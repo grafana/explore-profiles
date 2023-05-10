@@ -3,6 +3,8 @@
   "type": "app",
   "name": "Pyroscope App",
   "id": "grafana-pyroscope-app",
+  "backend": true,
+  "executable": "gpx_pyroscope_app",
   "info": {
     "keywords": ["app"],
     "description": "",
@@ -20,9 +22,25 @@
   "includes": [
     {
       "type": "page",
-      "name": "Default",
+      "name": "Single View",
       "path": "/a/%PLUGIN_ID%",
-      "role": "Admin",
+      "role": "Viewer",
+      "addToNav": true,
+      "defaultNav": true
+    },
+    {
+      "type": "page",
+      "name": "Comparison View",
+      "path": "/a/%PLUGIN_ID%/comparison",
+      "role": "Viewer",
+      "addToNav": true,
+      "defaultNav": true
+    },
+    {
+      "type": "page",
+      "name": "Comparison Diff View",
+      "path": "/a/%PLUGIN_ID%/comparison-diff",
+      "role": "Viewer",
       "addToNav": true,
       "defaultNav": true
     }

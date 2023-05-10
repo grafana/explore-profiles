@@ -1,3 +1,28 @@
 {
-  "extends": "./.config/tsconfig.json"
+  "extends": "./.config/tsconfig.json",
+  "include": [
+      "./src",
+      "./.config/types",
+      "./node_modules/pyroscope-oss/webapp/javascript/types"
+  ],
+  "compilerOptions": {
+    "paths": {
+       "@webapp/*": ["../node_modules/pyroscope-oss/webapp/javascript/*"],
+       "@pyroscope/flamegraph/*": ["../node_modules/pyroscope-oss/packages/pyroscope-flamegraph/*"],
+       "@pyroscope/models/*": ["../node_modules/pyroscope-oss/packages/pyroscope-models/*"],
+       "@phlare/*": ["../node_modules/phlare/public/app/*"],
+
+       "@webapp/components/ExportData": ["./overrides/components/ExportData"],
+       "@webapp/components/TimelineChart/ContextMenu.plugin": ["../node_modules/phlare/public/app/overrides/components/TimelineChart/ContextMenu.plugin"],
+       "@webapp/components/AppSelector/Label": ["./overrides/components/AppSelector/Label"],
+       "@webapp/components/TimelineChart/TimelineChart": ["./overrides/components/TimelineChart/TimelineChart"],
+
+       "@webapp/services/apps": ["../node_modules/phlare/public/app/overrides/services/appNames"],
+       "@webapp/services/render": ["../node_modules/phlare/public/app/overrides/services/render"],
+       "_@webapp/services/render": ["./overrides/services/render"],
+       "@webapp/services/base": ["./overrides/services/base"],
+       "@webapp/services/tags": ["../node_modules/phlare/public/app/overrides/services/tags"],
+       "@webapp/redux/store": ["../node_modules/phlare/public/app/store/*"]
+    }
+  }
 }

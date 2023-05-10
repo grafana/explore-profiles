@@ -1,12 +1,45 @@
 # Grafana app plugin template
 
-This template is a starting point for building an app plugin for Grafana.
+## development (tl;dr)
+
+```
+yarn dev
+```
+
+```
+mage watch
+```
+
+```
+yarn server
+```
 
 ## What are Grafana app plugins?
 
 App plugins can let you create a custom out-of-the-box monitoring experience by custom pages, nested datasources and panel plugins.
 
 ## Getting started
+
+### Backend
+
+1. Update [Grafana plugin SDK for Go](https://grafana.com/docs/grafana/latest/developers/plugins/backend/grafana-plugin-sdk-for-go/) dependency to the latest minor version:
+
+   ```bash
+   go get -u github.com/grafana/grafana-plugin-sdk-go
+   go mod tidy
+   ```
+
+2. Build backend plugin binaries for Linux, Windows and Darwin:
+
+   ```bash
+   mage -v
+   ```
+
+3. List all available Mage targets for additional commands:
+
+   ```bash
+   mage -l
+   ```
 
 
 ### Frontend

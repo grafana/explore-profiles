@@ -12,3 +12,19 @@ services:
     volumes:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
       - ./provisioning:/etc/grafana/provisioning
+  phlare:
+    image: grafana/phlare:weekly-f12-d2cdfc61
+    ports:
+    - 4100:4100/tcp
+    logging:
+      driver: none
+
+
+  go-agent:
+    build:
+      context: ./hacks/golang-simple
+    environment:
+      - PYROSCOPE_SERVER_ADDRESS=http://phlare:4100
+    logging:
+      driver: none
+
