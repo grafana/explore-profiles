@@ -2,10 +2,13 @@ package plugin
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/instancemgmt"
+	"github.com/grafana/grafana-plugin-sdk-go/backend/log"
 	"github.com/grafana/grafana-plugin-sdk-go/backend/resource/httpadapter"
-	"net/http"
 )
 
 // Make sure App implements required interfaces. This is important to do
@@ -24,14 +27,29 @@ type App struct {
 }
 
 // NewApp creates a new example *App instance.
-func NewApp(_ backend.AppInstanceSettings) (instancemgmt.Instance, error) {
+func NewApp(appInstanceSettings backend.AppInstanceSettings) (instancemgmt.Instance, error) {
 	var app App
+	logger := log.DefaultLogger
+
+	var settings Settings
+	err := json.Unmarshal(appInstanceSettings.JSONData, &settings)
+	if err != nil {
+		return &app, err
+	}
+
+	// TODO: unmarshall from both sources ({descripted,}JSONData) at once
+	settings.BasicAuthPassword = appInstanceSettings.DecryptedSecureJSONData["basicAuthPassword"]
+
+	rp, err := NewProxy(logger, settings)
+	if err != nil {
+		return &app, err
+	}
 
 	// Use a httpadapter (provided by the SDK) for resource calls. This allows us
 	// to use a *http.ServeMux for resource calls, so we can map multiple routes
 	// to CallResource without having to implement extra logic.
 	mux := http.NewServeMux()
-	app.registerRoutes(mux)
+	app.registerRoutes(rp, mux)
 	app.CallResourceHandler = httpadapter.New(mux)
 
 	return &app, nil
@@ -50,4 +68,3 @@ func (a *App) CheckHealth(_ context.Context, _ *backend.CheckHealthRequest) (*ba
 		Message: "ok",
 	}, nil
 }
-
