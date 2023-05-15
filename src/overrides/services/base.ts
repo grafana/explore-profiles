@@ -42,4 +42,4 @@ function isBackendSvrError(error: unknown): error is BackendSvrError {
   return typeof error === 'object' && error !== null && 'statusText' in error && 'data' in error && 'status' in error;
 }
 
-export { parseResponse, RequestError, RequestAbortedError };
+export { parseResponse, RequestError, RequestNotOkError, RequestAbortedError };
