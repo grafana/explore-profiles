@@ -1,4 +1,11 @@
 
 pyroscope-app {
   @import '../../node_modules/pyroscope-oss/webapp/sass/profile.scss';
+
+  // Weird selector to overwrite the default one from QueryInput.module.scss
+  .language-promql code.language-promql {
+    // Probably needed due to the default grafana font size
+    top: -1px;
+    left: -1px;
+  }
 }
