@@ -34,19 +34,9 @@ const config = async (env): Promise<Configuration> => {
           __dirname,
           './node_modules/phlare/public/app/overrides/components/TimelineChart/ContextMenu.plugin'
         ),
-        '@webapp/components/TimelineChart/TimelineChart': path.resolve(
-          __dirname,
-          './src/overrides/components/TimelineChart/TimelineChart'
-        ),
-
         // TODO: go back to phlare's once React is imported in every file there
-        '@webapp/components/AppSelector/Label': path.resolve(
-          __dirname,
-          //          './node_modules/phlare/public/app/overrides/components/AppSelector/Label'
-          './src/overrides/components/AppSelector/Label'
-        ),
+        '@webapp/components/AppSelector/Label': path.resolve(__dirname, './src/overrides/components/AppSelector/Label'),
 
-        //        '@webapp/services/render': path.resolve(__dirname, './src/overrides/services/render'),
         '@webapp/services/render': path.resolve(
           __dirname,
           './node_modules/phlare/public/app/overrides/services/render'

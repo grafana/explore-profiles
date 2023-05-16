@@ -24,8 +24,6 @@
        "@webapp/components/ExportData": ["./src/overrides/components/ExportData"],
        "@webapp/components/TimelineChart/ContextMenu.plugin": ["./node_modules/phlare/public/app/overrides/components/TimelineChart/ContextMenu.plugin"],
        "@webapp/components/AppSelector/Label": ["./src/overrides/components/AppSelector/Label"],
-       "@webapp/components/TimelineChart/TimelineChart": ["./src/overrides/components/TimelineChart/TimelineChart"],
-
        "@webapp/services/apps": ["./node_modules/phlare/public/app/overrides/services/appNames"],
        "@webapp/services/render": ["./node_modules/phlare/public/app/overrides/services/render"],
        "@webapp/services/base": ["./src/overrides/services/base"],
