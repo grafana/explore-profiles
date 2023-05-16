@@ -22,11 +22,19 @@
   "includes": [
     {
       "type": "page",
-      "name": "Single View",
+      "name": "Pyroscope",
       "path": "/a/%PLUGIN_ID%",
       "role": "Viewer",
       "addToNav": true,
-      "defaultNav": true
+      "defaultNav": false
+    },
+    {
+      "type": "page",
+      "name": "Single View",
+      "path": "/a/%PLUGIN_ID%/",
+      "role": "Viewer",
+      "addToNav": true,
+      "defaultNav": false
     },
     {
       "type": "page",
@@ -34,7 +42,7 @@
       "path": "/a/%PLUGIN_ID%/comparison",
       "role": "Viewer",
       "addToNav": true,
-      "defaultNav": true
+      "defaultNav": false
     },
     {
       "type": "page",
@@ -42,7 +50,7 @@
       "path": "/a/%PLUGIN_ID%/comparison-diff",
       "role": "Viewer",
       "addToNav": true,
-      "defaultNav": true
+      "defaultNav": false
     }
   ],
   "dependencies": {

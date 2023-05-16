@@ -13253,6 +13253,18 @@ react-custom-scrollbars-2@4.5.0:
     prop-types "^15.5.10"
     raf "^3.1.0"
 
+react-datepicker@4.7.0:
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-4.7.0.tgz#75e03b0a6718b97b84287933307faf2ed5f03cf4"
+  integrity sha512-FS8KgbwqpxmJBv/bUdA42MYqYZa+fEYcpc746DZiHvVE2nhjrW/dg7c5B5fIUuI8gZET6FOzuDgezNcj568Czw==
+  dependencies:
+    "@popperjs/core" "^2.9.2"
+    classnames "^2.2.6"
+    date-fns "^2.24.0"
+    prop-types "^15.7.2"
+    react-onclickoutside "^6.12.0"
+    react-popper "^2.2.5"
+
 react-datepicker@^4.7.0:
   version "4.11.0"
   resolved "https://registry.yarnpkg.com/react-datepicker/-/react-datepicker-4.11.0.tgz#40e73b4729a284ed206fdb322b8e84eb566e11a3"
@@ -13459,7 +13471,7 @@ react-notifications-component@~3.1.0:
   resolved "https://registry.yarnpkg.com/react-notifications-component/-/react-notifications-component-3.1.0.tgz#c676b7897a3fb10c554b69dba25fe2a9da6170e2"
   integrity sha512-qq+zgqVIa2zhlw+RvO2QSPk7xHLvZWTHl9VKRO56sMUef/UrcUTqOswL0DSJtRIpZYZhclquQUfDxD6H2w8aWA==
 
-react-onclickoutside@^6.12.2:
+react-onclickoutside@^6.12.0, react-onclickoutside@^6.12.2:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/react-onclickoutside/-/react-onclickoutside-6.13.0.tgz#e165ea4e5157f3da94f4376a3ab3e22a565f4ffc"
   integrity sha512-ty8So6tcUpIb+ZE+1HAhbLROvAIJYyJe/1vRrrcmW+jLsaM+/powDRqxzo6hSh9CuRZGSL1Q8mvcF5WRD93a0A==

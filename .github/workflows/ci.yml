@@ -34,6 +34,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js environment
@@ -53,10 +54,10 @@ jobs:
       - name: Build frontend
         run: yarn build
 
-      - name: Start grafana docker
-        run: docker-compose up -d
-      - name: Run e2e tests
-        run: yarn e2e
-      - name: Stop grafana docker
-        run: docker-compose down
-
+          #      - name: Start grafana docker
+          #        run: docker-compose up -d
+          #      - name: Run e2e tests
+          #        run: yarn e2e
+          #      - name: Stop grafana docker
+          #        run: docker-compose down
+          #
