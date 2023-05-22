@@ -2,6 +2,7 @@ import * as React from 'react';
 import { AppRootProps } from '@grafana/data';
 import { Route, Switch } from 'react-router-dom';
 import '../../styles/styles.scss';
+import TagExplorerView from '@webapp/pages/TagExplorerView';
 import ContinuousSingleView from '@webapp/pages/ContinuousSingleView';
 import ContinuousDiffView from '@webapp/pages/ContinuousDiffView';
 import ContinuousComparisonView from '@webapp/pages/ContinuousComparisonView';
@@ -40,9 +41,12 @@ export function App(props: AppRootProps) {
               <Route path={prefixRoute(ROUTES.COMPARISON_VIEW)}>
                 <ContinuousComparisonView />
               </Route>
+              <Route path={prefixRoute(ROUTES.SINGLE_VIEW)}>
+                <ContinuousSingleView />
+              </Route>
               {/* Default Page */}
               <Route>
-                <ContinuousSingleView />
+                <TagExplorerView />
               </Route>
             </Switch>
           </LoadAppNames>

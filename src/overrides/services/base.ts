@@ -12,7 +12,7 @@ import {
  *
  * It doesn't do request cancellation
  */
-export async function request(request: RequestInfo, config?: RequestInit): Promise<Result<unknown, RequestError>> {
+export async function requestWithOrgID(request: RequestInfo, config?: RequestInit): Promise<Result<unknown, RequestError>> {
   try {
     // Replace any double slashes
     const url = ['api/plugins/grafana-pyroscope-app/resources', request].join('/').replace(/\/{2,}/g, '/');

@@ -5,7 +5,7 @@
       "./.config/types",
       "./node_modules/pyroscope-oss/lib/",
       "./node_modules/pyroscope-oss/webapp/javascript/types",
-      "./node_modules/phlare/public/app/types.ts"
+      "./node_modules/grafana-pyroscope/public/app/types.ts"
   ],
   "plugins": [{ "name": "typescript-plugin-css-modules" }],
   "compilerOptions": {
@@ -19,17 +19,18 @@
        "@pyroscope/webapp/*": ["./node_modules/pyroscope-oss/webapp/*"],
        "@pyroscope/flamegraph/*": ["./node_modules/pyroscope-oss/packages/pyroscope-flamegraph/*"],
        "@pyroscope/models/*": ["./node_modules/pyroscope-oss/packages/pyroscope-models/*"],
-       "@phlare/*": ["./node_modules/phlare/public/app/*"],
+       "@phlare/*": ["./node_modules/grafana-pyroscope/public/app/*"],
 
        "@webapp/components/ExportData": ["./src/overrides/components/ExportData"],
-       "@webapp/components/TimelineChart/ContextMenu.plugin": ["./node_modules/phlare/public/app/overrides/components/TimelineChart/ContextMenu.plugin"],
+       "@webapp/components/TimelineChart/ContextMenu.plugin": ["./node_modules/grafana-pyroscope/public/app/overrides/components/TimelineChart/ContextMenu.plugin"],
        "@webapp/components/AppSelector/Label": ["./src/overrides/components/AppSelector/Label"],
-       "@webapp/services/apps": ["./node_modules/phlare/public/app/overrides/services/appNames"],
-       "@webapp/services/render": ["./node_modules/phlare/public/app/overrides/services/render"],
+       "@webapp/services/apps": ["./node_modules/grafana-pyroscope/public/app/overrides/services/appNames"],
+       "@webapp/services/render": ["./node_modules/grafana-pyroscope/public/app/overrides/services/render"],
        "@webapp/services/base": ["./src/overrides/services/base"],
-       "@webapp/services/tags": ["./node_modules/phlare/public/app/overrides/services/tags"],
-       "@webapp/redux/hooks": ["./node_modules/phlare/public/app/redux/hooks"],
-       "@webapp/redux/store": ["./node_modules/phlare/public/app/redux/store"],
+       "@webapp/services/tags": ["./node_modules/grafana-pyroscope/public/app/overrides/services/tags"],
+       "@webapp/redux/hooks": ["./node_modules/grafana-pyroscope/public/app/redux/hooks"],
+       "@webapp/redux/store": ["./node_modules/grafana-pyroscope/public/app/redux/store"],
+       "@webapp/redux/reducers/tenant": ["./node_modules/grafana-pyroscope/public/app/redux/reducers/tenant"],
 
        "react": ["./node_modules/@types/react"]
     }
