@@ -22,8 +22,8 @@
   "includes": [
     {
       "type": "page",
-      "name": "Pyroscope",
-      "path": "/a/%PLUGIN_ID%",
+      "name": "Tag Explorer",
+      "path": "/a/%PLUGIN_ID%/tag-explorer",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false
