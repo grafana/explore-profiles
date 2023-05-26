@@ -30,7 +30,7 @@ git push --tags origin v0.0.5
 
 #### Step 2. Wait for Release CD job to finish
 
-You want to make sure that `continuous-integration/drone/tag` job is green. There's going to be two of them. **Make sure that the _tag_ one there and is green**.
+You want to make sure that `continuous-integration/drone/tag` job is green. There's going to be two of them. **Make sure that the _tag_ one is there and is green**.
 
 ![Screenshot 2023-05-26 at 9 54 41 AM](https://github.com/grafana/pyroscope-app-plugin/assets/662636/b8d4f860-17a5-4e37-9557-c121cf98b4dd)
 
