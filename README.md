@@ -20,7 +20,7 @@ yarn server
 
 Currently the process is somewhat manual. We will automate it in the future.
 
-Step 1. Create a tag
+#### Step 1. Create a tag
 
 ```
 # for example:
@@ -28,17 +28,17 @@ git tag v0.0.5
 git push --tags origin v0.0.5
 ```
 
-Step 2. Wait for Release CD job to finish
+#### Step 2. Wait for Release CD job to finish
 
 You want to make sure that `continuous-integration/drone/tag` job is green. There's going to be two of them. **Make sure that the _tag_ one there and is green**.
 
 ![Screenshot 2023-05-26 at 9 54 41 AM](https://github.com/grafana/pyroscope-app-plugin/assets/662636/b8d4f860-17a5-4e37-9557-c121cf98b4dd)
 
-Step 3. Create a PR in `deployment_tools`
+#### Step 3. Create a PR in `deployment_tools`
 
 You'll need to update 3 files (one for each environment) in [deployment_tools](https://github.com/grafana/deployment_tools) repo. See [this PR](https://github.com/grafana/deployment_tools/pull/71148/files) for an example.
 
-Step 4. Wait for plugin to be deployed everwhere
+#### Step 4. Wait for plugin to be deployed everwhere
 
 Once you merge your PR, [stack-state-service](https://github.com/grafana/stack-state-service) will take care of provisioning the new version everywhere.
 
