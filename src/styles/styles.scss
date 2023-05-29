@@ -8,4 +8,9 @@ pyroscope-app {
     top: -1px;
     left: -1px;
   }
+
+  .pyroscope-app {
+    // Otherwise the app doesn't use full height when it's smaller than the window
+    overflow-y: initial;
+  }
 }
