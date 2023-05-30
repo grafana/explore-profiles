@@ -8928,9 +8928,9 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-"grafana-pyroscope@git+https://github.com/grafana/phlare.git#a512ee3":
+"grafana-pyroscope@git+https://github.com/grafana/phlare.git#49e4451":
   version "0.0.1"
-  resolved "git+https://github.com/grafana/phlare.git#a512ee39be8409c0cef7084db5ad84984d5b0e8b"
+  resolved "git+https://github.com/grafana/phlare.git#49e445110760051cc56b677efba7e675d6856729"
   dependencies:
     "@fortawesome/react-fontawesome" "~0.1.11"
     "@mui/base" "5.0.0-alpha.98"
@@ -8942,7 +8942,7 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
     "@szhsin/react-menu" "3.5.2"
     graphviz-react "^1.2.5"
     jquery "^3.6.4"
-    pyroscope-oss "git+https://github.com/pyroscope-io/pyroscope.git#72e54cc"
+    pyroscope-oss "git+https://github.com/pyroscope-io/pyroscope.git#f710852"
     react "^18.2.0"
     react-datepicker "^4.7.0"
     react-debounce-input "^3.2.5"
@@ -8956,6 +8956,7 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
     react-redux "^7.2.1"
     react-router-dom "5.3.0"
     react-textarea-autosize "8.3.0"
+    zod "^3.21.4"
 
 grapheme-splitter@^1.0.4:
   version "1.0.4"
@@ -12921,9 +12922,9 @@ pure-rand@^6.0.0:
   resolved "https://registry.yarnpkg.com/pure-rand/-/pure-rand-6.0.2.tgz#a9c2ddcae9b68d736a8163036f088a2781c8b306"
   integrity sha512-6Yg0ekpKICSjPswYOuC5sku/TSWaRYlA0qsXqJgM/d/4pLPHPuTxK7Nbf7jFKzAeedUhR8C7K9Uv63FBsSo8xQ==
 
-"pyroscope-oss@git+https://github.com/pyroscope-io/pyroscope.git#72e54cc":
+"pyroscope-oss@git+https://github.com/pyroscope-io/pyroscope.git#f710852":
   version "0.37.2"
-  resolved "git+https://github.com/pyroscope-io/pyroscope.git#72e54ccfcbb4812f87f8fc6840545079096c5462"
+  resolved "git+https://github.com/pyroscope-io/pyroscope.git#f710852d6c8b7b68c9dc3c06d0afae647dc0aa16"
   dependencies:
     "@babel/plugin-transform-runtime" "^7.16.4"
     "@babel/preset-env" "^7.10.4"
@@ -16565,3 +16566,8 @@ zod@3.17.3:
   version "3.17.3"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.17.3.tgz#86abbc670ff0063a4588d85a4dcc917d6e4af2ba"
   integrity sha512-4oKP5zvG6GGbMlqBkI5FESOAweldEhSOZ6LI6cG+JzUT7ofj1ZOC0PJudpQOpT1iqOFpYYtX5Pw0+o403y4bcg==
+
+zod@^3.21.4:
+  version "3.21.4"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.21.4.tgz#10882231d992519f0a10b5dd58a38c9dabbb64db"
+  integrity sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==

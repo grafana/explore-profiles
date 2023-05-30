@@ -13,7 +13,7 @@ services:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
       - ./provisioning:/etc/grafana/provisioning
   phlare:
-    image: grafana/phlare:0.6.0
+    image: grafana/phlare:weekly-f16-1114622c
     ports:
     - 4100:4100/tcp
     logging:

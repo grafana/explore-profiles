@@ -23,8 +23,14 @@
 
        "@webapp/components/ExportData": ["./src/overrides/components/ExportData"],
        "@webapp/components/TimelineChart/ContextMenu.plugin": ["./node_modules/grafana-pyroscope/public/app/overrides/components/TimelineChart/ContextMenu.plugin"],
-       "@webapp/components/AppSelector/Label": ["./src/overrides/components/AppSelector/Label"],
-       "@webapp/services/apps": ["./node_modules/grafana-pyroscope/public/app/overrides/services/appNames"],
+       "@webapp/components/AppSelector": [
+          "./node_modules/grafana-pyroscope/public/app/overrides/components/AppSelector"
+        ],
+       "@webapp/components/AppSelector/Label": [ "./node_modules/grafana-pyroscope/public/app/overrides/components/AppSelector/Label"],
+       "@webapp/components/Toolbar": [ "./node_modules/grafana-pyroscope/public/app/overrides/components/Toolbar"],
+
+       "@webapp/models/query": ["./node_modules/grafana-pyroscope/public/app/overrides/models/query"],
+       "@webapp/services/apps": ["./node_modules/grafana-pyroscope/public/app/overrides/services/apps"],
        "@webapp/services/render": ["./node_modules/grafana-pyroscope/public/app/overrides/services/render"],
        "@webapp/services/base": ["./src/overrides/services/base"],
        "@webapp/services/tags": ["./node_modules/grafana-pyroscope/public/app/overrides/services/tags"],
