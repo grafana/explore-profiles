@@ -29,6 +29,7 @@
        "@webapp/components/AppSelector/Label": [ "./node_modules/grafana-pyroscope/public/app/overrides/components/AppSelector/Label"],
        "@webapp/components/Toolbar": [ "./node_modules/grafana-pyroscope/public/app/overrides/components/Toolbar"],
 
+       "@webapp/models/app": ["./node_modules/grafana-pyroscope/public/app/overrides/models/app"],
        "@webapp/models/query": ["./node_modules/grafana-pyroscope/public/app/overrides/models/query"],
        "@webapp/services/apps": ["./node_modules/grafana-pyroscope/public/app/overrides/services/apps"],
        "@webapp/services/render": ["./node_modules/grafana-pyroscope/public/app/overrides/services/render"],
@@ -38,7 +39,8 @@
        "@webapp/redux/store": ["./node_modules/grafana-pyroscope/public/app/redux/store"],
        "@webapp/redux/reducers/tenant": ["./node_modules/grafana-pyroscope/public/app/redux/reducers/tenant"],
 
-       "react": ["./node_modules/@types/react"]
+       "react": ["./node_modules/@types/react"],
+       "zod": ["./node_modules/zod"]
     }
   }
 }
