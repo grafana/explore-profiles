@@ -77,7 +77,7 @@
     "@grafana/data": "9.5.2",
     "@grafana/runtime": "9.5.2",
     "@grafana/ui": "9.5.2",
-    "grafana-pyroscope": "git+https://github.com/grafana/phlare.git#49e4451",
+    "grafana-pyroscope": "git+https://github.com/grafana/phlare.git#929d630",
     "react": "17.0.2",
     "react-datepicker": "4.7.0",
     "react-dom": "17.0.2",

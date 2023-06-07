@@ -29,6 +29,11 @@ const config = async (env): Promise<Configuration> => {
       extensions: ['.ts', '.tsx', '.js', '.json', '.svg'],
       alias: {
         // More specific rules first
+        '@webapp/util/baseurl': path.resolve(
+          __dirname,
+          './node_modules/grafana-pyroscope/public/app/overrides/util/baseurl'
+        ),
+
         '@webapp/components/ExportData': path.resolve(__dirname, './src/overrides/components/ExportData'),
         '@webapp/components/TimelineChart/ContextMenu.plugin': path.resolve(
           __dirname,
@@ -86,6 +91,8 @@ const config = async (env): Promise<Configuration> => {
 
         '@webapp': path.resolve(__dirname, './node_modules/pyroscope-oss/webapp/javascript'),
         '@phlare': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
+
+        'redux-query-sync': path.resolve(__dirname, './src/overrides/redux-query-sync'),
 
         // Otherwise we may end up using zod from pyroscope-oss, which is an older version
         zod: path.resolve(__dirname, './node_modules/zod'),

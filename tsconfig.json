@@ -21,6 +21,7 @@
        "@pyroscope/models/*": ["./node_modules/pyroscope-oss/packages/pyroscope-models/*"],
        "@phlare/*": ["./node_modules/grafana-pyroscope/public/app/*"],
 
+
        "@webapp/components/ExportData": ["./src/overrides/components/ExportData"],
        "@webapp/components/TimelineChart/ContextMenu.plugin": ["./node_modules/grafana-pyroscope/public/app/overrides/components/TimelineChart/ContextMenu.plugin"],
        "@webapp/components/AppSelector": [
@@ -38,6 +39,7 @@
        "@webapp/redux/hooks": ["./node_modules/grafana-pyroscope/public/app/redux/hooks"],
        "@webapp/redux/store": ["./node_modules/grafana-pyroscope/public/app/redux/store"],
        "@webapp/redux/reducers/tenant": ["./node_modules/grafana-pyroscope/public/app/redux/reducers/tenant"],
+       "@webapp/util/baseurl": ["./node_modules/grafana-pyroscope/public/app/overrides/util/baseurl"],
 
        "react": ["./node_modules/@types/react"],
        "zod": ["./node_modules/zod"]
