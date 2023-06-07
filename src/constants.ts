@@ -10,7 +10,7 @@ export enum ROUTES {
   COMPARISON_DIFF_VIEW = '/comparison-diff',
 }
 
-export const NAVIGATION_TITLE = 'Pyroscope App Plugin';
+export const NAVIGATION_TITLE = 'Profiles';
 export const NAVIGATION_SUBTITLE = '';
 
 // Add a navigation item for each route you would like to display in the navigation bar
