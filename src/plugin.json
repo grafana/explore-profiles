@@ -1,13 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
-  "name": "Pyroscope",
+  "name": "Profiles",
   "id": "grafana-pyroscope-app",
   "backend": true,
   "executable": "gpx_pyroscope_app",
   "info": {
     "keywords": ["app"],
-    "description": "Continuous Profiling Platform",
+    "description": "Continuous profiling service powered by Grafana Pyroscope",
     "author": {
       "name": "Grafana"
     },
