@@ -77,6 +77,8 @@ const config = async (env): Promise<Configuration> => {
           './node_modules/grafana-pyroscope/public/app/overrides/services/apps'
         ),
 
+        '@phlare/util/history': path.resolve(__dirname, './src/overrides/util/history'),
+
         // Reuse Phlare's store
         '@webapp/redux/store': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app/redux/store'),
         '@webapp/redux/reducers/tenant': path.resolve(
@@ -91,8 +93,6 @@ const config = async (env): Promise<Configuration> => {
 
         '@webapp': path.resolve(__dirname, './node_modules/pyroscope-oss/webapp/javascript'),
         '@phlare': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
-
-        'redux-query-sync': path.resolve(__dirname, './src/overrides/redux-query-sync'),
 
         // Otherwise we may end up using zod from pyroscope-oss, which is an older version
         zod: path.resolve(__dirname, './node_modules/zod'),

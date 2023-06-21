@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { AppRootProps } from '@grafana/data';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useLocation } from 'react-router-dom';
 import '../../styles/styles.scss';
 import TagExplorerView from '@webapp/pages/TagExplorerView';
 import ContinuousSingleView from '@webapp/pages/ContinuousSingleView';
@@ -12,7 +12,7 @@ import store from '@phlare/redux/store';
 import { ROUTES } from '../../constants';
 import { PluginPropsContext } from '../../utils/utils.plugin';
 import { useTheme2 } from '@grafana/ui';
-import { useNavigation, prefixRoute } from '../../utils/utils.routing';
+import { useNavigation, prefixRoute, useNavigationLinksUpdate } from '../../utils/utils.routing';
 
 // Module augmentation so that typescript sees our 'custom' element
 declare global {
@@ -28,6 +28,7 @@ function Routes() {
   // This hook needs to be under the PLuginPropsContextProvider
   useNavigation();
   useSelectFirstApp();
+  useNavigationLinksUpdate();
 
   return (
     <Switch>
