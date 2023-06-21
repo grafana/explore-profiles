@@ -11,13 +11,25 @@ const copyCompilerOptionsPath = {
   ...compilerOptions.paths,
 };
 
-// tsconfig.json pints to @types/react
+// TODO:
+// tsconfig.json points to @types/react
 // here jest needs the actual code
-delete copyCompilerOptionsPath['react'];
+copyCompilerOptionsPath['react'] = ['./node_modules/react'];
 
 module.exports = {
   // Jest configuration provided by Grafana scaffolding
   ...require('./.config/jest.config'),
   modulePaths: [compilerOptions.baseUrl], // <-- This will be set to 'baseUrl' value
   moduleNameMapper: pathsToModuleNameMapper(copyCompilerOptionsPath, { prefix: '<rootDir>/' }),
+  transform: {
+    '^.+\\.(t|j)sx?$': ['@swc/jest'],
+    '\\.module\\.(css|scss)$': 'jest-css-modules-transform',
+    '\\.(css|scss)$': 'jest-css-modules-transform',
+  },
+
+  transformIgnorePatterns: [
+    // force us to not transpile these dependencies
+    // https://stackoverflow.com/a/69150188
+    'node_modules/(?!(true-myth|d3|d3-array|internmap|d3-scale|react-notifications-component|graphviz-react|pyroscope-oss|@grafana|ol))',
+  ],
 };

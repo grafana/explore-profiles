@@ -13,6 +13,8 @@ import { ROUTES } from '../../constants';
 import { PluginPropsContext } from '../../utils/utils.plugin';
 import { useTheme2 } from '@grafana/ui';
 import { useNavigation, prefixRoute, useNavigationLinksUpdate } from '../../utils/utils.routing';
+import { OnboardingDialog } from '../OnboardingDialog';
+
 
 // Module augmentation so that typescript sees our 'custom' element
 declare global {
@@ -31,24 +33,27 @@ function Routes() {
   useNavigationLinksUpdate();
 
   return (
-    <Switch>
-      <Route path={prefixRoute(ROUTES.SINGLE_VIEW)} exact>
-        <ContinuousSingleView />
-      </Route>
-      <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW)} exact>
-        <ContinuousDiffView />
-      </Route>
-      <Route path={prefixRoute(ROUTES.COMPARISON_VIEW)} exact>
-        <ContinuousComparisonView />
-      </Route>
-      <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
-        <TagExplorerView />
-      </Route>
-      {/* Default Route */}
-      <Route>
-        <Redirect to={prefixRoute(ROUTES.EXPLORE_VIEW)} />
-      </Route>
-    </Switch>
+    <>
+      <OnboardingDialog />
+      <Switch>
+        <Route path={prefixRoute(ROUTES.SINGLE_VIEW)} exact>
+          <ContinuousSingleView />
+        </Route>
+        <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW)} exact>
+          <ContinuousDiffView />
+        </Route>
+        <Route path={prefixRoute(ROUTES.COMPARISON_VIEW)} exact>
+          <ContinuousComparisonView />
+        </Route>
+        <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
+          <TagExplorerView />
+        </Route>
+        {/* Default Route */}
+        <Route>
+          <Redirect to={prefixRoute(ROUTES.EXPLORE_VIEW)} />
+        </Route>
+      </Switch>
+    </>
   );
 }
 
