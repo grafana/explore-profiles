@@ -39,12 +39,12 @@ describe('Faro', () => {
     ],
     // Prod
     [
-      'foobar.grafana-prod.net',
+      'foobar.grafana.net',
       'pyroscope-app-prod',
       'https://faro-collector-prod-us-central-0.grafana.net/collect/20ca4982e590cb9b90ad1a6e9f152230',
     ],
     [
-      'grafana-prod.net',
+      'grafana.net',
       'pyroscope-app-prod',
       'https://faro-collector-prod-us-central-0.grafana.net/collect/20ca4982e590cb9b90ad1a6e9f152230',
     ],
