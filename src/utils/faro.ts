@@ -47,6 +47,7 @@ function init(): Faro | undefined {
 
   return initializeFaro({
     url: env.faroUrl,
+    isolate: true,
     instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
     app: {
       name: env.appName,
