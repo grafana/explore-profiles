@@ -2,27 +2,31 @@
 
 ![Screenshot 2023-05-10 at 11-06-45 Diff process_cpu cpu nanoseconds cpu nanoseconds{pyroscope_app simple golang app function slow } and process_cpu cpu nanoseconds cpu nanoseconds{pyroscope_app simple golang app function fast } Pyroscope](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/f2a440ec-3d36-49a4-a9f7-a80d7f6fb86f)
 
-
 ## What are Grafana app plugins?
 
 App plugins can let you create a custom out-of-the-box monitoring experience by custom pages, nested datasources and panel plugins.
 
 ## Running Pyroscope App plugin locally for development
 
-At the same time run all three of these commands
+First, build and watch the frontend code:
+
 ```
 yarn dev
 ```
 
+Then make sure the backend plugin is built for all the architectures:
+
 ```
-mage watch
+mage
 ```
+
+Finally, run the server using docker-compose:
 
 ```
 yarn server
 ```
 
-Then go to `localhost:3000` and you should see the app plugin there
+Then go to `localhost:3000` and you should see the app plugin there.
 
 ## Release / Deployment Process
 
@@ -49,7 +53,6 @@ You'll need to update 3 files (one for each environment) in [deployment_tools](h
 #### Step 4. Wait for plugin to be deployed everwhere
 
 Once you merge your PR, [stack-state-service](https://github.com/grafana/stack-state-service) will take care of provisioning the new version everywhere.
-
 
 # Distributing your plugin
 
@@ -89,7 +92,6 @@ To trigger the workflow we need to push a version tag to github. This can be ach
 
 1. Run `npm version <major|minor|patch>`
 2. Run `git push origin main --follow-tags`
-
 
 ## Learn more
 
