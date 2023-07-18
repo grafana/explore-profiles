@@ -80,7 +80,7 @@
     "@grafana/runtime": "9.5.2",
     "@grafana/ui": "9.5.2",
     "@reduxjs/toolkit": "1.9.3",
-    "grafana-pyroscope": "git+https://github.com/grafana/phlare.git#83cd75d",
+    "grafana-pyroscope": "git+https://github.com/grafana/pyroscope.git#4df711e",
     "react": "17.0.2",
     "react-datepicker": "4.7.0",
     "react-dom": "17.0.2",

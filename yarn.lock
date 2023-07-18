@@ -9121,9 +9121,9 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-"grafana-pyroscope@git+https://github.com/grafana/phlare.git#83cd75d":
+"grafana-pyroscope@git+https://github.com/grafana/pyroscope.git#4df711e":
   version "0.0.1"
-  resolved "git+https://github.com/grafana/phlare.git#83cd75d30035f41934de372b532fef4407a978d6"
+  resolved "git+https://github.com/grafana/pyroscope.git#4df711ec90d9fdad8dc473f63c9554035f21f494"
   dependencies:
     "@fortawesome/react-fontawesome" "~0.1.11"
     "@mui/base" "5.0.0-alpha.98"
