@@ -3,8 +3,8 @@
   "include": [
       "./src",
       "./.config/types",
-      "./node_modules/pyroscope-oss/lib/",
-      "./node_modules/pyroscope-oss/webapp/javascript/types",
+      "./node_modules/grafana-pyroscope/og/lib/",
+      "./node_modules/grafana-pyroscope/og/webapp/javascript/types",
       "./node_modules/grafana-pyroscope/public/app/types.ts"
   ],
   "plugins": [{ "name": "typescript-plugin-css-modules" }],
@@ -14,11 +14,11 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-       "@webapp/*": ["./node_modules/pyroscope-oss/webapp/javascript/*"],
-       "@webapp/redux/*": ["./node_modules/pyroscope-oss/webapp/javascript/redux/*"],
-       "@pyroscope/webapp/*": ["./node_modules/pyroscope-oss/webapp/*"],
-       "@pyroscope/flamegraph/*": ["./node_modules/pyroscope-oss/packages/pyroscope-flamegraph/*"],
-       "@pyroscope/models/*": ["./node_modules/pyroscope-oss/packages/pyroscope-models/*"],
+       "@webapp/*": ["./node_modules/grafana-pyroscope/og/webapp/javascript/*"],
+       "@webapp/redux/*": ["./node_modules/grafana-pyroscope/og/webapp/javascript/redux/*"],
+       "@pyroscope/webapp/*": ["./node_modules/grafana-pyroscope/og/webapp/*"],
+       "@pyroscope/flamegraph/*": ["./node_modules/grafana-pyroscope/og/packages/pyroscope-flamegraph/*"],
+       "@pyroscope/models/*": ["./node_modules/grafana-pyroscope/og/packages/pyroscope-models/*"],
        "@phlare/*": ["./node_modules/grafana-pyroscope/public/app/*"],
 
 

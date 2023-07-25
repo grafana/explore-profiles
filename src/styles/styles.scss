@@ -1,6 +1,6 @@
 
 pyroscope-app {
-  @import '../../node_modules/pyroscope-oss/webapp/sass/profile.scss';
+  @import '../../node_modules/grafana-pyroscope/og/webapp/sass/profile.scss';
   @import './datepicker.scss';
   
   // Weird selector to overwrite the default one from QueryInput.module.scss

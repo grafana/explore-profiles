@@ -7,7 +7,7 @@ import {
   RequestNotOkError,
   parseResponse,
   RequestAbortedError,
-} from '../../../node_modules/pyroscope-oss/webapp/javascript/services/base';
+} from '../../../node_modules/grafana-pyroscope/og/webapp/javascript/services/base';
 import { faro as Faro } from '../../utils/faro';
 
 // TODO: bad naming, we should export a simple 'request' function for people consume

@@ -87,14 +87,14 @@ const config = async (env): Promise<Configuration> => {
         ),
 
         // Less specific rules last
-        '@pyroscope/webapp': path.resolve(__dirname, './node_modules/pyroscope-oss/webapp'),
-        '@pyroscope/flamegraph': path.resolve(__dirname, './node_modules/pyroscope-oss/packages/pyroscope-flamegraph'),
-        '@pyroscope/models': path.resolve(__dirname, './node_modules/pyroscope-oss/packages/pyroscope-models'),
+        '@pyroscope/webapp': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/webapp'),
+        '@pyroscope/flamegraph': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/packages/pyroscope-flamegraph'),
+        '@pyroscope/models': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/packages/pyroscope-models'),
 
-        '@webapp': path.resolve(__dirname, './node_modules/pyroscope-oss/webapp/javascript'),
+        '@webapp': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/webapp/javascript'),
         '@phlare': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
 
-        // Otherwise we may end up using zod from pyroscope-oss, which is an older version
+        // Otherwise we may end up using zod from pyroscope-pyroscope, which is an older version
         zod: path.resolve(__dirname, './node_modules/zod'),
       },
     },
@@ -102,8 +102,8 @@ const config = async (env): Promise<Configuration> => {
       rules: [
         {
           test: /\.(js|ts)x?$/,
-          // Ignore everything except (pyroscope-oss | phlare), since it's used as if it was local code
-          exclude: /node_modules\/(?!pyroscope-oss|grafana-pyroscope|phlare).*/,
+          // Ignore everything except (pyroscope-pyroscope | phlare), since it's used as if it was local code
+          exclude: /node_modules\/(?!grafana-pyroscope|phlare).*/,
           use: [
             {
               loader: 'esbuild-loader',
