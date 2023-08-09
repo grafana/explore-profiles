@@ -13,7 +13,7 @@ import { ROUTES } from '../../constants';
 import { PluginPropsContext } from '../../utils/utils.plugin';
 import { useTheme2 } from '@grafana/ui';
 import { useNavigation, prefixRoute, useNavigationLinksUpdate } from '../../utils/utils.routing';
-import { OnboardingDialog } from '../OnboardingDialog';
+import { Onboarding } from '../../pages/Onboarding';
 import '../../utils/faro';
 
 // Module augmentation so that typescript sees our 'custom' element
@@ -33,8 +33,7 @@ function Routes() {
   useNavigationLinksUpdate();
 
   return (
-    <>
-      <OnboardingDialog />
+    <Onboarding>
       <Switch>
         <Route path={prefixRoute(ROUTES.SINGLE_VIEW)} exact>
           <ContinuousSingleView />
@@ -53,7 +52,7 @@ function Routes() {
           <Redirect to={prefixRoute(ROUTES.EXPLORE_VIEW)} />
         </Route>
       </Switch>
-    </>
+    </Onboarding>
   );
 }
 

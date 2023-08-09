@@ -3,6 +3,7 @@ import type { Configuration, RuleSetRule } from 'webpack';
 import { merge } from 'webpack-merge';
 import grafanaConfig from './.config/webpack/webpack.config';
 import * as path from 'path';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 
 const config = async (env): Promise<Configuration> => {
   const baseConfig = await grafanaConfig(env);
@@ -129,8 +130,24 @@ const config = async (env): Promise<Configuration> => {
             },
           ],
         },
+        {
+          test: /\.(png|jpe?g|gif)$/,
+          type: 'asset/resource',
+          generator: {
+            publicPath: `public/plugins/grafana-pyroscope-app/img/`,
+            outputPath: 'img/',
+            filename: Boolean(env.production) ? '[hash][ext]' : '[name][ext]',
+          },
+        },
       ],
     },
+    plugins: [
+      new CopyWebpackPlugin({
+        patterns: [
+          { from: '**/*.png', to: '.', noErrorOnMissing: true }, // Optional
+        ],
+      }),
+    ],
   });
 };
 
