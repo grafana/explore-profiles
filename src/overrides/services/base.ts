@@ -1,5 +1,5 @@
 import { getBackendSrv } from '@grafana/runtime';
-import { Result } from '@webapp/util/fp';
+import { Result } from '@phlare/util/fp';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import { SpanStatusCode } from '@opentelemetry/api';
 import {
@@ -7,7 +7,8 @@ import {
   RequestNotOkError,
   parseResponse,
   RequestAbortedError,
-} from '../../../node_modules/grafana-pyroscope/og/webapp/javascript/services/base';
+  request
+} from '../../../node_modules/grafana-pyroscope/public/app/services/base';
 import { faro as Faro } from '../../utils/faro';
 
 // TODO: bad naming, we should export a simple 'request' function for people consume
@@ -96,4 +97,4 @@ function isBackendSvrError(error: unknown): error is BackendSvrError {
   return typeof error === 'object' && error !== null && 'statusText' in error && 'data' in error && 'status' in error;
 }
 
-export { parseResponse, RequestError, RequestNotOkError, RequestAbortedError };
+export { parseResponse, request, RequestError, RequestNotOkError, RequestAbortedError };

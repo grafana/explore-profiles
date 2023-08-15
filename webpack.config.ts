@@ -30,69 +30,16 @@ const config = async (env): Promise<Configuration> => {
       extensions: ['.ts', '.tsx', '.js', '.json', '.svg'],
       alias: {
         // More specific rules first
-        '@webapp/util/baseurl': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/util/baseurl'
-        ),
 
-        '@webapp/components/ExportData': path.resolve(__dirname, './src/overrides/components/ExportData'),
-        '@webapp/components/TimelineChart/ContextMenu.plugin': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/components/TimelineChart/ContextMenu.plugin'
-        ),
-        // TODO: go back to phlare's once React is imported in every file there
-        '@webapp/components/AppSelector/Label': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/components/AppSelector/Label'
-        ),
-        '@webapp/components/AppSelector': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/components/AppSelector/AppSelector'
-        ),
-        '@webapp/components/Toolbar': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/components/Toolbar'
-        ),
-
-        '@webapp/models/query': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/models/query'
-        ),
-        '@webapp/models/app': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/models/app'
-        ),
-        '@webapp/services/render': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/services/render'
-        ),
-        '@webapp/services/base': path.resolve(__dirname, './src/overrides/services/base'),
-        // Reuse phlare's tags service, since url is different from og pyroscope
-        '@webapp/services/tags': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/services/tags'
-        ),
-        // Reuse phlare's apps service, since url is different from og pyroscope
-        '@webapp/services/apps': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/overrides/services/apps'
-        ),
+        '@phlare/components/ExportData': path.resolve(__dirname, './src/overrides/components/ExportData'),
+        '@phlare/services/base': path.resolve(__dirname, './src/overrides/services/base'),
 
         '@phlare/util/history': path.resolve(__dirname, './src/overrides/util/history'),
 
-        // Reuse Phlare's store
-        '@webapp/redux/store': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app/redux/store'),
-        '@webapp/redux/reducers/tenant': path.resolve(
-          __dirname,
-          './node_modules/grafana-pyroscope/public/app/redux/reducers/tenant'
-        ),
-
         // Less specific rules last
-        '@pyroscope/webapp': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/webapp'),
         '@pyroscope/flamegraph': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/packages/pyroscope-flamegraph'),
         '@pyroscope/models': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/packages/pyroscope-models'),
 
-        '@webapp': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/webapp/javascript'),
         '@phlare': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
 
         // Otherwise we may end up using zod from pyroscope-pyroscope, which is an older version

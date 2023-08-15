@@ -1,7 +1,7 @@
 import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import continuousReducer, { ContinuousState } from '@webapp/redux/reducers/continuous';
+import { continuousReducer, ContinuousState } from '@phlare/redux/reducers/continuous';
 import { render, screen } from '@testing-library/react';
 import { OnboardingDialog } from './OnboardingDialog';
 

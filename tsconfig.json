@@ -3,9 +3,8 @@
   "include": [
       "./src",
       "./.config/types",
-      "./node_modules/grafana-pyroscope/og/lib/",
-      "./node_modules/grafana-pyroscope/og/webapp/javascript/types",
-      "./node_modules/grafana-pyroscope/public/app/types.ts"
+      "./node_modules/grafana-pyroscope/public/app/lib",
+      "./node_modules/grafana-pyroscope/public/app/types"
   ],
   "plugins": [{ "name": "typescript-plugin-css-modules" }],
   "compilerOptions": {
@@ -14,32 +13,15 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-       "@webapp/*": ["./node_modules/grafana-pyroscope/og/webapp/javascript/*"],
-       "@webapp/redux/*": ["./node_modules/grafana-pyroscope/og/webapp/javascript/redux/*"],
-       "@pyroscope/webapp/*": ["./node_modules/grafana-pyroscope/og/webapp/*"],
        "@pyroscope/flamegraph/*": ["./node_modules/grafana-pyroscope/og/packages/pyroscope-flamegraph/*"],
        "@pyroscope/models/*": ["./node_modules/grafana-pyroscope/og/packages/pyroscope-models/*"],
        "@phlare/*": ["./node_modules/grafana-pyroscope/public/app/*"],
 
 
-       "@webapp/components/ExportData": ["./src/overrides/components/ExportData"],
-       "@webapp/components/TimelineChart/ContextMenu.plugin": ["./node_modules/grafana-pyroscope/public/app/overrides/components/TimelineChart/ContextMenu.plugin"],
-       "@webapp/components/AppSelector": [
-          "./node_modules/grafana-pyroscope/public/app/overrides/components/AppSelector"
-        ],
-       "@webapp/components/AppSelector/Label": [ "./node_modules/grafana-pyroscope/public/app/overrides/components/AppSelector/Label"],
-       "@webapp/components/Toolbar": [ "./node_modules/grafana-pyroscope/public/app/overrides/components/Toolbar"],
+       "@phlare/components/ExportData": ["./src/overrides/components/ExportData"],
 
-       "@webapp/models/app": ["./node_modules/grafana-pyroscope/public/app/overrides/models/app"],
-       "@webapp/models/query": ["./node_modules/grafana-pyroscope/public/app/overrides/models/query"],
-       "@webapp/services/apps": ["./node_modules/grafana-pyroscope/public/app/overrides/services/apps"],
-       "@webapp/services/render": ["./node_modules/grafana-pyroscope/public/app/overrides/services/render"],
-       "@webapp/services/base": ["./src/overrides/services/base"],
-       "@webapp/services/tags": ["./node_modules/grafana-pyroscope/public/app/overrides/services/tags"],
-       "@webapp/redux/hooks": ["./node_modules/grafana-pyroscope/public/app/redux/hooks"],
-       "@webapp/redux/store": ["./node_modules/grafana-pyroscope/public/app/redux/store"],
-       "@webapp/redux/reducers/tenant": ["./node_modules/grafana-pyroscope/public/app/redux/reducers/tenant"],
-       "@webapp/util/baseurl": ["./node_modules/grafana-pyroscope/public/app/overrides/util/baseurl"],
+       "@phlare/services/base": ["./src/overrides/services/base"],
+       "@phlare/util/history": ["./src/overrides/util/history"],
 
        "react": ["./node_modules/@types/react"],
        "zod": ["./node_modules/zod"]
