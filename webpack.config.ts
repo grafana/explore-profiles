@@ -31,7 +31,6 @@ const config = async (env): Promise<Configuration> => {
       alias: {
         // More specific rules first
 
-        '@phlare/components/ExportData': path.resolve(__dirname, './src/overrides/components/ExportData'),
         '@phlare/services/base': path.resolve(__dirname, './src/overrides/services/base'),
 
         '@phlare/util/history': path.resolve(__dirname, './src/overrides/util/history'),

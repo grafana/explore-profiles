@@ -17,9 +17,6 @@
        "@pyroscope/models/*": ["./node_modules/grafana-pyroscope/og/packages/pyroscope-models/*"],
        "@phlare/*": ["./node_modules/grafana-pyroscope/public/app/*"],
 
-
-       "@phlare/components/ExportData": ["./src/overrides/components/ExportData"],
-
        "@phlare/services/base": ["./src/overrides/services/base"],
        "@phlare/util/history": ["./src/overrides/util/history"],
 
