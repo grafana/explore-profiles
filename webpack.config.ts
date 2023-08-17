@@ -31,15 +31,12 @@ const config = async (env): Promise<Configuration> => {
       alias: {
         // More specific rules first
 
-        '@phlare/services/base': path.resolve(__dirname, './src/overrides/services/base'),
+        '@pyroscope/services/base': path.resolve(__dirname, './src/overrides/services/base'),
 
-        '@phlare/util/history': path.resolve(__dirname, './src/overrides/util/history'),
+        '@pyroscope/util/history': path.resolve(__dirname, './src/overrides/util/history'),
 
-        // Less specific rules last
-        '@pyroscope/flamegraph': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/packages/pyroscope-flamegraph'),
-        '@pyroscope/models': path.resolve(__dirname, './node_modules/grafana-pyroscope/og/packages/pyroscope-models'),
 
-        '@phlare': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
+        '@pyroscope': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
 
         // Otherwise we may end up using zod from pyroscope-pyroscope, which is an older version
         zod: path.resolve(__dirname, './node_modules/zod'),

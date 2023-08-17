@@ -13,12 +13,10 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-       "@pyroscope/flamegraph/*": ["./node_modules/grafana-pyroscope/og/packages/pyroscope-flamegraph/*"],
-       "@pyroscope/models/*": ["./node_modules/grafana-pyroscope/og/packages/pyroscope-models/*"],
-       "@phlare/*": ["./node_modules/grafana-pyroscope/public/app/*"],
+       "@pyroscope/*": ["./node_modules/grafana-pyroscope/public/app/*"],
 
-       "@phlare/services/base": ["./src/overrides/services/base"],
-       "@phlare/util/history": ["./src/overrides/util/history"],
+       "@pyroscope/services/base": ["./src/overrides/services/base"],
+       "@pyroscope/util/history": ["./src/overrides/util/history"],
 
        "react": ["./node_modules/@types/react"],
        "zod": ["./node_modules/zod"]

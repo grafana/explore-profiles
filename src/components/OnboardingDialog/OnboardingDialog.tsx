@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useAppSelector } from '@phlare/redux/hooks';
-import { selectAppNamesState } from '@phlare/redux/reducers/continuous';
+import { useAppSelector } from '@pyroscope/redux/hooks';
+import { selectAppNamesState } from '@pyroscope/redux/reducers/continuous';
 import { Button, Modal, Icon } from '@grafana/ui';
 
 /**

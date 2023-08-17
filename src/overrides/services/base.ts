@@ -1,5 +1,5 @@
 import { getBackendSrv } from '@grafana/runtime';
-import { Result } from '@phlare/util/fp';
+import { Result } from '@pyroscope/util/fp';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import { SpanStatusCode } from '@opentelemetry/api';
 import {
