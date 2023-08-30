@@ -35,6 +35,7 @@ const config = async (env): Promise<Configuration> => {
 
         '@pyroscope/util/history': path.resolve(__dirname, './src/overrides/util/history'),
 
+        '@pyroscope/components/Toolbar': path.resolve(__dirname, './src/overrides/components/Toolbar'),
 
         '@pyroscope': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
 
