@@ -52,7 +52,8 @@ jobs:
       - name: Unit tests
         run: yarn test:ci
       - name: Build frontend
-        run: yarn build
+        run:
+          yarn build
 
           #      - name: Start grafana docker
           #        run: docker-compose up -d

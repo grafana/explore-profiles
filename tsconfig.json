@@ -1,10 +1,10 @@
 {
   "extends": "./.config/tsconfig.json",
   "include": [
-      "./src",
-      "./.config/types",
-      "./node_modules/grafana-pyroscope/public/app/lib",
-      "./node_modules/grafana-pyroscope/public/app/types"
+    "./src",
+    "./.config/types",
+    "./node_modules/grafana-pyroscope/public/app/lib",
+    "./node_modules/grafana-pyroscope/public/app/types"
   ],
   "plugins": [{ "name": "typescript-plugin-css-modules" }],
   "compilerOptions": {
@@ -13,13 +13,13 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-       "@pyroscope/*": ["./node_modules/grafana-pyroscope/public/app/*"],
+      "@pyroscope/*": ["./node_modules/grafana-pyroscope/public/app/*"],
 
-       "@pyroscope/services/base": ["./src/overrides/services/base"],
-       "@pyroscope/util/history": ["./src/overrides/util/history"],
+      "@pyroscope/services/base": ["./src/overrides/services/base"],
+      "@pyroscope/util/history": ["./src/overrides/util/history"],
 
-       "react": ["./node_modules/@types/react"],
-       "zod": ["./node_modules/zod"]
+      "react": ["./node_modules/@types/react"],
+      "zod": ["./node_modules/zod"]
     }
   }
 }

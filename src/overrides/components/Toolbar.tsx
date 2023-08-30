@@ -66,7 +66,6 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
   const isLoading = useResultsLoadingCheck();
   const appsLoading = appNamesState.type === 'reloading';
 
-
   /** Toolbar local state */
   const [selectedApp, setSelectedApp] = useState<AppProfileType>();
 

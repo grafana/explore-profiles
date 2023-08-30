@@ -15,10 +15,9 @@ services:
   phlare:
     image: grafana/phlare:weekly-f23-806280da
     ports:
-    - 4100:4100/tcp
+      - 4100:4100/tcp
     logging:
       driver: none
-
 
   go-agent:
     build:

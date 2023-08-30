@@ -27,7 +27,8 @@ function Dialog() {
       <div>{"It looks like you haven't ingested any data yet."}</div>
       <div>
         <a href="https://grafana.com/docs/phlare/latest/configure-client/" target="_blank" rel="noreferrer">
-          To get started with sending data add one of the profiling clients to your application. <Icon name="external-link-alt" />
+          To get started with sending data add one of the profiling clients to your application.{' '}
+          <Icon name="external-link-alt" />
         </a>
       </div>
       <Modal.ButtonRow>

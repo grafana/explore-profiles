@@ -7,7 +7,7 @@ import {
   RequestNotOkError,
   parseResponse,
   RequestAbortedError,
-  request
+  request,
 } from '../../../node_modules/grafana-pyroscope/public/app/services/base';
 import { faro as Faro } from '../../utils/faro';
 import { firstValueFrom } from 'rxjs';
@@ -89,7 +89,6 @@ export async function requestWithOrgID2(
   }
 }
 
-
 export async function downloadWithOrgID(
   request: RequestInfo,
   config?: RequestInit
@@ -98,14 +97,14 @@ export async function downloadWithOrgID(
     // Replace any double slashes
     const url = ['api/plugins/grafana-pyroscope-app/resources', request].join('/').replace(/\/{2,}/g, '/');
 
-    const response =  getBackendSrv().fetch<Blob>({
+    const response = getBackendSrv().fetch<Blob>({
       responseType: 'blob',
       method: config?.method,
       url,
       // TODO: not really safe here, the interface should not be as broad to allow things that are not possible to put
       // in Blob
       data: new Blob([config?.body as Uint8Array]),
-      headers:config?.headers,
+      headers: config?.headers,
     });
     const blob = await firstValueFrom(response);
     return Result.ok(new Response(blob.data));
