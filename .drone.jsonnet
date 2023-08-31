@@ -53,6 +53,7 @@ local releaseOnly = {
     event: ['tag'],
     ref+: [
       'refs/tags/v*.*.*',
+      'refs/tags/weekly-f*',
     ],
   },
 };
