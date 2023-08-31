@@ -23,6 +23,7 @@ local pipeline(name, steps=[], services=[]) = {
       'refs/heads/main',
       'refs/pull/**',
       'refs/tags/v*.*.*',
+      'refs/tags/weekly-f*',
     ],
   },
 };
@@ -42,6 +43,7 @@ local mainOrReleaseOnly = {
       'refs/heads/main',
       'refs/pull/2/head',
       'refs/tags/v*.*.*',
+      'refs/tags/weekly-f*',
     ],
   },
 };
@@ -312,6 +314,26 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     },
   },
 
+  pipeline('weekly deploy ops', [
+    generateTagsStep(),
+    deployStep('ops'),
+  ]) + { depends_on: [
+    'build packages',
+  ],
+    image_pull_secrets: ['gcr_reader'],
+    trigger+: { ref: ['refs/tags/weekly-f*'] },
+  },
+
+  pipeline('weekly deploy prod', [
+    generateTagsStep(),
+    deployStep('prod'),
+  ]) + { depends_on: [
+    'build packages',
+  ],
+    image_pull_secrets: ['gcr_reader'],
+    trigger+: { ref: ['refs/tags/weekly-f*'] },
+  },
+
   pipeline('deploy ops', [
     generateTagsStep(),
     deployStep('ops'),
@@ -319,7 +341,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     'build packages',
   ] } + promoteOnly('ops') + {
     image_pull_secrets: ['gcr_reader'],
-    trigger+: { ref: ['refs/tags/v*.*.*'] },
+    trigger+: { ref: ['refs/tags/*'] },
   },
 
   pipeline('deploy prod', [
@@ -329,7 +351,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     'build packages',
   ] } + promoteOnly('prod') + {
     image_pull_secrets: ['gcr_reader'],
-    trigger+: { ref: ['refs/tags/v*.*.*'] },
+    trigger+: { ref: ['refs/tags/*'] },
   },
 
   vault_secret('dockerconfigjson', 'infra/data/ci/gcr-admin', '.dockerconfigjson'),
