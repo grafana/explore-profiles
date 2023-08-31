@@ -30,25 +30,25 @@ Then go to `localhost:3000` and you should see the app plugin there.
 
 ## Release / Deployment Process
 
-Currently the process is somewhat manual. We will automate it in the future.
+### Dev environment
 
-#### Step 1. Create a tag
+Every time something gets merged into `main` branch it gets immidiately deployed to dev environment.
 
-```
-# for example:
-git tag v0.0.5
-git push --tags origin v0.0.5
-```
+### Prod / ops environment
 
-#### Step 2. Wait for Release CD job to finish
+Every week on Monday a new branch off of `main` gets created: `weekly/fxx`. Each commit on that branch gets tagged with a tag `weekly/fxx-yyyyyyyy` where `xx` is the week number and `yyyyyyyy` is a short git sha. Every time you push to that branch a Slack bot sends a message to `#pyroscope-ops` channel with a link to the argo workflow. After an approval from someone from `@pyroscope-secondary-oncall` on slack the release gets deployed to ops and prod environment.
 
-You want to make sure that `continuous-integration/drone/tag` job is green. There's going to be two of them. **Make sure that the _tag_ one is there and is green**.
+### Manual release to prod / ops
 
-![Screenshot 2023-05-26 at 9 54 41 AM](https://github.com/grafana/pyroscope-app-plugin/assets/662636/b8d4f860-17a5-4e37-9557-c121cf98b4dd)
-
-#### Step 3. Create a PR in `deployment_tools`
-
-You'll need to update 3 files (one for each environment) in [deployment_tools](https://github.com/grafana/deployment_tools) repo. See [this PR](https://github.com/grafana/deployment_tools/pull/71148/files) for an example.
+If you need to release something sooner than Monday you can do it manually. Here are the steps:
+1. Create a new tag, e.g run `git tag v0.0.15`
+2. Push the tag to github, e.g run `git push --tags origin v0.0.15`
+3. Wait for Drone CI to finish building the release
+4. [Go to Drone CI](https://drone.grafana.net/grafana/pyroscope-app-plugin/branches) and find the latest build on main branch
+5. Click on `main` branch. You should get to the Drone build page
+6. In the top right corner click the three dots button and select `Promote`
+7. Specify `ops` or `prod` for `Target`. Click `Deploy` button
+8. Wait for the release to be deployed. Monitor `#pyroscope-ops` channel on Slack for a confirmation message from Argo.
 
 #### Step 4. Wait for plugin to be deployed everwhere
 
