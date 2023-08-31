@@ -36,7 +36,7 @@ Every time something gets merged into `main` branch it gets immidiately deployed
 
 ### Prod / ops environment
 
-Every week on Monday a new branch off of `main` gets created: `weekly/fxx`. Each commit on that branch gets tagged with a tag `weekly/fxx-yyyyyyyy` where `xx` is the week number and `yyyyyyyy` is a short git sha. Every time you push to that branch a Slack bot sends a message to `#pyroscope-ops` channel with a link to the argo workflow. After an approval from someone from `@pyroscope-secondary-oncall` on slack the release gets deployed to ops and prod environment.
+Every week on Monday a new branch off of `main` gets created: `weekly/fxx`. Each commit on that branch gets tagged with a tag `weekly/fxx-yyyyyyyy` where `xx` is the week number and `yyyyyyyy` is a short git sha. Every time you push to that branch a Slack bot sends a message to `#pyroscope-ops` channel with a link to the argo workflow. After an approval from someone from `@pyroscope-secondary-oncall` on slack a PR is opened in `deployment_tools` repo, and that informs [stack-state-service](https://github.com/grafana/stack-state-service) to update the plugin everywhere. Note that it takes time for the release to be deployed by `stack-state-service` to all Grafana instances.
 
 ### Manual release to prod / ops
 
@@ -49,10 +49,6 @@ If you need to release something sooner than Monday you can do it manually. Here
 6. In the top right corner click the three dots button and select `Promote`
 7. Specify `ops` or `prod` for `Target`. Click `Deploy` button
 8. Wait for the release to be deployed. Monitor `#pyroscope-ops` channel on Slack for a confirmation message from Argo.
-
-#### Step 4. Wait for plugin to be deployed everwhere
-
-Once you merge your PR, [stack-state-service](https://github.com/grafana/stack-state-service) will take care of provisioning the new version everywhere.
 
 # Distributing your plugin
 
