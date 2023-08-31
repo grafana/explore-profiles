@@ -301,7 +301,7 @@ function createProfileSelectable(app: AppProfileType, styles: ReturnType<typeof 
       <span className={styles.category}>{category}:</span> <span className={styles.profileName}>{name}</span>
     </>
   );
-  const imgUrl = '/public/plugins/grafana-pyroscope-app/img/logo.svg';
+  const imgUrl = 'public/plugins/grafana-pyroscope-app/img/logo.svg';
 
   // The underlying mechanism used by Grafana's <Select> accepts components for labels,
   // but the strict typing believes that it only accepts strings, so we lie about the type here.
