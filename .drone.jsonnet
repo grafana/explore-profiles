@@ -120,7 +120,7 @@ local argoWorkflowStep(namespace, name) = {
       from_secret: 'argo_token',
     },
     log_level: 'debug',
-    command: if name == 'deploy-dev-envs' then
+    command: if name == 'deploy-plugin-dev' then
       'submit --from workflowtemplate/%(name)s --name %(name)s-${DRONE_COMMIT} --parameter dockertag=$(cat .tag) --parameter plugintag=${DRONE_COMMIT}' % { name: name }
     else
       'submit --from workflowtemplate/%(name)s --name %(name)s-$(cat .tag) --parameter dockertag=$(cat .tag) --parameter plugintag=$(cat .tag)' % { name: name },
@@ -131,7 +131,7 @@ local argoWorkflowStep(namespace, name) = {
   ],
 };
 
-local deployStep(envsGroup) = argoWorkflowStep('phlare-cd', 'deploy-%s-envs' % envsGroup);
+local deployStep(envsGroup) = argoWorkflowStep('phlare-cd', 'deploy-plugin-%s' % envsGroup);
 
 local generateTagsStep(depends_on=[]) = step('generate tags', [
   'git fetch origin --tags',
