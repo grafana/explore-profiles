@@ -1,4 +1,4 @@
-# this file is based on the one from grafana/incident
+# this file is based on the one from grafana/phlare
 
 local dockerGoImage = 'golang:1.20.4';
 local dockerGrafanaImage = 'grafana/grafana:9.4.2';
@@ -103,6 +103,35 @@ local vault_secret(name, vault_path, key) = {
     name: key,
   },
 };
+
+
+// NB: Former deployStep() replaced by argo-workflows api call using argo-cli container
+//     as `argoWorkflowStep('phlare-cd', 'deploy-<wave>-envs')`, with <wave> in ['dev', 'ops', 'prod'] see:
+//     - https://argo-workflows.grafana.net/workflow-templates/phlare-cd
+//       built from https://github.com/grafana/deployment_tools/tree/master/ksonnet/environments/phlare-cd
+//     - https://argo-workflows.grafana.net/workflows/phlare-cd
+//       for the actual workflows runs
+local argoWorkflowStep(namespace, name) = {
+  name: 'launch %s workflow' % name,
+  image: 'us.gcr.io/kubernetes-dev/drone/plugins/argo-cli',
+  settings: {
+    namespace: namespace,
+    token: {
+      from_secret: 'argo_token',
+    },
+    log_level: 'debug',
+    command: if name == 'deploy-dev-envs' then
+      'submit --from workflowtemplate/%(name)s --name %(name)s-${DRONE_COMMIT} --parameter dockertag=$(cat .tag) --parameter plugintag=${DRONE_COMMIT}' % { name: name }
+    else
+      'submit --from workflowtemplate/%(name)s --name %(name)s-$(cat .tag) --parameter dockertag=$(cat .tag) --parameter plugintag=$(cat .tag)' % { name: name },
+    add_ci_labels: true,
+  },
+  depends_on: [
+    'generate tags',
+  ],
+};
+
+local deployStep(envsGroup) = argoWorkflowStep('phlare-cd', 'deploy-%s-envs' % envsGroup);
 
 local generateTagsStep(depends_on=[]) = step('generate tags', [
   'git fetch origin --tags',
@@ -267,6 +296,40 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       ],
     } + releaseOnly,
   ]),
+
+  pipeline('deploy dev', [
+    generateTagsStep(),
+    deployStep('dev'),
+  ]) + {
+    depends_on: [
+      'build packages',
+    ],
+    trigger+: {
+      ref: [
+        'refs/heads/main',
+      ],
+    },
+  },
+
+  pipeline('deploy ops', [
+    generateTagsStep(),
+    deployStep('ops'),
+  ]) + { depends_on: [
+    'build packages',
+  ] } + promoteOnly('ops') + {
+    image_pull_secrets: ['gcr_reader'],
+    trigger+: { ref: ['refs/tags/v*.*.*'] },
+  },
+
+  pipeline('deploy prod', [
+    generateTagsStep(),
+    deployStep('prod'),
+  ]) + { depends_on: [
+    'build packages',
+  ] } + promoteOnly('prod') + {
+    image_pull_secrets: ['gcr_reader'],
+    trigger+: { ref: ['refs/tags/v*.*.*'] },
+  },
 
   vault_secret('dockerconfigjson', 'infra/data/ci/gcr-admin', '.dockerconfigjson'),
   vault_secret('gcr_reader', 'secret/data/common/gcr', '.dockerconfigjson'),
