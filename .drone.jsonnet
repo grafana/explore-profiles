@@ -301,6 +301,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     generateTagsStep(),
     deployStep('dev'),
   ]) + {
+    image_pull_secrets: ['gcr_reader'],
     depends_on: [
       'build packages',
     ],
