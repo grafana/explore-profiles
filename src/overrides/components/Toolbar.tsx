@@ -50,6 +50,7 @@ interface ToolbarProps {
   filterApp?: (names: string) => boolean;
 }
 function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarProps) {
+  const styles = useStyles2(getStyles);
   const dispatch = useAppDispatch();
 
   /** Gather pyroscope state */
@@ -86,8 +87,6 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
     }
   }, [query, serviceName, appProfileType]);
 
-  const styles = useStyles2(getStyles);
-
   /** Create drop-down selector options */
 
   const serviceNameOptions: Array<SelectableValue<string>> = useMemo(() => createAppNameSelectables(apps), [apps]);
@@ -101,6 +100,7 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
     const app = apps.find((app) => app.name === serviceName && app.__profile_type__ === appProfileType);
 
     if (app) {
+      // If we have successfully found an app
       // Check if the selected app has changed
       if (selectedApp?.name !== app.name || selectedApp.__profile_type__ !== app.__profile_type__) {
         // Report to the local state that we have changed the app for future comparison
@@ -110,8 +110,35 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
         const query: Query = appToQuery(app);
         onSelectedApp(query);
       }
+    } else {
+      // The combination of serviceName and appProfileType do not yield a valid app, let's choose an app
+      const matchingApps = apps.filter((app) => app.name === serviceName);
+
+      // Sometimes similar profile types might start with the same category and name, but have differing
+      // identifiers after subsequent `:`-separators.
+      // Do we have a profile type with the same category and name?
+      const { category, name } = getCommonProfileCategoryAndName(appProfileType);
+      const categoryAndName = `${category}:${name}`;
+      let successfulMatch = matchingApps.find((app) => app.__profile_type__.startsWith(categoryAndName));
+
+      if (!successfulMatch) {
+        // No? Let's try to default to a profile type name with cpu?
+        successfulMatch = matchingApps.find(
+          (app) => getCommonProfileCategoryAndName(app.__profile_type__).name === 'cpu'
+        );
+      }
+
+      if (!successfulMatch) {
+        // Fine, we'll just take the first app.
+        successfulMatch = matchingApps[0];
+      }
+
+      if (successfulMatch) {
+        // If any of the above criteria yielded an actual result, let us set it now.
+        setAppProfileType(successfulMatch.__profile_type__);
+      }
     }
-  }, [apps, onSelectedApp, selectedApp, serviceName, appProfileType, setSelectedApp]);
+  }, [apps, onSelectedApp, selectedApp, serviceName, appProfileType, setSelectedApp, setAppProfileType]);
 
   /** Time range management */
 
@@ -308,6 +335,11 @@ function createProfileSelectable(app: AppProfileType, styles: ReturnType<typeof 
   const label = labelComponent as unknown as string;
 
   return { label, value, imgUrl };
+}
+
+function getCommonProfileCategoryAndName(profileType = ':') {
+  const [category, name] = profileType.split(':', 2);
+  return { category, name };
 }
 
 export default Toolbar;
