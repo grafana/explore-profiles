@@ -9,8 +9,28 @@ function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
     return pyroscopeRangePart; // Just return as is.
   }
 
-  // Otherwise, let's get a DateTime object, after converting to milliseconds
-  return dateTime(asNumber);
+  // Otherwise, let's get a DateTime object, after converting to milliseconds 
+
+  // BEGIN HACK
+  // First though, let's see if we've already converted to milliseconds.
+  {
+    // It seems the "Sync Timelines" button results in milliseconds `from`, `until` strings.
+    // TODO(DJ) find the root cause of this different behavior.
+    // This is an unfortunate hack -- check if we are already dealing in milliseconds.
+    const testDateTime = dateTime(asNumber);
+    const year = testDateTime.toDate().getFullYear()
+    if (year >= 2000) {
+      // Pyroscope does not support dates that are pre-Y2K.
+      // We assume that if the date is Y2K or greater, it is already being expressed in milliseconds,
+      // so no conversion is done.
+      console.warn("Assuming date is expressed in milliseconds already", {date: pyroscopeRangePart, year});
+      return dateTime(asNumber);
+    }
+  }
+  // END HACK
+
+  // Default case, we do need to convert to milliseconds
+  return dateTime(asNumber * 1000);
 }
 
 export function translatePyroscopeTimeRangeToGrafana(from: string, until: string) {
@@ -34,7 +54,7 @@ function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string) {
   }
 
   // The `unix` result as a string is compatible with Pyroscope's range part format
-  return Math.round(rawTimeRangePart.unix() * 1000).toString();
+  return Math.round(rawTimeRangePart.unix()).toString();
 }
 
 export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange) {
