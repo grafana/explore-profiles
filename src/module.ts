@@ -16,9 +16,7 @@ type PageType = keyof typeof PAGES;
 // Note that this code will be executed once the first time the plugin has been active on screen.
 // The purpose of this code is to override any pyroscope definitions and change them to plugin app equivalents.
 
-const GRAFANA_BASE_URL = `/${config.appSubUrl}`;
-const PLUGIN_PREFIX = `${GRAFANA_BASE_URL}a/grafana-pyroscope-app`;
-
+const PLUGIN_PREFIX = `/a/grafana-pyroscope-app`;
 // Change URL names where they don't match pyroscope
 PAGES.CONTINOUS_SINGLE_VIEW = '/single'; // It isn't the default `/` in this app as it is in pyroscope.
 
