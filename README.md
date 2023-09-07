@@ -32,7 +32,7 @@ Then go to `localhost:3000` and you should see the app plugin there.
 
 ### Dev environment
 
-Every time something gets merged into `main` branch it gets immidiately deployed to [dev environment](https://firedev001.grafana-dev.net/).
+Every time something gets merged into `main` branch it gets deployed to [dev environment](https://firedev001.grafana-dev.net/). Note that it takes time for the release to be deployed by `stack-state-service` to all Grafana instances.
 
 ### Prod / ops environment
 
