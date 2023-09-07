@@ -29,9 +29,9 @@ yarn server
 Then go to `localhost:3000` and you should see the app plugin there.
 
 ### Use production data locally
-To run with production data locally you will need to update [this file]([url](https://github.com/grafana/pyroscope-app-plugin/blob/main/provisioning/plugins/app.yaml)) with values from here
+To run with production data locally you will need to update [this file](https://github.com/grafana/pyroscope-app-plugin/blob/main/provisioning/plugins/app.yaml) with values from the stacks page.
 
-for example, to run with data from ops get an api key from https://admin.grafana-ops.com/ and paste the corresponding values in
+For example, to run with data from ops get an api key from https://admin.grafana-ops.com/ and paste the corresponding values in
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/abcbed56-360c-48d4-a0a7-4dc0a7a1e900)
 
 
