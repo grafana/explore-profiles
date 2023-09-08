@@ -1,14 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import 'react-dom';
 
 import { useAppSelector, useAppDispatch } from '@pyroscope/redux/hooks';
 import { Query } from '@pyroscope/models/query';
 import {
-  setDateRange,
-  selectApps,
   reloadAppNames,
-  selectQueries,
-  selectAppNamesState,
   selectContinuousState,
   actions,
   selectTimelineSides,
@@ -24,10 +20,11 @@ import {
   useStyles2,
 } from '@grafana/ui';
 import { GrafanaTheme2, SelectableValue, TimeRange, getDefaultTimeRange } from '@grafana/data';
-import { appFromQuery, appToQuery } from 'grafana-pyroscope/public/app/models/app';
+import { appToQuery } from 'grafana-pyroscope/public/app/models/app';
 import { css } from '@emotion/css';
 import { translateGrafanaTimeRangeToPyroscope, translatePyroscopeTimeRangeToGrafana } from '../../utils/translation';
-import { isLoadingOrReloading } from 'grafana-pyroscope/public/app/pages/loading';
+import { isLoadingOrReloading } from '@pyroscope/pages/loading';
+import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
@@ -41,133 +38,45 @@ const getStyles = (theme: GrafanaTheme2) => {
   };
 };
 
-type AppProfileType = NonNullable<ReturnType<typeof appFromQuery>>;
-
 interface ToolbarProps {
   /** callback to be called when an app is selected via the dropdown */
-  onSelectedApp: (name: Query) => void;
+  onSelectedApp: (name: Query) => void; // We don't use this. Instead we allow the PyroscopeStateContext to handle state changes.
 
   filterApp?: (names: string) => boolean;
 }
-function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarProps) {
+function Toolbar({}: ToolbarProps) {
   const styles = useStyles2(getStyles);
   const dispatch = useAppDispatch();
 
-  /** Gather pyroscope state */
-  const appNamesState = useAppSelector(selectAppNamesState);
-  const apps = useAppSelector(selectApps);
-  const { query } = useAppSelector(selectQueries);
-  const {
-    from,
-    until,
-    comparisonView: { comparisonMode },
-  } = useAppSelector(selectContinuousState);
-
   /** Evaluate loading status */
   const isLoading = useResultsLoadingCheck();
-  const appsLoading = appNamesState.type === 'reloading';
 
-  /** Toolbar local state */
-  const [selectedApp, setSelectedApp] = useState<AppProfileType>();
+  const {
+    appsLoading,
 
-  const [serviceName, setServiceName] = useState<string>();
+    serviceNames,
+    profileTypes,
 
-  const [appProfileType, setAppProfileType] = useState<string>();
+    selectedServiceName,
+    setSelectedServiceName,
 
-  /** Initialize state from query (first time only) */
-  useEffect(() => {
-    // If the serviceName or appProfileType hasn't been set yet, derive it from the query
-    if (serviceName === undefined && appProfileType === undefined) {
-      const app = appFromQuery(query);
-      const currentServiceName = app?.name;
-      const currentProfileType = app?.__profile_type__;
+    selectedProfileType,
+    setSelectedProfileType,
 
-      setServiceName(currentServiceName);
-      setAppProfileType(currentProfileType);
-    }
-  }, [query, serviceName, appProfileType]);
+    timeRange,
+    setTimeRange,
+  } = useContext(PyroscopeStateContext);
 
   /** Create drop-down selector options */
 
-  const serviceNameOptions: Array<SelectableValue<string>> = useMemo(() => createAppNameSelectables(apps), [apps]);
+  const serviceNameOptions: Array<SelectableValue<string>> = useMemo(
+    () => createServiceNameSelectables(serviceNames),
+    [serviceNames]
+  );
 
-  const profileTypeOptions: Array<SelectableValue<string>> = useMemo(() => {
-    return apps.filter((app) => app.name === serviceName).map((app) => createProfileSelectable(app, styles));
-  }, [serviceName, apps, styles]);
-
-  /** Trigger a query change if the user selects a new app name / profile combo. */
-  useEffect(() => {
-    const app = apps.find((app) => app.name === serviceName && app.__profile_type__ === appProfileType);
-
-    if (app) {
-      // If we have successfully found an app
-      // Check if the selected app has changed
-      if (selectedApp?.name !== app.name || selectedApp.__profile_type__ !== app.__profile_type__) {
-        // Report to the local state that we have changed the app for future comparison
-        setSelectedApp(app);
-
-        // Update pyroscope with the new query, due to a selection of a different app.
-        const query: Query = appToQuery(app);
-        onSelectedApp(query);
-      }
-    } else {
-      // The combination of serviceName and appProfileType do not yield a valid app, let's choose an app
-      const matchingApps = apps.filter((app) => app.name === serviceName);
-
-      // Sometimes similar profile types might start with the same category and name, but have differing
-      // identifiers after subsequent `:`-separators.
-      // Do we have a profile type with the same category and name?
-      const { category, name } = getCommonProfileCategoryAndName(appProfileType);
-      const categoryAndName = `${category}:${name}`;
-      let successfulMatch = matchingApps.find((app) => app.__profile_type__.startsWith(categoryAndName));
-
-      if (!successfulMatch) {
-        // No? Let's try to default to a profile type name with cpu?
-        successfulMatch = matchingApps.find(
-          (app) => getCommonProfileCategoryAndName(app.__profile_type__).name === 'cpu'
-        );
-      }
-
-      if (!successfulMatch) {
-        // Fine, we'll just take the first app.
-        successfulMatch = matchingApps[0];
-      }
-
-      if (successfulMatch) {
-        // If any of the above criteria yielded an actual result, let us set it now.
-        setAppProfileType(successfulMatch.__profile_type__);
-      }
-    }
-  }, [apps, onSelectedApp, selectedApp, serviceName, appProfileType, setSelectedApp, setAppProfileType]);
-
-  /** Time range management */
-
-  const [timeRange, setTimeRange] = useState<TimeRange>(getDefaultTimeRange());
-
-  // Match the grafana time range selector to the pyroscope from/until state whenever it changes
-  useEffect(() => {
-    // When `from` and `until` change, update the grafana time range picker.
-    const grafanaTimeRange = translatePyroscopeTimeRangeToGrafana(from, until);
-    setTimeRange(grafanaTimeRange);
-  }, [from, until]);
-
-  const handleChangeDataRange = useCallback(
-    (timeRange: TimeRange) => {
-      const pyroscopeTimeRange = translateGrafanaTimeRangeToPyroscope(timeRange);
-
-      dispatch(setDateRange(pyroscopeTimeRange));
-
-      // When this component changes the time range, we clear the comparison mode `active` flag
-      if (comparisonMode.active) {
-        dispatch(
-          actions.setComparisonMode({
-            ...comparisonMode,
-            active: false,
-          })
-        );
-      }
-    },
-    [dispatch, comparisonMode]
+  const profileTypeOptions: Array<SelectableValue<string>> = useMemo(
+    () => profileTypes.map((app) => createProfileSelectable(app, styles)),
+    [profileTypes, styles]
   );
 
   function setTimeZone(timezone: string) {
@@ -176,6 +85,9 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
 
   const zoom = useCallback(() => {
     // Zooming out will double the overall range.
+    if (!timeRange) {
+      return;
+    }
     const { from, to } = timeRange;
 
     const halfDiff = to.diff(from) / 2;
@@ -192,8 +104,8 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
       from,
       to,
     };
-    handleChangeDataRange(newRange);
-  }, [timeRange, handleChangeDataRange]);
+    setTimeRange(newRange);
+  }, [timeRange, setTimeRange]);
 
   const navigate = useCallback(
     (forward = true) => {
@@ -215,9 +127,9 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
         from,
         to,
       };
-      handleChangeDataRange(newRange);
+      setTimeRange(newRange);
     },
-    [timeRange, handleChangeDataRange]
+    [timeRange, setTimeRange]
   );
 
   /** Refresh functionality */
@@ -237,16 +149,16 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
       <InlineFieldRow>
         <InlineField label="Service">
           <Select<string>
-            value={serviceName}
+            value={selectedServiceName}
             options={serviceNameOptions}
-            onChange={(selection) => setServiceName(selection.value)}
+            onChange={(selection) => setSelectedServiceName(selection.value || '')}
           />
         </InlineField>
         <InlineField label="Profile">
           <Select<string>
-            value={appProfileType}
+            value={selectedProfileType}
             options={profileTypeOptions}
-            onChange={(selection) => setAppProfileType(selection.value)}
+            onChange={(selection) => setSelectedProfileType(selection.value || '')}
           />
         </InlineField>
         <RefreshPicker
@@ -261,7 +173,7 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
       {/* Time range selection */}
       <HorizontalGroup>
         <TimeRangePicker
-          onChange={handleChangeDataRange}
+          onChange={setTimeRange}
           onChangeTimeZone={setTimeZone}
           value={timeRange}
           onZoom={zoom}
@@ -277,6 +189,31 @@ function Toolbar({ onSelectedApp, filterApp: _filterApp = () => true }: ToolbarP
       </HorizontalGroup>
     </HorizontalGroup>
   );
+}
+
+function createServiceNameSelectables(names: string[]) {
+  return Array.from(names).map((name) => ({
+    value: name,
+    label: name,
+    icon: 'sitemap',
+  }));
+}
+
+function createProfileSelectable(value: string, styles: ReturnType<typeof getStyles>): SelectableValue<string> {
+  const [category, name] = value.split(':');
+
+  const labelComponent = (
+    <>
+      <span className={styles.category}>{category}:</span> <span className={styles.profileName}>{name}</span>
+    </>
+  );
+  const imgUrl = 'public/plugins/grafana-pyroscope-app/img/logo.svg';
+
+  // The underlying mechanism used by Grafana's <Select> accepts components for labels,
+  // but the strict typing believes that it only accepts strings, so we lie about the type here.
+  const label = labelComponent as unknown as string;
+
+  return { label, value, imgUrl };
 }
 
 function useResultsLoadingCheck() {
@@ -301,45 +238,6 @@ function useResultsLoadingCheck() {
   ]);
 
   return isLoading;
-}
-
-function createAppNameSelectables(apps: AppProfileType[]) {
-  const names = new Set<string>();
-  apps.forEach((app) => names.add(app.name));
-
-  return Array.from(names).map(createAppNameSelectable);
-}
-
-function createAppNameSelectable(name: string): SelectableValue<string> {
-  return {
-    value: name,
-    label: name,
-    icon: 'sitemap',
-  };
-}
-
-function createProfileSelectable(app: AppProfileType, styles: ReturnType<typeof getStyles>): SelectableValue<string> {
-  const value = app.__profile_type__;
-
-  const [category, name] = value.split(':');
-
-  const labelComponent = (
-    <>
-      <span className={styles.category}>{category}:</span> <span className={styles.profileName}>{name}</span>
-    </>
-  );
-  const imgUrl = 'public/plugins/grafana-pyroscope-app/img/logo.svg';
-
-  // The underlying mechanism used by Grafana's <Select> accepts components for labels,
-  // but the strict typing believes that it only accepts strings, so we lie about the type here.
-  const label = labelComponent as unknown as string;
-
-  return { label, value, imgUrl };
-}
-
-function getCommonProfileCategoryAndName(profileType = ':') {
-  const [category, name] = profileType.split(':', 2);
-  return { category, name };
 }
 
 export default Toolbar;

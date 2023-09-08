@@ -9,7 +9,7 @@ function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
     return pyroscopeRangePart; // Just return as is.
   }
 
-  // Otherwise, let's get a DateTime object, after converting to milliseconds 
+  // Otherwise, let's get a DateTime object, after converting to milliseconds
 
   // BEGIN HACK
   // First though, let's see if we've already converted to milliseconds.
@@ -18,12 +18,12 @@ function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
     // TODO(DJ) find the root cause of this different behavior.
     // This is an unfortunate hack -- check if we are already dealing in milliseconds.
     const testDateTime = dateTime(asNumber);
-    const year = testDateTime.toDate().getFullYear()
+    const year = testDateTime.toDate().getFullYear();
     if (year >= 2000) {
       // Pyroscope does not support dates that are pre-Y2K.
       // We assume that if the date is Y2K or greater, it is already being expressed in milliseconds,
       // so no conversion is done.
-      console.warn("Assuming date is expressed in milliseconds already", {date: pyroscopeRangePart, year});
+      console.warn('Assuming date is expressed in milliseconds already', { date: pyroscopeRangePart, year });
       return dateTime(asNumber);
     }
   }

@@ -48,6 +48,7 @@ Every week on Monday a new branch off of `main` gets created: `weekly/fxx`. Each
 ### Manual release to prod / ops
 
 If you need to release something sooner than Monday you can do it manually. Here are the steps:
+
 1. Create a new tag, e.g run `git tag v0.0.15`
 2. Push the tag to github, e.g run `git push --tags origin v0.0.15`
 3. Wait for Drone CI to finish building the release
