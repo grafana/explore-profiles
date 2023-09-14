@@ -29,11 +29,11 @@ yarn server
 Then go to `localhost:3000` and you should see the app plugin there.
 
 ### Use production data locally
+
 To run with production data locally you will need to update [this file](https://github.com/grafana/pyroscope-app-plugin/blob/main/provisioning/plugins/app.yaml) with values from the stacks page.
 
 For example, to run with data from ops get an api key from https://admin.grafana-ops.com/ and paste the corresponding values in
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/abcbed56-360c-48d4-a0a7-4dc0a7a1e900)
-
 
 ## Release / Deployment Process
 
@@ -57,8 +57,6 @@ If you need to release something sooner than Monday you can do it manually. Here
 6. In the top right corner click the three dots button and select `Promote`
 7. Specify `ops` or `prod` for `Target`. Click `Deploy` button
 8. Wait for the release to be deployed. Monitor `#pyroscope-ops` channel on Slack for a confirmation message from Argo.
-
-
 
 Below you can find source code for existing app plugins and other related documentation.
 
