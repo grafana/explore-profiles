@@ -11,18 +11,47 @@ services:
       - 3000:3000/tcp
     volumes:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
-      - ./provisioning:/etc/grafana/provisioning
-  phlare:
-    image: grafana/phlare:weekly-f23-806280da
+      - ./samples/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - pyroscope
+
+  pyroscope:
+    container_name: 'pyroscope'
+    image: grafana/pyroscope
     ports:
       - 4100:4100/tcp
+    volumes:
+      - ./samples/pyroscope:/etc/pyroscope
     logging:
       driver: none
 
-  go-agent:
+  rideshare:
     build:
-      context: ./hacks/golang-simple
+      context: ./samples/rideshare
+    ports:
+      - 5000
     environment:
-      - PYROSCOPE_SERVER_ADDRESS=http://phlare:4100
+      - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4100
+      # Set this to 1 to turn on debug logging.
+      - DEBUG=0
+    deploy:
+      mode: replicated
+      replicas: 5
+    depends_on:
+      - pyroscope
+
+  rideshare-load-generator:
+    build:
+      context: ./samples/rideshare
+      dockerfile: Dockerfile.load-generator
+    environment:
+      - HOST_PREFIX=pyroscope-app-plugin-rideshare
+      # This should be the same as the rideshare replica count.
+      - REPLICAS=5
+      # Set this to 1 to turn on debug logging.
+      - DEBUG=0
+    depends_on:
+      - rideshare
+      - pyroscope
     logging:
       driver: none

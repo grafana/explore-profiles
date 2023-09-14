@@ -4,7 +4,7 @@ apps:
   - type: grafana-pyroscope-app
     disabled: false
     jsonData:
-      backendUrl: http://phlare:4100
+      backendUrl: http://pyroscope:4100
       basicAuthUser: 'myuser'
     secureJsonData:
       basicAuthPassword: 'mypassword'
