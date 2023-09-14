@@ -10,8 +10,7 @@ export enum ROUTES {
   COMPARISON_DIFF_VIEW = '/comparison-diff',
 }
 
-export const NAVIGATION_TITLE = 'Profiles';
-export const NAVIGATION_SUBTITLE = '';
+export const APP_TITLE = 'Profiles';
 
 // Add a navigation item for each route you would like to display in the navigation bar
 export const NAVIGATION: Record<string, NavModelItem> = {

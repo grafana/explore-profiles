@@ -18,6 +18,7 @@ import {
   Select,
   TimeRangePicker,
   useStyles2,
+  useTheme2,
 } from '@grafana/ui';
 import { GrafanaTheme2, SelectableValue, TimeRange, getDefaultTimeRange } from '@grafana/data';
 import { appToQuery } from 'grafana-pyroscope/public/app/models/app';
@@ -34,6 +35,15 @@ const getStyles = (theme: GrafanaTheme2) => {
     profileName: css`
       color: ${theme.colors.text.maxContrast};
       font-weight: bolder;
+    `,
+    toolbar: css`
+      //background: ${theme.colors.background.primary};
+      //border: 1px solid ${theme.colors.border.medium};
+      margin-bottom: ${theme.spacing(1)};
+      //padding-top: 2px;
+    `,
+    refresher: css`
+      min-width: ${theme.spacing(5)};
     `,
   };
 };
@@ -142,52 +152,58 @@ function Toolbar({}: ToolbarProps) {
     dispatch(actions.refresh());
   }
 
+  const theme = useTheme2();
+
   /** Component */
   return (
-    <HorizontalGroup justify="space-between">
-      {/* App Selection */}
-      <InlineFieldRow>
-        <InlineField label="Service">
-          <Select<string>
-            value={selectedServiceName}
-            options={serviceNameOptions}
-            onChange={(selection) => setSelectedServiceName(selection.value || '')}
+    <div className={styles.toolbar}>
+      <HorizontalGroup justify="space-between">
+        {/* App Selection */}
+        <InlineFieldRow>
+          <InlineField label="Service">
+            <Select<string>
+              value={selectedServiceName}
+              options={serviceNameOptions}
+              onChange={(selection) => setSelectedServiceName(selection.value || '')}
+            />
+          </InlineField>
+          <InlineField label="Profile">
+            <Select<string>
+              value={selectedProfileType}
+              options={profileTypeOptions}
+              onChange={(selection) => setSelectedProfileType(selection.value || '')}
+            />
+          </InlineField>
+          <RefreshPicker
+            noIntervalPicker={true}
+            onRefresh={refreshApps}
+            onIntervalChanged={() => null}
+            isLoading={appsLoading}
+            text={appsLoading ? 'Refreshing names' : undefined}
           />
-        </InlineField>
-        <InlineField label="Profile">
-          <Select<string>
-            value={selectedProfileType}
-            options={profileTypeOptions}
-            onChange={(selection) => setSelectedProfileType(selection.value || '')}
-          />
-        </InlineField>
-        <RefreshPicker
-          noIntervalPicker={true}
-          onRefresh={refreshApps}
-          onIntervalChanged={() => null}
-          isLoading={appsLoading}
-          text={appsLoading ? 'Refreshing names' : undefined}
-        />
-      </InlineFieldRow>
+        </InlineFieldRow>
 
-      {/* Time range selection */}
-      <HorizontalGroup>
-        <TimeRangePicker
-          onChange={setTimeRange}
-          onChangeTimeZone={setTimeZone}
-          value={timeRange}
-          onZoom={zoom}
-          onMoveBackward={() => navigate(false)}
-          onMoveForward={() => navigate(true)}
-        />
-        <RefreshPicker
-          noIntervalPicker={true}
-          onRefresh={refreshData}
-          onIntervalChanged={() => null}
-          isLoading={isLoading}
-        />
+        {/* Time range selection */}
+        <HorizontalGroup>
+          <TimeRangePicker
+            onChange={setTimeRange}
+            onChangeTimeZone={setTimeZone}
+            value={timeRange}
+            onZoom={zoom}
+            onMoveBackward={() => navigate(false)}
+            onMoveForward={() => navigate(true)}
+          />
+          <div className={styles.refresher}>
+            <RefreshPicker
+              noIntervalPicker={true}
+              onRefresh={refreshData}
+              onIntervalChanged={() => null}
+              isLoading={isLoading}
+            />
+          </div>
+        </HorizontalGroup>
       </HorizontalGroup>
-    </HorizontalGroup>
+    </div>
   );
 }
 

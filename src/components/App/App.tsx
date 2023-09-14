@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppRootProps } from '@grafana/data';
+import { AppRootProps, GrafanaTheme2, PageLayoutType } from '@grafana/data';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import '../../styles/styles.scss';
 import TagExplorerView from '@pyroscope/pages/TagExplorerView';
@@ -9,13 +9,15 @@ import ContinuousComparisonView from '@pyroscope/pages/ContinuousComparisonView'
 import { useSelectFirstApp } from '@pyroscope/hooks/useAppNames';
 import { Provider } from 'react-redux';
 import store from '@pyroscope/redux/store';
-import { ROUTES } from '../../constants';
+import { ROUTES, APP_TITLE } from '../../constants';
 import { PluginPropsContext } from '../../utils/utils.plugin';
-import { useTheme2 } from '@grafana/ui';
-import { useNavigation, prefixRoute, useNavigationLinksUpdate } from '../../utils/utils.routing';
+import { HorizontalGroup, VerticalGroup, useStyles2, useTheme2 } from '@grafana/ui';
+import { prefixRoute, useNavigationLinksUpdate } from '../../utils/utils.routing';
 import { Onboarding } from '../../pages/Onboarding';
 import '../../utils/faro';
 import { PyroscopeStateWrapper } from '../PyroscopeState/PyroscopeStateWrapper';
+import { css } from '@emotion/css';
+import { PluginPage } from '@grafana/runtime';
 
 // Module augmentation so that typescript sees our 'custom' element
 declare global {
@@ -29,7 +31,6 @@ declare global {
 
 function Routes() {
   // This hook needs to be under the PLuginPropsContextProvider
-  useNavigation();
   useSelectFirstApp();
   useNavigationLinksUpdate();
 
@@ -61,16 +62,50 @@ function Routes() {
 
 export function App(props: AppRootProps) {
   const theme = useTheme2();
+  const styles = useStyles2(getStyles);
+
+  const logoUrl: string = props.meta.info.logos.large;
+
+  const renderTitle = React.useCallback(
+    (title: string) => (
+      <HorizontalGroup>
+        <img src={logoUrl} className={styles.logo} />
+        <VerticalGroup spacing="xs">
+          <h1>{APP_TITLE}</h1>
+          <span>{title}</span>
+        </VerticalGroup>
+      </HorizontalGroup>
+    ),
+    [styles, logoUrl]
+  );
 
   return (
-    <PluginPropsContext.Provider value={props}>
-      <Provider store={store}>
-        <pyroscope-app className="app" data-theme={theme.name.toLowerCase()}>
-          <div className="pyroscope-app">
-            <Routes />
-          </div>
-        </pyroscope-app>
-      </Provider>
-    </PluginPropsContext.Provider>
+    <PluginPage layout={PageLayoutType.Standard} renderTitle={renderTitle}>
+      <div className={styles.app}>
+        <PluginPropsContext.Provider value={props}>
+          <Provider store={store}>
+            <pyroscope-app className="app" data-theme={theme.name.toLowerCase()}>
+              <div className="pyroscope-app">
+                <Routes />
+              </div>
+            </pyroscope-app>
+          </Provider>
+        </PluginPropsContext.Provider>
+      </div>
+    </PluginPage>
   );
 }
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  app: css`
+    background: ${theme.colors.background.canvas};
+    // margin-top: ${theme.spacing(-3)};
+    padding-top: ${theme.spacing(2)};
+    padding-bottom: ${theme.spacing(2)};
+    border: ${theme.colors.border.medium} solid 1px;
+  `,
+  logo: css`
+    width: ${theme.spacing(6)};
+    height: ${theme.spacing(6)};
+  `,
+});

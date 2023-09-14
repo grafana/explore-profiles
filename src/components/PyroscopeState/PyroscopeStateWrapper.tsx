@@ -45,7 +45,6 @@ export function PyroscopeStateWrapper(props: { children: ReactNode }) {
   /** Functions to change pyroscope state */
   const dispatch = useAppDispatch();
 
-
   /** Evaluate loading status */
   const appsLoading = appNamesState.type === 'reloading';
 
