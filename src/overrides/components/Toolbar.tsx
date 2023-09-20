@@ -175,6 +175,7 @@ function Toolbar({}: ToolbarProps) {
             />
           </InlineField>
           <RefreshPicker
+            isOnCanvas={true}
             noIntervalPicker={true}
             onRefresh={refreshApps}
             onIntervalChanged={() => null}
@@ -186,6 +187,7 @@ function Toolbar({}: ToolbarProps) {
         {/* Time range selection */}
         <HorizontalGroup>
           <TimeRangePicker
+            isOnCanvas={true}
             onChange={setTimeRange}
             onChangeTimeZone={setTimeZone}
             value={timeRange}
@@ -195,6 +197,7 @@ function Toolbar({}: ToolbarProps) {
           />
           <div className={styles.refresher}>
             <RefreshPicker
+              isOnCanvas={true}
               noIntervalPicker={true}
               onRefresh={refreshData}
               onIntervalChanged={() => null}
