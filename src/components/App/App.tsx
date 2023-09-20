@@ -34,28 +34,32 @@ function Routes() {
   useSelectFirstApp();
   useNavigationLinksUpdate();
 
+  const styles = useStyles2(getStyles);
+
   return (
     <Onboarding>
-      <PyroscopeStateWrapper>
-        <Switch>
-          <Route path={prefixRoute(ROUTES.SINGLE_VIEW)} exact>
-            <ContinuousSingleView />
-          </Route>
-          <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW)} exact>
-            <ContinuousDiffView />
-          </Route>
-          <Route path={prefixRoute(ROUTES.COMPARISON_VIEW)} exact>
-            <ContinuousComparisonView />
-          </Route>
-          <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
-            <TagExplorerView />
-          </Route>
-          {/* Default Route */}
-          <Route>
-            <Redirect to={prefixRoute(ROUTES.EXPLORE_VIEW)} />
-          </Route>
-        </Switch>
-      </PyroscopeStateWrapper>
+      <div className={styles.page}>
+        <PyroscopeStateWrapper>
+          <Switch>
+            <Route path={prefixRoute(ROUTES.SINGLE_VIEW)} exact>
+              <ContinuousSingleView />
+            </Route>
+            <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW)} exact>
+              <ContinuousDiffView />
+            </Route>
+            <Route path={prefixRoute(ROUTES.COMPARISON_VIEW)} exact>
+              <ContinuousComparisonView />
+            </Route>
+            <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
+              <TagExplorerView />
+            </Route>
+            {/* Default Route */}
+            <Route>
+              <Redirect to={prefixRoute(ROUTES.EXPLORE_VIEW)} />
+            </Route>
+          </Switch>
+        </PyroscopeStateWrapper>
+      </div>
     </Onboarding>
   );
 }
@@ -80,28 +84,28 @@ export function App(props: AppRootProps) {
   );
 
   return (
-    <PluginPage layout={PageLayoutType.Standard} renderTitle={renderTitle}>
-      <div className={styles.app}>
-        <PluginPropsContext.Provider value={props}>
-          <Provider store={store}>
+    <PluginPropsContext.Provider value={props}>
+      <Provider store={store}>
+        <Onboarding>
+          <PluginPage layout={PageLayoutType.Standard} renderTitle={renderTitle}>
             <pyroscope-app className="app" data-theme={theme.name.toLowerCase()}>
               <div className="pyroscope-app">
                 <Routes />
               </div>
             </pyroscope-app>
-          </Provider>
-        </PluginPropsContext.Provider>
-      </div>
-    </PluginPage>
+          </PluginPage>
+        </Onboarding>
+      </Provider>
+    </PluginPropsContext.Provider>
   );
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  app: css`
+  page: css`
     background: ${theme.colors.background.canvas};
     // margin-top: ${theme.spacing(-3)};
-    padding-top: ${theme.spacing(2)};
-    padding-bottom: ${theme.spacing(2)};
+    padding: ${theme.spacing(2)};
+    //padding-bottom: ${theme.spacing(2)};
     border: ${theme.colors.border.medium} solid 1px;
   `,
   logo: css`

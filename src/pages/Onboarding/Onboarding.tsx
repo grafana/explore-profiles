@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useAppSelector } from '@pyroscope/redux/hooks';
 import { selectAppNamesState } from '@pyroscope/redux/reducers/continuous';
-import { Button, Modal, Icon } from '@grafana/ui';
-import styles from './styles.module.scss';
+import { Button, Modal, Icon, useStyles, useStyles2 } from '@grafana/ui';
 import clsx from 'clsx';
 import HeroImage from '../../img/hero-image.png';
 import ResolveIncidents from '../../img/resolve-incidents.png';
 import DecreaseLatency from '../../img/decrease-latency.png';
 import ReduceCosts from '../../img/reduce-costs.png';
+import { GrafanaTheme2 } from '@grafana/data';
+import { css } from '@emotion/css';
 
 /**
  * Displays an onboarding dialog instructing how to push data
@@ -21,6 +22,8 @@ export function Onboarding({ children }: { children: React.ReactNode }) {
 
   const noData = appNamesState.type === 'loaded' && appNamesState.data.length <= 0;
   const shouldShowOnboarding = noData && showModal;
+
+  const styles = useStyles2(getStyles);
 
   if (shouldShowOnboarding) {
     return (
@@ -49,6 +52,8 @@ async function getURL(): Promise<any> {
 
 function OnboardingPage() {
   const [url, setURL] = useState('https://grafana.com/auth/sign-in/');
+
+  const styles = useStyles2(getStyles);
 
   getURL().then((x: any) => {
     if (x && x.orgSlug && x.hpInstanceId) {
@@ -155,9 +160,142 @@ function OnboardingPage() {
 }
 
 function StyledLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const styles = useStyles2(getStyles);
+
   return (
     <a className={styles.link} href={href} {...{ target: '_blank', rel: 'noreferrer' }}>
       {children} {<Icon name="external-link-alt" />}
     </a>
   );
 }
+
+/** This was extracted from the former `styles.module.scss` */
+// TODO Use more spacial and color parameters from `theme`
+const getStyles = (theme: GrafanaTheme2) => ({
+  onboardingPage: css`
+    padding: 16px;
+    margin: 64px;
+    position: relative;
+    background-color: ${theme.colors.background.primary};
+  `,
+  closeButton: css`
+    position: absolute;
+    top: -30px;
+    opacity: 0.8;
+    right: -32px;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    display: block;
+    padding: 0;
+    margin: 0;
+    font-size: 22px;
+  `,
+
+  onboardingRow: css`
+    background: ${theme.colors.background.secondary};
+    display: flex;
+    margin-top: 16px;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 2.5rem;
+  `,
+
+  onboardingParagraph: css`
+    padding: 20px 64px;
+    text-align: center;
+    line-height: 2;
+    flex: 1;
+    margin: 0;
+  `,
+
+  onboardingPanel: css`
+    flex: 1;
+    display: flex;
+    flex-flow: column wrap;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-top: 16px;
+    text-align: center;
+  `,
+  onboardingPanelHeader: css`
+    line-height: 1.5;
+    margin-bottom: 1em;
+  `,
+  onboardingPanelImage: css`
+    width: 5rem;
+    margin-bottom: 1em;
+  `,
+
+  hero: css`
+    display: flex;
+    flex-direction: row;
+  `,
+
+  heroTitles: css`
+    flex: 1;
+  `,
+
+  heroImage: css`
+    width: 40%;
+    margin-left: 16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border-radius: 3px;
+  `,
+
+  onboardingPanelNumber: css`
+    color: rgb(236, 109, 19);
+    text-align: center;
+    display: grid;
+    place-items: center;
+    background-image: linear-gradient(135deg, currentcolor, 75%, rgb(204, 204, 220));
+    border-radius: 100%;
+    font-size: 2.5rem;
+    line-height: 5rem;
+    height: 5rem;
+    width: 5rem;
+    margin-bottom: 1em;
+  `,
+
+  // TODO use theme.colors
+  color2: css`
+    color: rgb(190, 85, 190);
+  `,
+  // TODO use theme.colors
+  color3: css`
+    color: rgb(126, 108, 218);
+  `,
+  // FIXME use theme.colors
+  onboardingPanelNumberSpan: css`
+    color: rgb(220, 220, 220);
+  `,
+
+  onboardingPanelDescription: css`
+    text-align: justify;
+    text-align: center;
+    line-height: 1.66;
+    margin-top: 0;
+  `,
+
+  link: css`
+    color: ${theme.colors.text.link};
+    &:hover {
+      text-decoration: underline;
+    }
+  `,
+  title: css`
+    margin-bottom: 0.5em;
+    line-height: 1.5;
+  `,
+  subtitle: css`
+    margin-bottom: 1em;
+    line-height: 1.5;
+    font-size: 1.25rem;
+  `,
+  clearfix: css`
+    clear: both;
+  `,
+});
