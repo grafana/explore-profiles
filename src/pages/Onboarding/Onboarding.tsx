@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { useAppSelector } from '@pyroscope/redux/hooks';
-import { selectAppNamesState } from '@pyroscope/redux/reducers/continuous';
-import { Button, Modal, Icon, useStyles, useStyles2 } from '@grafana/ui';
+import React, { useEffect, useState } from 'react';
+import { Icon, useStyles2 } from '@grafana/ui';
 import clsx from 'clsx';
 import HeroImage from '../../img/hero-image.png';
 import ResolveIncidents from '../../img/resolve-incidents.png';
 import DecreaseLatency from '../../img/decrease-latency.png';
 import ReduceCosts from '../../img/reduce-costs.png';
-import { GrafanaTheme2 } from '@grafana/data';
+import { GrafanaTheme2, PageLayoutType } from '@grafana/data';
 import { css } from '@emotion/css';
+import { PluginPage } from '@grafana/runtime';
+import { TitleReplacement } from '../../components/App/TitleReplacement';
+import { useDataPresentCheck } from './hooks';
 
 /**
  * Displays an onboarding dialog instructing how to push data
@@ -17,27 +18,49 @@ import { css } from '@emotion/css';
  * It assumes apps are loaded via a different component
  */
 export function Onboarding({ children }: { children: React.ReactNode }) {
-  const appNamesState = useAppSelector(selectAppNamesState);
   const [showModal, setShowModal] = useState(true);
 
-  const noData = appNamesState.type === 'loaded' && appNamesState.data.length <= 0;
-  const shouldShowOnboarding = noData && showModal;
+  const { determinedNoDataPresent, waiting, error } = useDataPresentCheck();
+
+  const shouldShowOnboarding = (determinedNoDataPresent || error) && showModal;
 
   const styles = useStyles2(getStyles);
 
+  useEffect(() => {
+    // TODO determine if we want to
+    console.error('Failed to communicate with pyroscope.');
+  }, [error]);
+
+  if (waiting && !error) {
+    return (
+      // Setting the `text` in `paveNav` prevents a weird jittering effect where Grafana tries to put in a default Plugin Page wrapper.
+      <PluginPage
+        pageNav={{ text: (<Icon name="fa fa-spinner" />) as unknown as string }}
+        renderTitle={loadingTitle}
+        layout={PageLayoutType.Standard}
+      >
+        <></>
+      </PluginPage>
+    );
+  }
+
   if (shouldShowOnboarding) {
     return (
-      <div className={styles.onboardingPage}>
-        <button
-          className={styles.closeButton}
-          onClick={() => {
-            setShowModal(false);
-          }}
-        >
-          &times;
-        </button>
-        <OnboardingPage />
-      </div>
+      // The use of `PluginPage` is to set a clear "Onboarding" breadcrumb
+      // Using `Custom` ensures that it takes up the whole page (and doesn't conflict with the other `PluginPage`)
+      <PluginPage pageNav={{ text: 'Onboarding' }} layout={PageLayoutType.Custom}>
+        <div className={styles.onboardingPage}>
+          <button
+            className={styles.closeButton}
+            onClick={() => {
+              setShowModal(false);
+            }}
+          >
+            &times;
+          </button>
+          <OnboardingPage />
+        </div>
+      </PluginPage>
     );
   }
 
@@ -299,3 +322,15 @@ const getStyles = (theme: GrafanaTheme2) => ({
     clear: both;
   `,
 });
+
+const loadingTitle = (title: string) => (
+  <TitleReplacement
+    subtitle={
+      (
+        <span>
+          Loading... <Icon name="fa fa-spinner" />
+        </span>
+      ) as unknown as string
+    }
+  />
+);
