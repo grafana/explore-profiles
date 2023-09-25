@@ -41,6 +41,7 @@ const config = async (env): Promise<Configuration> => {
         '@pyroscope/pages/PageContentWrapper': path.resolve(__dirname, './src/overrides/pages/PageContentWrapper'),
         '@pyroscope/ui/Box': path.resolve(__dirname, './src/overrides/ui/Box'),
 
+        // General rules later
         '@pyroscope': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
 
         // Otherwise we may end up using zod from pyroscope-pyroscope, which is an older version

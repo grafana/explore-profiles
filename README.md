@@ -8,13 +8,24 @@ App plugins can let you create a custom out-of-the-box monitoring experience by 
 
 ## Running Pyroscope App plugin locally for development
 
-First, build and watch the frontend code:
+First, download the frontend dependencies and ensure they are up to date:
+
+```
+yarn
+```
+
+- This will have to be re-executed any time the `package.json` dependencies have been altered (possibly through a recent call to `git pull`).
+
+Then, build and watch the frontend code:
 
 ```
 yarn dev
 ```
 
-Then make sure the backend plugin is built for all the architectures:
+- This will be an ongoing webpack process which you will want to keep running, so use a separate
+  terminal for the subsequent steps.
+
+Then, make sure the backend plugin is built for all the architectures:
 
 ```
 mage
@@ -26,7 +37,86 @@ Finally, run the server using docker-compose:
 yarn server
 ```
 
-Then go to `localhost:3000` and you should see the app plugin there.
+- This includes a local Grafana, Pyroscope, and some example services (`rideshare`) to generate and transmit profile data to
+  your local Pyroscope.
+- See the [Docker](./docker-compose.yaml) configuration for more detail on the configured services.
+
+Then go to `localhost:3000` to connect to Grafana.
+
+- It may take a while for the Grafana service to ramp up; observing the terminal output will indicate
+  that Grafana is ready when only `rideshare` log messages are being generated.
+
+The plugin can be found by expanding the Grafana _Home_ menu, expanding _Observability_ to reveal _Profiles_.
+Click on _Profiles_.
+The direct URL of the plugin is `http://localhost:3000/a/grafana-pyroscope-app/`
+
+- The pyroscope web app will also be accessible via `http://localhost:4100` as per the `pyroscope` configuration
+  in the [docker-compose](./docker-compose.yaml) file. This may be a useful way of quickly comparing what the Pyroscope web app looks like (at least according to built code in the docker image that is running).
+
+- Note that any changes to the plugin backend code will require running `mage` again to keep the binary up to date.
+  It may be necessary to also run `yarn server` again to ensure the updated binary has taken effect, unless
+  the old binary's process can be terminated in the `grafana` docker image.
+
+### Pyroscope Respository as a Dependency
+
+In order to make use of Pyroscope code, this project's [package.json](../../package.json)
+file defines `grafana-pyroscope` as a dependency,
+citing the [Pyroscope github repository](https://github.com/grafana/pyroscope.git)
+and a specific commit hash.
+
+E.g.,
+
+```json
+{
+  ...
+  "dependencies": {
+    ...
+    "grafana-pyroscope": "git+https://github.com/grafana/pyroscope.git#802ff4fafea4d460bf81abb5fae2c80ecc874969",
+    ...
+  },
+...
+}
+```
+
+The commit hash is the alphanumeric string following the `#` character,
+and needs to be manually updated whenever we want this app plugin
+to refer to a newer version of the underlying pyroscope code.
+
+It is also possible to refer to a "work in progress" branch if it is pushed
+to the [Pyroscope github repository](https://github.com/grafana/pyroscope.git),
+perhaps as a Draft PR. This is an effective co-development strategy of making changes to the
+underlying Pyroscope code as well as a local copy of the Pyroscope App code,
+and seeing how they affect each other.
+
+After updating this hash, the `yarn` command _must_ be repeated to
+ensure that the specified dependency version is downloaded.
+Any files from the [Pyroscope repository](https://github.com/grafana/pyroscope.git)
+can be accessed through `./node_modules/grafana-pyroscope`.
+
+E.g,
+
+```
+$ ls node_modules/grafana-pyroscope/
+api                 go.sum                                operations
+CHANGELOG.md        GOVERNANCE.md                         package.json
+cmd                 go.work                               pkg
+CODE_OF_CONDUCT.md  go.work.sum                           public
+CODEOWNERS          images                                README.md
+cypress             jest.config.js                        scripts
+cypress.config.ts   jest-css-modules-transform-config.js  setupAfterEnv.ts
+docs                LICENSE                               svg-transform.js
+ebpf                LICENSING.md                          tools
+examples            MAINTAINERS.md                        tsconfig.json
+globalSetup.js      Makefile                              tsconfig.test.json
+globalTeardown.js   node_modules                          yarn.lock
+go.mod              og
+```
+
+### Overriding Pyroscope Code
+
+This repository imports from the [Pyroscope](https://github.com/grafana/pyroscope) project but overrides specific code files.
+To learn more about how this arrangement works, and how to develop with it, see
+the [Overrides Guide](./src/overrides/README.md).
 
 ### Use production data locally
 
