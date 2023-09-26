@@ -145,7 +145,9 @@ If you need to release something sooner than Monday you can do it manually. Here
 4. [Go to Drone CI](https://drone.grafana.net/grafana/pyroscope-app-plugin/branches) and find the latest build on main branch
 5. Click on `main` branch. You should get to the Drone build page
 6. In the top right corner click the three dots button and select `Promote`
-7. Specify `ops` or `prod` for `Target`. Click `Deploy` button
+![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/f8664c95-3c5a-4666-b00a-917b767e0c3c)
+
+7. Specify "`ops`" or "`prod`" for `Target`. Click `Deploy` button
 8. Wait for the release to be deployed. Monitor `#pyroscope-ops` channel on Slack for a confirmation message from Argo.
 
 Below you can find source code for existing app plugins and other related documentation.
