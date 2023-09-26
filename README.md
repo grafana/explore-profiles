@@ -148,7 +148,7 @@ If you need to release something sooner than Monday you can do it manually. Here
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/f8664c95-3c5a-4666-b00a-917b767e0c3c)
 
 7. Specify "`ops`" or "`prod`" for `Target`. Click `Deploy` button
-8. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack for a confirmation message from Argo.
+8. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack: **Be sure to click "approve" in the workflow posted in the slack channel to complete the process**
 
 Below you can find source code for existing app plugins and other related documentation.
 
