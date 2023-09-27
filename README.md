@@ -137,7 +137,7 @@ Every week on Monday a new branch off of `main` gets created: `weekly/fxx`. Each
 
 ### Manual release to prod / ops
 
-If you need to release something sooner than Monday you can do it manually. Here are the steps:
+If you need to release something sooner than Monday you can do it manually with just **10 simple steps**. Here are the steps:
 
 1. Create a new tag, e.g run `git tag v0.0.15`
 2. Push the tag to github, e.g run `git push --tags origin v0.0.15`
@@ -148,7 +148,15 @@ If you need to release something sooner than Monday you can do it manually. Here
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/f8664c95-3c5a-4666-b00a-917b767e0c3c)
 
 7. Specify "`ops`" or "`prod`" for `Target`. Click `Deploy` button
-8. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack: **Be sure to click "approve" in the workflow posted in the slack channel to complete the process**
+8. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack: **Be sure to click the workflow posted in the slack channel**
+<img width="390" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/7303134d-0de0-4280-b735-e448dc144d08">
+
+9. In argo click "resume" or the "approve prod" button to complete the process
+![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/e0d428a5-de7e-4e31-802f-d14f92dd462b)
+10. 🎉Congrats🎉 you should see this in argo and a confirmation in the #pyroscope-ops slack channel
+<img width="213" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/11f83017-fbc8-48e7-af56-477ca5929cf2">
+
+
 
 Below you can find source code for existing app plugins and other related documentation.
 
