@@ -19,9 +19,11 @@ export function CollapseBox({ title, children, isLoading }: CollapseBoxProps) {
 
   const s = useStyles2(getStyles);
 
-  return <PanelContainer title={title} className={s.box}>
-    {children}
-  </PanelContainer>
+  return (
+    <PanelContainer title={title} className={s.box}>
+      {children}
+    </PanelContainer>
+  );
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({

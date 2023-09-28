@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { GrafanaTheme2, usePluginContext } from '@grafana/data';
 import { APP_TITLE } from '../../constants';
-import { HorizontalGroup, VerticalGroup, useStyles2, useTheme2 } from '@grafana/ui';
+import { HorizontalGroup, VerticalGroup, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 
 const getStyles = (theme: GrafanaTheme2) => ({
