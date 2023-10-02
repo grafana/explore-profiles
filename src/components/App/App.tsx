@@ -50,10 +50,14 @@ function Routes() {
 
   const versionInfo = React.useMemo(() => {
     const hash = pyroscopeGitInfo.split('#')[1];
+    const commitURL = `https://github.com/grafana/pyroscope/commit/${hash}`;
+
     return (
       <VerticalGroup spacing="xs">
-        <Label description={updated}>Profiles App v{appPluginVersion}</Label>
-        <Label description={hash}>Pyroscope App v{pyroscopeVersion}</Label>
+        <Label description={updated}>Cloud Profiles App: v{appPluginVersion}</Label>
+        <a href={commitURL} target="_blank" rel="noopener noreferrer">
+          <Label description={hash}>OSS Pyroscope commit: {pyroscopeVersion}</Label>
+        </a>
       </VerticalGroup>
     );
   }, [updated]);
