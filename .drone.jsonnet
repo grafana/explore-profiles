@@ -153,7 +153,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('install dependencies', [
       'yarn install --immutable',
-    ], image=dockerE2EImage),
+    ], image=dockerNodeImage),
 
     step('build backend packages', [
       // 'mage -v test',
