@@ -55,9 +55,12 @@ function Routes() {
     return (
       <VerticalGroup spacing="xs">
         <Label description={updated}>Cloud Profiles App: v{appPluginVersion}</Label>
-        <a href={commitURL} target="_blank" rel="noopener noreferrer">
-          <Label description={hash}>OSS Pyroscope commit: {pyroscopeVersion}</Label>
-        </a>
+        <Label description={hash}>
+          OSS Pyroscope commit:
+          <a href={commitURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+            {pyroscopeVersion}
+          </a>
+        </Label>
       </VerticalGroup>
     );
   }, [updated]);
