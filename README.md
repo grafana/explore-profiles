@@ -145,13 +145,18 @@ chmod +x ./scripts/create_version_tag.sh
 ./scripts/create_version_tag.sh
 ```
 This will increment and push the newest tag to github
+
 2. Wait for Drone CI to finish building the release
+
 3. [Go to Drone CI](https://drone.grafana.net/grafana/pyroscope-app-plugin/branches) and find the latest build on main branch
+
 4. Click on `main` branch. You should get to the Drone build page
+
 5. In the top right corner click the three dots button and select `Promote`
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/f8664c95-3c5a-4666-b00a-917b767e0c3c)
 
 6. Specify "`ops`" or "`prod`" for `Target`. Click `Deploy` button
+
 7. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack: **Be sure to click the workflow posted in the slack channel**
 <img width="390" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/7303134d-0de0-4280-b735-e448dc144d08">
 
