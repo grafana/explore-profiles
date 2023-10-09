@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "name": "Profiles",
+    "type": "app",
+    "id": "grafana-pyroscope-app",
+    "enabled": true,
+    "pinned": true,
+    "module": "plugins/grafana-pyroscope-app/module",
+    "baseUrl": "public/plugins/grafana-pyroscope-app",
+    "info": {
+      "author": { "name": "Grafana", "url": "" },
+      "description": "Continuous profiling service powered by Grafana Pyroscope",
+      "links": null,
+      "logos": {
+        "small": "public/plugins/grafana-pyroscope-app/img/logo.svg",
+        "large": "public/plugins/grafana-pyroscope-app/img/logo.svg"
+      },
+      "build": {},
+      "screenshots": [],
+      "version": "0.0.2",
+      "updated": "2023-10-05"
+    },
+    "includes": [
+      {
+        "name": "Tag Explorer",
+        "path": "/a/grafana-pyroscope-app/tag-explorer",
+        "type": "page",
+        "component": "",
+        "role": "Viewer",
+        "addToNav": true,
+        "defaultNav": false,
+        "slug": "tag-explorer",
+        "icon": "",
+        "uid": ""
+      },
+      {
+        "name": "Single View",
+        "path": "/a/grafana-pyroscope-app/single",
+        "type": "page",
+        "component": "",
+        "role": "Viewer",
+        "addToNav": true,
+        "defaultNav": false,
+        "slug": "single-view",
+        "icon": "",
+        "uid": ""
+      },
+      {
+        "name": "Comparison View",
+        "path": "/a/grafana-pyroscope-app/comparison",
+        "type": "page",
+        "component": "",
+        "role": "Viewer",
+        "addToNav": true,
+        "defaultNav": false,
+        "slug": "comparison-view",
+        "icon": "",
+        "uid": ""
+      },
+      {
+        "name": "Comparison Diff View",
+        "path": "/a/grafana-pyroscope-app/comparison-diff",
+        "type": "page",
+        "component": "",
+        "role": "Viewer",
+        "addToNav": true,
+        "defaultNav": false,
+        "slug": "comparison-diff-view",
+        "icon": "",
+        "uid": ""
+      }
+    ],
+    "dependencies": { "grafanaDependency": ">=9.3.8", "grafanaVersion": "*", "plugins": [] },
+    "jsonData": {
+      "backendUrl": "http://pyroscope:4100",
+      "basicAuthUser": "myuser",
+      "enableFlameGraphDotComExport": false
+    },
+    "secureJsonFields": { "basicAuthPassword": true },
+    "defaultNavUrl": "",
+    "latestVersion": "",
+    "hasUpdate": false,
+    "state": "",
+    "signature": "unsigned",
+    "signatureType": "",
+    "signatureOrg": "",
+    "angularDetected": false
+  },
+  "_extensionConfigs": [],
+  "configPages": [{ "title": "Configuration", "icon": "cog", "id": "configuration" }]
+}

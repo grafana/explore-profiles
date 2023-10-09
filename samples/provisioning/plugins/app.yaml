@@ -6,5 +6,6 @@ apps:
     jsonData:
       backendUrl: http://pyroscope:4100
       basicAuthUser: 'myuser'
+      enableFlameGraphDotComExport: true
     secureJsonData:
       basicAuthPassword: 'mypassword'
