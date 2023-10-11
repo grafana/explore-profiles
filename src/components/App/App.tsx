@@ -57,8 +57,14 @@ function Routes() {
     const pluginCommitSha = GIT_COMMIT;
     const pluginCommitURL = `https://github.com/grafana/pyroscope-app-plugin/commit/${pluginCommitSha}`;
 
+    // Convert 'updated' to a readable date format if it's a timestamp
+    const updatedDate = new Date(updated).toLocaleString(); // or another date formatting
+
     return (
       <VerticalGroup spacing="xs">
+        <Label description={`Last updated: ${updatedDate}`}>
+          Updated:
+        </Label>
         <Label description={pluginCommitSha}>
           <a href={pluginCommitURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
             Plugin commit sha:
