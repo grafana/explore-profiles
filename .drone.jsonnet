@@ -124,9 +124,9 @@ local argoWorkflowStep(namespace, name) = {
     },
     log_level: 'debug',
     command: if name == 'deploy-plugin-dev' then
-      'submit --from workflowtemplate/%(name)s --name %(name)s-${DRONE_COMMIT} --parameter dockertag=$(cat .tag) --parameter plugintag=${DRONE_COMMIT}' % { name: name }
+      'submit --from workflowtemplate/%(name)s --name %(name)s-${DRONE_COMMIT} --parameter --parameter plugintag=${DRONE_COMMIT}' % { name: name }
     else
-      'submit --from workflowtemplate/%(name)s --name %(name)s-$(cat .tag) --parameter dockertag=$(cat .tag) --parameter plugintag=$(cat .tag)' % { name: name },
+      'submit --from workflowtemplate/%(name)s --name %(name)s-$(DRONE_TAG) --parameter --parameter plugintag=$(DRONE_TAG)' % { name: name },
     add_ci_labels: true,
   },
   depends_on: [
@@ -140,10 +140,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
   'git fetch origin --tags',
   'git status --porcelain --untracked-files=no',
   'git diff --no-ext-diff --quiet',  // fail if the workspace has modified files
-  './scripts/version',
-  "./scripts/version | tr -d '\n' > .tag",
-  '{ echo -n latest, ; echo -n ${DRONE_COMMIT}, ; ./scripts/version ; } > .tags',  // save version in special file for docker plugin
-  'cat .tags',
 ]) + { depends_on: depends_on };
 
 // Main array of drone pipelines
@@ -172,7 +168,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('build frontend packages (with tag)', [
       'export NODE_ENV=production',
-      'echo "" > src/version.ts',
+      'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
       'yarn build',
     ], image=dockerNodeImage) + {
       depends_on: [
