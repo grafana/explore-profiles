@@ -351,6 +351,17 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     trigger+: { ref: ['refs/tags/*'] },
   },
 
+  pipeline('deploy opsprod', [
+    generateTagsStep(),
+    deployStep('ops'),
+    deployStep('prod'),
+  ]) + { depends_on: [
+    'build packages',
+  ] } + promoteOnly('opsprod') + {
+    image_pull_secrets: ['gcr_reader'],
+    trigger+: { ref: ['refs/tags/*'] },
+  },
+
   vault_secret('dockerconfigjson', 'infra/data/ci/gcr-admin', '.dockerconfigjson'),
   vault_secret('gcr_reader', 'secret/data/common/gcr', '.dockerconfigjson'),
   vault_secret('gcs_service_account_key', 'infra/data/ci/drone-plugins', 'gcp_key'),
