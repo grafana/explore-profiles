@@ -17,6 +17,7 @@ import { PyroscopeStateWrapper } from '../PyroscopeState/PyroscopeStateWrapper';
 import { css } from '@emotion/css';
 import { PluginPage } from '@grafana/runtime';
 import { TitleReplacement } from './TitleReplacement';
+import { GIT_COMMIT } from '../../version';
 
 // Extract version information from the package.json files
 // The consequences of importing them into the source code are that the contents of these package files will be in the built result
@@ -51,16 +52,20 @@ function Routes() {
   } = usePluginContext();
 
   const versionInfo = React.useMemo(() => {
-    const hash = pyroscopeGitInfo.split('#')[1];
-    const commitURL = `https://github.com/grafana/pyroscope/commit/${hash}`;
+    const pyroscopeCommitSha = pyroscopeGitInfo.split('#')[1];
+    const pyroscopeCommitURL = `https://github.com/grafana/pyroscope/commit/${pyroscopeCommitSha}`;
+    const pluginCommitSha = GIT_COMMIT;
+    const pluginCommitURL = `https://github.com/grafana/pyroscope-app-plugin/commit/${pluginCommitSha}`;
 
     return (
       <VerticalGroup spacing="xs">
-        <Label description={updated}>Cloud Profiles App: v{appPluginVersion}</Label>
-        <Label description={hash}>
-          OSS Pyroscope commit:
-          <a href={commitURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
-            {pyroscopeVersion}
+        <Label description={pluginCommitSha}>
+          <a href={pluginCommitURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+            Plugin commit sha:
+          </a></Label>
+        <Label description={pyroscopeCommitSha}>
+          <a href={pyroscopeCommitURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+            OSS Pyroscope commit sha:
           </a>
         </Label>
       </VerticalGroup>
