@@ -144,6 +144,8 @@ If you need to release something sooner than Monday you can do it manually with 
 chmod +x ./scripts/create_version_tag.sh
 ./scripts/create_version_tag.sh
 ```
+**note: Do not push two versions on the same commit or it will break things. If something goes wrong with this create a new commit for the next version**
+
 This will increment and push the newest tag to github
 
 2. Wait for Drone CI to finish building the release
