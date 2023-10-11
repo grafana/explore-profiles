@@ -109,7 +109,7 @@ export function App(props: AppRootProps) {
       <Provider store={store}>
         <Onboarding>
           <PluginPage layout={PageLayoutType.Standard} renderTitle={renderTitle}>
-            <pyroscope-app className="app" data-theme={theme.name.toLowerCase()}>
+            <pyroscope-app className="app">
               <div className="pyroscope-app">
                 <Routes />
               </div>
