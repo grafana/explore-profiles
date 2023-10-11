@@ -124,9 +124,9 @@ local argoWorkflowStep(namespace, name) = {
     },
     log_level: 'debug',
     command: if name == 'deploy-plugin-dev' then
-      'submit --from workflowtemplate/%(name)s --name %(name)s-${DRONE_COMMIT} --parameter --parameter plugintag=${DRONE_COMMIT}' % { name: name }
+      'submit --from workflowtemplate/%(name)s --name %(name)s-${DRONE_COMMIT} --parameter plugintag=${DRONE_COMMIT}' % { name: name }
     else
-      'submit --from workflowtemplate/%(name)s --name %(name)s-$(DRONE_TAG) --parameter --parameter plugintag=$(DRONE_TAG)' % { name: name },
+      'submit --from workflowtemplate/%(name)s --name %(name)s-$(DRONE_TAG) --parameter plugintag=$(DRONE_TAG)' % { name: name },
     add_ci_labels: true,
   },
   depends_on: [
