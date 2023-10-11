@@ -157,7 +157,7 @@ This will increment and push the newest tag to github
 5. In the top right corner click the three dots button and select `Promote`
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/f8664c95-3c5a-4666-b00a-917b767e0c3c)
 
-6. Specify "`ops`" or "`prod`" for `Target`. Click `Deploy` button
+6. Specify "`ops`" or "`prod`" or `opsprod` (for both) for `Target`. Click `Deploy` button
 
 7. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack: **Be sure to click the workflow posted in the slack channel**
 <img width="390" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/7303134d-0de0-4280-b735-e448dc144d08">
