@@ -93,13 +93,11 @@ export function GrafanaPanelBox({
   const styles = useStyles2(getStyles);
 
   const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
   const childrenContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (childrenContainerRef.current) {
       setWidth(childrenContainerRef.current.offsetWidth);
-      setHeight(childrenContainerRef.current.offsetHeight);
     }
   }, [childrenContainerRef]);
 
@@ -109,7 +107,7 @@ export function GrafanaPanelBox({
   const showOnHoverClass = 'show-on-hover';
 
   const headerHeight = getHeaderHeight(theme, hasHeader);
-  const { contentStyle } = getContentStyle(padding, theme, headerHeight);
+  const { contentStyle } = getContentStyle(padding, theme);
 
   const headerStyles: CSSProperties = {
     height: headerHeight,
@@ -236,11 +234,8 @@ const getHeaderHeight = (theme: GrafanaTheme2, hasHeader: boolean) => {
   return 0;
 };
 
-const getContentStyle = (padding: string, theme: GrafanaTheme2, headerHeight: number) => {
+const getContentStyle = (padding: string, theme: GrafanaTheme2) => {
   const chromePadding = (padding === 'md' ? theme.components.panel.padding : 0) * theme.spacing.gridSize;
-
-  const panelPadding = chromePadding * 2;
-  const panelBorder = 1 * 2;
 
   const contentStyle: CSSProperties = {
     padding: chromePadding,

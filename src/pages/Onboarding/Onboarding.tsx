@@ -323,7 +323,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
 });
 
-const loadingTitle = (title: string) => (
+const loadingTitle = () => (
   <TitleReplacement
     subtitle={
       (

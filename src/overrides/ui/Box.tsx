@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PanelContainer, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
@@ -14,9 +14,7 @@ function Box(props: BoxProps) {
   return <PanelContainer className={`${className} ${s.box}`}>{children}</PanelContainer>;
 }
 
-export function CollapseBox({ title, children, isLoading }: CollapseBoxProps) {
-  const [open, setOpen] = useState(true);
-
+export function CollapseBox({ title, children }: CollapseBoxProps) {
   const s = useStyles2(getStyles);
 
   return (

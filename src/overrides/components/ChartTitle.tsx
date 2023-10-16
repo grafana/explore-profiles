@@ -1,10 +1,10 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { ChartTitleProps, getChartTitle } from 'grafana-pyroscope/public/app/components/ChartTitle';
 import { Icon, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 
-export default function ChartTitle({ children, color, icon, postfix, titleKey = 'unknown' }: ChartTitleProps) {
+export default function ChartTitle({ children, color, titleKey = 'unknown' }: ChartTitleProps) {
   const s = useStyles2(getStyles);
 
   const title = getChartTitle(titleKey);

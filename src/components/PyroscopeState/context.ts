@@ -38,9 +38,9 @@ const DEFAULT: Data = {
   profileTypes: [],
   timeRange: DEFAULT_TIME_RANGE,
 
-  setSelectedServiceName: (name: string) => null,
-  setSelectedProfileType: (type: string) => null,
-  setTimeRange: (timeRange: TimeRange) => null,
+  setSelectedServiceName: () => null,
+  setSelectedProfileType: () => null,
+  setTimeRange: () => null,
 };
 
 export const PyroscopeStateContext = React.createContext(DEFAULT);

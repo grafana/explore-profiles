@@ -40,7 +40,7 @@ export async function requestWithOrgID(
 
   // Notice how we always resolve even in error cases
   // The services distinguish based on the Result type
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     otel.context.with(otel.trace.setSpan(otel.context.active(), span!), async () => {
       const url = request.toString();
       faro.api.pushEvent('Sending request', { url });

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import 'react-dom';
 
 import { useAppSelector, useAppDispatch } from '@pyroscope/redux/hooks';
@@ -18,12 +18,9 @@ import {
   Select,
   TimeRangePicker,
   useStyles2,
-  useTheme2,
 } from '@grafana/ui';
-import { GrafanaTheme2, SelectableValue, TimeRange, getDefaultTimeRange } from '@grafana/data';
-import { appToQuery } from 'grafana-pyroscope/public/app/models/app';
+import { GrafanaTheme2, SelectableValue, TimeRange } from '@grafana/data';
 import { css } from '@emotion/css';
-import { translateGrafanaTimeRangeToPyroscope, translatePyroscopeTimeRangeToGrafana } from '../../utils/translation';
 import { isLoadingOrReloading } from '@pyroscope/pages/loading';
 import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
 
@@ -89,7 +86,7 @@ function Toolbar({}: ToolbarProps) {
     [profileTypes, styles]
   );
 
-  function setTimeZone(timezone: string) {
+  function setTimeZone() {
     // No op
   }
 
@@ -151,8 +148,6 @@ function Toolbar({}: ToolbarProps) {
   function refreshData() {
     dispatch(actions.refresh());
   }
-
-  const theme = useTheme2();
 
   /** Component */
   return (

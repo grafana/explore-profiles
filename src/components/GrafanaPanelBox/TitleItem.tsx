@@ -70,7 +70,10 @@ const getStyles = (theme: GrafanaTheme2) => {
       ...getFocusStyles(theme),
       zIndex: 1,
     },
-    '&: focus:not(:focus-visible)': getMouseFocusStyles(theme),
+    '&: focus:not(:focus-visible)': {
+      outline: 'none',
+      boxShadow: `none`,
+    },
 
     '&:hover ': {
       boxShadow: `${theme.shadows.z1}`,
@@ -136,13 +139,6 @@ export const focusCss = (theme: GrafanaTheme | GrafanaTheme2) => {
   transition-duration: 0.2s;
   transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);`;
 };
-
-export function getMouseFocusStyles(theme: GrafanaTheme | GrafanaTheme2): CSSObject {
-  return {
-    outline: 'none',
-    boxShadow: `none`,
-  };
-}
 
 export function getFocusStyles(theme: GrafanaTheme2): CSSObject {
   return {

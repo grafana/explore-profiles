@@ -2,35 +2,19 @@ import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'rea
 import 'react-dom';
 
 import { useAppSelector, useAppDispatch } from '@pyroscope/redux/hooks';
-import { Query } from '@pyroscope/models/query';
 import {
   setDateRange,
   selectApps,
-  reloadAppNames,
   selectQueries,
   selectAppNamesState,
   selectContinuousState,
   actions,
-  selectTimelineSides,
-  selectComparisonState,
   setQuery,
 } from '@pyroscope/redux/reducers/continuous';
-import {
-  HorizontalGroup,
-  InlineField,
-  InlineFieldRow,
-  RefreshPicker,
-  Select,
-  TimeRangePicker,
-  useStyles2,
-} from '@grafana/ui';
-import { GrafanaTheme2, SelectableValue, TimeRange, getDefaultTimeRange } from '@grafana/data';
+import { TimeRange } from '@grafana/data';
 import { appFromQuery, appToQuery } from 'grafana-pyroscope/public/app/models/app';
-import { css } from '@emotion/css';
 import { translateGrafanaTimeRangeToPyroscope, translatePyroscopeTimeRangeToGrafana } from '../../utils/translation';
-import { isLoadingOrReloading } from 'grafana-pyroscope/public/app/pages/loading';
 import { PyroscopeStateContext } from './context';
-import { AppProfileType } from './types';
 import { getCommonProfileCategoryAndName } from './util';
 
 // Derive the QueryBrand type from the selector, since it isn't explicitly exported

@@ -1,4 +1,4 @@
-import { AppPlugin, AppPluginMeta } from '@grafana/data';
+import { AppPlugin } from '@grafana/data';
 import { App } from './components/App';
 import { AppConfig, AppPluginSettings } from './components/AppConfig';
 import { PAGES } from 'grafana-pyroscope/public/app/pages/urls';

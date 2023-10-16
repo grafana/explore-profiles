@@ -1,8 +1,6 @@
 import { css, cx } from '@emotion/css';
 import React from 'react';
 
-import { GrafanaTheme2 } from '@grafana/data';
-
 import { useStyles2, Icon, Tooltip } from '@grafana/ui';
 
 import { TitleItem } from './TitleItem';
@@ -35,7 +33,7 @@ export function PanelDescription({ description, className }: Props) {
   ) : null;
 }
 
-const getStyles = (theme: GrafanaTheme2) => {
+const getStyles = () => {
   return {
     description: css({
       code: {

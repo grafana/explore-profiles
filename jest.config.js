@@ -1,5 +1,4 @@
 const { pathsToModuleNameMapper } = require('ts-jest');
-const path = require('path');
 
 // force timezone to UTC to allow tests to work regardless of local timezone
 // generally used by snapshots, but can affect specific tests
