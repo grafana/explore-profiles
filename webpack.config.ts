@@ -35,6 +35,11 @@ const config = async (env): Promise<Configuration> => {
 
         '@pyroscope/util/history': path.resolve(__dirname, './src/overrides/util/history'),
 
+        '@pyroscope/hooks/util/determineDefaultApp': path.resolve(
+          __dirname,
+          './src/overrides/hooks/util/determineDefaultApp'
+        ),
+
         '@pyroscope/components/Toolbar': path.resolve(__dirname, './src/overrides/components/Toolbar'),
         '@pyroscope/components/ChartTitle': path.resolve(__dirname, './src/overrides/components/ChartTitle'),
         '@pyroscope/components/Panel': path.resolve(__dirname, './src/overrides/components/Panel'),

@@ -23,6 +23,7 @@ import { GrafanaTheme2, SelectableValue, TimeRange } from '@grafana/data';
 import { css } from '@emotion/css';
 import { isLoadingOrReloading } from '@pyroscope/pages/loading';
 import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
+import userStorage from '../../utils/UserStorage';
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
@@ -51,6 +52,7 @@ interface ToolbarProps {
 
   filterApp?: (names: string) => boolean;
 }
+
 function Toolbar({}: ToolbarProps) {
   const styles = useStyles2(getStyles);
   const dispatch = useAppDispatch();
@@ -149,6 +151,14 @@ function Toolbar({}: ToolbarProps) {
     dispatch(actions.refresh());
   }
 
+  function onSelectService(selection: SelectableValue) {
+    const serviceName = selection.value || '';
+
+    setSelectedServiceName(serviceName);
+
+    userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: serviceName }).catch(() => {}); // fire & forget
+  }
+
   /** Component */
   return (
     <div className={styles.toolbar}>
@@ -156,11 +166,7 @@ function Toolbar({}: ToolbarProps) {
         {/* App Selection */}
         <InlineFieldRow>
           <InlineField label="Service">
-            <Select<string>
-              value={selectedServiceName}
-              options={serviceNameOptions}
-              onChange={(selection) => setSelectedServiceName(selection.value || '')}
-            />
+            <Select<string> value={selectedServiceName} options={serviceNameOptions} onChange={onSelectService} />
           </InlineField>
           <InlineField label="Profile">
             <Select<string>
