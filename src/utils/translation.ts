@@ -1,4 +1,4 @@
-import { DateTime, RawTimeRange, TimeRange, dateTime, dateTimeParse } from '@grafana/data';
+import { AbsoluteTimeRange, DateTime, RawTimeRange, TimeRange, dateTime, dateTimeParse } from '@grafana/data';
 
 function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
   // Pyroscope uses seconds from 1970 as a string, or relative format (e.g., now-5s)
@@ -48,9 +48,11 @@ export function translatePyroscopeTimeRangeToGrafana(from: string, until: string
   return timeRange;
 }
 
-function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string) {
+function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string | number) {
   if (typeof rawTimeRangePart === 'string') {
     return rawTimeRangePart;
+  } else if (typeof rawTimeRangePart === 'number') {
+    return Math.round(rawTimeRangePart).toString();
   }
 
   // The `unix` result as a string is compatible with Pyroscope's range part format
@@ -60,6 +62,13 @@ function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string) {
 export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange) {
   const from = stringifyRawTimeRangePart(timeRange.raw.from);
   const until = stringifyRawTimeRangePart(timeRange.raw.to);
+
+  return { from, until };
+}
+
+export function translateGrafanaAbsoluteTimeRangeToPyroscope(timeRange: AbsoluteTimeRange) {
+  const from = stringifyRawTimeRangePart(timeRange.from);
+  const until = stringifyRawTimeRangePart(timeRange.to);
 
   return { from, until };
 }

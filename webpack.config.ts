@@ -41,6 +41,11 @@ const config = async (env): Promise<Configuration> => {
         ),
 
         '@pyroscope/components/Toolbar': path.resolve(__dirname, './src/overrides/components/Toolbar'),
+        '@pyroscope/components/TimelineChart/TimelineChartWrapper': path.resolve(
+          __dirname,
+          './src/overrides/components/TimelineChart/TimelineChartWrapper'
+        ),
+
         '@pyroscope/components/ChartTitle': path.resolve(__dirname, './src/overrides/components/ChartTitle'),
         '@pyroscope/components/Panel': path.resolve(__dirname, './src/overrides/components/Panel'),
         '@pyroscope/components/ExportData': path.resolve(__dirname, './src/overrides/components/ExportData'),
