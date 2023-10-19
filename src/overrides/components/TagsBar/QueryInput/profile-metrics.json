@@ -1,0 +1,135 @@
+{
+  "block:contentions:count:contentions:count": {
+    "id": "block:contentions:count:contentions:count",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "short"
+  },
+  "block:delay:nanoseconds:contentions:count": {
+    "id": "block:delay:nanoseconds:contentions:count",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "ns"
+  },
+  "goroutine:goroutine:count:goroutine:count": {
+    "id": "goroutine:goroutine:count:goroutine:count",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "short"
+  },
+  "memory:alloc_in_new_tlab_bytes:bytes::": {
+    "id": "memory:alloc_in_new_tlab_bytes:bytes::",
+    "description": "Bytes allocated in a new Thread-Local Allocation Buffer (TLAB).",
+    "type": "memory",
+    "subType": "alloc_in_new_tlab",
+    "unit": "bytes"
+  },
+  "memory:alloc_in_new_tlab_objects:count::": {
+    "id": "memory:alloc_in_new_tlab_objects:count::",
+    "description": "Count of objects allocated in a new Thread-Local Allocation Buffer (TLAB).",
+    "type": "memory",
+    "subType": "alloc_in_new_tlab",
+    "unit": "short"
+  },
+  "memory:alloc_objects:count:space:bytes": {
+    "id": "memory:alloc_objects:count:space:bytes",
+    "description": "Counts the number of objects allocated in memory, represented in bytes.",
+    "type": "memory",
+    "subType": "alloc_objects",
+    "unit": "count"
+  },
+  "memory:alloc_space:bytes:space:bytes": {
+    "id": "memory:alloc_space:bytes:space:bytes",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "bytes"
+  },
+  "memory:inuse_objects:count:space:bytes": {
+    "id": "memory:inuse_objects:count:space:bytes",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "short"
+  },
+  "memory:inuse_space:bytes:space:bytes": {
+    "id": "memory:inuse_space:bytes:space:bytes",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "bytes"
+  },
+  "mutex:contentions:count:contentions:count": {
+    "id": "mutex:contentions:count:contentions:count",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "short"
+  },
+  "mutex:delay:nanoseconds:contentions:count": {
+    "id": "mutex:delay:nanoseconds:contentions:count",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "ns"
+  },
+  "process_cpu:alloc_samples:count:cpu:nanoseconds": {
+    "id": "process_cpu:alloc_samples:count:cpu:nanoseconds",
+    "description": "Samples the memory allocations over a duration of CPU time.",
+    "type": "memory",
+    "subType": "alloc_samples",
+    "unit": "short"
+  },
+  "process_cpu:alloc_size:bytes:cpu:nanoseconds": {
+    "id": "process_cpu:alloc_size:bytes:cpu:nanoseconds",
+    "description": "Size of memory allocations during a specific CPU processing time.",
+    "type": "memory",
+    "subType": "alloc_size",
+    "unit": "bytes"
+  },
+  "process_cpu:cpu:nanoseconds:cpu:nanoseconds": {
+    "id": "process_cpu:cpu:nanoseconds:cpu:nanoseconds",
+    "description": "Measures the CPU processing time in nanoseconds.",
+    "type": "cpu",
+    "subType": "cpu_time",
+    "unit": "ns"
+  },
+  "process_cpu:exception:count:cpu:nanoseconds": {
+    "id": "process_cpu:exception:count:cpu:nanoseconds",
+    "description": "Counts the number of runtime exceptions during the CPU processing time.",
+    "type": "exceptions",
+    "subType": "exception_count",
+    "unit": "short"
+  },
+  "process_cpu:lock_count:count:cpu:nanoseconds": {
+    "id": "process_cpu:lock_count:count:cpu:nanoseconds",
+    "description": "Measures the number of times a process attempted to acquire a lock during CPU processing time.",
+    "type": "locks",
+    "subType": "lock_count",
+    "unit": "short"
+  },
+  "process_cpu:lock_time:nanoseconds:cpu:nanoseconds": {
+    "id": "process_cpu:lock_time:nanoseconds:cpu:nanoseconds",
+    "description": "Time spent waiting for a lock to become available during CPU processing.",
+    "type": "locks",
+    "subType": "lock_time",
+    "unit": "ns"
+  },
+  "process_cpu:samples:count::milliseconds": {
+    "id": "process_cpu:samples:count::milliseconds",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "short"
+  },
+  "process_cpu:samples:count:cpu:nanoseconds": {
+    "id": "process_cpu:samples:count:cpu:nanoseconds",
+    "description": "No description available",
+    "type": "",
+    "subType": "",
+    "unit": "short"
+  }
+}

@@ -29,6 +29,7 @@ module.exports = {
   transformIgnorePatterns: [
     // force us to not transpile these dependencies
     // https://stackoverflow.com/a/69150188
-    'node_modules/(?!(true-myth|d3|d3-array|internmap|d3-scale|react-notifications-component|graphviz-react|@grafana|ol|grafana-pyroscope))',
+    'node_modules/(?!(true-myth|d3|d3-array|internmap|d3-scale|react-notifications-component|graphviz-react|@grafana|ol|grafana-pyroscope|@react-hook))',
   ],
+  resetMocks: true,
 };
