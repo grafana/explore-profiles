@@ -67,8 +67,15 @@ export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange) {
 }
 
 export function translateGrafanaAbsoluteTimeRangeToPyroscope(timeRange: AbsoluteTimeRange) {
-  const from = stringifyRawTimeRangePart(timeRange.from);
-  const until = stringifyRawTimeRangePart(timeRange.to);
-
+  const from = stringifyRawTimeRangePart(floorTenSeconds(timeRange.from));
+  const until = stringifyRawTimeRangePart(ceilTenSeconds(timeRange.to));
   return { from, until };
+}
+
+export function floorTenSeconds(milliseconds: number) {
+  return Math.floor(milliseconds / 10000) * 10000;
+}
+
+export function ceilTenSeconds(milliseconds: number) {
+  return Math.ceil(milliseconds / 10000) * 10000;
 }

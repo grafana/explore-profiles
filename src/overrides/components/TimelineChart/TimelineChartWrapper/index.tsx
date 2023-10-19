@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import Color from 'color';
 import { markingsFromSelection } from '@pyroscope/components/TimelineChart/markings';
 import { PanelRenderer } from '@grafana/runtime';
@@ -10,15 +10,24 @@ import {
   MutableDataFrame,
   PanelData,
   TimeRange,
+  dateTime,
   rangeUtil,
 } from '@grafana/data';
 import { LoadingState } from '@grafana/schema';
-import { translateGrafanaAbsoluteTimeRangeToPyroscope } from '../../../../utils/translation';
+import {
+  ceilTenSeconds,
+  floorTenSeconds,
+  translateGrafanaAbsoluteTimeRangeToPyroscope,
+} from '../../../../utils/translation';
 import { usePanelContext, useTheme2 } from '@grafana/ui';
 import { PyroscopeStateContext } from '../../../../components/PyroscopeState/context';
 
 import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
 import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineChart/centerTimelineData';
+
+import useResizeObserver from '@react-hook/resize-observer';
+
+const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
 
 type TimelineChartWrapperProps = ConstructorParameters<typeof PyroscopeTimelineChartWrapper>[0];
 
@@ -105,18 +114,10 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
     props.onSelect(from, until);
   };
 
-  // Adjust visible range to match actual data if there is any.
-  let rangeFrom = series[0]?.fields[0].values.at(0)
-  let rangeTo = series[0]?.fields[0].values.at(-1)
-
-  for (let i = 1; i  < series.length; ++i) {
-    rangeFrom = Math.min(rangeFrom, series[i].fields[0].values.at(0))
-    rangeTo = Math.max(rangeTo, series[i].fields[0].values.at(-1));
-  }
-
-  // If there is real data, use that to determine the range. Otherwise use what is set in the context.
-  const practicalRange = (rangeFrom && rangeTo) ? rangeUtil.convertRawToRange({from: rangeFrom, to: rangeTo}) : timeRange;
-
+  const adjustedRange = rangeUtil.convertRawToRange({
+    from: dateTime(floorTenSeconds(timeRange.from.unix() * 1000) - POINT_DISTANCE / 2),
+    to: dateTime(ceilTenSeconds(timeRange.to.unix() * 1000)),
+  });
 
   return (
     <GrafanaTimeSeries
@@ -124,7 +125,7 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
       showLegend={showLegend}
       annotations={annotations}
       onChangeTimeRange={onChangeTimeRange}
-      timeRange={practicalRange}
+      timeRange={adjustedRange}
     />
   );
 }
@@ -145,11 +146,9 @@ function GrafanaTimeSeries({
   const panelContainer = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
 
-  useEffect(() => {
-    if (panelContainer.current) {
-      setWidth(panelContainer.current.offsetWidth);
-    }
-  }, [panelContainer]);
+  useResizeObserver(panelContainer, (entry: ResizeObserverEntry) => {
+    setWidth(entry.contentRect.width);
+  });
 
   const panelData: PanelData = {
     series,
@@ -165,7 +164,7 @@ function GrafanaTimeSeries({
   ctx.canDeleteAnnotations = nope;
 
   return (
-    <div style={{ minWidth: '100%' }} ref={panelContainer}>
+    <div style={{ minWidth: '100%', overflow: 'hidden' }} ref={panelContainer}>
       <PanelRenderer
         title={''}
         pluginId="timeseries"
@@ -223,7 +222,7 @@ const unitMap: Record<string, string> = {
 };
 
 export function convertToDataFrame(data: TimelineData, unit: string, format: 'bars' | 'lines', label?: string) {
-  const custom = format === 'bars' ? { drawStyle: 'bars', fillOpacity: 100 } : { drawStyle: 'lines' };
+  const custom = format === 'bars' ? { drawStyle: 'bars', fillOpacity: 100, barAlignment: 1 } : { drawStyle: 'lines' };
 
   const dataframe = new MutableDataFrame();
   dataframe.addField({ name: 'time', type: FieldType.time });
@@ -240,7 +239,8 @@ export function convertToDataFrame(data: TimelineData, unit: string, format: 'ba
   const { durationDelta, samples, startTime } = timeline;
 
   for (let i = 0; i < samples.length; ++i) {
-    const time = (startTime + i * durationDelta) * 1000;
+    const time =
+      (startTime + i * durationDelta) * 1000; // Scale to milliseconds
     const sample = samples[i];
 
     dataframe.appendRow([time, sample]);
