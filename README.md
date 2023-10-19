@@ -120,7 +120,7 @@ the [Overrides Guide](./src/overrides/README.md).
 
 ### Use production data locally
 
-To run with production data locally you will need to update [this file](https://github.com/grafana/pyroscope-app-plugin/blob/main/provisioning/plugins/app.yaml) with values from the stacks page.
+To run with production data locally you will need to update [this file](https://github.com/grafana/pyroscope-app-plugin/blob/main/samples/provisioning/plugins/app.yaml) with values from the stacks page.
 
 For example, to run with data from ops get an api key from https://admin.grafana-ops.com/ and paste the corresponding values in
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/abcbed56-360c-48d4-a0a7-4dc0a7a1e900)
