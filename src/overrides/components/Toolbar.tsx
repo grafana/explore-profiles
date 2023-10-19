@@ -62,7 +62,11 @@ function useBuildProfileTypeOptions() {
         value: profileMetric.id,
         // The underlying mechanism used by Grafana's <Select> accepts components for labels,
         // but the strict typing believes that it only accepts strings, so we lie about the type here.
-        label: (<span className={styles.profileName}>{profileMetric.type}</span>) as unknown as string,
+        label: (
+          <span className={styles.profileName}>
+            {profileMetric.type} ({profileMetric.group})
+          </span>
+        ) as unknown as string,
         imgUrl: 'public/plugins/grafana-pyroscope-app/img/logo.svg',
       })),
     [profileMetrics, styles]

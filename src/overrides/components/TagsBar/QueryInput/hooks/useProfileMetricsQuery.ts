@@ -7,7 +7,7 @@ export type ProfileMetric = {
   id: ProfileMetricId;
   description: string;
   type: string;
-  subType: string;
+  group: string;
   unit: string; // TODO: enum
 };
 
@@ -23,11 +23,13 @@ function getProfileMetric(profileMetricId: ProfileMetricId): ProfileMetric {
     return PROFILE_METRICS[profileMetricId] as ProfileMetric;
   }
 
+  const [group = 'unknown', type = 'unknown type'] = profileMetricId.split(':');
+
   return {
     id: profileMetricId,
-    description: `No description available for profile  "${profileMetricId}"`,
-    type: profileMetricId.split(':')[1] || 'Unknown type',
-    subType: 'Unknown sub type',
+    description: `No description available for profile metric "${profileMetricId}"`,
+    type,
+    group,
     unit: 'number', // TODO: confirm
   };
 }

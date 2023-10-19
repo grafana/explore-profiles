@@ -29,7 +29,12 @@ export default function QueryInput({ initialQuery, onSubmit }: QueryInputProps) 
 
   return (
     <>
-      <Button variant="secondary" fill="outline" type="button" style={{ height: textAreaSize.height }}>
+      <Button
+        variant="secondary"
+        fill="outline"
+        type="button"
+        style={{ height: textAreaSize.height, marginRight: '5px' }}
+      >
         {data.profileMetric.type}
         <Tooltip content={data.profileMetric.description} placement="bottom">
           <Icon name="info-circle" className={styles.profileTypeInfo} />
