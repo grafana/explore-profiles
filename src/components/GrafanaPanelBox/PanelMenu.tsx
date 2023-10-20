@@ -55,10 +55,12 @@ export function PanelMenu({
     [onOpenMenu, onVisibleChange]
   );
 
+  const label = title ? `Menu for panel with title ${title}` : `Menu for panel with no title`;
+
   return (
     <Dropdown overlay={menu} placement={placement} offset={offset} onVisibleChange={handleVisibility}>
       <ToolbarButton
-        aria-label={`Menu for panel with ${title ? `title ${title}` : 'no title'}`}
+        aria-label={label}
         title="Menu"
         icon="ellipsis-v"
         iconSize="md"

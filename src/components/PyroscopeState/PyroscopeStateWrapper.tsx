@@ -158,6 +158,9 @@ export function PyroscopeStateWrapper(props: { children: ReactNode }) {
   }, [profileTypeSet]);
 
   /** Trigger a query change if the user selects a new app name / profile combo. */
+
+  // TODO: Refactor this function to reduce its Cognitive Complexity from 12 to a value we feel confident with :)
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
     const app = apps.find((app) => app.name === selectedServiceName && app.__profile_type__ === selectedProfileType);
 

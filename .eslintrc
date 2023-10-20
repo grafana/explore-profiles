@@ -1,6 +1,12 @@
 {
-  "extends": "./.config/.eslintrc",
+  "extends": ["./.config/.eslintrc", "plugin:jest/recommended", "plugin:sonarjs/recommended"],
+  "plugins": ["jest", "sonarjs"],
   "rules": {
-    "no-unused-vars": "error"
+    "no-unused-vars": "error",
+    "jest/expect-expect": "error",
+    "jest/valid-title": "off",
+    "sonarjs/cognitive-complexity": ["error", 8],
+    "sonarjs/prefer-immediate-return": "off",
+    "sonarjs/no-duplicate-string": "off"
   }
 }

@@ -37,6 +37,8 @@ type Marking = {
   lineWidth?: number;
 };
 
+// TODO: Refactor this function to reduce its Cognitive Complexity from 9 to a value we feel confident with :)
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function TimelineChartWrapper(props: TimelineChartWrapperProps) {
   const theme = useTheme2();
 
@@ -239,8 +241,7 @@ export function convertToDataFrame(data: TimelineData, unit: string, format: 'ba
   const { durationDelta, samples, startTime } = timeline;
 
   for (let i = 0; i < samples.length; ++i) {
-    const time =
-      (startTime + i * durationDelta) * 1000; // Scale to milliseconds
+    const time = (startTime + i * durationDelta) * 1000; // Scale to milliseconds
     const sample = samples[i];
 
     dataframe.appendRow([time, sample]);

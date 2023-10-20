@@ -13,7 +13,10 @@ describe('useUpdateSidebarLinks', () => {
   describe('no sidebar links available', () => {
     it('does not fail', () => {
       const history = createMemoryHistory();
-      render(<SetupComponent history={history} />);
+
+      const renderFn = () => render(<SetupComponent history={history} />);
+
+      expect(renderFn).not.toThrow();
     });
   });
 
