@@ -76,7 +76,7 @@ function TagsDropdown({ query, tags, onSelectedLabel, onSetQuery }: TagsDropdown
  */
 function TagsBar({ onSetQuery, query, tags, onSelectedLabel, onRefresh }: TagsBarProps) {
   return (
-    <div className="tags-bar _rc-menu-container--theme-dark">
+    <div className="tags-bar _rc-menu-container--theme-dark" style={{ flexFlow: 'wrap' }}>
       <TagsDropdown query={query} tags={tags} onSelectedLabel={onSelectedLabel} onSetQuery={onSetQuery} />
 
       <QueryInput

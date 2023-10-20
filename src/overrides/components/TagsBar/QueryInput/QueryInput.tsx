@@ -22,19 +22,14 @@ type QueryInputProps = {
 export default function QueryInput({ initialQuery, onSubmit }: QueryInputProps) {
   const parsedQuery = useParseQuery(initialQuery);
 
-  const { textAreaRef, textAreaSize } = useResizeTextarea(parsedQuery.query);
-  const codeRef = useHighlightQuery(parsedQuery.query, textAreaSize);
+  const { textareaRef, textareaSize } = useResizeTextarea();
+  const codeRef = useHighlightQuery(parsedQuery.query, textareaSize);
 
   const { data, actions } = useQueryInput(parsedQuery, onSubmit);
 
   return (
     <>
-      <Button
-        variant="secondary"
-        fill="outline"
-        type="button"
-        style={{ height: textAreaSize.height, marginRight: '5px' }}
-      >
+      <Button variant="secondary" fill="outline" type="button" className={styles.profileTypeButton}>
         {data.profileMetric.type}
         <Tooltip content={data.profileMetric.description} placement="bottom">
           <Icon name="info-circle" className={styles.profileTypeInfo} />
@@ -42,14 +37,15 @@ export default function QueryInput({ initialQuery, onSubmit }: QueryInputProps) 
       </Button>
 
       <form aria-label="query-input" className={styles.wrapper} onSubmit={actions.submitForm}>
-        <pre className={cx(styles.highlight, 'language-promql')} aria-hidden="true">
-          <code className="language-promql" id="highlighting-content" ref={codeRef} style={textAreaSize}>
+        {/* TODO: Use <CodeEditor /> - see https://github.com/grafana/grafana/blob/a851750b1c9b4d8aa6743dcf935a990be115173c/public/app/plugins/datasource/prometheus/components/monaco-query-field/MonacoQueryField.tsx */}
+        <pre className={cx(styles.highlight, 'language-promql')} aria-hidden="true" style={textareaSize}>
+          <code className="language-promql" id="highlighting-content" ref={codeRef}>
             {data.query}
           </code>
         </pre>
 
         <TextareaAutosize
-          ref={textAreaRef}
+          ref={textareaRef}
           className={styles.input}
           value={data.query}
           onChange={actions.handleTextAreaChange}
@@ -57,7 +53,7 @@ export default function QueryInput({ initialQuery, onSubmit }: QueryInputProps) 
           spellCheck="false"
         />
 
-        <Button type="submit" style={{ height: textAreaSize.height }}>
+        <Button type="submit" style={{ height: textareaSize.height }}>
           Execute
         </Button>
       </form>

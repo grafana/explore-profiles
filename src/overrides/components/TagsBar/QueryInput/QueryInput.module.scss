@@ -2,6 +2,10 @@
   margin-left: 8px;
 }
 
+.profileTypeButton {
+  margin: 0 4px 6px;
+}
+
 .wrapper {
   flex-grow: 1;
   display: flex;
@@ -18,13 +22,13 @@
   color: var(--ps-grey-primary);
   letter-spacing: 0px;
   font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
-  font-size: 16px;
+  font-size: 14px;
   border: 1px solid var(--ps-ui-border);
   padding: 0.25em 0.375em;
   resize: none;
   word-break: break-all;
   box-sizing: border-box;
-  line-height: 27px;
+  line-height: 24px;
   white-space: break-spaces;
   overflow: hidden;
 }
@@ -47,14 +51,14 @@
   margin: 0 !important;
 
   code {
-    font-size: 16px;
+    font-size: 14px;
     font-family: SFMono-Regular, Consolas, Liberation Mono, Menlo, monospace;
     background: none;
     border: 1px solid transparent;
     box-shadow: none;
     padding: 0.25em 0.375em;
     margin: 0;
-    line-height: 27px;
+    line-height: 24px;
     position: absolute;
     top: 0px;
     left: 0px;
