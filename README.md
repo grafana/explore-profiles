@@ -144,27 +144,27 @@ If you need to release something sooner than Monday you can do it manually with 
 chmod +x ./scripts/create_version_tag.sh
 ./scripts/create_version_tag.sh
 ```
-**note: Do not push two versions on the same commit or it will break things. If something goes wrong with this create a new commit for the next version**
 
 This will increment and push the newest tag to github
 
 2. Wait for Drone CI to finish building the release
 
-3. [Go to Drone CI](https://drone.grafana.net/grafana/pyroscope-app-plugin/branches) and find the latest build on main branch
+3. [Go to Drone CI](https://drone.grafana.net/grafana/pyroscope-app-plugin) and find the latest **versioned** build on main branch. Make sure it's a `v*.*.*` build, e.g:
+![Screenshot 2023-10-23 at 11 59 20 AM](https://github.com/grafana/pyroscope-app-plugin/assets/662636/90c12fd0-e6e4-44b1-ade7-225b487661ed)
 
-4. Click on `main` branch. You should get to the Drone build page
+4. Click on that build. You should get to the Drone build page. 
 
-5. In the top right corner click the three dots button and select `Promote`
+6. In the top right corner click the three dots button and select `Promote`
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/f8664c95-3c5a-4666-b00a-917b767e0c3c)
 
-6. Specify "`ops`" or "`prod`" or `opsprod` (for both) for `Target`. Click `Deploy` button
+7. Specify "`ops`" or "`prod`" or `opsprod` (for both) for `Target`. Click `Deploy` button
 
-7. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack: **Be sure to click the workflow posted in the slack channel**
+8. Wait for the release to be deployed. Monitor [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) channel on Slack: **Be sure to click the workflow posted in the slack channel**
 <img width="390" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/7303134d-0de0-4280-b735-e448dc144d08">
 
-8. In argo click "resume" or the "approve prod" button to complete the process
+9. In argo click "resume" or the "approve prod" button to complete the process
 ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/e0d428a5-de7e-4e31-802f-d14f92dd462b)
-9. 🎉Congrats🎉 you should see this in argo and a confirmation in the #pyroscope-ops slack channel
+10. 🎉Congrats🎉 you should see this in argo and a confirmation in the #pyroscope-ops slack channel
 <img width="213" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/11f83017-fbc8-48e7-af56-477ca5929cf2">
 
 
