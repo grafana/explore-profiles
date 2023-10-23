@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Icon, useStyles2 } from '@grafana/ui';
 import clsx from 'clsx';
 import HeroImage from '../../img/hero-image.png';
@@ -18,18 +18,13 @@ import { useDataPresentCheck } from './hooks';
  * It assumes apps are loaded via a different component
  */
 export function Onboarding({ children }: { children: React.ReactNode }) {
-  const [showModal, setShowModal] = useState(true);
+  const [modalClosed, setModalClosed] = useState(false);
 
   const { determinedNoDataPresent, waiting, error } = useDataPresentCheck();
 
-  const shouldShowOnboarding = (determinedNoDataPresent || error) && showModal;
+  const shouldShowOnboarding = determinedNoDataPresent && !error && !modalClosed;
 
   const styles = useStyles2(getStyles);
-
-  useEffect(() => {
-    // TODO determine if we want to
-    console.error('Failed to communicate with pyroscope.');
-  }, [error]);
 
   if (waiting && !error) {
     return (
@@ -53,7 +48,7 @@ export function Onboarding({ children }: { children: React.ReactNode }) {
           <button
             className={styles.closeButton}
             onClick={() => {
-              setShowModal(false);
+              setModalClosed(true);
             }}
           >
             &times;
