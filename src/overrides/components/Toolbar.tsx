@@ -235,7 +235,7 @@ export default function Toolbar({}: ToolbarProps) {
   /** Component */
   return (
     <div className={styles.toolbar}>
-      <HorizontalGroup justify="space-between">
+      <HorizontalGroup justify="space-between" align="flex-start">
         {/* App Selection */}
         <InlineFieldRow>
           <InlineField label="Service">
@@ -254,7 +254,7 @@ export default function Toolbar({}: ToolbarProps) {
           />
         </InlineFieldRow>
         {/* Time range selection */}
-        <HorizontalGroup>
+        <HorizontalGroup align="flex-start">
           <TimeRangePicker
             isOnCanvas={true}
             onChange={setTimeRange}
