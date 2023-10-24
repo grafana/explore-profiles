@@ -64,6 +64,7 @@
     "jest-environment-jsdom": "^29.3.1",
     "prettier": "^2.5.0",
     "react-svg-loader": "^3.0.3",
+    "remove-files-webpack-plugin": "^1.5.0",
     "replace-in-file-webpack-plugin": "^1.0.6",
     "sass": "1.56.1",
     "sass-loader": "13.2.0",

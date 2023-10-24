@@ -3,7 +3,8 @@ import type { Configuration, RuleSetRule } from 'webpack';
 import { merge } from 'webpack-merge';
 import grafanaConfig from './.config/webpack/webpack.config';
 import * as path from 'path';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
+import RemovePlugin from 'remove-files-webpack-plugin';
+import { DIST_DIR } from './.config/webpack/constants';
 
 const config = async (env): Promise<Configuration> => {
   const baseConfig = await grafanaConfig(env);
@@ -103,10 +104,19 @@ const config = async (env): Promise<Configuration> => {
       ],
     },
     plugins: [
-      new CopyWebpackPlugin({
-        patterns: [
-          { from: '**/*.png', to: '.', noErrorOnMissing: true }, // Optional
-        ],
+      // prevents test files to appear in the build artefacts
+      // among them, there might be (e.g.) "plugin.json" files used as fixtures in our tests
+      // that the platform would try to load
+      new RemovePlugin({
+        after: {
+          test: [
+            {
+              folder: DIST_DIR,
+              recursive: true,
+              method: (absoluteResourcePath) => absoluteResourcePath.includes('__tests__'),
+            },
+          ],
+        },
       }),
     ],
   });
