@@ -25,6 +25,7 @@ import { isLoadingOrReloading } from '@pyroscope/pages/loading';
 import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
 import userStorage from '../../utils/UserStorage';
 import { ProfileMetricId, useGetProfileMetricByIds } from './TagsBar/QueryInput/hooks/useProfileMetricsQuery';
+import { useLocation } from 'react-router-dom';
 
 interface ToolbarProps {
   /** callback to be called when an app is selected via the dropdown */
@@ -180,34 +181,66 @@ function useTimeRangePicker() {
   };
 }
 
-function useResultsLoadingCheck() {
+function useIsDataLoadingPerPage() {
   const timelineSides = useAppSelector(selectTimelineSides);
-  const timelinesState = useAppSelector(selectContinuousState);
+  const { tagExplorerView, singleView, diffView, leftTimeline, rightTimeline } = useAppSelector(selectContinuousState);
   const { left: comparisonLeft, right: comparisonRight } = useAppSelector(selectComparisonState);
-  const { diffView, tagExplorerView } = useAppSelector(selectContinuousState);
 
-  const { singleView } = useAppSelector((state) => state.continuous);
+  const { pathname } = useLocation();
 
-  const isLoading = isLoadingOrReloading([
+  if (pathname.endsWith('tag-explorer')) {
+    return isLoadingOrReloading([tagExplorerView.activeTagProfileLoadingType, tagExplorerView.groupsLoadingType]);
+  }
+
+  if (pathname.endsWith('single')) {
+    return isLoadingOrReloading([singleView.type]);
+  }
+
+  if (pathname.endsWith('comparison')) {
+    return isLoadingOrReloading([
+      comparisonLeft.type,
+      comparisonRight.type,
+      timelineSides.left.type,
+      timelineSides.right.type,
+      leftTimeline.type,
+      rightTimeline.type,
+    ]);
+  }
+
+  if (pathname.endsWith('comparison-diff')) {
+    return isLoadingOrReloading([
+      diffView.type,
+      timelineSides.left.type,
+      timelineSides.right.type,
+      leftTimeline.type,
+      rightTimeline.type,
+    ]);
+  }
+
+  // :man_shrug:
+  console.warn(
+    'Unknown page at pathname="%s"!. The main refresh button might not be correctly reporting the loading state.',
+    pathname
+  );
+
+  return isLoadingOrReloading([
     comparisonLeft.type,
     comparisonRight.type,
     timelineSides.left.type,
     timelineSides.right.type,
-    timelinesState.leftTimeline.type,
-    timelinesState.rightTimeline.type,
+    leftTimeline.type,
+    rightTimeline.type,
     diffView.type,
     singleView.type,
     tagExplorerView.activeTagProfileLoadingType,
     tagExplorerView.groupsLoadingType,
   ]);
-
-  return isLoading;
 }
 
 function useRefreshTimeRangePicker() {
   const dispatch = useAppDispatch();
 
-  const isDataLoading = useResultsLoadingCheck();
+  const isDataLoading = useIsDataLoadingPerPage();
 
   return {
     isDataLoading,
