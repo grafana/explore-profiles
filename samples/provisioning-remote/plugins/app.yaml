@@ -1,0 +1,11 @@
+apiVersion: 1
+
+apps:
+  - type: grafana-pyroscope-app
+    disabled: false
+    jsonData:
+      backendUrl: $REMOTE_BACKEND_URL
+      basicAuthUser: $REMOTE_BASIC_AUTH_USER
+      enableFlameGraphDotComExport: true
+    secureJsonData:
+      basicAuthPassword: $REMOTE_BASIC_AUTH_PASSWORD

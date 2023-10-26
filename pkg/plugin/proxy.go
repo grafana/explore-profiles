@@ -28,7 +28,7 @@ func NewProxy(logger log.Logger, settings Settings) (*Proxy, error) {
 
 		// Let's log before setting up basic auth
 		logger.Debug("setting up URL as target", req.URL)
-		req.SetBasicAuth(settings.BasicAuthUser, settings.BasicAuthPassword)
+		req.SetBasicAuth(string(settings.BasicAuthUser), settings.BasicAuthPassword)
 	}
 
 	rp := &httputil.ReverseProxy{

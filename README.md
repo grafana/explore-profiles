@@ -57,6 +57,13 @@ The direct URL of the plugin is `http://localhost:3000/a/grafana-pyroscope-app/`
   It may be necessary to also run `yarn server` again to ensure the updated binary has taken effect, unless
   the old binary's process can be terminated in the `grafana` docker image.
 
+### Using remote profile data
+
+- Copy the content of the `.env.local` file to a new `.env` file in the root directory.
+- Open 1Password and search for the note named "DB FE - Remote profile data credentials"
+- Fill in the missing values
+- Instead of `yarn server`, launch `yarn server:remote` in the terminal
+
 ### Pyroscope Respository as a Dependency
 
 In order to make use of Pyroscope code, this project's [package.json](../../package.json)

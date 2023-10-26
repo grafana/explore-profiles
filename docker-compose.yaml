@@ -22,8 +22,6 @@ services:
       - 4100:4100/tcp
     volumes:
       - ./samples/pyroscope:/etc/pyroscope
-    logging:
-      driver: none
 
   rideshare:
     build:
