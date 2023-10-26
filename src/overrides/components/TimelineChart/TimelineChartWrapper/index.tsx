@@ -240,6 +240,11 @@ export function convertToDataFrame(data: TimelineData, unit: string, format: 'ba
 
   const { durationDelta, samples, startTime } = timeline;
 
+  if (Number.isNaN(startTime) || Number.isNaN(durationDelta)) {
+    console.error("Malformed time. Ignoring timeline.", {startTime, durationDelta, label});
+    return dataframe;
+  }
+
   for (let i = 0; i < samples.length; ++i) {
     const time = (startTime + i * durationDelta) * 1000; // Scale to milliseconds
     const sample = samples[i];
