@@ -34,4 +34,5 @@ e2e-results/
 
 .eslintcache
 
+# Local configuration and customization
 .env

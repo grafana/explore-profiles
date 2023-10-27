@@ -3,8 +3,7 @@ import { getBackendSrv } from '@grafana/runtime';
 import { lastValueFrom } from 'rxjs';
 import { merge } from 'lodash';
 import { useMemo } from 'react';
-
-import { AppPluginSettings } from '../AppConfig';
+import { AppPluginSettings } from '../../../types/plugin';
 
 export function usePluginSettingsApiClient(plugin: GrafanaPlugin<AppPluginMeta<AppPluginSettings>>) {
   const { meta } = plugin;

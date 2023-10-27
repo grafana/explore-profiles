@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { getAppEvents } from '@grafana/runtime';
 import { AppPluginMeta, AppEvents, GrafanaPlugin } from '@grafana/data';
 
-import { AppPluginSettings } from '../AppConfig';
 import { usePluginSettingsApiClient } from './usePluginSettingsApiClient';
+import { AppPluginSettings } from '../../../types/plugin';
 
 export function useAppConfig(plugin: GrafanaPlugin<AppPluginMeta<AppPluginSettings>>) {
   const { settingsApiClient } = usePluginSettingsApiClient(plugin);

@@ -6,14 +6,13 @@ services:
     build:
       context: ./.config
       args:
+        grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
         grafana_version: ${GRAFANA_VERSION:-10.1.1}
     ports:
-      - 3000:3000/tcp
+      - ${GRAFANA_PORT:-3000}:3000/tcp
     volumes:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
       - ./samples/provisioning:/etc/grafana/provisioning
-    depends_on:
-      - pyroscope
 
   pyroscope:
     container_name: 'pyroscope'

@@ -1,7 +1,10 @@
 import { NavModelItem } from '@grafana/data';
-import pluginJson from './plugin.json';
 
-export const PLUGIN_BASE_URL = `/a/${pluginJson.id}`;
+import { id } from './plugin.json';
+
+export const PYROSCOPE_APP_ID = id;
+
+export const PLUGIN_BASE_URL = `/a/${PYROSCOPE_APP_ID}`;
 
 export enum ROUTES {
   EXPLORE_VIEW = '/tag-explorer',

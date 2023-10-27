@@ -1,8 +1,7 @@
 import React from 'react';
 import PyroscopeExportData, { ExportDataProps } from 'grafana-pyroscope/public/app/components/ExportData';
 import { PluginMeta, usePluginContext } from '@grafana/data';
-
-import { AppPluginSettings } from 'src/components/AppConfig';
+import { AppPluginSettings } from '../../types/plugin';
 
 export default function ExportData(props: ExportDataProps) {
   const { meta } = usePluginContext();

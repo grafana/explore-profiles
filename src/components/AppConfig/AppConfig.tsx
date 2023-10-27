@@ -3,9 +3,7 @@ import { Button, FieldSet, Form, InlineField, InlineFieldRow, InlineSwitch } fro
 import { PluginConfigPageProps, AppPluginMeta } from '@grafana/data';
 
 import { useAppConfig } from './hooks/useAppConfig';
-export interface AppPluginSettings {
-  enableFlameGraphDotComExport: boolean;
-}
+import { AppPluginSettings } from '../../types/plugin';
 
 export interface AppConfigProps extends PluginConfigPageProps<AppPluginMeta<AppPluginSettings>> {}
 
