@@ -1,10 +1,8 @@
 package plugin
 
-import "encoding/json"
-
 type Settings struct {
-	BackendURL                   string          `json:"backendUrl"`
-	BasicAuthUser                json.RawMessage `json:"basicAuthUser"` // support string or integer
-	BasicAuthPassword            string          `json:"basicAuthPassword"`
-	EnableFlameGraphDotComExport bool            `json:"enableFlameGraphDotComExport"`
+	BackendURL                   string `json:"backendUrl"`
+	BasicAuthUser                string `json:"basicAuthUser"` // must be treated as a string
+	BasicAuthPassword            string `json:"basicAuthPassword"`
+	EnableFlameGraphDotComExport bool   `json:"enableFlameGraphDotComExport"`
 }
