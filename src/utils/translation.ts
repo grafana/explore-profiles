@@ -59,9 +59,26 @@ function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string | number)
   return Math.round(rawTimeRangePart.unix()).toString();
 }
 
+function getPyroscopeCompatibleRawRange(timeRange: TimeRange) {
+
+  const {from, to} = timeRange.raw
+
+  for (const time of [from, to]) {
+    if (typeof time === 'string' && time.includes('/')) {
+      // Pyroscope can't handle symbolic range elements with `/` characters (which cut-off by unit)
+      const raw = {from: timeRange.from, to: timeRange.to}
+      return raw;
+    }
+  }
+
+  return timeRange.raw;
+}
+
 export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange) {
-  const from = stringifyRawTimeRangePart(timeRange.raw.from);
-  const until = stringifyRawTimeRangePart(timeRange.raw.to);
+  const raw = getPyroscopeCompatibleRawRange(timeRange);
+
+  const from = stringifyRawTimeRangePart(raw.from);
+  const until = stringifyRawTimeRangePart(raw.to);
 
   return { from, until };
 }
