@@ -63,16 +63,24 @@ export async function requestWithOrgID(
 /**
  * request makes requests to the plugin backend
  *
- * It delegates to pyroscope request method to pass along cancellation signal
+ * It doesn't do request cancellation
  */
 export async function requestWithOrgID2(
-  requestInfo: RequestInfo,
+  request: RequestInfo,
   config?: RequestInit
 ): Promise<Result<unknown, RequestError>> {
   try {
-    // Prepend plugin resources proxy URL and replace any double slashes
-    const url = ['api/plugins/grafana-pyroscope-app/resources', requestInfo].join('/').replace(/\/{2,}/g, '/');
-    return request(url, config);
+    // Replace any double slashes
+    const url = ['api/plugins/grafana-pyroscope-app/resources', request].join('/').replace(/\/{2,}/g, '/');
+
+    // TODO: replace with fetch since this is going to be deprecated
+    const response = await getBackendSrv().request({
+      method: config?.method,
+      url,
+      data: config?.body,
+    });
+
+    return Result.ok(response);
   } catch (e) {
     if (isBackendSvrError(e)) {
       return Result.err(new RequestNotOkError(e.status, `${e.statusText}:  ${JSON.stringify(e.data)}`));
