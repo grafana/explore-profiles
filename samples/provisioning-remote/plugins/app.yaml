@@ -1,3 +1,4 @@
+# Don't forget to rebuild the Docker image if you change the content of this file
 apiVersion: 1
 
 apps:

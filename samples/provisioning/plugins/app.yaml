@@ -5,7 +5,9 @@ apps:
     disabled: false
     jsonData:
       backendUrl: http://pyroscope:4100
-      basicAuthUser: 'myuser'
+      # 1. our plugin backend expects a string
+      # 2. this value must match the one in samples/provisioning/datasources/datasources.yaml (grafanacloud-profiles)
+      basicAuthUser: "42" 
       enableFlameGraphDotComExport: true
     secureJsonData:
       basicAuthPassword: 'mypassword'

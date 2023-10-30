@@ -14,4 +14,3 @@ services:
       - 3000:3000/tcp
     volumes:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
-      - ./samples/provisioning-remote:/etc/grafana/provisioning
