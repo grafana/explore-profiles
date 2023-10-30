@@ -12,8 +12,15 @@ import {
 import { faro as Faro } from '../../utils/faro';
 import { firstValueFrom } from 'rxjs';
 
-// TODO: bad naming, we should export a simple 'request' function for people consume
-// it's irrelevant whether it has OrgID or not, however to fix this it needs to be changed upstream (in phlare repo) first
+// TODO: 
+// Move various functions into /utils/backend, but ensure the expected override exports
+// are still exported from here.
+import backendFetch from '../../utils/backend/fetch';
+
+// TODO: re: `requestWithOrgID`, we should export a simple 'request' function
+// however to fix this it needs to be changed upstream (in grafana/pyroscope repo) first.
+// Also note that grafana/pyroscope repo also has a simple 'request' so we may need to resolve to a single
+// function first.
 /**
  * makes a request with faro tracing integration (if enabled)
  */
@@ -21,13 +28,16 @@ export async function requestWithOrgID(
   request: RequestInfo,
   config?: RequestInit
 ): Promise<Result<unknown, RequestError>> {
+
+  // TODO move aspects of this code into:
+  // /utils/backend/telemetry
   const faro = Faro;
   const otel = faro?.api?.getOTEL();
   const tracer = otel?.trace.getTracer('default');
 
   // Don't do any tracing if disabled
   if (!faro || !otel || !tracer) {
-    return requestWithOrgID2(request, config);
+    return requestWrapper(request, config);
   }
 
   let span = otel.trace.getActiveSpan();
@@ -44,7 +54,7 @@ export async function requestWithOrgID(
     otel.context.with(otel.trace.setSpan(otel.context.active(), span!), async () => {
       const url = request.toString();
       faro.api.pushEvent('Sending request', { url });
-      const res = await requestWithOrgID2(request, config);
+      const res = await requestWrapper(request, config);
 
       if (res.isErr) {
         span!.setStatus({ code: SpanStatusCode.ERROR });
@@ -61,26 +71,18 @@ export async function requestWithOrgID(
 }
 
 /**
- * request makes requests to the plugin backend
- *
- * It doesn't do request cancellation
+ * Makes requests to the plugin backend
  */
-export async function requestWithOrgID2(
-  request: RequestInfo,
+export async function requestWrapper(
+  requestInfo: RequestInfo,
   config?: RequestInit
 ): Promise<Result<unknown, RequestError>> {
   try {
-    // Replace any double slashes
-    const url = ['api/plugins/grafana-pyroscope-app/resources', request].join('/').replace(/\/{2,}/g, '/');
-
-    // TODO: replace with fetch since this is going to be deprecated
-    const response = await getBackendSrv().request({
-      method: config?.method,
-      url,
-      data: config?.body,
-    });
-
-    return Result.ok(response);
+    // Prepend plugin resources proxy URL and replace any double slashes
+    const url = ['api/plugins/grafana-pyroscope-app/resources', requestInfo].join('/').replace(/\/{2,}/g, '/');
+    
+    const response = await backendFetch(url, config);
+    return Result.ok(response.data);
   } catch (e) {
     if (isBackendSvrError(e)) {
       return Result.err(new RequestNotOkError(e.status, `${e.statusText}:  ${JSON.stringify(e.data)}`));
