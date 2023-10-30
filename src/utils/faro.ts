@@ -1,5 +1,7 @@
-import { initializeFaro, Faro, getWebInstrumentations } from '@grafana/faro-web-sdk';
+import { MetaUser, initializeFaro, Faro, getWebInstrumentations } from '@grafana/faro-web-sdk';
 import { TracingInstrumentation } from '@grafana/faro-web-tracing';
+import { config } from '@grafana/runtime';
+import { GIT_COMMIT } from '../version';
 
 const ENVS = [
   // TODO: enable this for testing locally
@@ -47,14 +49,28 @@ function init(): Faro | undefined {
 
   return initializeFaro({
     url: env.faroUrl,
+    user: extractUserMeta(),
     isolate: true,
     instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
     app: {
       name: env.appName,
+      version: GIT_COMMIT,
       // TODO: capture version from git tags when building
       //      version: '1.0.0',
     },
   });
+}
+
+function extractUserMeta() {
+  const { id, email, login } = config.bootData.user;
+
+  const user: MetaUser = {
+    id: String(id),
+    email: email,
+    username: login,
+  };
+
+  return user;
 }
 
 export const faro = init();
