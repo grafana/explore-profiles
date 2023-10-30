@@ -60,13 +60,12 @@ function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string | number)
 }
 
 function getPyroscopeCompatibleRawRange(timeRange: TimeRange) {
-
-  const {from, to} = timeRange.raw
+  const { from, to } = timeRange.raw;
 
   for (const time of [from, to]) {
     if (typeof time === 'string' && time.includes('/')) {
       // Pyroscope can't handle symbolic range elements with `/` characters (which cut-off by unit)
-      const raw = {from: timeRange.from, to: timeRange.to}
+      const raw = { from: timeRange.from, to: timeRange.to };
       return raw;
     }
   }
