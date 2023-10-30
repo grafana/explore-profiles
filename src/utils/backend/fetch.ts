@@ -12,11 +12,11 @@ const cachedRequestPromises = new Map<string, Promise<FetchResponse<unknown>>>()
 const DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS = 100_000;
 
 /** A simple, light, Grafana URL that will help trigger an abort */
-const NULL_URL = '/api/orgs'
+const NULL_URL = '/api/orgs';
 
 /**
  * Fetch makes requests to the plugin backend through Grafana's backend service.
- * 
+ *
  * It uses similar parameters to the standard fetch api, but delegates to Grafana's fetch method.
  * The standard fetch api allows for a signal to cancel a request. Pyroscope uses this,
  * so this code attempts to emulate cancellation through Grafana's backend service requestIds.
@@ -32,13 +32,17 @@ export default async function fetch(url: string, config?: RequestInit) {
   const { signal, method, body } = config || {};
 
   function getFetchRequest() {
-    const cachedPromise = cachedRequestPromises.get(requestId);
-    
-    if (cachedPromise) {
-      // Don't bother initiating a fetch if we have one currently on the go or recently returned
-      return cachedPromise;
-    }
+    /** Only cache GET requests (undefined defaults to GET) */
+    const useCaching = method === 'GET' || method === undefined;
 
+    if (useCaching) {
+      const cachedPromise = cachedRequestPromises.get(requestId);
+
+      if (cachedPromise) {
+        // Don't bother initiating a fetch if we have one currently on the go or recently returned
+        return cachedPromise;
+      }
+    }
 
     const observable = getBackendSrv().fetch({
       method,
@@ -47,7 +51,7 @@ export default async function fetch(url: string, config?: RequestInit) {
       requestId,
     });
 
-    // Listen to the abort signal
+    // Listen to the abort signal if it is set
     signal?.addEventListener('abort', function abort() {
       // By fetching with the same requestId, previous requestId requests
       // will be cancelled by the backend service. The url does not matter.
@@ -56,20 +60,22 @@ export default async function fetch(url: string, config?: RequestInit) {
         requestId,
       });
       signal.removeEventListener('abort', abort);
-      function noop(){};
       lastValueFrom(cancelFetch).then(noop, noop);
     });
 
     const promise = lastValueFrom(observable);
 
-    cachedRequestPromises.set(requestId, promise);
+    if (useCaching) {
+      cachedRequestPromises.set(requestId, promise);
+      const cleanup = () => cachedRequestPromises.delete(requestId);
 
-    promise.then(
-      // Delete cached promise `DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS` after successful fetch
-      () => setTimeout(() => cachedRequestPromises.delete(requestId), DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS),
-      // Delete cached promise immediately on error.
-      () => cachedRequestPromises.delete(requestId)
-    );
+      promise.then(
+        // Delete cached promise `DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS` after successful fetch
+        () => setTimeout(() => cleanup, DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS),
+        // Delete cached promise immediately on error.
+        () => cleanup
+      );
+    }
 
     return promise;
   }
@@ -77,3 +83,5 @@ export default async function fetch(url: string, config?: RequestInit) {
   const response = await getFetchRequest();
   return response;
 }
+
+function noop() {}
