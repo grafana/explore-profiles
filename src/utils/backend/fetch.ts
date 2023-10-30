@@ -9,7 +9,7 @@ const cachedRequestPromises = new Map<string, Promise<FetchResponse<unknown>>>()
 /**
  * The time limit for keeping successful requests around
  */
-const DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS = 100_000;
+const DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS = 1_000;
 
 /** A simple, light, Grafana URL that will help trigger an abort */
 const NULL_URL = '/api/orgs';
@@ -32,14 +32,15 @@ export default async function fetch(url: string, config?: RequestInit) {
   const { signal, method, body } = config || {};
 
   function getFetchRequest() {
-    /** Only cache GET requests (undefined defaults to GET) */
-    const useCaching = method === 'GET' || method === undefined;
+    /** Only cache GET requests (undefined defaults to GET) that access `/render` */
+    const useCaching = (method === 'GET' || method === undefined) && url.startsWith('api/plugins/grafana-pyroscope-app/resources/pyroscope/render');
 
     if (useCaching) {
       const cachedPromise = cachedRequestPromises.get(requestId);
 
       if (cachedPromise) {
         // Don't bother initiating a fetch if we have one currently on the go or recently returned
+        console.error("Duplicate fetch prevented:", requestId)
         return cachedPromise;
       }
     }
