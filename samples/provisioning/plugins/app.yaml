@@ -7,7 +7,7 @@ apps:
       backendUrl: http://pyroscope:4100
       # 1. our plugin backend expects a string
       # 2. this value must match the one in samples/provisioning/datasources/datasources.yaml (grafanacloud-profiles)
-      basicAuthUser: "42" 
+      basicAuthUser: '42'
       enableFlameGraphDotComExport: true
     secureJsonData:
       basicAuthPassword: 'mypassword'

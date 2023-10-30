@@ -12,7 +12,7 @@ import {
 import { faro as Faro } from '../../utils/faro';
 import { firstValueFrom } from 'rxjs';
 
-// TODO: 
+// TODO:
 // Move various functions into /utils/backend, but ensure the expected override exports
 // are still exported from here.
 import backendFetch from '../../utils/backend/fetch';
@@ -28,7 +28,6 @@ export async function requestWithOrgID(
   request: RequestInfo,
   config?: RequestInit
 ): Promise<Result<unknown, RequestError>> {
-
   // TODO move aspects of this code into:
   // /utils/backend/telemetry
   const faro = Faro;
@@ -80,7 +79,7 @@ export async function requestWrapper(
   try {
     // Prepend plugin resources proxy URL and replace any double slashes
     const url = ['api/plugins/grafana-pyroscope-app/resources', requestInfo].join('/').replace(/\/{2,}/g, '/');
-    
+
     const response = await backendFetch(url, config);
     return Result.ok(response.data);
   } catch (e) {

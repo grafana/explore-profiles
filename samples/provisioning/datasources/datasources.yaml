@@ -7,7 +7,7 @@ datasources:
     url: http://pyroscope:4100
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
-    basicAuthUser: "42" 
+    basicAuthUser: '42'
     secureJsonData:
       basicAuthPassword: 'mypassword'
   - uid: other-user-pyroscope
