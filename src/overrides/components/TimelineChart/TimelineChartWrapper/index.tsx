@@ -240,8 +240,9 @@ export function convertToDataFrame(data: TimelineData, unit: string, format: 'ba
 
   const { durationDelta, samples, startTime } = timeline;
 
-  if (Number.isNaN(startTime) || Number.isNaN(durationDelta)) {
-    console.error('Malformed time. Ignoring timeline.', { startTime, durationDelta, label });
+  // Prevents processing a timeline with undefined, null, or NaN time entries.
+  if (Number.isNaN(Number(startTime)) || Number.isNaN(Number(durationDelta))) {
+    console.error('The start time or duration delta is not defined. Ignoring timeline.', { startTime, durationDelta, label });
     return dataframe;
   }
 
