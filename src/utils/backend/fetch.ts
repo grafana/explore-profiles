@@ -12,7 +12,7 @@ const cachedRequestPromises = new Map<string, Promise<FetchResponse<unknown>>>()
 const DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS = 1_000;
 
 /** A simple, light, Grafana URL that will help trigger an abort */
-const NULL_URL = '/api/orgs';
+const NULL_URL = '/public/plugins/grafana-pyroscope-app/empty.json';
 
 /**
  * Fetch makes requests to the plugin backend through Grafana's backend service.
