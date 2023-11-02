@@ -7,7 +7,6 @@ import {
   RequestNotOkError,
   parseResponse,
   RequestAbortedError,
-  request,
 } from '../../../node_modules/grafana-pyroscope/public/app/services/base';
 import { faro as Faro } from '../../utils/faro';
 import { firstValueFrom } from 'rxjs';
@@ -17,14 +16,10 @@ import { firstValueFrom } from 'rxjs';
 // are still exported from here.
 import backendFetch from '../../utils/backend/fetch';
 
-// TODO: re: `requestWithOrgID`, we should export a simple 'request' function
-// however to fix this it needs to be changed upstream (in grafana/pyroscope repo) first.
-// Also note that grafana/pyroscope repo also has a simple 'request' so we may need to resolve to a single
-// function first.
 /**
  * makes a request with faro tracing integration (if enabled)
  */
-export async function requestWithOrgID(
+export async function request(
   request: RequestInfo,
   config?: RequestInit
 ): Promise<Result<unknown, RequestError>> {
@@ -126,4 +121,4 @@ function isBackendSvrError(error: unknown): error is BackendSvrError {
   return typeof error === 'object' && error !== null && 'statusText' in error && 'data' in error && 'status' in error;
 }
 
-export { parseResponse, request, RequestError, RequestNotOkError, RequestAbortedError };
+export { parseResponse, RequestError, RequestNotOkError, RequestAbortedError };
