@@ -21,7 +21,7 @@ const PieChart = ({ data, width, height }: PieChartProps) => {
         mode: FieldColorModeId.Fixed,
       };
 
-      dataframe.addField({ name: 'samples', config: { color } });
+      dataframe.addField({ name: 'total', config: { color } });
 
       dataframe.appendRow([label, samples]);
 

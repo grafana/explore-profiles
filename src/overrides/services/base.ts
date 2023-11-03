@@ -19,10 +19,7 @@ import backendFetch from '../../utils/backend/fetch';
 /**
  * makes a request with faro tracing integration (if enabled)
  */
-export async function request(
-  request: RequestInfo,
-  config?: RequestInit
-): Promise<Result<unknown, RequestError>> {
+export async function request(request: RequestInfo, config?: RequestInit): Promise<Result<unknown, RequestError>> {
   // TODO move aspects of this code into:
   // /utils/backend/telemetry
   const faro = Faro;
