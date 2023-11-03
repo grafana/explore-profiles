@@ -33,14 +33,16 @@ export default async function fetch(url: string, config?: RequestInit) {
 
   function getFetchRequest() {
     /** Only cache GET requests (undefined defaults to GET) that access `/render` */
-    const useCaching = (method === 'GET' || method === undefined) && url.startsWith('api/plugins/grafana-pyroscope-app/resources/pyroscope/render');
+    const useCaching =
+      (method === 'GET' || method === undefined) &&
+      url.startsWith('api/plugins/grafana-pyroscope-app/resources/pyroscope/render');
 
     if (useCaching) {
       const cachedPromise = cachedRequestPromises.get(requestId);
 
       if (cachedPromise) {
         // Don't bother initiating a fetch if we have one currently on the go or recently returned
-        console.error("Duplicate fetch prevented:", requestId)
+        console.error('Duplicate fetch prevented:', requestId);
         return cachedPromise;
       }
     }

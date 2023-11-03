@@ -1,4 +1,4 @@
-import { GIT_COMMIT } from "src/version";
+import { GIT_COMMIT } from 'src/version';
 
 const initializeFaro = jest.fn();
 jest.mock('@grafana/faro-web-sdk', () => ({
@@ -14,15 +14,15 @@ const MOCK_USER = {
   id: 64,
   email: 'sixty.four@grafana.com',
   login: 'user64',
-}
+};
 
 jest.mock('@grafana/runtime', () => ({
   config: {
     bootData: {
-      user: MOCK_USER
-    }
-  }
-}))
+      user: MOCK_USER,
+    },
+  },
+}));
 
 describe('Faro', () => {
   beforeEach(() => {
@@ -74,7 +74,6 @@ describe('Faro', () => {
     expect(faro).toBeDefined();
     expect(initializeFaro.mock.lastCall[0].url).toBe(url);
     expect(initializeFaro.mock.lastCall[0].app.name).toBe(appName);
-
   });
 
   it('does nothing if running in an invalid env', () => {
@@ -88,8 +87,7 @@ describe('Faro', () => {
     expect(initializeFaro.mock.lastCall).toBeUndefined();
   });
 
-  it('applies grafana user data and GIT_COMMIT data into faro init arguments', ()=>{
-
+  it('applies grafana user data and GIT_COMMIT data into faro init arguments', () => {
     const host = 'grafana.net';
 
     Object.defineProperty(window, 'location', {
@@ -107,7 +105,5 @@ describe('Faro', () => {
 
     const app = initializeFaro.mock.lastCall[0].app;
     expect(app.version).toEqual(GIT_COMMIT);
-  })
+  });
 });
-
-
