@@ -1,102 +1,50 @@
-import React from 'react';
-import ReactFlot from 'react-flot';
-import Color from 'color';
-import TooltipWrapper, {
-  TooltipWrapperProps,
-} from '@pyroscope/components/TimelineChart/TooltipWrapper';
+import React, { useContext, useMemo } from 'react';
 import styles from '@pyroscope/pages/tagExplorer/components/TotalSamplesChart/PieChart/styles.module.scss';
-//import 'react-flot/flot/jquery.flot.pie';
+import { PanelRenderer } from '@grafana/runtime';
+import { MutableDataFrame, PanelData, LoadingState } from '@grafana/data';
+import { PyroscopeStateContext } from '../../../../../../components/PyroscopeState/context';
+import { stringifyPyroscopeColor } from '../../../../../../utils/translation';
+import { FieldColor, FieldColorModeId } from '@grafana/schema';
 
-// This override is intended to prevent the import of `Interactivity.plugin`
-// Very soon we will be replacing this with an embedded Grafana Pie chart.
-// import './Interactivity.plugin';
+import { PieChartProps } from 'grafana-pyroscope/public/app/pages/tagExplorer/components/TotalSamplesChart/PieChart';
 
-export type PieChartDataItem = {
-  label: string;
-  data: number;
-  color: Color | string | undefined;
-};
+const PieChart = ({ data, width, height }: PieChartProps) => {
+  const series = useMemo(() => {
+    return data.map((item) => {
+      const dataframe = new MutableDataFrame();
+      const { data: samples, label } = item;
+      dataframe.name = item.label;
+      dataframe.addField({ name: 'label' });
 
-interface TooltipProps {
-  label?: string;
-  percent?: number;
-  value?: number;
-}
+      const color: FieldColor = {
+        fixedColor: stringifyPyroscopeColor(item.color),
+        mode: FieldColorModeId.Fixed,
+      };
 
-interface PieChartProps {
-  data: PieChartDataItem[];
-  width: string;
-  height: string;
-  id: string;
-  onHoverTooltip?: React.FC<TooltipProps>;
-}
+      dataframe.addField({ name: 'samples', config: { color } });
 
-const setOnHoverDisplayTooltip = (
-  data: TooltipProps & TooltipWrapperProps,
-  onHoverTooltip: React.FC<TooltipProps>
-) => {
-  const TooltipBody = onHoverTooltip;
+      dataframe.appendRow([label, samples]);
 
-  if (TooltipBody) {
-    return (
-      <TooltipWrapper align={data.align} pageY={data.pageY} pageX={data.pageX}>
-        <TooltipBody
-          value={data.value}
-          label={data.label}
-          percent={data.percent}
-        />
-      </TooltipWrapper>
-    );
-  }
+      return dataframe;
+    });
+  }, [data]);
 
-  return null;
-};
+  const { timeRange } = useContext(PyroscopeStateContext);
 
-const PieChart = ({
-  data,
-  width,
-  height,
-  id,
-  onHoverTooltip,
-}: PieChartProps) => {
-  const options = {
-    series: {
-      pie: {
-        show: true,
-        radius: 1,
-        stroke: {
-          width: 0,
-        },
-        label: {
-          show: true,
-          radius: 0.7,
-          threshold: 0.05,
-          formatter: (_: string, data: { percent: number }) =>
-            `${data.percent.toFixed(2)}%`,
-        },
-      },
-    },
-    legend: {
-      show: false,
-    },
-    grid: {
-      hoverable: true,
-      clickable: false,
-    },
-    pieChartTooltip: onHoverTooltip
-      ? (tooltipData: TooltipProps & TooltipWrapperProps) =>
-          setOnHoverDisplayTooltip(tooltipData, onHoverTooltip)
-      : null,
+  const panelData: PanelData = {
+    series,
+    timeRange,
+    state: LoadingState.Done,
   };
 
   return (
     <div className={styles.wrapper}>
-      <ReactFlot
-        id={id}
-        options={options}
-        data={data}
-        width={width}
-        height={height}
+      <PanelRenderer
+        pluginId="piechart"
+        title=""
+        data={panelData}
+        width={parseInt(width, 10)}
+        height={parseInt(height, 10)}
       />
     </div>
   );

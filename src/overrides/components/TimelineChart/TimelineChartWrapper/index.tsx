@@ -17,6 +17,7 @@ import { LoadingState } from '@grafana/schema';
 import {
   ceilTenSeconds,
   floorTenSeconds,
+  stringifyPyroscopeColor,
   translateGrafanaAbsoluteTimeRangeToPyroscope,
 } from '../../../../utils/translation';
 import { usePanelContext, useTheme2 } from '@grafana/ui';
@@ -101,7 +102,7 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
     const color =
       marking.color.alpha() === 0
         ? theme.colors.text.secondary
-        : stringifyColor(marking.color) || theme.colors.text.secondary;
+        : stringifyPyroscopeColor(marking.color) || theme.colors.text.secondary;
     subSelections.addRange({ time: marking.xaxis.from as number, timeEnd: marking.xaxis.to as number, color });
   });
 
@@ -229,7 +230,9 @@ export function convertToDataFrame(data: TimelineData, unit: string, format: 'ba
   const dataframe = new MutableDataFrame();
   dataframe.addField({ name: 'time', type: FieldType.time });
   // If there is no color, leave it as undefined so the default can be chosen
-  const color = data?.color ? { mode: FieldColorModeId.Fixed, fixedColor: stringifyColor(data?.color) } : undefined;
+  const color = data?.color
+    ? { mode: FieldColorModeId.Fixed, fixedColor: stringifyPyroscopeColor(data?.color) }
+    : undefined;
   dataframe.addField({ name: label || ' ', type: FieldType.number, config: { unit, custom, color } });
 
   const timeline = data.data;
@@ -258,13 +261,6 @@ export function convertToDataFrame(data: TimelineData, unit: string, format: 'ba
   }
 
   return dataframe;
-}
-
-function stringifyColor(color: string | undefined | Color) {
-  if (typeof color === 'string' || color === undefined) {
-    return color;
-  }
-  return color.toString();
 }
 
 export default TimelineChartWrapper;

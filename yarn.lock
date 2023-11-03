@@ -4260,7 +4260,14 @@
     expect "^29.0.0"
     pretty-format "^29.0.0"
 
-"@types/jquery@*", "@types/jquery@^3.5.16":
+"@types/jquery@*":
+  version "3.5.25"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.25.tgz#c817c71d414855f7d71f46da39f43e6b9579b0b9"
+  integrity sha512-gykx2c+OZf5nx2tv/5fDQqmvGgTiXshELy5jf9IgXPtVfSBl57IUYByN4osbwMXwJijWGOEYQABzGaFZE79A0Q==
+  dependencies:
+    "@types/sizzle" "*"
+
+"@types/jquery@^3.5.16":
   version "3.5.16"
   resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.5.16.tgz#632131baf30951915b0317d48c98e9890bdf051d"
   integrity sha512-bsI7y4ZgeMkmpG9OM710RRzDFp+w4P1RGiIt30C1mSBT+ExCleeh4HObwgArnDFELmRrOpXgSYN9VF1hj+f1lw==
@@ -7966,9 +7973,9 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.4, 
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-"grafana-pyroscope@git+https://github.com/grafana/pyroscope.git#a4928eb76e58ea28526131d13a9ff3efd705f7d1":
+"grafana-pyroscope@git+https://github.com/grafana/pyroscope.git#504883b36a31b57c60c9ae8725dc9ed43626c14c":
   version "2.0.0"
-  resolved "git+https://github.com/grafana/pyroscope.git#a4928eb76e58ea28526131d13a9ff3efd705f7d1"
+  resolved "git+https://github.com/grafana/pyroscope.git#504883b36a31b57c60c9ae8725dc9ed43626c14c"
   dependencies:
     "@fortawesome/fontawesome-svg-core" "~1.2.30"
     "@fortawesome/free-brands-svg-icons" "~5.15.1"

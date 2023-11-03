@@ -52,6 +52,10 @@ const config = async (env): Promise<Configuration> => {
         '@pyroscope/components/Panel': path.resolve(__dirname, './src/overrides/components/Panel'),
         '@pyroscope/components/ExportData': path.resolve(__dirname, './src/overrides/components/ExportData'),
         '@pyroscope/pages/PageContentWrapper': path.resolve(__dirname, './src/overrides/pages/PageContentWrapper'),
+        '@pyroscope/pages/tagExplorer/components/TotalSamplesChart/PieChart': path.resolve(
+          __dirname,
+          './src/overrides/pages/tagExplorer/components/TotalSamplesChart/PieChart'
+        ),
         '@pyroscope/ui/Box': path.resolve(__dirname, './src/overrides/ui/Box'),
 
         // General rules later

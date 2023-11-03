@@ -1,4 +1,5 @@
 import { AbsoluteTimeRange, DateTime, RawTimeRange, TimeRange, dateTime, dateTimeParse } from '@grafana/data';
+import Color from 'color';
 
 function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
   // Pyroscope uses seconds from 1970 as a string, or relative format (e.g., now-5s)
@@ -94,4 +95,11 @@ export function floorTenSeconds(milliseconds: number) {
 
 export function ceilTenSeconds(milliseconds: number) {
   return Math.ceil(milliseconds / 10000) * 10000;
+}
+
+export function stringifyPyroscopeColor(color: string | undefined | Color) {
+  if (typeof color === 'string' || color === undefined) {
+    return color;
+  }
+  return color.toString();
 }
