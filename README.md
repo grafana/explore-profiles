@@ -138,6 +138,11 @@ For example, to run with data from ops get an api key from https://admin.grafana
 
 Every time something gets merged into `main` branch it gets deployed to [dev environment](https://firedev001.grafana-dev.net/). Note that it takes time for the release to be deployed by `stack-state-service` to all Grafana instances.
 
+Note: sometimes Drone does not pick up new commits on `main` branch. When that happens, you can manually trigger a build from [this page](https://drone.grafana.net/grafana/pyroscope-app-plugin/branches):
+<img width="1189" alt="Screenshot_2023-11-06_at_12_06_57_PM" src="https://github.com/grafana/pyroscope-app-plugin/assets/662636/f21d1763-e1aa-41cd-8317-75eddad68b67">
+
+
+
 ### Prod / ops environment
 
 Every week on Monday a new branch off of `main` gets created: `weekly/fxx`. Each commit on that branch gets tagged with a tag `weekly/fxx-yyyyyyyy` where `xx` is the week number and `yyyyyyyy` is a short git sha. Every time you push to that branch a Slack bot sends a message to `#pyroscope-ops` channel with a link to the argo workflow. After an approval from someone from `@pyroscope-secondary-oncall` on slack a PR is opened in `deployment_tools` repo, and that informs [stack-state-service](https://github.com/grafana/stack-state-service) to update the plugin everywhere. Note that it takes time for the release to be deployed by `stack-state-service` to all Grafana instances.
