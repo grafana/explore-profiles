@@ -22,7 +22,7 @@ export function TitleReplacement({ subtitle }: { subtitle: string }) {
       <img src={logoUrl} className={styles.logo} />
       <VerticalGroup spacing="xs">
         <h1>{APP_TITLE}</h1>
-        <span>{subtitle}</span>
+        <span data-testid="page-title">{subtitle}</span>
       </VerticalGroup>
     </HorizontalGroup>
   );

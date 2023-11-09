@@ -272,10 +272,20 @@ export default function Toolbar({}: ToolbarProps) {
         {/* App Selection */}
         <InlineFieldRow>
           <InlineField label="Service">
-            <Select<string> value={selectedServiceName} options={serviceNameOptions} onChange={selectServiceName} />
+            <Select<string>
+              value={selectedServiceName}
+              options={serviceNameOptions}
+              onChange={selectServiceName}
+              aria-label="Services list"
+            />
           </InlineField>
           <InlineField label="Profile">
-            <Select<string> value={selectedProfileType} options={profileTypeOptions} onChange={selectProfileType} />
+            <Select<string>
+              value={selectedProfileType}
+              options={profileTypeOptions}
+              onChange={selectProfileType}
+              aria-label="Profiles list"
+            />
           </InlineField>
           <RefreshPicker
             isOnCanvas={true}

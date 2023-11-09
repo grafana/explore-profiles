@@ -25,9 +25,10 @@ dist/
 artifacts/
 work/
 ci/
-e2e-results/
-**/cypress/videos
-**/cypress/report.json
+
+# E2E
+e2e/test-reports/
+e2e/test-results/
 
 # Editor
 .idea

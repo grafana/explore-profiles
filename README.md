@@ -64,6 +64,10 @@ The direct URL of the plugin is `http://localhost:3000/a/grafana-pyroscope-app/`
 - Fill in the missing values
 - Instead of `yarn server`, launch `yarn server:remote` in the terminal
 
+## End-to-end testing
+
+Our tests are implemented with [Playwright](https://playwright.dev/). See our [internal documentation](./e2e/README.md).
+
 ### Pyroscope Respository as a Dependency
 
 In order to make use of Pyroscope code, this project's [package.json](../../package.json)
@@ -140,8 +144,6 @@ Every time something gets merged into `main` branch it gets deployed to [dev env
 
 Note: sometimes Drone does not pick up new commits on `main` branch. When that happens, you can manually trigger a build from [this page](https://drone.grafana.net/grafana/pyroscope-app-plugin/branches):
 <img width="1189" alt="Screenshot_2023-11-06_at_12_06_57_PM" src="https://github.com/grafana/pyroscope-app-plugin/assets/662636/f21d1763-e1aa-41cd-8317-75eddad68b67">
-
-
 
 ### Prod / ops environment
 
