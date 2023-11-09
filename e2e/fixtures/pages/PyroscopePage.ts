@@ -1,4 +1,4 @@
-import { type Page } from '@playwright/test';
+import { type Page, expect } from '@playwright/test';
 
 export class PyroscopePage {
   readonly page: Page;
@@ -12,6 +12,10 @@ export class PyroscopePage {
   async goto() {
     await this.page.goto(this.pathname);
     await this.page.locator('.pyroscope-app').waitFor();
+  }
+
+  clickOnNavLink(label: string) {
+    return this.page.getByLabel(label).click();
   }
 
   getTitle() {
@@ -33,5 +37,15 @@ export class PyroscopePage {
 
   getProfilesList() {
     return this.page.getByLabel('Profiles list');
+  }
+
+  async assertNoSpinners() {
+    await expect(this.getMainSpinner()).not.toBeVisible();
+
+    const refreshSpinners = this.getRefreshSpinners();
+
+    for (let i = 0; i < (await refreshSpinners.count()); i += 1) {
+      await expect(refreshSpinners.nth(i)).not.toBeVisible();
+    }
   }
 }

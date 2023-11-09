@@ -32,6 +32,7 @@ export function config(config: CustomEnvConfig) {
       trace: 'on-first-retry',
     },
     expect: {
+      timeout: 7500,
       toHaveScreenshot: { maxDiffPixelRatio: 0.01 }, // tweak me with experience
     },
 

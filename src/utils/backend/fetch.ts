@@ -1,90 +1,56 @@
 import { FetchResponse, getBackendSrv } from '@grafana/runtime';
 import { lastValueFrom } from 'rxjs';
 
-/**
- * Collect in-flight requests to avoid repeating them
- */
-const cachedRequestPromises = new Map<string, Promise<FetchResponse<unknown>>>();
+const cachedPromises = new Map<string, Promise<FetchResponse<unknown>>>();
 
-/**
- * The time limit for keeping successful requests around
- */
-const DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS = 1_000;
+const CACHE_TIMEOUT_MILLISECONDS = 1_000;
 
-/** A simple, light, Grafana URL that will help trigger an abort */
-const NULL_URL = '/public/plugins/grafana-pyroscope-app/empty.json';
+const buildCacheKey = (url: string, config?: RequestInit) => `${config?.method || 'GET'}-${url}-${config?.body}`;
 
 /**
  * Fetch makes requests to the plugin backend through Grafana's backend service.
- *
  * It uses similar parameters to the standard fetch api, but delegates to Grafana's fetch method.
- * The standard fetch api allows for a signal to cancel a request. Pyroscope uses this,
- * so this code attempts to emulate cancellation through Grafana's backend service requestIds.
  *
- * If multiple requests are made within a time window, defined in part by
- * `DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS`, then a new request will not be issued,
- * and instead the cached promise will be returned.
- * The time window is the duration required for the request to succeed, plus
- * `DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS`.
- */
+ * We also add a cache to prevent the same request to be made in a short window if time.
+ * This happens when Pyroscope is mounting then unmounting immediately its page components (e.g. when the query in the URL is empty then it's updated to a default value).
+ * */
 export default async function fetch(url: string, config?: RequestInit) {
-  const requestId = url;
-  const { signal, method, body } = config || {};
+  const cacheKey = buildCacheKey(url, config);
+  const cachedPromise = cachedPromises.get(cacheKey);
 
-  function getFetchRequest() {
-    /** Only cache GET requests (undefined defaults to GET) that access `/render` */
-    const useCaching =
-      (method === 'GET' || method === undefined) &&
-      url.startsWith('api/plugins/grafana-pyroscope-app/resources/pyroscope/render');
-
-    if (useCaching) {
-      const cachedPromise = cachedRequestPromises.get(requestId);
-
-      if (cachedPromise) {
-        // Don't bother initiating a fetch if we have one currently on the go or recently returned
-        console.error('Duplicate fetch prevented:', requestId);
-        return cachedPromise;
-      }
-    }
-
-    const observable = getBackendSrv().fetch({
-      method,
-      url,
-      data: body,
-      requestId,
-    });
-
-    // Listen to the abort signal if it is set
-    signal?.addEventListener('abort', function abort() {
-      // By fetching with the same requestId, previous requestId requests
-      // will be cancelled by the backend service. The url does not matter.
-      const cancelFetch = getBackendSrv().fetch({
-        url: NULL_URL,
-        requestId,
-      });
-      signal.removeEventListener('abort', abort);
-      lastValueFrom(cancelFetch).then(noop, noop);
-    });
-
-    const promise = lastValueFrom(observable);
-
-    if (useCaching) {
-      cachedRequestPromises.set(requestId, promise);
-      const cleanup = () => cachedRequestPromises.delete(requestId);
-
-      promise.then(
-        // Delete cached promise `DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS` after successful fetch
-        () => setTimeout(() => cleanup, DUPLICATE_URL_CACHE_TIMEOUT_MILLISECONDS),
-        // Delete cached promise immediately on error.
-        () => cleanup
-      );
-    }
-
-    return promise;
+  if (cachedPromise) {
+    return cachedPromise;
   }
 
-  const response = await getFetchRequest();
-  return response;
-}
+  // TODO: when migrating Pyroscope OSS code base here, we'll have to add request cancellation.
+  // It might be a bit tricky because getBackendSrv() does not currently support it.
+  // It only allows us to pass a requestId and, if a request with the same id is made later, it cancels the previous request before making the new one.
 
-function noop() {}
+  // We could use a hack that consists of adding a request id and listening to config.signal "abort" events. Whenever the event is received, we could make a dummy request
+  // with getBackendSrv with the same request id.
+  // Unfortunately, it does not work because of a race condition with Pyroscope OSS (e.g. in public/app/redux/reducers/continuous/tagExplorer.thunks.ts)
+  // We would end up cancelling the wrong request, leaving the user with a blank page.
+  const observable = getBackendSrv().fetch({
+    url,
+    method: config?.method,
+    data: config?.body,
+  });
+
+  const promise = lastValueFrom(observable);
+
+  cachedPromises.set(cacheKey, promise);
+
+  const removeCacheItem = () => {
+    cachedPromises.delete(cacheKey);
+  };
+
+  return promise
+    .then((response) => {
+      setTimeout(removeCacheItem, CACHE_TIMEOUT_MILLISECONDS);
+      return response;
+    })
+    .catch((error) => {
+      removeCacheItem();
+      throw error;
+    });
+}

@@ -9,16 +9,8 @@ test.describe('Smoke tests', () => {
     await expect(comparisonDiffViewPage.getTitle()).toHaveText('Comparison Diff View');
   });
 
-  test('Refresh spinners', async ({ comparisonDiffViewPage }) => {
-    const refreshSpinners = comparisonDiffViewPage.getRefreshSpinners();
-
-    for (let i = 0; i < (await refreshSpinners.count()); i += 1) {
-      await expect(refreshSpinners.nth(i)).not.toBeVisible();
-    }
-  });
-
-  test('Main spinner', async ({ comparisonDiffViewPage }) => {
-    await expect(comparisonDiffViewPage.getMainSpinner()).not.toBeVisible();
+  test('Spinners', async ({ comparisonDiffViewPage }) => {
+    await comparisonDiffViewPage.assertNoSpinners();
   });
 
   test('Service & profile dropdowns', async ({ comparisonDiffViewPage }) => {
