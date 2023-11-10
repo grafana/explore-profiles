@@ -1,47 +1,67 @@
 import { FetchResponse, getBackendSrv } from '@grafana/runtime';
 import { lastValueFrom } from 'rxjs';
+import { connectRequestCancellation } from './cancelling';
 
-const cachedPromises = new Map<string, Promise<FetchResponse<unknown>>>();
+type CachedRequest = {
+  promise: Promise<FetchResponse<unknown>>;
+  requestId: string;
+};
+
+const cachedRequests = new Map<string, CachedRequest>();
 
 const CACHE_TIMEOUT_MILLISECONDS = 1_000;
 
 const buildCacheKey = (url: string, config?: RequestInit) => `${config?.method || 'GET'}-${url}-${config?.body}`;
 
+let requestsCount = 0;
+const buildRequestId = () => `grafana-pyroscope-app-req:${++requestsCount}`;
+
 /**
- * Fetch makes requests to the plugin backend through Grafana's backend service.
- * It uses similar parameters to the standard fetch api, but delegates to Grafana's fetch method.
+ * Fetch makes requests through Grafana's backend service.
+ *
+ * It uses similar parameters to the standard fetch api, which originate from pyroscope,
+ * but delegates through Grafana's fetch method.
  *
  * We also add a cache to prevent the same request to be made in a short window if time.
  * This happens when Pyroscope is mounting then unmounting immediately its page components (e.g. when the query in the URL is empty then it's updated to a default value).
+ *
+ * The `config` object may contain a `signal` field, which can be used as an `AbortSignal`.
+ * If it is present, we will listen for the signal and use Grafana backend service methods to
+ * cancel that inflight request (or the original request in the event that a cached request is accessed).
  * */
 export default async function fetch(url: string, config?: RequestInit) {
+  const requestId = buildRequestId();
   const cacheKey = buildCacheKey(url, config);
-  const cachedPromise = cachedPromises.get(cacheKey);
+  const cachedRequest = cachedRequests.get(cacheKey);
 
-  if (cachedPromise) {
-    return cachedPromise;
+  if (cachedRequest) {
+    if (config?.signal) {
+      // If this call to `fetch` comes with a cancellation signal,
+      // we want to make sure that the signal cancels the originally cached request.
+      connectRequestCancellation(cachedRequest.requestId, config.signal);
+    }
+    return cachedRequest.promise;
   }
 
-  // TODO: when migrating Pyroscope OSS code base here, we'll have to add request cancellation.
-  // It might be a bit tricky because getBackendSrv() does not currently support it.
-  // It only allows us to pass a requestId and, if a request with the same id is made later, it cancels the previous request before making the new one.
+  if (config?.signal) {
+    connectRequestCancellation(requestId, config.signal);
+  }
 
-  // We could use a hack that consists of adding a request id and listening to config.signal "abort" events. Whenever the event is received, we could make a dummy request
-  // with getBackendSrv with the same request id.
-  // Unfortunately, it does not work because of a race condition with Pyroscope OSS (e.g. in public/app/redux/reducers/continuous/tagExplorer.thunks.ts)
-  // We would end up cancelling the wrong request, leaving the user with a blank page.
+  // The requestId gives us a handle which we can use to cancel the request.
+
   const observable = getBackendSrv().fetch({
     url,
     method: config?.method,
     data: config?.body,
+    requestId,
   });
 
   const promise = lastValueFrom(observable);
 
-  cachedPromises.set(cacheKey, promise);
+  cachedRequests.set(cacheKey, { promise, requestId });
 
   const removeCacheItem = () => {
-    cachedPromises.delete(cacheKey);
+    cachedRequests.delete(cacheKey);
   };
 
   return promise
