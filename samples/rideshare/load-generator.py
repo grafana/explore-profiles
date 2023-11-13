@@ -13,7 +13,7 @@ DEBUG = os.environ["DEBUG"] == "1"
 
 def log(msg, fatal = False):
     if fatal or DEBUG:
-        log(msg)
+        print(msg)
 
 if __name__ == "__main__":
     log(f"starting load generator")
@@ -24,7 +24,7 @@ if __name__ == "__main__":
     time.sleep(10)
     while True:
         replica = random.randint(1, replicas)
-        host = f'{host_prefix}-{replica}'
+        host = f'{host_prefix}_{replica}'
         vehicle = VEHICLES[random.randint(0, len(VEHICLES) - 1)]
 
         log(f"requesting {vehicle} from {host}")

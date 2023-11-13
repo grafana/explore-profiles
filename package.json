@@ -109,7 +109,7 @@
     "@reduxjs/toolkit": "1.9.3",
     "@types/tinycolor2": "^1.4.3",
     "color": "^3.1.3",
-    "grafana-pyroscope": "git+https://github.com/grafana/pyroscope.git#2170010641ba15dd3cea40e45ed0b07b457507ec",
+    "grafana-pyroscope": "git+https://github.com/grafana/pyroscope.git#e33bf7742516ca00f6a6d9b8ec69cd14ba5531e2",
     "lodash.groupby": "^4.6.0",
     "lodash.map": "^4.6.0",
     "react": "17.0.2",
