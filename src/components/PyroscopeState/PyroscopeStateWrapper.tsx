@@ -40,8 +40,12 @@ export function PyroscopeStateWrapper(props: { children: ReactNode }) {
   const {
     from,
     until,
+    maxNodes,
     comparisonView: { comparisonMode },
   } = useAppSelector(selectContinuousState);
+
+  let maxNodesInt = parseInt(maxNodes, 10);
+  maxNodesInt = isNaN(maxNodesInt) ? 0 : maxNodesInt;
 
   /** Trigger a change of query due to a change in the selected app */
   const onSelectedApp = useCallback(
@@ -89,6 +93,13 @@ export function PyroscopeStateWrapper(props: { children: ReactNode }) {
       }
     },
     [dispatch, comparisonMode, from, until]
+  );
+
+  const setMaxNodes = useCallback(
+    (value: Number) => {
+      dispatch(actions.setMaxNodes(String(value)));
+    },
+    [dispatch]
   );
 
   /** Initialize app/profile state from query (first time only) */
@@ -218,6 +229,9 @@ export function PyroscopeStateWrapper(props: { children: ReactNode }) {
 
         setSelectedServiceName,
         setSelectedProfileType,
+
+        maxNodes: maxNodesInt,
+        setMaxNodes: setMaxNodes,
 
         timeRange,
         setTimeRange,

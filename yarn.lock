@@ -6126,9 +6126,9 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.4, 
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-"grafana-pyroscope@git+https://github.com/grafana/pyroscope.git#e33bf7742516ca00f6a6d9b8ec69cd14ba5531e2":
+"grafana-pyroscope@git+https://github.com/grafana/pyroscope.git#0723e56f9574c76b61ddc9f348bffec82fcbd816":
   version "2.0.0"
-  resolved "git+https://github.com/grafana/pyroscope.git#e33bf7742516ca00f6a6d9b8ec69cd14ba5531e2"
+  resolved "git+https://github.com/grafana/pyroscope.git#0723e56f9574c76b61ddc9f348bffec82fcbd816"
   dependencies:
     "@fortawesome/fontawesome-svg-core" "~1.2.30"
     "@fortawesome/free-brands-svg-icons" "~5.15.1"

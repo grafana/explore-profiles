@@ -10,10 +10,12 @@ type Data = {
   selectedServiceName?: string;
   selectedProfileType?: string;
   timeRange: TimeRange;
+  maxNodes: number;
 
   setSelectedServiceName: (name: string) => void;
   setSelectedProfileType: (type: string) => void;
   setTimeRange: (timeRange: TimeRange) => void;
+  setMaxNodes: (value: number) => void;
 };
 
 const DEFAULT_TIME_RANGE = (function () {
@@ -37,10 +39,12 @@ const DEFAULT: Data = {
   serviceNames: [],
   profileTypes: [],
   timeRange: DEFAULT_TIME_RANGE,
+  maxNodes: 0,
 
   setSelectedServiceName: () => null,
   setSelectedProfileType: () => null,
   setTimeRange: () => null,
+  setMaxNodes: () => null,
 };
 
 export const PyroscopeStateContext = React.createContext(DEFAULT);
