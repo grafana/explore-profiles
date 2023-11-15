@@ -21,7 +21,7 @@
     "e2e:prepare": "npx playwright install --with-deps chromium",
     "e2e:codegen": "playwright codegen",
     "e2e:local": "playwright test -c e2e/config/playwright.config.local.ts",
-    "e2e:local:dev": "npm run e2e:local -- --ui"
+    "e2e:local:watch": "npm run e2e:local -- --ui"
   },
   "lint-staged": {
     "*.{ts,tsx,scss}": "yarn format:fix"
@@ -58,6 +58,7 @@
     "@types/react-router-dom": "^5.3.3",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
+    "dotenv": "^16.3.1",
     "esbuild-loader": "^4.0.2",
     "eslint-plugin-jest": "^27.4.2",
     "eslint-plugin-sonarjs": "^0.21.0",

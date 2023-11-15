@@ -1,13 +1,15 @@
-import { defineConfig, devices } from '@playwright/test';
+import { Project, defineConfig } from '@playwright/test';
+import path from 'path';
 
 type CustomEnvConfig = {
   baseURL: string;
+  projects?: Project[];
 };
 
 export function config(config: CustomEnvConfig) {
   return defineConfig({
     // Look for test files in the "tests" directory, relative to this configuration file.
-    testDir: '../tests',
+    testDir: path.join(process.cwd(), 'e2e', 'tests'),
     // Folder for test artifacts such as screenshots, videos, traces, etc.
     outputDir: '../test-results',
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
@@ -37,11 +39,6 @@ export function config(config: CustomEnvConfig) {
     },
 
     /* Configure projects for major browsers */
-    projects: [
-      {
-        name: 'chromium',
-        use: { ...devices['Desktop Chrome'] },
-      },
-    ],
+    projects: config.projects,
   });
 }

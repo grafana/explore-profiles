@@ -1,8 +1,8 @@
 import { test as base } from '@playwright/test';
-import { TagExplorerPage } from './pages/TagExplorerPage';
-import { SingleViewPage } from './pages/SingleViewPage';
-import { ComparisonViewPage } from './pages/ComparisonViewPage';
 import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
+import { ComparisonViewPage } from './pages/ComparisonViewPage';
+import { SingleViewPage } from './pages/SingleViewPage';
+import { TagExplorerPage } from './pages/TagExplorerPage';
 
 type Fixtures = {
   tagExplorerPage: TagExplorerPage;

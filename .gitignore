@@ -29,6 +29,7 @@ ci/
 # E2E
 e2e/test-reports/
 e2e/test-results/
+e2e/auth/
 
 # Editor
 .idea
