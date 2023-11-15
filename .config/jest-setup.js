@@ -23,3 +23,7 @@ Object.defineProperty(global, 'matchMedia', {
 });
 
 HTMLCanvasElement.prototype.getContext = () => {};
+
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;

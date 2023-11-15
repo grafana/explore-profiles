@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import React from 'react';
 import { Router, useHistory } from 'react-router-dom';
 import { useNavigationLinksUpdate } from './utils.routing';
@@ -80,11 +80,15 @@ describe('useUpdateSidebarLinks', () => {
       const { rerender } = render(Comp);
       expect(screen.queryByRole('tab')?.getAttribute('href')).toBe(prefixWithPluginPath('single'));
 
-      history.push('test?foo=bar');
+      act(() => {
+        history.push('test?foo=bar');
+      });
       rerender(Comp);
       expect(screen.queryByRole('tab')?.getAttribute('href')).toBe(prefixWithPluginPath('single?foo=bar'));
 
-      history.push('test');
+      act(() => {
+        history.push('test');
+      });
       rerender(Comp);
       expect(screen.queryByRole('tab')?.getAttribute('href')).toBe(prefixWithPluginPath('single'));
     });
