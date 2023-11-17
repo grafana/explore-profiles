@@ -1,0 +1,24 @@
+version: '3.0'
+
+services:
+  grafana:
+    container_name: 'grafana-pyroscope-app'
+    build:
+      context: ./.config
+      args:
+        grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
+        grafana_version: ${GRAFANA_VERSION:-10.1.1}
+    ports:
+      - ${GRAFANA_PORT:-3000}:3000/tcp
+    volumes:
+      - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
+      - ./samples/provisioning:/etc/grafana/provisioning
+
+  pyroscope:
+    container_name: 'pyroscope-static'
+    image: docker.io/grafana/pyroscope:1.2.0
+    ports:
+      - 4100:4100/tcp
+    volumes:
+      - ./samples/static/pyroscope:/etc/pyroscope
+      - ./samples/static/grafana-pyroscope-sample-blocks-public:/data-shared

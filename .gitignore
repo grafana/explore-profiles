@@ -38,3 +38,6 @@ e2e/auth/
 
 # Local configuration and customization
 .env
+
+# Pyroscope
+samples/static/grafana-pyroscope-sample-blocks-public*

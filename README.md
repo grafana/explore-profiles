@@ -31,7 +31,7 @@ Then, make sure the backend plugin is built for all the architectures:
 mage
 ```
 
-Finally, run the server using docker-compose:
+Finally, in a different terminal tab, run the server using docker-compose:
 
 ```
 yarn server
@@ -41,16 +41,17 @@ yarn server
   your local Pyroscope.
 - See the [Docker](./docker-compose.yaml) configuration for more detail on the configured services.
 
-Then go to `localhost:3000` to connect to Grafana.
+Then go to [http://localhost:3000](http://localhost:3000) to connect to Grafana.
 
 - It may take a while for the Grafana service to ramp up; observing the terminal output will indicate
   that Grafana is ready when only `rideshare` log messages are being generated.
 
 The plugin can be found by expanding the Grafana _Home_ menu, expanding _Observability_ to reveal _Profiles_.
 Click on _Profiles_.
-The direct URL of the plugin is `http://localhost:3000/a/grafana-pyroscope-app/`
 
-- The pyroscope web app will also be accessible via `http://localhost:4100` as per the `pyroscope` configuration
+The direct URL of the plugin is [http://localhost:3000/a/grafana-pyroscope-app](http://localhost:3000/a/grafana-pyroscope-app)
+
+- The pyroscope web app will also be accessible via [http://localhost:4100](http://localhost:4100) as per the `pyroscope` configuration
   in the [docker-compose](./docker-compose.yaml) file. This may be a useful way of quickly comparing what the Pyroscope web app looks like (at least according to built code in the docker image that is running).
 
 - Note that any changes to the plugin backend code will require running `mage` again to keep the binary up to date.
@@ -59,14 +60,42 @@ The direct URL of the plugin is `http://localhost:3000/a/grafana-pyroscope-app/`
 
 ### Using remote profile data
 
+Instead of profile data from fake applications, you can use real remote data:
+
 - Copy the content of the `.env.local` file to a new `.env` file in the root directory.
 - Open 1Password and search for the note named "DB FE - Remote profile data credentials"
 - Fill in the missing values
-- Instead of `yarn server`, launch `yarn server:remote` in the terminal
+- Launch `yarn dev` in the terminal
+- In a different tab, launch `yarn server:remote`
+
+### Using static profile data
+
+To simplify some testing and/or your development workflow, you can also use static profile data:
+
+- If not yet done, unzip [./samples/static/grafana-pyroscope-sample-blocks-public.zip](./samples/static/grafana-pyroscope-sample-blocks-public.zip)
+- Launch `yarn dev` in the terminal
+- In a different tab, launch `yarn server:static`
+- Choose a time range spanning from `2023-11-11 08:55:00` to `2023-11-11 13:05:00`
+
+The data is stored in a public bucket in Google Cloud Storage and can be downloaded via [the gsutil tool](https://cloud.google.com/storage/docs/gsutil):
+
+(_TODO: add doc about gcloud utils installation/deployment tools_)
+
+To update it, type in a terminal:
+
+- `rm -rf ./samples/static/grafana-pyroscope-sample-blocks-public`
+- `gsutil -m cp -r gs://grafana-pyroscope-sample-blocks-public/ ./samples/static/`
+- `yarn server:static`
+
+Alternatively, if you only want to spin up a new Pyroscope server with this data, you can do it from the folder of your choice:
+
+- `mkdir -p ./my-sample-data`
+- `gsutil -m cp -r gs://grafana-pyroscope-sample-blocks-public/ ./my-sample-data/`
+- `docker run -t -i -p 4040:4040 -v $(pwd)/my-sample-data/grafana-pyroscope-sample-blocks-public:/data-shared simonswine/pyroscope:main-826665a94 --storage.backend filesystem -querier.max-query-length 3650d --querier.max-query-lookback 3650d`
 
 ## End-to-end testing
 
-Our tests are implemented with [Playwright](https://playwright.dev/). See our [internal documentation](./e2e/README.md).
+Our tests are implemented with [Playwright](https://playwright.dev/). Have a look at our [internal documentation](./e2e/README.md).
 
 ### Pyroscope Respository as a Dependency
 
