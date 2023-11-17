@@ -130,8 +130,8 @@ function useRefreshAppsPicker() {
   };
 }
 
-function useTimeRangePicker() {
-  const { timeRange, setTimeRange } = useContext(PyroscopeStateContext);
+function useTimeRangePicker(refreshApps: Function) {
+  const { timeRange, setTimeRange: setPyroscopeTimeRange } = useContext(PyroscopeStateContext);
 
   const zoom = useCallback(() => {
     // Zooming out will double the overall range.
@@ -154,8 +154,10 @@ function useTimeRangePicker() {
       from,
       to,
     };
-    setTimeRange(newRange);
-  }, [timeRange, setTimeRange]);
+
+    setPyroscopeTimeRange(newRange);
+    // TODO: refreshApps() as well?
+  }, [timeRange, setPyroscopeTimeRange]);
 
   const navigate = useCallback(
     (forward = true) => {
@@ -177,14 +179,19 @@ function useTimeRangePicker() {
         from,
         to,
       };
-      setTimeRange(newRange);
+
+      setPyroscopeTimeRange(newRange);
+      // TODO: refreshApps() as well?
     },
-    [timeRange, setTimeRange]
+    [timeRange, setPyroscopeTimeRange]
   );
 
   return {
     timeRange,
-    setTimeRange,
+    setTimeRange: (newRange: TimeRange) => {
+      setPyroscopeTimeRange(newRange);
+      refreshApps();
+    },
     setTimeZone() {}, // no op
     zoom,
     navigate,
@@ -272,12 +279,14 @@ export default function Toolbar({}: ToolbarProps) {
   const { maxNodes, setMaxNodes } = useBuildMaxNodes();
   const [viewMaxNodes, setViewMaxNodes] = useState(maxNodes);
 
-  const { timeRange, setTimeRange, setTimeZone, zoom, navigate } = useTimeRangePicker();
-
   /** Refresh functionality */
 
   const { appsLoading, refreshApps } = useRefreshAppsPicker();
   const { isDataLoading, refreshData } = useRefreshTimeRangePicker();
+
+  /** Time range */
+
+  const { timeRange, setTimeRange, setTimeZone, zoom, navigate } = useTimeRangePicker(refreshApps);
 
   /** Component */
   return (
