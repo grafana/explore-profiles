@@ -3,14 +3,18 @@ import { type Page, expect } from '@playwright/test';
 export class PyroscopePage {
   readonly page: Page;
   pathname: string;
+  urlParams: string;
 
-  constructor(page: Page, pathname: string) {
+  constructor(page: Page, pathname: string, urlParams: string) {
     this.page = page;
     this.pathname = pathname;
+    this.urlParams = urlParams;
   }
 
-  async goto() {
-    await this.page.goto(this.pathname);
+  async goto(urlParams: string | undefined = undefined) {
+    const url = urlParams !== undefined ? `${this.pathname}?${urlParams}` : `${this.pathname}?${this.urlParams}`;
+
+    await this.page.goto(url);
     await this.page.locator('.pyroscope-app').waitFor();
   }
 
@@ -43,8 +47,9 @@ export class PyroscopePage {
     await expect(this.getMainSpinner()).not.toBeVisible();
 
     const refreshSpinners = this.getRefreshSpinners();
+    const spinnersCount = await refreshSpinners.count();
 
-    for (let i = 0; i < (await refreshSpinners.count()); i += 1) {
+    for (let i = 0; i < spinnersCount; i += 1) {
       await expect(refreshSpinners.nth(i)).not.toBeVisible();
     }
   }

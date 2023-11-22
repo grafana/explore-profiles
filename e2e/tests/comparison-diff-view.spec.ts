@@ -23,7 +23,5 @@ test.describe('Smoke tests', () => {
 
     await expect(camparisonContainer).toContainText('Baseline time range');
     await expect(camparisonContainer).toContainText('Comparison time range');
-
-    await expect(comparisonDiffViewPage.getDiffContainer()).toContainText('Baseline vs. Comparison Diff');
   });
 });

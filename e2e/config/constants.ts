@@ -25,4 +25,10 @@ function getEnvVars(): EnvVars {
 
 export const ENV_VARS = getEnvVars();
 
+// We use static data in local and PR build (where the host is http://localhost):
+// pyroscope-rideshare-go app, cpu profile, from from `2023-11-11 08:55:00` to `2023-11-11 13:05:00`
+export const DEFAULT_URL_PARAMS = ENV_VARS.E2E_BASE_URL.startsWith('http://localhost')
+  ? 'query=process_cpu%3Acpu%3Ananoseconds%3Acpu%3Ananoseconds%7Bservice_name%3D"pyroscope-rideshare-go"%7D&from=1699688210000&until=1699705810000&groupBy=pyroscope_spy&groupByValue=All'
+  : '';
+
 export const AUTH_FILE = path.join(process.cwd(), 'e2e', 'auth', 'user.json');

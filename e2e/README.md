@@ -45,7 +45,7 @@ yarn && yarn dev
 And in another terminal tab:
 
 ```shell
-yarn server:remote
+yarn server:static
 ```
 
 Run the tests in interactive UI mode (with a built-in watch mode), for instance, against the local environment:

@@ -13,6 +13,7 @@ services:
     volumes:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
       - ./samples/provisioning:/etc/grafana/provisioning
+      - ./samples/dashboards:/var/lib/grafana/dashboards
 
   pyroscope:
     container_name: 'pyroscope-static'
