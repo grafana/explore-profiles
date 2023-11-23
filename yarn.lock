@@ -741,13 +741,13 @@
   dependencies:
     prop-types "^15.8.1"
 
-"@grafana/data@10.3.0-146333":
-  version "10.3.0-146333"
-  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-10.3.0-146333.tgz#b1bcf9ca09e7d716d2d6ecd5faf05ae5b6e323c2"
-  integrity sha512-TLXTvAZvhItYYl5k3snufZRNNjrm1pAZnSGIe+gTBUDpqQhSKizFz4u6PrU10+r+Oxv1HctAIT4loGObY1gt3w==
+"@grafana/data@10.3.0-147665":
+  version "10.3.0-147665"
+  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-10.3.0-147665.tgz#7e979ebb5f59c0cd1fa8ec7c27bb469654b4d997"
+  integrity sha512-T/UgPe/u4CJwxZUV+x4ASKHHI+jI1Qz4nZYTMOO9DQ7WM431qbR6lbt7CG37va1jhy+rHTuSITjyzTh6j840bw==
   dependencies:
     "@braintree/sanitize-url" "6.0.2"
-    "@grafana/schema" "10.3.0-146333"
+    "@grafana/schema" "10.3.0-147665"
     "@types/d3-interpolate" "^3.0.0"
     "@types/string-hash" "1.1.1"
     d3-interpolate "3.0.1"
@@ -772,50 +772,10 @@
     uplot "1.6.27"
     xss "^1.0.14"
 
-"@grafana/data@10.3.0-146556":
-  version "10.3.0-146556"
-  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-10.3.0-146556.tgz#593141e2e63e7a7500340c02a2f38b4ab0342d7c"
-  integrity sha512-XpGPwDVgYKfXV5pk5Np9i05FSeOFjc41TI7+QXuGaoyJJPG2jI/YzUt8doYsKHvbpp7iQpnR/dAMfjDVEtzo0g==
-  dependencies:
-    "@braintree/sanitize-url" "6.0.2"
-    "@grafana/schema" "10.3.0-146556"
-    "@types/d3-interpolate" "^3.0.0"
-    "@types/string-hash" "1.1.1"
-    d3-interpolate "3.0.1"
-    date-fns "2.30.0"
-    dompurify "^2.4.3"
-    eventemitter3 "5.0.1"
-    fast_array_intersect "1.1.0"
-    history "4.10.1"
-    lodash "4.17.21"
-    marked "5.1.1"
-    marked-mangle "1.1.0"
-    moment "2.29.4"
-    moment-timezone "0.5.43"
-    ol "7.4.0"
-    papaparse "5.4.1"
-    react-use "17.4.0"
-    regenerator-runtime "0.14.0"
-    rxjs "7.8.1"
-    string-hash "^1.1.3"
-    tinycolor2 "1.6.0"
-    tslib "2.6.0"
-    uplot "1.6.27"
-    xss "^1.0.14"
-
-"@grafana/e2e-selectors@10.3.0-146333":
-  version "10.3.0-146333"
-  resolved "https://registry.yarnpkg.com/@grafana/e2e-selectors/-/e2e-selectors-10.3.0-146333.tgz#69223fdb19eeefb58a4c093d73e69450ff5e3932"
-  integrity sha512-IJrOvHSINxVQCFGeGiN26QxeIuWOAjqLuBMVNS8VfVlHYStwsnswwvYTk39X39zFKbbkGplTTEmNi4u624UN/g==
-  dependencies:
-    "@grafana/tsconfig" "^1.2.0-rc1"
-    tslib "2.6.0"
-    typescript "5.2.2"
-
-"@grafana/e2e-selectors@10.3.0-146556":
-  version "10.3.0-146556"
-  resolved "https://registry.yarnpkg.com/@grafana/e2e-selectors/-/e2e-selectors-10.3.0-146556.tgz#246c50ecc6718b8472dab1ccbd99b774bd8935ef"
-  integrity sha512-IxCux5ifIuOg5oMsfFnwecdAfqr6bZfGsGYojmXw2T0KH7uw/4cclQB1s2FwLwpEf+8MT02BEuYRNgLmWrp18A==
+"@grafana/e2e-selectors@10.3.0-147665":
+  version "10.3.0-147665"
+  resolved "https://registry.yarnpkg.com/@grafana/e2e-selectors/-/e2e-selectors-10.3.0-147665.tgz#18aad1efa44bbebdac581a1a8cf613be6e27d8d3"
+  integrity sha512-CITVOdbdMneP4aeEznCs3sfXgD9HWWATwLT9Cj5BVU4ODCwPiAuuPA8mm9bd3kcpDHlYMvGGM3fNQflHvkI53g==
   dependencies:
     "@grafana/tsconfig" "^1.2.0-rc1"
     tslib "2.6.0"
@@ -893,14 +853,14 @@
     "@opentelemetry/sdk-trace-web" "^1.15.2"
     "@opentelemetry/semantic-conventions" "^1.15.2"
 
-"@grafana/flamegraph@10.3.0-146556":
-  version "10.3.0-146556"
-  resolved "https://registry.yarnpkg.com/@grafana/flamegraph/-/flamegraph-10.3.0-146556.tgz#12d0c207f59eb327db0c45c4baadec2eef71bb2a"
-  integrity sha512-FL7caAd9+XWyAUpBFu7YJhVf4jAu4aQOGyZqwd4PEojUas8MsvzYAPJPGkaN6MCNHIwb4c8aQGrV39TT9BT+rQ==
+"@grafana/flamegraph@10.3.0-147665":
+  version "10.3.0-147665"
+  resolved "https://registry.yarnpkg.com/@grafana/flamegraph/-/flamegraph-10.3.0-147665.tgz#dcd62e779ff0db05a78592631bcb75810954daae"
+  integrity sha512-i+Nn7JZgz1Mxif3mZ+0HDvTt+/dhyzFwC5bwLVDsxX4AbRoFiFSQBlBKcc7RQBS7oBEzb4RRKTtHB/vSTkDWQQ==
   dependencies:
     "@emotion/css" "11.11.2"
-    "@grafana/data" "10.3.0-146556"
-    "@grafana/ui" "10.3.0-146556"
+    "@grafana/data" "10.3.0-147665"
+    "@grafana/ui" "10.3.0-147665"
     "@leeoniya/ufuzzy" "1.0.8"
     d3 "^7.8.5"
     lodash "4.17.21"
@@ -910,15 +870,15 @@
     tinycolor2 "1.6.0"
     tslib "2.6.0"
 
-"@grafana/runtime@10.3.0-146333":
-  version "10.3.0-146333"
-  resolved "https://registry.yarnpkg.com/@grafana/runtime/-/runtime-10.3.0-146333.tgz#c5208fece3145452f458c5b19282a3eb267d0b02"
-  integrity sha512-lTonAUedqV7FljysEjvD/p5MOfAb6bOrCf9KkiyS6TOpyF5CCcei/adIAgy+xYiVAoLTsQ9QNsWQsWTtADUqwg==
+"@grafana/runtime@10.3.0-147665":
+  version "10.3.0-147665"
+  resolved "https://registry.yarnpkg.com/@grafana/runtime/-/runtime-10.3.0-147665.tgz#433f0b299e3252a1581cf5fe1c708451b2b04731"
+  integrity sha512-vHH2uVTZqikGpChdo5BjCKq+S15LgzaCjOjWJhs4R8rHC4VDTMcCgV2lpgOm8QMwBlSwWU8C4KB7xVUZbAKu2w==
   dependencies:
-    "@grafana/data" "10.3.0-146333"
-    "@grafana/e2e-selectors" "10.3.0-146333"
+    "@grafana/data" "10.3.0-147665"
+    "@grafana/e2e-selectors" "10.3.0-147665"
     "@grafana/faro-web-sdk" "1.2.1"
-    "@grafana/ui" "10.3.0-146333"
+    "@grafana/ui" "10.3.0-147665"
     history "4.10.1"
     lodash "4.17.21"
     rxjs "7.8.1"
@@ -926,17 +886,10 @@
     systemjs-cjs-extra "0.2.0"
     tslib "2.6.0"
 
-"@grafana/schema@10.3.0-146333":
-  version "10.3.0-146333"
-  resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-10.3.0-146333.tgz#faa3ca5c2f076210269cadf3735086c4ec149ad1"
-  integrity sha512-y24zs3MehedYQCznS+7EGPBZPtn3DnDk81bBqSPfmRA+jg716zqocNJY/W61LgbQOjfBX6R2EUtWsu04iXopmw==
-  dependencies:
-    tslib "2.6.0"
-
-"@grafana/schema@10.3.0-146556":
-  version "10.3.0-146556"
-  resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-10.3.0-146556.tgz#b74368498f0ef7099805a3e1b89570bc2d91b995"
-  integrity sha512-jfGBm/yOGM8uefSDlTMx+WzdPTKbLaUHSnus0iLaYZ0q1ZbDy3LGgncE1/ds7o1U7B6sI2rccb9HTpv5DdFbcg==
+"@grafana/schema@10.3.0-147665":
+  version "10.3.0-147665"
+  resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-10.3.0-147665.tgz#ad8ebb5b5f857d36236b3754cd3e3365c1c0f292"
+  integrity sha512-0pzZygb0QPvI4gCYFlyoS1oeU1QiWdt9Li9HXjDyx5h6GdEvZiGEwXIv1x0W2zsJrb/3tNZTuO16EmCG45F+ww==
   dependencies:
     tslib "2.6.0"
 
@@ -945,88 +898,17 @@
   resolved "https://registry.yarnpkg.com/@grafana/tsconfig/-/tsconfig-1.2.0-rc1.tgz#10973c978ec95b0ea637511254b5f478bce04de7"
   integrity sha512-+SgQeBQ1pT6D/E3/dEdADqTrlgdIGuexUZ8EU+8KxQFKUeFeU7/3z/ayI2q/wpJ/Kr6WxBBNlrST6aOKia19Ag==
 
-"@grafana/ui@10.3.0-146333":
-  version "10.3.0-146333"
-  resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-10.3.0-146333.tgz#46046cbe6a26aeebb17e837ea8799db16ede1b92"
-  integrity sha512-OGNf5wiHFIXa+t9zecV/RLeTPzqwJ7QHx4CDRMoQySmmvIvChpWAd81XqoTBz8E1hreVxF3MZWLkZGZtBIiuRQ==
+"@grafana/ui@10.3.0-147665":
+  version "10.3.0-147665"
+  resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-10.3.0-147665.tgz#4b4522ba72967cdfe068314d3e496cc148683a10"
+  integrity sha512-QKcVuH6URhyF0FENjeQCLa32wu5LTQtFLDUV23vBEGZFlosuZwRRxWP1OgH7cFL2SgWveyd9enhl+oz7LaA3Sg==
   dependencies:
     "@emotion/css" "11.11.2"
     "@emotion/react" "11.11.1"
-    "@grafana/data" "10.3.0-146333"
-    "@grafana/e2e-selectors" "10.3.0-146333"
+    "@grafana/data" "10.3.0-147665"
+    "@grafana/e2e-selectors" "10.3.0-147665"
     "@grafana/faro-web-sdk" "1.2.1"
-    "@grafana/schema" "10.3.0-146333"
-    "@leeoniya/ufuzzy" "1.0.8"
-    "@monaco-editor/react" "4.6.0"
-    "@popperjs/core" "2.11.8"
-    "@react-aria/button" "3.8.0"
-    "@react-aria/dialog" "3.5.3"
-    "@react-aria/focus" "3.13.0"
-    "@react-aria/menu" "3.10.0"
-    "@react-aria/overlays" "3.15.0"
-    "@react-aria/utils" "3.18.0"
-    "@react-stately/menu" "3.5.3"
-    ansicolor "1.1.100"
-    calculate-size "1.1.1"
-    classnames "2.3.2"
-    core-js "3.33.0"
-    d3 "7.8.5"
-    date-fns "2.30.0"
-    hoist-non-react-statics "3.3.2"
-    i18next "^22.0.0"
-    i18next-browser-languagedetector "^7.0.2"
-    immutable "4.3.1"
-    is-hotkey "0.2.0"
-    jquery "3.7.0"
-    lodash "4.17.21"
-    micro-memoize "^4.1.2"
-    moment "2.29.4"
-    monaco-editor "0.34.0"
-    ol "7.4.0"
-    prismjs "1.29.0"
-    rc-cascader "3.20.0"
-    rc-drawer "6.5.2"
-    rc-slider "10.3.1"
-    rc-time-picker "^3.7.3"
-    rc-tooltip "6.1.1"
-    react-beautiful-dnd "13.1.1"
-    react-calendar "4.6.0"
-    react-colorful "5.6.1"
-    react-custom-scrollbars-2 "4.5.0"
-    react-dropzone "14.2.3"
-    react-highlight-words "0.20.0"
-    react-hook-form "7.5.3"
-    react-i18next "^12.0.0"
-    react-inlinesvg "3.0.2"
-    react-loading-skeleton "3.3.1"
-    react-popper "2.3.0"
-    react-popper-tooltip "4.4.2"
-    react-router-dom "5.3.3"
-    react-select "5.7.4"
-    react-table "7.8.0"
-    react-transition-group "4.4.5"
-    react-use "17.4.0"
-    react-window "1.8.9"
-    rxjs "7.8.1"
-    slate "0.47.9"
-    slate-plain-serializer "0.7.13"
-    slate-react "0.22.10"
-    tinycolor2 "1.6.0"
-    tslib "2.6.0"
-    uplot "1.6.27"
-    uuid "9.0.0"
-
-"@grafana/ui@10.3.0-146556":
-  version "10.3.0-146556"
-  resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-10.3.0-146556.tgz#b9f8ec9af2ad47a85692c7459fd538b2ddafb108"
-  integrity sha512-1xDfEpUtk5HCDjGBnExdbPmsURqqOz2zZbbCv0KnpFY9LAfnlDsKXZKU2YOF9+nqWIdVqlbXu0xOq588xn9Xtw==
-  dependencies:
-    "@emotion/css" "11.11.2"
-    "@emotion/react" "11.11.1"
-    "@grafana/data" "10.3.0-146556"
-    "@grafana/e2e-selectors" "10.3.0-146556"
-    "@grafana/faro-web-sdk" "1.2.1"
-    "@grafana/schema" "10.3.0-146556"
+    "@grafana/schema" "10.3.0-147665"
     "@leeoniya/ufuzzy" "1.0.8"
     "@monaco-editor/react" "4.6.0"
     "@popperjs/core" "2.11.8"
@@ -5837,18 +5719,18 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.2.0, graceful-fs@^4.2.4, 
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-"grafana-pyroscope@git+https://github.com/grafana/pyroscope.git#82a7d758e56ea01cd2eca870e76bbec2ad6932f6":
+"grafana-pyroscope@git+https://github.com/grafana/pyroscope.git#8838f5a49866f681c158f6693d5f9c75dcbd0313":
   version "2.0.0"
-  resolved "git+https://github.com/grafana/pyroscope.git#82a7d758e56ea01cd2eca870e76bbec2ad6932f6"
+  resolved "git+https://github.com/grafana/pyroscope.git#8838f5a49866f681c158f6693d5f9c75dcbd0313"
   dependencies:
     "@fortawesome/fontawesome-svg-core" "~1.2.30"
     "@fortawesome/free-brands-svg-icons" "~5.15.1"
     "@fortawesome/free-regular-svg-icons" "~5.15.2"
     "@fortawesome/free-solid-svg-icons" "~5.14.0"
     "@fortawesome/react-fontawesome" "~0.1.11"
-    "@grafana/data" "10.3.0-146556"
-    "@grafana/flamegraph" "10.3.0-146556"
-    "@grafana/ui" "10.3.0-146556"
+    "@grafana/data" "10.3.0-147665"
+    "@grafana/flamegraph" "10.3.0-147665"
+    "@grafana/ui" "10.3.0-147665"
     "@hookform/resolvers" "^2.9.8"
     "@mui/base" "5.0.0-alpha.98"
     "@mui/material" "5.10.11"
