@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
-    "@grafana/eslint-config": "^5.1.0",
+    "@grafana/eslint-config": "^6.0.1",
     "@grafana/tsconfig": "^1.2.0-rc1",
     "@playwright/test": "^1.39.0",
     "@swc/core": "^1.3.51",
