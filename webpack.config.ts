@@ -1,31 +1,48 @@
 // webpack.config.ts
 import type { Configuration, RuleSetRule } from 'webpack';
 import { merge } from 'webpack-merge';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import grafanaConfig from './.config/webpack/webpack.config';
 import * as path from 'path';
-import RemovePlugin from 'remove-files-webpack-plugin';
-import { DIST_DIR } from './.config/webpack/constants';
 
 const config = async (env): Promise<Configuration> => {
-  const baseConfig = await grafanaConfig(env);
+  const baseConfig = (await grafanaConfig(env)) as any;
 
+  // Customize swc-loader
   const swcLoader = baseConfig.module.rules.find((rule: { use: { loader: string } }) => {
     return rule.use.loader === 'swc-loader';
   }) as RuleSetRule;
 
-  // TODO:
-  // Disable swc loader, since react-svg-spinner was erroring with
-  // ERROR in ../node_modules/react-svg-spinner/index.js 16:10
-  // Module parse failed: Comma is not permitted after the rest element (16:10)
-  // You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders
-  // |   thickness,
-  // |       size,
-  // >   ...props,
-  // | }) =>
-  //
-  // which is a valid error, but let's deal with this later
-  swcLoader.test = '//';
+  // Ignore everything except (pyroscope-pyroscope | phlare), since it's used as if it was local code
+  swcLoader.exclude = /node_modules\/(?!grafana-pyroscope|phlare).*/;
 
+  const swcLoaderJsc = (swcLoader?.use as any).options.jsc;
+
+  // required
+  swcLoaderJsc.baseUrl = path.join(process.cwd(), 'src');
+
+  // Decorators are only used in pyroscope/public/app/components/ExportData.tsx
+  swcLoaderJsc.parser.decorators = true;
+
+  // Don't minified React component names in devtools
+  // swcLoaderJsc.keepClassNames = env.development;
+
+  // Customize CopyWebpackPlugin
+  // to prevent JSON files used in tests to appear in the build artefacts
+  // among them, there might be (e.g.) some "plugin.json" files used that the platform would try to load
+  const copyPlugin = baseConfig.plugins.find((p) => p instanceof CopyWebpackPlugin);
+  if (!copyPlugin) {
+    throw 'Webpack CopyPlugin not found! Please check .config/webpack/webpack.config.ts and adjust this configuration.';
+  }
+
+  const jsonPattern = copyPlugin.patterns.find(({ from }) => from === '**/*.json');
+  if (!jsonPattern) {
+    throw 'Cannot find a JSON entry in the Webpack CopyPlugin! Please check .config/webpack/webpack.config.ts and adjust this configuration.';
+  }
+
+  jsonPattern.filter = (filepath) => !filepath.includes('__tests__');
+
+  // Final config
   return merge(baseConfig, {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json', '.svg'],
@@ -67,21 +84,6 @@ const config = async (env): Promise<Configuration> => {
     },
     module: {
       rules: [
-        {
-          test: /\.(js|ts)x?$/,
-          // Ignore everything except (pyroscope-pyroscope | phlare), since it's used as if it was local code
-          exclude: /node_modules\/(?!grafana-pyroscope|phlare).*/,
-          use: [
-            {
-              loader: 'esbuild-loader',
-              options: {
-                loader: 'tsx',
-                target: 'es2015',
-              },
-            },
-          ],
-        },
-
         // SVG
         {
           test: /\.svg$/,
@@ -107,22 +109,6 @@ const config = async (env): Promise<Configuration> => {
         },
       ],
     },
-    plugins: [
-      // prevents test files to appear in the build artefacts
-      // among them, there might be (e.g.) "plugin.json" files used as fixtures in our tests
-      // that the platform would try to load
-      new RemovePlugin({
-        after: {
-          test: [
-            {
-              folder: DIST_DIR,
-              recursive: true,
-              method: (absoluteResourcePath) => absoluteResourcePath.includes('__tests__'),
-            },
-          ],
-        },
-      }),
-    ],
   });
 };
 
