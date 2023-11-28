@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import PROFILE_METRICS from '../profile-metrics.json';
+import PROFILE_METRICS from './profile-metrics.json';
 
 export type ProfileMetricId = keyof typeof PROFILE_METRICS;
 

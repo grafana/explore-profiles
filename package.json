@@ -116,6 +116,7 @@
     "grafana-pyroscope": "git+https://github.com/grafana/pyroscope.git#5b8ab0e44a5e1c3125c9b1a66f3b202f13728ff9",
     "lodash.groupby": "^4.6.0",
     "lodash.map": "^4.6.0",
+    "nanoid": "^4.0.2",
     "react": "18.2.0",
     "react-datepicker": "4.7.0",
     "react-dom": "18.2.0",
@@ -133,6 +134,7 @@
     "ts-custom-error": "^3.2.0",
     "ts-essentials": "^9.0.0",
     "tslib": "2.5.0",
+    "xstate": "^4.38.3",
     "zod": "^3.21.4"
   },
   "resolutions": {

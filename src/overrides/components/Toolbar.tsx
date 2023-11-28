@@ -25,7 +25,7 @@ import { css } from '@emotion/css';
 import { isLoadingOrReloading } from '@pyroscope/pages/loading';
 import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
 import userStorage from '../../utils/UserStorage';
-import { ProfileMetricId, useGetProfileMetricByIds } from './TagsBar/QueryInput/hooks/useProfileMetricsQuery';
+import { ProfileMetricId, useGetProfileMetricByIds } from '../../hooks/useProfileMetricsQuery';
 import { useLocation } from 'react-router-dom';
 
 interface ToolbarProps {
