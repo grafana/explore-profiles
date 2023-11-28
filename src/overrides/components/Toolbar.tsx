@@ -315,9 +315,11 @@ export default function Toolbar({}: ToolbarProps) {
               value={viewMaxNodes || ''}
               type="number"
               placeholder="16384"
+              min="-1"
               onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
                 let newValue = parseInt(event.currentTarget.value, 10);
                 newValue = isNaN(newValue) ? 0 : newValue;
+                newValue = Math.max(-1, newValue);
                 setViewMaxNodes(newValue);
               }}
               aria-label="Max Nodes"
