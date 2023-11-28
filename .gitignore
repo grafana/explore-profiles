@@ -36,8 +36,11 @@ e2e/auth/
 
 .eslintcache
 
+# MacOS
+.DS_Store
+
 # Local configuration and customization
 .env
 
 # Pyroscope
-samples/static/grafana-pyroscope-sample-blocks-public*
+samples/static/grafana-pyroscope-sample-blocks-public

@@ -32,9 +32,17 @@ jobs:
           version: latest
           args: buildAll
 
-  build:
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: backend-build
+          path: dist
+          retention-days: 1
+
+  frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    needs: [backend]
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js environment
@@ -45,20 +53,58 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
-      - name: Check types
+
+      # lint
+      - name: Check TS types
         run: yarn typecheck
       - name: Lint
         run: yarn lint
+
       - name: Unit tests
         run: yarn test:ci
-      - name: Build frontend
-        run:
-          yarn build
 
-          #      - name: Start grafana docker
-          #        run: docker-compose up -d
-          #      - name: Run e2e tests
-          #        run: yarn e2e
-          #      - name: Stop grafana docker
-          #        run: docker-compose down
-          #
+      # before the frontend build so that the folder is not overwritten
+      - name: Download backend build
+        uses: actions/download-artifact@v2
+        with:
+          name: backend-build
+          path: dist
+
+      - name: Make backend build executable
+        run: chmod +x dist/gpx_pyroscope_app_*
+
+      - name: Build frontend
+        run: yarn build
+
+      # e2e test
+      - name: Start Grafana server
+        run: yarn e2e:ci:server:up
+
+      # commented to save time during the build (building this action takes ~30s)
+      # the next step "Prepare e2e test" takes ~20s, which gives us the time needed
+      # uncomment it if you experience flakiness
+      # - uses: cygnetdigital/wait_for_response@v2.0.0
+      #   with:
+      #     url: 'http://localhost:3000/a/grafana-pyroscope-app/single'
+      #     responseCode: '200'
+      #     timeout: 20000
+      #     interval: 500
+
+      # we do this here to give a bit more time to the app to start
+      - name: Prepare e2e tests
+        run: yarn e2e:prepare
+
+      - name: Run e2e tests
+        run: yarn e2e:ci
+
+      - name: Stop Grafana server
+        run: yarn e2e:ci:server:down
+
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: e2e-test-reports-and-results
+          path: |
+            e2e/test-reports
+            e2e/test-results
+          retention-days: 15

@@ -4,6 +4,7 @@ import path from 'path';
 type CustomEnvConfig = {
   baseURL: string;
   projects?: Project[];
+  timeout?: number;
 };
 
 export function config(config: CustomEnvConfig) {
@@ -13,7 +14,7 @@ export function config(config: CustomEnvConfig) {
     // Folder for test artifacts such as screenshots, videos, traces, etc.
     outputDir: '../test-results',
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-    reporter: [['html', { outputFolder: '../test-reports' }]],
+    reporter: [['html', { outputFolder: '../test-reports', open: process.env.CI ? 'never' : 'on-failure' }]],
     /* Run tests in files in parallel */
     fullyParallel: true,
     /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -34,7 +35,7 @@ export function config(config: CustomEnvConfig) {
       trace: 'on-first-retry',
     },
     expect: {
-      timeout: 7500,
+      timeout: Number(config.timeout) > 0 ? config.timeout : 5000,
       toHaveScreenshot: { maxDiffPixelRatio: 0.01 }, // tweak me with experience
     },
 

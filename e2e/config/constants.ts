@@ -18,9 +18,13 @@ function getEnvVars(): EnvVars {
     acc[name] = value;
 
     return acc;
-  }, {});
+  }, {} as EnvVars);
 
-  return envVars as EnvVars;
+  if (!envVars.E2E_BASE_URL) {
+    throw new Error('Missing E2E_BASE_URL environment variable!');
+  }
+
+  return envVars;
 }
 
 export const ENV_VARS = getEnvVars();

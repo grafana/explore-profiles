@@ -21,8 +21,6 @@ test.describe('Regression bugs', () => {
     await page.getByText('E2E').click();
     await page.getByText('Simple dashboard').click();
 
-    await page.getByText('Simple panel');
-
     const timepicker = page.getByTestId('data-testid TimePicker Open Button');
 
     await expect(timepicker).toHaveText('Last 6 hours');

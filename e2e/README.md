@@ -64,4 +64,14 @@ Enjoy :)
 
 ### CI build
 
-_TODO_
+In build time (PR and main branch), we use a [Pyroscope version with static data](../docker-compose.e2e.yaml) (2023-11-11 09:00 -> 2023-11-11 13:00). This allows us to launch deterministic and predictable tests.
+
+## FAQ
+
+### The build of my PR has failed, why?
+
+- On your GitHub PR, next to the "CI / frontend (pull_request)" job, click on "Details"
+- On the GitHub actions page, click on "🏠 Summary"
+- At the bottom of the page, click on the "e2e-test-reports-and-results" articfact to download it
+- Unzip it and open the "test-reports/index.html" page
+- Navigate the failing tests to see screenshots and videos of what happened
