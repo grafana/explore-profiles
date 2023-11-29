@@ -217,6 +217,10 @@ Below you can find source code for existing app plugins and other related docume
 - [Plugin.json documentation](https://grafana.com/docs/grafana/latest/developers/plugins/metadata/)
 - [How to sign a plugin?](https://grafana.com/docs/grafana/latest/developers/plugins/sign-a-plugin/)
 
+### admin-* instances
+
+admin-* instances, such as https://admin-ops-us-east-0.grafana-ops.net/grafana/a/grafana-pyroscope-app/single are provisioned separately from everything else (they don't use gcom, hosted-grafana or stack-state-service), and are typically on the latest commit from main branch.
+
 ## Common problems & solutions
 
 ### The service & profile dropdowns are empty of data
