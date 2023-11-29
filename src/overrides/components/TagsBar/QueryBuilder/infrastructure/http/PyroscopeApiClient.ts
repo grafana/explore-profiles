@@ -1,10 +1,16 @@
 import { tenantIDFromStorage } from '@pyroscope/services/storage';
 import { HttpClient } from './HttpClient';
 import { config } from '@grafana/runtime';
+import { logger } from '../../domain/helpers/logger';
 
 export class PyroscopeApiClient extends HttpClient {
+  // TODO: FIXME
   static apiBaseUrl = new URL(
-    '/api/plugins/grafana-pyroscope-app/resources/querier.v1.QuerierService',
+    !config.appUrl.includes('localhost') &&
+    !config.appUrl.includes('/grafana/') &&
+    document.location.pathname.startsWith('/grafana/')
+      ? '/grafana/api/plugins/grafana-pyroscope-app/resources/querier.v1.QuerierService'
+      : '/api/plugins/grafana-pyroscope-app/resources/querier.v1.QuerierService',
     config.appUrl
   ).toString();
 
@@ -12,6 +18,9 @@ export class PyroscopeApiClient extends HttpClient {
     super(PyroscopeApiClient.apiBaseUrl, {
       'content-type': 'application/json',
     });
+
+    logger.debug('*** PyroscopeApiClient appUrl', config.appUrl);
+    logger.debug('*** PyroscopeApiClient apiBaseUrl', PyroscopeApiClient.apiBaseUrl);
   }
 
   static queryToMatchers(query: string) {
