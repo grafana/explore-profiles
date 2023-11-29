@@ -32,4 +32,6 @@ module.exports = {
     'node_modules/(?!(true-myth|d3|d3-array|internmap|d3-scale|react-notifications-component|graphviz-react|@grafana|ol|grafana-pyroscope|@react-hook|nanoid))',
   ],
   resetMocks: true,
+  clearMocks: true,
+  resetModules: true,
 };

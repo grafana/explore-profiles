@@ -1,5 +1,3 @@
-import { logger } from '../../domain/helpers/logger';
-
 export class HttpClient {
   baseUrl = '';
   defaultHeaders = {};
@@ -21,8 +19,6 @@ export class HttpClient {
       headers,
       signal,
     };
-
-    logger.debug('*** HTTPClient fullUrl', fullUrl);
 
     let response;
 
