@@ -4,23 +4,16 @@ import { config } from '@grafana/runtime';
 import { logger } from '../../domain/helpers/logger';
 
 export class PyroscopeApiClient extends HttpClient {
-  // TODO: FIXME
-  static apiBaseUrl = new URL(
-    !config.appUrl.includes('localhost') &&
-    !config.appUrl.includes('/grafana/') &&
-    document.location.pathname.startsWith('/grafana/')
-      ? '/grafana/api/plugins/grafana-pyroscope-app/resources/querier.v1.QuerierService'
-      : '/api/plugins/grafana-pyroscope-app/resources/querier.v1.QuerierService',
-    config.appUrl
-  ).toString();
-
   constructor() {
-    super(PyroscopeApiClient.apiBaseUrl, {
-      'content-type': 'application/json',
-    });
+    const apiBaseUrl = new URL('/api/plugins/grafana-pyroscope-app/resources/querier.v1.QuerierService', config.appUrl);
 
     logger.debug('*** PyroscopeApiClient appUrl', config.appUrl);
-    logger.debug('*** PyroscopeApiClient apiBaseUrl', PyroscopeApiClient.apiBaseUrl);
+    logger.debug('*** PyroscopeApiClient apiBaseUrl', apiBaseUrl.toString());
+    logger.debug('*** PyroscopeApiClient DOM base element', document.querySelector('base')?.href);
+
+    super(apiBaseUrl.toString(), {
+      'content-type': 'application/json',
+    });
   }
 
   static queryToMatchers(query: string) {
