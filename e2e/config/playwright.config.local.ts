@@ -33,4 +33,8 @@ const projects = shouldAuthenticate
 export default config({
   baseURL: ENV_VARS.E2E_BASE_URL,
   projects,
+  reporter: [
+    ['list', { printSteps: true }],
+    ['html', { outputFolder: '../test-reports', open: 'on-failure' }],
+  ],
 });

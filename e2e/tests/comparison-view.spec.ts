@@ -21,7 +21,7 @@ test.describe('Smoke tests', () => {
   test('Baseline & comparison columns', async ({ comparisonViewPage }) => {
     const camparisonContainer = comparisonViewPage.getComparisonContainer();
 
-    await expect(camparisonContainer).toContainText('Baseline time range');
-    await expect(camparisonContainer).toContainText('Comparison time range');
+    await expect(camparisonContainer.locator('h6').nth(0)).toContainText('Baseline time range');
+    await expect(camparisonContainer.locator('h6').nth(1)).toContainText('Comparison time range');
   });
 });

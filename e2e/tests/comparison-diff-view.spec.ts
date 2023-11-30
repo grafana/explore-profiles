@@ -4,6 +4,7 @@ test.beforeEach(async ({ comparisonDiffViewPage }) => {
   await comparisonDiffViewPage.goto();
 });
 
+// TODO: https://playwright.dev/docs/test-annotations#tag-tests
 test.describe('Smoke tests', () => {
   test('Page title', async ({ comparisonDiffViewPage }) => {
     await expect(comparisonDiffViewPage.getTitle()).toHaveText('Comparison Diff View');
@@ -21,7 +22,7 @@ test.describe('Smoke tests', () => {
   test('Baseline, comparison & diff columns', async ({ comparisonDiffViewPage }) => {
     const camparisonContainer = comparisonDiffViewPage.getComparisonContainer();
 
-    await expect(camparisonContainer).toContainText('Baseline time range');
-    await expect(camparisonContainer).toContainText('Comparison time range');
+    await expect(camparisonContainer.locator('h6').nth(0)).toContainText('Baseline time range');
+    await expect(camparisonContainer.locator('h6').nth(1)).toContainText('Comparison time range');
   });
 });

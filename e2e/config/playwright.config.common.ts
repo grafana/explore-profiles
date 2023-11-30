@@ -1,10 +1,12 @@
-import { Project, defineConfig } from '@playwright/test';
+import { PlaywrightTestConfig, Project, defineConfig } from '@playwright/test';
 import path from 'path';
 
 type CustomEnvConfig = {
   baseURL: string;
-  projects?: Project[];
+  projects: Project[];
+  reporter: PlaywrightTestConfig['reporter'];
   timeout?: number;
+  retries?: number;
 };
 
 export function config(config: CustomEnvConfig) {
@@ -14,13 +16,13 @@ export function config(config: CustomEnvConfig) {
     // Folder for test artifacts such as screenshots, videos, traces, etc.
     outputDir: '../test-results',
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-    reporter: [['html', { outputFolder: '../test-reports', open: process.env.CI ? 'never' : 'on-failure' }]],
+    reporter: config.reporter,
     /* Run tests in files in parallel */
     fullyParallel: true,
     /* Fail the build on CI if you accidentally left test.only in the source code. */
     forbidOnly: !!process.env.CI,
     /* Retry on CI only */
-    retries: process.env.CI ? 2 : 0,
+    retries: config.retries && config.retries > 0 ? config.retries : 0,
     /* Opt out of parallel tests on CI. */
     workers: process.env.CI ? 1 : undefined,
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
