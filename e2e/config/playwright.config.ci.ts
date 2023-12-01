@@ -13,12 +13,12 @@ const projects = shouldAuthenticate
       },
       {
         name: 'chromium',
+        dependencies: ['authenticate'],
         testDir: path.join(process.cwd(), 'e2e', 'tests'),
         use: {
           ...devices['Desktop Chrome'],
           storageState: AUTH_FILE, // Use prepared auth state.
         },
-        dependencies: ['authenticate'],
       },
     ]
   : [
