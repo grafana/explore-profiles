@@ -3,6 +3,7 @@ import { isPartialFilter } from '../helpers/isPartialFilter';
 import { defaultContext } from '../stateMachine';
 import { OperatorKind, QueryBuilderContext, QueryBuilderEvent } from '../types';
 import { MESSAGES } from '../../ui/constants';
+import { getLastFilter } from '../helpers/getLastFilter';
 
 export const idle: StateNodeConfig<
   QueryBuilderContext,
@@ -14,7 +15,7 @@ export const idle: StateNodeConfig<
     assign({
       suggestions: (context) => {
         let placeholder = MESSAGES.FILTER_ADD;
-        const lastFilter = context.filters.at(-1);
+        const lastFilter = getLastFilter(context.filters);
 
         if (lastFilter && isPartialFilter(lastFilter)) {
           if (!lastFilter.operator) {

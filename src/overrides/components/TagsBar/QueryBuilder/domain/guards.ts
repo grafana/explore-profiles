@@ -1,4 +1,5 @@
 import { getFilterUnderEdition } from './helpers/getFilterUnderEdition';
+import { getLastFilter } from './helpers/getLastFilter';
 import { isPartialFilter } from './helpers/isPartialFilter';
 import { isSwitchingOperatorMode } from './helpers/isSwitchingOpStrictness';
 import { EditEvent, FilterPartKind, QueryBuilderContext, QueryBuilderEvent, SelectEvent } from './types';
@@ -8,46 +9,38 @@ type Guards<TContext, TEvent> = Record<string, CondFn<TContext, TEvent>>;
 
 export const guards: Guards<QueryBuilderContext, QueryBuilderEvent> = {
   shouldSuggestAttributes: (context) => {
-    const lastFilter = context.filters.at(-1);
-    if (!lastFilter) {
-      return true;
-    }
-
-    return !isPartialFilter(lastFilter);
+    const lastFilter = getLastFilter(context.filters);
+    return !lastFilter || !isPartialFilter(lastFilter);
   },
   shouldSuggestOperators: (context) => {
-    const lastFilter = context.filters.at(-1);
-    if (!lastFilter) {
-      return false;
-    }
-
-    return isPartialFilter(lastFilter) && !lastFilter.operator;
+    return !getLastFilter(context.filters)?.operator;
   },
   shouldSuggestValues: (context) => {
-    const lastFilter = context.filters.at(-1);
-    if (!lastFilter) {
-      return false;
-    }
-
-    return isPartialFilter(lastFilter) && !lastFilter.value;
+    const lastFilter = getLastFilter(context.filters);
+    return Boolean(lastFilter?.operator && !lastFilter?.value);
   },
-  shouldEditAttribute: (context, event) => (event as EditEvent).data.part === FilterPartKind.attribute,
-  shouldEditOperator: (context, event) => (event as EditEvent).data.part === FilterPartKind.operator,
-  shouldEditValue: (context, event) => (event as EditEvent).data.part === FilterPartKind.value,
-  // see assignOperatorToFilter() in domain/actions.ts
-  shouldLoadLabelValues: (context, event) => {
+  // edition
+  isSwitchingOperatorMode: (context, event) => {
     if (!context.edition) {
-      return true;
-    }
-
-    // editing
-
-    const lastFilter = context.filters.at(-1);
-
-    if (lastFilter && isPartialFilter(lastFilter)) {
-      return true;
+      return false;
     }
 
     return isSwitchingOperatorMode(getFilterUnderEdition(context), (event as SelectEvent).data.value);
   },
+  isNotSwitchingOperatorMode: (context, event) => {
+    if (!context.edition) {
+      return false;
+    }
+
+    return !isSwitchingOperatorMode(getFilterUnderEdition(context), (event as SelectEvent).data.value);
+  },
+  // after completion
+  hasPartialFilter: (context) => {
+    const lastFilter = getLastFilter(context.filters);
+    return Boolean(lastFilter && isPartialFilter(lastFilter));
+  },
+  // edition
+  shouldEditAttribute: (context, event) => (event as EditEvent).data.part === FilterPartKind.attribute,
+  shouldEditOperator: (context, event) => (event as EditEvent).data.part === FilterPartKind.operator,
+  shouldEditValue: (context, event) => (event as EditEvent).data.part === FilterPartKind.value,
 };

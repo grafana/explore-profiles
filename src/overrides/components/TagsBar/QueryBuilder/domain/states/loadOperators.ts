@@ -64,12 +64,22 @@ export const displayOperators: StateNodeConfig<
     DISCARD_SUGGESTIONS: 'idle',
     SELECT_SUGGESTION: [
       {
-        cond: 'shouldLoadLabelValues',
+        cond: 'isSwitchingOperatorMode',
         target: 'loadLabelValues',
         actions: ['assignOperatorToFilter'],
       },
       {
-        target: 'idle',
+        cond: 'isNotSwitchingOperatorMode',
+        target: 'autoSuggestProxy',
+        actions: ['assignOperatorToFilter'],
+      },
+      {
+        cond: 'hasPartialFilter',
+        target: 'autoSuggestProxy',
+        actions: ['assignOperatorToFilter'],
+      },
+      {
+        target: 'loadLabelValues',
         actions: ['assignOperatorToFilter'],
       },
     ],

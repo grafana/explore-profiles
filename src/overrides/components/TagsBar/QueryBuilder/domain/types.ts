@@ -91,6 +91,7 @@ export type QueryBuilderSchema = {
     loadOperators: State<QueryBuilderContext, QueryBuilderEvent>;
     displayOperators: State<QueryBuilderContext, QueryBuilderEvent>;
     displayLabelValues: State<QueryBuilderContext, QueryBuilderEvent>;
+    autoSuggestProxy: State<QueryBuilderContext, QueryBuilderEvent>;
   };
 };
 

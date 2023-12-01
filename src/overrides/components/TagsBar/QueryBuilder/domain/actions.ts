@@ -19,6 +19,7 @@ import {
 } from './types';
 import { isSwitchingOperatorMode } from './helpers/isSwitchingOpStrictness';
 import { getFilterUnderEdition } from './helpers/getFilterUnderEdition';
+import { getLastFilter } from './helpers/getLastFilter';
 
 export const actions: any = {
   cancelAllLoad: () => {
@@ -88,7 +89,6 @@ export const actions: any = {
         : filter
     ) as Filters;
 
-    // see shouldLoadLabelValues() in domain/guards.ts
     const filterUnderEdition = getFilterUnderEdition(context);
 
     const newEdition =
@@ -135,7 +135,7 @@ export const actions: any = {
   removeLastFilter: assign((context: QueryBuilderContext) => {
     const { filters, query } = context;
 
-    const lastFilter = filters.at(-1);
+    const lastFilter = getLastFilter(filters);
     if (!lastFilter) {
       return context;
     }

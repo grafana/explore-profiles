@@ -3,6 +3,7 @@ import { actions } from './actions';
 import { guards } from './guards';
 import { services } from './services';
 import { idle } from './states/idle';
+import { autoSuggestProxy } from './states/autoSuggestProxy';
 import { displayLabelValues, loadLabelValues } from './states/loadLabelValues';
 import { displayLabels, loadLabels } from './states/loadLabels';
 import { displayOperators, loadOperators } from './states/loadOperators';
@@ -45,6 +46,7 @@ const config = (
     displayOperators,
     loadLabelValues,
     displayLabelValues,
+    autoSuggestProxy,
   },
 });
 

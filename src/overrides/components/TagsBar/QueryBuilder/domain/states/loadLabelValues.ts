@@ -4,6 +4,7 @@ import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
 import { MESSAGES } from '../../ui/constants';
 import { defaultContext } from '../stateMachine';
 import { invariant } from '../helpers/invariant';
+import { getLastFilter } from '../helpers/getLastFilter';
 
 export const loadLabelValues: StateNodeConfig<
   QueryBuilderContext,
@@ -54,7 +55,7 @@ export const displayLabelValues: StateNodeConfig<
 > = {
   entry: assign({
     suggestions: (context) => {
-      const targetFilter = context.edition ? getFilterUnderEdition(context) : context.filters.at(-1);
+      const targetFilter = context.edition ? getFilterUnderEdition(context) : getLastFilter(context.filters);
 
       invariant(typeof targetFilter?.operator !== undefined, 'No operator for the target filter!');
 
@@ -83,10 +84,17 @@ export const displayLabelValues: StateNodeConfig<
   }),
   on: {
     DISCARD_SUGGESTIONS: 'idle',
-    SELECT_SUGGESTION: {
-      target: 'idle',
-      actions: ['assignValueToFilter'],
-    },
+    SELECT_SUGGESTION: [
+      {
+        cond: 'hasPartialFilter',
+        target: 'autoSuggestProxy',
+        actions: ['assignValueToFilter'],
+      },
+      {
+        target: 'idle',
+        actions: ['assignValueToFilter'],
+      },
+    ],
     REMOVE_LAST_FILTER: {
       target: 'loadOperators',
       actions: ['removeLastFilter'],

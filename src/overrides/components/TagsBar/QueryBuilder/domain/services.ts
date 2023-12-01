@@ -1,6 +1,7 @@
 import { labelsRepository } from '../infrastructure/labelsRepository';
 import { operatorsRepository } from '../infrastructure/operatorsRepository';
 import { filtersToQuery } from './helpers/filtersToQuery';
+import { getLastFilter } from './helpers/getLastFilter';
 import { logger } from './helpers/logger';
 import { FilterKind, Filters, QueryBuilderContext, QueryBuilderEvent, Suggestions } from './types';
 
@@ -58,7 +59,7 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
 
         query = filtersToQuery(query, filters);
       } else {
-        targetFilter = context.filters.at(-1);
+        targetFilter = getLastFilter(context.filters);
 
         if (targetFilter?.type !== FilterKind.partial) {
           throw new Error('Impossible to load label values: no partial filter found!');
