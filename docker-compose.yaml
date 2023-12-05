@@ -14,6 +14,9 @@ services:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
       - ./samples/provisioning:/etc/grafana/provisioning
       - ./samples/dashboards:/var/lib/grafana/dashboards
+    environment:
+      GF_INSTALL_PLUGINS: grafana-llm-app
+      OPENAI_API_KEY: $OPENAI_API_KEY
 
   pyroscope:
     container_name: 'pyroscope'

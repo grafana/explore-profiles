@@ -25,3 +25,11 @@ services:
       context: .
     ports:
       - 4100:4100/tcp
+
+  qdrant:
+    image: qdrant/qdrant
+    volumes:
+      - qdrant-storage:/qdrant/storage
+
+volumes:
+  qdrant-storage:

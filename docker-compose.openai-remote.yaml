@@ -17,3 +17,11 @@ services:
     environment:
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
+
+  qdrant:
+    image: qdrant/qdrant
+    volumes:
+      - qdrant-storage:/qdrant/storage
+
+volumes:
+  qdrant-storage:

@@ -23,6 +23,13 @@
   "includes": [
     {
       "type": "page",
+      "name": "Single View AI",
+      "path": "/a/%PLUGIN_ID%/single-ai",
+      "addToNav": true,
+      "defaultNav": false
+    },
+    {
+      "type": "page",
       "name": "Tag Explorer",
       "path": "/a/%PLUGIN_ID%/tag-explorer",
       "role": "Viewer",

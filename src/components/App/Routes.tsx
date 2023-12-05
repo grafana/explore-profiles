@@ -5,6 +5,7 @@ import ContinuousComparisonView from '@pyroscope/pages/ContinuousComparisonView'
 import ContinuousDiffView from '@pyroscope/pages/ContinuousDiffView';
 import ContinuousSingleView from '@pyroscope/pages/ContinuousSingleView';
 import TagExplorerView from '@pyroscope/pages/TagExplorerView';
+import ContinuousSingleViewAi from '../../pages/ContinuousSingleViewAi/ContinuousSingleViewAi';
 import * as React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { ROUTES } from '../../constants';
@@ -69,6 +70,9 @@ export function Routes() {
       <div className={styles.page}>
         <PyroscopeStateWrapper>
           <Switch>
+            <Route path={prefixRoute(ROUTES.SINGLE_VIEW_AI)} exact>
+              <ContinuousSingleViewAi />
+            </Route>
             <Route path={prefixRoute(ROUTES.SINGLE_VIEW)} exact>
               <ContinuousSingleView />
             </Route>
