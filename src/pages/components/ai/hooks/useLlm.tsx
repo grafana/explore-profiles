@@ -1,6 +1,6 @@
 import { useFetchDotProfile } from './useFetchDotProfile';
 import { Message, useOpenAiChatCompletions } from './useOpenAiChatCompletions';
-import { ProfileMetricId, useGetProfileMetricById } from '../../../../../hooks/useProfileMetricsQuery';
+import { ProfileMetricId, useGetProfileMetricById } from '../../../../hooks/useProfileMetricsQuery';
 
 export type LlmReply = {
   text: string;
@@ -38,8 +38,19 @@ function stubReply() {
   };
 }
 
-export function useLlm(query: string, from: string, until: string): UseLlmResponse {
-  const { error: profileError, loading: profileLoading, value: profileValue } = useFetchDotProfile(query, from, until);
+export function useLlm(
+  query: string,
+  from: string,
+  until: string,
+  rightQuery?: string,
+  rightFrom?: string,
+  rightUntil?: string
+): UseLlmResponse {
+  const {
+    error: profileError,
+    loading: profileLoading,
+    value: profileValue,
+  } = useFetchDotProfile(query, from, until, rightQuery, rightFrom, rightUntil);
 
   // uncomment me to use pre-recorded API profile data
   // const { error: profileError, loading: profileLoading, value: profileValue } = stubProfile();

@@ -9,7 +9,7 @@ enum PromptCategories {
   user = 'user',
 }
 
-type Prompts = Record<string, (profile: string, profileType: string) => string>;
+type Prompts = Record<string, (profile: string, profileType: string, profileRight?: string) => string>;
 
 const prompts: Record<PromptCategories, Prompts> = {
   system: {
@@ -62,6 +62,26 @@ The profile type is ${profileType}
 Below is the performance profile in DOT format:
 ${profile}
 `,
+    diff: (profile: string, profileType: string, profileRight?: string) => `
+Two performance profiles in the DOT format will follow. Tell me in what way has performance changed between the first and the second profile, if at all.
+
+Tell me about function names and not nodes.
+Do not break function names.
+Do not show any numeric values, absolute or percents.
+Do not show node names like N1, N3, or Node 1, Node 2.
+Do not suggest low-level runtime optimisations, focus on the user code.
+
+Always use full function names.
+Never split function and package name.
+
+Remove any numeric values, absolute or percents, from the output.
+Remove node names like N1, N3, or Node 1, Node 2 from the output.
+The profile type is ${profileType}
+    
+    ${profile}
+    
+    ${profileRight}
+`,
   },
 };
 
@@ -70,11 +90,13 @@ export const buildPrompts = ({
   user,
   profile,
   profileType,
+  profileRight,
 }: {
   system: string;
   user: string;
   profile: string;
   profileType: string;
+  profileRight?: string;
 }) => {
   const systemPrompt = prompts.system[system];
   if (typeof systemPrompt !== 'function') {
@@ -87,7 +109,7 @@ export const buildPrompts = ({
   }
 
   return {
-    system: systemPrompt(profile, profileType),
-    user: userPrompt(profile, profileType),
+    system: systemPrompt(profile, profileType, profileRight),
+    user: userPrompt(profile, profileType, profileRight),
   };
 };

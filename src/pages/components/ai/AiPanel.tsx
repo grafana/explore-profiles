@@ -13,6 +13,9 @@ type AiPanelProps = {
   query: string;
   from: string;
   until: string;
+  rightQuery?: string;
+  rightFrom?: string;
+  rightUntil?: string;
   onClickClose: (event: any) => void;
 };
 
@@ -33,10 +36,10 @@ export const getStyles = (theme: GrafanaTheme2) => ({
   `,
 });
 
-export default function AiPanel({ query, from, until, onClickClose }: AiPanelProps) {
+export default function AiPanel({ query, from, until, rightQuery, rightFrom, rightUntil, onClickClose }: AiPanelProps) {
   const styles = useStyles2(getStyles);
 
-  const { loading, error, reply } = useLlm(query, from, until);
+  const { loading, error, reply } = useLlm(query, from, until, rightQuery, rightFrom, rightUntil);
 
   const displayReply = Boolean(reply?.hasStarted || reply?.hasFinished);
 

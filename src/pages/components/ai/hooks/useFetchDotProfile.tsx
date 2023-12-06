@@ -3,7 +3,7 @@ import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
 import {
   ProfileFormat,
   PyroscopeApiClient,
-} from '../../../../../overrides/components/TagsBar/QueryBuilder/infrastructure/http/PyroscopeApiClient';
+} from '../../../../overrides/components/TagsBar/QueryBuilder/infrastructure/http/PyroscopeApiClient';
 
 const pyroscopeApiClient = new PyroscopeApiClient();
 
@@ -26,9 +26,16 @@ function cleanup(profile: string) {
   return profile;
 }
 
-export function useFetchDotProfile(query: string, from: string, until: string): ReturnType<typeof useAsync> {
+export function useFetchDotProfile(
+  query: string,
+  from: string,
+  until: string,
+  rightQuery?: string,
+  rightFrom?: string,
+  rightUntil?: string
+): ReturnType<typeof useAsync> {
   return useAsync(async () => {
-    const reponse = await pyroscopeApiClient.fetchProfile(
+    const response = await pyroscopeApiClient.fetchProfile(
       query,
       formatAsOBject(from).getTime(),
       formatAsOBject(until).getTime(),
@@ -36,8 +43,22 @@ export function useFetchDotProfile(query: string, from: string, until: string): 
       100
     );
 
-    let profile = await reponse.text();
+    let profile = await response.text();
 
-    return cleanup(profile);
+    if (rightQuery && rightFrom && rightUntil) {
+      const responseRight = await pyroscopeApiClient.fetchProfile(
+        rightQuery,
+        formatAsOBject(rightFrom).getTime(),
+        formatAsOBject(rightUntil).getTime(),
+        ProfileFormat.dot,
+        100
+      );
+
+      let profileRight = await responseRight.text();
+
+      return { value: cleanup(profile), valueRight: cleanup(profileRight) };
+    }
+
+    return { value: cleanup(profile) };
   }, [query, from, until]);
 }
