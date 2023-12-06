@@ -52,16 +52,6 @@ main nav a[aria-label="Tab Single View AI"]::after {
   border-radius: 2px;
   font-size: 12px;
 }
-main nav a[aria-label="Tab Diff View AI"]::after {
-  content: "New";
-  position: absolute;
-  right: 12px;
-  background-color: rgb(255, 136, 51);
-  color: #fff;
-  padding: 0px 4px;
-  border-radius: 2px;
-  font-size: 12px;
-}
     `);
 
     return () => {

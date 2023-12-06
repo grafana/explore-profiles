@@ -28,14 +28,14 @@ import {
   setQuery,
 } from '@pyroscope/redux/reducers/continuous';
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
-import AiPanel from '../../components/ai/AiPanel';
-import { AskAiButton } from '../../components/ai/AskAiButton';
+import AiPanel from './ai/AiPanel';
+import { AskAiButton } from './ai/AskAiButton';
 import AddAnnotationMenuItem from './continuous/contextMenu/AddAnnotation.menuitem';
 import ContextMenu from './continuous/contextMenu/ContextMenu';
-import { createTooltip } from '../../helpers/createTooltip';
-import { formatTitle } from '../../helpers/formatTitle';
-import { isLoadingOrReloading } from '../../helpers/loading';
-import { useAiPanel } from '../../components/ai/hooks/useAiPanel';
+import { createTooltip } from './helpers/createTooltip';
+import { formatTitle } from './helpers/formatTitle';
+import { isLoadingOrReloading } from './helpers/loading';
+import { useAiPanel } from './ai/hooks/useAiPanel';
 
 // eslint-disable-next-line no-unused-vars
 export const getStyles = (theme: GrafanaTheme2) => ({
