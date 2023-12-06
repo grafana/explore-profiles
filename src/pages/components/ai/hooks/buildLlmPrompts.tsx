@@ -9,7 +9,7 @@ enum PromptCategories {
   user = 'user',
 }
 
-type Prompts = Record<string, (profile: string, profileType: string) => string>;
+type Prompts = Record<string, (profile: string, profileType: string, profileRight?: string) => string>;
 
 const prompts: Record<PromptCategories, Prompts> = {
   system: {
@@ -62,6 +62,14 @@ The profile type is ${profileType}
 Below is the performance profile in DOT format:
 ${profile}
 `,
+    diff: (profile: string, profileType: string, profileRight?: string) => `
+    Two performance profiles in the DOT format will follow. Tell me what has changed between the first and the second profile.
+    The profile type is ${profileType}
+    
+    ${profile}
+    
+    ${profileRight}
+`
   },
 };
 
@@ -70,11 +78,13 @@ export const buildPrompts = ({
   user,
   profile,
   profileType,
+  profileRight,
 }: {
   system: string;
   user: string;
   profile: string;
   profileType: string;
+  profileRight?: string;
 }) => {
   const systemPrompt = prompts.system[system];
   if (typeof systemPrompt !== 'function') {
@@ -87,7 +97,7 @@ export const buildPrompts = ({
   }
 
   return {
-    system: systemPrompt(profile, profileType),
-    user: userPrompt(profile, profileType),
+    system: systemPrompt(profile, profileType, profileRight),
+    user: userPrompt(profile, profileType, profileRight),
   };
 };
