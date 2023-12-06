@@ -1,46 +1,28 @@
 import { llms } from '@grafana/experimental';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { finalize } from 'rxjs';
 import { model, buildPrompts } from './buildLlmPrompts';
 
 // taken from "@grafana/experimental"
-type Role = 'system' | 'user' | 'assistant' | 'function';
-type Message = {
+export type Role = 'system' | 'user' | 'assistant' | 'function';
+export type Message = {
   role: Role;
   content: string;
   name?: string;
   function_call?: Object;
 };
-type Messages = Message[];
 
 export function useOpenAiChatCompletions(profile: string, profileType: string) {
   const [reply, setReply] = useState('');
   const [replyHasStarted, setReplyHasStarted] = useState(false);
   const [replyHasFinished, setReplyHasFinished] = useState(false);
+  const [messages, setMessages] = useState([] as Message[]);
+  const replyHasStartedRef = useRef(replyHasStarted);
 
-  useEffect(() => {
-    if (!profile) {
-      return;
-    }
-
-    const prompts = buildPrompts({ system: 'empty', user: 'ryan', profile, profileType });
-    const messages: Messages = [
-      {
-        role: 'system',
-        content: prompts.system,
-      },
-      {
-        role: 'user',
-        content: prompts.user,
-      },
-    ];
-
-    console.log('*** useLlm messages', messages);
-
+  const sendMessages = useCallback(() => {
     setReplyHasStarted(true);
     setReplyHasFinished(false);
-
-    // TODO: handle errors
+    setReply('');
     const stream = llms.openai
       .streamChatCompletions({
         model,
@@ -60,17 +42,51 @@ export function useOpenAiChatCompletions(profile: string, profileType: string) {
           setReplyHasFinished(true);
         })
       );
-
     stream.subscribe(setReply);
+  }, [messages, setReplyHasStarted, setReplyHasFinished]);
 
-    return () => {
-      // TODO
-    };
-  }, [profile, profileType]);
+  const addMessages = useCallback(
+    (messagesToAdd: Message[]): void => {
+      messages.push(...messagesToAdd);
+      setMessages(messages);
+      sendMessages();
+    },
+    [messages, sendMessages]
+  );
+
+  useEffect(() => {
+    if (!profile) {
+      return;
+    }
+
+    if (messages.length === 0) {
+      const prompts = buildPrompts({ system: 'empty', user: 'ryan', profile, profileType });
+      setMessages([
+        {
+          role: 'system',
+          content: prompts.system,
+        },
+        {
+          role: 'system',
+          content: prompts.user,
+        },
+      ]);
+      return;
+    }
+
+    console.log('*** useLlm messages', messages);
+
+    if (replyHasStartedRef.current) {
+      return;
+    }
+    sendMessages();
+  }, [profile, profileType, messages, setMessages, sendMessages]);
 
   return {
     text: reply,
     hasStarted: replyHasStarted,
     hasFinished: replyHasFinished,
+    addMessages: addMessages,
+    messages: messages,
   };
 }

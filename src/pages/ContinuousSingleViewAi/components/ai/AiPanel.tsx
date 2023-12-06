@@ -1,11 +1,10 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-// import React, { useCallback } from 'react';
-import React from 'react';
+import React, { useCallback } from 'react';
 import LoadingSpinner from 'grafana-pyroscope/public/app/ui/LoadingSpinner';
 import { AiPanelError } from './AiPanelError';
-// import { AiPanelFollowUpForm } from './AiPanelFollowUpForm';
+import { AiPanelFollowUpForm } from './AiPanelFollowUpForm';
 import { AiPanelHeader } from './AiPanelHeader';
 import { AiPanelReply } from './AiPanelReply';
 import { LlmReply, useLlm } from './hooks/useLlm';
@@ -20,7 +19,7 @@ type AiPanelProps = {
 // eslint-disable-next-line no-unused-vars
 export const getStyles = (theme: GrafanaTheme2) => ({
   panel: css`
-    padding: 0 16px;
+    padding: 0 80px 0 16px;
 
     & h1 {
       margin-top: 0;
@@ -41,11 +40,24 @@ export default function AiPanel({ query, from, until, onClickClose }: AiPanelPro
 
   const displayReply = Boolean(reply?.hasStarted || reply?.hasFinished);
 
-  // const displayFollowUpForm = !error && Boolean(reply?.hasFinished);
-  // const onSubmitFollowUpForm = useCallback((event: any, question: string) => {
-  //   // TODO
-  //   console.log('*** question', question);
-  // }, []);
+  const displayFollowUpForm = !error && Boolean(reply?.hasFinished);
+  const onSubmitFollowUpForm = useCallback(
+    (event: any, question: string) => {
+      const addMessages = reply!.addMessages;
+      addMessages([
+        {
+          role: 'assistant',
+          content: reply!.text,
+        },
+        {
+          role: 'user',
+          content: question,
+        },
+      ]);
+      console.log('*** question', question);
+    },
+    [reply]
+  );
 
   return (
     <div className={styles.panel}>
@@ -61,7 +73,7 @@ export default function AiPanel({ query, from, until, onClickClose }: AiPanelPro
 
       {displayReply ? <AiPanelReply reply={reply as LlmReply} /> : null}
 
-      {/* {displayFollowUpForm ? <AiPanelFollowUpForm onSubmit={onSubmitFollowUpForm} /> : null} */}
+      {displayFollowUpForm ? <AiPanelFollowUpForm onSubmit={onSubmitFollowUpForm} /> : null}
     </div>
   );
 }

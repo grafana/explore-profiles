@@ -14,13 +14,16 @@ type Prompts = Record<string, (profile: string, profileType: string) => string>;
 const prompts: Record<PromptCategories, Prompts> = {
   system: {
     // add new system prompts above
-    empty: () => '',
+    empty: () => `
+    You are a performance profiling expert and excel at analyzing profiles in the DOT format.
+    In the DOT format, a row like N47 -> N61 means the function from N47 called the function from N61.
+`,
   },
   user: {
     // add new user prompts above
     ryan: (profile: string, profileType: string) => `
     Analyze this flamegraph in DOT format and address these key aspects:
-    - **Performance Bottleneck**: Identify the primary factors slowing down the process, consuming excessive memory, or causing a bottlneck in the system.
+    - **Performance Bottleneck**: Identify the primary factors slowing down the process, consuming excessive memory, or causing a bottleneck in the system.
     - **Root Cause**: Explain clearly why these bottlenecks are occurring.
     - **Recommended Fix**: Suggest practical solutions for these issues.
     
@@ -33,7 +36,7 @@ const prompts: Record<PromptCategories, Prompts> = {
     Format the response using markdown headers for each section corresponding to the key aspects.
     
     The profile type is: ${profileType}
-    Flamegraph in DOT format:
+    Profile in DOT format:
     ${profile}
 `,
     anton: (profile: string, profileType: string) => `

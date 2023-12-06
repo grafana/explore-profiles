@@ -3,12 +3,14 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import Markdown from 'markdown-to-jsx';
 import React, { ReactNode } from 'react';
+import { Message } from './hooks/useOpenAiChatCompletions';
 
 type AiPanelReplyProps = {
   reply: {
     text: string;
     hasStarted: boolean;
     hasFinished: boolean;
+    messages: Message[];
   };
 };
 
@@ -84,8 +86,20 @@ export function AiPanelReply({ reply }: AiPanelReplyProps) {
   const styles = useStyles2(getStyles);
 
   return (
-    <div className={styles.reply}>
-      <Markdown options={markdownOptions}>{reply.text}</Markdown>
-    </div>
+    <>
+      {reply?.messages
+        ?.filter((message) => message.role !== 'system')
+        .map((message) => (
+          <>
+            <div className={styles.reply}>
+              <Markdown options={markdownOptions}>{message.content}</Markdown>
+            </div>
+            <hr />
+          </>
+        ))}
+      <div className={styles.reply}>
+        <Markdown options={markdownOptions}>{reply.text}</Markdown>
+      </div>
+    </>
   );
 }

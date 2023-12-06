@@ -1,13 +1,13 @@
 import { useFetchDotProfile } from './useFetchDotProfile';
-import { useOpenAiChatCompletions } from './useOpenAiChatCompletions';
+import { Message, useOpenAiChatCompletions } from './useOpenAiChatCompletions';
 import { ProfileMetricId, useGetProfileMetricById } from '../../../../../hooks/useProfileMetricsQuery';
 
-// /Users/rperry2174/Desktop/projects/pyroscope-app-plugin/src/pages/ContinuousSingleViewAi/components/ai/hooks/useLlm.tsx
-// /Users/rperry2174/Desktop/projects/pyroscope-app-plugin/src/hooks/useProfileMetricsQuery.ts
 export type LlmReply = {
   text: string;
   hasStarted: boolean;
   hasFinished: boolean;
+  addMessages: (messages: Message[]) => void;
+  messages: Message[];
 };
 
 type UseLlmResponse = {

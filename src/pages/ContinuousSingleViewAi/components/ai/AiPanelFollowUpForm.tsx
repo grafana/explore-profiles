@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, TextArea, useStyles2 } from '@grafana/ui';
-import React, { useCallback, useState } from 'react';
+import React, { KeyboardEvent, useCallback, useState } from 'react';
 
 type AiPanelFollowUpFormProps = {
   onSubmit: (event: any, question: string) => void;
@@ -48,6 +48,12 @@ export function AiPanelFollowUpForm({ onSubmit }: AiPanelFollowUpFormProps) {
   const styles = useStyles2(getStyles);
   const { question, onChangeInput, onClickSend } = useFollowUpForm(onSubmit);
 
+  const onKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.code === 'Enter' && !event.shiftKey) {
+      onClickSend();
+    }
+  };
+
   return (
     <div>
       <TextArea
@@ -55,6 +61,7 @@ export function AiPanelFollowUpForm({ onSubmit }: AiPanelFollowUpFormProps) {
         placeholder="Ask me something else..."
         value={question}
         onChange={onChangeInput}
+        onKeyDown={onKeyDown}
       />
 
       <Button className={styles.sendButton} onClick={onClickSend}>

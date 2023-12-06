@@ -15,8 +15,6 @@ function cleanup(profile: string) {
     .replace(/id="node\d+" /g, '')
     .replace(/labeltooltip=".*\)" /g, '')
     .replace(/tooltip=".*\)" /g, '')
-    .replace(/\{"version.*/g, '')
-    .replace(/\{"version.*/g, '')
     .replace(/(N\d+ -> N\d+).*/g, '$1')
     .replace(/N\d+ \[label="other.*\n/, '')
     .replace(/shape=box /g, '')
