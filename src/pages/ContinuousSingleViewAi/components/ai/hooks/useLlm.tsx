@@ -1,6 +1,9 @@
 import { useFetchDotProfile } from './useFetchDotProfile';
 import { useOpenAiChatCompletions } from './useOpenAiChatCompletions';
+import { ProfileMetricId, useGetProfileMetricById } from '../../../../../hooks/useProfileMetricsQuery';
 
+// /Users/rperry2174/Desktop/projects/pyroscope-app-plugin/src/pages/ContinuousSingleViewAi/components/ai/hooks/useLlm.tsx
+// /Users/rperry2174/Desktop/projects/pyroscope-app-plugin/src/hooks/useProfileMetricsQuery.ts
 export type LlmReply = {
   text: string;
   hasStarted: boolean;
@@ -44,7 +47,9 @@ export function useLlm(query: string, from: string, until: string): UseLlmRespon
   // uncomment me to use a pre-recorded OpenAI reply
   // return stubReply();
 
-  const reply = useOpenAiChatCompletions(profileValue);
+  const rawProfileType = query.split('{')[0];
+  const profileData = useGetProfileMetricById(rawProfileType as ProfileMetricId);
+  const reply = useOpenAiChatCompletions(profileValue, profileData.data?.type || 'cpu');
 
   if (profileError) {
     console.error('Error while fetching DOT profile!');

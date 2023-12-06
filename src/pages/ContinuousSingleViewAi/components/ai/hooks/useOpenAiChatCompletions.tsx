@@ -13,7 +13,7 @@ type Message = {
 };
 type Messages = Message[];
 
-export function useOpenAiChatCompletions(profile: string) {
+export function useOpenAiChatCompletions(profile: string, profileType: string) {
   const [reply, setReply] = useState('');
   const [replyHasStarted, setReplyHasStarted] = useState(false);
   const [replyHasFinished, setReplyHasFinished] = useState(false);
@@ -23,7 +23,7 @@ export function useOpenAiChatCompletions(profile: string) {
       return;
     }
 
-    const prompts = buildPrompts({ system: 'empty', user: 'anton', profile });
+    const prompts = buildPrompts({ system: 'empty', user: 'ryan', profile, profileType });
     const messages: Messages = [
       {
         role: 'system',
@@ -66,7 +66,7 @@ export function useOpenAiChatCompletions(profile: string) {
     return () => {
       // TODO
     };
-  }, [profile]);
+  }, [profile, profileType]);
 
   return {
     text: reply,
