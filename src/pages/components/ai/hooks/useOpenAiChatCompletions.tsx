@@ -12,9 +12,9 @@ export type Message = {
   function_call?: Object;
 };
 type ProfileContainer = {
-  value: string,
-  valueRight?: string,
-}
+  value: string;
+  valueRight?: string;
+};
 
 export function useOpenAiChatCompletions(profile: ProfileContainer, profileType: string) {
   const [reply, setReply] = useState('');
@@ -66,7 +66,13 @@ export function useOpenAiChatCompletions(profile: ProfileContainer, profileType:
     if (messages.length === 0) {
       let prompts = buildPrompts({ system: 'empty', user: 'ryan', profile: profile.value, profileType });
       if (profile.valueRight) {
-        prompts = buildPrompts({ system: 'empty', user: 'diff', profile: profile.value, profileType, profileRight: profile.valueRight });
+        prompts = buildPrompts({
+          system: 'empty',
+          user: 'diff',
+          profile: profile.value,
+          profileType,
+          profileRight: profile.valueRight,
+        });
       }
       setMessages([
         {

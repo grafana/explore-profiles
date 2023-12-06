@@ -38,8 +38,19 @@ function stubReply() {
   };
 }
 
-export function useLlm(query: string, from: string, until: string, rightQuery?: string, rightFrom?: string, rightUntil?: string): UseLlmResponse {
-  const { error: profileError, loading: profileLoading, value: profileValue } = useFetchDotProfile(query, from, until, rightQuery, rightFrom, rightUntil);
+export function useLlm(
+  query: string,
+  from: string,
+  until: string,
+  rightQuery?: string,
+  rightFrom?: string,
+  rightUntil?: string
+): UseLlmResponse {
+  const {
+    error: profileError,
+    loading: profileLoading,
+    value: profileValue,
+  } = useFetchDotProfile(query, from, until, rightQuery, rightFrom, rightUntil);
 
   // uncomment me to use pre-recorded API profile data
   // const { error: profileError, loading: profileLoading, value: profileValue } = stubProfile();
