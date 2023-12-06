@@ -11,7 +11,11 @@ import {
   selectAnnotationsOrDefault,
 } from '@pyroscope/redux/reducers/continuous';
 import usePopulateLeftRightQuery from '@pyroscope/hooks/populateLeftRightQuery.hook';
-import useTimelines, { leftColor, rightColor, selectionColor } from '@pyroscope/hooks/timeline.hook';
+import useTimelines, {
+  leftColor,
+  rightColor,
+  selectionColor,
+} from '@pyroscope/hooks/timeline.hook';
 import useTimeZone from '@pyroscope/hooks/timeZone.hook';
 import useTags from '@pyroscope/hooks/tags.hook';
 import Toolbar from '@pyroscope/components/Toolbar';
@@ -26,17 +30,24 @@ import { isLoadingOrReloading } from '../../helpers/loading';
 import { Panel } from '@pyroscope/components/Panel';
 import { PageContentWrapper } from '@pyroscope/pages/PageContentWrapper';
 import { FlameGraphWrapper } from '@pyroscope/components/FlameGraphWrapper';
-import AiPanel from '../../components/ai/AiPanel';
-import { getStyles } from '../../ContinuousSingleViewAi/components/ContinuousSingleView';
-import { useStyles2 } from '@grafana/ui';
-import { useAiPanel } from '../../components/ai/hooks/useAiPanel';
+import AiPanel from "../../components/ai/AiPanel";
+import  { getStyles } from "../../ContinuousSingleViewAi/components/ContinuousSingleView";
+import {useStyles2} from "@grafana/ui";
+import {useAiPanel} from "../../components/ai/hooks/useAiPanel";
 
 function ComparisonDiffView() {
   const styles = useStyles2(getStyles);
 
   const dispatch = useAppDispatch();
-  const { diffView, refreshToken, maxNodes, leftFrom, rightFrom, leftUntil, rightUntil } =
-    useAppSelector(selectContinuousState);
+  const {
+    diffView,
+    refreshToken,
+    maxNodes,
+    leftFrom,
+    rightFrom,
+    leftUntil,
+    rightUntil,
+  } = useAppSelector(selectContinuousState);
   const { leftQuery, rightQuery } = useAppSelector(selectQueries);
   const annotations = useAppSelector(selectAnnotationsOrDefault('diffView'));
 
@@ -48,7 +59,11 @@ function ComparisonDiffView() {
   const { offset } = useTimeZone();
   const timezone = offset === 0 ? 'utc' : 'browser';
 
-  const isLoading = isLoadingOrReloading([diffView.type, timelines.left.type, timelines.right.type]);
+  const isLoading = isLoadingOrReloading([
+    diffView.type,
+    timelines.left.type,
+    timelines.right.type,
+  ]);
 
   useEffect(() => {
     if (rightQuery && leftQuery) {
@@ -66,7 +81,17 @@ function ComparisonDiffView() {
       return fetchData.abort;
     }
     return undefined;
-  }, [dispatch, leftFrom, leftUntil, leftQuery, rightFrom, rightUntil, rightQuery, refreshToken, maxNodes]);
+  }, [
+    dispatch,
+    leftFrom,
+    leftUntil,
+    leftQuery,
+    rightFrom,
+    rightUntil,
+    rightQuery,
+    refreshToken,
+    maxNodes,
+  ]);
 
   const { isAiPanelOpen, onClickAskAi, onClickCloseAiPanel } = useAiPanel(leftQuery, leftFrom, leftUntil);
 
@@ -79,7 +104,12 @@ function ComparisonDiffView() {
             dispatch(actions.setQuery(query));
           }}
         />
-        <Panel isLoading={isLoading} title={<ChartTitle titleKey={diffView.profile?.metadata.name as any} />}>
+        <Panel
+          isLoading={isLoading}
+          title={
+            <ChartTitle titleKey={diffView.profile?.metadata.name as any} />
+          }
+        >
           <TimelineChartWrapper
             data-testid="timeline-main"
             id="timeline-chart-diff"
@@ -139,7 +169,10 @@ function ComparisonDiffView() {
               key="timeline-chart-left"
               id="timeline-chart-left"
               timelineA={leftTimeline}
-              syncCrosshairsWith={['timeline-chart-diff', 'timeline-chart-right']}
+              syncCrosshairsWith={[
+                'timeline-chart-diff',
+                'timeline-chart-right',
+              ]}
               selectionWithHandler
               onSelect={(from, until) => {
                 dispatch(actions.setLeft({ from, until }));
@@ -176,7 +209,10 @@ function ComparisonDiffView() {
               id="timeline-chart-right"
               selectionWithHandler
               timelineA={rightTimeline}
-              syncCrosshairsWith={['timeline-chart-diff', 'timeline-chart-left']}
+              syncCrosshairsWith={[
+                'timeline-chart-diff',
+                'timeline-chart-left',
+              ]}
               onSelect={(from, until) => {
                 dispatch(actions.setRight({ from, until }));
               }}
@@ -193,26 +229,19 @@ function ComparisonDiffView() {
             />
           </Panel>
         </div>
-        <Panel isLoading={isLoading} headerActions={!isAiPanelOpen ? <AskAiButton onClick={onClickAskAi} /> : null}>
+        <Panel
+            isLoading={isLoading}
+            headerActions={!isAiPanelOpen ? <AskAiButton onClick={onClickAskAi} /> : null}
+        >
           {isAiPanelOpen ? (
-            <div className={styles.flamegraphContainer}>
-              <div className={styles.flamegraphComponent}>
-                <FlameGraphWrapper profile={diffView.profile} diff={true} />
+              <div className={styles.flamegraphContainer}>
+                <div className={styles.flamegraphComponent}><FlameGraphWrapper profile={diffView.profile} diff={true} /></div>
+                <div className={styles.aiPanel}>
+                  <AiPanel query={leftQuery} from={leftFrom} until={leftUntil} rightQuery={rightQuery} rightFrom={rightFrom} rightUntil={rightUntil} onClickClose={onClickCloseAiPanel} />
+                </div>
               </div>
-              <div className={styles.aiPanel}>
-                <AiPanel
-                  query={leftQuery}
-                  from={leftFrom}
-                  until={leftUntil}
-                  rightQuery={rightQuery}
-                  rightFrom={rightFrom}
-                  rightUntil={rightUntil}
-                  onClickClose={onClickCloseAiPanel}
-                />
-              </div>
-            </div>
           ) : (
-            <FlameGraphWrapper profile={diffView.profile} diff={true} />
+              <FlameGraphWrapper profile={diffView.profile} diff={true} />
           )}
         </Panel>
       </PageContentWrapper>

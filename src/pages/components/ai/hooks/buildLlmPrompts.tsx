@@ -69,7 +69,7 @@ ${profile}
     ${profile}
     
     ${profileRight}
-`,
+`
   },
 };
 
