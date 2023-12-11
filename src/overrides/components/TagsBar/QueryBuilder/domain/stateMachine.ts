@@ -18,6 +18,7 @@ export const defaultContext: QueryBuilderContext = Object.freeze({
   },
   query: '',
   filters: [],
+  isQueryUpToDate: true,
   edition: null,
   suggestions: {
     type: null,

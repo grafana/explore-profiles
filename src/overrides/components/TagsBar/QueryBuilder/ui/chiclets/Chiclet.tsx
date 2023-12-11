@@ -3,6 +3,7 @@ import { css } from '@emotion/css';
 import { ChicletAttributeOperatorValue } from './ChicletAttributeOperatorValue';
 import { PartialChiclet } from './PartialChiclet';
 import { FilterPartKind, FilterKind, CompleteFilter, Filter } from '../../domain/types';
+import { GrafanaTheme2 } from '@grafana/data';
 
 type ChicletProps = {
   filter: Filter;
@@ -10,7 +11,7 @@ type ChicletProps = {
   onRemove: (event: React.MouseEvent<HTMLElement>, filter: CompleteFilter) => void;
 };
 
-export const chicletStyle = css`
+const chicletStyle = css`
   display: flex;
   margin: 0 4px 4px 0;
   & > button {
@@ -31,12 +32,44 @@ export const chicletStyle = css`
   }
 `;
 
-export const noHoverStyle = css`
+const partialChicletStyle = css`
+  ${chicletStyle};
+  & > button {
+    background-color: #6e6e6e;
+  }
+  & :nth-child(2) {
+    padding: 6px;
+  }
+`;
+
+const inactiveChicletStyle = css`
+  ${chicletStyle};
+  & > button {
+    background-color: #6e6e6e;
+  }
+`;
+
+const noHoverStyle = css`
   &:hover {
     opacity: 1 !important;
     cursor: default !important;
   }
 `;
+
+// TODO: use the Grafana theme
+// eslint-disable-next-line no-unused-vars
+export const getStyles = (theme: GrafanaTheme2) => ({
+  chicletStyle,
+  partialChicletStyle,
+  inactiveChicletStyle,
+  chicletAttributeStyle: noHoverStyle,
+  chicletRemoveButtonStyle: css`
+    & svg {
+      width: 12px;
+      height: 12px;
+    }
+  `,
+});
 
 const ChicletComponent = ({ filter, onClick, onRemove }: ChicletProps) => {
   switch (filter.type) {

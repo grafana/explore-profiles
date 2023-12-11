@@ -4,16 +4,17 @@ import { queryToFilters } from '../queryToFilters';
 type TestCase = [string, Filters];
 
 const expectedCountFilter = {
+  id: expect.any(String),
+  type: FilterKind['attribute-operator-value'],
+  active: true,
   attribute: {
     label: 'action',
     value: 'action',
   },
-  id: expect.any(String),
   operator: {
     label: '=',
     value: '=',
   },
-  type: FilterKind['attribute-operator-value'],
   value: {
     label: 'count',
     value: 'count',
@@ -37,16 +38,17 @@ const cases: TestCase[] = [
     [
       expectedCountFilter,
       {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
         attribute: {
           label: 'controller',
           value: 'controller',
         },
-        id: expect.any(String),
         operator: {
           label: '!=',
           value: '!=',
         },
-        type: FilterKind['attribute-operator-value'],
         value: {
           label: 'admin/products',
           value: 'admin/products',
@@ -59,16 +61,17 @@ const cases: TestCase[] = [
     [
       expectedCountFilter,
       {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
         attribute: {
           label: 'pod_id',
           value: 'pod_id',
         },
-        id: expect.any(String),
         operator: {
           label: 'in',
           value: 'in',
         },
-        type: FilterKind['attribute-operator-value'],
         value: {
           label: '83, 84',
           value: '83|84',

@@ -4,6 +4,7 @@ import { filtersToQuery } from '../filtersToQuery';
 const actionFilter = {
   id: '5epq3GXZmI',
   type: FilterKind['attribute-operator-value'],
+  active: true,
   attribute: {
     value: 'action',
     label: 'action',
@@ -21,6 +22,7 @@ const actionFilter = {
 const partialControllerFilter = {
   id: 'o60y4DfivA',
   type: FilterKind.partial,
+  active: false,
   attribute: {
     value: 'controller',
     label: 'controller',
@@ -43,6 +45,7 @@ const controllerFilter = {
 const podIdFilter = {
   id: 'CnxcVO7uQE',
   type: FilterKind['attribute-operator-value'],
+  active: true,
   attribute: {
     value: 'pod_id',
     label: 'pod_id',

@@ -19,6 +19,7 @@ export type PartialFilter = {
   attribute: Suggestion;
   operator?: Suggestion;
   value?: Suggestion;
+  active: boolean;
 };
 
 export type CompleteFilter = {
@@ -27,6 +28,7 @@ export type CompleteFilter = {
   attribute: Suggestion;
   operator: Suggestion;
   value: Suggestion;
+  active: boolean;
 };
 
 export type Filter = PartialFilter | CompleteFilter;
@@ -69,6 +71,7 @@ export type QueryBuilderContext = {
   inputParams: InputParams;
   query: string;
   filters: Filters;
+  isQueryUpToDate: boolean;
   edition: Edition | null;
   suggestions: {
     type: SuggestionKind | null;
@@ -102,6 +105,7 @@ export type EditEvent = { type: 'EDIT_FILTER'; data: Edition };
 export type RemoveFilterEvent = { type: 'REMOVE_FILTER'; data: string }; // data = filterId
 export type RemoveLastFilterEvent = { type: 'REMOVE_LAST_FILTER' };
 export type ChangeInputParamsEvent = { type: 'CHANGE_INPUT_PARAMS'; data: InputParams };
+export type ExecuteQueryEvent = { type: 'EXECUTE_QUERY' };
 
 export type QueryBuilderEvent =
   | StartEvent
@@ -110,4 +114,5 @@ export type QueryBuilderEvent =
   | EditEvent
   | RemoveFilterEvent
   | RemoveLastFilterEvent
-  | ChangeInputParamsEvent;
+  | ChangeInputParamsEvent
+  | ExecuteQueryEvent;

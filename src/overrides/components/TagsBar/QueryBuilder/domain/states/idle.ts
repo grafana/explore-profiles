@@ -66,10 +66,17 @@ export const idle: StateNodeConfig<
         actions: ['setEdition'],
       },
     ],
-    REMOVE_FILTER: {
-      target: 'idle',
-      actions: ['removeFilter'],
-    },
+    REMOVE_FILTER: [
+      {
+        cond: 'hasPartialFilter',
+        target: 'autoSuggestProxy',
+        actions: ['removeFilter'],
+      },
+      {
+        target: 'idle',
+        actions: ['removeFilter'],
+      },
+    ],
     REMOVE_LAST_FILTER: {
       target: 'idle',
       actions: ['removeLastFilter'],
@@ -77,6 +84,10 @@ export const idle: StateNodeConfig<
     CHANGE_INPUT_PARAMS: {
       target: 'idle',
       actions: ['changeInputParams'],
+    },
+    EXECUTE_QUERY: {
+      target: 'idle',
+      actions: ['activateFilters'],
     },
   },
 };

@@ -1,14 +1,14 @@
+import React, { memo, useCallback, useRef } from 'react';
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
-import React, { memo, useCallback, useRef } from 'react';
 import { Actor } from './domain/stateMachine';
 import { QueryBuilderContext } from './domain/types';
 import { useStateMachine } from './domain/useStateMachine';
+import { ChicletsList } from './ui/chiclets/ChicletsList';
 import { DisabledSelect } from './ui/selects/DisabledSelect';
 import { MultipleSelect } from './ui/selects/MultipleSelect';
 import { SingleSelect } from './ui/selects/SingleSelect';
-import { ChicletsList } from './ui/chiclets/ChicletsList';
 
 // TODO: use the Grafana theme
 // eslint-disable-next-line no-unused-vars
@@ -22,6 +22,8 @@ export const getStyles = (theme: GrafanaTheme2) => ({
   filterButton: css`
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    &[disabled] {
+    }
   `,
 });
 
@@ -34,15 +36,16 @@ export type QueryBuilderProps = {
 };
 
 function QueryBuilderComponent(props: QueryBuilderProps) {
-  const { onChangeQuery } = props;
   const styles = useStyles2(getStyles);
 
   const { actor, internalProps } = useStateMachine(props);
-  const { suggestions, filters, edition, query: newQuery } = internalProps;
+  const { filters, edition, isQueryUpToDate, suggestions } = internalProps;
 
   const { onFocus, onChange, onCloseMenu } = useSelect(actor, suggestions, props.id);
 
-  const onClickSearch = useCallback(() => onChangeQuery(newQuery), [newQuery, onChangeQuery]);
+  const onClickExecute = useCallback(() => {
+    actor.send({ type: 'EXECUTE_QUERY' });
+  }, [actor]);
 
   return (
     <div id={props.id} className={styles.queryBuilder}>
@@ -69,7 +72,12 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
         />
       )}
 
-      <Button onClick={onClickSearch} title="Execute" className={styles.filterButton}>
+      <Button
+        onClick={onClickExecute}
+        tooltip={!isQueryUpToDate ? 'Execute new query' : 'Nothing to execute, all filters applied'}
+        className={styles.filterButton}
+        disabled={isQueryUpToDate}
+      >
         Execute
       </Button>
     </div>

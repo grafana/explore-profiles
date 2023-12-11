@@ -29,6 +29,7 @@ export function queryToFilters(query: string): Filters {
         ? {
             id: nanoid(10),
             type: FilterKind['attribute-operator-value'],
+            active: true,
             attribute: { value: attribute, label: attribute },
             operator: { value: OperatorKind.in, label: OperatorKind.in },
             value: {
@@ -42,6 +43,7 @@ export function queryToFilters(query: string): Filters {
         : {
             id: nanoid(10),
             type: FilterKind['attribute-operator-value'],
+            active: true,
             attribute: { value: attribute, label: attribute },
             operator: { value: operator, label: operator },
             value: { value: value, label: value },

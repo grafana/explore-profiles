@@ -1,28 +1,12 @@
-import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
 import { Tag, useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { PartialFilter, FilterPartKind } from '../../domain/types';
-import { chicletStyle } from './Chiclet';
+import { getStyles } from './Chiclet';
 
 type PartialChicletProps = {
   filter: PartialFilter;
   onClick: (event: React.MouseEvent<HTMLElement>, filter: PartialFilter, part: FilterPartKind) => void;
 };
-
-// TODO: use the Grafana theme
-// eslint-disable-next-line no-unused-vars
-const getStyles = (theme: GrafanaTheme2) => ({
-  partialChicletStyle: css`
-    ${chicletStyle};
-    & > button {
-      background-color: #6e6e6e;
-    }
-    & :nth-child(2) {
-      padding: 6px;
-    }
-  `,
-});
 
 export const PartialChiclet = ({ filter, onClick }: PartialChicletProps) => {
   const styles = useStyles2(getStyles);
