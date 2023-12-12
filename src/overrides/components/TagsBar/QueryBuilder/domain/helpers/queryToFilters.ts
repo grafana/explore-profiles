@@ -28,7 +28,7 @@ export function queryToFilters(query: string): Filters {
       if (shouldChangeToIsEmptyOperator) {
         return {
           id: nanoid(10),
-          type: FilterKind['attribute-operator-value'],
+          type: FilterKind['attribute-operator'],
           active: true,
           attribute: { value: attribute, label: attribute },
           // TODO: don't hardcode the label

@@ -10,6 +10,7 @@ export function filtersToQuery(query: string, filters: Filters) {
         return `${attribute.value}=~"${value.value}"`;
       }
 
+      // TODO: use "attribute-operator" FilterKind? We still set a value for these filters that we could use here.
       if (operator.value === OperatorKind['is-empty']) {
         return `${attribute.value}=""`;
       }

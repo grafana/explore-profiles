@@ -3,6 +3,7 @@ import { State } from 'xstate';
 export enum FilterKind {
   'partial' = 'partial',
   'attribute-operator-value' = 'attribute-operator-value',
+  'attribute-operator' = 'attribute-operator',
 }
 
 export enum OperatorKind {

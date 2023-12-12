@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { css } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { Select, useStyles2 } from '@grafana/ui';
@@ -14,24 +14,15 @@ export const getStyles = () => ({
 });
 
 type SingleSelectProps = {
-  actor: any;
   suggestions: any;
   onFocus: () => void;
   onChange: (suggestion: SelectableValue<string>) => void;
+  onKeyDown: (event: any) => void;
   onCloseMenu: () => void;
 };
 
-export function SingleSelect({ actor, suggestions, onFocus, onChange, onCloseMenu }: SingleSelectProps) {
+export function SingleSelect({ suggestions, onFocus, onChange, onKeyDown, onCloseMenu }: SingleSelectProps) {
   const styles = useStyles2(getStyles);
-
-  const onKeyDown = useCallback(
-    (event: any) => {
-      if (event.code === 'Backspace' && !event.target.value) {
-        actor.send({ type: 'REMOVE_LAST_FILTER' });
-      }
-    },
-    [actor]
-  );
 
   return (
     <Select

@@ -62,7 +62,7 @@ const cases: TestCase[] = [
       expectedCountFilter,
       {
         id: expect.any(String),
-        type: FilterKind['attribute-operator-value'],
+        type: FilterKind['attribute-operator'],
         active: true,
         attribute: {
           label: 'span_name',

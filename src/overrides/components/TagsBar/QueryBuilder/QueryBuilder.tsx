@@ -1,9 +1,9 @@
-import React, { memo, useCallback, useRef } from 'react';
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
+import React, { memo, useCallback, useRef } from 'react';
 import { Actor } from './domain/stateMachine';
-import { QueryBuilderContext } from './domain/types';
+import { CompleteFilter, Filter, FilterPartKind, QueryBuilderContext, Suggestions } from './domain/types';
 import { useStateMachine } from './domain/useStateMachine';
 import { ChicletsList } from './ui/chiclets/ChicletsList';
 import { DisabledSelect } from './ui/selects/DisabledSelect';
@@ -39,7 +39,16 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
   const { actor, internalProps } = useStateMachine(props);
   const { filters, edition, isQueryUpToDate, suggestions } = internalProps;
 
-  const { onFocus, onChange, onCloseMenu } = useSelect(actor, suggestions, props.id);
+  const { onClickChiclet, onRemoveChiclet } = useChicletHandlers(actor);
+
+  const {
+    onFocus,
+    onChangeSingleSuggestion,
+    onSingleSelectKeyDown,
+    onCloseSingleMenu,
+    onMultipleSelectKeyDown,
+    onCloseMultipleMenu,
+  } = useSelectHandlers(actor, suggestions, props.id);
 
   const onClickExecute = useCallback(() => {
     actor.send({ type: 'EXECUTE_QUERY' });
@@ -48,25 +57,32 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
   return (
     <div id={props.id} className={styles.queryBuilder}>
       <ChicletsList
-        actor={actor}
         filters={filters}
-        suggestions={suggestions}
+        onClickChiclet={onClickChiclet}
+        onRemoveChiclet={onRemoveChiclet}
         edition={edition}
-        onChange={onChange}
-        onCloseMenu={onCloseMenu}
+        suggestions={suggestions}
+        onChangeSingleSuggestion={onChangeSingleSuggestion}
+        onCloseSingleSuggestionsMenu={onCloseSingleMenu}
+        onCloseMultipleSuggestionsMenu={onCloseMultipleMenu}
       />
 
       {edition ? (
         <DisabledSelect />
       ) : suggestions.multiple ? (
-        <MultipleSelect actor={actor} suggestions={suggestions} onFocus={onFocus} />
-      ) : (
-        <SingleSelect
-          actor={actor}
+        <MultipleSelect
           suggestions={suggestions}
           onFocus={onFocus}
-          onChange={onChange}
-          onCloseMenu={onCloseMenu}
+          onKeyDown={onMultipleSelectKeyDown}
+          onCloseMenu={onCloseMultipleMenu}
+        />
+      ) : (
+        <SingleSelect
+          suggestions={suggestions}
+          onFocus={onFocus}
+          onChange={onChangeSingleSuggestion}
+          onKeyDown={onSingleSelectKeyDown}
+          onCloseMenu={onCloseSingleMenu}
         />
       )}
 
@@ -82,12 +98,36 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
   );
 }
 
-function useSelect(actor: Actor, suggestions: QueryBuilderContext['suggestions'], queryBuilderId: string) {
+function useChicletHandlers(actor: Actor) {
+  const onClickChiclet = useCallback(
+    (event: any, filter: Filter, part: FilterPartKind) => {
+      actor.send({ type: 'EDIT_FILTER', data: { filterId: filter.id, part } });
+    },
+    [actor]
+  );
+
+  const onRemoveChiclet = useCallback(
+    (event: any, filter: CompleteFilter) => {
+      actor.send({ type: 'REMOVE_FILTER', data: filter.id });
+    },
+    [actor]
+  );
+
+  return {
+    onClickChiclet,
+    onRemoveChiclet,
+  };
+}
+
+// eslint-disable-next-line sonarjs/cognitive-complexity
+function useSelectHandlers(actor: Actor, suggestions: QueryBuilderContext['suggestions'], queryBuilderId: string) {
+  /* single & multiple */
   const onFocus = useCallback(() => {
     actor.send({ type: 'START_INPUT' });
   }, [actor]);
 
-  const onChange = useCallback(
+  /* single only */
+  const onChangeSingleSuggestion = useCallback(
     (suggestion: SelectableValue<string>) => {
       const { value = '', label = '' } = suggestion;
 
@@ -96,9 +136,45 @@ function useSelect(actor: Actor, suggestions: QueryBuilderContext['suggestions']
     [actor]
   );
 
-  const onCloseMenu = useCallback(() => {
+  const onSingleSelectKeyDown = useCallback(
+    (event: any) => {
+      if (event.code === 'Backspace' && !event.target.value) {
+        actor.send({ type: 'REMOVE_LAST_FILTER' });
+      }
+    },
+    [actor]
+  );
+
+  const onCloseSingleMenu = useCallback(() => {
     actor.send({ type: 'DISCARD_SUGGESTIONS' });
   }, [actor]);
+
+  /* multiple only */
+  const onMultipleSelectKeyDown = useCallback(
+    (event: any, values: Suggestions) => {
+      if (event.code === 'Backspace' && !event.target.value && !values.length) {
+        actor.send({ type: 'REMOVE_LAST_FILTER' });
+      }
+    },
+
+    [actor]
+  );
+
+  const onCloseMultipleMenu = useCallback(
+    (values: Suggestions) => {
+      if (values.length) {
+        actor.send({
+          type: 'SELECT_SUGGESTION',
+          data: { value: values.map((v) => v.value).join('|'), label: values.map((v) => v.label).join(', ') },
+        });
+      } else {
+        actor.send({ type: 'DISCARD_SUGGESTIONS' });
+      }
+    },
+    [actor]
+  );
+
+  /* misc */
 
   // when closed by the state machine
   const blurInput = useCallback(() => {
@@ -120,8 +196,11 @@ function useSelect(actor: Actor, suggestions: QueryBuilderContext['suggestions']
 
   return {
     onFocus,
-    onChange,
-    onCloseMenu,
+    onChangeSingleSuggestion,
+    onSingleSelectKeyDown,
+    onMultipleSelectKeyDown,
+    onCloseSingleMenu,
+    onCloseMultipleMenu,
   };
 }
 

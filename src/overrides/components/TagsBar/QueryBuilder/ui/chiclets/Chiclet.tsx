@@ -4,6 +4,7 @@ import { ChicletAttributeOperatorValue } from './ChicletAttributeOperatorValue';
 import { PartialChiclet } from './PartialChiclet';
 import { FilterPartKind, FilterKind, CompleteFilter, Filter } from '../../domain/types';
 import { GrafanaTheme2 } from '@grafana/data';
+import { ChicletAttributeOperator } from './ChicletAttributeOperator';
 
 type ChicletProps = {
   filter: Filter;
@@ -78,6 +79,9 @@ const ChicletComponent = ({ filter, onClick, onRemove }: ChicletProps) => {
 
     case FilterKind['attribute-operator-value']:
       return <ChicletAttributeOperatorValue filter={filter as CompleteFilter} onClick={onClick} onRemove={onRemove} />;
+
+    case FilterKind['attribute-operator']:
+      return <ChicletAttributeOperator filter={filter as CompleteFilter} onClick={onClick} onRemove={onRemove} />;
 
     default:
       throw new TypeError(`Unsupported filter type "${filter.type}" (${JSON.stringify(filter)})!`);

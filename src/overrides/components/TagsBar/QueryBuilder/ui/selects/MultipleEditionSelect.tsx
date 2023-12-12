@@ -6,14 +6,12 @@ import { MESSAGES } from '../constants';
 import { SelectableValue } from '@grafana/data';
 
 export type MultipleEditionSelectProps = {
-  actor: any;
   selection: Suggestion;
   suggestions: any;
-  onChange: (suggestions: Array<SelectableValue<string>>) => void;
-  onCloseMenu: () => void;
+  onCloseMenu: (values: Suggestions) => void;
 };
 
-export function MultipleEditionSelect({ actor, selection, suggestions }: MultipleEditionSelectProps) {
+export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: MultipleEditionSelectProps) {
   const styles = useStyles2(getStyles);
 
   const defaultValue = useMemo(() => {
@@ -28,16 +26,9 @@ export function MultipleEditionSelect({ actor, selection, suggestions }: Multipl
     setValues(newValues.map(({ value = '', label = '' }) => ({ value, label })));
   }, []);
 
-  const onCloseMenu = () => {
-    if (values.length) {
-      actor.send({
-        type: 'SELECT_SUGGESTION',
-        data: { value: values.map((v) => v.value).join('|'), label: values.map((v) => v.label).join(', ') },
-      });
-    } else {
-      actor.send({ type: 'DISCARD_SUGGESTIONS' });
-    }
-  };
+  const onInternalCloseMenu = useCallback(() => {
+    onCloseMenu(values);
+  }, [onCloseMenu, values]);
 
   return (
     <MultiSelect
@@ -49,7 +40,7 @@ export function MultipleEditionSelect({ actor, selection, suggestions }: Multipl
       autoFocus
       value={values}
       onChange={onChange}
-      onCloseMenu={onCloseMenu}
+      onCloseMenu={onInternalCloseMenu}
       options={suggestions.items}
       isOpen
       isLoading={suggestions.isLoading}

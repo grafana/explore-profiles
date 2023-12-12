@@ -6,12 +6,13 @@ import { MESSAGES } from '../constants';
 import { SelectableValue } from '@grafana/data';
 
 export type MultipleSelectProps = {
-  actor: any;
   suggestions: any;
   onFocus: () => void;
+  onKeyDown: (event: any, values: Suggestions) => void;
+  onCloseMenu: (values: Suggestions) => void;
 };
 
-export function MultipleSelect({ actor, suggestions, onFocus }: MultipleSelectProps) {
+export function MultipleSelect({ suggestions, onFocus, onKeyDown, onCloseMenu }: MultipleSelectProps) {
   const styles = useStyles2(getStyles);
   const [values, setValues] = useState<Suggestions>([]);
 
@@ -19,26 +20,16 @@ export function MultipleSelect({ actor, suggestions, onFocus }: MultipleSelectPr
     setValues(newValues.map(({ value = '', label = '' }) => ({ value, label })));
   }, []);
 
-  const onKeyDown = useCallback(
+  const onInternalKeyDown = useCallback(
     (event: any) => {
-      if (event.code === 'Backspace' && !event.target.value && !values.length) {
-        actor.send({ type: 'REMOVE_LAST_FILTER' });
-      }
+      onKeyDown(event, values);
     },
-
-    [actor, values]
+    [onKeyDown, values]
   );
 
-  const onCloseMenu = () => {
-    if (values.length) {
-      actor.send({
-        type: 'SELECT_SUGGESTION',
-        data: { value: values.map((v) => v.value).join('|'), label: values.map((v) => v.label).join(', ') },
-      });
-    } else {
-      actor.send({ type: 'DISCARD_SUGGESTIONS' });
-    }
-  };
+  const onInternalCloseMenu = useCallback(() => {
+    onCloseMenu(values);
+  }, [onCloseMenu, values]);
 
   return (
     <MultiSelect
@@ -50,9 +41,9 @@ export function MultipleSelect({ actor, suggestions, onFocus }: MultipleSelectPr
       autoFocus
       value={values}
       onFocus={onFocus}
-      onKeyDown={onKeyDown}
+      onKeyDown={onInternalKeyDown}
       onChange={onChange}
-      onCloseMenu={onCloseMenu}
+      onCloseMenu={onInternalCloseMenu}
       options={suggestions.items}
       isOpen={suggestions.isVisible}
       isLoading={suggestions.isLoading}

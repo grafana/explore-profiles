@@ -1,19 +1,20 @@
-import React, { memo, useCallback } from 'react';
 import { css } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
+import React, { memo } from 'react';
 import {
   CompleteFilter,
   Edition,
+  Filter,
   FilterPartKind,
   Filters,
-  Filter,
   QueryBuilderContext,
   Suggestion,
+  Suggestions,
 } from '../../domain/types';
+import { MultipleEditionSelect } from '../selects/MultipleEditionSelect';
 import { SingleEditionSelect } from '../selects/SingleEditionSelect';
 import { Chiclet } from './Chiclet';
-import { MultipleEditionSelect } from '../selects/MultipleEditionSelect';
 
 export const getStyles = () => ({
   chicletsList: css`
@@ -27,30 +28,27 @@ export const getStyles = () => ({
 });
 
 type ChicletsListProps = {
-  actor: any;
   filters: Filters;
-  suggestions: QueryBuilderContext['suggestions'];
+  onClickChiclet: (event: React.MouseEvent<HTMLElement>, filter: Filter, part: FilterPartKind) => void;
+  onRemoveChiclet: (event: React.MouseEvent<HTMLElement>, filter: CompleteFilter) => void;
   edition: Edition | null;
-  onChange: (suggestion: SelectableValue<string>) => void;
-  onCloseMenu: () => void;
+  suggestions: QueryBuilderContext['suggestions'];
+  onChangeSingleSuggestion: (suggestion: SelectableValue<string>) => void;
+  onCloseSingleSuggestionsMenu: () => void;
+  onCloseMultipleSuggestionsMenu: (values: Suggestions) => void;
 };
 
-function ChicletsListComponent({ actor, filters, suggestions, edition, onChange, onCloseMenu }: ChicletsListProps) {
+function ChicletsListComponent({
+  filters,
+  onClickChiclet,
+  onRemoveChiclet,
+  edition,
+  suggestions,
+  onChangeSingleSuggestion,
+  onCloseSingleSuggestionsMenu,
+  onCloseMultipleSuggestionsMenu,
+}: ChicletsListProps) {
   const styles = useStyles2(getStyles);
-
-  const onClickChiclet = useCallback(
-    (event: any, filter: Filter, part: FilterPartKind) => {
-      actor.send({ type: 'EDIT_FILTER', data: { filterId: filter.id, part } });
-    },
-    [actor]
-  );
-
-  const onRemoveChiclet = useCallback(
-    (event: any, filter: CompleteFilter) => {
-      actor.send({ type: 'REMOVE_FILTER', data: filter.id });
-    },
-    [actor]
-  );
 
   return (
     <div className={styles.chicletsList}>
@@ -65,16 +63,14 @@ function ChicletsListComponent({ actor, filters, suggestions, edition, onChange,
                 key={edition.part}
                 selection={filter[edition.part] as Suggestion}
                 suggestions={suggestions}
-                onChange={onChange}
-                onCloseMenu={onCloseMenu}
+                onChange={onChangeSingleSuggestion}
+                onCloseMenu={onCloseSingleSuggestionsMenu}
               />
             ) : (
               <MultipleEditionSelect
-                actor={actor}
                 selection={filter[edition.part] as Suggestion}
                 suggestions={suggestions}
-                onChange={onChange}
-                onCloseMenu={onCloseMenu}
+                onCloseMenu={onCloseMultipleSuggestionsMenu}
               />
             )
           ) : null}

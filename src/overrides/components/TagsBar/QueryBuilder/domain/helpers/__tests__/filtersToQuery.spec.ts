@@ -44,7 +44,7 @@ const controllerFilter = {
 
 const spanNameFilter = {
   id: 'Jryvc2BpaM',
-  type: FilterKind['attribute-operator-value'],
+  type: FilterKind['attribute-operator'],
   active: true,
   attribute: {
     value: 'span_name',

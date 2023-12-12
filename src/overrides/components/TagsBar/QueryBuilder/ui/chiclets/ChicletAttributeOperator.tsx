@@ -11,10 +11,10 @@ type ChicletAttributeOperatorValueProps = {
 
 const noOp = () => {};
 
-export const ChicletAttributeOperatorValue = ({ filter, onClick, onRemove }: ChicletAttributeOperatorValueProps) => {
+export const ChicletAttributeOperator = ({ filter, onClick, onRemove }: ChicletAttributeOperatorValueProps) => {
   const styles = useStyles2(getStyles);
 
-  const { attribute, operator, value, active } = filter;
+  const { attribute, operator, active } = filter;
   const className = active ? styles.chicletStyle : styles.inactiveChicletStyle;
 
   return (
@@ -25,13 +25,6 @@ export const ChicletAttributeOperatorValue = ({ filter, onClick, onRemove }: Chi
         name={operator.label}
         title="Edit operator"
         onClick={(name, e) => onClick(e, filter, FilterPartKind.operator)}
-        tabIndex={0}
-      />
-
-      <Tag
-        name={value.label}
-        title="Edit value"
-        onClick={(name, e) => onClick(e, filter, FilterPartKind.value)}
         tabIndex={0}
       />
 

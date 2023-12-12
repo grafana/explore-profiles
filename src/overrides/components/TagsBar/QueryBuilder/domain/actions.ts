@@ -88,8 +88,7 @@ export const actions: any = {
 
     const newFilters = context.filters.map((filter) => {
       if (isPartialFilter(filter)) {
-        const newType =
-          newOperator.value === OperatorKind['is-empty'] ? FilterKind['attribute-operator-value'] : filter.type;
+        const newType = newOperator.value === OperatorKind['is-empty'] ? FilterKind['attribute-operator'] : filter.type;
 
         return {
           ...filter,
@@ -104,8 +103,7 @@ export const actions: any = {
 
     return {
       ...context,
-      filters: newFilters,
-      isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
+      ...updateFiltersAndQuery(newFilters, context),
     };
   }),
   // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -128,7 +126,7 @@ export const actions: any = {
       if (newOperator.value === OperatorKind['is-empty']) {
         return {
           ...filter,
-          type: FilterKind['attribute-operator-value'],
+          type: FilterKind['attribute-operator'],
           operator: newOperator,
           value: { value: '', label: '' },
           active: false,
@@ -141,6 +139,7 @@ export const actions: any = {
 
       return {
         ...filter,
+        type: FilterKind['attribute-operator-value'],
         operator: newOperator,
         value:
           previousOperator === OperatorKind.in && filter.value
