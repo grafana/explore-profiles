@@ -6,9 +6,15 @@ export function filtersToQuery(query: string, filters: Filters) {
     .map((filter) => {
       const { attribute, operator, value } = filter as CompleteFilter;
 
-      return operator.value === OperatorKind.in
-        ? `${attribute.value}=~"${value.value}"`
-        : `${attribute.value}${operator.value}"${value.value}"`;
+      if (operator.value === OperatorKind.in) {
+        return `${attribute.value}=~"${value.value}"`;
+      }
+
+      if (operator.value === OperatorKind['is-empty']) {
+        return `${attribute.value}=""`;
+      }
+
+      return `${attribute.value}${operator.value}"${value.value}"`;
     });
 
   const [, serviceNameLabel] = query.match(/{.*(service_name="[^"]*").*}/) ?? [];

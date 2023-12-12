@@ -57,6 +57,29 @@ const cases: TestCase[] = [
     ],
   ],
   [
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",span_name=""}',
+    [
+      expectedCountFilter,
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'span_name',
+          value: 'span_name',
+        },
+        operator: {
+          label: 'is empty',
+          value: 'is-empty',
+        },
+        value: {
+          label: '',
+          value: '',
+        },
+      },
+    ],
+  ],
+  [
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
     [
       expectedCountFilter,

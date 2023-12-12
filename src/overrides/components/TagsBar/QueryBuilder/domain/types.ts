@@ -10,6 +10,7 @@ export enum OperatorKind {
   '!=' = '!=',
   '=~' = '=~',
   '!~' = '!~',
+  'is-empty' = 'is-empty',
   'in' = 'in',
 }
 

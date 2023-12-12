@@ -63,24 +63,26 @@ export const displayOperators: StateNodeConfig<
   on: {
     DISCARD_SUGGESTIONS: 'idle',
     SELECT_SUGGESTION: [
+      // edition
       {
-        cond: 'isSwitchingOperatorMode',
+        cond: 'shouldSuggestValuesAfterOperatorEdition',
         target: 'loadLabelValues',
-        actions: ['assignOperatorToFilter'],
+        actions: ['editFilterOperator'],
       },
       {
-        cond: 'isNotSwitchingOperatorMode',
+        cond: 'shouldNotSuggestValuesAfterOperatorEdition',
         target: 'autoSuggestProxy',
-        actions: ['assignOperatorToFilter'],
+        actions: ['editFilterOperator'],
       },
+      // no edition
       {
         cond: 'hasPartialFilter',
         target: 'autoSuggestProxy',
-        actions: ['assignOperatorToFilter'],
+        actions: ['setFilterOperator'],
       },
       {
         target: 'loadLabelValues',
-        actions: ['assignOperatorToFilter'],
+        actions: ['setFilterOperator'],
       },
     ],
     REMOVE_LAST_FILTER: {

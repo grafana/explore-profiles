@@ -42,6 +42,24 @@ const controllerFilter = {
   },
 };
 
+const spanNameFilter = {
+  id: 'Jryvc2BpaM',
+  type: FilterKind['attribute-operator-value'],
+  active: true,
+  attribute: {
+    value: 'span_name',
+    label: 'span_name',
+  },
+  operator: {
+    value: 'is-empty',
+    label: 'is empty',
+  },
+  value: {
+    value: '',
+    label: '',
+  },
+};
+
 const podIdFilter = {
   id: 'CnxcVO7uQE',
   type: FilterKind['attribute-operator-value'],
@@ -91,6 +109,12 @@ const cases: TestCase[] = [
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests"}',
     [actionFilter, controllerFilter],
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",controller!="admin/products"}',
+  ],
+  // with complete filters: is-empty operator
+  [
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests"}',
+    [actionFilter, spanNameFilter],
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",span_name=""}',
   ],
   // with complete filters: in operator
   [

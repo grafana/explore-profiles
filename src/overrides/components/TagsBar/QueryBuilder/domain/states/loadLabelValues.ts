@@ -86,13 +86,13 @@ export const displayLabelValues: StateNodeConfig<
     DISCARD_SUGGESTIONS: 'idle',
     SELECT_SUGGESTION: [
       {
-        cond: 'hasPartialFilter',
+        cond: 'isEditing',
         target: 'autoSuggestProxy',
-        actions: ['assignValueToFilter'],
+        actions: ['editFilterValue'],
       },
       {
         target: 'idle',
-        actions: ['assignValueToFilter'],
+        actions: ['setFilterValue'],
       },
     ],
     REMOVE_LAST_FILTER: {

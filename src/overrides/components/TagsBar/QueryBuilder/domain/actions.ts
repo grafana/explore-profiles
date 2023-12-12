@@ -7,7 +7,6 @@ import { queryToFilters } from './helpers/queryToFilters';
 import {
   ChangeInputParamsEvent,
   EditEvent,
-  Filter,
   FilterKind,
   FilterPartKind,
   Filters,
@@ -17,36 +16,52 @@ import {
   RemoveFilterEvent,
   SelectEvent,
 } from './types';
-import { isSwitchingOperatorMode } from './helpers/isSwitchingOpStrictness';
-import { getFilterUnderEdition } from './helpers/getFilterUnderEdition';
 import { getLastFilter } from './helpers/getLastFilter';
 import { areFiltersEqual } from './helpers/areFiltersEqual';
 import { toggleCompleteFilters } from './helpers/toggleCompleteFilters';
+import { isEditingOperatorMode } from './helpers/isSwitchingOperatorMode';
+
+function updateFiltersAndQuery(newFilters: Filters, context: QueryBuilderContext) {
+  const isQueryUpToDate = areFiltersEqual(newFilters, queryToFilters(context.inputParams.query));
+
+  if (isQueryUpToDate) {
+    return {
+      filters: toggleCompleteFilters(newFilters, true),
+      isQueryUpToDate,
+    };
+  }
+
+  return {
+    filters: newFilters,
+    query: filtersToQuery(context.query, newFilters),
+    isQueryUpToDate,
+  };
+}
 
 export const actions: any = {
   cancelAllLoad: () => {
     labelsRepository.cancel('Discarded by user');
   },
-  setEdition: assign({ edition: (context, event: EditEvent) => event.data }),
-  assignAttributeToFilter: assign((context: QueryBuilderContext, event: SelectEvent) => {
-    if (!context.edition) {
-      const newFilters = [
-        ...context.filters,
-        { id: nanoid(10), type: FilterKind.partial, active: false, attribute: event.data },
-      ] as Filters;
+  // FILTER ATTRIBUTES
+  setFilterAttribute: assign((context: QueryBuilderContext, event: SelectEvent) => {
+    const newFilters = [
+      ...context.filters,
+      { id: nanoid(10), type: FilterKind.partial, active: false, attribute: event.data },
+    ] as Filters;
 
-      return {
-        ...context,
-        filters: newFilters,
-        isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
-      };
+    return {
+      ...context,
+      filters: newFilters,
+      isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
+    };
+  }),
+  editFilterAttribute: assign((context: QueryBuilderContext, event: SelectEvent) => {
+    if (context.edition === null) {
+      throw new Error('Cannot edit filter attribute without edition data!');
     }
-
-    /* *** edition *** */
 
     const { filterId } = context.edition;
 
-    // note: we can only edit the attribute of partial filters, so no need to rebuild the query here
     const newFilters = context.filters.map((filter) =>
       filter.id === filterId
         ? {
@@ -61,82 +76,93 @@ export const actions: any = {
     return {
       ...context,
       filters: newFilters,
+      // note: we can only edit the attribute of partial filters, so no need to rebuild the query here
       isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
       edition: null,
     };
   }),
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-  assignOperatorToFilter: assign((context: QueryBuilderContext, event: SelectEvent) => {
-    if (!context.edition) {
-      const newFilters = context.filters.map((filter) =>
-        isPartialFilter(filter)
-          ? ({
-              ...filter,
-              operator: event.data,
-            } as PartialFilter)
-          : filter
-      ) as Filters;
+  // FILTER OPERATORS
+  setFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
+    const newOperator = event.data;
+    const newValue = newOperator.value === OperatorKind['is-empty'] ? { value: '', label: '' } : undefined;
 
-      return {
-        ...context,
-        filters: newFilters,
-        isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
-      };
-    }
+    const newFilters = context.filters.map((filter) => {
+      if (isPartialFilter(filter)) {
+        const newType =
+          newOperator.value === OperatorKind['is-empty'] ? FilterKind['attribute-operator-value'] : filter.type;
 
-    /* *** edition *** */
+        return {
+          ...filter,
+          type: newType,
+          operator: newOperator,
+          value: newValue,
+        } as PartialFilter;
+      }
 
-    const { filterId } = context.edition;
+      return filter;
+    }) as Filters;
 
-    let newFilters = context.filters.map((filter) =>
-      filter.id === filterId
-        ? {
-            ...filter,
-            active: false,
-            operator: event.data,
-            value:
-              filter?.operator?.value === OperatorKind.in && filter.value
-                ? {
-                    value: filter.value.value.split('|').pop(),
-                    label: filter.value.label.split(', ').pop(),
-                  }
-                : filter.value,
-          }
-        : filter
-    ) as Filters;
-
-    const filterUnderEdition = getFilterUnderEdition(context);
-
-    const newEdition =
-      !isPartialFilter(filterUnderEdition) && isSwitchingOperatorMode(filterUnderEdition, event.data.value)
-        ? { ...context.edition, part: FilterPartKind.value }
-        : null;
-
-    if (areFiltersEqual(newFilters, queryToFilters(context.inputParams.query))) {
-      return {
-        ...context,
-        filters: toggleCompleteFilters(newFilters, true),
-        isQueryUpToDate: true,
-        edition: newEdition,
-      };
-    }
-
-    // filters are different
     return {
       ...context,
       filters: newFilters,
-      query: filtersToQuery(context.query, newFilters),
-      isQueryUpToDate: false,
+      isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
+    };
+  }),
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  editFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
+    if (context.edition === null) {
+      throw new Error('Cannot edit filter attribute without edition data!');
+    }
+
+    const { filterId } = context.edition;
+    const newOperator = event.data;
+    let newEdition = null;
+
+    const newFilters = context.filters.map((filter) => {
+      if (filter.id !== filterId) {
+        return filter;
+      }
+
+      const previousOperator = filter.operator!.value;
+
+      if (newOperator.value === OperatorKind['is-empty']) {
+        return {
+          ...filter,
+          type: FilterKind['attribute-operator-value'],
+          operator: newOperator,
+          value: { value: '', label: '' },
+          active: false,
+        };
+      }
+
+      if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {
+        newEdition = { ...context.edition, part: FilterPartKind.value };
+      }
+
+      return {
+        ...filter,
+        operator: newOperator,
+        value:
+          previousOperator === OperatorKind.in && filter.value
+            ? {
+                value: filter.value.value.split('|').pop(),
+                label: filter.value.label.split(', ').pop(),
+              }
+            : filter.value,
+        active: false,
+      };
+    }) as Filters;
+
+    return {
+      ...context,
+      ...updateFiltersAndQuery(newFilters, context),
       edition: newEdition,
     };
   }),
-  assignValueToFilter: assign((context: QueryBuilderContext, event: SelectEvent) => {
-    const matchFn = context.edition
-      ? (filter: Filter) => filter.id === context!.edition!.filterId
-      : (filter: Filter) => isPartialFilter(filter);
-
-    let newFilters = context.filters.map((filter) =>
-      matchFn(filter)
+  // FILTER VALUES
+  setFilterValue: assign((context: QueryBuilderContext, event: SelectEvent) => {
+    const newFilters = context.filters.map((filter) =>
+      isPartialFilter(filter)
         ? {
             ...filter,
             type: FilterKind['attribute-operator-value'],
@@ -146,38 +172,47 @@ export const actions: any = {
         : filter
     ) as Filters;
 
-    if (areFiltersEqual(newFilters, queryToFilters(context.inputParams.query))) {
-      return {
-        ...context,
-        filters: toggleCompleteFilters(newFilters, true),
-        query: filtersToQuery(context.query, newFilters),
-        isQueryUpToDate: true,
-        edition: null,
-      };
-    }
-
-    // filters are different
     return {
       ...context,
-      filters: newFilters,
-      query: filtersToQuery(context.query, newFilters),
-      isQueryUpToDate: false,
+      ...updateFiltersAndQuery(newFilters, context),
+    };
+  }),
+  editFilterValue: assign((context: QueryBuilderContext, event: SelectEvent) => {
+    if (context.edition === null) {
+      throw new Error('Cannot edit filter attribute without edition data!');
+    }
+
+    const { filterId } = context.edition;
+
+    const newFilters = context.filters.map((filter) =>
+      filter.id === filterId
+        ? {
+            ...filter,
+            type: FilterKind['attribute-operator-value'],
+            active: false,
+            value: event.data,
+          }
+        : filter
+    ) as Filters;
+
+    return {
+      ...context,
+      ...updateFiltersAndQuery(newFilters, context),
       edition: null,
     };
   }),
+  // FILTER REMOVAL
   removeFilter: assign((context: QueryBuilderContext, event: RemoveFilterEvent) => {
     const filterId = event.data;
     const newFilters = toggleCompleteFilters(context.filters.filter(({ id }) => id !== filterId) as Filters, false);
 
     return {
       ...context,
-      filters: newFilters,
-      query: filtersToQuery(context.query, newFilters),
-      isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
+      ...updateFiltersAndQuery(newFilters, context),
     };
   }),
   removeLastFilter: assign((context: QueryBuilderContext) => {
-    const { filters, query } = context;
+    const { filters } = context;
 
     const lastFilter = getLastFilter(filters);
     if (!lastFilter) {
@@ -199,11 +234,11 @@ export const actions: any = {
 
     return {
       ...context,
-      filters: newFilters,
-      query: filtersToQuery(query, filters),
-      isQueryUpToDate: areFiltersEqual(newFilters, queryToFilters(context.inputParams.query)),
+      ...updateFiltersAndQuery(newFilters, context),
     };
   }),
+  // MISC
+  setEdition: assign({ edition: (context, event: EditEvent) => event.data }),
   changeInputParams: assign({
     inputParams: (context: QueryBuilderContext, event: ChangeInputParamsEvent) => event.data,
     query: (context: QueryBuilderContext, event: ChangeInputParamsEvent) => event.data.query,
@@ -211,16 +246,9 @@ export const actions: any = {
     filters: (context: QueryBuilderContext, event: ChangeInputParamsEvent) => queryToFilters(event.data.query),
     isQueryUpToDate: true,
   }),
-  activateFilters: assign((context: QueryBuilderContext) => {
-    const newFilters = context.filters.map((filter) =>
-      filter.type === FilterKind.partial ? filter : { ...filter, active: true }
-    ) as Filters;
-
-    return {
-      ...context,
-      filters: newFilters,
-      query: filtersToQuery(context.query, newFilters),
-      isQueryUpToDate: true,
-    };
-  }),
+  activateFilters: assign((context: QueryBuilderContext) => ({
+    ...context,
+    filters: toggleCompleteFilters(context.filters, true),
+    isQueryUpToDate: true,
+  })),
 };

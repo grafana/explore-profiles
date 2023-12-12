@@ -61,10 +61,17 @@ export const displayLabels: StateNodeConfig<
   }),
   on: {
     DISCARD_SUGGESTIONS: 'idle',
-    SELECT_SUGGESTION: {
-      target: 'loadOperators',
-      actions: ['assignAttributeToFilter'],
-    },
+    SELECT_SUGGESTION: [
+      {
+        cond: 'isEditing',
+        target: 'loadOperators',
+        actions: ['editFilterAttribute'],
+      },
+      {
+        target: 'loadOperators',
+        actions: ['setFilterAttribute'],
+      },
+    ],
     REMOVE_LAST_FILTER: {
       target: 'idle',
       actions: ['removeLastFilter'],
