@@ -24,11 +24,12 @@ const chicletStyle = css`
   }
   & > :first-child {
     background-color: #3d71d9;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 0;
   }
   & > :last-child {
     border-left: 1px solid #3d71d9;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
   }
 `;
 
@@ -40,8 +41,7 @@ const partialChicletStyle = css`
   border-bottom-right-radius: 0;
   & > :first-child {
     background-color: #6e6e6e;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border-radius: 0;
   }
   & > :last-child {
     border-color: #6e6e6e;
