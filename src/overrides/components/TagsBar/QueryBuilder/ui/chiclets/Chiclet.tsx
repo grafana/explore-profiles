@@ -15,38 +15,47 @@ type ChicletProps = {
 const chicletStyle = css`
   display: flex;
   margin: 0 4px 4px 0;
+  align-items: center;
+  border: 1px solid #3d71d9;
+  border-radius: 2px;
   & > button {
-    border-radius: 0;
+    height: 32px;
+    background-color: transparent;
+  }
+  & > :first-child {
     background-color: #3d71d9;
-    padding: 6px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
   }
-  & :first-child {
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
-  }
-  & :nth-child(3) {
-    margin-right: 1px;
-  }
-  & :nth-child(4) {
-    border-top-right-radius: 2px;
-    border-bottom-right-radius: 2px;
+  & > :last-child {
+    border-left: 1px solid #3d71d9;
   }
 `;
 
 const partialChicletStyle = css`
   ${chicletStyle};
-  & > button {
+  border-color: #6e6e6e;
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  & > :first-child {
     background-color: #6e6e6e;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
   }
-  & :nth-child(2) {
-    padding: 6px;
+  & > :last-child {
+    border-color: #6e6e6e;
   }
 `;
 
 const inactiveChicletStyle = css`
   ${chicletStyle};
-  & > button {
+  border-color: #6e6e6e;
+  & > :first-child {
     background-color: #6e6e6e;
+  }
+  & > :last-child {
+    border-color: #6e6e6e;
   }
 `;
 
