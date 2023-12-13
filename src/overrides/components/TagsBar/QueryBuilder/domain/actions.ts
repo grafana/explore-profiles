@@ -27,6 +27,7 @@ function updateFiltersAndQuery(newFilters: Filters, context: QueryBuilderContext
   if (isQueryUpToDate) {
     return {
       filters: toggleCompleteFilters(newFilters, true),
+      query: filtersToQuery(context.query, newFilters),
       isQueryUpToDate,
     };
   }
@@ -247,7 +248,6 @@ export const actions: any = {
   }),
   activateFilters: assign((context: QueryBuilderContext) => ({
     ...context,
-    filters: toggleCompleteFilters(context.filters, true),
-    isQueryUpToDate: true,
+    ...updateFiltersAndQuery(context.filters, context),
   })),
 };
