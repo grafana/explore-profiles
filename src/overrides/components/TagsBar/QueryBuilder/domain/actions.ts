@@ -140,7 +140,6 @@ export const actions: any = {
 
       return {
         ...filter,
-        type: FilterKind['attribute-operator-value'],
         operator: newOperator,
         value:
           previousOperator === OperatorKind.in && filter.value

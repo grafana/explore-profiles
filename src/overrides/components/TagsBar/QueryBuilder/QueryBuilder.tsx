@@ -17,9 +17,10 @@ export const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     justify-content: flex-start;
     align-items: baseline;
-    margin: -4px 0 4px 0;
+    margin: -10px 0 6px 0;
   `,
-  filterButton: css`
+  executeButton: css`
+    margin: 7px 0 0 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   `,
@@ -89,7 +90,7 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
       <Button
         onClick={onClickExecute}
         tooltip={!isQueryUpToDate ? 'Execute new query' : 'Nothing to execute, all filters applied'}
-        className={styles.filterButton}
+        className={styles.executeButton}
         disabled={isQueryUpToDate}
       >
         Execute

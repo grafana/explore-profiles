@@ -14,12 +14,12 @@ type ChicletProps = {
 
 const chicletStyle = css`
   display: flex;
-  margin: 0 4px 4px 0;
+  margin: 4px 4px 0 0;
   align-items: center;
   border: 1px solid #3d71d9;
   border-radius: 2px;
   & > button {
-    height: 32px;
+    height: 30px;
     background-color: transparent;
   }
   & > :first-child {
