@@ -1,5 +1,6 @@
-import { Tag, useStyles2 } from '@grafana/ui';
 import React from 'react';
+import { cx } from '@emotion/css';
+import { Tag, useStyles2 } from '@grafana/ui';
 import { PartialFilter, FilterPartKind } from '../../domain/types';
 import { getStyles } from './Chiclet';
 
@@ -17,7 +18,7 @@ export const PartialChiclet = ({ filter, onClick }: PartialChicletProps) => {
   }
 
   return (
-    <div className={styles.partialChicletStyle}>
+    <div className={cx(styles.chiclet, styles.partialChiclet)}>
       <Tag
         colorIndex={9}
         name={attribute.label}

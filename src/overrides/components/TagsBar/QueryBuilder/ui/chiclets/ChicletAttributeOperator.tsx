@@ -1,4 +1,5 @@
 import React from 'react';
+import { cx } from '@emotion/css';
 import { Tag, useStyles2 } from '@grafana/ui';
 import { CompleteFilter, FilterPartKind } from '../../domain/types';
 import { getStyles } from './Chiclet';
@@ -15,11 +16,11 @@ export const ChicletAttributeOperator = ({ filter, onClick, onRemove }: ChicletA
   const styles = useStyles2(getStyles);
 
   const { attribute, operator, active } = filter;
-  const className = active ? styles.chicletStyle : styles.inactiveChicletStyle;
+  const className = active ? styles.chiclet : cx(styles.chiclet, styles.inactiveChiclet);
 
   return (
     <div className={className}>
-      <Tag className={styles.chicletAttributeStyle} name={attribute.label} title="Cannot edit label" onClick={noOp} />
+      <Tag className={styles.chicletAttribute} name={attribute.label} title="Cannot edit label" onClick={noOp} />
 
       <Tag
         name={operator.label}
@@ -29,7 +30,7 @@ export const ChicletAttributeOperator = ({ filter, onClick, onRemove }: ChicletA
       />
 
       <Tag
-        className={styles.chicletRemoveButtonStyle}
+        className={styles.chicletRemoveButton}
         icon="times"
         name=""
         title="Remove filter"
