@@ -320,7 +320,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
 const loadingTitle = () => (
   <TitleReplacement
-    subtitle={
+    title={
       (
         <span>
           Loading... <Icon name="fa fa-spinner" />

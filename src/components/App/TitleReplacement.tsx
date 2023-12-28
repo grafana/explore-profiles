@@ -11,7 +11,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
 });
 
-export function TitleReplacement({ subtitle }: { subtitle: string }) {
+export function TitleReplacement({ title }: { title: string }) {
   const { meta } = usePluginContext();
   const logoUrl: string = meta.info.logos.large;
 
@@ -21,8 +21,8 @@ export function TitleReplacement({ subtitle }: { subtitle: string }) {
     <HorizontalGroup>
       <img src={logoUrl} className={styles.logo} />
       <VerticalGroup spacing="xs">
-        <h1>{APP_TITLE}</h1>
-        <span data-testid="page-title">{subtitle}</span>
+        <h1 data-testid="page-title">{title}</h1>
+        <span>{APP_TITLE}</span>
       </VerticalGroup>
     </HorizontalGroup>
   );

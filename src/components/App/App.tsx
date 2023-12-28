@@ -72,7 +72,7 @@ main nav a[aria-label="Tab Diff View AI"]::after {
     };
   }, []);
 
-  const renderTitle = React.useCallback((title: string) => <TitleReplacement subtitle={title} />, []);
+  const renderTitle = React.useCallback((title: string) => <TitleReplacement title={title} />, []);
 
   return (
     <PluginContextProvider meta={props.meta}>
