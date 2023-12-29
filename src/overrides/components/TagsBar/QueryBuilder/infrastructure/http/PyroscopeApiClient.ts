@@ -1,5 +1,5 @@
 import { tenantIDFromStorage } from '@pyroscope/services/storage';
-import { HttpClient } from './HttpClient';
+import { HttpClient } from '../../../../../../shared/infrastructure/http/HttpClient';
 import { config } from '@grafana/runtime';
 
 export enum ProfileFormat {
@@ -42,7 +42,7 @@ export class PyroscopeApiClient extends HttpClient {
       matchers: PyroscopeApiClient.queryToMatchers(query),
       start: from,
       end: until,
-    });
+    }).then((response) => response.json());
   }
 
   async fetchLabelValues(labelId: string, query: string, from: number, until: number) {
@@ -51,7 +51,7 @@ export class PyroscopeApiClient extends HttpClient {
       matchers: PyroscopeApiClient.queryToMatchers(query),
       start: from,
       end: until,
-    });
+    }).then((response) => response.json());
   }
 
   async fetchProfile(query: string, from: number, until: number, format: ProfileFormat, maxNodes: number) {
@@ -61,7 +61,7 @@ export class PyroscopeApiClient extends HttpClient {
       until,
       format,
       maxNodes,
-    });
+    }).then((response) => (format === ProfileFormat.dot ? response.text() : response.json()));
   }
 
   _buildHeaders() {

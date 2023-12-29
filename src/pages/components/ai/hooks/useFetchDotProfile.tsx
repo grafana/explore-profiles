@@ -35,7 +35,7 @@ export function useFetchDotProfile(
   rightUntil?: string
 ): ReturnType<typeof useAsync> {
   return useAsync(async () => {
-    const response = await pyroscopeApiClient.fetchProfile(
+    const profile = await pyroscopeApiClient.fetchProfile(
       query,
       formatAsOBject(from).getTime(),
       formatAsOBject(until).getTime(),
@@ -43,18 +43,14 @@ export function useFetchDotProfile(
       100
     );
 
-    let profile = await response.text();
-
     if (rightQuery && rightFrom && rightUntil) {
-      const responseRight = await pyroscopeApiClient.fetchProfile(
+      const profileRight = await pyroscopeApiClient.fetchProfile(
         rightQuery,
         formatAsOBject(rightFrom).getTime(),
         formatAsOBject(rightUntil).getTime(),
         ProfileFormat.dot,
         100
       );
-
-      let profileRight = await responseRight.text();
 
       return { value: cleanup(profile), valueRight: cleanup(profileRight) };
     }

@@ -9,8 +9,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
 
-  static async parseLabelsResponse(response: Response): Promise<Suggestions> {
-    const json = await response.json();
+  static parseLabelsResponse(json: any): Suggestions {
     if (!Array.isArray(json.names)) {
       return [];
     }
@@ -20,8 +19,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
     return uniqueLabels.map((label) => ({ value: label, label }));
   }
 
-  static async parseLabelValuesResponse(response: Response): Promise<Suggestions> {
-    const json = await response.json();
+  static parseLabelValuesResponse(json: any): Suggestions {
     if (!Array.isArray(json.names)) {
       return [];
     }
@@ -51,10 +49,9 @@ class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
       return labelsFromCache;
     }
 
-    const response = await this.httpClient.fetchLabels(query, from, until);
+    const json = await this.httpClient.fetchLabels(query, from, until);
 
-    const labels = await LabelsRepository.parseLabelsResponse(response);
-
+    const labels = LabelsRepository.parseLabelsResponse(json);
     if (labels.length) {
       this.cacheClient.set([query, from, until], labels);
     }
@@ -71,10 +68,9 @@ class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
       return labelValuesFromCache;
     }
 
-    const response = await this.httpClient.fetchLabelValues(labelId, query, from, until);
+    const json = await this.httpClient.fetchLabelValues(labelId, query, from, until);
 
-    const labelValues = await LabelsRepository.parseLabelValuesResponse(response);
-
+    const labelValues = LabelsRepository.parseLabelValuesResponse(json);
     if (labelValues.length) {
       this.cacheClient.set([labelId, query, from, until], labelValues);
     }

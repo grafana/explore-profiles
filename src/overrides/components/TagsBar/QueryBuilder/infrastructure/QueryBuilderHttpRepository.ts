@@ -1,4 +1,4 @@
-import { HttpClient } from './http/HttpClient';
+import { HttpClient } from '../../../../../shared/infrastructure/http/HttpClient';
 
 export class QueryBuilderHttpRepository<THttpClient extends HttpClient> {
   httpClient: THttpClient;

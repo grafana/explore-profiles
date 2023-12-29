@@ -36,7 +36,7 @@ function useIsLlmEnabled() {
     return { error };
   }
 
-  return { isEnabled: Boolean(value), loading };
+  return { isEnabled: Boolean(value), loading, error };
 }
 
 export function AskAiButton({ onClick }: AskAiButtonProps) {
