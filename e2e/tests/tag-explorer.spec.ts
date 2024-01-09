@@ -6,7 +6,7 @@ test.beforeEach(async ({ tagExplorerPage }) => {
 
 test.describe('Smoke tests', () => {
   test('Page title', async ({ tagExplorerPage }) => {
-    await expect(tagExplorerPage.getTitle()).toHaveText('Tag Explorer');
+    await expect(tagExplorerPage.getTitle()).toHaveText('Tag explorer');
   });
 
   test('Spinners', async ({ tagExplorerPage }) => {

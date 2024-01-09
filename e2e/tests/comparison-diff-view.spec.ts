@@ -7,7 +7,7 @@ test.beforeEach(async ({ comparisonDiffViewPage }) => {
 // TODO: https://playwright.dev/docs/test-annotations#tag-tests
 test.describe('Smoke tests', () => {
   test('Page title', async ({ comparisonDiffViewPage }) => {
-    await expect(comparisonDiffViewPage.getTitle()).toHaveText('Comparison Diff View');
+    await expect(comparisonDiffViewPage.getTitle()).toHaveText('Comparison diff view');
   });
 
   test('Spinners', async ({ comparisonDiffViewPage }) => {

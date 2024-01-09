@@ -6,7 +6,7 @@ test.beforeEach(async ({ comparisonViewPage }) => {
 
 test.describe('Smoke tests', () => {
   test('Page title', async ({ comparisonViewPage }) => {
-    await expect(comparisonViewPage.getTitle()).toHaveText('Comparison View');
+    await expect(comparisonViewPage.getTitle()).toHaveText('Comparison view');
   });
 
   test('Spinners', async ({ comparisonViewPage }) => {

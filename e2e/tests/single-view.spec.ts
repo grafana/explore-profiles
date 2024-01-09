@@ -6,7 +6,7 @@ test.beforeEach(async ({ singleViewPage }) => {
 
 test.describe('Smoke tests', () => {
   test('Page title', async ({ singleViewPage }) => {
-    await expect(singleViewPage.getTitle()).toHaveText('Single View');
+    await expect(singleViewPage.getTitle()).toHaveText('Single view');
   });
 
   test('Spinners', async ({ singleViewPage }) => {
