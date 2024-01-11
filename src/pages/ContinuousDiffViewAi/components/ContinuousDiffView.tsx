@@ -35,8 +35,7 @@ function ComparisonDiffView() {
   const styles = useStyles2(getStyles);
 
   const dispatch = useAppDispatch();
-  const { diffView, refreshToken, maxNodes, leftFrom, rightFrom, leftUntil, rightUntil } =
-    useAppSelector(selectContinuousState);
+  const { diffView, refreshToken, leftFrom, rightFrom, leftUntil, rightUntil } = useAppSelector(selectContinuousState);
   const { leftQuery, rightQuery } = useAppSelector(selectQueries);
   const annotations = useAppSelector(selectAnnotationsOrDefault('diffView'));
 
@@ -66,7 +65,7 @@ function ComparisonDiffView() {
       return fetchData.abort;
     }
     return undefined;
-  }, [dispatch, leftFrom, leftUntil, leftQuery, rightFrom, rightUntil, rightQuery, refreshToken, maxNodes]);
+  }, [dispatch, leftFrom, leftUntil, leftQuery, rightFrom, rightUntil, rightQuery, refreshToken]);
 
   const { isAiPanelOpen, onClickAskAi, onClickCloseAiPanel } = useAiPanel(leftQuery, leftFrom, leftUntil);
 

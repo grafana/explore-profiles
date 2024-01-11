@@ -3,6 +3,7 @@ import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
 import { ComparisonViewPage } from './pages/ComparisonViewPage';
 import { SingleViewPage } from './pages/SingleViewPage';
 import { TagExplorerPage } from './pages/TagExplorerPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { DEFAULT_URL_PARAMS } from '../config/constants';
 
 type Fixtures = {
@@ -10,6 +11,7 @@ type Fixtures = {
   singleViewPage: SingleViewPage;
   comparisonViewPage: ComparisonViewPage;
   comparisonDiffViewPage: ComparisonDiffViewPage;
+  settingsPage: SettingsPage;
 };
 
 type Options = {
@@ -58,6 +60,9 @@ export const test = base.extend<Options & Fixtures>({
       { page, failOnUncaughtExceptions, use },
       new ComparisonDiffViewPage(page, DEFAULT_URL_PARAMS)
     );
+  },
+  settingsPage: async ({ page, failOnUncaughtExceptions }, use) => {
+    await withExceptionsAssertion({ page, failOnUncaughtExceptions, use }, new SettingsPage(page));
   },
 });
 

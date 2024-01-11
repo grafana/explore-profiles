@@ -67,13 +67,17 @@ const config = async (env): Promise<Configuration> => {
 
         '@pyroscope/components/ChartTitle': path.resolve(__dirname, './src/overrides/components/ChartTitle'),
         '@pyroscope/components/Panel': path.resolve(__dirname, './src/overrides/components/Panel'),
-        '@pyroscope/components/ExportData': path.resolve(__dirname, './src/overrides/components/ExportData'),
         '@pyroscope/pages/PageContentWrapper': path.resolve(__dirname, './src/overrides/pages/PageContentWrapper'),
         '@pyroscope/pages/tagExplorer/components/TotalSamplesChart/PieChart': path.resolve(
           __dirname,
           './src/overrides/pages/tagExplorer/components/TotalSamplesChart/PieChart'
         ),
         '@pyroscope/ui/Box': path.resolve(__dirname, './src/overrides/ui/Box'),
+
+        '@pyroscope/components/FlameGraphWrapper': path.resolve(
+          __dirname,
+          './src/overrides/components/FlameGraphWrapper'
+        ),
 
         // General rules later
         '@pyroscope': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),

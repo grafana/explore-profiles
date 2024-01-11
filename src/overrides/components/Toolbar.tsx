@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import 'react-dom';
 
 import { useAppSelector, useAppDispatch } from '@pyroscope/redux/hooks';
@@ -16,7 +16,6 @@ import {
   InlineFieldRow,
   RefreshPicker,
   Select,
-  Input,
   TimeRangePicker,
   useStyles2,
 } from '@grafana/ui';
@@ -80,15 +79,6 @@ function useBuildProfileTypeOptions() {
     selectProfileType(selection: SelectableValue<string>) {
       setSelectedProfileType(selection.value || '');
     },
-  };
-}
-
-function useBuildMaxNodes() {
-  const { maxNodes, setMaxNodes } = useContext(PyroscopeStateContext);
-
-  return {
-    maxNodes,
-    setMaxNodes,
   };
 }
 
@@ -275,10 +265,6 @@ export default function Toolbar({}: ToolbarProps) {
   const { serviceNameOptions, selectedServiceName, selectServiceName } = useBuildServiceNameOptions();
   const { profileTypeOptions, selectedProfileType, selectProfileType } = useBuildProfileTypeOptions();
 
-  // calling setMaxNodes on each onChange generates too many events, so we split it
-  const { maxNodes, setMaxNodes } = useBuildMaxNodes();
-  const [viewMaxNodes, setViewMaxNodes] = useState(maxNodes);
-
   /** Refresh functionality */
 
   const { appsLoading, refreshApps } = useRefreshAppsPicker();
@@ -310,27 +296,11 @@ export default function Toolbar({}: ToolbarProps) {
               aria-label="Profiles list"
             />
           </InlineField>
-          <InlineField label="Max Nodes">
-            <Input
-              value={viewMaxNodes || ''}
-              type="number"
-              placeholder="16384"
-              min="-1"
-              onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
-                let newValue = parseInt(event.currentTarget.value, 10);
-                newValue = isNaN(newValue) ? 0 : newValue;
-                newValue = Math.max(-1, newValue);
-                setViewMaxNodes(newValue);
-              }}
-              aria-label="Max Nodes"
-            />
-          </InlineField>
           <RefreshPicker
             isOnCanvas={true}
             noIntervalPicker={true}
             onRefresh={() => {
               refreshApps();
-              setMaxNodes(viewMaxNodes);
             }}
             onIntervalChanged={() => null}
             isLoading={appsLoading}

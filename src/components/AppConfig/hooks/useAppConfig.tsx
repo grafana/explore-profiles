@@ -1,48 +1,85 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAppEvents } from '@grafana/runtime';
-import { AppPluginMeta, AppEvents, GrafanaPlugin } from '@grafana/data';
+import { AppEvents } from '@grafana/data';
 
-import { usePluginSettingsApiClient } from './usePluginSettingsApiClient';
-import { AppPluginSettings } from '../../../types/plugin';
+import { useFetchPluginSettings } from './useFetchPluginSettings';
 
-export function useAppConfig(plugin: GrafanaPlugin<AppPluginMeta<AppPluginSettings>>) {
-  const { settingsApiClient } = usePluginSettingsApiClient(plugin);
+export const DEFAULT_SETTINGS = {
+  COLLAPSED_FLAMEGRAPHS: false,
+  MAX_NODES: 16384,
+  ENABLE_FLAMEGRAPHDOTCOM_EXPORT: true,
+};
+
+function reportError(error: Error, msgs: string[]) {
+  console.error(msgs[0]);
+  console.error(error);
+
+  getAppEvents().publish({
+    type: AppEvents.alertError.name,
+    payload: msgs,
+  });
+}
+
+export function useAppConfig() {
+  const { settings, error: fecthConfigError, mutate } = useFetchPluginSettings();
+
+  if (fecthConfigError) {
+    reportError(fecthConfigError, [
+      'Error while retrieving the plugin settings!',
+      'Please try to reload the page, sorry for the inconvenience.',
+    ]);
+  }
+
+  const [collapsedFlamegraphs, setCollapsedFlamegraphs] = useState<boolean>(
+    settings?.collapsedFlamegraphs ?? DEFAULT_SETTINGS.COLLAPSED_FLAMEGRAPHS
+  );
+  const [maxNodes, setMaxNodes] = useState<number>(settings?.maxNodes ?? DEFAULT_SETTINGS.MAX_NODES);
 
   const [enableFlameGraphDotComExport, setEnableFlameGraphDotComExport] = useState<boolean>(
-    plugin.meta.jsonData?.enableFlameGraphDotComExport ?? true
+    settings?.enableFlameGraphDotComExport ?? DEFAULT_SETTINGS.ENABLE_FLAMEGRAPHDOTCOM_EXPORT
   );
+
+  useEffect(() => {
+    if (settings) {
+      setCollapsedFlamegraphs(settings.collapsedFlamegraphs);
+      setMaxNodes(settings.maxNodes);
+      setEnableFlameGraphDotComExport(settings.enableFlameGraphDotComExport);
+    }
+  }, [settings]);
 
   return {
     data: {
+      collapsedFlamegraphs,
+      maxNodes,
       enableFlameGraphDotComExport,
     },
     actions: {
+      toggleCollapsedFlamegraphs() {
+        setCollapsedFlamegraphs((v) => !v);
+      },
+      updateMaxNodes(event: React.ChangeEvent<HTMLInputElement>) {
+        setMaxNodes(Number(event.target.value));
+      },
       toggleEnableFlameGraphDotComExport() {
         setEnableFlameGraphDotComExport((v) => !v);
       },
-      async saveConfiguration() {
+      async saveSettings() {
         try {
-          await settingsApiClient.update({
-            jsonData: {
-              enableFlameGraphDotComExport,
-            },
+          await mutate({
+            collapsedFlamegraphs,
+            maxNodes,
+            enableFlameGraphDotComExport,
           });
-
-          // We reload the page as the changes made here wouldn't be propagated to the actual plugin otherwise.
-          // This is not ideal, however unfortunately currently there is no supported way for updating the plugin state.
-          window.location.reload();
-        } catch (error) {
-          // TODO: is there any offical logger library at Grafana?
-          console.error('Error while saving the plugin configuration!');
-          console.error(error);
 
           getAppEvents().publish({
-            type: AppEvents.alertError.name,
-            payload: [
-              'Error while saving the plugin configuration!',
-              'Please try again later, sorry for the inconvenience.',
-            ],
+            type: AppEvents.alertSuccess.name,
+            payload: ['Plugin settings successfully saved!'],
           });
+        } catch (error) {
+          reportError(error as Error, [
+            'Error while saving the plugin settings!',
+            'Please try again later, sorry for the inconvenience.',
+          ]);
         }
       },
     },

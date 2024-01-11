@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { AppEvents } from '@grafana/data';
 
-import { useAppConfig } from '../useAppConfig';
+import { useAppConfig, DEFAULT_SETTINGS } from '../useAppConfig';
 import plugin from './fixtures/plugin.json';
 
 // appEvents dependency
@@ -14,28 +14,22 @@ jest.mock('@grafana/runtime', () => ({
   getAppEvents: () => appEvents,
 }));
 
-// settingsApiClient dependency
-const settingsApiClient = {
-  update: jest.fn(async () => ({})),
+// useFetchPluginSettings dependency
+const mutate = jest.fn();
+
+const defaultSettings = {
+  collapsedFlamegraphs: DEFAULT_SETTINGS.COLLAPSED_FLAMEGRAPHS,
+  maxNodes: DEFAULT_SETTINGS.MAX_NODES,
+  enableFlameGraphDotComExport: DEFAULT_SETTINGS.ENABLE_FLAMEGRAPHDOTCOM_EXPORT,
 };
 
-jest.mock('../usePluginSettingsApiClient', () => ({
-  usePluginSettingsApiClient: () => ({ settingsApiClient }),
+jest.mock('../useFetchPluginSettings', () => ({
+  useFetchPluginSettings: () => ({
+    settings: defaultSettings,
+    error: null,
+    mutate,
+  }),
 }));
-
-// window.location.reload mock
-const { location } = window;
-
-beforeEach(() => {
-  Object.defineProperty(window, 'location', {
-    configurable: true,
-    value: { reload: jest.fn() },
-  });
-});
-
-afterEach(() => {
-  Object.defineProperty(window, 'location', { configurable: true, value: location });
-});
 
 // tests
 describe('useAppConfig(plugin)', () => {
@@ -44,13 +38,47 @@ describe('useAppConfig(plugin)', () => {
     const { result } = renderHook(() => useAppConfig(plugin));
 
     expect(result.current).toEqual({
-      data: {
-        enableFlameGraphDotComExport: false,
-      },
+      data: defaultSettings,
       actions: {
+        toggleCollapsedFlamegraphs: expect.any(Function),
+        updateMaxNodes: expect.any(Function),
         toggleEnableFlameGraphDotComExport: expect.any(Function),
-        saveConfiguration: expect.any(Function),
+        saveSettings: expect.any(Function),
       },
+    });
+  });
+
+  describe('actions.toggleCollapsedFlamegraphs()', () => {
+    it('toggles the value of data.collapsedFlamegraphs', () => {
+      // @ts-expect-error
+      const { result } = renderHook(() => useAppConfig(plugin));
+
+      const { data, actions } = result.current;
+
+      expect(data.collapsedFlamegraphs).toBe(defaultSettings.collapsedFlamegraphs);
+
+      act(() => {
+        actions.toggleCollapsedFlamegraphs();
+      });
+
+      expect(result.current.data.collapsedFlamegraphs).toBe(true);
+    });
+  });
+
+  describe('actions.updateMaxNodes(event)', () => {
+    it('updates the value of data.maxNodes', () => {
+      // @ts-expect-error
+      const { result } = renderHook(() => useAppConfig(plugin));
+
+      const { data, actions } = result.current;
+
+      expect(data.maxNodes).toBe(defaultSettings.maxNodes);
+
+      act(() => {
+        actions.updateMaxNodes({ target: { value: '42' } } as React.ChangeEvent<HTMLInputElement>);
+      });
+
+      expect(result.current.data.maxNodes).toBe(42);
     });
   });
 
@@ -61,49 +89,50 @@ describe('useAppConfig(plugin)', () => {
 
       const { data, actions } = result.current;
 
-      expect(data.enableFlameGraphDotComExport).toBe(false);
+      expect(data.enableFlameGraphDotComExport).toBe(defaultSettings.enableFlameGraphDotComExport);
 
       act(() => {
         actions.toggleEnableFlameGraphDotComExport();
       });
 
-      expect(result.current.data.enableFlameGraphDotComExport).toBe(true);
+      expect(result.current.data.enableFlameGraphDotComExport).toBe(false);
     });
   });
 
-  describe('actions.saveConfiguration()', () => {
-    it('uses the settingsApiClient to update the plugin settings', async () => {
+  describe('actions.saveSettings()', () => {
+    it('stores the plugin settings', async () => {
       // @ts-expect-error
       const { result } = renderHook(() => useAppConfig(plugin));
 
-      const { saveConfiguration } = result.current.actions;
+      const { saveSettings } = result.current.actions;
 
-      await saveConfiguration();
+      await saveSettings();
 
-      expect(settingsApiClient.update).toHaveBeenCalledWith({
-        jsonData: {
-          enableFlameGraphDotComExport: result.current.data.enableFlameGraphDotComExport,
-        },
-      });
+      expect(mutate).toHaveBeenCalledWith(defaultSettings);
     });
 
-    describe('after updating the plugin settings', () => {
-      it('reloads the page', async () => {
+    describe('if no error occurred', () => {
+      it(`publishes an "${AppEvents.alertSuccess.name}" application event`, async () => {
+        mutate.mockResolvedValue({ ok: true });
+
         // @ts-expect-error
         const { result } = renderHook(() => useAppConfig(plugin));
 
-        const { saveConfiguration } = result.current.actions;
+        const { saveSettings } = result.current.actions;
 
-        await saveConfiguration();
+        await saveSettings();
 
-        expect(window.location.reload).toHaveBeenCalledWith();
+        expect(appEvents.publish).toHaveBeenCalledWith({
+          type: AppEvents.alertSuccess.name,
+          payload: ['Plugin settings successfully saved!'],
+        });
       });
     });
 
-    describe('if an error occurs while updating the plugin settings', () => {
+    describe('if an error occurred', () => {
       it(`publishes an "${AppEvents.alertError.name}" application event`, async () => {
         const updateError = new Error('Ooops! settingsApiClient.update error.');
-        settingsApiClient.update.mockRejectedValue(updateError);
+        mutate.mockRejectedValue(updateError);
 
         // prevent console noise in the output
         jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -111,16 +140,13 @@ describe('useAppConfig(plugin)', () => {
         // @ts-expect-error
         const { result } = renderHook(() => useAppConfig(plugin));
 
-        const { saveConfiguration } = result.current.actions;
+        const { saveSettings } = result.current.actions;
 
-        await saveConfiguration();
+        await saveSettings();
 
         expect(appEvents.publish).toHaveBeenCalledWith({
           type: AppEvents.alertError.name,
-          payload: [
-            'Error while saving the plugin configuration!',
-            'Please try again later, sorry for the inconvenience.',
-          ],
+          payload: ['Error while saving the plugin settings!', 'Please try again later, sorry for the inconvenience.'],
         });
       });
     });

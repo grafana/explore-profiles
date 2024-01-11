@@ -1,4 +1,4 @@
-FROM docker.io/grafana/pyroscope:1.2.0
+FROM docker.io/grafana/pyroscope:latest
 
 USER root
 

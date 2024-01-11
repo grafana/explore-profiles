@@ -73,8 +73,7 @@
     "dependencies": { "grafanaDependency": ">=9.3.8", "grafanaVersion": "*", "plugins": [] },
     "jsonData": {
       "backendUrl": "http://pyroscope:4100",
-      "basicAuthUser": "myuser",
-      "enableFlameGraphDotComExport": false
+      "basicAuthUser": "myuser"
     },
     "secureJsonFields": { "basicAuthPassword": true },
     "defaultNavUrl": "",

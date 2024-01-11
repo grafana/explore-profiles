@@ -77,18 +77,18 @@ function ContinuousSingleView() {
 
   const { query } = useAppSelector(selectQueries);
   const tags = useTags().regularTags;
-  const { from, until, refreshToken, maxNodes } = useAppSelector((state) => state.continuous);
+  const { from, until, refreshToken } = useAppSelector((state) => state.continuous);
 
   const { singleView } = useAppSelector((state) => state.continuous);
   const annotations = useAppSelector(selectAnnotationsOrDefault('singleView'));
 
   useEffect(() => {
-    if (from && until && query && maxNodes) {
+    if (from && until && query) {
       const fetchData = dispatch(fetchSingleView(null));
       return () => fetchData.abort('cancel');
     }
     return undefined;
-  }, [from, until, query, refreshToken, maxNodes, dispatch]);
+  }, [from, until, query, refreshToken, dispatch]);
 
   const flamegraphRenderer = (() => {
     switch (singleView.type) {

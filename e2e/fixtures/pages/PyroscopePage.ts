@@ -18,6 +18,14 @@ export class PyroscopePage {
     await this.page.locator('.pyroscope-app').waitFor();
   }
 
+  getByText(text, options?: Record<string, unknown>) {
+    return this.page.getByText(text, options);
+  }
+
+  getByRole(role, options?: Record<string, unknown>) {
+    return this.page.getByRole(role, options);
+  }
+
   clickOnNavLink(label: string) {
     return this.page.getByLabel(label).click();
   }
