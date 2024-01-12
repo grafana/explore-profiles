@@ -25,14 +25,14 @@
       "type": "page",
       "name": "Single view AI",
       "path": "/a/%PLUGIN_ID%/single-ai",
-      "addToNav": true,
+      "addToNav": false,
       "defaultNav": false
     },
     {
       "type": "page",
       "name": "Diff view AI",
       "path": "/a/%PLUGIN_ID%/comparison-diff-ai",
-      "addToNav": true,
+      "addToNav": false,
       "defaultNav": false
     },
     {
