@@ -29,7 +29,10 @@
     "e2e:ci:server:down": "docker-compose down"
   },
   "lint-staged": {
-    "*.{ts,tsx,scss}": "yarn format:fix"
+    "*.{ts,tsx,scss}": [
+      "yarn format:fix",
+      "yarn lint"
+    ]
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
