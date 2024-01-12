@@ -12,27 +12,27 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Go environment
         if: steps.check-for-backend.outputs.has-backend == 'true'
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: '1.19'
 
       - name: Test backend
         if: steps.check-for-backend.outputs.has-backend == 'true'
-        uses: magefile/mage-action@v2
+        uses: magefile/mage-action@v3
         with:
           version: latest
           args: coverage
 
       - name: Build backend
-        uses: magefile/mage-action@v2
+        uses: magefile/mage-action@v3
         with:
           version: latest
           args: buildAll
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: backend-build
@@ -44,9 +44,9 @@ jobs:
     timeout-minutes: 15
     needs: [backend]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 'lts/hydrogen'
           cache: 'yarn'
@@ -65,7 +65,7 @@ jobs:
 
       # before the frontend build so that the folder is not overwritten
       - name: Download backend build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: backend-build
           path: dist
@@ -100,7 +100,7 @@ jobs:
       - name: Stop Grafana server
         run: yarn e2e:ci:server:down
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: e2e-test-reports-and-results
