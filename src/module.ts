@@ -1,17 +1,11 @@
 import { AppPlugin } from '@grafana/data';
 import { App } from './components/App';
-import { AppConfig } from './components/AppConfig';
 import { registerExtension } from './extensions/query-links';
 import { AppPluginSettings } from './types/plugin';
 import { PAGES } from 'grafana-pyroscope/public/app/pages/urls';
 import { PLUGIN_BASE_URL } from './constants';
 
-export const plugin = new AppPlugin<AppPluginSettings>().setRootPage(App).addConfigPage({
-  title: 'Configuration',
-  icon: 'cog',
-  body: AppConfig,
-  id: 'configuration',
-});
+export const plugin = new AppPlugin<AppPluginSettings>().setRootPage(App);
 
 // Note that this code will be executed immediately on the start of Grafana due to plugin.json `preload: true`
 registerExtension(plugin);

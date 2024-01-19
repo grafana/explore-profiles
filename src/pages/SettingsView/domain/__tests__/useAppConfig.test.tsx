@@ -23,7 +23,7 @@ const defaultSettings = {
   enableFlameGraphDotComExport: DEFAULT_SETTINGS.ENABLE_FLAMEGRAPHDOTCOM_EXPORT,
 };
 
-jest.mock('../useFetchPluginSettings', () => ({
+jest.mock('../../infrastructure/useFetchPluginSettings', () => ({
   useFetchPluginSettings: () => ({
     settings: defaultSettings,
     error: null,

@@ -1,10 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[bug] "
+title: '[bug] '
 labels: bug
 assignees: ''
-
 ---
 
 ### Bug description
@@ -14,7 +13,7 @@ assignees: ''
 
 ### Steps to reproduce
 
-1. Go to this URL: 
+1. Go to this URL:
 2. <!-- Do this... -->
 3. <!-- Then do this... -->
 

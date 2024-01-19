@@ -5,12 +5,13 @@ import ContinuousComparisonView from '@pyroscope/pages/ContinuousComparisonView'
 import ContinuousDiffView from '@pyroscope/pages/ContinuousDiffView';
 import ContinuousSingleView from '@pyroscope/pages/ContinuousSingleView';
 import TagExplorerView from '@pyroscope/pages/TagExplorerView';
-import ContinuousSingleViewAi from '../../pages/ContinuousSingleViewAi/ContinuousSingleViewAi';
-import ContinuousDiffViewAi from '../../pages/ContinuousDiffViewAi/ContinuousDiffViewAi';
 import * as React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { SettingsView } from '../../pages/SettingsView/SettingsView';
 import { ROUTES } from '../../constants';
 import useConsistentTheme from '../../hooks/useConsistentTheme';
+import ContinuousDiffViewAi from '../../pages/ContinuousDiffViewAi/ContinuousDiffViewAi';
+import ContinuousSingleViewAi from '../../pages/ContinuousSingleViewAi/ContinuousSingleViewAi';
 import { prefixRoute, useNavigationLinksUpdate } from '../../utils/utils.routing';
 import { GIT_COMMIT } from '../../version';
 import { PyroscopeStateWrapper } from '../PyroscopeState/PyroscopeStateWrapper';
@@ -88,6 +89,9 @@ export function Routes() {
             </Route>
             <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
               <TagExplorerView />
+            </Route>
+            <Route path={prefixRoute(ROUTES.SETTINGS)} exact>
+              <SettingsView />
             </Route>
             {/* Default Route */}
             <Route>

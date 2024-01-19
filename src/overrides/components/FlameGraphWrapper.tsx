@@ -13,7 +13,7 @@ import { SharedQuery } from '@pyroscope/legacy/flamegraph/FlameGraph/FlameGraphR
 import { isGrafanaFlamegraphEnabled } from '@pyroscope/util/features';
 
 import { flamebearerToDataFrameDTO } from '@pyroscope/util/flamebearer';
-import { useFetchPluginSettings } from '../../components/AppConfig/hooks/useFetchPluginSettings';
+import { useFetchPluginSettings } from '../../pages/SettingsView/infrastructure/useFetchPluginSettings';
 import { getAppEvents } from '@grafana/runtime';
 import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
 

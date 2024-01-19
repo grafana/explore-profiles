@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getAppEvents } from '@grafana/runtime';
 import { AppEvents } from '@grafana/data';
 
-import { useFetchPluginSettings } from './useFetchPluginSettings';
+import { useFetchPluginSettings } from '../infrastructure/useFetchPluginSettings';
 
 export const DEFAULT_SETTINGS = {
   COLLAPSED_FLAMEGRAPHS: false,

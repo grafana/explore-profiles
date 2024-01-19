@@ -52,13 +52,15 @@ export class PyroscopePage {
   }
 
   async assertNoSpinners() {
-    await expect(this.getMainSpinner()).not.toBeVisible();
+    const slowExpect = expect.configure({ timeout: 10000 });
+
+    await slowExpect(this.getMainSpinner()).not.toBeVisible();
 
     const refreshSpinners = this.getRefreshSpinners();
     const spinnersCount = await refreshSpinners.count();
 
     for (let i = 0; i < spinnersCount; i += 1) {
-      await expect(refreshSpinners.nth(i)).not.toBeVisible();
+      await slowExpect(refreshSpinners.nth(i)).not.toBeVisible();
     }
   }
 }

@@ -70,7 +70,7 @@
     {
       "type": "page",
       "name": "Settings",
-      "path": "/plugins/%PLUGIN_ID%",
+      "path": "/a/%PLUGIN_ID%/settings",
       "role": "Admin",
       "addToNav": true,
       "defaultNav": false

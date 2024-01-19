@@ -13,6 +13,7 @@ export enum ROUTES {
   COMPARISON_DIFF_VIEW = '/comparison-diff',
   SINGLE_VIEW_AI = '/single-ai',
   COMPARISON_DIFF_VIEW_AI = '/comparison-diff-ai',
+  SETTINGS = '/settings',
 }
 
 export const APP_TITLE = 'Profiles';
@@ -48,5 +49,10 @@ export const NAVIGATION: Record<string, NavModelItem> = {
     id: ROUTES.COMPARISON_DIFF_VIEW_AI,
     text: 'Diff View AI',
     url: `${PLUGIN_BASE_URL}/comparison-diff-ai`,
+  },
+  [ROUTES.SETTINGS]: {
+    id: ROUTES.SETTINGS,
+    text: 'Settings',
+    url: `${PLUGIN_BASE_URL}/settings`,
   },
 };

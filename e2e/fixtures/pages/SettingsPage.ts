@@ -3,7 +3,7 @@ import { PyroscopePage } from './PyroscopePage';
 
 export class SettingsPage extends PyroscopePage {
   constructor(readonly page: Page) {
-    super(page, '/plugins/grafana-pyroscope-app', '');
+    super(page, '/a/grafana-pyroscope-app/settings', '');
   }
 
   async goto() {
