@@ -6,13 +6,13 @@ import { GrafanaPanelBox } from '../../components/GrafanaPanelBox';
 import { css } from '@emotion/css';
 import { PanelProps } from 'grafana-pyroscope/public/app/components/Panel';
 
-export function Panel({ isLoading, title, children, className = '', headerActions }: PanelProps) {
+export function Panel({ isLoading, title, children, className = '', headerActions, dataTestId }: PanelProps) {
   const s = useStyles2(getStyles);
 
   const loadingState = isLoading ? LoadingState.Loading : LoadingState.Done;
 
   return (
-    <div className={`${className} ${s.panelWrap}`}>
+    <div className={`${className} ${s.panelWrap}`} data-testid={dataTestId}>
       <GrafanaPanelBox loadingState={loadingState} title={title as unknown as string} actions={headerActions}>
         {children}
       </GrafanaPanelBox>

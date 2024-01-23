@@ -6,7 +6,19 @@ export class ComparisonViewPage extends PyroscopePage {
     super(page, '/a/grafana-pyroscope-app/comparison', defaultUrlParams);
   }
 
-  getComparisonContainer() {
-    return this.page.getByTestId('comparison-container');
+  getBaselinePanel() {
+    return this.page.getByTestId('baseline-panel');
+  }
+
+  getComparisonPanel() {
+    return this.page.getByTestId('comparison-panel');
+  }
+
+  getBaselineQueryBuilder() {
+    return this.getBaselinePanel().locator('#query-builder-single');
+  }
+
+  getComparisonQueryBuilder() {
+    return this.getComparisonPanel().locator('#query-builder-single');
   }
 }

@@ -6,13 +6,23 @@ export class ComparisonDiffViewPage extends PyroscopePage {
     super(page, '/a/grafana-pyroscope-app/comparison-diff', defaultUrlParams);
   }
 
-  getComparisonContainer() {
-    // TODO: fix and use data test ids "data-testid Panel header [object Object]" in Pyroscope OSS
-    return this.page.locator('.diff-instructions-wrapper');
+  getBaselinePanel() {
+    return this.page.getByTestId('baseline-panel');
   }
 
-  getDiffContainer() {
-    // TODO: fix and use data test ids "data-testid Panel header [object Object]" in Pyroscope OSS
-    return this.page.locator('.pyroscope-app');
+  getBaselineQueryBuilder() {
+    return this.getBaselinePanel().locator('#query-builder-single');
+  }
+
+  getComparisonPanel() {
+    return this.page.getByTestId('comparison-panel');
+  }
+
+  getComparisonQueryBuilder() {
+    return this.getComparisonPanel().locator('#query-builder-single');
+  }
+
+  getDiffPanel() {
+    return this.page.getByTestId('diff-panel');
   }
 }

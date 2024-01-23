@@ -39,8 +39,7 @@ export class PyroscopePage {
   }
 
   getMainSpinner() {
-    // TODO: improve with proper loading indicators
-    return this.page.locator('.pyroscope-app').getByText('Loading');
+    return this.page.locator('.pyroscope-app').getByText('Loading').first();
   }
 
   getServicesList() {
@@ -62,5 +61,10 @@ export class PyroscopePage {
     for (let i = 0; i < spinnersCount; i += 1) {
       await slowExpect(refreshSpinners.nth(i)).not.toBeVisible();
     }
+  }
+
+  async clickOnMenuItem(itemText: string) {
+    // TODO: improve after upgrading Grafana version (which has a different navigation menu)
+    await this.page.locator(`a:has-text("${itemText}")`).first().click();
   }
 }

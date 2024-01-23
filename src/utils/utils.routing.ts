@@ -11,6 +11,36 @@ export function prefixRoute(route: string): string {
   return `${PLUGIN_BASE_URL}/${route}`.replace(/\/{2,}/g, '/');
 }
 
+function getOriginalHref(el: Element) {
+  const originalHref = el.getAttribute('data-original-href');
+  const href = el.getAttribute('href');
+
+  // Already set up
+  if (originalHref) {
+    return originalHref;
+  }
+
+  // For some reason href is not set, there's nothing we can do
+  if (!href) {
+    return;
+  }
+
+  // Set up
+  el.setAttribute('data-original-href', href);
+  return href;
+}
+
+function setHrefAttribute(fn: (href: string) => string) {
+  return function (el: Element) {
+    const href = getOriginalHref(el);
+    if (!href) {
+      return;
+    }
+
+    el.setAttribute('href', fn(href));
+  };
+}
+
 /*
  * update navigation links with existing query parameters
  * so that current state is kept when changing routes
@@ -18,35 +48,19 @@ export function prefixRoute(route: string): string {
 export function useNavigationLinksUpdate() {
   const location = useLocation();
 
-  function getOriginalHref(el: Element) {
-    const originalHref = el.getAttribute('data-original-href');
-    const href = el.getAttribute('href');
-
-    // Already set up
-    if (originalHref) {
-      return originalHref;
-    }
-
-    // For some reason href is not set, there's nothing we can do
-    if (!href) {
-      return;
-    }
-
-    // Set up
-    el.setAttribute('data-original-href', href);
-    return href;
-  }
-
   useEffect(() => {
     function findSidebarLinks() {
-      // TODO: come up with better selectors
-      const tablist = document.querySelectorAll('[role="tablist"]');
-      if (!tablist.length) {
+      // classic menu vs "mega menu"
+      const links =
+        document.querySelectorAll(`[role="tablist"] a[role="tab"][href^="/a/${plugin.id}"]`) ||
+        document.querySelectorAll('[data-testid="data-testid Nav menu item"]');
+
+      if (!links.length) {
         return;
       }
 
       return (
-        Array.from(document.querySelectorAll(`[role="tablist"] a[role="tab"][href^="/a/${plugin.id}"]`))
+        Array.from(links)
           // Only care about routes that are defined in plugin.json
           .filter((a) => {
             const href = getOriginalHref(a);
@@ -57,17 +71,6 @@ export function useNavigationLinksUpdate() {
             return ROUTES.includes(href);
           })
       );
-    }
-
-    function setHrefAttribute(fn: (href: string) => string) {
-      return function (el: Element) {
-        const href = getOriginalHref(el);
-        if (!href) {
-          return;
-        }
-
-        el.setAttribute('href', fn(href));
-      };
     }
 
     const sidebarLinks = findSidebarLinks();

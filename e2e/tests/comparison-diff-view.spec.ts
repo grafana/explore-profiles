@@ -19,10 +19,9 @@ test.describe('Smoke tests', () => {
     await expect(comparisonDiffViewPage.getProfilesList()).toBeVisible();
   });
 
-  test('Baseline, comparison & diff columns', async ({ comparisonDiffViewPage }) => {
-    const camparisonContainer = comparisonDiffViewPage.getComparisonContainer();
-
-    await expect(camparisonContainer.locator('h6').nth(0)).toContainText('Baseline time range');
-    await expect(camparisonContainer.locator('h6').nth(1)).toContainText('Comparison time range');
+  test('Baseline, comparison & diff panels', async ({ comparisonDiffViewPage }) => {
+    await expect(comparisonDiffViewPage.getBaselinePanel()).toContainText('Baseline time range');
+    await expect(comparisonDiffViewPage.getComparisonPanel()).toContainText('Comparison time range');
+    await expect(comparisonDiffViewPage.getDiffPanel()).toBeVisible();
   });
 });
