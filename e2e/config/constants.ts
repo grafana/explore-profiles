@@ -9,14 +9,7 @@ type EnvVars = {
 
 function getEnvVars(): EnvVars {
   const envVars = ['E2E_BASE_URL', 'E2E_USERNAME', 'E2E_PASSWORD'].reduce((acc, name: string) => {
-    const value = process.env[name];
-
-    if (!value) {
-      console.warn('The "%s" environment variable is empty! Is it intended?', name);
-    }
-
-    acc[name] = value;
-
+    acc[name] = process.env[name];
     return acc;
   }, {} as EnvVars);
 

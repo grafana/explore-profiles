@@ -1,0 +1,6 @@
+.git
+.github
+.husky
+coverage
+node_modules
+scripts

@@ -35,4 +35,6 @@ export default config({
   projects,
   reporter: [['dot'], ['html', { outputFolder: '../test-reports', open: 'never' }], ['github']],
   retries: 1,
+  forbidOnly: true,
+  workers: 1,
 });

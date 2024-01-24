@@ -76,7 +76,7 @@ jobs:
       - name: Build frontend
         run: yarn build
 
-      # e2e test
+      # e2e tests
       - name: Start Grafana server
         run: yarn e2e:ci:server:up
 
@@ -89,10 +89,6 @@ jobs:
       #     responseCode: '200'
       #     timeout: 20000
       #     interval: 500
-
-      # we do this here to give a bit more time to the app to start
-      - name: Prepare e2e tests
-        run: yarn e2e:prepare
 
       - name: Run e2e tests
         run: yarn e2e:ci
