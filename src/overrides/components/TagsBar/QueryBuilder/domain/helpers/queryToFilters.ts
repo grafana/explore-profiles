@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid';
+
 import { FilterKind, Filters, OperatorKind } from '../types';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity

@@ -1,8 +1,8 @@
 import { invariant } from '../domain/helpers/invariant';
 import { Suggestions } from '../domain/types';
-import { QueryBuilderHttpRepository } from './QueryBuilderHttpRepository';
 import { CacheClient } from './http/CacheClient';
 import { PyroscopeApiClient } from './http/PyroscopeApiClient';
+import { QueryBuilderHttpRepository } from './QueryBuilderHttpRepository';
 
 class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
   cacheClient: CacheClient;

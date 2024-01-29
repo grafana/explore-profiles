@@ -1,6 +1,6 @@
 import { config } from '@grafana/runtime';
 
-import { HttpClient } from '../../../shared/infrastructure/http/HttpClient';
+import { HttpClient } from '../../../shared/infrastructure/HttpClient';
 import { Profile } from '../domain/Profile';
 import { stripBase64Prefix } from './helpers/stripBase64Prefix';
 

@@ -1,9 +1,10 @@
 // webpack.config.ts
+import * as path from 'path';
+import CopyWebpackPlugin from 'copy-webpack-plugin';
 import type { Configuration, RuleSetRule } from 'webpack';
 import { merge } from 'webpack-merge';
-import CopyWebpackPlugin from 'copy-webpack-plugin';
+
 import grafanaConfig from './.config/webpack/webpack.config';
-import * as path from 'path';
 
 const config = async (env): Promise<Configuration> => {
   const baseConfig = (await grafanaConfig(env)) as any;

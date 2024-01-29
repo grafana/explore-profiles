@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures';
+import { expect, test } from '../fixtures';
 
 test.beforeEach(async ({ comparisonViewPage }) => {
   await comparisonViewPage.goto();

@@ -1,5 +1,6 @@
 import path from 'path';
-import { test, expect } from '../../fixtures';
+
+import { expect, test } from '../../fixtures';
 
 test.beforeEach(async ({ adHocViewPage }) => {
   await adHocViewPage.goto();

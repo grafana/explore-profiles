@@ -1,12 +1,12 @@
-import React, { useContext, useMemo } from 'react';
-import styles from '@pyroscope/pages/tagExplorer/components/TotalSamplesChart/PieChart/styles.module.scss';
+import { LoadingState, MutableDataFrame, PanelData } from '@grafana/data';
 import { PanelRenderer } from '@grafana/runtime';
-import { MutableDataFrame, PanelData, LoadingState } from '@grafana/data';
-import { PyroscopeStateContext } from '../../../../../../components/PyroscopeState/context';
-import { stringifyPyroscopeColor } from '../../../../../../utils/translation';
 import { FieldColor, FieldColorModeId } from '@grafana/schema';
-
+import styles from '@pyroscope/pages/tagExplorer/components/TotalSamplesChart/PieChart/styles.module.scss';
 import { PieChartProps } from 'grafana-pyroscope/public/app/pages/tagExplorer/components/TotalSamplesChart/PieChart';
+import React, { useContext, useMemo } from 'react';
+
+import { PyroscopeStateContext } from '../../../../../../app/domain/PyroscopeState/context';
+import { stringifyPyroscopeColor } from '../../../../../../shared/domain/translation';
 
 const PieChart = ({ data, width, height }: PieChartProps) => {
   const series = useMemo(() => {

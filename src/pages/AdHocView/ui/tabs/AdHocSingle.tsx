@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
 
 import { useUploadFile } from '../../domain/useUploadFile';
-import { AdHocProfileTypeSelector } from '../AdHocProfileTypeSelector';
 import { AdHocFileDropZone } from '../AdHocFileDropZone';
 import { AdHocFlameGraph } from '../AdHocFlameGraph';
+import { AdHocProfileTypeSelector } from '../AdHocProfileTypeSelector';
 import { AdHocSpinner } from '../AdHocSpinner';
 
 function AdHocSingleComponent() {

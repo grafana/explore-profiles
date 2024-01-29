@@ -1,7 +1,8 @@
-import React from 'react';
 import { cx } from '@emotion/css';
 import { Tag, useStyles2 } from '@grafana/ui';
-import { PartialFilter, FilterPartKind } from '../../domain/types';
+import React from 'react';
+
+import { FilterPartKind, PartialFilter } from '../../domain/types';
 import { getStyles } from './Chiclet';
 
 type PartialChicletProps = {

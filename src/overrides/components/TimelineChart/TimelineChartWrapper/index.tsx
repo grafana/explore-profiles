@@ -1,32 +1,31 @@
-import React, { useContext, useRef, useState } from 'react';
-import Color from 'color';
-import { markingsFromSelection } from '@pyroscope/components/TimelineChart/markings';
-import { PanelRenderer } from '@grafana/runtime';
 import {
   AbsoluteTimeRange,
   DataFrame,
+  dateTime,
   FieldColorModeId,
   FieldType,
   MutableDataFrame,
   PanelData,
-  TimeRange,
-  dateTime,
   rangeUtil,
+  TimeRange,
 } from '@grafana/data';
+import { PanelRenderer } from '@grafana/runtime';
 import { LoadingState } from '@grafana/schema';
+import { usePanelContext, useTheme2 } from '@grafana/ui';
+import { markingsFromSelection } from '@pyroscope/components/TimelineChart/markings';
+import useResizeObserver from '@react-hook/resize-observer';
+import Color from 'color';
+import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineChart/centerTimelineData';
+import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
+import React, { useContext, useRef, useState } from 'react';
+
+import { PyroscopeStateContext } from '../../../../app/domain/PyroscopeState/context';
 import {
   ceilTenSeconds,
   floorTenSeconds,
   stringifyPyroscopeColor,
   translateGrafanaAbsoluteTimeRangeToPyroscope,
-} from '../../../../utils/translation';
-import { usePanelContext, useTheme2 } from '@grafana/ui';
-import { PyroscopeStateContext } from '../../../../components/PyroscopeState/context';
-
-import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
-import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineChart/centerTimelineData';
-
-import useResizeObserver from '@react-hook/resize-observer';
+} from '../../../../shared/domain/translation';
 
 const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
 

@@ -1,4 +1,4 @@
-import { PlaywrightTestConfig, Project, defineConfig } from '@playwright/test';
+import { defineConfig, PlaywrightTestConfig, Project } from '@playwright/test';
 import path from 'path';
 
 type CustomEnvConfig = {

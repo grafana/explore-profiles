@@ -1,7 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { InlineField, InlineFieldRow, Select, useStyles2 } from '@grafana/ui';
-import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { css } from '@emotion/css';
+import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { InlineField, InlineFieldRow, Select, useStyles2 } from '@grafana/ui';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 type ProfileSelectorProps = {
   profileTypes: string[];

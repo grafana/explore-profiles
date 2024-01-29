@@ -1,5 +1,6 @@
 import { config } from '@grafana/runtime';
-import { HttpClient } from '../../../shared/infrastructure/http/HttpClient';
+
+import { HttpClient } from '../../../shared/infrastructure/HttpClient';
 
 type ApiResponse = {
   settings: Array<{ name: string; value: string }>;

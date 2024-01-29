@@ -1,5 +1,6 @@
-import React from 'react';
 import { Select, useStyles2 } from '@grafana/ui';
+import React from 'react';
+
 import { getStyles } from './SingleSelect';
 
 const noOp = () => {};

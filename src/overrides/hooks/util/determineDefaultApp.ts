@@ -1,5 +1,6 @@
 import { determineDefaultApp as pyroscopeDetermineDefaultApp } from 'grafana-pyroscope/public/app/hooks/util/determineDefaultApp';
-import userStorage from '../../../utils/UserStorage';
+
+import userStorage from '../../../shared/infrastructure/UserStorage';
 
 export async function determineDefaultApp(apps: any[]) {
   const userSettings = await userStorage.get(userStorage.KEYS.SETTINGS);

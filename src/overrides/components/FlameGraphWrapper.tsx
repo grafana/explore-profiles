@@ -1,21 +1,19 @@
-import React, { useContext, useEffect } from 'react';
 import { AppEvents, createTheme } from '@grafana/data';
 import { FlameGraph } from '@grafana/flamegraph';
-import { Button, Tooltip } from '@grafana/ui';
-
-import useColorMode from '@pyroscope/hooks/colorMode.hook';
-import { FlamegraphRenderer } from '@pyroscope/legacy/flamegraph/FlamegraphRenderer';
-import ExportData from '@pyroscope/components/ExportData';
-import type { Profile } from '@pyroscope/legacy/models';
-import useExportToFlamegraphDotCom from '@pyroscope/components/exportToFlamegraphDotCom.hook';
-import { SharedQuery } from '@pyroscope/legacy/flamegraph/FlameGraph/FlameGraphRenderer';
-
-import { isGrafanaFlamegraphEnabled } from '@pyroscope/util/features';
-
-import { flamebearerToDataFrameDTO } from '@pyroscope/util/flamebearer';
-import { useFetchPluginSettings } from '../../pages/SettingsView/infrastructure/useFetchPluginSettings';
 import { getAppEvents } from '@grafana/runtime';
-import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
+import { Button, Tooltip } from '@grafana/ui';
+import ExportData from '@pyroscope/components/ExportData';
+import useExportToFlamegraphDotCom from '@pyroscope/components/exportToFlamegraphDotCom.hook';
+import useColorMode from '@pyroscope/hooks/colorMode.hook';
+import { SharedQuery } from '@pyroscope/legacy/flamegraph/FlameGraph/FlameGraphRenderer';
+import { FlamegraphRenderer } from '@pyroscope/legacy/flamegraph/FlamegraphRenderer';
+import type { Profile } from '@pyroscope/legacy/models';
+import { isGrafanaFlamegraphEnabled } from '@pyroscope/util/features';
+import { flamebearerToDataFrameDTO } from '@pyroscope/util/flamebearer';
+import React, { useContext, useEffect } from 'react';
+
+import { PyroscopeStateContext } from '../../app/domain/PyroscopeState/context';
+import { useFetchPluginSettings } from '../../pages/SettingsView/infrastructure/useFetchPluginSettings';
 
 type Props = {
   profile?: Profile;

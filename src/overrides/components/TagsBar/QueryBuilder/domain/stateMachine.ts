@@ -1,14 +1,15 @@
-import { Interpreter, createMachine, interpret, type MachineConfig, type MachineOptions } from 'xstate';
+import { createMachine, interpret, Interpreter, type MachineConfig, type MachineOptions } from 'xstate';
+
 import { actions } from './actions';
 import { guards } from './guards';
+import { queryToFilters } from './helpers/queryToFilters';
 import { services } from './services';
-import { idle } from './states/idle';
 import { autoSuggestProxy } from './states/autoSuggestProxy';
-import { displayLabelValues, loadLabelValues } from './states/loadLabelValues';
+import { idle } from './states/idle';
 import { displayLabels, loadLabels } from './states/loadLabels';
+import { displayLabelValues, loadLabelValues } from './states/loadLabelValues';
 import { displayOperators, loadOperators } from './states/loadOperators';
 import { InputParams, QueryBuilderContext, QueryBuilderEvent, QueryBuilderSchema } from './types';
-import { queryToFilters } from './helpers/queryToFilters';
 
 export const defaultContext: QueryBuilderContext = Object.freeze({
   inputParams: {

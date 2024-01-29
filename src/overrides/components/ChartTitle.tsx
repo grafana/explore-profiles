@@ -1,8 +1,8 @@
-import React from 'react';
-import { ChartTitleProps, getChartTitle } from 'grafana-pyroscope/public/app/components/ChartTitle';
-import { Icon, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { Icon, useStyles2 } from '@grafana/ui';
+import { ChartTitleProps, getChartTitle } from 'grafana-pyroscope/public/app/components/ChartTitle';
+import React from 'react';
 
 export default function ChartTitle({ children, color, titleKey = 'unknown' }: ChartTitleProps) {
   const s = useStyles2(getStyles);

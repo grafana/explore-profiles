@@ -1,9 +1,10 @@
 import { AppPlugin } from '@grafana/data';
-import { App } from './components/App';
-import { registerExtension } from './extensions/query-links';
-import { AppPluginSettings } from './types/plugin';
 import { PAGES } from 'grafana-pyroscope/public/app/pages/urls';
+
+import { App } from './app/App';
+import { AppPluginSettings } from './app/domain/AppPluginSettings';
 import { PLUGIN_BASE_URL } from './constants';
+import { registerExtension } from './extensions/query-links';
 
 export const plugin = new AppPlugin<AppPluginSettings>().setRootPage(App);
 

@@ -1,7 +1,8 @@
-import { State, StateNodeConfig, assign } from 'xstate';
-import { QueryBuilderContext, QueryBuilderEvent, SuggestionKind, Suggestions } from '../types';
+import { assign, State, StateNodeConfig } from 'xstate';
+
 import { MESSAGES } from '../../ui/constants';
 import { defaultContext } from '../stateMachine';
+import { QueryBuilderContext, QueryBuilderEvent, SuggestionKind, Suggestions } from '../types';
 
 export const loadLabels: StateNodeConfig<
   QueryBuilderContext,

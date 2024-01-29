@@ -1,10 +1,11 @@
 import { Query } from '@pyroscope/models/query';
 import { useAppSelector } from '@pyroscope/redux/hooks';
-import { TagsState, selectContinuousState } from '@pyroscope/redux/reducers/continuous';
+import { selectContinuousState, TagsState } from '@pyroscope/redux/reducers/continuous';
+import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
 import React from 'react';
 import 'react-dom';
+
 import { QueryBuilder } from './QueryBuilder/QueryBuilder';
-import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
 
 export type TagsBarProps = {
   /** the current query */

@@ -1,9 +1,10 @@
-import { State, StateNodeConfig, assign } from 'xstate';
+import { assign, State, StateNodeConfig } from 'xstate';
+
+import { MESSAGES } from '../../ui/constants';
+import { getLastFilter } from '../helpers/getLastFilter';
 import { isPartialFilter } from '../helpers/isPartialFilter';
 import { defaultContext } from '../stateMachine';
 import { OperatorKind, QueryBuilderContext, QueryBuilderEvent } from '../types';
-import { MESSAGES } from '../../ui/constants';
-import { getLastFilter } from '../helpers/getLastFilter';
 
 export const idle: StateNodeConfig<
   QueryBuilderContext,

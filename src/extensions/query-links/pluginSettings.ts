@@ -1,4 +1,5 @@
 import { getBackendSrv } from '@grafana/runtime';
+
 import { PYROSCOPE_APP_ID } from '../../constants';
 import { PyroscopeAppSettings } from './types';
 

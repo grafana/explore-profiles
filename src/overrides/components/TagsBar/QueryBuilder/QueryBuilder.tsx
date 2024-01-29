@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
 import React, { memo, useCallback, useRef } from 'react';
+
 import { Actor } from './domain/stateMachine';
 import { CompleteFilter, Filter, FilterPartKind, QueryBuilderContext, Suggestions } from './domain/types';
 import { useStateMachine } from './domain/useStateMachine';

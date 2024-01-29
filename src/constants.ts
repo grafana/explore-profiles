@@ -1,8 +1,8 @@
 import { NavModelItem } from '@grafana/data';
 
-import { id } from './plugin.json';
+import plugin from './plugin.json';
 
-export const PYROSCOPE_APP_ID = id;
+export const PYROSCOPE_APP_ID = plugin.id;
 
 export const PLUGIN_BASE_URL = `/a/${PYROSCOPE_APP_ID}`;
 

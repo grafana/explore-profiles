@@ -1,6 +1,7 @@
-import React from 'react';
 import { cx } from '@emotion/css';
 import { Tag, useStyles2 } from '@grafana/ui';
+import React from 'react';
+
 import { CompleteFilter, FilterPartKind } from '../../domain/types';
 import { getStyles } from './Chiclet';
 

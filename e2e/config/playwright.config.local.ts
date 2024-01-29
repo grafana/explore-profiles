@@ -1,7 +1,8 @@
 import { devices } from '@playwright/test';
-import { config } from './playwright.config.common';
-import { ENV_VARS, AUTH_FILE } from './constants';
 import path from 'path';
+
+import { AUTH_FILE, ENV_VARS } from './constants';
+import { config } from './playwright.config.common';
 
 const shouldAuthenticate = !ENV_VARS.E2E_BASE_URL.startsWith('http://localhost');
 const failOnUncaughtExceptions = false;

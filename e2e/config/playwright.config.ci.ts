@@ -1,7 +1,8 @@
 import { devices } from '@playwright/test';
-import { config } from './playwright.config.common';
-import { ENV_VARS, AUTH_FILE } from './constants';
 import path from 'path';
+
+import { AUTH_FILE, ENV_VARS } from './constants';
+import { config } from './playwright.config.common';
 
 const shouldAuthenticate = !ENV_VARS.E2E_BASE_URL.startsWith('http://localhost');
 
@@ -33,7 +34,8 @@ const projects = shouldAuthenticate
 export default config({
   baseURL: ENV_VARS.E2E_BASE_URL,
   projects,
-  reporter: [['dot'], ['html', { outputFolder: '../test-reports', open: 'never' }], ['github']],
+  // we use the "list" reporter instead of the "dot" one, because it doesn't show in GitHub actions logs
+  reporter: [['list'], ['html', { outputFolder: '../test-reports', open: 'never' }], ['github']],
   retries: 1,
   forbidOnly: true,
   workers: 1,

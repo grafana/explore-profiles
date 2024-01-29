@@ -1,9 +1,10 @@
+import { SelectableValue } from '@grafana/data';
 import { MultiSelect, useStyles2 } from '@grafana/ui';
 import React, { useCallback, useMemo, useState } from 'react';
-import { getStyles } from './SingleEditionSelect';
+
 import { Suggestion, Suggestions } from '../../domain/types';
 import { MESSAGES } from '../constants';
-import { SelectableValue } from '@grafana/data';
+import { getStyles } from './SingleEditionSelect';
 
 export type MultipleEditionSelectProps = {
   selection: Suggestion;

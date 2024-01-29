@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures';
+import { expect, test } from '../fixtures';
 
 test.describe('Regression bugs', () => {
   test('Tag Explorer page with infinite spinners (#179)', async ({ singleViewPage, tagExplorerPage }) => {

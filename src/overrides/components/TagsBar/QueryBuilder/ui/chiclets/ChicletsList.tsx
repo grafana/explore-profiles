@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import React, { memo } from 'react';
+
 import {
   CompleteFilter,
   Edition,

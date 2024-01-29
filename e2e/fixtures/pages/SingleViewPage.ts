@@ -1,4 +1,5 @@
 import { type Page } from '@playwright/test';
+
 import { PyroscopePage } from './PyroscopePage';
 
 export class SingleViewPage extends PyroscopePage {

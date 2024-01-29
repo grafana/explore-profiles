@@ -1,10 +1,11 @@
-import React, { useCallback, useState } from 'react';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { TabsBar, Tab, TabContent, useStyles2 } from '@grafana/ui';
+import { Tab, TabContent, TabsBar, useStyles2 } from '@grafana/ui';
+import React, { useCallback, useState } from 'react';
 
-import { AdHocSingle } from './tabs/AdHocSingle';
 import { AdHocComparison } from './tabs/AdHocComparison';
+import { AdHocSingle } from './tabs/AdHocSingle';
+
 // import { AdHocDiff } from './tabs/AdHocDiff';
 
 const getStyles = (theme: GrafanaTheme2) => ({

@@ -1,4 +1,5 @@
-import { StateNodeConfig, State } from 'xstate';
+import { State, StateNodeConfig } from 'xstate';
+
 import { QueryBuilderContext, QueryBuilderEvent } from '../types';
 
 export const autoSuggestProxy: StateNodeConfig<

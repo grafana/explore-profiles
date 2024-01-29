@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
 import { SelectableValue } from '@grafana/data';
+import { useCallback, useEffect, useState } from 'react';
 
 import { adHocProfileClient } from '../infrastructure/adHocProfileClient';
-
 import { reportError } from './helpers/reportError';
 import { Profile } from './Profile';
 

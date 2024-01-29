@@ -1,10 +1,11 @@
-import React, { memo } from 'react';
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
+import React, { memo } from 'react';
+
+import { CompleteFilter, Filter, FilterKind, FilterPartKind } from '../../domain/types';
+import { ChicletAttributeOperator } from './ChicletAttributeOperator';
 import { ChicletAttributeOperatorValue } from './ChicletAttributeOperatorValue';
 import { PartialChiclet } from './PartialChiclet';
-import { FilterPartKind, FilterKind, CompleteFilter, Filter } from '../../domain/types';
-import { GrafanaTheme2 } from '@grafana/data';
-import { ChicletAttributeOperator } from './ChicletAttributeOperator';
 
 type ChicletProps = {
   filter: Filter;

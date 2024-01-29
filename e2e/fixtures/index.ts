@@ -1,11 +1,12 @@
 import { test as base, expect } from '@playwright/test';
-import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
-import { ComparisonViewPage } from './pages/ComparisonViewPage';
-import { SingleViewPage } from './pages/SingleViewPage';
-import { TagExplorerPage } from './pages/TagExplorerPage';
-import { SettingsPage } from './pages/SettingsPage';
+
 import { DEFAULT_URL_PARAMS } from '../config/constants';
 import { AdHocViewPage } from './pages/AdHocViewPage';
+import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
+import { ComparisonViewPage } from './pages/ComparisonViewPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { SingleViewPage } from './pages/SingleViewPage';
+import { TagExplorerPage } from './pages/TagExplorerPage';
 
 type Fixtures = {
   tagExplorerPage: TagExplorerPage;

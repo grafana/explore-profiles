@@ -1,7 +1,7 @@
-import React from 'react';
-import { Spinner, useStyles2 } from '@grafana/ui';
-import { GrafanaTheme2 } from '@grafana/data';
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
+import { Spinner, useStyles2 } from '@grafana/ui';
+import React from 'react';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   spinner: css`

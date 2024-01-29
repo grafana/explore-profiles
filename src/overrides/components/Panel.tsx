@@ -1,10 +1,10 @@
+import { css } from '@emotion/css';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-
-import React from 'react';
-import { GrafanaPanelBox } from '../../components/GrafanaPanelBox';
-import { css } from '@emotion/css';
 import { PanelProps } from 'grafana-pyroscope/public/app/components/Panel';
+import React from 'react';
+
+import { GrafanaPanelBox } from '../../shared/ui/GrafanaPanelBox/GrafanaPanelBox';
 
 export function Panel({ isLoading, title, children, className = '', headerActions, dataTestId }: PanelProps) {
   const s = useStyles2(getStyles);

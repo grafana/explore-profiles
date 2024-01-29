@@ -1,7 +1,7 @@
-import React from 'react';
 import { css } from '@emotion/css';
-import { useStyles2 } from '@grafana/ui';
 import { GrafanaTheme2 } from '@grafana/data';
+import { useStyles2 } from '@grafana/ui';
+import React from 'react';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css`

@@ -1,10 +1,11 @@
-import { State, StateNodeConfig, assign } from 'xstate';
-import { OperatorKind, QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
-import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
+import { assign, State, StateNodeConfig } from 'xstate';
+
 import { MESSAGES } from '../../ui/constants';
-import { defaultContext } from '../stateMachine';
-import { invariant } from '../helpers/invariant';
+import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
 import { getLastFilter } from '../helpers/getLastFilter';
+import { invariant } from '../helpers/invariant';
+import { defaultContext } from '../stateMachine';
+import { OperatorKind, QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
 
 export const loadLabelValues: StateNodeConfig<
   QueryBuilderContext,

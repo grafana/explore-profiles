@@ -1,9 +1,14 @@
-import { assign } from 'xstate';
 import { nanoid } from 'nanoid';
+import { assign } from 'xstate';
+
 import { labelsRepository } from '../infrastructure/labelsRepository';
+import { areFiltersEqual } from './helpers/areFiltersEqual';
 import { filtersToQuery } from './helpers/filtersToQuery';
+import { getLastFilter } from './helpers/getLastFilter';
 import { isPartialFilter } from './helpers/isPartialFilter';
+import { isEditingOperatorMode } from './helpers/isSwitchingOperatorMode';
 import { queryToFilters } from './helpers/queryToFilters';
+import { toggleCompleteFilters } from './helpers/toggleCompleteFilters';
 import {
   ChangeInputParamsEvent,
   EditEvent,
@@ -16,10 +21,6 @@ import {
   RemoveFilterEvent,
   SelectEvent,
 } from './types';
-import { getLastFilter } from './helpers/getLastFilter';
-import { areFiltersEqual } from './helpers/areFiltersEqual';
-import { toggleCompleteFilters } from './helpers/toggleCompleteFilters';
-import { isEditingOperatorMode } from './helpers/isSwitchingOperatorMode';
 
 function updateFiltersAndQuery(newFilters: Filters, context: QueryBuilderContext) {
   const isQueryUpToDate = areFiltersEqual(newFilters, queryToFilters(context.inputParams.query));

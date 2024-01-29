@@ -1,8 +1,8 @@
-import React, { useCallback } from 'react';
 import { DropzoneFile, FileDropzone } from '@grafana/ui';
+import React, { useCallback } from 'react';
 
-import { reportError } from '../domain/helpers/reportError';
 import { ACCEPTED_FILE_TYPES } from '../domain/accepted-file-types';
+import { reportError } from '../domain/helpers/reportError';
 
 const options = {
   accept: ACCEPTED_FILE_TYPES,

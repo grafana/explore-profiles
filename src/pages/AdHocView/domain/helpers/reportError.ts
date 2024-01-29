@@ -1,5 +1,5 @@
-import { getAppEvents } from '@grafana/runtime';
 import { AppEvents } from '@grafana/data';
+import { getAppEvents } from '@grafana/runtime';
 
 export function reportError(msgs: string[], error?: unknown) {
   console.error('File upload error!', msgs);

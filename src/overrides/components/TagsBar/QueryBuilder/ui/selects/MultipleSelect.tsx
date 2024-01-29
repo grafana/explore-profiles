@@ -1,9 +1,10 @@
+import { SelectableValue } from '@grafana/data';
 import { MultiSelect, useStyles2 } from '@grafana/ui';
 import React, { useCallback, useState } from 'react';
-import { getStyles } from './SingleSelect';
+
 import { Suggestions } from '../../domain/types';
 import { MESSAGES } from '../constants';
-import { SelectableValue } from '@grafana/data';
+import { getStyles } from './SingleSelect';
 
 export type MultipleSelectProps = {
   suggestions: any;

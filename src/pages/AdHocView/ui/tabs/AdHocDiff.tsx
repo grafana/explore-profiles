@@ -2,9 +2,9 @@ import React from 'react';
 
 import { useUploadDiffFiles } from '../../domain/useUploadDiffFiles';
 import { AdHocColumns } from '../AdHocColums';
+import { AdHocFileDropZone } from '../AdHocFileDropZone';
 import { AdHocFlameGraph } from '../AdHocFlameGraph';
 import { AdHocProfileTypeSelector } from '../AdHocProfileTypeSelector';
-import { AdHocFileDropZone } from '../AdHocFileDropZone';
 import { AdHocSpinner } from '../AdHocSpinner';
 
 export function AdHocDiff() {

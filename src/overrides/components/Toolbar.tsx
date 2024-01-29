@@ -1,15 +1,5 @@
-import React, { useCallback, useContext, useMemo } from 'react';
-import 'react-dom';
-
-import { useAppSelector, useAppDispatch } from '@pyroscope/redux/hooks';
-import { Query } from '@pyroscope/models/query';
-import {
-  reloadAppNames,
-  selectContinuousState,
-  actions,
-  selectTimelineSides,
-  selectComparisonState,
-} from '@pyroscope/redux/reducers/continuous';
+import { css } from '@emotion/css';
+import { GrafanaTheme2, SelectableValue, TimeRange } from '@grafana/data';
 import {
   HorizontalGroup,
   InlineField,
@@ -19,13 +9,26 @@ import {
   TimeRangePicker,
   useStyles2,
 } from '@grafana/ui';
-import { GrafanaTheme2, SelectableValue, TimeRange } from '@grafana/data';
-import { css } from '@emotion/css';
+import { Query } from '@pyroscope/models/query';
 import { isLoadingOrReloading } from '@pyroscope/pages/loading';
-import { PyroscopeStateContext } from '../../components/PyroscopeState/context';
-import userStorage from '../../utils/UserStorage';
-import { ProfileMetricId, useGetProfileMetricByIds } from '../../hooks/useProfileMetricsQuery';
+import { useAppDispatch, useAppSelector } from '@pyroscope/redux/hooks';
+import {
+  actions,
+  reloadAppNames,
+  selectComparisonState,
+  selectContinuousState,
+  selectTimelineSides,
+} from '@pyroscope/redux/reducers/continuous';
+import React, { useCallback, useContext, useMemo } from 'react';
+import 'react-dom';
 import { useLocation } from 'react-router-dom';
+
+import { PyroscopeStateContext } from '../../app/domain/PyroscopeState/context';
+import {
+  ProfileMetricId,
+  useGetProfileMetricByIds,
+} from '../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+import userStorage from '../../shared/infrastructure/UserStorage';
 
 interface ToolbarProps {
   /** callback to be called when an app is selected via the dropdown */

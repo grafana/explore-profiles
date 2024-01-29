@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { getAppEvents } from '@grafana/runtime';
 import { AppEvents } from '@grafana/data';
+import { getAppEvents } from '@grafana/runtime';
+import { useEffect, useState } from 'react';
 
 import { useFetchPluginSettings } from '../infrastructure/useFetchPluginSettings';
 

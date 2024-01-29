@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { buildStateMachine } from './stateMachine';
-import { QueryBuilderContext } from './types';
+
 import { QueryBuilderProps } from '../QueryBuilder';
 import { logger } from './helpers/logger';
+import { buildStateMachine } from './stateMachine';
+import { QueryBuilderContext } from './types';
 
 export function useStateMachine({ query, from, until, onChangeQuery }: QueryBuilderProps) {
   const { actor, initialContext } = useMemo(

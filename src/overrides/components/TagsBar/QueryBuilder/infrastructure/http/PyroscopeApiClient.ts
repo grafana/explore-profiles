@@ -1,6 +1,7 @@
-import { tenantIDFromStorage } from '@pyroscope/services/storage';
-import { HttpClient } from '../../../../../../shared/infrastructure/http/HttpClient';
 import { config } from '@grafana/runtime';
+import { tenantIDFromStorage } from '@pyroscope/services/storage';
+
+import { HttpClient } from '../../../../../../shared/infrastructure/HttpClient';
 
 export enum ProfileFormat {
   dot = 'dot',

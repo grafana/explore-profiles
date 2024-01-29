@@ -1,8 +1,8 @@
-import React from 'react';
 import { css } from '@emotion/css';
-import { PluginPage } from '@grafana/runtime';
 import { PageLayoutType } from '@grafana/data';
-import { FieldSet, InlineFieldRow, InlineField, InlineSwitch, Input, Button, Form, useStyles2 } from '@grafana/ui';
+import { PluginPage } from '@grafana/runtime';
+import { Button, FieldSet, Form, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
+import React from 'react';
 
 import { useAppConfig } from './domain/useAppConfig';
 

@@ -1,9 +1,8 @@
-import React from 'react';
-import { PanelContainer, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-
+import { PanelContainer, useStyles2 } from '@grafana/ui';
 import { BoxProps, CollapseBoxProps } from 'grafana-pyroscope/public/app/ui/Box';
+import React from 'react';
 
 export default Box;
 function Box(props: BoxProps) {
