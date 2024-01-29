@@ -5,12 +5,14 @@ import { SingleViewPage } from './pages/SingleViewPage';
 import { TagExplorerPage } from './pages/TagExplorerPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { DEFAULT_URL_PARAMS } from '../config/constants';
+import { AdHocViewPage } from './pages/AdHocViewPage';
 
 type Fixtures = {
   tagExplorerPage: TagExplorerPage;
   singleViewPage: SingleViewPage;
   comparisonViewPage: ComparisonViewPage;
   comparisonDiffViewPage: ComparisonDiffViewPage;
+  adHocViewPage: AdHocViewPage;
   settingsPage: SettingsPage;
 };
 
@@ -60,6 +62,9 @@ export const test = base.extend<Options & Fixtures>({
       { page, failOnUncaughtExceptions, use },
       new ComparisonDiffViewPage(page, DEFAULT_URL_PARAMS)
     );
+  },
+  adHocViewPage: async ({ page, failOnUncaughtExceptions }, use) => {
+    await withExceptionsAssertion({ page, failOnUncaughtExceptions, use }, new AdHocViewPage(page));
   },
   settingsPage: async ({ page, failOnUncaughtExceptions }, use) => {
     await withExceptionsAssertion({ page, failOnUncaughtExceptions, use }, new SettingsPage(page));

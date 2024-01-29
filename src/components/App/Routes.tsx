@@ -5,6 +5,7 @@ import ContinuousComparisonView from '@pyroscope/pages/ContinuousComparisonView'
 import ContinuousDiffView from '@pyroscope/pages/ContinuousDiffView';
 import ContinuousSingleView from '@pyroscope/pages/ContinuousSingleView';
 import TagExplorerView from '@pyroscope/pages/TagExplorerView';
+import AdHocView from '../../pages/AdHocView/AdHocView';
 import * as React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { SettingsView } from '../../pages/SettingsView/SettingsView';
@@ -72,6 +73,9 @@ export function Routes() {
       <div className={styles.page}>
         <PyroscopeStateWrapper>
           <Switch>
+            <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
+              <TagExplorerView />
+            </Route>
             <Route path={prefixRoute(ROUTES.SINGLE_VIEW_AI)} exact>
               <ContinuousSingleViewAi />
             </Route>
@@ -81,14 +85,14 @@ export function Routes() {
             <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW_AI)} exact>
               <ContinuousDiffViewAi />
             </Route>
-            <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW)} exact>
-              <ContinuousDiffView />
-            </Route>
             <Route path={prefixRoute(ROUTES.COMPARISON_VIEW)} exact>
               <ContinuousComparisonView />
             </Route>
-            <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
-              <TagExplorerView />
+            <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW)} exact>
+              <ContinuousDiffView />
+            </Route>
+            <Route path={prefixRoute(ROUTES.ADHOC_VIEW)} exact>
+              <AdHocView />
             </Route>
             <Route path={prefixRoute(ROUTES.SETTINGS)} exact>
               <SettingsView />

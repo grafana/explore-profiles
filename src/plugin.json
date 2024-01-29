@@ -69,6 +69,14 @@
     },
     {
       "type": "page",
+      "name": "Ad hoc view",
+      "path": "/a/%PLUGIN_ID%/ad-hoc",
+      "role": "Viewer",
+      "addToNav": true,
+      "defaultNav": false
+    },
+    {
+      "type": "page",
       "name": "Settings",
       "path": "/a/%PLUGIN_ID%/settings",
       "role": "Admin",

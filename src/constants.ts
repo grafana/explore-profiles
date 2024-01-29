@@ -11,6 +11,7 @@ export enum ROUTES {
   SINGLE_VIEW = '/single',
   COMPARISON_VIEW = '/comparison',
   COMPARISON_DIFF_VIEW = '/comparison-diff',
+  ADHOC_VIEW = '/ad-hoc',
   SINGLE_VIEW_AI = '/single-ai',
   COMPARISON_DIFF_VIEW_AI = '/comparison-diff-ai',
   SETTINGS = '/settings',
@@ -39,6 +40,11 @@ export const NAVIGATION: Record<string, NavModelItem> = {
     id: ROUTES.COMPARISON_DIFF_VIEW,
     text: 'Diff View',
     url: `${PLUGIN_BASE_URL}/comparison-diff`,
+  },
+  [ROUTES.ADHOC_VIEW]: {
+    id: ROUTES.ADHOC_VIEW,
+    text: 'Ad hoc View',
+    url: `${PLUGIN_BASE_URL}/ad-hoc`,
   },
   [ROUTES.SINGLE_VIEW_AI]: {
     id: ROUTES.SINGLE_VIEW_AI,

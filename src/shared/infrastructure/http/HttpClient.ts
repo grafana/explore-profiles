@@ -3,7 +3,7 @@ export class HttpClient {
   defaultHeaders = {};
   abortController?: AbortController | null = null;
 
-  constructor(baseUrl: string, defaultHeaders: Record<string, string>) {
+  constructor(baseUrl: string, defaultHeaders: Record<string, string> = {}) {
     this.baseUrl = baseUrl;
     this.defaultHeaders = Object.freeze(defaultHeaders);
   }
@@ -38,7 +38,7 @@ export class HttpClient {
     return response;
   }
 
-  abort(reason: any) {
+  abort(reason?: any) {
     if (this.abortController) {
       this.abortController.abort(reason);
     }
