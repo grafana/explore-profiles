@@ -3,6 +3,7 @@ import { AppRootProps, PageLayoutType, PluginContextProvider } from '@grafana/da
 import { PluginPage } from '@grafana/runtime';
 import store from '@pyroscope/redux/store';
 import { setupReduxQuerySync } from '@pyroscope/redux/useReduxQuerySync';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
 
@@ -28,6 +29,8 @@ function addStyle(styleString: string) {
   style.textContent = styleString;
   document.head.append(style);
 }
+
+const queryClient = new QueryClient();
 
 export function App(props: AppRootProps) {
   const unsubscribeRef = useRef<unknown>(null);
@@ -75,17 +78,19 @@ main nav a[aria-label="Tab Diff View AI"]::after {
 
   return (
     <PluginContextProvider meta={props.meta}>
-      <Provider store={store}>
-        <Onboarding>
-          <PluginPage layout={PageLayoutType.Standard} renderTitle={renderTitle}>
-            <pyroscope-app className="app">
-              <div className="pyroscope-app">
-                <Routes />
-              </div>
-            </pyroscope-app>
-          </PluginPage>
-        </Onboarding>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <Onboarding>
+            <PluginPage layout={PageLayoutType.Standard} renderTitle={renderTitle}>
+              <pyroscope-app className="app">
+                <div className="pyroscope-app">
+                  <Routes />
+                </div>
+              </pyroscope-app>
+            </PluginPage>
+          </Onboarding>
+        </Provider>
+      </QueryClientProvider>
     </PluginContextProvider>
   );
 }

@@ -61,3 +61,16 @@ export function useGetProfileMetricByIds(profileMetricIds: ProfileMetricId[]): Q
     isLoading: false,
   };
 }
+
+export function useGetProfileMetricByType(type?: ProfileMetric['type']): ProfileMetric {
+  const data = useMemo(
+    () =>
+      Object.values(PROFILE_METRICS).reduce((acc, profileMetric) => {
+        acc.set(profileMetric.type, profileMetric);
+        return acc;
+      }, new Map()),
+    []
+  );
+
+  return data.get(type) || {};
+}

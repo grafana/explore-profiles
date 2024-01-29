@@ -1,4 +1,3 @@
-import { Query } from '@pyroscope/models/query';
 import { useAppSelector } from '@pyroscope/redux/hooks';
 import { selectContinuousState, TagsState } from '@pyroscope/redux/reducers/continuous';
 import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
@@ -9,15 +8,23 @@ import { QueryBuilder } from './QueryBuilder/QueryBuilder';
 
 export type TagsBarProps = {
   /** the current query */
-  query: Query;
-  /** the state with existing tags */
-  tags: TagsState;
-  /** callback for when a label is selected */
-  onSelectedLabel: (label: string, query: Query) => void;
+  query: string;
   /** callback for when a new query is selected */
   onSetQuery: (q: string) => void;
+
+  /* TODO: deprecate tags, onSelectedLabel and onRefresh once Pyroscope OSS migration is finished */
+
+  /** the state with existing tags */
+  // @deprecated
+  tags?: TagsState;
+
+  /** callback for when a label is selected */
+  // @deprecated
+  onSelectedLabel?: (label: string, query: string) => void;
+
   /** callback for when the same query is submitted again */
-  onRefresh: () => void;
+  // @deprecated
+  onRefresh?: () => void;
 };
 
 export default function TagsBar(props: TagsBarProps) {

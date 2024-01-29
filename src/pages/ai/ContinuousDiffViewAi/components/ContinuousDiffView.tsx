@@ -24,7 +24,7 @@ import {
 } from '@pyroscope/redux/reducers/continuous';
 import React, { useEffect } from 'react';
 
-import { formatTitle } from '../../../../shared/ui/formatTitle';
+import { addQueryToPageTitle } from '../../../../shared/ui/addQueryToPageTitle';
 import { isLoadingOrReloading } from '../../../../shared/ui/loading';
 import { getStyles } from '../../ContinuousSingleViewAi/components/ContinuousSingleView';
 import AiPanel from '../../shared/AiPanel';
@@ -71,7 +71,7 @@ function ComparisonDiffView() {
 
   return (
     <div>
-      <PageTitle title={formatTitle('Diff', leftQuery, rightQuery)} />
+      <PageTitle title={addQueryToPageTitle('Diff', leftQuery, rightQuery)} />
       <PageContentWrapper>
         <Toolbar
           onSelectedApp={(query) => {

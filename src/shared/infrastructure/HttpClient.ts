@@ -8,7 +8,7 @@ export class HttpClient {
     this.defaultHeaders = Object.freeze(defaultHeaders);
   }
 
-  async fetch(pathname: string, options: RequestInit) {
+  async fetch(pathname: string, options?: RequestInit) {
     this.abortController = new AbortController();
     const { signal } = this.abortController;
 

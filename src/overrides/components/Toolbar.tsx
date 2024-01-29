@@ -32,7 +32,7 @@ import userStorage from '../../shared/infrastructure/UserStorage';
 
 interface ToolbarProps {
   /** callback to be called when an app is selected via the dropdown */
-  onSelectedApp: (name: Query) => void; // We don't use this. Instead we allow the PyroscopeStateContext to handle state changes.
+  onSelectedApp?: (name: Query) => void; // We don't use this. Instead we allow the PyroscopeStateContext to handle state changes.
   filterApp?: (names: string) => boolean;
 }
 

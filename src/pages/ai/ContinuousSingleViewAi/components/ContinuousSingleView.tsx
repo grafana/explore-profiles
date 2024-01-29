@@ -28,8 +28,8 @@ import { isAnnotationsEnabled } from '@pyroscope/util/features';
 import React, { useEffect } from 'react';
 import 'react-dom';
 
+import { addQueryToPageTitle } from '../../../../shared/ui/addQueryToPageTitle';
 import { createTooltip } from '../../../../shared/ui/createTooltip';
-import { formatTitle } from '../../../../shared/ui/formatTitle';
 import { isLoadingOrReloading } from '../../../../shared/ui/loading';
 import AiPanel from '../../shared/AiPanel';
 import { AskAiButton } from '../../shared/AskAiButton';
@@ -157,7 +157,7 @@ function ContinuousSingleView() {
 
   return (
     <div>
-      <PageTitle title={formatTitle('Single AI', query)} />
+      <PageTitle title={addQueryToPageTitle('Single AI', query)} />
       <PageContentWrapper>
         <Toolbar
           onSelectedApp={(query) => {
