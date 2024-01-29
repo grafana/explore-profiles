@@ -7,6 +7,7 @@ export function useSingleView() {
   const [query, setQuery] = useUserQuery();
   const [timeRange] = useUserTimeRange();
 
+  // TODO: UX -> keep internal state with timeline & profile to prevent re-renders with empty panels
   const { isPending, error, profile, timeline } = useFetchProfileAndTimeline(query, timeRange);
   const isLoading = isPending && !error;
 
