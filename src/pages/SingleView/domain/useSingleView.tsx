@@ -1,3 +1,4 @@
+import { useFetchPluginSettings } from '../../../pages/SettingsView/infrastructure/useFetchPluginSettings';
 import { useGetProfileMetricByType } from '../../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
 import { useUserQuery } from './useUserQuery';
@@ -7,9 +8,22 @@ export function useSingleView() {
   const [query, setQuery] = useUserQuery();
   const [timeRange, setTimeRange] = useUserTimeRange();
 
+  const { error: fetchSettingsError, settings } = useFetchPluginSettings();
+
   // TODO: UX -> keep internal state with timeline & profile to prevent re-renders with empty panels
-  const { isPending, error, profile, timeline } = useFetchProfileAndTimeline(query, timeRange);
-  const isLoading = isPending && !error;
+  const {
+    isPending,
+    error: fetchDataError,
+    profile,
+    timeline,
+  } = useFetchProfileAndTimeline({
+    query,
+    timeRange,
+    maxNodes: settings?.maxNodes,
+    enabled: Boolean(settings) || Boolean(fetchSettingsError),
+  });
+
+  const isLoading = isPending && !fetchDataError;
 
   const timelinePanelTitle = useGetProfileMetricByType(profile?.metadata?.name)?.description;
 
@@ -18,9 +32,10 @@ export function useSingleView() {
     setQuery,
     setTimeRange,
     isLoading,
-    error,
+    fetchDataError,
     profile,
     timeline,
     timelinePanelTitle,
+    fetchSettingsError,
   };
 }

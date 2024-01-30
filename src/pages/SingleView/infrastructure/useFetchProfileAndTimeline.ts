@@ -8,6 +8,13 @@ import { TimeRange } from '../domain/useUserTimeRange';
 
 const apiClient = new ApiClient();
 
+type FetchSingleViewDataParams = {
+  query: string;
+  timeRange: TimeRange;
+  maxNodes?: number;
+  enabled: boolean;
+};
+
 type FetchSingleViewDataResponse = {
   isPending: boolean;
   error: Error | null;
@@ -15,7 +22,12 @@ type FetchSingleViewDataResponse = {
   timeline?: Timeline;
 };
 
-export function useFetchProfileAndTimeline(query: string, timeRange: TimeRange): FetchSingleViewDataResponse {
+export function useFetchProfileAndTimeline({
+  query,
+  timeRange,
+  maxNodes,
+  enabled,
+}: FetchSingleViewDataParams): FetchSingleViewDataResponse {
   const { from, until } = timeRange;
 
   const searchParams = new URLSearchParams({
@@ -26,8 +38,13 @@ export function useFetchProfileAndTimeline(query: string, timeRange: TimeRange):
     format: 'json',
   });
 
+  if (Number(maxNodes) > 0) {
+    searchParams.set('max-nodes', String(maxNodes));
+  }
+
   const { isPending, error, data } = useQuery({
-    queryKey: [query, from, until],
+    enabled,
+    queryKey: [query, from, until, maxNodes],
     queryFn: () => apiClient.fetch(`/pyroscope/render?${searchParams.toString()}`).then((response) => response.json()),
   });
 

@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
-import { PageLayoutType } from '@grafana/data';
-import { PluginPage } from '@grafana/runtime';
+import { AppEvents, PageLayoutType } from '@grafana/data';
+import { getAppEvents, PluginPage } from '@grafana/runtime';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -25,7 +25,30 @@ const getStyles = () => ({
 export function SingleView() {
   const styles = useStyles2(getStyles);
 
-  const { query, setQuery, setTimeRange, isLoading, error, profile, timeline, timelinePanelTitle } = useSingleView();
+  const {
+    query,
+    setQuery,
+    setTimeRange,
+    isLoading,
+    fetchDataError,
+    profile,
+    timeline,
+    timelinePanelTitle,
+    fetchSettingsError,
+  } = useSingleView();
+
+  if (fetchSettingsError) {
+    console.error('Error while retrieving the plugin settings!');
+    console.error(fetchSettingsError);
+
+    getAppEvents().publish({
+      type: AppEvents.alertError.name,
+      payload: [
+        'Error while retrieving the plugin settings!',
+        'Some features might not work as expected (e.g. max nodes). Please try to reload the page, sorry for the inconvenience.',
+      ],
+    });
+  }
 
   return (
     <PluginPage layout={PageLayoutType.Custom}>
@@ -36,12 +59,12 @@ export function SingleView() {
       <TagsBar query={query} onSetQuery={setQuery} />
 
       <Panel title={timelinePanelTitle} isLoading={isLoading} className={styles.timelinePanel}>
-        {error && <ErrorMessage title="Error while loading timeline data!" error={error} />}
+        {fetchDataError && <ErrorMessage title="Error while loading timeline data!" error={fetchDataError} />}
         {timeline && <Timeline timeline={timeline} onSelectTimeRange={setTimeRange} />}
       </Panel>
 
       <Panel isLoading={isLoading}>
-        {error && <ErrorMessage title="Error while loading flamegraph data!" error={error} />}
+        {fetchDataError && <ErrorMessage title="Error while loading flamegraph data!" error={fetchDataError} />}
         {profile && <FlameGraphWrapper profile={profile} />}
       </Panel>
     </PluginPage>
