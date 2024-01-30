@@ -25,7 +25,7 @@ const getStyles = () => ({
 export function SingleView() {
   const styles = useStyles2(getStyles);
 
-  const { query, setQuery, isLoading, error, profile, timeline, timelinePanelTitle } = useSingleView();
+  const { query, setQuery, setTimeRange, isLoading, error, profile, timeline, timelinePanelTitle } = useSingleView();
 
   return (
     <PluginPage layout={PageLayoutType.Custom}>
@@ -37,7 +37,7 @@ export function SingleView() {
 
       <Panel title={timelinePanelTitle} isLoading={isLoading} className={styles.timelinePanel}>
         {error && <ErrorMessage title="Error while loading timeline data!" error={error} />}
-        {timeline && <Timeline timeline={timeline} />}
+        {timeline && <Timeline timeline={timeline} onSelectTimeRange={setTimeRange} />}
       </Panel>
 
       <Panel isLoading={isLoading}>

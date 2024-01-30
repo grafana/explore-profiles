@@ -5,7 +5,7 @@ import { useUserTimeRange } from './useUserTimeRange';
 
 export function useSingleView() {
   const [query, setQuery] = useUserQuery();
-  const [timeRange] = useUserTimeRange();
+  const [timeRange, setTimeRange] = useUserTimeRange();
 
   // TODO: UX -> keep internal state with timeline & profile to prevent re-renders with empty panels
   const { isPending, error, profile, timeline } = useFetchProfileAndTimeline(query, timeRange);
@@ -16,6 +16,7 @@ export function useSingleView() {
   return {
     query,
     setQuery,
+    setTimeRange,
     isLoading,
     error,
     profile,

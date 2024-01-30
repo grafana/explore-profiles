@@ -3,15 +3,13 @@ import React from 'react';
 import TimelineChartWrapper from '../../../overrides/components/TimelineChart/TimelineChartWrapper';
 import { useColorMode } from '../domain/useColorMode';
 import { useTimeZone } from '../domain/useTimeZone';
-import { useUserTimeRange } from '../domain/useUserTimeRange';
 
 type TimelinePanelProps = {
-  timeline: any;
+  timeline: any; // TODO
+  onSelectTimeRange: (from: string, until: string) => void;
 };
 
-export function Timeline({ timeline }: TimelinePanelProps) {
-  const [, setTimeRange] = useUserTimeRange();
-
+export function Timeline({ timeline, onSelectTimeRange }: TimelinePanelProps) {
   const { offset } = useTimeZone();
   const timezone = offset === 0 ? 'utc' : 'browser';
 
@@ -31,7 +29,7 @@ export function Timeline({ timeline }: TimelinePanelProps) {
       timelineA={timelineA}
       timezone={timezone}
       selectionType="single"
-      onSelect={setTimeRange}
+      onSelect={onSelectTimeRange}
     />
   );
 }
