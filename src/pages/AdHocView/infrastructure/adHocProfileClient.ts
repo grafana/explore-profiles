@@ -1,30 +1,10 @@
-import { config } from '@grafana/runtime';
-
-import { HttpClient } from '../../../shared/infrastructure/HttpClient';
+import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
 import { Profile } from '../domain/Profile';
 import { stripBase64Prefix } from './helpers/stripBase64Prefix';
 
-class AdHocProfileClient extends HttpClient {
-  constructor() {
-    let { appUrl } = config;
-
-    if (appUrl.at(-1) !== '/') {
-      // to ensure that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
-      appUrl += '/';
-    }
-
-    const apiBaseUrl = new URL(
-      'api/plugins/grafana-pyroscope-app/resources/adhocprofiles.v1.AdHocProfileService',
-      appUrl
-    );
-
-    super(apiBaseUrl.toString(), {
-      'content-type': 'application/json',
-    });
-  }
-
+class AdHocProfileClient extends ApiClient {
   async get(profileId: string, profileType: string): Promise<Profile> {
-    const response = await this.fetch('/Get', {
+    const response = await this.fetch('/adhocprofiles.v1.AdHocProfileService/Get', {
       method: 'POST',
       body: JSON.stringify({
         id: profileId,
@@ -43,9 +23,9 @@ class AdHocProfileClient extends HttpClient {
   }
 
   async uploadSingle(file: File): Promise<Profile> {
-    const profile = await this._readProfile(file);
+    const profile = await this._readProfileFile(file);
 
-    const response = await this.fetch('/Upload', {
+    const response = await this.fetch('/adhocprofiles.v1.AdHocProfileService/Upload', {
       method: 'POST',
       body: JSON.stringify({
         name: file.name,
@@ -74,7 +54,7 @@ class AdHocProfileClient extends HttpClient {
     };
   }
 
-  async _readProfile(file: File): Promise<string> {
+  async _readProfileFile(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
 
@@ -96,4 +76,5 @@ class AdHocProfileClient extends HttpClient {
     });
   }
 }
+
 export const adHocProfileClient = new AdHocProfileClient();

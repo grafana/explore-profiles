@@ -1,28 +1,12 @@
-import { config } from '@grafana/runtime';
 import { tenantIDFromStorage } from '@pyroscope/services/storage';
 
-import { HttpClient } from '../../../../../../shared/infrastructure/HttpClient';
+import { ApiClient } from '../../../../../../shared/infrastructure/http/ApiClient';
 
 export enum ProfileFormat {
   dot = 'dot',
 }
 
-export class PyroscopeApiClient extends HttpClient {
-  constructor() {
-    let { appUrl } = config;
-
-    if (appUrl.at(-1) !== '/') {
-      // to ensure that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
-      appUrl += '/';
-    }
-
-    const apiBaseUrl = new URL('api/plugins/grafana-pyroscope-app/resources', appUrl);
-
-    super(apiBaseUrl.toString(), {
-      'content-type': 'application/json',
-    });
-  }
-
+export class PyroscopeApiClient extends ApiClient {
   static queryToMatchers(query: string) {
     const labelsIndex = query.indexOf('{');
 

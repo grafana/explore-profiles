@@ -8,6 +8,6 @@ export class TagExplorerPage extends PyroscopePage {
   }
 
   getMainSpinner() {
-    return this.page.getByRole('progressbar');
+    return this.page.getByRole('progressbar').first();
   }
 }
