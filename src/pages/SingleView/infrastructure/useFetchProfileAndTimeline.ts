@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 // TODO: migrate these 2 types below
 import { Profile } from 'grafana-pyroscope/public/app/legacy/models/profile';
 import { Timeline } from 'grafana-pyroscope/public/app/models/timeline';
+import { useEffect } from 'react';
 
 import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
 import { TimeRange } from '../domain/useUserTimeRange';
@@ -48,9 +49,11 @@ export function useFetchProfileAndTimeline({
     queryFn: () => apiClient.fetch(`/pyroscope/render?${searchParams.toString()}`).then((response) => response.json()),
   });
 
+  useEffect(() => () => apiClient.abort());
+
   return {
     isPending,
-    error,
+    error: apiClient.isAbortError(error) ? null : error,
     profile: data
       ? {
           version: data.version,

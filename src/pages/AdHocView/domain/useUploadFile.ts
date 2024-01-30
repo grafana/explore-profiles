@@ -42,9 +42,7 @@ export function useUploadFile() {
       } catch (error) {
         setProfileData(DEFAULT_PROFILE_DATA);
 
-        const isAbortError = error instanceof DOMException && error.name === 'AbortError';
-
-        if (!isAbortError) {
+        if (!adHocProfileClient.isAbortError(error)) {
           reportError(['Error while uploading profile!', (error as Error).message], error);
         }
       }
@@ -81,9 +79,7 @@ export function useUploadFile() {
           profile: data.profile,
         }));
       } catch (error) {
-        const isAbortError = error instanceof DOMException && error.name === 'AbortError';
-
-        if (!isAbortError) {
+        if (!adHocProfileClient.isAbortError(error)) {
           reportError(['Error while fetching profile!', (error as Error).message], error);
         }
       }
