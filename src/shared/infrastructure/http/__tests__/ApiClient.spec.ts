@@ -1,4 +1,4 @@
-describe('PyroscopeApiClient', () => {
+describe('ApiClient', () => {
   const apiBaseUrlCases = [
     ['https://localhost:3000/', 'https://localhost:3000/api/plugins/grafana-pyroscope-app/resources'],
     [
@@ -22,11 +22,11 @@ describe('PyroscopeApiClient', () => {
       // testing like it's 2023 :man_shrug:
       jest.doMock('@grafana/runtime', () => ({ config: { appUrl } }));
 
-      const { PyroscopeApiClient } = require('../PyroscopeApiClient');
+      const { ApiClient } = require('../ApiClient');
 
-      const client = new PyroscopeApiClient();
+      const apiClient = new ApiClient();
 
-      expect(client.baseUrl).toBe(expectedApiBaseUrl);
+      expect(apiClient.baseUrl).toBe(expectedApiBaseUrl);
     });
   });
 });

@@ -11,7 +11,7 @@ test.describe('Regression bugs', () => {
     await tagExplorerPage.assertNoSpinners();
   });
 
-  test('Navigating to dashboard after Prolifes and changing timerange', async ({ singleViewPage, page }) => {
+  test('Navigating to dashboard after Profiles and changing timerange', async ({ singleViewPage, page }) => {
     await singleViewPage.goto(''); // empty query params
 
     await singleViewPage.assertNoSpinners();

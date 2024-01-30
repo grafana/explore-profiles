@@ -1,6 +1,4 @@
-import { config } from '@grafana/runtime';
-
-import { HttpClient } from '../../../shared/infrastructure/HttpClient';
+import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
 
 type ApiResponse = {
   settings: Array<{ name: string; value: string }>;
@@ -12,27 +10,12 @@ export type PluginSettings = {
   enableFlameGraphDotComExport: boolean;
 };
 
-export class SettingsApiClient extends HttpClient {
+export class SettingsApiClient extends ApiClient {
   static PLUGIN_SETTING_NAME = 'pluginSettings';
-
-  constructor() {
-    let { appUrl } = config;
-
-    if (appUrl.at(-1) !== '/') {
-      // to ensure that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
-      appUrl += '/';
-    }
-
-    const apiBaseUrl = new URL('api/plugins/grafana-pyroscope-app/resources/settings.v1.SettingsService', appUrl);
-
-    super(apiBaseUrl.toString(), {
-      'content-type': 'application/json',
-    });
-  }
 
   async get(): Promise<PluginSettings> {
     return super
-      .fetch('/Get', { method: 'POST', body: JSON.stringify({}) })
+      .fetch('/settings.v1.SettingsService/Get', { method: 'POST', body: JSON.stringify({}) })
       .then((response) => response.json())
       .then((json: ApiResponse) => {
         if (!json.settings) {
@@ -51,7 +34,7 @@ export class SettingsApiClient extends HttpClient {
 
   async set(newSettings: PluginSettings) {
     return super
-      .fetch('/Set', {
+      .fetch('/settings.v1.SettingsService/Set', {
         method: 'POST',
         body: JSON.stringify({
           setting: {
