@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { Profile } from 'grafana-pyroscope/public/app/legacy/models/profile';
 import { Timeline } from 'grafana-pyroscope/public/app/models/timeline';
 
+import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
 import { TimeRange } from '../domain/useUserTimeRange';
-import { pyroscopeApiClient } from './PyroscopeApiClient';
+
+const apiClient = new ApiClient();
 
 type FetchSingleViewDataResponse = {
   isPending: boolean;
@@ -26,8 +28,7 @@ export function useFetchProfileAndTimeline(query: string, timeRange: TimeRange):
 
   const { isPending, error, data } = useQuery({
     queryKey: [query, from, until],
-    queryFn: () =>
-      pyroscopeApiClient.fetch(`/pyroscope/render?${searchParams.toString()}`).then((response) => response.json()),
+    queryFn: () => apiClient.fetch(`/pyroscope/render?${searchParams.toString()}`).then((response) => response.json()),
   });
 
   return {
