@@ -1,10 +1,24 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-import { PanelProps } from 'grafana-pyroscope/public/app/components/Panel';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-import { GrafanaPanelBox } from '../../shared/components/GrafanaPanelBox/GrafanaPanelBox';
+import { GrafanaPanelBox } from './GrafanaPanelBox/GrafanaPanelBox';
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  panelWrap: css`
+    margin-bottom: ${theme.spacing(1)};
+  `,
+});
+
+type PanelProps = {
+  isLoading: boolean;
+  title?: ReactNode;
+  children: ReactNode;
+  className?: string;
+  headerActions?: ReactNode;
+  dataTestId?: string;
+};
 
 export function Panel({ isLoading, title, children, className = '', headerActions, dataTestId }: PanelProps) {
   const s = useStyles2(getStyles);
@@ -19,9 +33,3 @@ export function Panel({ isLoading, title, children, className = '', headerAction
     </div>
   );
 }
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  panelWrap: css`
-    margin-bottom: ${theme.spacing(1)};
-  `,
-});

@@ -1,8 +1,8 @@
 import { AppEvents } from '@grafana/data';
 import { getAppEvents } from '@grafana/runtime';
 
-export function reportError(msgs: string[], error?: unknown) {
-  console.error('File upload error!', msgs);
+export function displayError(error: unknown, msgs: string[]) {
+  console.error(msgs);
   console.error(error);
 
   getAppEvents().publish({

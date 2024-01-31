@@ -1,5 +1,5 @@
-import { useFetchPluginSettings } from '../../../pages/SettingsView/infrastructure/useFetchPluginSettings';
 import { useGetProfileMetricByType } from '../../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+import { useFetchPluginSettings } from '../../../shared/infrastructure/settings/useFetchPluginSettings';
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
 import { useUserQuery } from './useUserQuery';
 import { useUserTimeRange } from './useUserTimeRange';
@@ -37,5 +37,6 @@ export function useSingleView() {
     timeline,
     timelinePanelTitle,
     fetchSettingsError,
+    settings,
   };
 }

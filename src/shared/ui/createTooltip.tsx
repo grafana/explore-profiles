@@ -3,7 +3,7 @@ import { TimelineTooltip } from '@pyroscope/components/TimelineTooltip';
 import { Profile } from '@pyroscope/legacy/models';
 import React from 'react';
 
-import { prepareTimelineTooltipContent } from './prepareTimelineTooltipContent';
+import { prepareTimelineTooltipContent } from '../domain/prepareTimelineTooltipContent';
 
 export function createTooltip(query: string, data: TooltipCallbackProps, profile?: Profile) {
   if (!profile) {

@@ -28,9 +28,9 @@ import { isAnnotationsEnabled } from '@pyroscope/util/features';
 import React, { useEffect } from 'react';
 import 'react-dom';
 
-import { addQueryToPageTitle } from '../../../../shared/ui/addQueryToPageTitle';
+import { addQueryToPageTitle } from '../../../../shared/domain/addQueryToPageTitle';
+import { isLoadingOrReloading } from '../../../../shared/domain/loading';
 import { createTooltip } from '../../../../shared/ui/createTooltip';
-import { isLoadingOrReloading } from '../../../../shared/ui/loading';
 import AiPanel from '../../shared/AiPanel';
 import { AskAiButton } from '../../shared/AskAiButton';
 import { useAiPanel } from '../../shared/hooks/useAiPanel';

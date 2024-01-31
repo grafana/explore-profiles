@@ -1,14 +1,17 @@
 import { css } from '@emotion/css';
-import { AppEvents, PageLayoutType } from '@grafana/data';
-import { getAppEvents, PluginPage } from '@grafana/runtime';
+import { PageLayoutType } from '@grafana/data';
+import { PluginPage } from '@grafana/runtime';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { FlameGraphWrapper } from '../../overrides/components/FlameGraphWrapper';
-import { Panel } from '../../overrides/components/Panel';
+// TODO: migrate TagsBar
 import TagsBar from '../../overrides/components/TagsBar';
+// TODO: migrate Toolbar
 import Toolbar from '../../overrides/components/Toolbar';
-import { addQueryToPageTitle } from '../../shared/ui/addQueryToPageTitle';
+import { FlameGraph } from '../../shared/components/FlameGraph/FlameGraph';
+import { Panel } from '../../shared/components/Panel';
+import { addQueryToPageTitle } from '../../shared/domain/addQueryToPageTitle';
+import { displayError } from '../../shared/domain/displayError';
 import { useSingleView } from './domain/useSingleView';
 import { ErrorMessage } from './ui/ErrorMessage';
 import { PageTitle } from './ui/PageTitle';
@@ -35,19 +38,14 @@ export function SingleView() {
     timeline,
     timelinePanelTitle,
     fetchSettingsError,
+    settings,
   } = useSingleView();
 
   if (fetchSettingsError) {
-    console.error('Error while retrieving the plugin settings!');
-    console.error(fetchSettingsError);
-
-    getAppEvents().publish({
-      type: AppEvents.alertError.name,
-      payload: [
-        'Error while retrieving the plugin settings!',
-        'Some features might not work as expected (e.g. max nodes). Please try to reload the page, sorry for the inconvenience.',
-      ],
-    });
+    displayError(fetchSettingsError, [
+      'Error while retrieving the plugin settings!',
+      'Some features might not work as expected (e.g. max nodes). Please try to reload the page, sorry for the inconvenience.',
+    ]);
   }
 
   return (
@@ -65,7 +63,13 @@ export function SingleView() {
 
       <Panel isLoading={isLoading}>
         {fetchDataError && <ErrorMessage title="Error while loading flamegraph data!" error={fetchDataError} />}
-        {profile && <FlameGraphWrapper profile={profile} />}
+        {profile && (
+          <FlameGraph
+            profile={profile}
+            enableFlameGraphDotComExport={settings?.enableFlameGraphDotComExport}
+            collapsedFlamegraphs={settings?.collapsedFlamegraphs}
+          />
+        )}
       </Panel>
     </PluginPage>
   );

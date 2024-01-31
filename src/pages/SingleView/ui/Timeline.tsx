@@ -1,11 +1,13 @@
 import React from 'react';
 
+// TODO: migrate TimelineChartWrapper
 import TimelineChartWrapper from '../../../overrides/components/TimelineChart/TimelineChartWrapper';
-import { useColorMode } from '../domain/useColorMode';
+import { Timeline as TimelineType } from '../../../shared/types/Timeline';
+import { useColorMode } from '../../../shared/ui/useColorMode';
 import { useTimeZone } from '../domain/useTimeZone';
 
 type TimelinePanelProps = {
-  timeline: any; // TODO
+  timeline: TimelineType;
   onSelectTimeRange: (from: string, until: string) => void;
 };
 

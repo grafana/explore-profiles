@@ -1,3 +1,4 @@
+// TODO: migrate, remove Pyroscope dependency
 import { useAppDispatch, useAppSelector } from '@pyroscope/redux/hooks';
 import { selectAppColorMode, setColorMode } from '@pyroscope/redux/reducers/ui';
 import { useCallback, useEffect } from 'react';

@@ -1,10 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-// TODO: migrate these 2 types below
-import { Profile } from 'grafana-pyroscope/public/app/legacy/models/profile';
-import { Timeline } from 'grafana-pyroscope/public/app/models/timeline';
 import { useEffect } from 'react';
 
 import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
+import { FlamebearerProfile } from '../../../shared/types/FlamebearerProfile';
+import { Timeline } from '../../../shared/types/Timeline';
 import { TimeRange } from '../domain/useUserTimeRange';
 
 const apiClient = new ApiClient();
@@ -19,7 +18,7 @@ type FetchSingleViewDataParams = {
 type FetchSingleViewDataResponse = {
   isPending: boolean;
   error: Error | null;
-  profile?: Profile;
+  profile?: FlamebearerProfile;
   timeline?: Timeline;
 };
 

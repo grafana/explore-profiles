@@ -2,7 +2,8 @@ import { AppEvents } from '@grafana/data';
 import { getAppEvents } from '@grafana/runtime';
 import { useEffect, useState } from 'react';
 
-import { useFetchPluginSettings } from '../infrastructure/useFetchPluginSettings';
+import { displayError } from '../../../shared/domain/displayError';
+import { useFetchPluginSettings } from '../../../shared/infrastructure/settings/useFetchPluginSettings';
 
 export const DEFAULT_SETTINGS = {
   COLLAPSED_FLAMEGRAPHS: false,
@@ -10,21 +11,11 @@ export const DEFAULT_SETTINGS = {
   ENABLE_FLAMEGRAPHDOTCOM_EXPORT: true,
 };
 
-function reportError(error: Error, msgs: string[]) {
-  console.error(msgs[0]);
-  console.error(error);
-
-  getAppEvents().publish({
-    type: AppEvents.alertError.name,
-    payload: msgs,
-  });
-}
-
 export function useAppConfig() {
-  const { settings, error: fecthConfigError, mutate } = useFetchPluginSettings();
+  const { settings, error: fetchConfigError, mutate } = useFetchPluginSettings();
 
-  if (fecthConfigError) {
-    reportError(fecthConfigError, [
+  if (fetchConfigError) {
+    displayError(fetchConfigError, [
       'Error while retrieving the plugin settings!',
       'Please try to reload the page, sorry for the inconvenience.',
     ]);
@@ -76,7 +67,7 @@ export function useAppConfig() {
             payload: ['Plugin settings successfully saved!'],
           });
         } catch (error) {
-          reportError(error as Error, [
+          displayError(error, [
             'Error while saving the plugin settings!',
             'Please try again later, sorry for the inconvenience.',
           ]);

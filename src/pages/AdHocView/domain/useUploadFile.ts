@@ -1,8 +1,8 @@
 import { SelectableValue } from '@grafana/data';
 import { useCallback, useEffect, useState } from 'react';
 
+import { displayError } from '../../../shared/domain/displayError';
 import { adHocProfileClient } from '../infrastructure/adHocProfileClient';
-import { reportError } from './helpers/reportError';
 import { Profile } from './Profile';
 
 const DEFAULT_PROFILE_DATA: Profile = {
@@ -43,7 +43,7 @@ export function useUploadFile() {
         setProfileData(DEFAULT_PROFILE_DATA);
 
         if (!adHocProfileClient.isAbortError(error)) {
-          reportError(['Error while uploading profile!', (error as Error).message], error);
+          displayError(error, ['Error while uploading profile!', (error as Error).message]);
         }
       }
 
@@ -80,7 +80,7 @@ export function useUploadFile() {
         }));
       } catch (error) {
         if (!adHocProfileClient.isAbortError(error)) {
-          reportError(['Error while fetching profile!', (error as Error).message], error);
+          displayError(error, ['Error while fetching profile!', (error as Error).message]);
         }
       }
 
