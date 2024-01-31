@@ -4,14 +4,14 @@ import { PluginPage } from '@grafana/runtime';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-// TODO: migrate TagsBar
-import TagsBar from '../../overrides/components/TagsBar';
 // TODO: migrate Toolbar
 import Toolbar from '../../overrides/components/Toolbar';
 import { FlameGraph } from '../../shared/components/FlameGraph/FlameGraph';
 import { Panel } from '../../shared/components/Panel';
+import { QueryBuilder } from '../../shared/components/QueryBuilder/QueryBuilder';
 import { addQueryToPageTitle } from '../../shared/domain/addQueryToPageTitle';
 import { displayError } from '../../shared/domain/displayError';
+import { formatAsOBject } from '../../shared/domain/formatDate';
 import { useSingleView } from './domain/useSingleView';
 import { ErrorMessage } from './ui/ErrorMessage';
 import { PageTitle } from './ui/PageTitle';
@@ -31,6 +31,7 @@ export function SingleView() {
   const {
     query,
     setQuery,
+    timeRange,
     setTimeRange,
     isLoading,
     fetchDataError,
@@ -52,9 +53,17 @@ export function SingleView() {
     <PluginPage layout={PageLayoutType.Custom}>
       <PageTitle title={addQueryToPageTitle('Single', query)} />
 
-      {/* TODO: add event handlers for services and profile types */}
+      {/* TODO: migrate + add event handlers for services and profile types */}
       <Toolbar />
-      <TagsBar query={query} onSetQuery={setQuery} />
+
+      <QueryBuilder
+        id="query-builder-single"
+        query={query}
+        // every time this component re-renders, we might pass new timerange values ;)
+        from={formatAsOBject(timeRange.from).getTime()}
+        until={formatAsOBject(timeRange.until).getTime()}
+        onChangeQuery={setQuery}
+      />
 
       <Panel title={timelinePanelTitle} isLoading={isLoading} className={styles.timelinePanel}>
         {fetchDataError && <ErrorMessage title="Error while loading timeline data!" error={fetchDataError} />}

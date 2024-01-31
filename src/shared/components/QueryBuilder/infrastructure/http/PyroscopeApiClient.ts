@@ -1,6 +1,6 @@
 import { tenantIDFromStorage } from '@pyroscope/services/storage';
 
-import { ApiClient } from '../../../../../../shared/infrastructure/http/ApiClient';
+import { ApiClient } from '../../../../infrastructure/http/ApiClient';
 
 export enum ProfileFormat {
   dot = 'dot',

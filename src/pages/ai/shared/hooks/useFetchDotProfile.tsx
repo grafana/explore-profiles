@@ -4,7 +4,7 @@ import { useAsync } from 'react-use';
 import {
   ProfileFormat,
   PyroscopeApiClient,
-} from '../../../../overrides/components/TagsBar/QueryBuilder/infrastructure/http/PyroscopeApiClient';
+} from '../../../../shared/components/QueryBuilder/infrastructure/http/PyroscopeApiClient';
 
 const pyroscopeApiClient = new PyroscopeApiClient();
 

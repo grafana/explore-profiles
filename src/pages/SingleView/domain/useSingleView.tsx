@@ -30,6 +30,7 @@ export function useSingleView() {
   return {
     query,
     setQuery,
+    timeRange,
     setTimeRange,
     isLoading,
     fetchDataError,

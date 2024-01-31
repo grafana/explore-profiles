@@ -4,7 +4,7 @@ import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
 import React from 'react';
 import 'react-dom';
 
-import { QueryBuilder } from './QueryBuilder/QueryBuilder';
+import { QueryBuilder } from '../../../shared/components/QueryBuilder/QueryBuilder';
 
 export type TagsBarProps = {
   /** the current query */
