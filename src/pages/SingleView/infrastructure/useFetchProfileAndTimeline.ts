@@ -4,30 +4,26 @@ import { useEffect } from 'react';
 import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
 import { FlamebearerProfile } from '../../../shared/types/FlamebearerProfile';
 import { Timeline } from '../../../shared/types/Timeline';
-import { TimeRange } from '../domain/useUserTimeRange';
+import { TimeRange } from '../../../shared/types/TimeRange';
 
 const apiClient = new ApiClient();
 
-type FetchSingleViewDataParams = {
+type FetchParams = {
   query: string;
   timeRange: TimeRange;
   maxNodes?: number;
   enabled: boolean;
 };
 
-type FetchSingleViewDataResponse = {
-  isPending: boolean;
+type FetchResponse = {
+  isFetching: boolean;
   error: Error | null;
   profile?: FlamebearerProfile;
   timeline?: Timeline;
+  refetch: () => {};
 };
 
-export function useFetchProfileAndTimeline({
-  query,
-  timeRange,
-  maxNodes,
-  enabled,
-}: FetchSingleViewDataParams): FetchSingleViewDataResponse {
+export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled }: FetchParams): FetchResponse {
   const { from, until } = timeRange;
 
   const searchParams = new URLSearchParams({
@@ -42,24 +38,29 @@ export function useFetchProfileAndTimeline({
     searchParams.set('max-nodes', String(maxNodes));
   }
 
-  const { isPending, error, data } = useQuery({
+  const { isFetching, error, data, refetch } = useQuery({
     enabled,
     queryKey: [query, from, until, maxNodes],
-    queryFn: () => apiClient.fetch(`/pyroscope/render?${searchParams.toString()}`).then((response) => response.json()),
+    queryFn: () =>
+      apiClient
+        .fetch(`/pyroscope/render?${searchParams.toString()}`)
+        .then((response) => response.json())
+        .then((json) => ({
+          profile: {
+            version: json.version,
+            flamebearer: json.flamebearer,
+            metadata: json.metadata,
+          },
+          timeline: json.timeline,
+        })),
   });
 
   useEffect(() => () => apiClient.abort());
 
   return {
-    isPending,
+    isFetching,
     error: apiClient.isAbortError(error) ? null : error,
-    profile: data
-      ? {
-          version: data.version,
-          flamebearer: data.flamebearer,
-          metadata: data.metadata,
-        }
-      : undefined,
-    timeline: data?.timeline,
+    ...data,
+    refetch,
   };
 }

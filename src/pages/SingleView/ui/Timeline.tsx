@@ -31,7 +31,8 @@ export function Timeline({ timeline, onSelectTimeRange }: TimelinePanelProps) {
       timelineA={timelineA}
       timezone={timezone}
       selectionType="single"
-      onSelect={onSelectTimeRange}
+      // TODO: migrate TimelineChartWrapper & handle this conversion elsewhere
+      onSelect={(from, until) => onSelectTimeRange(String(Number(from) / 1000), String(Number(until) / 1000))}
     />
   );
 }

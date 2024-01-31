@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-export type TimeRange = {
-  from: string;
-  until: string;
-};
+import { TimeRange } from '../../../shared/types/TimeRange';
 
 function parseTimeRangeFromUrl() {
   const searchParams = new URLSearchParams(document.location.search);

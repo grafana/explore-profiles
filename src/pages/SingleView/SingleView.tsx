@@ -4,11 +4,10 @@ import { PluginPage } from '@grafana/runtime';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-// TODO: migrate Toolbar
-import Toolbar from '../../overrides/components/Toolbar';
 import { FlameGraph } from '../../shared/components/FlameGraph/FlameGraph';
 import { Panel } from '../../shared/components/Panel';
 import { QueryBuilder } from '../../shared/components/QueryBuilder/QueryBuilder';
+import { Toolbar } from '../../shared/components/Toolbar/Toolbar';
 import { addQueryToPageTitle } from '../../shared/domain/addQueryToPageTitle';
 import { displayError } from '../../shared/domain/displayError';
 import { formatAsOBject } from '../../shared/domain/formatDate';
@@ -38,6 +37,7 @@ export function SingleView() {
     profile,
     timeline,
     timelinePanelTitle,
+    refetch,
     fetchSettingsError,
     settings,
   } = useSingleView();
@@ -53,8 +53,7 @@ export function SingleView() {
     <PluginPage layout={PageLayoutType.Custom}>
       <PageTitle title={addQueryToPageTitle('Single', query)} />
 
-      {/* TODO: migrate + add event handlers for services and profile types */}
-      <Toolbar />
+      <Toolbar isLoading={isLoading} timeRange={timeRange} onRefresh={refetch} onChangeTimeRange={setTimeRange} />
 
       <QueryBuilder
         id="query-builder-single"

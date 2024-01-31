@@ -1,4 +1,4 @@
-import userStorage from '../../../../shared/infrastructure/UserStorage';
+import { userStorage } from '../../../../shared/infrastructure/userStorage';
 import { determineDefaultApp } from '../determineDefaultApp';
 
 jest.mock('../../../../shared/infrastructure/UserStorage');
