@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import { ApiClient } from '../../../infrastructure/http/ApiClient';
 import { getProfileMetric, ProfileMetric } from '../../../infrastructure/profile-metrics/getProfileMetric';
@@ -62,8 +61,8 @@ export function useFetchServices(timeRange: FetchParams): FetchResponse {
         .fetch('/querier.v1.QuerierService/Series', {
           method: 'POST',
           body: JSON.stringify({
-            start: Number(from || 0),
-            end: Number(until || 0),
+            start: Number(from) * 1000 || 0,
+            end: Number(until) * 1000 || 0,
             labelNames: ['service_name', '__profile_type__'],
             matchers: [],
           }),
@@ -71,8 +70,6 @@ export function useFetchServices(timeRange: FetchParams): FetchResponse {
         .then((response) => response.json())
         .then((json) => formatResponseData(json)),
   });
-
-  useEffect(() => () => apiClient.abort());
 
   return {
     isFetching,
