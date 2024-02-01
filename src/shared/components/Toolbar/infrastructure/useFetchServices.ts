@@ -55,6 +55,8 @@ export function useFetchServices(timeRange: FetchParams): FetchResponse {
   const { from, until } = timeRange;
 
   const { isFetching, error, data, refetch } = useQuery({
+    // for UX: keep previous data while fetching -> the dropdowns do not re-render (causing layout shifts)
+    placeholderData: (previousData) => previousData,
     queryKey: [from, until],
     queryFn: () =>
       apiClient

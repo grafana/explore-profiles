@@ -1,7 +1,5 @@
-import { css } from '@emotion/css';
 import { PageLayoutType } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
-import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { FlameGraph } from '../../shared/components/FlameGraph/FlameGraph';
@@ -16,17 +14,7 @@ import { ErrorMessage } from './ui/ErrorMessage';
 import { PageTitle } from './ui/PageTitle';
 import { Timeline } from './ui/Timeline';
 
-const getStyles = () => ({
-  timelinePanel: css`
-    & > div {
-      min-height: 250px;
-    }
-  `,
-});
-
 export function SingleView() {
-  const styles = useStyles2(getStyles);
-
   const { data, actions } = useSingleView();
 
   if (data.fetchSettingsError) {
@@ -56,7 +44,7 @@ export function SingleView() {
         onChangeQuery={actions.setQuery}
       />
 
-      <Panel title={data.timelinePanelTitle} isLoading={data.isLoading} className={styles.timelinePanel}>
+      <Panel title={data.timelinePanelTitle} isLoading={data.isLoading}>
         {data.fetchDataError && <ErrorMessage title="Error while loading timeline data!" error={data.fetchDataError} />}
         {data.timeline && <Timeline timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />}
       </Panel>

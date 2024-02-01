@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
 import { FlamebearerProfile } from '../../../shared/types/FlamebearerProfile';
@@ -56,8 +55,6 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
           timeline: json.timeline,
         })),
   });
-
-  useEffect(() => () => apiClient.abort());
 
   return {
     isFetching,
