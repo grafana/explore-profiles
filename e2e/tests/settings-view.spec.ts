@@ -8,15 +8,22 @@ test.describe('Plugin Settings', () => {
   // prevents unwanted settings modifications while running multiple tests in parallel
   test.describe.configure({ mode: 'serial' });
 
-  test.describe('Flamegraph Settings', () => {
-    test('Are visible', async ({ settingsPage }) => {
+  test.describe('Smoke tests', () => {
+    test('Flamegraph & Export settings', async ({ settingsPage }) => {
       const flamegraphSettings = settingsPage.getFlamegraphSettings();
 
       await expect(flamegraphSettings).toBeVisible();
       await expect(flamegraphSettings.getByText('Collapsed flamegraphs')).toBeVisible();
       await expect(flamegraphSettings.getByText('Maximum number of nodes')).toBeVisible();
-    });
 
+      const exportSettings = settingsPage.getExportSettings();
+
+      await expect(exportSettings).toBeVisible();
+      await expect(exportSettings.getByText('Enable flamegraph.com')).toBeVisible();
+    });
+  });
+
+  test.describe('Flamegraph Settings', () => {
     test('Can be modified', async ({ settingsPage, singleViewPage }) => {
       await settingsPage.resetTestSettings();
 
@@ -31,13 +38,6 @@ test.describe('Plugin Settings', () => {
   });
 
   test.describe('Export settings', () => {
-    test('Are visible', async ({ settingsPage }) => {
-      const exportSettings = settingsPage.getExportSettings();
-
-      await expect(exportSettings).toBeVisible();
-      await expect(exportSettings.getByText('Enable flamegraph.com')).toBeVisible();
-    });
-
     test('Can be modified', async ({ settingsPage, singleViewPage }) => {
       await settingsPage.resetTestSettings();
 
