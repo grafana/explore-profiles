@@ -5,20 +5,14 @@ test.beforeEach(async ({ comparisonViewPage }) => {
 });
 
 test.describe('Smoke tests', () => {
-  test('Page title', async ({ comparisonViewPage }) => {
+  test('Page title, spinners, dropdowns, panels', async ({ comparisonViewPage }) => {
     await expect(comparisonViewPage.getTitle()).toHaveText('Comparison view');
-  });
 
-  test('Spinners', async ({ comparisonViewPage }) => {
     await comparisonViewPage.assertNoSpinners();
-  });
 
-  test('Service & profile dropdowns', async ({ comparisonViewPage }) => {
     await expect(comparisonViewPage.getServicesList()).toBeVisible();
     await expect(comparisonViewPage.getProfilesList()).toBeVisible();
-  });
 
-  test('Baseline & comparison panels', async ({ comparisonViewPage }) => {
     await expect(comparisonViewPage.getBaselinePanel()).toContainText('Baseline time range');
     await expect(comparisonViewPage.getComparisonPanel()).toContainText('Comparison time range');
   });

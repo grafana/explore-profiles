@@ -8,15 +8,11 @@ test.beforeEach(async ({ singleViewPage }) => {
 // <div aria-label="Panel loading bar" class="css-132bufy"></div>
 
 test.describe('Smoke tests', () => {
-  test('Page title', async ({ singleViewPage }) => {
+  test('Page title, spinners, dropdowns', async ({ singleViewPage }) => {
     await expect(singleViewPage.getTitle()).toHaveText('Single view');
-  });
 
-  test('Spinners', async ({ singleViewPage }) => {
     await singleViewPage.assertNoSpinners();
-  });
 
-  test('Service & profile dropdowns', async ({ singleViewPage }) => {
     await expect(singleViewPage.getServicesList()).toBeVisible();
     await expect(singleViewPage.getProfilesList()).toBeVisible();
   });
