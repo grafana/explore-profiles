@@ -1,5 +1,7 @@
 import { createTheme } from '@grafana/data';
 import { FlameGraph as GrafanaFlameGraph } from '@grafana/flamegraph';
+import { FlameGraphDataContainer } from '@grafana/flamegraph/src/FlameGraph/dataTransform';
+import { ClickedItemData } from '@grafana/flamegraph/src/types';
 // TODO: migrate ExportData
 import ExportData from '@pyroscope/components/ExportData';
 import React from 'react';
@@ -15,6 +17,7 @@ type FlameGraphWrapperProps = {
   vertical?: boolean;
   enableFlameGraphDotComExport?: boolean;
   collapsedFlamegraphs?: boolean;
+  onItemFocused?: (data: ClickedItemData, dataContainer: FlameGraphDataContainer | undefined) => void;
 };
 
 export function FlameGraph({
@@ -23,6 +26,7 @@ export function FlameGraph({
   vertical,
   enableFlameGraphDotComExport,
   collapsedFlamegraphs,
+  onItemFocused,
 }: FlameGraphWrapperProps) {
   const { colorMode } = useColorMode();
   const getTheme = () => createTheme({ colors: { mode: colorMode } });
@@ -53,6 +57,7 @@ export function FlameGraph({
       extraHeaderElements={extraHeaderElements}
       vertical={vertical}
       getTheme={getTheme}
+      onItemFocused={onItemFocused}
     />
   );
 }

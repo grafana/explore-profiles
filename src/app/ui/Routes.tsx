@@ -17,6 +17,7 @@ import { ROUTES } from '../../constants';
 import { AdHocView } from '../../pages/AdHocView/AdHocView';
 import ContinuousDiffViewAi from '../../pages/ai/ContinuousDiffViewAi/ContinuousDiffViewAi';
 import ContinuousSingleViewAi from '../../pages/ai/ContinuousSingleViewAi/ContinuousSingleViewAi';
+import { GithubView } from '../../pages/Github/GithubView';
 import { SettingsView } from '../../pages/SettingsView/SettingsView';
 import { SingleView } from '../../pages/SingleView/SingleView';
 import { GIT_COMMIT } from '../../version';
@@ -101,6 +102,9 @@ export function Routes() {
             </Route>
             <Route path={prefixRoute(ROUTES.SETTINGS)} exact>
               <SettingsView />
+            </Route>
+            <Route path={prefixRoute(ROUTES.GITHUB)} exact>
+              <GithubView />
             </Route>
             {/* Default Route */}
             <Route>

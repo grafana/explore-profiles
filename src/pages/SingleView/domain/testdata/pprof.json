@@ -1,0 +1,226 @@
+{
+  "sampleType": [
+    {
+      "type": "15",
+      "unit": "13"
+    }
+  ],
+  "sample": [
+    {
+      "locationId": ["9", "10", "7", "4", "5", "6"],
+      "value": ["140000000"]
+    },
+    {
+      "locationId": ["11", "3", "4", "5", "6"],
+      "value": ["10000000"]
+    },
+    {
+      "locationId": ["1", "2", "7", "4", "5", "6"],
+      "value": ["1240000000"]
+    },
+    {
+      "locationId": ["1", "2", "3", "4", "5", "6"],
+      "value": ["3280000000"]
+    },
+    {
+      "locationId": ["8", "3", "4", "5", "6"],
+      "value": ["10000000"]
+    }
+  ],
+  "mapping": [
+    {
+      "id": "1",
+      "buildId": "2",
+      "hasFunctions": true
+    }
+  ],
+  "location": [
+    {
+      "id": "1",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "2",
+          "line": "458"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "3",
+          "line": "141"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "4",
+          "line": "2978"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "1",
+          "line": "3582"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "5",
+          "line": "3745"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "6",
+          "line": "458"
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "4",
+          "line": "3191"
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "3",
+          "line": "126"
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "7",
+          "line": "269"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "3",
+          "line": "168"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "mappingId": "1",
+      "line": [
+        {
+          "functionId": "3",
+          "line": "121"
+        }
+      ]
+    }
+  ],
+  "function": [
+    {
+      "id": "1",
+      "name": "3",
+      "systemName": "3",
+      "filename": "1",
+      "startLine": "3553"
+    },
+    {
+      "id": "2",
+      "name": "5",
+      "systemName": "5",
+      "filename": "6",
+      "startLine": "457"
+    },
+    {
+      "id": "3",
+      "name": "7",
+      "systemName": "7",
+      "filename": "8",
+      "startLine": "121"
+    },
+    {
+      "id": "4",
+      "name": "9",
+      "systemName": "9",
+      "filename": "1",
+      "startLine": "2891"
+    },
+    {
+      "id": "5",
+      "name": "10",
+      "systemName": "10",
+      "filename": "1",
+      "startLine": "3721"
+    },
+    {
+      "id": "6",
+      "name": "11",
+      "systemName": "11",
+      "filename": "4",
+      "startLine": "428"
+    },
+    {
+      "id": "7",
+      "name": "12",
+      "systemName": "12",
+      "filename": "6",
+      "startLine": "268"
+    }
+  ],
+  "stringTable": [
+    "",
+    "/usr/local/Cellar/go/1.21.3/libexec/src/runtime/proc.go",
+    "{\"repository\":\"github.com/grafana/pyroscope\",\"git_ref\":\"main\"}",
+    "runtime.schedule",
+    "/usr/local/Cellar/go/1.21.3/libexec/src/runtime/asm_amd64.s",
+    "runtime.kevent",
+    "/usr/local/Cellar/go/1.21.3/libexec/src/runtime/sys_darwin.go",
+    "runtime.netpoll",
+    "/usr/local/Cellar/go/1.21.3/libexec/src/runtime/netpoll_kqueue.go",
+    "runtime.findRunnable",
+    "runtime.park_m",
+    "runtime.mcall",
+    "runtime.read",
+    "nanoseconds",
+    "",
+    "cpu"
+  ],
+  "timeNanos": "1706622687925000000",
+  "durationNanos": "3600000000000",
+  "periodType": {
+    "type": "15",
+    "unit": "13"
+  },
+  "period": "1000000000",
+  "defaultSampleType": "15"
+}

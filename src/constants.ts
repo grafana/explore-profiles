@@ -16,6 +16,7 @@ export enum ROUTES {
   SINGLE_VIEW_AI = '/single-ai',
   COMPARISON_DIFF_VIEW_AI = '/comparison-diff-ai',
   SETTINGS = '/settings',
+  GITHUB = '/github',
 }
 
 // Add a navigation item for each route you would like to display in the navigation bar

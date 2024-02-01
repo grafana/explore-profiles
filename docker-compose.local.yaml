@@ -1,0 +1,47 @@
+version: '3.0'
+
+services:
+  grafana:
+    container_name: 'grafana-pyroscope-app'
+    build:
+      context: ./.config
+      args:
+        grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
+        grafana_version: ${GRAFANA_VERSION:-10.1.1}
+    ports:
+      - ${GRAFANA_PORT:-3000}:3000/tcp
+    volumes:
+      - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
+      - ./samples/provisioning-local:/etc/grafana/provisioning
+      - ./samples/dashboards:/var/lib/grafana/dashboards
+    environment:
+      GF_INSTALL_PLUGINS: grafana-llm-app
+      OPENAI_API_KEY: $OPENAI_API_KEY
+
+  rideshare:
+    build:
+      context: ./samples/rideshare
+    ports:
+      - 5000
+    environment:
+      - PYROSCOPE_SERVER_ADDRESS=http://host.docker.internal:4040
+      # Set this to 1 to turn on debug logging.
+      - DEBUG=0
+    deploy:
+      mode: replicated
+      replicas: 5
+
+  rideshare-load-generator:
+    build:
+      context: ./samples/rideshare
+      dockerfile: Dockerfile.load-generator
+    environment:
+      - HOST_PREFIX=pyroscope-app-plugin-rideshare
+      # This should be the same as the rideshare replica count.
+      - REPLICAS=5
+      # Set this to 1 to turn on debug logging.
+      - DEBUG=0
+    depends_on:
+      - rideshare
+    logging:
+      driver: none
