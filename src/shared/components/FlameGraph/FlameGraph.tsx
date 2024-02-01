@@ -4,7 +4,7 @@ import { FlameGraphDataContainer } from '@grafana/flamegraph/src/FlameGraph/data
 import { ClickedItemData } from '@grafana/flamegraph/src/types';
 // TODO: migrate ExportData
 import ExportData from '@pyroscope/components/ExportData';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
 import { useColorMode } from '../../ui/useColorMode';
@@ -43,11 +43,15 @@ export function FlameGraph({
     />
   );
 
-  const dataFrame = flamebearerToDataFrameDTO(
-    profile.flamebearer.levels,
-    profile.flamebearer.names,
-    profile.metadata.units,
-    Boolean(diff)
+  const dataFrame = useMemo(
+    () =>
+      flamebearerToDataFrameDTO(
+        profile.flamebearer.levels,
+        profile.flamebearer.names,
+        profile.metadata.units,
+        Boolean(diff)
+      ),
+    [profile, diff]
   );
 
   return (
