@@ -33,7 +33,7 @@ export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePan
       timelineA={timelineA}
       timezone={timezone}
       selectionType="single"
-      onSelect={(from, until) => onSelectTimeRange(from, until)}
+      onSelect={onSelectTimeRange}
     />
   );
 }
