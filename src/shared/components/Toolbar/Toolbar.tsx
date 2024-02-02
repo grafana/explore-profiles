@@ -35,7 +35,10 @@ function useTimeRangePicker(
   const setTimeRange = useCallback(
     (newTimeRange: TimeRange) => {
       const { from, until } = translateGrafanaTimeRangeToPyroscope(newTimeRange);
-      onChangeTimerangePicker(String(Number(from) * 1000), String(Number(until) * 1000));
+      // TODO: FIXME by ensuring that we always have the same time range format flowing in the app (Grafana's)
+      const newFrom = Number.isNaN(Number(from)) ? from : String(Number(from) * 1000);
+      const newUntil = Number.isNaN(Number(until)) ? until : String(Number(until) * 1000);
+      onChangeTimerangePicker(newFrom, newUntil);
     },
     [onChangeTimerangePicker]
   );
@@ -96,8 +99,6 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
 
   // TODO: setTimeZone, etc.
   const { setTimeRange, setTimeZone, zoom, navigate } = useTimeRangePicker(timeRange, onChangeTimeRange);
-
-  console.log('*** NEW     ', timeRange);
 
   return (
     <div className={styles.toolbar}>
