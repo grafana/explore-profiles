@@ -30,6 +30,7 @@ export class FunctionDetails {
   fileName: string;
   callSites: Map<number, CallSite>;
   unit: string;
+
   constructor(
     name: string,
     version: string,
@@ -45,18 +46,22 @@ export class FunctionDetails {
     this.callSites = callSites;
     this.unit = unit;
   }
+
   Version(): FunctionVersion | undefined {
     if (!this.version) {
       return undefined;
     }
     return JSON.parse(this.version);
   }
+
   Cum(): number {
     return Array.from(this.callSites.values()).reduce((acc, { cum }) => acc + cum, 0);
   }
+
   Flat(): number {
     return Array.from(this.callSites.values()).reduce((acc, { flat }) => acc + flat, 0);
   }
+
   Map(code: string): CodeMappingProps {
     const allLines = atob(code).split('\n');
     // sort call site
@@ -86,7 +91,45 @@ export class FunctionDetails {
       lines: lines,
     };
   }
+
+  /**
+   * Gets a link to Github for this function.
+   */
+  LinkToGithub(url: string): string {
+    console.log(url);
+    console.table(this);
+
+    if (url.match(/raw\.githubusercontent\.com\//)) {
+      // For raw.githubusercontent.com urls we need to do more massaging to
+      // link them to the corresponding github repo.
+      //
+      // These urls look like: https://raw.githubusercontent.com/golang/go/master/src/runtime/netpoll_kqueue.go
+      //
+      // We need to transform them to be https://github.com/{org}/{repo}/blob/{filepath}
+
+      // First, remove the wrong domain.
+      url = url.replace('https://raw.githubusercontent.com/', '')
+
+      // Next, find the index of the '/' that separates the org/repo from the
+      // rest of the url.
+      const idx = url.indexOf('/', url.indexOf('/') + 1);
+
+      // Peel off the org and repo.
+      const [org, repo] = url.substring(0, idx).split('/');
+
+      // Grab the remainder of the url.
+      const rest = url.substring(idx+1);
+
+      url = `https://github.com/${org}/${repo}/blob/${rest}`;
+    }
+
+    // Link to the specific line this function exists at.
+    url += `#L${this.startLine}`;
+
+    return url;
+  }
 }
+
 
 export type CallSite = {
   line: number;

@@ -1,4 +1,4 @@
-import { InlineLabel } from '@grafana/ui';
+import { InlineLabel, LinkButton } from '@grafana/ui';
 import React from 'react';
 
 import { Code, CodeProps } from './Code';
@@ -9,6 +9,7 @@ export type CodeInfo = {
   filename: string;
   functionName: string;
   code: CodeProps;
+  link: string;
 };
 
 type CodeContainerProps = {
@@ -27,6 +28,7 @@ export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
         <InlineLabel width="auto"> Repository</InlineLabel>
         <span>{codeInfo.repository}</span>
       </div>
+
       <div
         style={{
           display: 'flex',
@@ -37,6 +39,7 @@ export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
         <InlineLabel width="auto"> Commit</InlineLabel>
         <span>{codeInfo.gitRef}</span>
       </div>
+
       <div
         style={{
           display: 'flex',
@@ -55,6 +58,7 @@ export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
           {codeInfo.filename}
         </div>
       </div>
+
       <div
         style={{
           display: 'flex',
@@ -66,15 +70,26 @@ export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
         <span>{codeInfo.functionName}</span>
       </div>
 
-      <div style={{ paddingTop: '0.5rem' }}>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'baseline',
+        paddingTop: '0.5rem',
+        width: '100%',
+      }}>
         <InlineLabel
           style={{
             marginBottom: '0.5rem',
+            flexShrink: '1',
           }}
         >
           Breakdown per lines:
         </InlineLabel>
+        <LinkButton href={codeInfo.link} icon={'github'} variant={'primary'}>
+          View on GitHub
+        </LinkButton>
       </div>
+
       <Code lines={codeInfo.code.lines} unit={codeInfo.code.unit}></Code>
     </>
   );

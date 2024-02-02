@@ -72,8 +72,6 @@ export function useSingleView() {
 
     let functionDetails = parsePprof(labels[labels.length - 1], res);
 
-    console.log(functionDetails);
-
     // Pick a "default" function details. For now, just pick first details
     // with version defined (or the first details if none have versions).
     const functionDetailsWithVersions = functionDetails.filter((details) => details.Version() !== undefined);
@@ -99,14 +97,16 @@ export function useSingleView() {
       path: fn,
     });
 
+    const url = details.LinkToGithub(fileRes.URL);
+
     const mappings = details.Map(fileRes.content);
-    console.log(mappings);
     setCodeInfo({
       gitRef: ref,
       repository: repo,
       filename: fn,
       functionName: details.name,
       code: mappings,
+      link: url,
     });
   };
   const [codeInfo, setCodeInfo] = useState<CodeInfo | null>(null);
