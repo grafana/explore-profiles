@@ -884,13 +884,13 @@
     uplot "1.6.27"
     xss "^1.0.14"
 
-"@grafana/data@10.4.0-158641", "@grafana/data@10.4.0-pre":
-  version "10.4.0-158641"
-  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-10.4.0-158641.tgz#6d3ad4698b4eb0affec7ab65c8e44e67a973c328"
-  integrity sha512-X1fIOC1ZW4NtYz6odLtEnQ/mr+c5rC7WBTd6DatUPgB/E5kO8Mw/zqEEIjASXJl9GAOUaxPqviDoM6/QkRbKtA==
+"@grafana/data@10.4.0-158707", "@grafana/data@10.4.0-pre":
+  version "10.4.0-158707"
+  resolved "https://registry.yarnpkg.com/@grafana/data/-/data-10.4.0-158707.tgz#092991179fe3220d48f7a73639d97ceb74f1cf85"
+  integrity sha512-+iF6rXz8dZjUenBFHl0H7iWyvcdc5WXhIDwe1N/exHpA7yK4BokZuu6XnYAG2Ign73MaWvW9lei0E7AdsK5DTg==
   dependencies:
     "@braintree/sanitize-url" "7.0.0"
-    "@grafana/schema" "10.4.0-158641"
+    "@grafana/schema" "10.4.0-158707"
     "@types/d3-interpolate" "^3.0.0"
     "@types/string-hash" "1.1.3"
     d3-interpolate "3.0.1"
@@ -924,10 +924,10 @@
     tslib "2.6.0"
     typescript "5.2.2"
 
-"@grafana/e2e-selectors@10.4.0-158641":
-  version "10.4.0-158641"
-  resolved "https://registry.yarnpkg.com/@grafana/e2e-selectors/-/e2e-selectors-10.4.0-158641.tgz#005fbb4a94c6f25a44707ab737e6faa559daa205"
-  integrity sha512-U3rCQci1GEzhUZVP6AVSTNmyXSyn5M2dtOvhAKjXNim2RuS1U9GqylIwleSIVYRfc65Ny18RcEDaDVxVyXIV8Q==
+"@grafana/e2e-selectors@10.4.0-158707":
+  version "10.4.0-158707"
+  resolved "https://registry.yarnpkg.com/@grafana/e2e-selectors/-/e2e-selectors-10.4.0-158707.tgz#60937083e27145b970d89432393e1195214e4713"
+  integrity sha512-+uPFYPkFdBDzgA+KeAs/zbcdEte/qe/31ZR+oCC8LKEj66QsMLOIYNaevqRxjMrNqQqvxrGbssY3W3Vb5aFJew==
   dependencies:
     "@grafana/tsconfig" "^1.2.0-rc1"
     tslib "2.6.2"
@@ -1031,21 +1031,6 @@
     "@opentelemetry/sdk-trace-web" "^1.15.2"
     "@opentelemetry/semantic-conventions" "^1.15.2"
 
-"@grafana/flamegraph@../grafana/packages/grafana-flamegraph":
-  version "10.4.0-pre"
-  dependencies:
-    "@emotion/css" "11.11.2"
-    "@grafana/data" "10.4.0-pre"
-    "@grafana/ui" "10.4.0-pre"
-    "@leeoniya/ufuzzy" "1.0.14"
-    d3 "^7.8.5"
-    lodash "4.17.21"
-    react "18.2.0"
-    react-use "17.5.0"
-    react-virtualized-auto-sizer "1.0.21"
-    tinycolor2 "1.6.0"
-    tslib "2.6.2"
-
 "@grafana/flamegraph@10.3.0-147665":
   version "10.3.0-147665"
   resolved "https://registry.yarnpkg.com/@grafana/flamegraph/-/flamegraph-10.3.0-147665.tgz#dcd62e779ff0db05a78592631bcb75810954daae"
@@ -1062,6 +1047,22 @@
     react-virtualized-auto-sizer "1.0.7"
     tinycolor2 "1.6.0"
     tslib "2.6.0"
+
+"@grafana/flamegraph@https://gitpkg.now.sh/grafana/grafana/packages/grafana-flamegraph?fa79bf359cb498ecb85071a59be806914a21d4d6":
+  version "10.4.0-pre"
+  resolved "https://gitpkg.now.sh/grafana/grafana/packages/grafana-flamegraph?fa79bf359cb498ecb85071a59be806914a21d4d6#49ab56d1c8c3589d0ee31a7a95a490618c8e833c"
+  dependencies:
+    "@emotion/css" "11.11.2"
+    "@grafana/data" "10.4.0-pre"
+    "@grafana/ui" "10.4.0-pre"
+    "@leeoniya/ufuzzy" "1.0.14"
+    d3 "^7.8.5"
+    lodash "4.17.21"
+    react "18.2.0"
+    react-use "17.5.0"
+    react-virtualized-auto-sizer "1.0.21"
+    tinycolor2 "1.6.0"
+    tslib "2.6.2"
 
 "@grafana/runtime@10.3.0-147665":
   version "10.3.0-147665"
@@ -1086,10 +1087,10 @@
   dependencies:
     tslib "2.6.0"
 
-"@grafana/schema@10.4.0-158641":
-  version "10.4.0-158641"
-  resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-10.4.0-158641.tgz#1be250249498de223f90932ec3c9bc0fcfd4870e"
-  integrity sha512-NpsCl744N54vfBikf9yTmymotRazcrmnYocoZyaMhXrx6Tzuud/ZZRa6mj+7JlM7Pyt0XLWQbZCYbku6fSRhIA==
+"@grafana/schema@10.4.0-158707":
+  version "10.4.0-158707"
+  resolved "https://registry.yarnpkg.com/@grafana/schema/-/schema-10.4.0-158707.tgz#4440d6f40c69257343459e57350c75e2c8c6448f"
+  integrity sha512-fSKexX3pmOebjz1TH9Qi3yGPjUzTrtdxXa8xJkjsLekCzY2bYkJ6Z3hQedt0xXnkepHV68t3HUWkz+mEBix1yg==
   dependencies:
     tslib "2.6.2"
 
@@ -1170,17 +1171,17 @@
     uuid "9.0.0"
 
 "@grafana/ui@10.4.0-pre":
-  version "10.4.0-158641"
-  resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-10.4.0-158641.tgz#665842270ca71d595196b2ba3615dc67e5d0f1cf"
-  integrity sha512-GoPyiX4yTpRRUvhNyMMbx77ZhRKrUp0L0s+lh4Ztl+6l4vv6bxVLv8XWOVcM2NkADO25gg+mIRnA7D3xid8vvw==
+  version "10.4.0-158707"
+  resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-10.4.0-158707.tgz#56c5dbe016f4a36036ce38014829493399b6bd10"
+  integrity sha512-3JaacDdCySA13NBZq+bodQAkjU4UA9kvE1dxJwynGMtC19Qyb2dk9S4waak+7L/4Vhbk8atNjE/bYw6Os/cBmQ==
   dependencies:
     "@emotion/css" "11.11.2"
     "@emotion/react" "11.11.3"
     "@floating-ui/react" "0.26.8"
-    "@grafana/data" "10.4.0-158641"
-    "@grafana/e2e-selectors" "10.4.0-158641"
+    "@grafana/data" "10.4.0-158707"
+    "@grafana/e2e-selectors" "10.4.0-158707"
     "@grafana/faro-web-sdk" "^1.3.6"
-    "@grafana/schema" "10.4.0-158641"
+    "@grafana/schema" "10.4.0-158707"
     "@leeoniya/ufuzzy" "1.0.14"
     "@monaco-editor/react" "4.6.0"
     "@popperjs/core" "2.11.8"
