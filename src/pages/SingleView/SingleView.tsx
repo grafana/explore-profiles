@@ -12,7 +12,7 @@ import { formatAsOBject } from '../../shared/domain/formatDate';
 import { useSingleView } from './domain/useSingleView';
 import { ErrorMessage } from './ui/ErrorMessage';
 import { PageTitle } from './ui/PageTitle';
-import { Timeline } from './ui/Timeline';
+import { Timeline } from './ui/Timeline/Timeline';
 
 export function SingleView() {
   const { data, actions } = useSingleView();
