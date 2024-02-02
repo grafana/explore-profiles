@@ -884,7 +884,7 @@
     uplot "1.6.27"
     xss "^1.0.14"
 
-"@grafana/data@10.4.0-158707", "@grafana/data@10.4.0-pre":
+"@grafana/data@10.4.0-158707":
   version "10.4.0-158707"
   resolved "https://registry.yarnpkg.com/@grafana/data/-/data-10.4.0-158707.tgz#092991179fe3220d48f7a73639d97ceb74f1cf85"
   integrity sha512-+iF6rXz8dZjUenBFHl0H7iWyvcdc5WXhIDwe1N/exHpA7yK4BokZuu6XnYAG2Ign73MaWvW9lei0E7AdsK5DTg==
@@ -1048,13 +1048,13 @@
     tinycolor2 "1.6.0"
     tslib "2.6.0"
 
-"@grafana/flamegraph@https://gitpkg.now.sh/grafana/grafana/packages/grafana-flamegraph?fa79bf359cb498ecb85071a59be806914a21d4d6":
+"@grafana/flamegraph@https://gitpkg.now.sh/grafana/grafana/packages/grafana-flamegraph?40cd87c96cf7c7420329b669f03a6675b2b1f406":
   version "10.4.0-pre"
-  resolved "https://gitpkg.now.sh/grafana/grafana/packages/grafana-flamegraph?fa79bf359cb498ecb85071a59be806914a21d4d6#49ab56d1c8c3589d0ee31a7a95a490618c8e833c"
+  resolved "https://gitpkg.now.sh/grafana/grafana/packages/grafana-flamegraph?40cd87c96cf7c7420329b669f03a6675b2b1f406#419fa5a30426328a37d1a77d6a8a4a58a5ea9df3"
   dependencies:
     "@emotion/css" "11.11.2"
-    "@grafana/data" "10.4.0-pre"
-    "@grafana/ui" "10.4.0-pre"
+    "@grafana/data" "10.4.0-158707"
+    "@grafana/ui" "10.4.0-158707"
     "@leeoniya/ufuzzy" "1.0.14"
     d3 "^7.8.5"
     lodash "4.17.21"
@@ -1170,7 +1170,7 @@
     uplot "1.6.27"
     uuid "9.0.0"
 
-"@grafana/ui@10.4.0-pre":
+"@grafana/ui@10.4.0-158707":
   version "10.4.0-158707"
   resolved "https://registry.yarnpkg.com/@grafana/ui/-/ui-10.4.0-158707.tgz#56c5dbe016f4a36036ce38014829493399b6bd10"
   integrity sha512-3JaacDdCySA13NBZq+bodQAkjU4UA9kvE1dxJwynGMtC19Qyb2dk9S4waak+7L/4Vhbk8atNjE/bYw6Os/cBmQ==
