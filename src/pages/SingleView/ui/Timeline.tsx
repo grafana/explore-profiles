@@ -1,17 +1,18 @@
 import React from 'react';
 
-// TODO: migrate TimelineChartWrapper
-import TimelineChartWrapper from '../../../overrides/components/TimelineChart/TimelineChartWrapper';
 import { Timeline as TimelineType } from '../../../shared/types/Timeline';
+import { TimeRange } from '../../../shared/types/TimeRange';
 import { useColorMode } from '../../../shared/ui/useColorMode';
 import { useTimeZone } from '../domain/useTimeZone';
+import { TimelineChartWrapper } from './TimelineChartWrapper';
 
 type TimelinePanelProps = {
+  timeRange: TimeRange;
   timeline: TimelineType;
   onSelectTimeRange: (from: string, until: string) => void;
 };
 
-export function Timeline({ timeline, onSelectTimeRange }: TimelinePanelProps) {
+export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePanelProps) {
   const { offset } = useTimeZone();
   const timezone = offset === 0 ? 'utc' : 'browser';
 
@@ -28,11 +29,11 @@ export function Timeline({ timeline, onSelectTimeRange }: TimelinePanelProps) {
       height="125px"
       mode="singles"
       format="bars"
+      timeRange={timeRange}
       timelineA={timelineA}
       timezone={timezone}
       selectionType="single"
-      // TODO: migrate TimelineChartWrapper & handle this conversion elsewhere
-      onSelect={(from, until) => onSelectTimeRange(String(Number(from) / 1000), String(Number(until) / 1000))}
+      onSelect={(from, until) => onSelectTimeRange(from, until)}
     />
   );
 }

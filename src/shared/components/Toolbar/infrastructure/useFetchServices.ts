@@ -16,7 +16,6 @@ type FetchResponse = {
   isFetching: boolean;
   error: Error | null;
   services: Services;
-  refetch: () => void;
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -54,7 +53,7 @@ function formatResponseData(data: any): Services {
 export function useFetchServices(timeRange: FetchParams): FetchResponse {
   const { from, until } = timeRange;
 
-  const { isFetching, error, data, refetch } = useQuery({
+  const { isFetching, error, data } = useQuery({
     // for UX: keep previous data while fetching -> the dropdowns do not re-render (causing layout shifts)
     placeholderData: (previousData) => previousData,
     queryKey: [from, until],
@@ -63,8 +62,8 @@ export function useFetchServices(timeRange: FetchParams): FetchResponse {
         .fetch('/querier.v1.QuerierService/Series', {
           method: 'POST',
           body: JSON.stringify({
-            start: Number(from) * 1000 || 0,
-            end: Number(until) * 1000 || 0,
+            start: Number(from) || 0,
+            end: Number(until) || 0,
             labelNames: ['service_name', '__profile_type__'],
             matchers: [],
           }),
@@ -77,6 +76,5 @@ export function useFetchServices(timeRange: FetchParams): FetchResponse {
     isFetching,
     error: apiClient.isAbortError(error) ? null : error,
     services: data || new Map(),
-    refetch: () => refetch(),
   };
 }

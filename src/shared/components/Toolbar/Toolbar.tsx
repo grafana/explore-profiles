@@ -9,10 +9,9 @@ import {
   TimeRangePicker,
   useStyles2,
 } from '@grafana/ui';
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
 import 'react-dom';
 
-import { PyroscopeStateContext } from '../../../app/domain/PyroscopeState/context';
 import { translateGrafanaTimeRangeToPyroscope, translatePyroscopeTimeRangeToGrafana } from '../../domain/translation';
 import { TimeRange as TimeRangeType } from '../../types/TimeRange';
 import { useFetchServices } from './infrastructure/useFetchServices';
@@ -27,68 +26,49 @@ export const getStyles = (theme: GrafanaTheme2) => {
   };
 };
 
-function useTimeRangePicker(refreshServices: Function) {
-  const { timeRange, setTimeRange: setPyroscopeTimeRange } = useContext(PyroscopeStateContext);
+function useTimeRangePicker(
+  pyroscopeTimeRange: TimeRangeType,
+  onChangeTimerangePicker: ToolbarProps['onChangeTimeRange']
+) {
+  const timeRange = translatePyroscopeTimeRangeToGrafana(pyroscopeTimeRange.from, pyroscopeTimeRange.until);
+
+  const setTimeRange = useCallback(
+    (newTimeRange: TimeRange) => {
+      const { from, until } = translateGrafanaTimeRangeToPyroscope(newTimeRange);
+      onChangeTimerangePicker(String(Number(from) * 1000), String(Number(until) * 1000));
+    },
+    [onChangeTimerangePicker]
+  );
 
   const zoom = useCallback(() => {
-    // Zooming out will double the overall range.
-    if (!timeRange) {
-      return;
-    }
     const { from, to } = timeRange;
-
     const halfDiff = to.diff(from) / 2;
 
     // These are mutable...
     from.subtract(halfDiff);
     to.add(halfDiff);
 
-    const newRange: TimeRange = {
-      raw: {
-        from,
-        to,
-      },
-      from,
-      to,
-    };
-
-    setPyroscopeTimeRange(newRange);
-    // TODO: refreshApps() as well?
-  }, [timeRange, setPyroscopeTimeRange]);
+    setTimeRange({ from, to, raw: { from, to } });
+  }, [timeRange, setTimeRange]);
 
   const navigate = useCallback(
     (forward = true) => {
       const { from, to } = timeRange;
-
       const multiplier = forward ? +1 : -1;
-
       const halfDiff = (to.diff(from) / 2) * multiplier;
 
       // These are mutable...
       from.add(halfDiff);
       to.add(halfDiff);
 
-      const newRange: TimeRange = {
-        raw: {
-          from,
-          to,
-        },
-        from,
-        to,
-      };
-
-      setPyroscopeTimeRange(newRange);
-      // TODO: refreshApps() as well?
+      setTimeRange({ from, to, raw: { from, to } });
     },
-    [timeRange, setPyroscopeTimeRange]
+    [timeRange, setTimeRange]
   );
 
   return {
     timeRange,
-    setTimeRange: (newRange: TimeRange) => {
-      setPyroscopeTimeRange(newRange);
-      refreshServices();
-    },
+    setTimeRange,
     setTimeZone() {}, // no op
     zoom,
     navigate,
@@ -105,10 +85,9 @@ type ToolbarProps = {
 export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: ToolbarProps) {
   const styles = useStyles2(getStyles);
 
-  const { isFetching: isLoadingServices, services, refetch: refetchServices } = useFetchServices(timeRange);
+  const { services } = useFetchServices(timeRange);
 
   const onRefreshAll = () => {
-    refetchServices();
     onRefresh();
   };
 
@@ -116,12 +95,9 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
   const { profileTypeOptions, selectedProfileType, selectProfileType } = useBuildProfileTypeOptions(services);
 
   // TODO: setTimeZone, etc.
-  const { setTimeZone, zoom, navigate } = useTimeRangePicker(refetchServices);
+  const { setTimeRange, setTimeZone, zoom, navigate } = useTimeRangePicker(timeRange, onChangeTimeRange);
 
-  const onChangeTimerangePicker = (newTimeRange: TimeRange) => {
-    const { from, until } = translateGrafanaTimeRangeToPyroscope(newTimeRange);
-    onChangeTimeRange(from, until);
-  };
+  console.log('*** NEW     ', timeRange);
 
   return (
     <div className={styles.toolbar}>
@@ -143,20 +119,12 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
               aria-label="Profiles list"
             />
           </InlineField>
-          <RefreshPicker
-            isOnCanvas={true}
-            noIntervalPicker={true}
-            onRefresh={refetchServices}
-            onIntervalChanged={() => null}
-            isLoading={isLoadingServices}
-            width="36px"
-          />
         </InlineFieldRow>
         {/* Time range selection */}
         <HorizontalGroup align="flex-start">
           <TimeRangePicker
             isOnCanvas={true}
-            onChange={onChangeTimerangePicker}
+            onChange={setTimeRange}
             // TODO: setTimeZone
             onChangeTimeZone={setTimeZone}
             value={translatePyroscopeTimeRangeToGrafana(timeRange.from, timeRange.until)}

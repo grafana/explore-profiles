@@ -46,7 +46,9 @@ export function SingleView() {
 
       <Panel title={data.timelinePanelTitle} isLoading={data.isLoading}>
         {data.fetchDataError && <ErrorMessage title="Error while loading timeline data!" error={data.fetchDataError} />}
-        {data.timeline && <Timeline timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />}
+        {data.timeline && (
+          <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
+        )}
       </Panel>
 
       <Panel isLoading={data.isLoading}>
