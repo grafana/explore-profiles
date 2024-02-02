@@ -111,7 +111,6 @@
     "@grafana/experimental": "^1.7.4",
     "@grafana/faro-web-sdk": "^1.1.0",
     "@grafana/faro-web-tracing": "^1.1.0",
-    "@grafana/flamegraph": "^10.3.1",
     "@grafana/runtime": "10.3.0-147665",
     "@grafana/ui": "10.3.0-147665",
     "@hookform/resolvers": "^2.9.8",

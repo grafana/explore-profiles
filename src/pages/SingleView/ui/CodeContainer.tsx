@@ -70,13 +70,15 @@ export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
         <span>{codeInfo.functionName}</span>
       </div>
 
-      <div style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        paddingTop: '0.5rem',
-        width: '100%',
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'baseline',
+          paddingTop: '0.5rem',
+          width: '100%',
+        }}
+      >
         <InlineLabel
           style={{
             marginBottom: '0.5rem',
@@ -85,7 +87,7 @@ export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
         >
           Breakdown per lines:
         </InlineLabel>
-        <LinkButton href={codeInfo.link} icon={'github'} variant={'primary'}>
+        <LinkButton href={codeInfo.link} target="_blank" icon={'github'} variant={'primary'}>
           View on GitHub
         </LinkButton>
       </div>
