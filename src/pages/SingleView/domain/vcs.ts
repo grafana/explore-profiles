@@ -136,6 +136,7 @@ export type CallSite = {
 export function parsePprof(fnName: string, profile: PprofProfile): FunctionDetails[] {
   const versions = new Map<string, FunctionDetails>();
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   profile.sample.forEach((sample) => {
     sample.locationId.forEach((locationId, index) => {
       const location = profile.location.find((loc) => loc.id === locationId);

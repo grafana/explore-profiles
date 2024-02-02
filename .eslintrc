@@ -5,8 +5,7 @@
     "no-unused-vars": "error",
     "jest/expect-expect": "error",
     "jest/valid-title": "off",
-    // todo bring back to 8
-    "sonarjs/cognitive-complexity": ["error", 20],
+    "sonarjs/cognitive-complexity": ["error", 8],
     "sonarjs/prefer-immediate-return": "off",
     "sonarjs/no-duplicate-string": "off"
   }

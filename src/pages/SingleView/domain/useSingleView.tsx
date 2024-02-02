@@ -35,6 +35,7 @@ export function useSingleView() {
 
   const timelinePanelTitle = useGetProfileMetricByType(profile?.metadata?.name)?.description;
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const onItemFocused = async (data: ClickedItemData, container: FlameGraphDataContainer | undefined) => {
     if (!container) {
       return;
