@@ -96,9 +96,6 @@ export class FunctionDetails {
    * Gets a link to Github for this function.
    */
   LinkToGithub(url: string): string {
-    console.log(url);
-    console.table(this);
-
     if (url.match(/raw\.githubusercontent\.com\//)) {
       // For raw.githubusercontent.com urls we need to do more massaging to
       // link them to the corresponding github repo.
@@ -108,7 +105,7 @@ export class FunctionDetails {
       // We need to transform them to be https://github.com/{org}/{repo}/blob/{filepath}
 
       // First, remove the wrong domain.
-      url = url.replace('https://raw.githubusercontent.com/', '')
+      url = url.replace('https://raw.githubusercontent.com/', '');
 
       // Next, find the index of the '/' that separates the org/repo from the
       // rest of the url.
@@ -118,7 +115,7 @@ export class FunctionDetails {
       const [org, repo] = url.substring(0, idx).split('/');
 
       // Grab the remainder of the url.
-      const rest = url.substring(idx+1);
+      const rest = url.substring(idx + 1);
 
       url = `https://github.com/${org}/${repo}/blob/${rest}`;
     }
@@ -129,7 +126,6 @@ export class FunctionDetails {
     return url;
   }
 }
-
 
 export type CallSite = {
   line: number;
