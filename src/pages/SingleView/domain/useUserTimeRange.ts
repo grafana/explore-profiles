@@ -5,8 +5,8 @@ import { TimeRange } from '../../../shared/types/TimeRange';
 function parseTimeRangeFromUrl() {
   const searchParams = new URLSearchParams(document.location.search);
   return {
-    from: searchParams.get('from') || '',
-    until: searchParams.get('until') || '',
+    from: searchParams.get('from') || 'now-5m',
+    until: searchParams.get('until') || 'now',
   };
 }
 
