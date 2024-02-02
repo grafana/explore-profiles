@@ -57,8 +57,10 @@ export function useFetchServices(timeRange: FetchParams): FetchResponse {
     // for UX: keep previous data while fetching -> the dropdowns do not re-render (causing layout shifts)
     placeholderData: (previousData) => previousData,
     queryKey: [from, until],
-    queryFn: () =>
-      apiClient
+    queryFn: () => {
+      apiClient.abort();
+
+      return apiClient
         .fetch('/querier.v1.QuerierService/Series', {
           method: 'POST',
           body: JSON.stringify({
@@ -69,7 +71,8 @@ export function useFetchServices(timeRange: FetchParams): FetchResponse {
           }),
         })
         .then((response) => response.json())
-        .then((json) => formatResponseData(json)),
+        .then((json) => formatResponseData(json));
+    },
   });
 
   return {

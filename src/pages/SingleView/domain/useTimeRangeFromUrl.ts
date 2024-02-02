@@ -10,7 +10,7 @@ function parseTimeRangeFromUrl() {
   };
 }
 
-export function useUserTimeRange(): [TimeRange, (from: string, until: string) => void] {
+export function useTimeRangeFromUrl(): [TimeRange, (from: string, until: string) => void] {
   const [timeRange, setInternalTimeRange] = useState<TimeRange>(parseTimeRangeFromUrl());
 
   const setTimeRange = useCallback((from: string, until: string) => {

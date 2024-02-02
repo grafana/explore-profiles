@@ -42,8 +42,10 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
     placeholderData: (previousData) => previousData,
     enabled,
     queryKey: [query, from, until, maxNodes],
-    queryFn: () =>
-      apiClient
+    queryFn: () => {
+      apiClient.abort();
+
+      return apiClient
         .fetch(`/pyroscope/render?${searchParams.toString()}`)
         .then((response) => response.json())
         .then((json) => ({
@@ -53,7 +55,8 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
             metadata: json.metadata,
           },
           timeline: json.timeline,
-        })),
+        }));
+    },
   });
 
   return {

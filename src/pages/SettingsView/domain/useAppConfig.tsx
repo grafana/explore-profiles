@@ -2,7 +2,7 @@ import { AppEvents } from '@grafana/data';
 import { getAppEvents } from '@grafana/runtime';
 import { useEffect, useState } from 'react';
 
-import { displayError } from '../../../shared/domain/displayError';
+import { displayError } from '../../../shared/domain/displayStatus';
 import { useFetchPluginSettings } from '../../../shared/infrastructure/settings/useFetchPluginSettings';
 
 export const DEFAULT_SETTINGS = {

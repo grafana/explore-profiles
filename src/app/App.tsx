@@ -12,6 +12,7 @@ import { Onboarding } from './ui/Onboarding/Onboarding';
 import { Routes } from './ui/Routes';
 import './ui/styles.scss';
 import { TitleReplacement } from './ui/TitleReplacement';
+import { useOfflineDetection } from './useOfflineDetection';
 
 // Module augmentation so that typescript sees our 'custom' element
 /* eslint-disable no-unused-vars */
@@ -40,6 +41,10 @@ const queryClient = new QueryClient({
 });
 
 export function App(props: AppRootProps) {
+  // we do this instead of dealing with fetch errors because by default, react-query will not fetch when offline
+  // (https://tanstack.com/query/latest/docs/framework/react/guides/network-mode#network-mode-online)
+  useOfflineDetection();
+
   const unsubscribeRef = useRef<unknown>(null);
 
   if (!unsubscribeRef.current) {

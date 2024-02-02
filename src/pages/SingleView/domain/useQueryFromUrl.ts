@@ -5,7 +5,7 @@ function parseQueryFromUrl() {
   return searchParams.get('query') || '';
 }
 
-export function useUserQuery(): [string, (newQuery: string) => void] {
+export function useQueryFromUrl(): [string, (newQuery: string) => void] {
   const [query, setInternalQuery] = useState(parseQueryFromUrl());
 
   const setQuery = useCallback((newQuery: string) => {

@@ -1,12 +1,12 @@
 import { useGetProfileMetricByType } from '../../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
 import { useFetchPluginSettings } from '../../../shared/infrastructure/settings/useFetchPluginSettings';
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
-import { useUserQuery } from './useUserQuery';
-import { useUserTimeRange } from './useUserTimeRange';
+import { useQueryFromUrl } from './useQueryFromUrl';
+import { useTimeRangeFromUrl } from './useTimeRangeFromUrl';
 
 export function useSingleView() {
-  const [query, setQuery] = useUserQuery();
-  const [timeRange, setTimeRange] = useUserTimeRange();
+  const [query, setQuery] = useQueryFromUrl();
+  const [timeRange, setTimeRange] = useTimeRangeFromUrl();
 
   const { isFetching: isFetchingSettings, error: fetchSettingsError, settings } = useFetchPluginSettings();
 
