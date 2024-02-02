@@ -49,6 +49,10 @@ function getNodes(level: number[], names: string[], diff: boolean) {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function flamebearerToDataFrameDTO(levels: number[][], names: string[], unit: string, diff: boolean) {
+  if (!levels.length) {
+    return;
+  }
+
   const nodeLevels: any[][] = [];
 
   for (let i = 0; i < levels.length; i++) {

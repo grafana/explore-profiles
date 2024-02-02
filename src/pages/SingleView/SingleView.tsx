@@ -37,28 +37,11 @@ const getStyles = () => ({
 });
 
 export function SingleView() {
+  const { data, actions } = useSingleView();
   const styles = useStyles2(getStyles);
 
-  const {
-    query,
-    setQuery,
-    timeRange,
-    setTimeRange,
-    isLoading,
-    fetchDataError,
-    profile,
-    timeline,
-    timelinePanelTitle,
-    refetch,
-    fetchSettingsError,
-    settings,
-    onItemFocused,
-    codeInfo,
-    closeCodePanel,
-  } = useSingleView();
-
-  if (fetchSettingsError) {
-    displayError(fetchSettingsError, [
+  if (data.fetchSettingsError) {
+    displayError(data.fetchSettingsError, [
       'Error while retrieving the plugin settings!',
       'Some features might not work as expected (e.g. max nodes). Please try to reload the page, sorry for the inconvenience.',
     ]);
@@ -66,46 +49,55 @@ export function SingleView() {
 
   return (
     <PluginPage layout={PageLayoutType.Custom}>
-      <PageTitle title={addQueryToPageTitle('Single', query)} />
+      <PageTitle title={addQueryToPageTitle('Single', data.query)} />
 
-      <Toolbar isLoading={isLoading} timeRange={timeRange} onRefresh={refetch} onChangeTimeRange={setTimeRange} />
+      <Toolbar
+        isLoading={data.isLoading}
+        timeRange={data.timeRange}
+        onRefresh={actions.refetch}
+        onChangeTimeRange={actions.setTimeRange}
+      />
 
       <QueryBuilder
         id="query-builder-single"
-        query={query}
+        query={data.query}
         // every time this component re-renders, we might pass new timerange values ;)
-        from={formatAsOBject(timeRange.from).getTime()}
-        until={formatAsOBject(timeRange.until).getTime()}
-        onChangeQuery={setQuery}
+        from={formatAsOBject(data.timeRange.from).getTime()}
+        until={formatAsOBject(data.timeRange.until).getTime()}
+        onChangeQuery={actions.setQuery}
       />
 
-      <Panel title={timelinePanelTitle} isLoading={isLoading} className={styles.timelinePanel}>
-        {fetchDataError && <ErrorMessage title="Error while loading timeline data!" error={fetchDataError} />}
-        {timeline && <Timeline timeline={timeline} onSelectTimeRange={setTimeRange} />}
+      <Panel title={data.timelinePanelTitle} isLoading={data.isLoading}>
+        {data.fetchDataError && <ErrorMessage title="Error while loading timeline data!" error={data.fetchDataError} />}
+        {data.timeline && (
+          <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
+        )}
       </Panel>
       <div className={styles.flex}>
-        <Panel isLoading={isLoading} className={styles.flamegraphPanel}>
-          {fetchDataError && <ErrorMessage title="Error while loading flamegraph data!" error={fetchDataError} />}
-          {profile && (
+        <Panel isLoading={data.isLoading} className={styles.flamegraphPanel}>
+          {data.fetchDataError && (
+            <ErrorMessage title="Error while loading flamegraph data!" error={data.fetchDataError} />
+          )}
+          {data.profile && (
             <FlameGraph
-              profile={profile}
-              enableFlameGraphDotComExport={settings?.enableFlameGraphDotComExport}
-              collapsedFlamegraphs={settings?.collapsedFlamegraphs}
-              onItemFocused={onItemFocused}
+              profile={data.profile}
+              enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}
+              collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
+              onItemFocused={actions.onItemFocused}
             />
           )}
         </Panel>
 
-        {codeInfo && (
+        {data.codeInfo && (
           <Panel
             isLoading={false}
             className={styles.codeContainer}
             title="Function Details"
             headerActions={
-              <IconButton name="times-circle" variant="secondary" aria-label="close" onClick={closeCodePanel} />
+              <IconButton name="times-circle" variant="secondary" aria-label="close" onClick={actions.closeCodePanel} />
             }
           >
-            <CodeContainer codeInfo={codeInfo} />
+            <CodeContainer codeInfo={data.codeInfo} />
           </Panel>
         )}
       </div>

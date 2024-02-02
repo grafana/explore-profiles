@@ -30,7 +30,14 @@ function addStyle(styleString: string) {
   document.head.append(style);
 }
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false,
+    },
+  },
+});
 
 export function App(props: AppRootProps) {
   const unsubscribeRef = useRef<unknown>(null);

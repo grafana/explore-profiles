@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
 import { FlamebearerProfile } from '../../../shared/types/FlamebearerProfile';
@@ -39,6 +38,8 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
   }
 
   const { isFetching, error, data, refetch } = useQuery({
+    // for UX: keep previous data while fetching -> timeline & profile do not re-render with empty panels
+    placeholderData: (previousData) => previousData,
     enabled,
     queryKey: [query, from, until, maxNodes],
     queryFn: () =>
@@ -54,8 +55,6 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
           timeline: json.timeline,
         })),
   });
-
-  useEffect(() => () => apiClient.abort());
 
   return {
     isFetching,
