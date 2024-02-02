@@ -138,6 +138,15 @@ export function parsePprof(fnName: string, profile: PprofProfile): FunctionDetai
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   profile.sample.forEach((sample) => {
+    if (sample.locationId === undefined) {
+      // Sometimes a sample may not have a stack trace associated with it. This
+      // may be a bug in the Pyroscope API or it may be an idiosyncrasy of the
+      // pprof format.
+      //
+      // While it may cause some counting errors, let's skip these for now.
+      return;
+    }
+
     sample.locationId.forEach((locationId, index) => {
       const location = profile.location.find((loc) => loc.id === locationId);
       if (!location) {

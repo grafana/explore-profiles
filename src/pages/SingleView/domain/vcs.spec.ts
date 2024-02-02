@@ -3,6 +3,7 @@ import path from 'path';
 
 import { PprofProfile } from '../../../shared/domain/Profile';
 import PprofData from './testdata/pprof.json';
+import YugePprofData from './testdata/yuge.json';
 import { CallSite, FunctionDetails, parsePprof } from './vcs';
 
 jest.mock('@grafana/runtime', () => ({ config: { appUrl: 'https://localhost:3000/' } }));
@@ -151,4 +152,42 @@ test('codeMapping', () => {
       },
     ],
   });
+});
+
+test('parseYuge', () => {
+  const funcName = 'github.com/grafana/pyroscope/pkg/phlaredb/symdb.(*PartitionWriter).convertSamples';
+  const res = parsePprof(funcName, YugePprofData as PprofProfile);
+
+  expect(res).toEqual([
+    new FunctionDetails(
+      funcName,
+      '{"repository":"https://github.com/grafana/pyroscope","git_ref":"369ca83"}',
+      107,
+      '/home/runner/work/pyroscope/pyroscope/pkg/phlaredb/symdb/dedup_slice.go',
+      new Map<number, CallSite>([
+        [138, { cum: 27030000000, flat: 1490000000, line: 138 }],
+        [143, { cum: 30700000000, flat: 0, line: 143 }],
+        [152, { cum: 10500000000, flat: 0, line: 152 }],
+        [136, { cum: 3560000000, flat: 400000000, line: 136 }],
+        [151, { cum: 500000000, flat: 0, line: 151 }],
+        [134, { cum: 1650000000, flat: 1650000000, line: 134 }],
+        [120, { cum: 560000000, flat: 0, line: 120 }],
+        [137, { cum: 820000000, flat: 820000000, line: 137 }],
+        [142, { cum: 400000000, flat: 10000000, line: 142 }],
+        [149, { cum: 70000000, flat: 70000000, line: 149 }],
+        [132, { cum: 340000000, flat: 340000000, line: 132 }],
+        [121, { cum: 370000000, flat: 0, line: 121 }],
+        [127, { cum: 60000000, flat: 60000000, line: 127 }],
+        [115, { cum: 660000000, flat: 0, line: 115 }],
+        [156, { cum: 30000000, flat: 0, line: 156 }],
+        [114, { cum: 420000000, flat: 150000000, line: 114 }],
+        [130, { cum: 140000000, flat: 140000000, line: 130 }],
+        [148, { cum: 130000000, flat: 130000000, line: 148 }],
+        [133, { cum: 100000000, flat: 100000000, line: 133 }],
+        [153, { cum: 30000000, flat: 30000000, line: 153 }],
+        [147, { cum: 20000000, flat: 20000000, line: 147 }],
+      ]),
+      'nanoseconds'
+    ),
+  ]);
 });
