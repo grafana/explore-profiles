@@ -88,14 +88,14 @@ type ToolbarProps = {
 export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: ToolbarProps) {
   const styles = useStyles2(getStyles);
 
-  const { services } = useFetchServices(timeRange);
-
   const onRefreshAll = () => {
     onRefresh();
   };
 
-  const { serviceNameOptions, selectedServiceName, selectServiceName } = useBuildServiceNameOptions(services);
-  const { profileTypeOptions, selectedProfileType, selectProfileType } = useBuildProfileTypeOptions(services);
+  const { services } = useFetchServices(timeRange);
+
+  const { serviceNameOptions, selectedService, setService } = useBuildServiceNameOptions(services);
+  const { profileTypeOptions, selectedProfileType, setProfileType } = useBuildProfileTypeOptions(services);
 
   // TODO: setTimeZone, etc.
   const { setTimeRange, setTimeZone, zoom, navigate } = useTimeRangePicker(timeRange, onChangeTimeRange);
@@ -106,17 +106,17 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
         <InlineFieldRow>
           <InlineField label="Service">
             <Select<string>
-              value={selectedServiceName}
               options={serviceNameOptions}
-              onChange={selectServiceName}
+              value={selectedService}
+              onChange={setService}
               aria-label="Services list"
             />
           </InlineField>
           <InlineField label="Profile">
             <Select<string>
-              value={selectedProfileType}
               options={profileTypeOptions}
-              onChange={selectProfileType}
+              value={selectedProfileType}
+              onChange={setProfileType}
               aria-label="Profiles list"
             />
           </InlineField>

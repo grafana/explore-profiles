@@ -9,8 +9,6 @@ export function useQueryFromUrl(): [string, (newQuery: string) => void] {
   const [query, setInternalQuery] = useState(parseQueryFromUrl());
 
   const setQuery = useCallback((newQuery: string) => {
-    setInternalQuery(newQuery);
-
     const newUrl = new URL(document.location.toString());
     const searchParams = new URLSearchParams(newUrl.search);
 
@@ -20,14 +18,21 @@ export function useQueryFromUrl(): [string, (newQuery: string) => void] {
     history.pushState(null, '', newUrl.toString());
   }, []);
 
-  const onPopState = useCallback(() => {
+  const onChangeHistory = useCallback(() => {
     setInternalQuery(parseQueryFromUrl());
   }, []);
 
   useEffect(() => {
-    window.addEventListener('popstate', onPopState);
-    return () => window.removeEventListener('popstate', onPopState);
-  }, [onPopState]);
+    window.addEventListener('popstate', onChangeHistory);
+    window.addEventListener('pushstate', onChangeHistory);
+    window.addEventListener('replacestate', onChangeHistory);
+
+    return () => {
+      window.removeEventListener('replacestate', onChangeHistory);
+      window.removeEventListener('pushstate', onChangeHistory);
+      window.removeEventListener('popstate', onChangeHistory);
+    };
+  }, [onChangeHistory]);
 
   return [query, setQuery];
 }

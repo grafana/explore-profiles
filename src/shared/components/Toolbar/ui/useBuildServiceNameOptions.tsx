@@ -1,12 +1,30 @@
 import { SelectableValue } from '@grafana/data';
-import { useContext, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { PyroscopeStateContext } from '../../../../app/domain/PyroscopeState/context';
+// TODO: move useQueryFromUrl.ts to shared/domain
+import { useQueryFromUrl } from '../../../../pages/SingleView/domain/useQueryFromUrl';
 import { userStorage } from '../../../infrastructure/userStorage';
 import { Services } from '../infrastructure/useFetchServices';
+import { useProfileTypeFromQuery } from './useBuildProfileTypeOptions';
+
+export function useServiceFromQuery(): [string, (newService: string) => void] {
+  const [query, setQuery] = useQueryFromUrl();
+  const [, service = ''] = query.match(/.+\{service_name="(.+)"\}/) || [];
+
+  const setService = useCallback(
+    (newService: string) => {
+      const newQuery = query.replace(`service_name="${service}"`, `service_name="${newService}"`);
+      setQuery(newQuery);
+    },
+    [query, service, setQuery]
+  );
+
+  return [service, setService];
+}
 
 export function useBuildServiceNameOptions(services: Services) {
-  const { selectedServiceName, setSelectedServiceName } = useContext(PyroscopeStateContext);
+  const [selectedService, setService] = useServiceFromQuery();
+  const [, setProfileType] = useProfileTypeFromQuery();
 
   const serviceNameOptions: Array<SelectableValue<string>> = useMemo(
     () =>
@@ -22,11 +40,15 @@ export function useBuildServiceNameOptions(services: Services) {
 
   return {
     serviceNameOptions,
-    selectedServiceName,
-    selectServiceName(selection: SelectableValue<string>) {
-      const serviceName = selection.value || '';
-      setSelectedServiceName(serviceName);
-      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: serviceName }).catch(() => {}); // fire & forget
+    selectedService: selectedService || serviceNameOptions[0]?.value,
+    setService(option: SelectableValue<string>) {
+      const newService = option.value || '';
+      setService(newService);
+
+      const newProfileTypes = Array.from(services.get(newService)?.values() || []);
+      setProfileType(newProfileTypes[0].id);
+
+      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: newService }).catch(() => {}); // fire & forget
     },
   };
 }

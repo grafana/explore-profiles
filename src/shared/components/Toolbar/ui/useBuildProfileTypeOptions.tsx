@@ -1,10 +1,12 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-import React, { useContext, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { PyroscopeStateContext } from '../../../../app/domain/PyroscopeState/context';
+// TODO: move useQueryFromUrl.ts to shared/domain
+import { useQueryFromUrl } from '../../../../pages/SingleView/domain/useQueryFromUrl';
 import { Services } from '../infrastructure/useFetchServices';
+import { useServiceFromQuery } from './useBuildServiceNameOptions';
 
 const getStyles = (theme: GrafanaTheme2) => {
   return {
@@ -15,14 +17,29 @@ const getStyles = (theme: GrafanaTheme2) => {
   };
 };
 
-export function useBuildProfileTypeOptions(services: Services) {
-  const styles: ReturnType<typeof getStyles> = useStyles2(getStyles);
+export function useProfileTypeFromQuery(): [string, (newProfileType: string) => void] {
+  const [query, setQuery] = useQueryFromUrl();
+  const [, profileType] = query.match(/([^{]+)\{.*}/) || [];
 
-  const { selectedServiceName } = useContext(PyroscopeStateContext);
-  const { selectedProfileType, setSelectedProfileType } = useContext(PyroscopeStateContext);
+  const setProfileType = useCallback(
+    (newProfileType: string) => {
+      const newQuery = query.replace(profileType, newProfileType);
+      setQuery(newQuery);
+    },
+    [profileType, query, setQuery]
+  );
+
+  return [profileType, setProfileType];
+}
+
+export function useBuildProfileTypeOptions(services: Services) {
+  const styles = useStyles2(getStyles);
+
+  const [selectedService] = useServiceFromQuery();
+  const [selectedProfileType, setProfileType] = useProfileTypeFromQuery();
 
   const profileTypeOptions: Array<SelectableValue<string>> = useMemo(() => {
-    const profileMetrics = selectedServiceName ? Array.from(services.get(selectedServiceName)?.values() || []) : [];
+    const profileMetrics = selectedService ? Array.from(services.get(selectedService)?.values() || []) : [];
 
     return profileMetrics
       .sort((a, b) => a.type.localeCompare(b.type))
@@ -37,13 +54,13 @@ export function useBuildProfileTypeOptions(services: Services) {
         ) as unknown as string,
         imgUrl: 'public/plugins/grafana-pyroscope-app/img/logo.svg',
       }));
-  }, [selectedServiceName, services, styles.profileName]);
+  }, [selectedService, services, styles.profileName]);
 
   return {
     profileTypeOptions,
-    selectedProfileType,
-    selectProfileType(selection: SelectableValue<string>) {
-      setSelectedProfileType(selection.value || '');
+    selectedProfileType: selectedProfileType || profileTypeOptions[0]?.value,
+    setProfileType(option: SelectableValue<string>) {
+      setProfileType(option.value || '');
     },
   };
 }
