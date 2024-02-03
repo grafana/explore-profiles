@@ -1,9 +1,10 @@
 import LoadingSpinner from 'grafana-pyroscope/public/app/ui/LoadingSpinner';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { AiPanelError } from '../../../pages/ai/shared/AiPanelError';
 import { AiPanelFollowUpForm } from '../../../pages/ai/shared/AiPanelFollowUpForm';
 import { AiPanelReply } from '../../../pages/ai/shared/AiPanelReply';
+import { SuggestionPromptInputs } from '../../../pages/ai/shared/hooks/buildLlmPrompts';
 import { LlmReply, useLlmSuggestions } from '../../../pages/ai/shared/hooks/useLlm';
 import { CodeInfo } from './CodeContainer';
 
@@ -12,9 +13,12 @@ type SuggestionsContainerProps = {
 };
 
 export const SuggestionsContainer = ({ codeInfo }: SuggestionsContainerProps) => {
-  const { loading, error, reply } = useLlmSuggestions({
-    codeInfo: codeInfo,
-  });
+  const promptInputs: SuggestionPromptInputs = useMemo(() => {
+    return {
+      codeInfo,
+    };
+  }, [codeInfo]);
+  const { loading, error, reply } = useLlmSuggestions(promptInputs);
 
   const displayReply = Boolean(reply?.hasStarted || reply?.hasFinished);
   const displayFollowUpForm = !error && Boolean(reply?.hasFinished);
