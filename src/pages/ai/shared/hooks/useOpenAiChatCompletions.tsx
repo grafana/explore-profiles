@@ -2,8 +2,7 @@ import { llms } from '@grafana/experimental';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { finalize } from 'rxjs';
 
-import { buildExplainerPrompts, buildSuggestionPrompts, model } from './buildLlmPrompts';
-import { SuggestionPromptInputs } from './buildLlmPrompts';
+import { buildExplainerPrompts, buildSuggestionPrompts, model, SuggestionPromptInputs } from './buildLlmPrompts';
 
 // taken from "@grafana/experimental"
 export type Role = 'system' | 'user' | 'assistant' | 'function';
@@ -172,7 +171,7 @@ export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInp
       return;
     }
     sendMessages();
-  }, [messages, setMessages, sendMessages]);
+  }, [messages, setMessages, sendMessages, suggestionPromptInputs]);
 
   return {
     text: reply,

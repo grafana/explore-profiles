@@ -106,7 +106,7 @@ export function SingleView() {
           </Panel>
         )}
 
-        {showSuggestions && (
+        {data.codeInfo && showSuggestions && (
           <Panel
             isLoading={false}
             className={styles.codeContainer}
