@@ -1,8 +1,8 @@
 import { ProfileMetricId } from '../../../../shared/infrastructure/profile-metrics/getProfileMetric';
 import { useGetProfileMetricById } from '../../../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+import { SuggestionPromptInputs } from './buildLlmPrompts';
 import { useFetchDotProfile } from './useFetchDotProfile';
 import { Message, useOpenAiExplainer, useOpenAiSuggestions } from './useOpenAiChatCompletions';
-import { SuggestionPromptInputs } from './buildLlmPrompts';
 
 export type LlmReply = {
   text: string;
@@ -94,17 +94,16 @@ export function useLlmExplainer(
   return response;
 }
 
-const profile = {value: 'test'};
-
 // TODO(@petethepig): this is largely same function as useLlmExplainer, maybe we should merge them somehow
 export function useLlmSuggestions(suggestionPromptInputs: SuggestionPromptInputs): UseLlmResponse {
-
   // TODO: maybe add this back in
   // const {
   //   error: dotError,
   //   loading: dotLoading,
   //   value: dotValue,
   // } = useFetchDotProfile(query, from, until, rightQuery, rightFrom, rightUntil);
+
+  const reply = useOpenAiSuggestions(suggestionPromptInputs);
 
   if (!suggestionPromptInputs.codeInfo || !suggestionPromptInputs.codeInfo.functionName) {
     return {
@@ -113,8 +112,6 @@ export function useLlmSuggestions(suggestionPromptInputs: SuggestionPromptInputs
       reply: null,
     };
   }
-
-  const reply = useOpenAiSuggestions(suggestionPromptInputs);
 
   const response = {
     error: null,

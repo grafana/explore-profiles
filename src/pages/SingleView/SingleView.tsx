@@ -13,9 +13,9 @@ import { displayError } from '../../shared/domain/displayError';
 import { formatAsOBject } from '../../shared/domain/formatDate';
 import { useSingleView } from './domain/useSingleView';
 import { CodeContainer } from './ui/CodeContainer';
-import { SuggestionsContainer } from './ui/SuggestionsContainer';
 import { ErrorMessage } from './ui/ErrorMessage';
 import { PageTitle } from './ui/PageTitle';
+import { SuggestionsContainer } from './ui/SuggestionsContainer';
 import { Timeline } from './ui/Timeline';
 
 const getStyles = () => ({
@@ -100,9 +100,12 @@ export function SingleView() {
               <IconButton name="times-circle" variant="secondary" aria-label="close" onClick={actions.closeCodePanel} />
             }
           >
-            <CodeContainer codeInfo={data.codeInfo} onSuggestionsClick={function(){
-              setShowSuggestions(true);
-            }} />
+            <CodeContainer
+              codeInfo={data.codeInfo}
+              onSuggestionsClick={function () {
+                setShowSuggestions(true);
+              }}
+            />
           </Panel>
         )}
 
@@ -115,7 +118,7 @@ export function SingleView() {
               <IconButton name="times-circle" variant="secondary" aria-label="close" onClick={actions.closeCodePanel} />
             }
           >
-            <SuggestionsContainer codeInfo={data.codeInfo}  />
+            <SuggestionsContainer codeInfo={data.codeInfo} />
           </Panel>
         )}
       </div>

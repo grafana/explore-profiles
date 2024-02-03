@@ -1,4 +1,3 @@
-import { i } from '@tanstack/query-core/build/legacy/queryClient-aPcvMwE9';
 import { CodeInfo } from '../../../../pages/SingleView/ui/CodeContainer';
 
 /* https://platform.openai.com/docs/models/overview */
@@ -120,7 +119,7 @@ export const buildExplainerPrompts = ({
 export type SuggestionPromptInputs = {
   codeInfo: CodeInfo;
   dotProfile?: string;
-}
+};
 
 // I will give you a profile in DOT format, and
 // Profile in DOT format:
@@ -132,9 +131,9 @@ export type SuggestionPromptInputs = {
 
 export const buildSuggestionPrompts = ({
   codeInfo,
-  // dotProfile,
-}: SuggestionPromptInputs) => {
-  const userPrompt =`
+}: // dotProfile,
+SuggestionPromptInputs) => {
+  const userPrompt = `
 You are a code optimization expert. I will give you code, each line annotated with amount of time spent on a particular line (it's in the beginning of each line), and a function name.
 
 I want you to write back a new improved code for this function and explain why you made changes.
@@ -151,9 +150,9 @@ Annotated code is below:
 \`\`\`
 ${codeInfoToAnnotatedCode(codeInfo)}
 \`\`\`
-`
+`;
 
-console.log(`prompt: ${userPrompt}`);
+  console.log(`prompt: ${userPrompt}`);
   return {
     system: ``,
     user: userPrompt,
@@ -161,9 +160,11 @@ console.log(`prompt: ${userPrompt}`);
 };
 
 function codeInfoToAnnotatedCode(codeInfo: CodeInfo): string {
-  let code = codeInfo.code.lines.map((line) => {
-    return `(${line.cum} ${codeInfo.code.unit}) ${line.line}`;
-  }).join("\n");
+  let code = codeInfo.code.lines
+    .map((line) => {
+      return `(${line.cum} ${codeInfo.code.unit}) ${line.line}`;
+    })
+    .join('\n');
 
   return code;
 }

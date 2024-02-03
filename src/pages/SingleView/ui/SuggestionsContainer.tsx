@@ -1,12 +1,10 @@
+import LoadingSpinner from 'grafana-pyroscope/public/app/ui/LoadingSpinner';
 import React, { useCallback } from 'react';
 
 import { AiPanelError } from '../../../pages/ai/shared/AiPanelError';
 import { AiPanelFollowUpForm } from '../../../pages/ai/shared/AiPanelFollowUpForm';
 import { AiPanelReply } from '../../../pages/ai/shared/AiPanelReply';
 import { LlmReply, useLlmSuggestions } from '../../../pages/ai/shared/hooks/useLlm';
-
-import LoadingSpinner from 'grafana-pyroscope/public/app/ui/LoadingSpinner';
-
 import { CodeInfo } from './CodeContainer';
 
 type SuggestionsContainerProps = {
@@ -14,7 +12,6 @@ type SuggestionsContainerProps = {
 };
 
 export const SuggestionsContainer = ({ codeInfo }: SuggestionsContainerProps) => {
-
   const { loading, error, reply } = useLlmSuggestions({
     codeInfo: codeInfo,
   });

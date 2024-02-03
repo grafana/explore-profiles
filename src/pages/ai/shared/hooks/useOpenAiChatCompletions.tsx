@@ -149,6 +149,9 @@ export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInp
   );
 
   useEffect(() => {
+    if (!suggestionPromptInputs) {
+      return;
+    }
     // TODO(@petethepig): this is a stub, we should replace it with real data
     const prompts = buildSuggestionPrompts(suggestionPromptInputs);
     if (messages.length === 0) {
@@ -181,4 +184,3 @@ export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInp
     messages: messages,
   };
 }
-

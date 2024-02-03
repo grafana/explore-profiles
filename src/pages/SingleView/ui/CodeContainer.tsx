@@ -1,4 +1,4 @@
-import { InlineLabel, LinkButton, Button } from '@grafana/ui';
+import { Button, InlineLabel, LinkButton } from '@grafana/ui';
 import React from 'react';
 
 import { Code, CodeProps } from './Code';
@@ -92,7 +92,13 @@ export const CodeContainer = ({ codeInfo, onSuggestionsClick }: CodeContainerPro
           View on GitHub
         </LinkButton>
         &nbsp;
-        <Button onClick={()=>{ onSuggestionsClick(); }} icon={'ai'} variant={'primary'}>
+        <Button
+          onClick={() => {
+            onSuggestionsClick();
+          }}
+          icon={'ai'}
+          variant={'primary'}
+        >
           Suggest optimizations
         </Button>
       </div>
