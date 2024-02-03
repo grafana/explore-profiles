@@ -1,7 +1,8 @@
 import { ProfileMetricId } from '../../../../shared/infrastructure/profile-metrics/getProfileMetric';
 import { useGetProfileMetricById } from '../../../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
 import { useFetchDotProfile } from './useFetchDotProfile';
-import { Message, useOpenAiChatCompletions } from './useOpenAiChatCompletions';
+import { Message, useOpenAiExplainer, useOpenAiSuggestions } from './useOpenAiChatCompletions';
+import { SuggestionPromptInputs } from './buildLlmPrompts';
 
 export type LlmReply = {
   text: string;
@@ -39,7 +40,7 @@ function stubReply() {
   };
 }
 
-export function useLlm(
+export function useLlmExplainer(
   query: string,
   from: string,
   until: string,
@@ -61,7 +62,7 @@ export function useLlm(
 
   const rawProfileType = query.split('{')[0];
   const profileData = useGetProfileMetricById(rawProfileType as ProfileMetricId);
-  const reply = useOpenAiChatCompletions(profileValue, profileData.data?.type || 'cpu');
+  const reply = useOpenAiExplainer(profileValue, profileData.data?.type || 'cpu');
 
   if (profileError) {
     console.error('Error while fetching DOT profile!');
@@ -89,6 +90,37 @@ export function useLlm(
   };
 
   console.log('*** useLlm reply', response);
+
+  return response;
+}
+
+const profile = {value: 'test'};
+
+// TODO(@petethepig): this is largely same function as useLlmExplainer, maybe we should merge them somehow
+export function useLlmSuggestions(suggestionPromptInputs: SuggestionPromptInputs): UseLlmResponse {
+
+  // TODO: maybe add this back in
+  // const {
+  //   error: dotError,
+  //   loading: dotLoading,
+  //   value: dotValue,
+  // } = useFetchDotProfile(query, from, until, rightQuery, rightFrom, rightUntil);
+
+  if (!suggestionPromptInputs.codeInfo || !suggestionPromptInputs.codeInfo.functionName) {
+    return {
+      loading: true,
+      error: null,
+      reply: null,
+    };
+  }
+
+  const reply = useOpenAiSuggestions(suggestionPromptInputs);
+
+  const response = {
+    error: null,
+    loading: !reply.text.trim(),
+    reply,
+  };
 
   return response;
 }

@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import { PageLayoutType } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
 import { IconButton, useStyles2 } from '@grafana/ui';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { FlameGraph } from '../../shared/components/FlameGraph/FlameGraph';
 import { Panel } from '../../shared/components/Panel';
@@ -13,6 +13,7 @@ import { displayError } from '../../shared/domain/displayError';
 import { formatAsOBject } from '../../shared/domain/formatDate';
 import { useSingleView } from './domain/useSingleView';
 import { CodeContainer } from './ui/CodeContainer';
+import { SuggestionsContainer } from './ui/SuggestionsContainer';
 import { ErrorMessage } from './ui/ErrorMessage';
 import { PageTitle } from './ui/PageTitle';
 import { Timeline } from './ui/Timeline';
@@ -46,6 +47,8 @@ export function SingleView() {
       'Some features might not work as expected (e.g. max nodes). Please try to reload the page, sorry for the inconvenience.',
     ]);
   }
+
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   return (
     <PluginPage layout={PageLayoutType.Custom}>
@@ -97,7 +100,22 @@ export function SingleView() {
               <IconButton name="times-circle" variant="secondary" aria-label="close" onClick={actions.closeCodePanel} />
             }
           >
-            <CodeContainer codeInfo={data.codeInfo} />
+            <CodeContainer codeInfo={data.codeInfo} onSuggestionsClick={function(){
+              setShowSuggestions(true);
+            }} />
+          </Panel>
+        )}
+
+        {showSuggestions && (
+          <Panel
+            isLoading={false}
+            className={styles.codeContainer}
+            title="Optimization Assistant"
+            headerActions={
+              <IconButton name="times-circle" variant="secondary" aria-label="close" onClick={actions.closeCodePanel} />
+            }
+          >
+            <SuggestionsContainer codeInfo={data.codeInfo}  />
           </Panel>
         )}
       </div>

@@ -8,7 +8,7 @@ import { AiPanelError } from './AiPanelError';
 import { AiPanelFollowUpForm } from './AiPanelFollowUpForm';
 import { AiPanelHeader } from './AiPanelHeader';
 import { AiPanelReply } from './AiPanelReply';
-import { LlmReply, useLlm } from './hooks/useLlm';
+import { LlmReply, useLlmExplainer } from './hooks/useLlm';
 
 type AiPanelProps = {
   query: string;
@@ -40,7 +40,7 @@ export const getStyles = (theme: GrafanaTheme2) => ({
 export default function AiPanel({ query, from, until, rightQuery, rightFrom, rightUntil, onClickClose }: AiPanelProps) {
   const styles = useStyles2(getStyles);
 
-  const { loading, error, reply } = useLlm(query, from, until, rightQuery, rightFrom, rightUntil);
+  const { loading, error, reply } = useLlmExplainer(query, from, until, rightQuery, rightFrom, rightUntil);
 
   const displayReply = Boolean(reply?.hasStarted || reply?.hasFinished);
 

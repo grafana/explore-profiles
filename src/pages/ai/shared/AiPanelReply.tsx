@@ -7,6 +7,7 @@ import React, { ReactNode } from 'react';
 import { Message } from './hooks/useOpenAiChatCompletions';
 
 type AiPanelReplyProps = {
+  noHighlight?: boolean;
   reply: {
     text: string;
     hasStarted: boolean;
@@ -83,8 +84,10 @@ const SearchTerm = ({ children }: { children: ReactNode }) => {
 
 const markdownOptions = { overrides: { code: { component: SearchTerm } } };
 
-export function AiPanelReply({ reply }: AiPanelReplyProps) {
+export function AiPanelReply({ noHighlight, reply }: AiPanelReplyProps) {
   const styles = useStyles2(getStyles);
+
+  const mdOptions = !noHighlight ? markdownOptions : {};
 
   return (
     <>
@@ -93,13 +96,13 @@ export function AiPanelReply({ reply }: AiPanelReplyProps) {
         .map((message) => (
           <>
             <div className={styles.reply}>
-              <Markdown options={markdownOptions}>{message.content}</Markdown>
+              <Markdown options={mdOptions}>{message.content}</Markdown>
             </div>
             <hr />
           </>
         ))}
       <div className={styles.reply}>
-        <Markdown options={markdownOptions}>{reply.text}</Markdown>
+        <Markdown options={mdOptions}>{reply.text}</Markdown>
       </div>
     </>
   );

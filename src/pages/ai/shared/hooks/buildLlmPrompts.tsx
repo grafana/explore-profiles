@@ -1,3 +1,6 @@
+import { i } from '@tanstack/query-core/build/legacy/queryClient-aPcvMwE9';
+import { CodeInfo } from '../../../../pages/SingleView/ui/CodeContainer';
+
 /* https://platform.openai.com/docs/models/overview */
 
 export const model = 'gpt-4-1106-preview';
@@ -26,15 +29,15 @@ const prompts: Record<PromptCategories, Prompts> = {
     - **Performance Bottleneck**: Identify the primary factors slowing down the process, consuming excessive memory, or causing a bottleneck in the system.
     - **Root Cause**: Explain clearly why these bottlenecks are occurring.
     - **Recommended Fix**: Suggest practical solutions for these issues.
-    
+
     Guidelines:
     - Always use full function names without splitting them from package names.
     - Exclude numeric values, percentages, and node names (e.g., N1, N3, Node 1, Node 2).
     - Focus on user code over low-level runtime optimizations.
     - For standard library or runtime functions, explain their presence/function and link them to user code functions calling them. Avoid repetitive mentions from the same call chain.
-    
+
     Format the response using markdown headers for each section corresponding to the key aspects.
-    
+
     The profile type is: ${profileType}
     Profile in DOT format:
     ${profile}
@@ -77,15 +80,15 @@ Never split function and package name.
 Remove any numeric values, absolute or percents, from the output.
 Remove node names like N1, N3, or Node 1, Node 2 from the output.
 The profile type is ${profileType}
-    
+
     ${profile}
-    
+
     ${profileRight}
 `,
   },
 };
 
-export const buildPrompts = ({
+export const buildExplainerPrompts = ({
   system,
   user,
   profile,
@@ -113,3 +116,54 @@ export const buildPrompts = ({
     user: userPrompt(profile, profileType, profileRight),
   };
 };
+
+export type SuggestionPromptInputs = {
+  codeInfo: CodeInfo;
+  dotProfile?: string;
+}
+
+// I will give you a profile in DOT format, and
+// Profile in DOT format:
+// \`\`\`
+// ${dotProfile}
+// \`\`\`
+
+// Make sure to take the profile into strong consideration. If a suggested performance improvement isn't backed up by information from the profile, do not include it.
+
+export const buildSuggestionPrompts = ({
+  codeInfo,
+  // dotProfile,
+}: SuggestionPromptInputs) => {
+  const userPrompt =`
+You are a code optimization expert. I will give you code, each line annotated with amount of time spent on a particular line (it's in the beginning of each line), and a function name.
+
+I want you to write back a new improved code for this function and explain why you made changes.
+
+Make sure to take annotations into strong consideration. If a suggested performance improvement isn't backed up by information from the annotations, do not include it.
+
+If you can't find any meaningful performance optimizations, say so. Ask for context if you think other context might help make decisions. If you think the problem is with user input and not the actual code itself, say so.
+
+When you output code in markdown, please don't specify language after 3 backticks (e.g instead of saying "\`\`\`go" say "\`\`\`"), and always add a new line after 3 backticks.
+
+Function name is \`${codeInfo.functionName}\`.
+
+Annotated code is below:
+\`\`\`
+${codeInfoToAnnotatedCode(codeInfo)}
+\`\`\`
+`
+
+console.log(`prompt: ${userPrompt}`);
+  return {
+    system: ``,
+    user: userPrompt,
+  };
+};
+
+function codeInfoToAnnotatedCode(codeInfo: CodeInfo): string {
+  let code = codeInfo.code.lines.map((line) => {
+    return `(${line.cum} ${codeInfo.code.unit}) ${line.line}`;
+  }).join("\n");
+
+  return code;
+}

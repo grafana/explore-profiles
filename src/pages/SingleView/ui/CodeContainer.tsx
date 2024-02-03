@@ -1,4 +1,4 @@
-import { InlineLabel, LinkButton } from '@grafana/ui';
+import { InlineLabel, LinkButton, Button } from '@grafana/ui';
 import React from 'react';
 
 import { Code, CodeProps } from './Code';
@@ -14,9 +14,10 @@ export type CodeInfo = {
 
 type CodeContainerProps = {
   codeInfo: CodeInfo;
+  onSuggestionsClick: () => void;
 };
 
-export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
+export const CodeContainer = ({ codeInfo, onSuggestionsClick }: CodeContainerProps) => {
   return (
     <>
       <div
@@ -90,6 +91,10 @@ export const CodeContainer = ({ codeInfo }: CodeContainerProps) => {
         <LinkButton href={codeInfo.link} target="_blank" icon={'github'} variant={'primary'}>
           View on GitHub
         </LinkButton>
+        &nbsp;
+        <Button onClick={()=>{ onSuggestionsClick(); }} icon={'ai'} variant={'primary'}>
+          Suggest optimizations
+        </Button>
       </div>
 
       <Code lines={codeInfo.code.lines} unit={codeInfo.code.unit}></Code>
