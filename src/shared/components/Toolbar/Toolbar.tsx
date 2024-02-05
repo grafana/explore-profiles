@@ -101,7 +101,7 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
   const { setTimeRange, setTimeZone, zoom, navigate } = useTimeRangePicker(timeRange, onChangeTimeRange);
 
   return (
-    <div className={styles.toolbar}>
+    <div className={styles.toolbar} data-testid="toolbar">
       <HorizontalGroup justify="space-between" align="flex-start">
         <InlineFieldRow>
           <InlineField label="Service" data-testid="services-dropdown">
