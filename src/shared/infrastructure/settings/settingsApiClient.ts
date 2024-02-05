@@ -1,4 +1,4 @@
-import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
+import { ApiClient } from '../http/ApiClient';
 
 type ApiResponse = {
   settings: Array<{ name: string; value: string }>;

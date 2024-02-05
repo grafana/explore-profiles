@@ -43,4 +43,8 @@ export class HttpClient {
       this.abortController.abort(reason);
     }
   }
+
+  isAbortError(error: unknown) {
+    return error instanceof DOMException && error.name === 'AbortError';
+  }
 }

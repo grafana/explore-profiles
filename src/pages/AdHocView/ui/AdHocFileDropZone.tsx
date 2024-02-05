@@ -1,15 +1,15 @@
 import { DropzoneFile, FileDropzone } from '@grafana/ui';
 import React, { useCallback } from 'react';
 
+import { displayError } from '../../../shared/domain/displayStatus';
 import { ACCEPTED_FILE_TYPES } from '../domain/accepted-file-types';
-import { reportError } from '../domain/helpers/reportError';
 
 const options = {
   accept: ACCEPTED_FILE_TYPES,
   multiple: false,
   // maxSize: 42, // TODO?
   onError(error: Error) {
-    reportError(['Error while uploading file!', error.toString()], error);
+    displayError(error, ['Error while uploading file!', error.toString()]);
   },
 };
 

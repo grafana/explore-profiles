@@ -28,7 +28,7 @@ import {
   ProfileMetricId,
   useGetProfileMetricByIds,
 } from '../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
-import userStorage from '../../shared/infrastructure/UserStorage';
+import { userStorage } from '../../shared/infrastructure/userStorage';
 
 interface ToolbarProps {
   /** callback to be called when an app is selected via the dropdown */

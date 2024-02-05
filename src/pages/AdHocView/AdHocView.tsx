@@ -4,9 +4,9 @@ import React from 'react';
 
 import { AdHocTabs } from './ui/AdHocTabs';
 
-export default function AdHocView() {
+export function AdHocView() {
   return (
-    <PluginPage layout={PageLayoutType.Custom} renderTitle={() => null}>
+    <PluginPage layout={PageLayoutType.Custom}>
       <AdHocTabs />
     </PluginPage>
   );

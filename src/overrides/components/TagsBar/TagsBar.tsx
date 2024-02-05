@@ -5,19 +5,24 @@ import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
 import React from 'react';
 import 'react-dom';
 
-import { QueryBuilder } from './QueryBuilder/QueryBuilder';
+import { QueryBuilder } from '../../../shared/components/QueryBuilder/QueryBuilder';
 
 export type TagsBarProps = {
   /** the current query */
   query: Query;
-  /** the state with existing tags */
-  tags: TagsState;
-  /** callback for when a label is selected */
-  onSelectedLabel: (label: string, query: Query) => void;
-  /** callback for when a new query is selected */
-  onSetQuery: (q: string) => void;
   /** callback for when the same query is submitted again */
-  onRefresh: () => void;
+  onSetQuery: (q: string) => void;
+
+  /* TODO: deprecate tags, onSelectedLabel and onRefresh once Pyroscope OSS migration is finished */
+  /** the state with existing tags */
+  // @deprecated
+  tags?: TagsState;
+  /** callback for when a label is selected */
+  // @deprecated
+  onSelectedLabel?: (label: string, query: Query) => void;
+  /** callback for when a new query is selected */
+  // @deprecated
+  onRefresh?: () => void;
 };
 
 export default function TagsBar(props: TagsBarProps) {

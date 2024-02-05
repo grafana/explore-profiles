@@ -17,8 +17,6 @@ export enum ROUTES {
   SETTINGS = '/settings',
 }
 
-export const APP_TITLE = 'Profiles';
-
 // Add a navigation item for each route you would like to display in the navigation bar
 export const NAVIGATION: Record<string, NavModelItem> = {
   [ROUTES.EXPLORE_VIEW]: {

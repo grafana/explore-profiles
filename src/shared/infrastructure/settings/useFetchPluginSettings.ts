@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { PluginSettings, settingsApiClient } from './settingsApiClient';
 
 type FetchPluginSettingsResponse = {
-  loading: boolean;
+  isFetching: boolean;
   error: Error | null;
   settings?: PluginSettings;
   mutate: (newSettings: PluginSettings) => Promise<void>;
@@ -20,15 +20,15 @@ async function mutate(newSettings: PluginSettings) {
 }
 
 export function useFetchPluginSettings(): FetchPluginSettingsResponse {
-  const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const [error, setError] = useState(null);
 
-  if (settings || error || loading) {
-    return { settings, error, loading, mutate };
+  if (settings || error || isFetching) {
+    return { settings, error, isFetching, mutate };
   }
 
   setError(null);
-  setLoading(true);
+  setIsFetching(true);
 
   settingsApiClient
     .get()
@@ -39,7 +39,7 @@ export function useFetchPluginSettings(): FetchPluginSettingsResponse {
     .catch((error) => {
       setError(error);
     })
-    .finally(() => setLoading(false));
+    .finally(() => setIsFetching(false));
 
-  return { settings, error, loading, mutate };
+  return { settings, error, isFetching, mutate };
 }

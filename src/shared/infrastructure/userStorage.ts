@@ -29,4 +29,4 @@ class UserStorage {
   }
 }
 
-export default new UserStorage();
+export const userStorage = new UserStorage();
