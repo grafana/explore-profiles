@@ -7,11 +7,10 @@ test.beforeEach(async ({ adHocViewPage }) => {
 });
 
 test.describe('Smoke tests', () => {
-  test('Page title', async ({ adHocViewPage }) => {
+  test('Page title & tabs', async ({ adHocViewPage }) => {
     await expect(adHocViewPage.getTitle()).toHaveText('Ad hoc view');
-  });
 
-  test('Tabs', async ({ adHocViewPage }) => {
+    // tabs
     const acceptedFileTypesList = '.gz, .json, .pb, .pprof';
 
     await adHocViewPage.selectTab('Single view');
