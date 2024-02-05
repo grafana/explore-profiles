@@ -104,7 +104,7 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
     <div className={styles.toolbar}>
       <HorizontalGroup justify="space-between" align="flex-start">
         <InlineFieldRow>
-          <InlineField label="Service">
+          <InlineField label="Service" data-testid="services-dropdown">
             <Select<string>
               options={serviceNameOptions}
               value={selectedService}
@@ -112,7 +112,7 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
               aria-label="Services list"
             />
           </InlineField>
-          <InlineField label="Profile">
+          <InlineField label="Profile" data-testid="profile-types-dropdown">
             <Select<string>
               options={profileTypeOptions}
               value={selectedProfileType}
