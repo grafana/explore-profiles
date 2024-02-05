@@ -4,6 +4,10 @@ test.beforeEach(async ({ settingsPage }) => {
   await settingsPage.goto();
 });
 
+test.afterEach(async ({ settingsPage }) => {
+  await settingsPage.resetTestSettings();
+});
+
 test.describe('Plugin Settings', () => {
   // prevents unwanted settings modifications while running multiple tests in parallel
   test.describe.configure({ mode: 'serial' });

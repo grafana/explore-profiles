@@ -38,5 +38,5 @@ export default config({
   reporter: [['list'], ['html', { outputFolder: '../test-reports', open: 'never' }], ['github']],
   retries: 1,
   forbidOnly: true,
-  workers: 1,
+  workers: 2,
 });

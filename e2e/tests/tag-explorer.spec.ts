@@ -5,12 +5,11 @@ test.beforeEach(async ({ tagExplorerPage }) => {
 });
 
 test.describe('Smoke tests', () => {
-  test('Page title, spinners, dropdowns', async ({ tagExplorerPage }) => {
+  test('Page title, toolbar, loading indicators', async ({ tagExplorerPage, toolbar }) => {
     await expect(tagExplorerPage.getTitle()).toHaveText('Tag explorer');
+    await tagExplorerPage.assertNoLoadingPanels();
 
-    await tagExplorerPage.assertNoSpinners();
-
-    await expect(tagExplorerPage.getServicesList()).toBeVisible();
-    await expect(tagExplorerPage.getProfilesList()).toBeVisible();
+    await toolbar.assertVisible();
+    await toolbar.assertNoSpinners();
   });
 });

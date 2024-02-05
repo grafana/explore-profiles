@@ -18,6 +18,10 @@ export class PyroscopePage {
     await this.page.locator('.pyroscope-app').waitFor();
   }
 
+  locator(selector: string, options?: Record<string, unknown>) {
+    return this.page.locator(selector, options);
+  }
+
   getByText(text, options?: Record<string, unknown>) {
     return this.page.getByText(text, options);
   }
@@ -34,32 +38,14 @@ export class PyroscopePage {
     return this.page.getByTestId('page-title');
   }
 
-  getRefreshSpinners() {
-    return this.page.getByTestId('data-testid RefreshPicker run button').locator('i.fa-spinner');
-  }
-
-  getMainSpinner() {
-    return this.page.locator('.pyroscope-app').getByText('Loading').first();
-  }
-
-  getServicesList() {
-    return this.page.getByLabel('Services list');
-  }
-
-  getProfilesList() {
-    return this.page.getByLabel('Profiles list');
-  }
-
-  async assertNoSpinners() {
+  async assertNoLoadingPanels() {
     const slowExpect = expect.configure({ timeout: 10000 });
 
-    await slowExpect(this.getMainSpinner()).not.toBeVisible();
+    const loadingPanels = this.page.getByLabel('Panel loading bar');
+    const loadingPanelsCount = await loadingPanels.count();
 
-    const refreshSpinners = this.getRefreshSpinners();
-    const spinnersCount = await refreshSpinners.count();
-
-    for (let i = 0; i < spinnersCount; i += 1) {
-      await slowExpect(refreshSpinners.nth(i)).not.toBeVisible();
+    for (let i = 0; i < loadingPanelsCount; i += 1) {
+      await slowExpect(loadingPanels.nth(i)).not.toBeVisible();
     }
   }
 
