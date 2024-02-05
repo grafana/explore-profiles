@@ -4,15 +4,13 @@ test.beforeEach(async ({ comparisonDiffViewPage }) => {
   await comparisonDiffViewPage.goto();
 });
 
-// TODO: https://playwright.dev/docs/test-annotations#tag-tests
 test.describe('Smoke tests', () => {
-  test('Page title, spinners, dropdowns, panels', async ({ comparisonDiffViewPage }) => {
+  test('Page title, toolbar, loading indicators, panels', async ({ comparisonDiffViewPage, toolbar }) => {
     await expect(comparisonDiffViewPage.getTitle()).toHaveText('Comparison diff view');
+    await comparisonDiffViewPage.assertNoLoadingPanels();
 
-    await comparisonDiffViewPage.assertNoSpinners();
-
-    await expect(comparisonDiffViewPage.getServicesList()).toBeVisible();
-    await expect(comparisonDiffViewPage.getProfilesList()).toBeVisible();
+    await toolbar.assertVisible();
+    await toolbar.assertNoSpinners();
 
     await expect(comparisonDiffViewPage.getBaselinePanel()).toContainText('Baseline time range');
     await expect(comparisonDiffViewPage.getComparisonPanel()).toContainText('Comparison time range');

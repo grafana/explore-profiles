@@ -1,20 +1,21 @@
 import { expect, test } from '../fixtures';
 
 test.describe('Regression bugs', () => {
-  test('Tag Explorer page with infinite spinners (#179)', async ({ singleViewPage, tagExplorerPage }) => {
+  test('Tag Explorer page with infinite spinners (#179)', async ({ singleViewPage, tagExplorerPage, toolbar }) => {
     await singleViewPage.goto();
 
-    await singleViewPage.assertNoSpinners();
+    await singleViewPage.assertNoLoadingPanels();
+    await toolbar.assertNoSpinners();
 
     await singleViewPage.clickOnNavLink('Tab Tag Explorer');
 
-    await tagExplorerPage.assertNoSpinners();
+    await tagExplorerPage.assertNoLoadingPanels();
+    await toolbar.assertNoSpinners();
   });
 
   test('Navigating to dashboard after Profiles and changing timerange', async ({ singleViewPage, page }) => {
     await singleViewPage.goto(''); // empty query params
-
-    await singleViewPage.assertNoSpinners();
+    await singleViewPage.assertNoLoadingPanels();
 
     await page.getByLabel('Toggle menu').click();
     await page.getByText('Dashboards').click();

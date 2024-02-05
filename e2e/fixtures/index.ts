@@ -1,6 +1,7 @@
 import { test as base, expect } from '@playwright/test';
 
 import { DEFAULT_URL_PARAMS } from '../config/constants';
+import { Toolbar } from './components/Toolbar';
 import { AdHocViewPage } from './pages/AdHocViewPage';
 import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
 import { ComparisonViewPage } from './pages/ComparisonViewPage';
@@ -9,6 +10,7 @@ import { SingleViewPage } from './pages/SingleViewPage';
 import { TagExplorerPage } from './pages/TagExplorerPage';
 
 type Fixtures = {
+  toolbar: Toolbar;
   tagExplorerPage: TagExplorerPage;
   singleViewPage: SingleViewPage;
   comparisonViewPage: ComparisonViewPage;
@@ -40,6 +42,9 @@ const withExceptionsAssertion = async ({ page, failOnUncaughtExceptions, use }, 
 export const test = base.extend<Options & Fixtures>({
   // fixture option accessible in every test case or fixture (default value = false)
   failOnUncaughtExceptions: [false, { option: true }],
+  toolbar: async ({ page }, use) => {
+    await use(new Toolbar(page));
+  },
   tagExplorerPage: async ({ page, failOnUncaughtExceptions }, use) => {
     await withExceptionsAssertion(
       { page, failOnUncaughtExceptions, use },

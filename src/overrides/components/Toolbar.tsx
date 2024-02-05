@@ -277,11 +277,11 @@ export default function Toolbar({}: ToolbarProps) {
 
   /** Component */
   return (
-    <div className={styles.toolbar}>
+    <div className={styles.toolbar} data-testid="toolbar">
       <HorizontalGroup justify="space-between" align="flex-start">
         {/* App Selection */}
         <InlineFieldRow>
-          <InlineField label="Service">
+          <InlineField label="Service" data-testid="services-dropdown">
             <Select<string>
               value={selectedServiceName}
               options={serviceNameOptions}
@@ -289,7 +289,7 @@ export default function Toolbar({}: ToolbarProps) {
               aria-label="Services list"
             />
           </InlineField>
-          <InlineField label="Profile">
+          <InlineField label="Profile" data-testid="profile-types-dropdown">
             <Select<string>
               value={selectedProfileType}
               options={profileTypeOptions}
