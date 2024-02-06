@@ -20,7 +20,6 @@ import {
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
 import React, { useCallback, useContext, useMemo } from 'react';
-import 'react-dom';
 import { useLocation } from 'react-router-dom';
 
 import { PyroscopeStateContext } from '../../app/domain/PyroscopeState/context';

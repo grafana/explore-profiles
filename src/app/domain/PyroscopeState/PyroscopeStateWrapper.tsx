@@ -11,7 +11,6 @@ import {
 } from '@pyroscope/redux/reducers/continuous';
 import { appFromQuery, appToQuery } from 'grafana-pyroscope/public/app/models/app';
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
-import 'react-dom';
 
 import {
   translateGrafanaTimeRangeToPyroscope,

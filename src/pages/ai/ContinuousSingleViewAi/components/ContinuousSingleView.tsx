@@ -26,7 +26,6 @@ import {
 } from '@pyroscope/redux/reducers/continuous';
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
 import React, { useEffect } from 'react';
-import 'react-dom';
 
 import { addQueryToPageTitle } from '../../../../shared/domain/addQueryToPageTitle';
 import { isLoadingOrReloading } from '../../../../shared/domain/loading';

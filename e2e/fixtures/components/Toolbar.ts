@@ -39,6 +39,18 @@ export class Toolbar {
     return this.get().getByTestId('data-testid TimePicker Open Button');
   }
 
+  async zoomOutTimeRange() {
+    await this.get().getByLabel('Zoom out time range').click();
+  }
+
+  async moveTimeRangeBackwards() {
+    await this.get().getByLabel('Move time range backwards').click();
+  }
+
+  async moveTimeRangeForwards() {
+    await this.get().getByLabel('Move time range forwards').click();
+  }
+
   async assertNoSpinners() {
     const slowExpect = expect.configure({ timeout: 10000 });
 

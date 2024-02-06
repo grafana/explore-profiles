@@ -2,7 +2,6 @@ import { useAppSelector } from '@pyroscope/redux/hooks';
 import { selectContinuousState, TagsState } from '@pyroscope/redux/reducers/continuous';
 import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
 import React from 'react';
-import 'react-dom';
 
 import { QueryBuilder } from '../../../shared/components/QueryBuilder/QueryBuilder';
 
