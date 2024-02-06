@@ -26,7 +26,6 @@ import {
 } from '@pyroscope/redux/reducers/continuous';
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
 import React, { useEffect } from 'react';
-import 'react-dom';
 
 import { createTooltip } from '../../../../shared/ui/createTooltip';
 import { formatTitle } from '../../../../shared/ui/formatTitle';
