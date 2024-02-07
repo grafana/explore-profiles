@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2, TimeRange } from '@grafana/data';
+import { GrafanaTheme2 } from '@grafana/data';
 import {
   HorizontalGroup,
   InlineField,
@@ -9,16 +9,11 @@ import {
   TimeRangePicker,
   useStyles2,
 } from '@grafana/ui';
-import React, { useCallback } from 'react';
-import 'react-dom';
+import React from 'react';
 
-import { translateGrafanaTimeRangeToPyroscope, translatePyroscopeTimeRangeToGrafana } from '../../domain/translation';
-import { TimeRange as TimeRangeType } from '../../types/TimeRange';
-import { useFetchServices } from './infrastructure/useFetchServices';
-import { useBuildProfileTypeOptions } from './ui/useBuildProfileTypeOptions';
-import { useBuildServiceNameOptions } from './ui/useBuildServiceNameOptions';
+import { useToolbar } from './domain/useToolbar';
 
-export const getStyles = (theme: GrafanaTheme2) => {
+const getStyles = (theme: GrafanaTheme2) => {
   return {
     toolbar: css`
       margin-bottom: ${theme.spacing(1)};
@@ -26,79 +21,14 @@ export const getStyles = (theme: GrafanaTheme2) => {
   };
 };
 
-function useTimeRangePicker(
-  pyroscopeTimeRange: TimeRangeType,
-  onChangeTimerangePicker: ToolbarProps['onChangeTimeRange']
-) {
-  const timeRange = translatePyroscopeTimeRangeToGrafana(pyroscopeTimeRange.from, pyroscopeTimeRange.until);
-
-  const setTimeRange = useCallback(
-    (newTimeRange: TimeRange) => {
-      const { from, until } = translateGrafanaTimeRangeToPyroscope(newTimeRange);
-      // TODO: FIXME by ensuring that we always have the same time range format flowing in the app (Grafana's)
-      const newFrom = Number.isNaN(Number(from)) ? from : String(Number(from) * 1000);
-      const newUntil = Number.isNaN(Number(until)) ? until : String(Number(until) * 1000);
-      onChangeTimerangePicker(newFrom, newUntil);
-    },
-    [onChangeTimerangePicker]
-  );
-
-  const zoom = useCallback(() => {
-    const { from, to } = timeRange;
-    const halfDiff = to.diff(from) / 2;
-
-    // These are mutable...
-    from.subtract(halfDiff);
-    to.add(halfDiff);
-
-    setTimeRange({ from, to, raw: { from, to } });
-  }, [timeRange, setTimeRange]);
-
-  const navigate = useCallback(
-    (forward = true) => {
-      const { from, to } = timeRange;
-      const multiplier = forward ? +1 : -1;
-      const halfDiff = (to.diff(from) / 2) * multiplier;
-
-      // These are mutable...
-      from.add(halfDiff);
-      to.add(halfDiff);
-
-      setTimeRange({ from, to, raw: { from, to } });
-    },
-    [timeRange, setTimeRange]
-  );
-
-  return {
-    timeRange,
-    setTimeRange,
-    setTimeZone() {}, // no op
-    zoom,
-    navigate,
-  };
-}
-
 type ToolbarProps = {
   isLoading: boolean;
-  timeRange: TimeRangeType;
   onRefresh: () => void;
-  onChangeTimeRange: (from: string, until: string) => void;
 };
 
-export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: ToolbarProps) {
+export function Toolbar({ isLoading, onRefresh }: ToolbarProps) {
   const styles = useStyles2(getStyles);
-
-  const onRefreshAll = () => {
-    onRefresh();
-  };
-
-  const { services } = useFetchServices(timeRange);
-
-  const { serviceNameOptions, selectedService, setService } = useBuildServiceNameOptions(services);
-  const { profileTypeOptions, selectedProfileType, setProfileType } = useBuildProfileTypeOptions(services);
-
-  // TODO: setTimeZone, etc.
-  const { setTimeRange, setTimeZone, zoom, navigate } = useTimeRangePicker(timeRange, onChangeTimeRange);
+  const { data, actions } = useToolbar();
 
   return (
     <div className={styles.toolbar} data-testid="toolbar">
@@ -106,38 +36,41 @@ export function Toolbar({ isLoading, timeRange, onRefresh, onChangeTimeRange }: 
         <InlineFieldRow>
           <InlineField label="Service" data-testid="services-dropdown">
             <Select<string>
-              options={serviceNameOptions}
-              value={selectedService}
-              onChange={setService}
+              placeholder={data.servicePlaceHolder}
+              options={data.serviceOptions}
+              value={data.selectedService}
+              onChange={actions.setService}
               aria-label="Services list"
             />
           </InlineField>
+
           <InlineField label="Profile" data-testid="profile-types-dropdown">
             <Select<string>
-              options={profileTypeOptions}
-              value={selectedProfileType}
-              onChange={setProfileType}
+              placeholder={data.profileTypePlaceHolder}
+              options={data.profileTypeOptions}
+              value={data.selectedProfileType}
+              onChange={actions.setProfileType}
               aria-label="Profiles list"
             />
           </InlineField>
         </InlineFieldRow>
-        {/* Time range selection */}
+
         <HorizontalGroup align="flex-start">
           <TimeRangePicker
             isOnCanvas={true}
-            onChange={setTimeRange}
-            // TODO: setTimeZone
-            onChangeTimeZone={setTimeZone}
-            value={translatePyroscopeTimeRangeToGrafana(timeRange.from, timeRange.until)}
-            onZoom={zoom}
-            onMoveBackward={() => navigate(false)}
-            onMoveForward={() => navigate(true)}
+            onChange={actions.setTimeRange}
+            onChangeTimeZone={actions.setTimeZone}
+            value={data.timeRange}
+            onZoom={actions.zoom}
+            onMoveBackward={actions.moveTimeRangeBackward}
+            onMoveForward={actions.moveTimeRangeForward}
           />
+
           <RefreshPicker
             isOnCanvas={true}
             noIntervalPicker={true}
-            onRefresh={onRefreshAll}
-            onIntervalChanged={() => null}
+            onRefresh={onRefresh}
+            onIntervalChanged={actions.setInterval}
             isLoading={isLoading}
             width="36px"
           />

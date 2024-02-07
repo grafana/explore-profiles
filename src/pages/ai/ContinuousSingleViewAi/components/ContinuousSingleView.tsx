@@ -25,11 +25,11 @@ import {
   setQuery,
 } from '@pyroscope/redux/reducers/continuous';
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
+import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
+import { isLoadingOrReloading } from '@shared/domain/loading';
+import { createTooltip } from '@shared/ui/createTooltip';
 import React, { useEffect } from 'react';
 
-import { addQueryToPageTitle } from '../../../../shared/domain/addQueryToPageTitle';
-import { isLoadingOrReloading } from '../../../../shared/domain/loading';
-import { createTooltip } from '../../../../shared/ui/createTooltip';
 import AiPanel from '../../shared/AiPanel';
 import { AskAiButton } from '../../shared/AskAiButton';
 import { useAiPanel } from '../../shared/hooks/useAiPanel';

@@ -21,7 +21,6 @@ import {
   translateGrafanaAbsoluteTimeRangeToPyroscope,
   translatePyroscopeTimeRangeToGrafana,
 } from '@shared/domain/translation';
-import { TimeRange as TimeRangeType } from '@shared/types/TimeRange';
 import Color from 'color';
 import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineChart/centerTimelineData';
 import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
@@ -32,7 +31,8 @@ import { PyroscopeStateContext } from '../../../../app/domain/PyroscopeState/con
 const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
 
 type TimelineChartWrapperProps = ConstructorParameters<typeof PyroscopeTimelineChartWrapper>[0] & {
-  timeRange: TimeRangeType;
+  timeRange: TimeRange;
+  onSelectTimeRange: (newTimeRange: TimeRange) => void;
 };
 
 type Marking = {
@@ -45,8 +45,6 @@ type Marking = {
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function TimelineChartWrapper(props: TimelineChartWrapperProps) {
   const theme = useTheme2();
-
-  const timeRange = translatePyroscopeTimeRangeToGrafana(props.timeRange.from, props.timeRange.until);
 
   const unit = useSelectedProfileUnit();
 
@@ -94,13 +92,15 @@ export function TimelineChartWrapper(props: TimelineChartWrapperProps) {
   }
 
   const onChangeTimeRange = (timeRange: AbsoluteTimeRange) => {
+    // TODO: FIXME - it should be straighforward
     const { from, until } = translateGrafanaAbsoluteTimeRangeToPyroscope(timeRange);
-    props.onSelect(from, until);
+    const grafanaTimeRange = translatePyroscopeTimeRangeToGrafana(from, until);
+    props.onSelectTimeRange(grafanaTimeRange);
   };
 
   const adjustedRange = rangeUtil.convertRawToRange({
-    from: dateTime(floorTenSeconds(timeRange.from.unix() * 1000) - POINT_DISTANCE / 2),
-    to: dateTime(ceilTenSeconds(timeRange.to.unix() * 1000)),
+    from: dateTime(floorTenSeconds(props.timeRange.from.unix() * 1000) - POINT_DISTANCE / 2),
+    to: dateTime(ceilTenSeconds(props.timeRange.to.unix() * 1000)),
   });
 
   return (

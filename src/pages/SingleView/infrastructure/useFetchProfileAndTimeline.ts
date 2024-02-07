@@ -1,7 +1,7 @@
+import { TimeRange } from '@grafana/data';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { Timeline } from '@shared/types/Timeline';
-import { TimeRange } from '@shared/types/TimeRange';
 import { useQuery } from '@tanstack/react-query';
 
 const apiClient = new ApiClient();
@@ -22,12 +22,13 @@ type FetchResponse = {
 };
 
 export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled }: FetchParams): FetchResponse {
-  const { from, until } = timeRange;
+  const from = Number(timeRange.from.unix()) * 1000;
+  const until = Number(timeRange.to.unix()) * 1000;
 
   const searchParams = new URLSearchParams({
     query,
-    from,
-    until,
+    from: String(from),
+    until: String(until),
     aggregation: 'sum',
     format: 'json',
   });
@@ -37,7 +38,7 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
   }
 
   const { isFetching, error, data, refetch } = useQuery({
-    // for UX: keep previous data while fetching -> timeline & profile do not re-render with empty panels
+    // for UX: keep previous data while fetching -> timeline & profile do not re-render with empty panels when refreshing
     placeholderData: (previousData) => previousData,
     enabled,
     queryKey: [query, from, until, maxNodes],

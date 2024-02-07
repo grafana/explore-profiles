@@ -1,15 +1,16 @@
+import { TimeRange } from '@grafana/data';
+import { noOp } from '@shared/domain/noOp';
 import { Timeline as TimelineType } from '@shared/types/Timeline';
-import { TimeRange } from '@shared/types/TimeRange';
 import { useColorMode } from '@shared/ui/useColorMode';
 import React from 'react';
 
-import { useTimeZone } from '../../domain/useTimeZone';
+import { useTimeZone } from './domain/useTimeZone';
 import { TimelineChartWrapper } from './TimelineChartWrapper';
 
 type TimelinePanelProps = {
   timeRange: TimeRange;
   timeline: TimelineType;
-  onSelectTimeRange: (from: string, until: string) => void;
+  onSelectTimeRange: (newTimeRange: TimeRange) => void;
 };
 
 export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePanelProps) {
@@ -33,7 +34,9 @@ export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePan
       timelineA={timelineA}
       timezone={timezone}
       selectionType="single"
-      onSelect={onSelectTimeRange}
+      // TODO: FIXME
+      onSelect={noOp}
+      onSelectTimeRange={onSelectTimeRange}
     />
   );
 }

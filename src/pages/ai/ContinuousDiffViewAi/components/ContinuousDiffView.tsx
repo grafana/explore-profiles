@@ -22,10 +22,10 @@ import {
   selectQueries,
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
+import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
+import { isLoadingOrReloading } from '@shared/domain/loading';
 import React, { useEffect } from 'react';
 
-import { addQueryToPageTitle } from '../../../../shared/domain/addQueryToPageTitle';
-import { isLoadingOrReloading } from '../../../../shared/domain/loading';
 import { getStyles } from '../../ContinuousSingleViewAi/components/ContinuousSingleView';
 import AiPanel from '../../shared/AiPanel';
 import { AskAiButton } from '../../shared/AskAiButton';

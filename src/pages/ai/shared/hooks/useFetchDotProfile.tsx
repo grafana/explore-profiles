@@ -1,10 +1,9 @@
-import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
-import { useAsync } from 'react-use';
-
 import {
   ProfileFormat,
   PyroscopeApiClient,
-} from '../../../../shared/components/QueryBuilder/infrastructure/http/PyroscopeApiClient';
+} from '@shared/components/QueryBuilder/infrastructure/http/PyroscopeApiClient';
+import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
+import { useAsync } from 'react-use';
 
 const pyroscopeApiClient = new PyroscopeApiClient();
 

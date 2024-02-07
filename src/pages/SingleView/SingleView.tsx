@@ -6,7 +6,6 @@ import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
 import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
 import { displayError } from '@shared/domain/displayStatus';
-import { formatAsOBject } from '@shared/domain/formatDate';
 import React from 'react';
 
 import { useSingleView } from './domain/useSingleView';
@@ -28,19 +27,13 @@ export function SingleView() {
     <PluginPage layout={PageLayoutType.Custom}>
       <PageTitle title={addQueryToPageTitle('Single', data.query)} />
 
-      <Toolbar
-        isLoading={data.isLoading}
-        timeRange={data.timeRange}
-        onRefresh={actions.refetch}
-        onChangeTimeRange={actions.setTimeRange}
-      />
+      <Toolbar isLoading={data.isLoading} onRefresh={actions.refetch} />
 
       <QueryBuilder
         id="query-builder-single"
         query={data.query}
-        // every time this component re-renders, we might pass new timerange values ;)
-        from={formatAsOBject(data.timeRange.from).getTime()}
-        until={formatAsOBject(data.timeRange.until).getTime()}
+        from={data.timeRange.from.unix() * 1000}
+        until={data.timeRange.to.unix() * 1000}
         onChangeQuery={actions.setQuery}
       />
 
