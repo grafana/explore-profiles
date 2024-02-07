@@ -1,5 +1,6 @@
-import { useGetProfileMetricByType } from '../../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
-import { useFetchPluginSettings } from '../../../shared/infrastructure/settings/useFetchPluginSettings';
+import { useGetProfileMetricByType } from '@shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
+
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
 import { useQueryFromUrl } from './useQueryFromUrl';
 import { useTimeRangeFromUrl } from './useTimeRangeFromUrl';

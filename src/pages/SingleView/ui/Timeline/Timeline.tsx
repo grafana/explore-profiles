@@ -1,8 +1,8 @@
+import { Timeline as TimelineType } from '@shared/types/Timeline';
+import { TimeRange } from '@shared/types/TimeRange';
+import { useColorMode } from '@shared/ui/useColorMode';
 import React from 'react';
 
-import { Timeline as TimelineType } from '../../../../shared/types/Timeline';
-import { TimeRange } from '../../../../shared/types/TimeRange';
-import { useColorMode } from '../../../../shared/ui/useColorMode';
 import { useTimeZone } from '../../domain/useTimeZone';
 import { TimelineChartWrapper } from './TimelineChartWrapper';
 

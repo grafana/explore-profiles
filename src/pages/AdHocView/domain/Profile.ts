@@ -1,4 +1,4 @@
-import { FlamebearerProfile } from '../../../shared/types/FlamebearerProfile';
+import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 
 export type Profile = {
   id: string;

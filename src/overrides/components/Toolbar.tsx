@@ -19,13 +19,13 @@ import {
   selectContinuousState,
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
+import { ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { useGetProfileMetricByIds } from '@shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+import { userStorage } from '@shared/infrastructure/userStorage';
 import React, { useCallback, useContext, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { PyroscopeStateContext } from '../../app/domain/PyroscopeState/context';
-import { ProfileMetricId } from '../../shared/infrastructure/profile-metrics/getProfileMetric';
-import { useGetProfileMetricByIds } from '../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
-import { userStorage } from '../../shared/infrastructure/userStorage';
 
 interface ToolbarProps {
   /** callback to be called when an app is selected via the dropdown */

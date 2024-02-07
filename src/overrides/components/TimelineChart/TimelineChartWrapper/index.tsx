@@ -14,18 +14,18 @@ import { LoadingState } from '@grafana/schema';
 import { usePanelContext, useTheme2 } from '@grafana/ui';
 import { markingsFromSelection } from '@pyroscope/components/TimelineChart/markings';
 import useResizeObserver from '@react-hook/resize-observer';
+import {
+  ceilTenSeconds,
+  floorTenSeconds,
+  stringifyPyroscopeColor,
+  translateGrafanaAbsoluteTimeRangeToPyroscope,
+} from '@shared/domain/translation';
 import Color from 'color';
 import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineChart/centerTimelineData';
 import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
 import React, { useContext, useRef, useState } from 'react';
 
 import { PyroscopeStateContext } from '../../../../app/domain/PyroscopeState/context';
-import {
-  ceilTenSeconds,
-  floorTenSeconds,
-  stringifyPyroscopeColor,
-  translateGrafanaAbsoluteTimeRangeToPyroscope,
-} from '../../../../shared/domain/translation';
 
 const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
 

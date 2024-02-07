@@ -1,14 +1,14 @@
 import { PageLayoutType } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
+import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
+import { Panel } from '@shared/components/Panel';
+import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
+import { Toolbar } from '@shared/components/Toolbar/Toolbar';
+import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
+import { displayError } from '@shared/domain/displayStatus';
+import { formatAsOBject } from '@shared/domain/formatDate';
 import React from 'react';
 
-import { FlameGraph } from '../../shared/components/FlameGraph/FlameGraph';
-import { Panel } from '../../shared/components/Panel';
-import { QueryBuilder } from '../../shared/components/QueryBuilder/QueryBuilder';
-import { Toolbar } from '../../shared/components/Toolbar/Toolbar';
-import { addQueryToPageTitle } from '../../shared/domain/addQueryToPageTitle';
-import { displayError } from '../../shared/domain/displayStatus';
-import { formatAsOBject } from '../../shared/domain/formatDate';
 import { useSingleView } from './domain/useSingleView';
 import { ErrorMessage } from './ui/ErrorMessage';
 import { PageTitle } from './ui/PageTitle';

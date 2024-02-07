@@ -48,6 +48,8 @@ const config = async (env): Promise<Configuration> => {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json', '.svg'],
       alias: {
+        '@shared': path.resolve(__dirname, './src/shared'),
+
         // More specific rules first
 
         '@pyroscope/services/base': path.resolve(__dirname, './src/overrides/services/base'),

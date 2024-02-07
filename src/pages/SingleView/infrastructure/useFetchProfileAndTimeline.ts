@@ -1,9 +1,8 @@
+import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
+import { Timeline } from '@shared/types/Timeline';
+import { TimeRange } from '@shared/types/TimeRange';
 import { useQuery } from '@tanstack/react-query';
-
-import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
-import { FlamebearerProfile } from '../../../shared/types/FlamebearerProfile';
-import { Timeline } from '../../../shared/types/Timeline';
-import { TimeRange } from '../../../shared/types/TimeRange';
 
 const apiClient = new ApiClient();
 

@@ -1,6 +1,5 @@
+import { displaySuccess, displayWarning } from '@shared/domain/displayStatus';
 import { useEffect } from 'react';
-
-import { displaySuccess, displayWarning } from '../shared/domain/displayStatus';
 
 function onOffline() {
   displayWarning(['Your network connection has been lost.']);
