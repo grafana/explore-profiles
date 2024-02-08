@@ -21,12 +21,10 @@ import {
   translateGrafanaAbsoluteTimeRangeToPyroscope,
   translatePyroscopeTimeRangeToGrafana,
 } from '@shared/domain/translation';
+import { Timeline } from '@shared/types/Timeline';
 import Color from 'color';
-import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineChart/centerTimelineData';
 import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
-import React, { useContext, useRef, useState } from 'react';
-
-import { PyroscopeStateContext } from '../../../../app/domain/PyroscopeState/context';
+import React, { useRef, useState } from 'react';
 
 const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
 
@@ -45,8 +43,6 @@ type Marking = {
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function TimelineChartWrapper(props: TimelineChartWrapperProps) {
   const theme = useTheme2();
-
-  const unit = useSelectedProfileUnit();
 
   const timelines: TimelineData[] = [];
 
@@ -72,7 +68,7 @@ export function TimelineChartWrapper(props: TimelineChartWrapperProps) {
     [timelineA, timelineB].forEach((timeline) => timeline && timelines.push(timeline));
   }
 
-  const series = timelines.map((timeline) => convertToDataFrame(timeline, unit, format));
+  const series = timelines.map((timeline) => convertToDataFrame(timeline, format));
 
   const annotations: DataFrame[] = [];
 
@@ -188,24 +184,13 @@ class RangeAnnotation extends MutableDataFrame {
   }
 }
 
-function useSelectedProfileUnit() {
-  const stateContext = useContext(PyroscopeStateContext);
-  const unit = stateContext?.selectedProfileType?.split(':')[2];
-
-  if (unit == null) {
-    return 'number';
-  }
-
-  return unitMap[unit] || unit;
-}
-
-// TODO When https://github.com/grafana/pyroscope-app-plugin/pull/115 is merged, use that central map to determine the units instead.
-const unitMap: Record<string, string> = {
-  nanoseconds: 'ns',
-  count: 'short',
+type TimelineData = {
+  data?: Timeline;
+  color?: string;
+  unit?: string;
 };
 
-export function convertToDataFrame(data: TimelineData, unit: string, format: 'bars' | 'lines', label?: string) {
+export function convertToDataFrame(data: TimelineData, format: 'bars' | 'lines', label?: string) {
   const custom = format === 'bars' ? { drawStyle: 'bars', fillOpacity: 100, barAlignment: 1 } : { drawStyle: 'lines' };
 
   const dataframe = new MutableDataFrame();
@@ -214,7 +199,7 @@ export function convertToDataFrame(data: TimelineData, unit: string, format: 'ba
   const color = data?.color
     ? { mode: FieldColorModeId.Fixed, fixedColor: stringifyPyroscopeColor(data?.color) }
     : undefined;
-  dataframe.addField({ name: label || ' ', type: FieldType.number, config: { unit, custom, color } });
+  dataframe.addField({ name: label || ' ', type: FieldType.number, config: { unit: data.unit, custom, color } });
 
   const timeline = data.data;
 

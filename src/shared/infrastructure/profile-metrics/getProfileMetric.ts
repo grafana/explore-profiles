@@ -19,11 +19,14 @@ export function getProfileMetric(profileMetricId: ProfileMetricId): ProfileMetri
 
   const [group = 'unknown', type = 'unknown type'] = profileMetricId.split(':');
 
+  const description = `No description available for profile metric "${profileMetricId}"`;
+  console.warn(description);
+
   return {
     id: profileMetricId,
-    description: `No description available for profile metric "${profileMetricId}"`,
+    description,
     type,
     group,
-    unit: 'number', // TODO: confirm
+    unit: 'short',
   };
 }
