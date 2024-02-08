@@ -23,12 +23,6 @@ declare global {
   }
 }
 
-function addStyle(styleString: string) {
-  const style = document.createElement('style');
-  style.textContent = styleString;
-  document.head.append(style);
-}
-
 export function App(props: AppRootProps) {
   const unsubscribeRef = useRef<unknown>(null);
 
@@ -39,37 +33,15 @@ export function App(props: AppRootProps) {
     unsubscribeRef.current = setupReduxQuerySync();
   }
 
-  useEffect(() => {
-    addStyle(`
-main nav a[aria-label="Tab Single View AI"]::after {
-  content: "New";
-  position: absolute;
-  right: 12px;
-  background-color: rgb(255, 136, 51);
-  color: #fff;
-  padding: 0px 4px;
-  border-radius: 2px;
-  font-size: 12px;
-}
-main nav a[aria-label="Tab Diff View AI"]::after {
-  content: "New";
-  position: absolute;
-  right: 12px;
-  background-color: rgb(255, 136, 51);
-  color: #fff;
-  padding: 0px 4px;
-  border-radius: 2px;
-  font-size: 12px;
-}
-    `);
-
-    return () => {
+  useEffect(
+    () => () => {
       if (typeof unsubscribeRef.current === 'function') {
         // leave no trace when navigating outside of the plugin pages (see https://github.com/grafana/pyroscope-app-plugin/issues/171)
         unsubscribeRef.current();
       }
-    };
-  }, []);
+    },
+    []
+  );
 
   const renderTitle = React.useCallback((title: string) => <TitleReplacement title={title} />, []);
 

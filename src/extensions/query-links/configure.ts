@@ -1,7 +1,7 @@
 import { TimeRange } from '@grafana/data';
+import { translateGrafanaTimeRangeToPyroscope } from '@shared/domain/translation';
 
 import { PYROSCOPE_APP_ID } from '../../constants';
-import { translateGrafanaTimeRangeToPyroscope } from '../../shared/domain/translation';
 import { getPluginSettings } from './pluginSettings';
 import { ExtensionQueryLinksContext, PyroscopeAppSettings, PyroscopeDatasourceSettings, Query } from './types';
 

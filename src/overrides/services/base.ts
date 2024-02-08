@@ -2,6 +2,10 @@ import { getBackendSrv } from '@grafana/runtime';
 import { SpanStatusCode } from '@opentelemetry/api';
 import { SemanticAttributes } from '@opentelemetry/semantic-conventions';
 import { Result } from '@pyroscope/util/fp';
+// TODO:
+// Move various functions into /utils/backend, but ensure the expected override exports
+// are still exported from here.
+import backendFetch from '@shared/infrastructure/backend/fetch';
 import { firstValueFrom } from 'rxjs';
 
 import {
@@ -11,10 +15,6 @@ import {
   RequestNotOkError,
 } from '../../../node_modules/grafana-pyroscope/public/app/services/base';
 import { faro as Faro } from '../../app/infrastructure/faro';
-// TODO:
-// Move various functions into /utils/backend, but ensure the expected override exports
-// are still exported from here.
-import backendFetch from '../../shared/infrastructure/backend/fetch';
 
 /**
  * makes a request with faro tracing integration (if enabled)

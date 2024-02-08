@@ -10,10 +10,10 @@ import { FlamegraphRenderer } from '@pyroscope/legacy/flamegraph/FlamegraphRende
 import type { Profile } from '@pyroscope/legacy/models';
 import { isGrafanaFlamegraphEnabled } from '@pyroscope/util/features';
 import { flamebearerToDataFrameDTO } from '@pyroscope/util/flamebearer';
+import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import React, { useContext, useEffect } from 'react';
 
 import { PyroscopeStateContext } from '../../app/domain/PyroscopeState/context';
-import { useFetchPluginSettings } from '../../shared/infrastructure/settings/useFetchPluginSettings';
 
 type Props = {
   profile?: Profile;

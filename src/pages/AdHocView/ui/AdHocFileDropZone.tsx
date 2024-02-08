@@ -1,7 +1,7 @@
 import { DropzoneFile, FileDropzone } from '@grafana/ui';
+import { displayError } from '@shared/domain/displayStatus';
 import React, { useCallback } from 'react';
 
-import { displayError } from '../../../shared/domain/displayStatus';
 import { ACCEPTED_FILE_TYPES } from '../domain/accepted-file-types';
 
 const options = {

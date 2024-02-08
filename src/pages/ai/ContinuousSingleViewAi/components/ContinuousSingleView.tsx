@@ -25,11 +25,11 @@ import {
   setQuery,
 } from '@pyroscope/redux/reducers/continuous';
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
+import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
+import { createTooltip } from '@shared/ui/createTooltip';
+import { isLoadingOrReloading } from '@shared/ui/loading';
 import React, { useEffect } from 'react';
 
-import { createTooltip } from '../../../../shared/ui/createTooltip';
-import { formatTitle } from '../../../../shared/ui/formatTitle';
-import { isLoadingOrReloading } from '../../../../shared/ui/loading';
 import AiPanel from '../../shared/AiPanel';
 import { AskAiButton } from '../../shared/AskAiButton';
 import { useAiPanel } from '../../shared/hooks/useAiPanel';
@@ -156,7 +156,7 @@ function ContinuousSingleView() {
 
   return (
     <div>
-      <PageTitle title={formatTitle('Single AI', query)} />
+      <PageTitle title={addQueryToPageTitle('Single AI', query)} />
       <PageContentWrapper>
         <Toolbar
           onSelectedApp={(query) => {

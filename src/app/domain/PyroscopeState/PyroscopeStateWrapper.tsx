@@ -9,13 +9,10 @@ import {
   setDateRange,
   setQuery,
 } from '@pyroscope/redux/reducers/continuous';
+import { translateGrafanaTimeRangeToPyroscope, translatePyroscopeTimeRangeToGrafana } from '@shared/domain/translation';
 import { appFromQuery, appToQuery } from 'grafana-pyroscope/public/app/models/app';
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  translateGrafanaTimeRangeToPyroscope,
-  translatePyroscopeTimeRangeToGrafana,
-} from '../../../shared/domain/translation';
 import { PyroscopeStateContext } from './context';
 import { getCommonProfileCategoryAndName } from './util';
 

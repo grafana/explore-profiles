@@ -5,7 +5,7 @@ import { Query } from '@pyroscope/models/query';
  * handling it appropriately when they are not preset
  * and returns only the page title if no query is set
  */
-export function formatTitle(pageName: string, leftQuery?: Query, rightQuery?: Query) {
+export function addQueryToPageTitle(pageName: string, leftQuery?: Query, rightQuery?: Query) {
   const separator = ' | ';
 
   if (leftQuery && rightQuery) {

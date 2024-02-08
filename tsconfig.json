@@ -13,8 +13,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-      "@pyroscope/*": ["./node_modules/grafana-pyroscope/public/app/*"],
+      "@shared/*": ["./src/shared/*"],
 
+      "@pyroscope/*": ["./node_modules/grafana-pyroscope/public/app/*"],
       "@pyroscope/services/base": ["./src/overrides/services/base"],
       "@pyroscope/util/history": ["./src/overrides/util/history"],
 

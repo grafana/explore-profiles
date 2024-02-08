@@ -53,4 +53,12 @@ export class PyroscopePage {
     // TODO: improve after upgrading Grafana version (which has a different navigation menu)
     await this.page.locator(`a:has-text("${itemText}")`).first().click();
   }
+
+  waitForRequest(urlOrPredicate, options?) {
+    return this.page.waitForRequest(urlOrPredicate, options);
+  }
+
+  waitForTimeout(timeout: number) {
+    return this.page.waitForTimeout(timeout);
+  }
 }

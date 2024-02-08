@@ -1,4 +1,5 @@
-import { ApiClient } from '../../../shared/infrastructure/http/ApiClient';
+import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+
 import { Profile } from '../domain/Profile';
 import { stripBase64Prefix } from './helpers/stripBase64Prefix';
 

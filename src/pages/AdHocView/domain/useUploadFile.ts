@@ -1,7 +1,7 @@
 import { SelectableValue } from '@grafana/data';
+import { displayError } from '@shared/domain/displayStatus';
 import { useCallback, useEffect, useState } from 'react';
 
-import { displayError } from '../../../shared/domain/displayStatus';
 import { adHocProfileClient } from '../infrastructure/adHocProfileClient';
 import { Profile } from './Profile';
 

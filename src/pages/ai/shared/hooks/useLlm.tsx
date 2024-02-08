@@ -1,7 +1,8 @@
 import {
   ProfileMetricId,
   useGetProfileMetricById,
-} from '../../../../shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+} from '@shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+
 import { useFetchDotProfile } from './useFetchDotProfile';
 import { Message, useOpenAiChatCompletions } from './useOpenAiChatCompletions';
 
