@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { QueryBuilderProps } from '../QueryBuilder';
-import { logger } from './helpers/logger';
+// import { logger } from './helpers/logger';
 import { buildStateMachine } from './stateMachine';
 import { QueryBuilderContext } from './types';
 
@@ -22,10 +22,10 @@ export function useStateMachine({ query, from, until, onChangeQuery }: QueryBuil
   useEffect(() => {
     actor.start();
 
-    actor.subscribe(({ value: state, event, context }) => {
-      logger.debug('*** %o', JSON.stringify(event));
-      logger.debug('***', JSON.stringify(context, null, 1));
-      logger.debug('*** ---------------------> "%s"', state);
+    actor.subscribe(({ /*value: state,*/ event, context }) => {
+      // logger.debug('*** %o', JSON.stringify(event));
+      // logger.debug('***', JSON.stringify(context, null, 1));
+      // logger.debug('*** ---------------------> "%s"', state);
 
       if (event.type === 'EXECUTE_QUERY') {
         onChangeQuery(context.query);
