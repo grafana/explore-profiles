@@ -3,9 +3,9 @@ import { displayError } from '@shared/domain/displayStatus';
 import { useCallback, useEffect, useState } from 'react';
 
 import { adHocProfileClient } from '../infrastructure/adHocProfileClient';
-import { Profile } from './Profile';
+import { AdHocProfile } from './AdHocProfile';
 
-const DEFAULT_PROFILE_DATA: Profile = {
+const DEFAULT_PROFILE_DATA: AdHocProfile = {
   id: '',
   name: '',
   profileTypes: [],

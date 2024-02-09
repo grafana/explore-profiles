@@ -1,6 +1,6 @@
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 
-export type Profile = {
+export type AdHocProfile = {
   id: string;
   name: string;
   profileTypes: string[];
