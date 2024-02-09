@@ -20,7 +20,7 @@ export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePan
 
   const [query] = useQueryFromUrl();
   const { profileType } = parseQuery(query);
-  let unit = getProfileMetric(profileType as ProfileMetricId)?.unit;
+  let unit = getProfileMetric(profileType as ProfileMetricId).unit;
 
   if (!unit) {
     console.warn('Unit not found for profile type "%s"! Using "short" instead.', profileType);

@@ -2,7 +2,11 @@ import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
-import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import {
+  getProfileMetric,
+  getProfileMetricByType,
+  ProfileMetricId,
+} from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
@@ -31,7 +35,11 @@ export function useSingleView() {
   const isLoading = isFetchingSettings || isFetching;
 
   const { profileType } = parseQuery(query);
-  const timelinePanelTitle = profileType ? getProfileMetric(profileType as ProfileMetricId)?.description : '';
+
+  const timelinePanelTitle =
+    getProfileMetric(profileType as ProfileMetricId).description ||
+    getProfileMetricByType(profile?.metadata.name as string)?.description ||
+    '';
 
   return {
     data: {

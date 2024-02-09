@@ -46,7 +46,17 @@ export function SingleView() {
         <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
       </Panel>
 
-      <Panel title={data.isLoading ? <Spinner /> : null} isLoading={data.isLoading}>
+      <Panel
+        title={
+          data.isLoading ? (
+            <>
+              <Spinner inline />
+              &nbsp;Loading...
+            </>
+          ) : null
+        }
+        isLoading={data.isLoading}
+      >
         {data.fetchDataError && (
           <ErrorMessage title="Error while loading flamegraph data!" error={data.fetchDataError} />
         )}

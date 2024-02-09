@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 
 import { getProfileMetric, ProfileMetric, ProfileMetricId, ProfileMetrics } from './getProfileMetric';
-import PROFILE_METRICS from './profile-metrics.json';
 
 type QueryResponse<T> = {
   data: T;
@@ -35,17 +34,4 @@ export function useGetProfileMetricByIds(profileMetricIds: ProfileMetricId[]): Q
     isError: false,
     isLoading: false,
   };
-}
-
-export function useGetProfileMetricByType(type?: ProfileMetric['type']): ProfileMetric {
-  const data = useMemo(
-    () =>
-      Object.values(PROFILE_METRICS).reduce((acc, profileMetric) => {
-        acc.set(profileMetric.type, profileMetric);
-        return acc;
-      }, new Map()),
-    []
-  );
-
-  return data.get(type) || {};
 }

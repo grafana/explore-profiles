@@ -17,7 +17,12 @@ const setMaxNodes = (newMaxNodes: number) => {
 
 function useSetDefaultMaxNodes(): number | null {
   const searchParams = parseUrlSearchParams();
-  let maxNodes = searchParams.has('max-nodes') ? Number(searchParams.get('max-nodes')) : null;
+  let maxNodes = null;
+
+  if (searchParams.has('max-nodes') && searchParams.get('max-nodes') !== '') {
+    maxNodes = Number(searchParams.get('max-nodes'));
+  }
+
   const hasMaxNodes = Boolean(maxNodes);
 
   const { isFetching, error, settings } = useFetchPluginSettings({ enabled: !hasMaxNodes });

@@ -6,7 +6,7 @@ function findMostSuitableProfileType(profileTypes: Array<[string, ProfileMetricI
 
   return (
     // CPU
-    profileTypes.find(([, profileType]) => getProfileMetric(profileType)?.type === 'cpu') ||
+    profileTypes.find(([, profileType]) => getProfileMetric(profileType).type === 'cpu') ||
     // Fallback to first
     profileTypes[0]
   );
