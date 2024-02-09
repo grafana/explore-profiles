@@ -8,10 +8,12 @@ export async function toMatchApiSnapshot(requestName, request, checkPostData = t
     const currentSearchParams = new URL(request.url()).searchParams;
     const expectedSearchParams = new URL(API_SNAPSHOTS[requestName].REQUEST).searchParams;
 
-    expect(currentSearchParams.size, requestName).toBe(expectedSearchParams.size);
-
     for (const [key, value] of currentSearchParams) {
       expect(expectedSearchParams.get(key), `${requestName}: ${key}`).toBe(value);
+    }
+
+    for (const [key, value] of expectedSearchParams) {
+      expect(currentSearchParams.get(key), `${requestName}: ${key}`).toBe(value);
     }
   }
 
