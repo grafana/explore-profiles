@@ -28,11 +28,10 @@ export function useSingleView() {
     maxNodes,
   });
 
-  // determining query and maxNodes can be asynchronous
-  const isLoading = !query || !maxNodes || isFetchingSettings || isFetching;
+  const isLoading = isFetchingSettings || isFetching;
 
   const { profileType } = parseQuery(query);
-  const timelinePanelTitle = getProfileMetric(profileType as ProfileMetricId)?.description;
+  const timelinePanelTitle = profileType ? getProfileMetric(profileType as ProfileMetricId)?.description : '';
 
   return {
     data: {
