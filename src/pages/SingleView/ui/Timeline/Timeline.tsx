@@ -4,10 +4,9 @@ import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { Timeline as TimelineType } from '@shared/types/Timeline';
-import { useColorMode } from '@shared/ui/useColorMode';
 import React from 'react';
 
-import { useTimeZone } from './domain/useTimeZone';
+import { useTimezone } from './domain/useTimeZone';
 import { TimelineChartWrapper } from './TimelineChartWrapper';
 
 type TimelinePanelProps = {
@@ -17,9 +16,7 @@ type TimelinePanelProps = {
 };
 
 export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePanelProps) {
-  const { offset } = useTimeZone();
-  const timezone = offset === 0 ? 'utc' : 'browser';
-  const { colorMode } = useColorMode();
+  const timezone = useTimezone();
 
   const [query] = useQueryFromUrl();
   const { profileType } = parseQuery(query);
@@ -32,7 +29,6 @@ export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePan
 
   const timelineA = {
     data: timeline,
-    color: colorMode === 'light' ? '#3b78e7' : undefined,
     unit,
   };
 

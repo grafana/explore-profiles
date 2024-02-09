@@ -11,6 +11,7 @@ import usePopulateLeftRightQuery from '@pyroscope/hooks/populateLeftRightQuery.h
 import useTags from '@pyroscope/hooks/tags.hook';
 import useTimelines, { leftColor, rightColor, selectionColor } from '@pyroscope/hooks/timeline.hook';
 import useTimeZone from '@pyroscope/hooks/timeZone.hook';
+import { isLoadingOrReloading } from '@pyroscope/pages/loading';
 import { PageContentWrapper } from '@pyroscope/pages/PageContentWrapper';
 import { useAppDispatch, useAppSelector } from '@pyroscope/redux/hooks';
 import {
@@ -23,7 +24,6 @@ import {
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
 import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
-import { isLoadingOrReloading } from '@shared/domain/loading';
 import React, { useEffect } from 'react';
 
 import { getStyles } from '../../ContinuousSingleViewAi/components/ContinuousSingleView';

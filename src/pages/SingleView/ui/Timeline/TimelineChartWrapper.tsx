@@ -12,7 +12,6 @@ import {
 import { PanelRenderer } from '@grafana/runtime';
 import { LoadingState } from '@grafana/schema';
 import { usePanelContext, useTheme2 } from '@grafana/ui';
-import { markingsFromSelection } from '@pyroscope/components/TimelineChart/markings';
 import useResizeObserver from '@react-hook/resize-observer';
 import {
   ceilTenSeconds,
@@ -23,15 +22,12 @@ import {
 } from '@shared/domain/translation';
 import { Timeline } from '@shared/types/Timeline';
 import Color from 'color';
-import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
 import React, { useRef, useState } from 'react';
 
-const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
+import { markingsFromSelection } from './markings';
+import { TimelineChartWrapperProps } from './types';
 
-type TimelineChartWrapperProps = ConstructorParameters<typeof PyroscopeTimelineChartWrapper>[0] & {
-  timeRange: TimeRange;
-  onSelectTimeRange: (newTimeRange: TimeRange) => void;
-};
+const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
 
 type Marking = {
   xaxis: { from: number; to: number };

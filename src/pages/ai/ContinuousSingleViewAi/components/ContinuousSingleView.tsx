@@ -12,6 +12,7 @@ import Toolbar from '@pyroscope/components/Toolbar';
 import useColorMode from '@pyroscope/hooks/colorMode.hook';
 import useTags from '@pyroscope/hooks/tags.hook';
 import useTimeZone from '@pyroscope/hooks/timeZone.hook';
+import { isLoadingOrReloading } from '@pyroscope/pages/loading';
 import { PageContentWrapper } from '@pyroscope/pages/PageContentWrapper';
 import { useAppDispatch, useAppSelector } from '@pyroscope/redux/hooks';
 import {
@@ -26,8 +27,6 @@ import {
 } from '@pyroscope/redux/reducers/continuous';
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
 import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
-import { isLoadingOrReloading } from '@shared/domain/loading';
-import { createTooltip } from '@shared/ui/createTooltip';
 import React, { useEffect } from 'react';
 
 import AiPanel from '../../shared/AiPanel';
@@ -189,7 +188,6 @@ function ContinuousSingleView() {
             annotations={annotations}
             selectionType="single"
             ContextMenu={contextMenu}
-            onHoverDisplayTooltip={(data) => createTooltip(query, data, singleView.profile)}
           />
         </Panel>
 
