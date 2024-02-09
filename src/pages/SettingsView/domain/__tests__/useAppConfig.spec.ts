@@ -1,7 +1,8 @@
 import { AppEvents } from '@grafana/data';
+import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
 import { act, renderHook } from '@testing-library/react';
 
-import { DEFAULT_SETTINGS, useAppConfig } from '../useAppConfig';
+import { useAppConfig } from '../useAppConfig';
 import plugin from './fixtures/plugin.json';
 
 // appEvents dependency
@@ -17,15 +18,9 @@ jest.mock('@grafana/runtime', () => ({
 // useFetchPluginSettings dependency
 const mutate = jest.fn();
 
-const defaultSettings = {
-  collapsedFlamegraphs: DEFAULT_SETTINGS.COLLAPSED_FLAMEGRAPHS,
-  maxNodes: DEFAULT_SETTINGS.MAX_NODES,
-  enableFlameGraphDotComExport: DEFAULT_SETTINGS.ENABLE_FLAMEGRAPHDOTCOM_EXPORT,
-};
-
-jest.mock('../../../../shared/infrastructure/settings/useFetchPluginSettings', () => ({
+jest.mock('@shared/infrastructure/settings/useFetchPluginSettings', () => ({
   useFetchPluginSettings: () => ({
-    settings: defaultSettings,
+    settings: DEFAULT_SETTINGS,
     error: null,
     mutate,
   }),
@@ -38,7 +33,7 @@ describe('useAppConfig(plugin)', () => {
     const { result } = renderHook(() => useAppConfig(plugin));
 
     expect(result.current).toEqual({
-      data: defaultSettings,
+      data: DEFAULT_SETTINGS,
       actions: {
         toggleCollapsedFlamegraphs: expect.any(Function),
         updateMaxNodes: expect.any(Function),
@@ -55,7 +50,7 @@ describe('useAppConfig(plugin)', () => {
 
       const { data, actions } = result.current;
 
-      expect(data.collapsedFlamegraphs).toBe(defaultSettings.collapsedFlamegraphs);
+      expect(data.collapsedFlamegraphs).toBe(DEFAULT_SETTINGS.collapsedFlamegraphs);
 
       act(() => {
         actions.toggleCollapsedFlamegraphs();
@@ -72,7 +67,7 @@ describe('useAppConfig(plugin)', () => {
 
       const { data, actions } = result.current;
 
-      expect(data.maxNodes).toBe(defaultSettings.maxNodes);
+      expect(data.maxNodes).toBe(DEFAULT_SETTINGS.maxNodes);
 
       act(() => {
         actions.updateMaxNodes({ target: { value: '42' } } as React.ChangeEvent<HTMLInputElement>);
@@ -89,7 +84,7 @@ describe('useAppConfig(plugin)', () => {
 
       const { data, actions } = result.current;
 
-      expect(data.enableFlameGraphDotComExport).toBe(defaultSettings.enableFlameGraphDotComExport);
+      expect(data.enableFlameGraphDotComExport).toBe(DEFAULT_SETTINGS.enableFlameGraphDotComExport);
 
       act(() => {
         actions.toggleEnableFlameGraphDotComExport();
@@ -108,7 +103,7 @@ describe('useAppConfig(plugin)', () => {
 
       await saveSettings();
 
-      expect(mutate).toHaveBeenCalledWith(defaultSettings);
+      expect(mutate).toHaveBeenCalledWith(DEFAULT_SETTINGS);
     });
 
     describe('if no error occurred', () => {

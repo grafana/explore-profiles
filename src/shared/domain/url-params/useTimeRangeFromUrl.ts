@@ -54,7 +54,9 @@ export function useTimeRangeFromUrl(): [TimeRange, (newTimeRange: TimeRange) => 
     const onHistoryChange = () => {
       const newTimeRange = parseTimeRangeFromUrl();
 
-      setInternalTimeRange(newTimeRange);
+      if (newTimeRange.from !== timeRange.from || newTimeRange.to !== timeRange.to) {
+        setInternalTimeRange(newTimeRange);
+      }
     };
 
     window.addEventListener('pushstate', onHistoryChange);
@@ -64,7 +66,7 @@ export function useTimeRangeFromUrl(): [TimeRange, (newTimeRange: TimeRange) => 
       window.removeEventListener('popstate', onHistoryChange);
       window.removeEventListener('pushstate', onHistoryChange);
     };
-  }, []);
+  }, [timeRange]);
 
   return [timeRange, setTimeRange];
 }

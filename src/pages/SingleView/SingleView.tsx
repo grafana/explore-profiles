@@ -5,7 +5,7 @@ import { Panel } from '@shared/components/Panel';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
 import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
-import { displayError } from '@shared/domain/displayStatus';
+import { displayWarning } from '@shared/domain/displayStatus';
 import React from 'react';
 
 import { useSingleView } from './domain/useSingleView';
@@ -17,10 +17,12 @@ export function SingleView() {
   const { data, actions } = useSingleView();
 
   if (data.fetchSettingsError) {
-    displayError(data.fetchSettingsError, [
+    displayWarning([
       'Error while retrieving the plugin settings!',
-      'Some features might not work as expected (e.g. max nodes). Please try to reload the page, sorry for the inconvenience.',
+      'Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.',
     ]);
+
+    console.error(data.fetchSettingsError);
   }
 
   return (

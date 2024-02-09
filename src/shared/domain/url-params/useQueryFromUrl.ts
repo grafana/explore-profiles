@@ -18,7 +18,6 @@ const setQuery = (newQuery: string) => {
   }
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 function useSetDefaultQuery(): string {
   let query = parseUrlSearchParams().get('query') ?? '';
   const hasQuery = Boolean(query);
@@ -59,10 +58,11 @@ export function useQueryFromUrl(): [string, (newQuery: string) => void] {
 
   useEffect(() => {
     const onHistoryChange = () => {
-      const searchParams = parseUrlSearchParams();
-      const newQuery = searchParams.get('query') ?? '';
+      const newQuery = parseUrlSearchParams().get('query');
 
-      setInternalQuery(newQuery);
+      if (newQuery !== query) {
+        setInternalQuery(newQuery ?? '');
+      }
     };
 
     window.addEventListener('pushstate', onHistoryChange);
@@ -72,7 +72,7 @@ export function useQueryFromUrl(): [string, (newQuery: string) => void] {
       window.removeEventListener('popstate', onHistoryChange);
       window.removeEventListener('pushstate', onHistoryChange);
     };
-  }, []);
+  }, [query]);
 
   return [query, setQuery];
 }

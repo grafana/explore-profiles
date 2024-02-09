@@ -1,3 +1,4 @@
+import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import { useGetProfileMetricByType } from '@shared/infrastructure/profile-metrics/useProfileMetricsQuery';
@@ -8,6 +9,7 @@ import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAnd
 export function useSingleView() {
   const [query, setQuery] = useQueryFromUrl();
   const [timeRange, setTimeRange] = useTimeRangeFromUrl();
+  const [maxNodes] = useMaxNodesFromUrl();
 
   const { isFetching: isFetchingSettings, error: fetchSettingsError, settings } = useFetchPluginSettings();
 
@@ -18,13 +20,15 @@ export function useSingleView() {
     profile,
     refetch,
   } = useFetchProfileAndTimeline({
-    enabled: Boolean(query && (settings || fetchSettingsError)),
+    // determining the query and maxNodes can be asynchronous
+    enabled: Boolean(query && maxNodes),
     query,
     timeRange,
-    maxNodes: settings?.maxNodes,
+    maxNodes,
   });
 
-  const isLoading = !query || isFetchingSettings || isFetching;
+  // determining the query and maxNodes can be asynchronous
+  const isLoading = !query || !maxNodes || isFetchingSettings || isFetching;
 
   const timelinePanelTitle = useGetProfileMetricByType(profile?.metadata?.name)?.description;
 

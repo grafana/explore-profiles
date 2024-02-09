@@ -1,32 +1,27 @@
 import { AppEvents } from '@grafana/data';
 import { getAppEvents } from '@grafana/runtime';
 import { displayError } from '@shared/domain/displayStatus';
+import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useEffect, useState } from 'react';
 
-export const DEFAULT_SETTINGS = {
-  COLLAPSED_FLAMEGRAPHS: false,
-  MAX_NODES: 16384,
-  ENABLE_FLAMEGRAPHDOTCOM_EXPORT: true,
-};
-
 export function useAppConfig() {
-  const { settings, error: fetchConfigError, mutate } = useFetchPluginSettings();
+  const { settings, error: fetchSettingsError, mutate } = useFetchPluginSettings();
 
-  if (fetchConfigError) {
-    displayError(fetchConfigError, [
+  if (fetchSettingsError) {
+    displayError(fetchSettingsError, [
       'Error while retrieving the plugin settings!',
       'Please try to reload the page, sorry for the inconvenience.',
     ]);
   }
 
   const [collapsedFlamegraphs, setCollapsedFlamegraphs] = useState<boolean>(
-    settings?.collapsedFlamegraphs ?? DEFAULT_SETTINGS.COLLAPSED_FLAMEGRAPHS
+    settings?.collapsedFlamegraphs ?? DEFAULT_SETTINGS.collapsedFlamegraphs
   );
-  const [maxNodes, setMaxNodes] = useState<number>(settings?.maxNodes ?? DEFAULT_SETTINGS.MAX_NODES);
+  const [maxNodes, setMaxNodes] = useState<number>(settings?.maxNodes ?? DEFAULT_SETTINGS.maxNodes);
 
   const [enableFlameGraphDotComExport, setEnableFlameGraphDotComExport] = useState<boolean>(
-    settings?.enableFlameGraphDotComExport ?? DEFAULT_SETTINGS.ENABLE_FLAMEGRAPHDOTCOM_EXPORT
+    settings?.enableFlameGraphDotComExport ?? DEFAULT_SETTINGS.enableFlameGraphDotComExport
   );
 
   useEffect(() => {
