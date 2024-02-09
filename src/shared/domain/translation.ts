@@ -29,7 +29,7 @@ function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
       // Pyroscope does not support dates that are pre-Y2K.
       // We assume that if the date is Y2K or greater, it is already being expressed in milliseconds,
       // so no conversion is done.
-      console.warn('Assuming date is expressed in milliseconds already', { date: pyroscopeRangePart, year });
+      // console.warn('Assuming date is expressed in milliseconds already', { date: pyroscopeRangePart, year });
       return dateTime(asNumber);
     }
   }
