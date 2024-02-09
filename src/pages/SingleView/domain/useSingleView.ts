@@ -1,7 +1,8 @@
+import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
-import { useGetProfileMetricByType } from '@shared/infrastructure/profile-metrics/useProfileMetricsQuery';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
@@ -30,7 +31,8 @@ export function useSingleView() {
   // determining query and maxNodes can be asynchronous
   const isLoading = !query || !maxNodes || isFetchingSettings || isFetching;
 
-  const timelinePanelTitle = useGetProfileMetricByType(profile?.metadata?.name)?.description;
+  const { profileType } = parseQuery(query);
+  const timelinePanelTitle = getProfileMetric(profileType as ProfileMetricId)?.description;
 
   return {
     data: {

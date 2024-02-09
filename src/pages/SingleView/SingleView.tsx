@@ -1,5 +1,6 @@
 import { PageLayoutType } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
+import { Spinner } from '@grafana/ui';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { Panel } from '@shared/components/Panel';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
@@ -41,12 +42,10 @@ export function SingleView() {
 
       <Panel title={data.timelinePanelTitle} isLoading={data.isLoading}>
         {data.fetchDataError && <ErrorMessage title="Error while loading timeline data!" error={data.fetchDataError} />}
-        {data.timeline && (
-          <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
-        )}
+        <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
       </Panel>
 
-      <Panel isLoading={data.isLoading}>
+      <Panel title={data.isLoading ? <Spinner /> : null} isLoading={data.isLoading}>
         {data.fetchDataError && (
           <ErrorMessage title="Error while loading flamegraph data!" error={data.fetchDataError} />
         )}

@@ -11,7 +11,7 @@ import { TimelineChartWrapper } from './TimelineChartWrapper';
 
 type TimelinePanelProps = {
   timeRange: TimeRange;
-  timeline: TimelineType;
+  timeline?: TimelineType;
   onSelectTimeRange: (newTimeRange: TimeRange) => void;
 };
 
@@ -36,7 +36,6 @@ export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePan
     <TimelineChartWrapper
       data-testid="timeline-single"
       id="timeline-chart-single"
-      height="125px"
       mode="singles"
       format="bars"
       timeRange={timeRange}
