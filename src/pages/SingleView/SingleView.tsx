@@ -35,6 +35,7 @@ export function SingleView() {
       <QueryBuilder
         id="query-builder-single"
         query={data.query}
+        // FIXME
         from={data.timeRange.from.unix() * 1000}
         until={data.timeRange.to.unix() * 1000}
         onChangeQuery={actions.setQuery}

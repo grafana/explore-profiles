@@ -23,9 +23,9 @@ function useSetDefaultQuery(): string {
   const hasQuery = Boolean(query);
 
   const [timeRange] = useTimeRangeFromUrl();
-  const { services, isFetching: isFetchingServices } = useFetchServices({ timeRange, enabled: !hasQuery });
+  const { services } = useFetchServices({ timeRange, enabled: !hasQuery });
 
-  if (hasQuery || isFetchingServices) {
+  if (hasQuery || !services.size) {
     return query;
   }
 
