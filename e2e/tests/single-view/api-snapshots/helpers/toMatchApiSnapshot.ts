@@ -5,7 +5,16 @@ export async function toMatchApiSnapshot(requestName, request, checkPostData = t
   if (checkPostData) {
     expect(request.postDataJSON(), requestName).toEqual(API_SNAPSHOTS[requestName].REQUEST);
   } else {
-    expect(request.url(), requestName).toBe(API_SNAPSHOTS[requestName].REQUEST);
+    const currentSearchParams = new URL(request.url()).searchParams;
+    const expectedSearchParams = new URL(API_SNAPSHOTS[requestName].REQUEST).searchParams;
+
+    for (const [key, value] of currentSearchParams) {
+      expect(expectedSearchParams.get(key), `${requestName}: ${key}`).toBe(value);
+    }
+
+    for (const [key, value] of expectedSearchParams) {
+      expect(currentSearchParams.get(key), `${requestName}: ${key}`).toBe(value);
+    }
   }
 
   const response = await (await request.response())?.json();
