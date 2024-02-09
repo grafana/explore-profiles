@@ -2,7 +2,7 @@ import { useFetchServices } from '@shared/infrastructure/services/useFetchServic
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { useEffect, useState } from 'react';
 
-import { getDefaultServiceAndProfileType } from './getDefaultServiceAndProfileType';
+import { getDefaultProfileType, getDefaultServiceAndProfileType } from './getDefaultServiceAndProfileType';
 import { buildQuery } from './parseQuery';
 import { parseUrlSearchParams } from './parseUrlSearchParams';
 import { pushNewUrl } from './pushNewUrl';
@@ -20,8 +20,7 @@ const setQuery = (newQuery: string) => {
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 function useSetDefaultQuery(): string {
-  const searchParams = parseUrlSearchParams();
-  const query = searchParams.get('query') ?? '';
+  let query = parseUrlSearchParams().get('query') ?? '';
   const hasQuery = Boolean(query);
 
   const [timeRange] = useTimeRangeFromUrl();
@@ -34,25 +33,22 @@ function useSetDefaultQuery(): string {
   const serviceFromUserSettings = !hasQuery ? userStorage.get(userStorage.KEYS.SETTINGS)?.defaultApp : '';
 
   if (serviceFromUserSettings && services.has(serviceFromUserSettings)) {
-    const serviceProfileTypes = Array.from(services.get(serviceFromUserSettings) || []).map(([id]: any) => [
-      serviceFromUserSettings,
-      id,
-    ]);
+    const profileType = getDefaultProfileType(serviceFromUserSettings, services);
 
-    if (serviceProfileTypes.length) {
-      const [, profileType] = getDefaultServiceAndProfileType(serviceProfileTypes);
+    if (profileType) {
+      query = buildQuery({ service: serviceFromUserSettings, profileType });
 
-      setQuery(buildQuery({ service: serviceFromUserSettings, profileType }));
+      setQuery(query);
+
+      return query;
     }
   }
 
-  const allProfileTypes = Array.from(services.entries()).flatMap(([service, profileTypesMap]) =>
-    Array.from(profileTypesMap.keys()).map((id) => [service, id])
-  );
+  const [service, profileType] = getDefaultServiceAndProfileType(services);
 
-  const [service, profileType] = getDefaultServiceAndProfileType(allProfileTypes);
+  query = buildQuery({ service, profileType });
 
-  setQuery(buildQuery({ service, profileType }));
+  setQuery(query);
 
   return query;
 }

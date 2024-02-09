@@ -1,4 +1,5 @@
 import { SelectableValue } from '@grafana/data';
+import { getDefaultProfileType } from '@shared/domain/url-params/getDefaultServiceAndProfileType';
 import { buildQuery, parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { Services } from '@shared/infrastructure/services/servicesApiClient';
@@ -27,8 +28,8 @@ export function useBuildServiceNameOptions(services: Services) {
     setService(option: SelectableValue<string>) {
       const newService = option.value || '';
 
-      const newProfileTypes = Array.from(services.get(newService)?.values() || []);
-      const newProfileType = newProfileTypes[0].id;
+      const newProfileType =
+        getDefaultProfileType(newService, services) || Array.from(services.get(newService)?.values() || [])[0]?.id;
 
       setQuery(buildQuery({ service: newService, profileType: newProfileType }));
 
