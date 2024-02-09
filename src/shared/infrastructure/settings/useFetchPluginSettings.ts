@@ -1,45 +1,39 @@
-import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
+import { DEFAULT_SETTINGS } from './default-settings';
 import { PluginSettings, settingsApiClient } from './settingsApiClient';
 
-type FetchPluginSettingsResponse = {
+type FetchParams = {
+  enabled?: boolean;
+};
+
+type FetchResponse = {
   isFetching: boolean;
   error: Error | null;
   settings?: PluginSettings;
   mutate: (newSettings: PluginSettings) => Promise<void>;
 };
 
-let settings: PluginSettings; // cache
-
+// TODO: use react-query? (https://tanstack.com/query/latest/docs/framework/react/guides/mutations)
 async function mutate(newSettings: PluginSettings) {
-  const response = await settingsApiClient.set(newSettings);
-
-  settings = newSettings;
-
-  return response;
+  await settingsApiClient.set(newSettings);
 }
 
-export function useFetchPluginSettings(): FetchPluginSettingsResponse {
-  const [isFetching, setIsFetching] = useState(false);
-  const [error, setError] = useState(null);
+export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResponse {
+  const { isFetching, error, data } = useQuery({
+    enabled,
+    queryKey: [],
+    queryFn: () => {
+      settingsApiClient.abort();
 
-  if (settings || error || isFetching) {
-    return { settings, error, isFetching, mutate };
-  }
+      return settingsApiClient.get().then((json) => (Object.keys(json).length ? json : DEFAULT_SETTINGS));
+    },
+  });
 
-  setError(null);
-  setIsFetching(true);
-
-  settingsApiClient
-    .get()
-    .then(async (json) => {
-      settings = json;
-      setError(null);
-    })
-    .catch((error) => {
-      setError(error);
-    })
-    .finally(() => setIsFetching(false));
-
-  return { settings, error, isFetching, mutate };
+  return {
+    isFetching,
+    error: settingsApiClient.isAbortError(error) ? null : error,
+    settings: data,
+    mutate,
+  };
 }

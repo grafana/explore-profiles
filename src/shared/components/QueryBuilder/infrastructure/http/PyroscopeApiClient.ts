@@ -23,6 +23,7 @@ export class PyroscopeApiClient extends ApiClient {
   }
 
   async fetchLabels(query: string, from: number, until: number) {
+    // all /querier requests: timerange in Unix time ms (unix * 1000)
     return this._post('/querier.v1.QuerierService/LabelNames', {
       matchers: PyroscopeApiClient.queryToMatchers(query),
       start: from,
@@ -31,6 +32,7 @@ export class PyroscopeApiClient extends ApiClient {
   }
 
   async fetchLabelValues(labelId: string, query: string, from: number, until: number) {
+    // all /querier requests: timerange in Unix time ms (unix * 1000)
     return this._post('/querier.v1.QuerierService/LabelValues', {
       name: labelId,
       matchers: PyroscopeApiClient.queryToMatchers(query),

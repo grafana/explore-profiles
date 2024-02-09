@@ -27,10 +27,12 @@ declare global {
 }
 
 // TODO: TEMP until finishing the Pyroscope OSS migration
-function isPageMigratedFromPyroscopeOSS() {
+function shouldSetupReduxQuerySync() {
   return [
+    '/a/grafana-pyroscope-app/settings',
+    '/a/grafana-pyroscope-app/ad-hoc',
+    // TODO Pyroscope OSS migration: add new paths below
     '/a/grafana-pyroscope-app/single',
-    // TODO Pyroscope OSS migration: add new paths here
   ].includes(window.location.pathname);
 }
 
@@ -42,7 +44,7 @@ export function App(props: AppRootProps) {
   const unsubscribeRef = useRef<unknown>(null);
 
   // disable Redux in migrated pages
-  if (!isPageMigratedFromPyroscopeOSS() && !unsubscribeRef.current) {
+  if (!shouldSetupReduxQuerySync() && !unsubscribeRef.current) {
     // we have to register as soon as possible to prevent loading apps before having parsed the URL parameters
     // we do this here and not at the top-level module scope so we can enable the plugin to be preloaded without setting history listeners,
     // which could cause conflicts with other parts of the platform or plugins

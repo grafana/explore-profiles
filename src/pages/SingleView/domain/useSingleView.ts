@@ -20,14 +20,14 @@ export function useSingleView() {
     profile,
     refetch,
   } = useFetchProfileAndTimeline({
-    // determining the query and maxNodes can be asynchronous
+    // determining query and maxNodes can be asynchronous
     enabled: Boolean(query && maxNodes),
     query,
     timeRange,
     maxNodes,
   });
 
-  // determining the query and maxNodes can be asynchronous
+  // determining query and maxNodes can be asynchronous
   const isLoading = !query || !maxNodes || isFetchingSettings || isFetching;
 
   const timelinePanelTitle = useGetProfileMetricByType(profile?.metadata?.name)?.description;

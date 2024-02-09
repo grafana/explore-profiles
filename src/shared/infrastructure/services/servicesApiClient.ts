@@ -41,6 +41,7 @@ class ServicesApiClient extends ApiClient {
   }
 
   list({ timeRange }: { timeRange: TimeRange }): Promise<Services> {
+    // all /querier requests: timerange in Unix time ms (unix * 1000)
     const start = timeRange.from.unix() * 1000;
     const end = timeRange.to.unix() * 1000;
 

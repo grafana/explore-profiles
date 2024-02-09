@@ -9,7 +9,7 @@ const apiClient = new ApiClient();
 type FetchParams = {
   query: string;
   timeRange: TimeRange;
-  maxNodes?: number;
+  maxNodes: number | null;
   enabled: boolean;
 };
 
@@ -22,6 +22,7 @@ type FetchResponse = {
 };
 
 export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled }: FetchParams): FetchResponse {
+  // /pyroscope/render requests: timerange can be YYYYDDMM, Unix time, Unix time in ms (unix * 1000)
   const from = Number(timeRange.from.unix()) * 1000;
   const until = Number(timeRange.to.unix()) * 1000;
 
