@@ -19,8 +19,7 @@ export function useFetchServices({ timeRange, enabled }: FetchParams): FetchResp
     enabled,
     // for UX: keep previous data while fetching -> the dropdowns do not re-render (causing layout shifts)
     placeholderData: (previousData) => previousData,
-    // to have a stable key, we use the raw values in case relative time ranges are passed (e.g. "now-5m")
-    queryKey: [timeRange.raw.from, timeRange.raw.to],
+    queryKey: [timeRange.from, timeRange.to],
     queryFn: () => {
       servicesApiClient.abort();
       return servicesApiClient.list({ timeRange });
