@@ -45,13 +45,11 @@ export function translatePyroscopeTimeRangeToGrafana(from: string, until: string
     to: translateToGrafanaRawTimeRangePart(until),
   };
 
-  const timeRange: TimeRange = {
+  return {
     raw,
     from: dateTimeParse(raw.from),
     to: dateTimeParse(raw.to),
   };
-
-  return timeRange;
 }
 
 function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string | number): string {

@@ -10,7 +10,7 @@ describe('async determineDefaultApp(apps)', () => {
   describe('when the user settings contain a default app', () => {
     it('should return the first "cpu app" that matches the default app', async () => {
       // @ts-expect-error
-      userStorage.get.mockResolvedValue({
+      userStorage.get.mockReturnValue({
         defaultApp: 'ride-sharing-app',
       });
 
@@ -41,7 +41,7 @@ describe('async determineDefaultApp(apps)', () => {
     describe('if no "cpu app" is found', () => {
       it('should return the first ".itimer app" that matches the default app', async () => {
         // @ts-expect-error
-        userStorage.get.mockResolvedValue({
+        userStorage.get.mockReturnValue({
           defaultApp: 'ride-sharing-app',
         });
 
@@ -73,7 +73,7 @@ describe('async determineDefaultApp(apps)', () => {
     describe('otherwise', () => {
       it('it should return the first app that matches the default app', async () => {
         // @ts-expect-error
-        userStorage.get.mockResolvedValue({
+        userStorage.get.mockReturnValue({
           defaultApp: 'ride-sharing-app',
         });
 
@@ -98,7 +98,7 @@ describe('async determineDefaultApp(apps)', () => {
   describe('when the user settings does not contain a default app', () => {
     it('should return the first "cpu app"', async () => {
       // @ts-expect-error
-      userStorage.get.mockResolvedValue(null);
+      userStorage.get.mockReturnValue(null);
 
       const apps = [
         {
@@ -127,7 +127,7 @@ describe('async determineDefaultApp(apps)', () => {
     describe('if no "cpu app" is found', () => {
       it('should return the first ".itimer app"', async () => {
         // @ts-expect-error
-        userStorage.get.mockResolvedValue(null);
+        userStorage.get.mockReturnValue(null);
 
         const apps = [
           {
@@ -157,7 +157,7 @@ describe('async determineDefaultApp(apps)', () => {
     describe('otherwise', () => {
       it('it should return the first app', async () => {
         // @ts-expect-error
-        userStorage.get.mockResolvedValue(null);
+        userStorage.get.mockReturnValue(null);
 
         const apps = [
           {
