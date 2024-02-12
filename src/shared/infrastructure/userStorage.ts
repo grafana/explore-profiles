@@ -7,11 +7,11 @@ class UserStorage {
     SETTINGS: `${plugin.id}.userSettings`,
   };
 
-  async has(itemName: string): Promise<boolean> {
+  has(itemName: string): boolean {
     return this.#storage.hasOwnProperty(itemName);
   }
 
-  async get(itemName: string): Promise<null | any> {
+  get(itemName: string): null | any {
     if (!this.has(itemName)) {
       return null;
     }
@@ -24,8 +24,10 @@ class UserStorage {
     }
   }
 
-  async set(itemName: string, value: any): Promise<void> {
-    this.#storage.setItem(itemName, JSON.stringify(value));
+  set(itemName: string, value: any): void {
+    try {
+      this.#storage.setItem(itemName, JSON.stringify(value));
+    } catch {}
   }
 }
 

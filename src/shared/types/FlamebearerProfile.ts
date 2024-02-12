@@ -1,11 +1,4 @@
-export type Profile = {
-  id: string;
-  name: string;
-  profileTypes: string[];
-  profile: FlamebearerProfile | null;
-};
-
-type FlamebearerProfile = {
+export type FlamebearerProfile = {
   version: number;
   flamebearer: Flamebearer;
   metadata: {

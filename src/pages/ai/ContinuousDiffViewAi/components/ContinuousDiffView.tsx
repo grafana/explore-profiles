@@ -23,9 +23,9 @@ import {
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
 import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
+import { isLoadingOrReloading } from '@shared/ui/isLoadingOrReloading';
 import React, { useEffect } from 'react';
 
-import { isLoadingOrReloading } from '../../../../shared/ui/loading';
 import { getStyles } from '../../ContinuousSingleViewAi/components/ContinuousSingleView';
 import AiPanel from '../../shared/AiPanel';
 import { AskAiButton } from '../../shared/AskAiButton';

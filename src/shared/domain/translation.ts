@@ -1,6 +1,11 @@
 import { AbsoluteTimeRange, DateTime, dateTime, dateTimeParse, RawTimeRange, TimeRange } from '@grafana/data';
 import Color from 'color';
 
+export type PyroscopeTimeRange = {
+  from: string;
+  until: string;
+};
+
 function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
   // Pyroscope uses seconds from 1970 as a string, or relative format (e.g., now-5s)
   // First let's see if we can derive a number
@@ -24,7 +29,7 @@ function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
       // Pyroscope does not support dates that are pre-Y2K.
       // We assume that if the date is Y2K or greater, it is already being expressed in milliseconds,
       // so no conversion is done.
-      console.warn('Assuming date is expressed in milliseconds already', { date: pyroscopeRangePart, year });
+      // console.warn('Assuming date is expressed in milliseconds already', { date: pyroscopeRangePart, year });
       return dateTime(asNumber);
     }
   }
@@ -34,22 +39,20 @@ function translateToGrafanaRawTimeRangePart(pyroscopeRangePart: string) {
   return dateTime(asNumber * 1000);
 }
 
-export function translatePyroscopeTimeRangeToGrafana(from: string, until: string) {
+export function translatePyroscopeTimeRangeToGrafana(from: string, until: string): TimeRange {
   const raw: RawTimeRange = {
     from: translateToGrafanaRawTimeRangePart(from),
     to: translateToGrafanaRawTimeRangePart(until),
   };
 
-  const timeRange: TimeRange = {
+  return {
     raw,
     from: dateTimeParse(raw.from),
     to: dateTimeParse(raw.to),
   };
-
-  return timeRange;
 }
 
-function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string | number) {
+function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string | number): string {
   if (typeof rawTimeRangePart === 'string') {
     return rawTimeRangePart;
   } else if (typeof rawTimeRangePart === 'number') {
@@ -60,7 +63,7 @@ function stringifyRawTimeRangePart(rawTimeRangePart: DateTime | string | number)
   return Math.round(rawTimeRangePart.unix()).toString();
 }
 
-function getPyroscopeCompatibleRawRange(timeRange: TimeRange) {
+function getPyroscopeCompatibleRawRange(timeRange: TimeRange): RawTimeRange {
   const { from, to } = timeRange.raw;
 
   for (const time of [from, to]) {
@@ -74,7 +77,7 @@ function getPyroscopeCompatibleRawRange(timeRange: TimeRange) {
   return timeRange.raw;
 }
 
-export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange) {
+export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange): PyroscopeTimeRange {
   const raw = getPyroscopeCompatibleRawRange(timeRange);
 
   const from = stringifyRawTimeRangePart(raw.from);
@@ -83,21 +86,21 @@ export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange) {
   return { from, until };
 }
 
-export function translateGrafanaAbsoluteTimeRangeToPyroscope(timeRange: AbsoluteTimeRange) {
+export function translateGrafanaAbsoluteTimeRangeToPyroscope(timeRange: AbsoluteTimeRange): PyroscopeTimeRange {
   const from = stringifyRawTimeRangePart(floorTenSeconds(timeRange.from));
   const until = stringifyRawTimeRangePart(ceilTenSeconds(timeRange.to));
   return { from, until };
 }
 
-export function floorTenSeconds(milliseconds: number) {
+export function floorTenSeconds(milliseconds: number): number {
   return Math.floor(milliseconds / 10000) * 10000;
 }
 
-export function ceilTenSeconds(milliseconds: number) {
+export function ceilTenSeconds(milliseconds: number): number {
   return Math.ceil(milliseconds / 10000) * 10000;
 }
 
-export function stringifyPyroscopeColor(color: string | undefined | Color) {
+export function stringifyPyroscopeColor(color: string | undefined | Color): string | undefined {
   if (typeof color === 'string' || color === undefined) {
     return color;
   }

@@ -105,7 +105,7 @@ function useBuildServiceNameOptions() {
 
       setSelectedServiceName(serviceName);
 
-      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: serviceName }).catch(() => {}); // fire & forget
+      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: serviceName });
     },
   };
 }

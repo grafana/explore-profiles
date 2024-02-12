@@ -27,7 +27,7 @@ import {
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
 import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
 import { createTooltip } from '@shared/ui/createTooltip';
-import { isLoadingOrReloading } from '@shared/ui/loading';
+import { isLoadingOrReloading } from '@shared/ui/isLoadingOrReloading';
 import React, { useEffect } from 'react';
 
 import AiPanel from '../../shared/AiPanel';

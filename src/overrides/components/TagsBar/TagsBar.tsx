@@ -1,4 +1,3 @@
-import { Query } from '@pyroscope/models/query';
 import { useAppSelector } from '@pyroscope/redux/hooks';
 import { selectContinuousState, TagsState } from '@pyroscope/redux/reducers/continuous';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
@@ -7,18 +6,21 @@ import React from 'react';
 
 export type TagsBarProps = {
   /** the current query */
-  query: Query;
-  /** callback for when the same query is submitted again */
+  query: string;
+  /** callback for when a new query is selected */
   onSetQuery: (q: string) => void;
 
   /* TODO: deprecate tags, onSelectedLabel and onRefresh once Pyroscope OSS migration is finished */
+
   /** the state with existing tags */
   // @deprecated
   tags?: TagsState;
+
   /** callback for when a label is selected */
   // @deprecated
-  onSelectedLabel?: (label: string, query: Query) => void;
-  /** callback for when a new query is selected */
+  onSelectedLabel?: (label: string, query: string) => void;
+
+  /** callback for when the same query is submitted again */
   // @deprecated
   onRefresh?: () => void;
 };

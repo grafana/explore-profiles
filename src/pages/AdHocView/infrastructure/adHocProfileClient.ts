@@ -1,10 +1,10 @@
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 
-import { Profile } from '../domain/Profile';
+import { AdHocProfile } from '../domain/AdHocProfile';
 import { stripBase64Prefix } from './helpers/stripBase64Prefix';
 
 class AdHocProfileClient extends ApiClient {
-  async get(profileId: string, profileType: string): Promise<Profile> {
+  async get(profileId: string, profileType: string): Promise<AdHocProfile> {
     const response = await this.fetch('/adhocprofiles.v1.AdHocProfileService/Get', {
       method: 'POST',
       body: JSON.stringify({
@@ -23,7 +23,7 @@ class AdHocProfileClient extends ApiClient {
     };
   }
 
-  async uploadSingle(file: File): Promise<Profile> {
+  async uploadSingle(file: File): Promise<AdHocProfile> {
     const profile = await this._readProfileFile(file);
 
     const response = await this.fetch('/adhocprofiles.v1.AdHocProfileService/Upload', {
