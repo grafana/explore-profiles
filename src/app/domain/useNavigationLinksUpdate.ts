@@ -1,97 +1,60 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 
 import { PLUGIN_BASE_URL } from '../../constants';
 import plugin from '../../plugin.json';
 
-const ROUTES = plugin.includes.map((a) => a.path.replace('%PLUGIN_ID%', plugin.id));
-
 // Prefixes the route with the base URL of the plugin
 export function prefixRoute(route: string): string {
-  // Replace duplicate slashes
-  return `${PLUGIN_BASE_URL}/${route}`.replace(/\/{2,}/g, '/');
+  return `${PLUGIN_BASE_URL}/${route}`.replace(/\/{2,}/g, '/'); // Replace duplicate slashes
 }
 
-function getOriginalHref(el: Element) {
-  const originalHref = el.getAttribute('data-original-href');
-  const href = el.getAttribute('href');
+const NAVIGATION_ROUTES = plugin.includes
+  .map(({ path }) => path.replace('%PLUGIN_ID%', plugin.id))
+  // filter out pages that don't need URL search parameters update
+  .filter((path) => !/(\/settings|\/ad-hoc)/.test(path));
 
-  // Already set up
-  if (originalHref) {
-    return originalHref;
-  }
+const findMenuLinks = () =>
+  Array.from(document.querySelectorAll(`a[href^="/a/${plugin.id}/"]`))
+    .filter((link: Element) => {
+      const href = link.getAttribute('data-original-href') || link.getAttribute('href');
+      return href && NAVIGATION_ROUTES.includes(href);
+    })
+    .map((link: Element) => {
+      if (!link.getAttribute('data-original-href') && link.getAttribute('href')) {
+        link.setAttribute('data-original-href', link.getAttribute('href') as string);
+      }
 
-  // For some reason href is not set, there's nothing we can do
-  if (!href) {
+      return link;
+    });
+
+const onHistoryChange = () => {
+  const newSearch = new URLSearchParams(window.location.search).toString();
+  if (!newSearch) {
     return;
   }
 
-  // Set up
-  el.setAttribute('data-original-href', href);
-  return href;
-}
+  findMenuLinks().forEach((link: Element) => {
+    const newHref = `${link.getAttribute('data-original-href')}?${newSearch}`;
+    link.setAttribute('href', newHref);
+  });
+};
 
-function setHrefAttribute(fn: (href: string) => string) {
-  return function (el: Element) {
-    const href = getOriginalHref(el);
-    if (!href) {
-      return;
-    }
-
-    el.setAttribute('href', fn(href));
-  };
-}
-
-/*
- * update navigation links with existing query parameters
- * so that current state is kept when changing routes
- */
 export function useNavigationLinksUpdate() {
-  const location = useLocation();
-
   useEffect(() => {
-    function findSidebarLinks() {
-      // classic menu vs "mega menu"
-      const links =
-        document.querySelectorAll(`[role="tablist"] a[role="tab"][href^="/a/${plugin.id}"]`) ||
-        document.querySelectorAll('[data-testid="data-testid Nav menu item"]');
+    onHistoryChange();
 
-      if (!links.length) {
-        return;
-      }
-
-      return (
-        Array.from(links)
-          // Only care about routes that are defined in plugin.json
-          .filter((a) => {
-            const href = getOriginalHref(a);
-            if (!href) {
-              return false;
-            }
-
-            return ROUTES.includes(href);
-          })
-      );
-    }
-
-    const sidebarLinks = findSidebarLinks();
-    sidebarLinks?.forEach(setHrefAttribute((href) => concatQueryParams(href, location.search)));
+    window.addEventListener('pushstate', onHistoryChange);
+    window.addEventListener('popstate', onHistoryChange);
 
     return () => {
-      sidebarLinks?.forEach(setHrefAttribute((href) => href));
+      findMenuLinks().forEach((link: Element) => {
+        if (link.getAttribute('data-original-href')) {
+          link.setAttribute('href', link.getAttribute('data-original-href') as string);
+        }
+      });
+
+      window.removeEventListener('popstate', onHistoryChange);
+      window.removeEventListener('pushstate', onHistoryChange);
     };
-  }, [location.pathname, location.search]);
-}
-
-// TODO: this way of concatenating may not be the best
-function concatQueryParams(basepath?: string, query?: string) {
-  if (!basepath) {
-    return '';
-  }
-
-  if (!query) {
-    return basepath;
-  }
-
-  return `${basepath}${query}`;
+  }, []);
 }

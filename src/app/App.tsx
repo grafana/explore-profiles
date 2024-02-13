@@ -8,9 +8,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
 
+import { Routes } from './domain/Routes';
 import './infrastructure/faro';
 import { Onboarding } from './ui/Onboarding/Onboarding';
-import { Routes } from './ui/Routes';
 import './ui/styles.scss';
 import { TitleReplacement } from './ui/TitleReplacement';
 

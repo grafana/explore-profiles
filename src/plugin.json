@@ -45,14 +45,6 @@
     },
     {
       "type": "page",
-      "name": "Single view (legacy)",
-      "path": "/a/%PLUGIN_ID%/single-legacy",
-      "role": "Viewer",
-      "addToNav": true,
-      "defaultNav": false
-    },
-    {
-      "type": "page",
       "name": "Single view",
       "path": "/a/%PLUGIN_ID%/single",
       "role": "Viewer",
