@@ -1,4 +1,4 @@
-FROM aleksandarxpetrov/pyroscope:feat-ad-hoc-component-6913c0991
+FROM docker.io/grafana/pyroscope:latest
 
 USER root
 

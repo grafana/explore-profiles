@@ -25,7 +25,8 @@
     "e2e:local:watch": "yarn e2e:local -- --ui",
     "e2e:local:codegen": "playwright codegen",
     "e2e:ci:server:up": "docker-compose -f docker-compose.e2e.yaml up --build -d",
-    "e2e:ci": "docker run --network host -v $(pwd)/e2e:/app/e2e $(docker build -q -t pyroscope-app-plugin-e2e:latest -f Dockerfile.plugin.e2e .)",
+    "pree2e:ci": "docker build -q -t pyroscope-app-plugin-e2e:latest -f Dockerfile.plugin.e2e .",
+    "e2e:ci": " docker run --network host -v $(pwd)/e2e:/app/e2e --name pyroscope-app-plugin-e2e pyroscope-app-plugin-e2e:latest",
     "e2e:ci:server:down": "docker-compose down"
   },
   "lint-staged": {
