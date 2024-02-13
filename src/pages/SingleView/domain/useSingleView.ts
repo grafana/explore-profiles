@@ -34,10 +34,10 @@ export function useSingleView() {
 
   const isLoading = isFetchingSettings || isFetching;
 
-  const { profileType } = parseQuery(query);
+  const { profileMetricId } = parseQuery(query);
 
   const timelinePanelTitle =
-    getProfileMetric(profileType as ProfileMetricId).description ||
+    getProfileMetric(profileMetricId as ProfileMetricId).description ||
     getProfileMetricByType(profile?.metadata.name as string)?.description ||
     '';
 
@@ -56,7 +56,7 @@ export function useSingleView() {
     actions: {
       setQuery,
       setTimeRange,
-      refetch: () => refetch(),
+      refetch,
     },
   };
 }

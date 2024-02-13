@@ -1,9 +1,19 @@
-export function parseQuery(query: string) {
-  const [, service = ''] = query.match(/.+\{.*service_name="([^"]+)".*\}/) || [];
-  const [, profileType = ''] = query.match(/([^{]+)\{.*}/) || [];
+type ParsedQuery = {
+  serviceId: string;
+  profileMetricId: string;
+};
 
-  return { service, profileType };
+export function parseQuery(query: string): ParsedQuery {
+  const [, serviceId = ''] = query.match(/.+\{.*service_name="([^"]+)".*\}/) || [];
+  const [, profileMetricId = ''] = query.match(/([^{]+)\{.*}/) || [];
+
+  return { serviceId, profileMetricId };
 }
 
-export const buildQuery = ({ service, profileType }: { service: string; profileType: string }) =>
-  `${profileType}{service_name="${service}"}`;
+type BuildQueryParams = {
+  serviceId: string;
+  profileMetricId: string;
+};
+
+export const buildQuery = ({ serviceId, profileMetricId }: BuildQueryParams): string =>
+  `${profileMetricId}{service_name="${serviceId}"}`;

@@ -38,18 +38,18 @@ export function Toolbar({ isLoading, onRefresh }: ToolbarProps) {
             <Select<string>
               placeholder={data.servicePlaceHolder}
               options={data.serviceOptions}
-              value={data.selectedService}
-              onChange={actions.setService}
+              value={data.selectedServiceId}
+              onChange={actions.selectService}
               aria-label="Services list"
             />
           </InlineField>
 
           <InlineField label="Profile" data-testid="profile-types-dropdown">
             <Select<string>
-              placeholder={data.profileTypePlaceHolder}
-              options={data.profileTypeOptions}
-              value={data.selectedProfileType}
-              onChange={actions.setProfileType}
+              placeholder={data.profilePlaceHolder}
+              options={data.profileOptions}
+              value={data.selectedProfileId}
+              onChange={actions.selectProfile}
               aria-label="Profiles list"
             />
           </InlineField>

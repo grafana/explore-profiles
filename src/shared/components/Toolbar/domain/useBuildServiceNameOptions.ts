@@ -1,5 +1,5 @@
 import { SelectableValue } from '@grafana/data';
-import { getDefaultProfileType } from '@shared/domain/url-params/getDefaultServiceAndProfileType';
+import { getDefaultProfile } from '@shared/domain/url-params/getDefaultServiceAndProfile';
 import { buildQuery, parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { Services } from '@shared/infrastructure/services/servicesApiClient';
@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 
 export function useBuildServiceNameOptions(services: Services) {
   const [query, setQuery] = useQueryFromUrl();
-  const { service } = parseQuery(query);
+  const { serviceId } = parseQuery(query);
 
   const serviceOptions: Array<SelectableValue<string>> = useMemo(
     () =>
@@ -24,16 +24,16 @@ export function useBuildServiceNameOptions(services: Services) {
 
   return {
     serviceOptions,
-    selectedService: serviceOptions.length ? service : null,
-    setService(option: SelectableValue<string>) {
-      const newService = option.value || '';
+    selectedServiceId: serviceOptions.length ? serviceId : null,
+    selectService(option: SelectableValue<string>) {
+      const newServiceId = option.value || '';
 
-      const newProfileType =
-        getDefaultProfileType(newService, services) || Array.from(services.get(newService)?.values() || [])[0]?.id;
+      const newProfileMetricId =
+        getDefaultProfile(newServiceId, services) || Array.from(services.get(newServiceId)?.values() || [])[0]?.id;
 
-      setQuery(buildQuery({ service: newService, profileType: newProfileType }));
+      setQuery(buildQuery({ serviceId: newServiceId, profileMetricId: newProfileMetricId }));
 
-      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: newService });
+      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: newServiceId });
     },
   };
 }

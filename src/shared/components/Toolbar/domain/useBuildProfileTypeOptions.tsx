@@ -20,10 +20,10 @@ export function useBuildProfileTypeOptions(services: Services) {
   const styles = useStyles2(getStyles);
 
   const [query, setQuery] = useQueryFromUrl();
-  const { service, profileType } = parseQuery(query);
+  const { serviceId, profileMetricId } = parseQuery(query);
 
-  const profileTypeOptions: Array<SelectableValue<string>> = useMemo(() => {
-    const profileMetrics = service ? Array.from(services.get(service)?.values() || []) : [];
+  const profileOptions: Array<SelectableValue<string>> = useMemo(() => {
+    const profileMetrics = serviceId ? Array.from(services.get(serviceId)?.values() || []) : [];
 
     return profileMetrics
       .sort((a, b) => a.type.localeCompare(b.type))
@@ -38,15 +38,15 @@ export function useBuildProfileTypeOptions(services: Services) {
         ) as unknown as string,
         imgUrl: 'public/plugins/grafana-pyroscope-app/img/logo.svg',
       }));
-  }, [service, services, styles.profileName]);
+  }, [serviceId, services, styles.profileName]);
 
   return {
-    profileTypeOptions,
-    selectedProfileType: profileTypeOptions.length ? profileType : null,
-    setProfileType(option: SelectableValue<string>) {
-      const newProfileType = option.value || '';
+    profileOptions,
+    selectedProfileId: profileOptions.length ? profileMetricId : null,
+    selectProfile(option: SelectableValue<string>) {
+      const newProfileMetricId = option.value || '';
 
-      setQuery(buildQuery({ service, profileType: newProfileType }));
+      setQuery(buildQuery({ serviceId, profileMetricId: newProfileMetricId }));
     },
   };
 }

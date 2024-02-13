@@ -2,7 +2,7 @@ import { useFetchServices } from '@shared/infrastructure/services/useFetchServic
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { useEffect, useState } from 'react';
 
-import { getDefaultProfileType, getDefaultServiceAndProfileType } from './getDefaultServiceAndProfileType';
+import { getDefaultProfile, getDefaultServiceAndProfile } from './getDefaultServiceAndProfile';
 import { buildQuery } from './parseQuery';
 import { parseUrlSearchParams } from './parseUrlSearchParams';
 import { pushNewUrl } from './pushNewUrl';
@@ -29,13 +29,13 @@ function useSetDefaultQuery(): string {
     return query;
   }
 
-  const serviceFromUserSettings = !hasQuery ? userStorage.get(userStorage.KEYS.SETTINGS)?.defaultApp : '';
+  const serviceIdFromUserSettings = !hasQuery ? userStorage.get(userStorage.KEYS.SETTINGS)?.defaultApp : '';
 
-  if (serviceFromUserSettings && services.has(serviceFromUserSettings)) {
-    const profileType = getDefaultProfileType(serviceFromUserSettings, services);
+  if (serviceIdFromUserSettings && services.has(serviceIdFromUserSettings)) {
+    const profileMetricId = getDefaultProfile(serviceIdFromUserSettings, services);
 
-    if (profileType) {
-      query = buildQuery({ service: serviceFromUserSettings, profileType });
+    if (profileMetricId) {
+      query = buildQuery({ serviceId: serviceIdFromUserSettings, profileMetricId });
 
       setQuery(query);
 
@@ -43,9 +43,9 @@ function useSetDefaultQuery(): string {
     }
   }
 
-  const [service, profileType] = getDefaultServiceAndProfileType(services);
+  const [serviceId, profileMetricId] = getDefaultServiceAndProfile(services);
 
-  query = buildQuery({ service, profileType });
+  query = buildQuery({ serviceId, profileMetricId });
 
   setQuery(query);
 
