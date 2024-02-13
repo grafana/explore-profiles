@@ -104,5 +104,6 @@ export function stringifyPyroscopeColor(color: string | undefined | Color): stri
   if (typeof color === 'string' || color === undefined) {
     return color;
   }
+
   return color.toString();
 }

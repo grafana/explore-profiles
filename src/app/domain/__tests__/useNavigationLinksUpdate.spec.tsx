@@ -1,7 +1,5 @@
 import { act, render, screen } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
 import React from 'react';
-import { Router, useHistory } from 'react-router-dom';
 
 import plugin from '../../../plugin.json';
 import { useNavigationLinksUpdate } from '../../domain/useNavigationLinksUpdate';
@@ -10,22 +8,31 @@ function prefixWithPluginPath(path?: string) {
   return ['/a', plugin.id, path].join('/');
 }
 
-describe('useUpdateSidebarLinks', () => {
+function TestComponent() {
+  useNavigationLinksUpdate();
+  return null;
+}
+
+function SetupComponent({ children, compEnabled = true }: { children?: React.ReactNode; compEnabled?: boolean }) {
+  return (
+    <>
+      {children}
+      {compEnabled && <TestComponent />}
+    </>
+  );
+}
+
+describe('useNavigationLinksUpdate()', () => {
   describe('no sidebar links available', () => {
     it('does not fail', () => {
-      const history = createMemoryHistory();
-
-      const renderFn = () => render(<SetupComponent history={history} />);
-
-      expect(renderFn).not.toThrow();
+      expect(() => render(<SetupComponent />)).not.toThrow();
     });
   });
 
   describe('when current location has no query params', () => {
     it('does not change href', () => {
-      const history = createMemoryHistory();
       render(
-        <SetupComponent history={history}>
+        <SetupComponent>
           <div role="tablist">
             <a href={prefixWithPluginPath('single')} role="tab" />
           </div>
@@ -38,9 +45,8 @@ describe('useUpdateSidebarLinks', () => {
 
   describe('does not apply to routes not defined in plugin.json', () => {
     it('does not change href', () => {
-      const history = createMemoryHistory();
       render(
-        <SetupComponent history={history}>
+        <SetupComponent>
           <div role="tablist">
             <a href={prefixWithPluginPath('foo')} role="tab" />
           </div>
@@ -53,11 +59,10 @@ describe('useUpdateSidebarLinks', () => {
 
   describe('when current location has query params', () => {
     it('appends them to sidebar', () => {
-      const history = createMemoryHistory({
-        initialEntries: ['/route?foo=bar'],
-      });
+      history.pushState(null, '', '?foo=bar');
+
       render(
-        <SetupComponent history={history}>
+        <SetupComponent>
           <div role="tablist">
             <a href={prefixWithPluginPath('single')} role="tab" />
           </div>
@@ -70,43 +75,41 @@ describe('useUpdateSidebarLinks', () => {
 
   describe('changes routes', () => {
     it('changes sidebar', () => {
-      const history = createMemoryHistory();
-      const Comp = (
-        <SetupComponent history={history}>
+      const Comp = (key: number) => (
+        <SetupComponent key={key}>
           <div role="tablist">
             <a href={prefixWithPluginPath('single')} role="tab" />
           </div>
         </SetupComponent>
       );
-      const { rerender } = render(Comp);
-      expect(screen.queryByRole('tab')?.getAttribute('href')).toBe(prefixWithPluginPath('single'));
+      const { rerender } = render(Comp(1));
 
       act(() => {
-        history.push('test?foo=bar');
+        history.pushState(null, '', '?foo=bar');
       });
-      rerender(Comp);
+      rerender(Comp(2));
       expect(screen.queryByRole('tab')?.getAttribute('href')).toBe(prefixWithPluginPath('single?foo=bar'));
 
       act(() => {
-        history.push('test');
+        history.pushState(null, '', 'test');
       });
-      rerender(Comp);
+      rerender(Comp(3));
       expect(screen.queryByRole('tab')?.getAttribute('href')).toBe(prefixWithPluginPath('single'));
     });
   });
 
   describe('when hook is cleaned up', () => {
-    it('returns the linsk to their original state', () => {
-      const history = createMemoryHistory({
-        initialEntries: ['/route?foo=bar'],
-      });
+    it('returns the links to their original state', () => {
+      history.pushState(null, '', '?foo=bar');
+
       const Comp = (compEnabled: boolean) => (
-        <SetupComponent history={history} compEnabled={compEnabled}>
+        <SetupComponent compEnabled={compEnabled}>
           <div role="tablist">
             <a href={prefixWithPluginPath('single')} role="tab" />
           </div>
         </SetupComponent>
       );
+
       const { rerender } = render(Comp(true));
       expect(screen.queryByRole('tab')?.getAttribute('href')).toBe(prefixWithPluginPath('single?foo=bar'));
 
@@ -115,25 +118,3 @@ describe('useUpdateSidebarLinks', () => {
     });
   });
 });
-
-function SetupComponent({
-  history,
-  children,
-  compEnabled = true,
-}: {
-  history: ReturnType<typeof useHistory>;
-  children?: React.ReactNode;
-  compEnabled?: boolean;
-}) {
-  return (
-    <Router history={history}>
-      {children}
-      {compEnabled && <MyComponent />}
-    </Router>
-  );
-}
-
-function MyComponent() {
-  useNavigationLinksUpdate();
-  return null;
-}

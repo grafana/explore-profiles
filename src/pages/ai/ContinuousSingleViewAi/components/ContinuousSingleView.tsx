@@ -26,7 +26,6 @@ import {
 } from '@pyroscope/redux/reducers/continuous';
 import { isAnnotationsEnabled } from '@pyroscope/util/features';
 import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
-import { createTooltip } from '@shared/ui/createTooltip';
 import { isLoadingOrReloading } from '@shared/ui/isLoadingOrReloading';
 import React, { useEffect } from 'react';
 
@@ -189,7 +188,6 @@ function ContinuousSingleView() {
             annotations={annotations}
             selectionType="single"
             ContextMenu={contextMenu}
-            onHoverDisplayTooltip={(data) => createTooltip(query, data, singleView.profile)}
           />
         </Panel>
 
