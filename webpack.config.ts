@@ -47,7 +47,7 @@ const config = async (env): Promise<Configuration> => {
   // Final config
   return merge(baseConfig, {
     resolve: {
-      extensions: ['.ts', '.tsx', '.js', '.json', '.svg'],
+      extensions: ['.ts', '.tsx', '.js', '.json'],
       alias: {
         '@shared': path.resolve(__dirname, './src/shared'),
 
@@ -92,20 +92,6 @@ const config = async (env): Promise<Configuration> => {
     },
     module: {
       rules: [
-        // SVG
-        {
-          test: /\.svg$/,
-          use: [
-            {
-              loader: 'react-svg-loader',
-              options: {
-                svgo: {
-                  plugins: [{ convertPathData: { noSpaceAfterFlags: false } }, { removeViewBox: false }],
-                },
-              },
-            },
-          ],
-        },
         {
           test: /\.(png|jpe?g|gif)$/,
           type: 'asset/resource',

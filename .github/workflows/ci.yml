@@ -99,6 +99,9 @@ jobs:
       - name: Start Grafana server
         run: yarn e2e:ci:server:up
 
+      - name: Prepare e2e tests
+        run: yarn e2e:ci:prepare
+
       # commented to save time during the build (building this action takes ~30s)
       # the next step "Prepare e2e test" takes ~20s, which gives us the time needed
       # uncomment it if you experience flakiness
@@ -109,7 +112,7 @@ jobs:
       #     timeout: 20000
       #     interval: 500
 
-      - name: Run e2e tests
+      - name: Launch e2e tests
         run: yarn e2e:ci
 
       - name: Stop Grafana server

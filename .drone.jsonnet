@@ -2,7 +2,7 @@
 
 local dockerGoImage = 'golang:1.20.4';
 local dockerGrafanaImage = 'grafana/grafana:9.4.2';
-local dockerNodeImage = 'node:19-bullseye';
+local dockerNodeImage = 'node:18-bullseye';
 local dockerE2EImage = 'mcr.microsoft.com/playwright:v1.29.2-focal';
 local dockerGrafanaPluginCIImage = 'grafana/grafana-plugin-ci-e2e:latest';
 

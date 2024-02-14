@@ -26,8 +26,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
 function useIsLlmEnabled() {
   const { value, error, loading } = useAsync(async () => {
-    const openAIHealthDetails = await llms.openai.enabled(); // check if the LLM plugin is enabled and configured
-    return openAIHealthDetails.ok;
+    const enabled = await llms.openai.enabled(); // check if the LLM plugin is enabled and configured
+    return enabled;
   });
 
   if (error) {
