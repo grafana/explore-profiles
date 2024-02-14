@@ -27,7 +27,7 @@ export function SingleView() {
     <>
       <PageTitle title="Single" />
 
-      <Toolbar isLoading={data.isLoading} onRefresh={actions.refetch} />
+      <Toolbar isLoading={data.isLoading} onRefresh={actions.refresh} />
 
       <QueryBuilder
         id="query-builder-single"

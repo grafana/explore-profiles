@@ -1,4 +1,4 @@
-import { TimeRange } from '@grafana/data';
+import { dateTimeParse, TimeRange } from '@grafana/data';
 
 import { ApiClient } from '../http/ApiClient';
 import { getProfileMetric, ProfileMetric } from '../profile-metrics/getProfileMetric';
@@ -42,8 +42,8 @@ class ServicesApiClient extends ApiClient {
 
   list({ timeRange }: { timeRange: TimeRange }): Promise<Services> {
     // all /querier requests: timerange in Unix time ms (unix * 1000)
-    const start = timeRange.from.unix() * 1000;
-    const end = timeRange.to.unix() * 1000;
+    const start = Number(dateTimeParse(timeRange.raw.from).unix()) * 1000;
+    const end = Number(dateTimeParse(timeRange.raw.to).unix()) * 1000;
 
     return this.fetch('/querier.v1.QuerierService/Series', {
       method: 'POST',

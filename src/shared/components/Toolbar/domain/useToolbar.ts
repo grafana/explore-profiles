@@ -5,7 +5,7 @@ import { useTimeRangePicker } from '../ui/useTimeRangePicker';
 import { useBuildProfileTypeOptions } from './useBuildProfileTypeOptions';
 import { useBuildServiceNameOptions } from './useBuildServiceNameOptions';
 
-export function useToolbar() {
+export function useToolbar({ isLoading, onRefresh }: { isLoading: boolean; onRefresh: () => void }) {
   const { timeRange, setTimeRange, zoom, navigate } = useTimeRangePicker();
 
   const { services } = useFetchServices({ timeRange });
@@ -22,6 +22,7 @@ export function useToolbar() {
       profileOptions,
       selectedProfileId,
       timeRange,
+      isLoading,
     },
     actions: {
       selectService,
@@ -36,6 +37,9 @@ export function useToolbar() {
         navigate(true);
       },
       setInterval: noOp,
+      refresh() {
+        onRefresh();
+      },
     },
   };
 }

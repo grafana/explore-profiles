@@ -26,9 +26,9 @@ type ToolbarProps = {
   onRefresh: () => void;
 };
 
-export function Toolbar({ isLoading, onRefresh }: ToolbarProps) {
+export function Toolbar(props: ToolbarProps) {
   const styles = useStyles2(getStyles);
-  const { data, actions } = useToolbar();
+  const { data, actions } = useToolbar(props);
 
   return (
     <div className={styles.toolbar} data-testid="toolbar">
@@ -69,9 +69,9 @@ export function Toolbar({ isLoading, onRefresh }: ToolbarProps) {
           <RefreshPicker
             isOnCanvas={true}
             noIntervalPicker={true}
-            onRefresh={onRefresh}
+            onRefresh={actions.refresh}
             onIntervalChanged={actions.setInterval}
-            isLoading={isLoading}
+            isLoading={data.isLoading}
             width="36px"
           />
         </HorizontalGroup>

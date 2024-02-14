@@ -7,6 +7,7 @@ import {
   getProfileMetricByType,
   ProfileMetricId,
 } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { useFetchServices } from '@shared/infrastructure/services/useFetchServices';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
@@ -23,7 +24,7 @@ export function useSingleView() {
     error: fetchDataError,
     timeline,
     profile,
-    refetch,
+    refetch: refetchProfileAndTimeline,
   } = useFetchProfileAndTimeline({
     // determining query and maxNodes can be asynchronous
     enabled: Boolean(query && maxNodes),
@@ -32,12 +33,12 @@ export function useSingleView() {
     maxNodes,
   });
 
+  const { refetch: refetchServices } = useFetchServices({ timeRange });
+
   const isLoading = isFetchingSettings || isFetching;
 
-  const { profileMetricId } = parseQuery(query);
-
   const timelinePanelTitle =
-    getProfileMetric(profileMetricId as ProfileMetricId).description ||
+    getProfileMetric(parseQuery(query).profileMetricId as ProfileMetricId).description ||
     getProfileMetricByType(profile?.metadata.name as string)?.description ||
     '';
 
@@ -56,7 +57,10 @@ export function useSingleView() {
     actions: {
       setQuery,
       setTimeRange,
-      refetch,
+      refresh() {
+        refetchProfileAndTimeline();
+        refetchServices();
+      },
     },
   };
 }
