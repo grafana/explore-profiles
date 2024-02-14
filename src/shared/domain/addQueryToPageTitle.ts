@@ -3,6 +3,7 @@
  * handling it appropriately when they are not preset
  * and returns only the page title if no query is set
  */
+// TODO: move to each page (see SingleView as example)
 export function addQueryToPageTitle(pageName: string, leftQuery?: string, rightQuery?: string) {
   const separator = ' | ';
 

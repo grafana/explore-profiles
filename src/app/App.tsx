@@ -1,11 +1,10 @@
-import * as React from 'react';
 import { AppRootProps, PageLayoutType, PluginContextProvider } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
 import store from '@pyroscope/redux/store';
 import { setupReduxQuerySync } from '@pyroscope/redux/useReduxQuerySync';
 import { queryClient } from '@shared/infrastructure/react-query/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
 
 import { Routes } from './domain/Routes';
@@ -35,6 +34,8 @@ function shouldSetupReduxQuerySync() {
   ].includes(window.location.pathname);
 }
 
+const renderPageTitle = (title: string) => <TitleReplacement title={title} />;
+
 export function App(props: AppRootProps) {
   const unsubscribeRef = useRef<unknown>(null);
 
@@ -56,14 +57,12 @@ export function App(props: AppRootProps) {
     []
   );
 
-  const renderTitle = React.useCallback((title: string) => <TitleReplacement title={title} />, []);
-
   return (
     <PluginContextProvider meta={props.meta}>
       <QueryClientProvider client={queryClient}>
         <Provider store={store}>
           <Onboarding>
-            <PluginPage layout={PageLayoutType.Standard} renderTitle={renderTitle}>
+            <PluginPage layout={PageLayoutType.Standard} renderTitle={renderPageTitle}>
               <pyroscope-app className="app">
                 <div className="pyroscope-app">
                   <Routes />

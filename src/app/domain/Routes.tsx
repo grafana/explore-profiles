@@ -18,7 +18,21 @@ import { PyroscopeStateWrapper } from './PyroscopeState/PyroscopeStateWrapper';
 import { prefixRoute, useNavigationLinksUpdate } from './useNavigationLinksUpdate';
 import { VersionInfoTooltip } from './VersionInfoTooltip';
 
-/* eslint-enable no-unused-vars */
+const getStyles = (theme: GrafanaTheme2) => ({
+  page: css`
+    background: ${theme.colors.background.canvas};
+    padding: ${theme.spacing(2)};
+    border: ${theme.colors.border.medium} solid 1px;
+  `,
+  versionTips: css`
+    position: relative;
+    left: ${theme.spacing(3.5)};
+    bottom: ${theme.spacing(1)};
+    height: 0px;
+    text-align: right;
+  `,
+});
+
 export function Routes() {
   const styles = useStyles2(getStyles);
   useConsistentTheme();
@@ -68,18 +82,3 @@ export function Routes() {
     </>
   );
 }
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  page: css`
-    background: ${theme.colors.background.canvas};
-    padding: ${theme.spacing(2)};
-    border: ${theme.colors.border.medium} solid 1px;
-  `,
-  versionTips: css`
-    position: relative;
-    left: ${theme.spacing(3.5)};
-    bottom: ${theme.spacing(1)};
-    height: 0px;
-    text-align: right;
-  `,
-});

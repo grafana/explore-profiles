@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 const setMaxNodes = (newMaxNodes: number) => {
   const searchParams = parseUrlSearchParams();
 
-  if (searchParams.get('max-nodes') !== String(newMaxNodes)) {
-    searchParams.set('max-nodes', String(newMaxNodes));
+  if (searchParams.get('maxNodes') !== String(newMaxNodes)) {
+    searchParams.set('maxNodes', String(newMaxNodes));
 
     pushNewUrl(searchParams);
   }
@@ -19,8 +19,8 @@ function useSetDefaultMaxNodes(): number | null {
   const searchParams = parseUrlSearchParams();
   let maxNodes = null;
 
-  if (searchParams.has('max-nodes') && searchParams.get('max-nodes') !== '') {
-    maxNodes = Number(searchParams.get('max-nodes'));
+  if (searchParams.has('maxNodes') && searchParams.get('maxNodes') !== '') {
+    maxNodes = Number(searchParams.get('maxNodes'));
   }
 
   const hasMaxNodes = Boolean(maxNodes);
@@ -56,7 +56,7 @@ export function useMaxNodesFromUrl(): [number | null, (newMaxNodes: number) => v
 
   useEffect(() => {
     const onHistoryChange = () => {
-      const newMaxNodes = parseUrlSearchParams().get('max-nodes');
+      const newMaxNodes = parseUrlSearchParams().get('maxNodes');
 
       if (newMaxNodes !== maxNodes) {
         setInternalMaxNodes(Number(newMaxNodes));

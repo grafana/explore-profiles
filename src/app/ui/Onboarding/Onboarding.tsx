@@ -29,12 +29,7 @@ export function Onboarding({ children }: { children: React.ReactNode }) {
 
   if (waiting && !error) {
     return (
-      // Setting the `text` in `paveNav` prevents a weird jittering effect where Grafana tries to put in a default Plugin Page wrapper.
-      <PluginPage
-        pageNav={{ text: (<Icon name="fa fa-spinner" />) as unknown as string }}
-        renderTitle={loadingTitle}
-        layout={PageLayoutType.Standard}
-      >
+      <PluginPage renderTitle={loadingTitle} layout={PageLayoutType.Standard}>
         <></>
       </PluginPage>
     );

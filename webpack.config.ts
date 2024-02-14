@@ -22,6 +22,7 @@ const config = async (env): Promise<Configuration> => {
   // required
   swcLoaderJsc.baseUrl = path.join(process.cwd(), 'src');
 
+  // TODO: remove me when Pyroscope OSS migration is finished
   // Decorators are only used in pyroscope/public/app/components/ExportData.tsx
   swcLoaderJsc.parser.decorators = true;
 

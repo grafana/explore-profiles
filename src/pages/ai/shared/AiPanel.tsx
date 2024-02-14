@@ -46,7 +46,7 @@ export default function AiPanel({ query, from, until, rightQuery, rightFrom, rig
 
   const displayFollowUpForm = !error && Boolean(reply?.hasFinished);
   const onSubmitFollowUpForm = useCallback(
-    (event: any, question: string) => {
+    (question: string) => {
       const addMessages = reply!.addMessages;
       addMessages([
         {

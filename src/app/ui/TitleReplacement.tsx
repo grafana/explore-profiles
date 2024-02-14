@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { css } from '@emotion/css';
-import { GrafanaTheme2, usePluginContext } from '@grafana/data';
+import { GrafanaTheme2 } from '@grafana/data';
 import { HorizontalGroup, useStyles2, VerticalGroup } from '@grafana/ui';
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -8,21 +8,23 @@ const getStyles = (theme: GrafanaTheme2) => ({
     width: ${theme.spacing(6)};
     height: ${theme.spacing(6)};
   `,
+  subTitle: css`
+    margin-left: 4px;
+  `,
 });
 
-export function TitleReplacement({ title }: { title: string }) {
-  const { meta } = usePluginContext();
-  const logoUrl: string = meta.info.logos.large;
-
+function TitleReplacementComponent({ title }: { title: string }) {
   const styles = useStyles2(getStyles);
 
   return (
     <HorizontalGroup>
-      <img src={logoUrl} className={styles.logo} />
+      <img src="public/plugins/grafana-pyroscope-app/img/logo.svg" className={styles.logo} />
       <VerticalGroup spacing="xs">
         <h1 data-testid="page-title">{title}</h1>
-        <span>Profiles</span>
+        <span className={styles.subTitle}>Profiles</span>
       </VerticalGroup>
     </HorizontalGroup>
   );
 }
+
+export const TitleReplacement = React.memo(TitleReplacementComponent);

@@ -12,8 +12,7 @@ interface Props {
 export function PanelDescription({ description, className }: Props) {
   const styles = useStyles2(getStyles);
 
-  const getDescriptionContent = (): JSX.Element => {
-    // description
+  const getDescriptionContent = () => {
     const panelDescription = typeof description === 'function' ? description() : description;
 
     return (

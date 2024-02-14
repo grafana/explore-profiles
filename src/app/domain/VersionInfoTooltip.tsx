@@ -1,5 +1,7 @@
-import { usePluginContext } from '@grafana/data';
-import { Icon, Toggletip } from '@grafana/ui';
+import { css } from '@emotion/css';
+import { GrafanaTheme2, usePluginContext } from '@grafana/data';
+import { config } from '@grafana/runtime';
+import { Icon, Toggletip, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
 // Extract version information from the package.json files
@@ -15,7 +17,19 @@ const pyroscopeGitInfo = pkg.dependencies['grafana-pyroscope'];
 const pyroscopeCommitSha = pyroscopeGitInfo.split('#')[1];
 const pyroscopeCommitURL = `https://github.com/grafana/pyroscope/commit/${pyroscopeCommitSha}`;
 
+const { buildInfo } = config;
+
+const grafanaCommitURL = `https://github.com/grafana/grafana/commit/${buildInfo.commit}`;
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  term: css`
+    color: ${theme.colors.text.maxContrast};
+    text-transform: uppercase;
+  `,
+});
+
 export function VersionInfoTooltip() {
+  const styles = useStyles2(getStyles);
   const {
     meta: {
       info: { version, updated },
@@ -27,32 +41,36 @@ export function VersionInfoTooltip() {
 
     return (
       <dl>
-        <dt>Plugin version</dt>
-        <dd>{version}</dd>
-        <dt>Last update</dt>
-        <dd>{lastUpdate}</dd>
-        <dt>Commit SHA</dt>
+        <dt className={styles.term}>Grafana {buildInfo.edition}</dt>
         <dd>
-          {' '}
-          <a href={pluginCommitURL} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+          🔗{' '}
+          <a href={grafanaCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
+            v{buildInfo.version}
+          </a>
+        </dd>
+        <dt className={styles.term}>Environment</dt>
+        <dd>{buildInfo.env}</dd>
+        <dt className={styles.term}>Plugin version</dt>
+        <dd>{version}</dd>
+        <dt className={styles.term}>Last update</dt>
+        <dd>{lastUpdate}</dd>
+        <dt className={styles.term}>Commit SHA</dt>
+        <dd>
+          🔗{' '}
+          <a href={pluginCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
             {pluginCommitSha}
           </a>
         </dd>
-        <dt>Pyroscope commit SHA</dt>
+        <dt className={styles.term}>Pyroscope Commit SHA</dt>
         <dd>
-          {' '}
-          <a
-            href={pyroscopeCommitURL}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: 'underline' }}
-          >
+          🔗{' '}
+          <a href={pyroscopeCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
             {pyroscopeCommitSha}
           </a>
         </dd>
       </dl>
     );
-  }, [version, updated]);
+  }, [updated, styles.term, version]);
 
   return (
     <Toggletip content={versionInfo} theme="info" placement="top-start">

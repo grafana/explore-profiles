@@ -4,7 +4,7 @@ import { Button, TextArea, useStyles2 } from '@grafana/ui';
 import React, { KeyboardEvent, useCallback, useState } from 'react';
 
 type AiPanelFollowUpFormProps = {
-  onSubmit: (event: any, question: string) => void;
+  onSubmit: (question: string) => void;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -32,7 +32,7 @@ function useFollowUpForm(onSubmit: AiPanelFollowUpFormProps['onSubmit']) {
       return;
     }
 
-    onSubmit(event, questionToSend);
+    onSubmit(questionToSend);
 
     setQuestion('');
   }, [question, onSubmit]);

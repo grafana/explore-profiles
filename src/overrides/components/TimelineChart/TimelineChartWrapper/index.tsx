@@ -4,13 +4,13 @@ import {
   dateTime,
   FieldColorModeId,
   FieldType,
+  LoadingState,
   MutableDataFrame,
   PanelData,
   rangeUtil,
   TimeRange,
 } from '@grafana/data';
 import { PanelRenderer } from '@grafana/runtime';
-import { LoadingState } from '@grafana/schema';
 import { usePanelContext, useTheme2 } from '@grafana/ui';
 import { markingsFromSelection } from '@pyroscope/components/TimelineChart/markings';
 import useResizeObserver from '@react-hook/resize-observer';

@@ -46,10 +46,6 @@ export interface PanelChromeProps {
    * Handle opening error details view (like inspect / error tab)
    */
   statusMessageOnClick?: (e: React.SyntheticEvent) => void;
-  /**
-   * @deprecated use `actions' instead
-   **/
-  leftItems?: ReactNode[];
   actions?: ReactNode;
   displayMode?: 'default' | 'transparent';
   onCancelQuery?: () => void;
@@ -82,7 +78,6 @@ export function GrafanaPanelBox({
   loadingState,
   statusMessage,
   statusMessageOnClick,
-  leftItems,
   actions,
   onCancelQuery,
   onOpenMenu,
@@ -116,11 +111,6 @@ export function GrafanaPanelBox({
   if (displayMode === 'transparent') {
     containerStyles.backgroundColor = 'transparent';
     containerStyles.border = 'none';
-  }
-
-  /** Old property name now maps to actions */
-  if (leftItems) {
-    actions = leftItems;
   }
 
   const testid = title ? selectors.components.Panels.Panel.title(title) : 'Panel';
@@ -251,7 +241,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       backgroundColor: background,
       border: `1px solid ${borderColor}`,
       position: 'relative',
-      borderRadius: theme.shape.borderRadius(1),
+      borderRadius: theme.shape.radius.default,
       height: '100%',
       display: 'flex',
       flexDirection: 'column',

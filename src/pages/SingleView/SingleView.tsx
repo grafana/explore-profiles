@@ -1,11 +1,8 @@
-import { PageLayoutType } from '@grafana/data';
-import { PluginPage } from '@grafana/runtime';
 import { Spinner } from '@grafana/ui';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { Panel } from '@shared/components/Panel';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
-import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
 import { displayWarning } from '@shared/domain/displayStatus';
 import React from 'react';
 
@@ -27,8 +24,8 @@ export function SingleView() {
   }
 
   return (
-    <PluginPage layout={PageLayoutType.Custom}>
-      <PageTitle title={addQueryToPageTitle('Single', data.query)} />
+    <>
+      <PageTitle title="Single" />
 
       <Toolbar isLoading={data.isLoading} onRefresh={actions.refetch} />
 
@@ -58,6 +55,6 @@ export function SingleView() {
           />
         )}
       </Panel>
-    </PluginPage>
+    </>
   );
 }
