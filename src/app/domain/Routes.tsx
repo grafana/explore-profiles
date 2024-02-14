@@ -27,7 +27,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   versionTips: css`
     position: relative;
     left: ${theme.spacing(3.5)};
-    bottom: ${theme.spacing(1)};
+    bottom: ${theme.spacing(2.5)};
     height: 0px;
     text-align: right;
   `,

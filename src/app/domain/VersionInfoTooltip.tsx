@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, usePluginContext } from '@grafana/data';
 import { config } from '@grafana/runtime';
-import { Icon, Toggletip, useStyles2 } from '@grafana/ui';
+import { IconButton, Toggletip, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
 // Extract version information from the package.json files
@@ -22,9 +22,17 @@ const { buildInfo } = config;
 const grafanaCommitURL = `https://github.com/grafana/grafana/commit/${buildInfo.commit}`;
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  term: css`
-    color: ${theme.colors.text.maxContrast};
-    text-transform: uppercase;
+  list: css`
+    text-align: left;
+
+    & > dt {
+      color: ${theme.colors.text.maxContrast};
+      text-transform: uppercase;
+    }
+
+    & > dd {
+      margin-left: ${theme.spacing(0.5)};
+    }
   `,
 });
 
@@ -40,28 +48,28 @@ export function VersionInfoTooltip() {
     const lastUpdate = new Date(updated).toLocaleString();
 
     return (
-      <dl>
-        <dt className={styles.term}>Grafana {buildInfo.edition}</dt>
+      <dl className={styles.list}>
+        <dt>Grafana {buildInfo.edition}</dt>
         <dd>
           🔗{' '}
           <a href={grafanaCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
             v{buildInfo.version}
           </a>
         </dd>
-        <dt className={styles.term}>Environment</dt>
+        <dt>Environment</dt>
         <dd>{buildInfo.env}</dd>
-        <dt className={styles.term}>Plugin version</dt>
-        <dd>{version}</dd>
-        <dt className={styles.term}>Last update</dt>
-        <dd>{lastUpdate}</dd>
-        <dt className={styles.term}>Commit SHA</dt>
+        <dt>Plugin version</dt>
+        <dd>
+          v{version} - {lastUpdate}
+        </dd>
+        <dt>Plugin Commit SHA</dt>
         <dd>
           🔗{' '}
           <a href={pluginCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
             {pluginCommitSha}
           </a>
         </dd>
-        <dt className={styles.term}>Pyroscope Commit SHA</dt>
+        <dt>Pyroscope Commit SHA</dt>
         <dd>
           🔗{' '}
           <a href={pyroscopeCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
@@ -70,11 +78,11 @@ export function VersionInfoTooltip() {
         </dd>
       </dl>
     );
-  }, [updated, styles.term, version]);
+  }, [updated, styles.list, version]);
 
   return (
     <Toggletip content={versionInfo} theme="info" placement="top-start">
-      <Icon name="info-circle" />
+      <IconButton name="info-circle" aria-label="Version info" />
     </Toggletip>
   );
 }
