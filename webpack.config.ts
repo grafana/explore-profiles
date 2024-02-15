@@ -53,6 +53,8 @@ const config = async (env): Promise<Configuration> => {
 
         // More specific rules first
 
+        '@pyroscope/redux/reducers/notifications': path.resolve(__dirname, './src/overrides/redux/notifications'),
+
         '@pyroscope/services/base': path.resolve(__dirname, './src/overrides/services/base'),
 
         '@pyroscope/util/history': path.resolve(__dirname, './src/overrides/util/history'),
