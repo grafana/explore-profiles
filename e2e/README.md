@@ -31,9 +31,9 @@ E2E_PASSWORD=pass
 
 To launch the tests against a non-local environment (dev, ops, prod):
 
-- Open 1Password
-- Search for "E2E Pyroscope", choose the enviroment you want to target
-- Set these values to the `.env` file
+1. Open the 1Password app
+2. Search for "E2E Pyroscope", choose the enviroment you want to target
+3. Set these values to the `.env` file
 
 By doing so, an [authentication step](https://playwright.dev/docs/auth) will automatically be added before launching the tests.
 
