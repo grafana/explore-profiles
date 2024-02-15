@@ -19,7 +19,7 @@ function useSetDefaultMaxNodes(): number | null {
   const searchParams = parseUrlSearchParams();
   let maxNodes = null;
 
-  if (searchParams.has('maxNodes') && searchParams.get('maxNodes') !== '') {
+  if (searchParams.get('maxNodes')) {
     maxNodes = Number(searchParams.get('maxNodes'));
   }
 
@@ -43,7 +43,7 @@ function useSetDefaultMaxNodes(): number | null {
     return DEFAULT_SETTINGS.maxNodes;
   }
 
-  maxNodes = settings!.maxNodes;
+  maxNodes = settings!.maxNodes || DEFAULT_SETTINGS.maxNodes; // could come undefined from the API
 
   setMaxNodes(maxNodes);
 
