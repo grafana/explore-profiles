@@ -15,9 +15,9 @@ export class HttpClient {
     const fullUrl = `${this.baseUrl}${pathname}`;
     const headers = { ...this.defaultHeaders, ...options?.headers };
     const fullOptions = {
+      signal, // we allow signal to be passed as an option
       ...options,
       headers,
-      signal,
     };
 
     let response;
@@ -29,7 +29,10 @@ export class HttpClient {
         throw new Error(`HTTP error: ${response.status} (${response.statusText})`);
       }
     } catch (error) {
-      (error as any).reason = signal.reason;
+      if (this.isAbortError(error)) {
+        (error as any).reason = options?.signal?.reason || signal.reason;
+      }
+
       throw error;
     }
 
