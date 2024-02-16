@@ -92,7 +92,7 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
 
   const series = timelines.map((timeline, index) => convertToDataFrame(timeline, unit, format, dataLabels[index]));
 
-  // const annotations: DataFrame[] = [];
+  const annotations: DataFrame[] = [];
 
   const subSelections = new RangeAnnotation();
 
@@ -105,9 +105,9 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
     subSelections.addRange({ time: marking.xaxis.from as number, timeEnd: marking.xaxis.to as number, color });
   });
 
-  // if (subSelections.length > 0) {
-  //   annotations.push(subSelections);
-  // }
+  if (subSelections.length > 0) {
+    annotations.push(subSelections);
+  }
 
   const showLegend = dataLabels.length >= 2;
 
@@ -125,7 +125,7 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
     <GrafanaTimeSeries
       series={series}
       showLegend={showLegend}
-      // annotations={annotations}
+      annotations={annotations}
       onChangeTimeRange={onChangeTimeRange}
       timeRange={adjustedRange}
     />
@@ -134,13 +134,13 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
 
 function GrafanaTimeSeries({
   series,
-  // annotations,
+  annotations,
   showLegend,
   onChangeTimeRange,
   timeRange,
 }: {
   series: DataFrame[];
-  // annotations: DataFrame[];
+  annotations: DataFrame[];
   showLegend: boolean;
   onChangeTimeRange: (timeRange: AbsoluteTimeRange) => void;
   timeRange: TimeRange;
@@ -156,7 +156,7 @@ function GrafanaTimeSeries({
     series,
     state: LoadingState.Done,
     timeRange,
-    // annotations,
+    annotations,
   };
 
   // This hack modifies the local panel context to prevent calling `canEdit/canAdd` methods which aren't defined by default.
