@@ -39,7 +39,7 @@ export function AdHocProfileTypeSelector({ profileTypes, onChange }: ProfileSele
   return (
     <div className={styles.selectorContainer}>
       <InlineFieldRow>
-        <InlineField label="Profile type" disabled={!options.length} data-testid="profile-types-dropdown">
+        <InlineField label="Profile" disabled={!options.length} data-testid="profile-types-dropdown">
           {/* added a key to ensure the dropdown is properly reset */}
           <Select key={option?.value} value={option} options={options} onChange={_onChange} width={16} />
         </InlineField>

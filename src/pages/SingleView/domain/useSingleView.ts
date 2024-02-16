@@ -50,6 +50,7 @@ export function useSingleView() {
       fetchDataError,
       timeline,
       profile,
+      noDataAvailable: profile?.flamebearer.numTicks === 0,
       timelinePanelTitle,
       fetchSettingsError,
       settings,
