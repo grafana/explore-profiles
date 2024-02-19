@@ -42,6 +42,7 @@ export function Onboarding({ children }: { children: React.ReactNode }) {
       <PluginPage pageNav={{ text: 'Onboarding' }} layout={PageLayoutType.Custom}>
         <div className={styles.onboardingPage}>
           <button
+            data-testid="close-onboarding-modal"
             className={styles.closeButton}
             onClick={() => {
               setModalClosed(true);
@@ -76,8 +77,8 @@ function OnboardingPage() {
   });
 
   return (
-    <>
-      <div className={styles.hero}>
+    <div data-testid="onboarding-modal">
+      <div className={styles.hero} data-testid="hero">
         <div className={styles.heroTitles}>
           <h1 className={styles.title}>Welcome to Grafana Cloud Profiles</h1>
           <h2 className={styles.subtitle}>
@@ -88,88 +89,94 @@ function OnboardingPage() {
         <img src={HeroImage} className={styles.heroImage}></img>
       </div>
 
-      <h3>What You Can Do</h3>
-      <div className={styles.onboardingRow}>
-        <div className={styles.onboardingPanel}>
-          <img className={styles.onboardingPanelImage} src={ReduceCosts as any as string}></img>
-          <h3 className={styles.onboardingPanelHeader}>Reduce Costs</h3>
-          <p className={styles.onboardingPanelDescription}>
-            Spot CPU spikes, memory leaks, and other inefficiencies with code-level visibility into resource usage.
-            Teams can then optimize their code and lower infrastructure costs.
-          </p>
-        </div>
-        <div className={styles.onboardingPanel}>
-          <img className={styles.onboardingPanelImage} src={DecreaseLatency as any as string}></img>
-          <h3 className={styles.onboardingPanelHeader}>Decrease Latency</h3>
-          <p className={styles.onboardingPanelDescription}>
-            Maintain high speed and efficiency and improve application performance. In a competitive digital world,
-            decreasing latency translates to increasing revenue.
-          </p>
-        </div>
-        <div className={styles.onboardingPanel}>
-          <img className={styles.onboardingPanelImage} src={ResolveIncidents as any as string}></img>
-          <h3 className={styles.onboardingPanelHeader}>Resolve Incidents Faster</h3>
-          <p className={styles.onboardingPanelDescription}>
-            Cut down the mean time to resolution (MTTR) by correlating continuous profiling data with metrics, logs, and
-            traces to quickly identify the root cause of any issue.
-          </p>
+      <div data-testid="what-you-can-do">
+        <h3>What You Can Do</h3>
+        <div className={styles.onboardingRow}>
+          <div className={styles.onboardingPanel}>
+            <img className={styles.onboardingPanelImage} src={ReduceCosts as any as string}></img>
+            <h3 className={styles.onboardingPanelHeader}>Reduce Costs</h3>
+            <p className={styles.onboardingPanelDescription}>
+              Spot CPU spikes, memory leaks, and other inefficiencies with code-level visibility into resource usage.
+              Teams can then optimize their code and lower infrastructure costs.
+            </p>
+          </div>
+          <div className={styles.onboardingPanel}>
+            <img className={styles.onboardingPanelImage} src={DecreaseLatency as any as string}></img>
+            <h3 className={styles.onboardingPanelHeader}>Decrease Latency</h3>
+            <p className={styles.onboardingPanelDescription}>
+              Maintain high speed and efficiency and improve application performance. In a competitive digital world,
+              decreasing latency translates to increasing revenue.
+            </p>
+          </div>
+          <div className={styles.onboardingPanel}>
+            <img className={styles.onboardingPanelImage} src={ResolveIncidents as any as string}></img>
+            <h3 className={styles.onboardingPanelHeader}>Resolve Incidents Faster</h3>
+            <p className={styles.onboardingPanelDescription}>
+              Cut down the mean time to resolution (MTTR) by correlating continuous profiling data with metrics, logs,
+              and traces to quickly identify the root cause of any issue.
+            </p>
+          </div>
         </div>
       </div>
 
-      <h3>How to Get Started</h3>
-      <div className={styles.onboardingRow}>
-        <div className={styles.onboardingPanel}>
-          <div className={styles.onboardingPanelNumber}>
-            <span className={styles.onboardingPanelNumberSpan}>1</span>
+      <div data-testid="how-to-get-started">
+        <h3>How to Get Started</h3>
+        <div className={styles.onboardingRow}>
+          <div className={styles.onboardingPanel}>
+            <div className={styles.onboardingPanelNumber}>
+              <span className={styles.onboardingPanelNumberSpan}>1</span>
+            </div>
+            <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
+            <p className={styles.onboardingPanelDescription}>
+              Use{' '}
+              <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
+                Grafana Agent
+              </StyledLink>{' '}
+              or{' '}
+              <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
+                Pyroscope SDKs
+              </StyledLink>{' '}
+              to push profiles from your applications to Grafana Cloud.
+            </p>
           </div>
-          <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
-          <p className={styles.onboardingPanelDescription}>
-            Use{' '}
-            <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
-              Grafana Agent
-            </StyledLink>{' '}
-            or{' '}
-            <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
-              Pyroscope SDKs
-            </StyledLink>{' '}
-            to push profiles from your applications to Grafana Cloud.
-          </p>
-        </div>
-        <div className={styles.onboardingPanel}>
-          <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
-            <span className={styles.onboardingPanelNumberSpan}>2</span>
+          <div className={styles.onboardingPanel}>
+            <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
+              <span className={styles.onboardingPanelNumberSpan}>2</span>
+            </div>
+            <h3 className={styles.onboardingPanelHeader}>Configure Your Applications</h3>
+            <p className={styles.onboardingPanelDescription}>
+              Go to <StyledLink href={url}>Grafana Cloud Stack settings</StyledLink> to find your Grafana Cloud
+              Credentials.
+            </p>
           </div>
-          <h3 className={styles.onboardingPanelHeader}>Configure Your Applications</h3>
-          <p className={styles.onboardingPanelDescription}>
-            Go to <StyledLink href={url}>Grafana Cloud Stack settings</StyledLink> to find your Grafana Cloud
-            Credentials.
-          </p>
-        </div>
-        <div className={styles.onboardingPanel}>
-          <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
-            <span className={styles.onboardingPanelNumberSpan}>3</span>
+          <div className={styles.onboardingPanel}>
+            <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
+              <span className={styles.onboardingPanelNumberSpan}>3</span>
+            </div>
+            <h3 className={styles.onboardingPanelHeader}>Start Getting Performance Insights</h3>
+            <p className={styles.onboardingPanelDescription}>
+              Once you&apos;re done with initial setup, refresh this page to see your profiling data.
+            </p>
           </div>
-          <h3 className={styles.onboardingPanelHeader}>Start Getting Performance Insights</h3>
-          <p className={styles.onboardingPanelDescription}>
-            Once you&apos;re done with initial setup, refresh this page to see your profiling data.
-          </p>
         </div>
       </div>
 
-      <h3>How Billing Works</h3>
-      <div className={styles.onboardingRow}>
-        <p className={styles.onboardingParagraph}>
-          Usage of Grafana Cloud Profiles is subject to{' '}
-          <StyledLink href="https://grafana.com/pricing/">Grafana Cloud Pricing</StyledLink> for Profiles.
-          <br></br>
-          For additional information, read the announcement&nbsp;
-          <StyledLink href="https://grafana.com/blog/2023/08/09/grafana-cloud-profiles-for-continuous-profiling/">
-            blog post
-          </StyledLink>
-          .
-        </p>
+      <div data-testid="how-billing-works">
+        <h3>How Billing Works</h3>
+        <div className={styles.onboardingRow}>
+          <p className={styles.onboardingParagraph}>
+            Usage of Grafana Cloud Profiles is subject to{' '}
+            <StyledLink href="https://grafana.com/pricing/">Grafana Cloud Pricing</StyledLink> for Profiles.
+            <br></br>
+            For additional information, read the announcement&nbsp;
+            <StyledLink href="https://grafana.com/blog/2023/08/09/grafana-cloud-profiles-for-continuous-profiling/">
+              blog post
+            </StyledLink>
+            .
+          </p>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
