@@ -62,6 +62,28 @@ test.describe('URL search parameters', () => {
     await expect(toolbar.getProfileTypesDropdown()).toHaveScreenshot();
     await expect(toolbar.getTimePicker()).toHaveScreenshot();
   });
+
+  test('When there is no data during the time range provided, it displays "No data" banners', async ({
+    singleViewPage,
+    toolbar,
+  }) => {
+    await singleViewPage.goto(
+      new URLSearchParams({
+        query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope"}',
+        from: '1704063600', // 2024-01-01
+        until: '1704150000', // 2024-01-02
+      }).toString()
+    );
+
+    await toolbar.assertNoSpinners();
+
+    await expect(toolbar.getServicesDropdown()).toHaveScreenshot();
+    await expect(toolbar.getProfileTypesDropdown()).toHaveScreenshot();
+
+    await singleViewPage.assertNoLoadingPanels();
+    await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
+    await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
+  });
 });
 
 test.describe('Toolbar', () => {
@@ -78,8 +100,6 @@ test.describe('Toolbar', () => {
 
       await singleViewPage.assertNoLoadingPanels();
       await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
-
-      await singleViewPage.waitForTimeout(2000); // TEMP
       await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
     });
 
@@ -95,8 +115,6 @@ test.describe('Toolbar', () => {
 
       await singleViewPage.assertNoLoadingPanels();
       await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
-
-      await singleViewPage.waitForTimeout(2000); // TEMP
       await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
     });
   });
@@ -114,8 +132,6 @@ test.describe('Toolbar', () => {
 
       await singleViewPage.assertNoLoadingPanels();
       await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
-
-      await singleViewPage.waitForTimeout(2000); // TEMP
       await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
     });
   });
@@ -134,8 +150,6 @@ test.describe('Time picker', () => {
 
     await singleViewPage.assertNoLoadingPanels();
     await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
-
-    await singleViewPage.waitForTimeout(2000); // TEMP
     await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
   });
 
@@ -151,8 +165,6 @@ test.describe('Time picker', () => {
 
     await singleViewPage.assertNoLoadingPanels();
     await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
-
-    await singleViewPage.waitForTimeout(2000); // TEMP
     await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
   });
 
@@ -168,8 +180,6 @@ test.describe('Time picker', () => {
 
     await singleViewPage.assertNoLoadingPanels();
     await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
-
-    await singleViewPage.waitForTimeout(2000); // TEMP
     await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
   });
 });
@@ -191,8 +201,6 @@ test.describe('Query builder', () => {
 
     await singleViewPage.assertNoLoadingPanels();
     await expect(singleViewPage.getTimelinePanel()).toHaveScreenshot();
-
-    await singleViewPage.waitForTimeout(2000); // TEMP
     await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
   });
 });

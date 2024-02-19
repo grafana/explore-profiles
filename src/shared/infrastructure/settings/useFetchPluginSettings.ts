@@ -22,7 +22,7 @@ async function mutate(newSettings: PluginSettings) {
 export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResponse {
   const { isFetching, error, data } = useQuery({
     enabled,
-    queryKey: [],
+    queryKey: ['settings'],
     queryFn: () => {
       settingsApiClient.abort();
 

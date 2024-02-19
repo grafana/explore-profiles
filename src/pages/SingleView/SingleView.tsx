@@ -49,7 +49,7 @@ export function SingleView() {
             message="Please verify that you've selected a proper service, profile type and time range."
           />
         )}
-        {/* we always display the timeline */}
+        {/* we always display the timeline to prevent layout shifts */}
         <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
       </Panel>
 
@@ -64,8 +64,9 @@ export function SingleView() {
             message="Please verify that you've selected a proper service, profile type and time range."
           />
         )}
-        {/* we don't always display the flamegraph */}
-        {!data.fetchDataError && !data.noDataAvailable && data.profile && (
+        {/* we don't always display the flamegraph because if there's no data, the UI does not look good */}
+        {/* we probably should open a PR in the @grafana/flamegraph repo to improve this */}
+        {data.shouldDisplayFlamegraph && (
           <FlameGraph
             profile={data.profile}
             enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}

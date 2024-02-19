@@ -9,15 +9,17 @@ import {
 } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchServices } from '@shared/infrastructure/services/useFetchServices';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
+import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
 import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
 
-export function useSingleView() {
+export function useSingleView(): DomainHookReturnValue {
   const [query, setQuery] = useQueryFromUrl();
   const [timeRange, setTimeRange] = useTimeRangeFromUrl();
   const [maxNodes] = useMaxNodesFromUrl();
 
-  const { isFetching: isFetchingSettings, error: fetchSettingsError, settings } = useFetchPluginSettings();
+  // determining query and maxNodes can be asynchronous so we enable the main query only when we have values for both
+  const enabled = Boolean(query && maxNodes);
 
   const {
     isFetching,
@@ -26,21 +28,27 @@ export function useSingleView() {
     profile,
     refetch: refetchProfileAndTimeline,
   } = useFetchProfileAndTimeline({
-    // determining query and maxNodes can be asynchronous
-    enabled: Boolean(query && maxNodes),
+    enabled,
     query,
     timeRange,
     maxNodes,
   });
 
-  const { refetch: refetchServices } = useFetchServices({ timeRange });
+  const { services, refetch: refetchServices, isFetching: isFetchingServices } = useFetchServices({ timeRange });
+
+  const { isFetching: isFetchingSettings, error: fetchSettingsError, settings } = useFetchPluginSettings();
 
   const isLoading = isFetchingSettings || isFetching;
+
+  // TODO: improve?
+  const noDataAvailable = (!isFetchingServices && services.size === 0) || profile?.flamebearer.numTicks === 0;
 
   const timelinePanelTitle =
     getProfileMetric(parseQuery(query).profileMetricId as ProfileMetricId).description ||
     getProfileMetricByType(profile?.metadata.name as string)?.description ||
     '';
+
+  const shouldDisplayFlamegraph = Boolean(!fetchDataError && !noDataAvailable && profile);
 
   return {
     data: {
@@ -50,7 +58,8 @@ export function useSingleView() {
       fetchDataError,
       timeline,
       profile,
-      noDataAvailable: profile?.flamebearer.numTicks === 0,
+      shouldDisplayFlamegraph,
+      noDataAvailable,
       timelinePanelTitle,
       fetchSettingsError,
       settings,
