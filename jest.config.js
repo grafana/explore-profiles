@@ -34,5 +34,6 @@ module.exports = {
   resetMocks: true,
   clearMocks: true,
   resetModules: true,
+  collectCoverageFrom: ['./src/**'],
   coverageReporters: ['json-summary', 'text', 'text-summary'],
 };
