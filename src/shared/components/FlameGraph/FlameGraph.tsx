@@ -1,13 +1,11 @@
 import { createTheme } from '@grafana/data';
 import { FlameGraph as GrafanaFlameGraph } from '@grafana/flamegraph';
 import { useTheme2 } from '@grafana/ui';
-// TODO: migrate ExportData
-import ExportData from '@pyroscope/components/ExportData';
 import React from 'react';
 
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
+import { ExportData } from './components/ExportData';
 import { flamebearerToDataFrameDTO } from './domain/flamebearerToDataFrameDTO';
-import { ExportButton } from './ui/ExportButton';
 
 type FlameGraphWrapperProps = {
   profile: FlamebearerProfile;
@@ -27,18 +25,6 @@ export function FlameGraph({
   const { isLight } = useTheme2();
   const getTheme = () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } });
 
-  const extraHeaderElements = (
-    <ExportData
-      flamebearer={profile}
-      exportFlamegraphDotCom={enableFlameGraphDotComExport}
-      exportPNG
-      exportJSON
-      exportPprof
-      exportHTML
-      buttonEl={ExportButton}
-    />
-  );
-
   const dataFrame = flamebearerToDataFrameDTO(
     profile.flamebearer.levels,
     profile.flamebearer.names,
@@ -50,7 +36,7 @@ export function FlameGraph({
     <GrafanaFlameGraph
       data={dataFrame}
       disableCollapsing={!collapsedFlamegraphs}
-      extraHeaderElements={extraHeaderElements}
+      extraHeaderElements={<ExportData profile={profile} enableFlameGraphDotComExport={enableFlameGraphDotComExport} />}
       vertical={vertical}
       getTheme={getTheme}
     />
