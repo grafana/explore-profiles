@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { DEFAULT_SETTINGS } from './default-settings';
 import { PluginSettings, settingsApiClient } from './settingsApiClient';
@@ -14,11 +14,6 @@ type FetchResponse = {
   mutate: (newSettings: PluginSettings) => Promise<void>;
 };
 
-// TODO: use react-query? (https://tanstack.com/query/latest/docs/framework/react/guides/mutations)
-async function mutate(newSettings: PluginSettings) {
-  await settingsApiClient.set(newSettings);
-}
-
 export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResponse {
   const { isFetching, error, data } = useQuery({
     enabled,
@@ -28,6 +23,11 @@ export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResp
 
       return settingsApiClient.get().then((json) => (Object.keys(json).length ? json : DEFAULT_SETTINGS));
     },
+  });
+
+  const { mutateAsync: mutate } = useMutation({
+    mutationFn: (newSettings: PluginSettings) => settingsApiClient.set(newSettings),
+    networkMode: 'always',
   });
 
   return {

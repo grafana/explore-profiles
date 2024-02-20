@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
+// TODO: FlameGraphWrapper from the plugin's @shared folder
 import { FlameGraphWrapper } from '@pyroscope/components/FlameGraphWrapper';
 import React from 'react';
 

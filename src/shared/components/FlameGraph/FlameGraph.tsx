@@ -1,11 +1,11 @@
 import { createTheme } from '@grafana/data';
 import { FlameGraph as GrafanaFlameGraph } from '@grafana/flamegraph';
+import { useTheme2 } from '@grafana/ui';
 // TODO: migrate ExportData
 import ExportData from '@pyroscope/components/ExportData';
 import React from 'react';
 
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
-import { useColorMode } from '../../ui/useColorMode';
 import { flamebearerToDataFrameDTO } from './domain/flamebearerToDataFrameDTO';
 import { ExportButton } from './ui/ExportButton';
 
@@ -24,8 +24,8 @@ export function FlameGraph({
   enableFlameGraphDotComExport,
   collapsedFlamegraphs,
 }: FlameGraphWrapperProps) {
-  const { colorMode } = useColorMode();
-  const getTheme = () => createTheme({ colors: { mode: colorMode } });
+  const { isLight } = useTheme2();
+  const getTheme = () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } });
 
   const extraHeaderElements = (
     <ExportData
