@@ -1,12 +1,6 @@
-import { tenantIDFromStorage } from '@pyroscope/services/storage';
+import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 
-import { ApiClient } from '../../../../infrastructure/http/ApiClient';
-
-export enum ProfileFormat {
-  dot = 'dot',
-}
-
-export class PyroscopeApiClient extends ApiClient {
+export class LabelsApiClient extends ApiClient {
   static queryToMatchers(query: string) {
     const labelsIndex = query.indexOf('{');
 
@@ -25,7 +19,7 @@ export class PyroscopeApiClient extends ApiClient {
   async fetchLabels(query: string, from: number, until: number) {
     // all /querier requests: timerange in Unix time ms (unix * 1000)
     return this._post('/querier.v1.QuerierService/LabelNames', {
-      matchers: PyroscopeApiClient.queryToMatchers(query),
+      matchers: LabelsApiClient.queryToMatchers(query),
       start: from,
       end: until,
     }).then((response) => response.json());
@@ -35,25 +29,10 @@ export class PyroscopeApiClient extends ApiClient {
     // all /querier requests: timerange in Unix time ms (unix * 1000)
     return this._post('/querier.v1.QuerierService/LabelValues', {
       name: labelId,
-      matchers: PyroscopeApiClient.queryToMatchers(query),
+      matchers: LabelsApiClient.queryToMatchers(query),
       start: from,
       end: until,
     }).then((response) => response.json());
-  }
-
-  async fetchProfile(query: string, from: number, until: number, format: ProfileFormat, maxNodes: number) {
-    return this._get('/pyroscope/render', {
-      query,
-      from,
-      until,
-      format,
-      maxNodes,
-    }).then((response) => (format === ProfileFormat.dot ? response.text() : response.json()));
-  }
-
-  _buildHeaders() {
-    const tenantID = tenantIDFromStorage();
-    return tenantID ? { 'X-Scope-OrgID': tenantID } : undefined;
   }
 
   _get(pathname: string, urlSearchParams: Record<string, any>) {
@@ -61,7 +40,6 @@ export class PyroscopeApiClient extends ApiClient {
 
     return super.fetch(`${pathname}?${params.toString()}`, {
       method: 'GET',
-      headers: this._buildHeaders(),
     });
   }
 
@@ -69,7 +47,6 @@ export class PyroscopeApiClient extends ApiClient {
     return super.fetch(pathname, {
       method: 'POST',
       body: JSON.stringify(body),
-      headers: this._buildHeaders(),
     });
   }
 }

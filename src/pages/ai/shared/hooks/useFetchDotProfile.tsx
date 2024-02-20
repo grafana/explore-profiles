@@ -1,11 +1,10 @@
-import {
-  ProfileFormat,
-  PyroscopeApiClient,
-} from '@shared/components/QueryBuilder/infrastructure/http/PyroscopeApiClient';
-import { formatAsOBject } from 'grafana-pyroscope/public/app/util/formatDate';
+import { formatAsOBject } from '@shared/domain/formatDate';
+// TODO: use react-query instead of react-use
 import { useAsync } from 'react-use';
 
-const pyroscopeApiClient = new PyroscopeApiClient();
+import { ProfileApiClient, ProfileFormat } from './ProfileApiClient';
+
+const profileApiClient = new ProfileApiClient();
 
 function cleanup(profile: string) {
   console.log(`[useFetchDotProfile] initial profile size: ${profile.length}`);
@@ -34,8 +33,9 @@ export function useFetchDotProfile(
   rightFrom?: string,
   rightUntil?: string
 ): ReturnType<typeof useAsync> {
+  // TODO: use react-query
   return useAsync(async () => {
-    const profile = await pyroscopeApiClient.fetchProfile(
+    const profile = await profileApiClient.fetchProfile(
       query,
       formatAsOBject(from).getTime(),
       formatAsOBject(until).getTime(),
@@ -44,7 +44,7 @@ export function useFetchDotProfile(
     );
 
     if (rightQuery && rightFrom && rightUntil) {
-      const profileRight = await pyroscopeApiClient.fetchProfile(
+      const profileRight = await profileApiClient.fetchProfile(
         rightQuery,
         formatAsOBject(rightFrom).getTime(),
         formatAsOBject(rightUntil).getTime(),

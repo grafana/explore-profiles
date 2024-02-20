@@ -7,7 +7,7 @@ import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
 import { ExportData } from './components/ExportData';
 import { flamebearerToDataFrameDTO } from './domain/flamebearerToDataFrameDTO';
 
-type FlameGraphWrapperProps = {
+type FlameGraphProps = {
   profile: FlamebearerProfile;
   diff?: boolean;
   vertical?: boolean;
@@ -21,7 +21,7 @@ export function FlameGraph({
   vertical,
   enableFlameGraphDotComExport,
   collapsedFlamegraphs,
-}: FlameGraphWrapperProps) {
+}: FlameGraphProps) {
   const { isLight } = useTheme2();
   const getTheme = () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } });
 

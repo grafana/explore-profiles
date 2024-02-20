@@ -1,8 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-// TODO: FlameGraphWrapper from the plugin's @shared folder
-import { FlameGraphWrapper } from '@pyroscope/components/FlameGraphWrapper';
+import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import React from 'react';
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -16,7 +15,7 @@ export function AdHocFlameGraph({ profile, diff }: { profile: any; diff?: boolea
 
   return (
     <div className={styles.flamegraph} data-testid="flamegraph">
-      <FlameGraphWrapper profile={profile} diff={diff} />
+      <FlameGraph profile={profile} diff={diff} />
     </div>
   );
 }

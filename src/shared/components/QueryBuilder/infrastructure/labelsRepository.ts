@@ -1,10 +1,10 @@
 import { invariant } from '../domain/helpers/invariant';
 import { Suggestions } from '../domain/types';
 import { CacheClient } from './http/CacheClient';
-import { PyroscopeApiClient } from './http/PyroscopeApiClient';
+import { LabelsApiClient } from './http/LabelsApiClient';
 import { QueryBuilderHttpRepository } from './QueryBuilderHttpRepository';
 
-class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
+class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
   cacheClient: CacheClient;
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
@@ -29,7 +29,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
     return labelValues.map((label) => ({ value: label, label }));
   }
 
-  constructor(httpClient: PyroscopeApiClient, cacheClient: CacheClient) {
+  constructor(httpClient: LabelsApiClient, cacheClient: CacheClient) {
     super(httpClient);
 
     this.cacheClient = cacheClient;
@@ -79,7 +79,4 @@ class LabelsRepository extends QueryBuilderHttpRepository<PyroscopeApiClient> {
   }
 }
 
-const cacheClient = new CacheClient();
-const pyroscopeApiClient = new PyroscopeApiClient();
-
-export const labelsRepository = new LabelsRepository(pyroscopeApiClient, cacheClient);
+export const labelsRepository = new LabelsRepository(new LabelsApiClient(), new CacheClient());

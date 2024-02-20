@@ -51,6 +51,7 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
     queryFn: () => {
       apiClient.abort();
 
+      // TODO: use ProfileApiClient
       return apiClient
         .fetch(`/pyroscope/render?${buildSearchParams(query, timeRange, maxNodes)}`)
         .then((response) => response.json())
