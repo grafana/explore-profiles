@@ -1,6 +1,6 @@
 import { Button, Dropdown } from '@grafana/ui';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { ExportMenu } from './ExportMenu';
 
@@ -9,7 +9,7 @@ export type ExportDataProps = {
   enableFlameGraphDotComExport?: boolean;
 };
 
-export function ExportData(props: ExportDataProps) {
+function ExportDataComponent(props: ExportDataProps) {
   const { profile, enableFlameGraphDotComExport } = props;
 
   return (
@@ -18,3 +18,5 @@ export function ExportData(props: ExportDataProps) {
     </Dropdown>
   );
 }
+
+export const ExportData = memo(ExportDataComponent);

@@ -43,7 +43,7 @@ function useSetDefaultMaxNodes(): number | null {
     return DEFAULT_SETTINGS.maxNodes;
   }
 
-  maxNodes = settings!.maxNodes || DEFAULT_SETTINGS.maxNodes; // could come undefined from the API
+  maxNodes = settings!.maxNodes;
 
   setMaxNodes(maxNodes);
 

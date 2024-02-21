@@ -1,13 +1,16 @@
 type ParsedQuery = {
   serviceId: string;
   profileMetricId: string;
+  labelSelector: string;
 };
 
 export function parseQuery(query: string): ParsedQuery {
   const [, serviceId = ''] = query.match(/.+\{.*service_name="([^"]+)".*\}/) || [];
   const [, profileMetricId = ''] = query.match(/([^{]+)\{.*}/) || [];
 
-  return { serviceId, profileMetricId };
+  const labelSelector = query.substring(query.indexOf('{'));
+
+  return { serviceId, profileMetricId, labelSelector };
 }
 
 type BuildQueryParams = {

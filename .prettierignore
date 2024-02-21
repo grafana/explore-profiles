@@ -3,3 +3,6 @@ dist
 samples/static/grafana-pyroscope-sample-blocks-public*
 e2e/test-reports
 e2e/test-results
+
+# the PprofRequest class uses decorators - FIXME or don't use them
+PprofRequest.ts

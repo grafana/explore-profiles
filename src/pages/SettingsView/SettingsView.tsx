@@ -4,7 +4,7 @@ import { PluginPage } from '@grafana/runtime';
 import { Button, FieldSet, Form, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { useAppConfig } from './domain/useAppConfig';
+import { useSettingsView } from './domain/useSettingsView';
 
 const getStyles = () => ({
   settingsForm: css`
@@ -17,7 +17,7 @@ const getStyles = () => ({
 
 export function SettingsView() {
   const styles = useStyles2(getStyles);
-  const { data, actions } = useAppConfig();
+  const { data, actions } = useSettingsView();
 
   return (
     <PluginPage layout={PageLayoutType.Custom} renderTitle={() => null}>

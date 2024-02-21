@@ -14,6 +14,9 @@ type FetchResponse = {
   mutate: (newSettings: PluginSettings) => Promise<void>;
 };
 
+/**
+ * Fetches the plugin settings and, if none/only some have been stored previously, returns adequate default values for the rest of the application
+ */
 export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResponse {
   const { isFetching, error, data } = useQuery({
     enabled,
@@ -21,7 +24,14 @@ export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResp
     queryFn: () => {
       settingsApiClient.abort();
 
-      return settingsApiClient.get().then((json) => (Object.keys(json).length ? json : DEFAULT_SETTINGS));
+      return settingsApiClient.get().then(
+        (json) =>
+          // provide defaults if any value comes null or undefined from the API (which can be the case ;))
+          Object.keys(DEFAULT_SETTINGS).reduce((acc, key) => {
+            acc[key] ??= DEFAULT_SETTINGS[key as keyof PluginSettings]; // TS luv :man_shrug:
+            return acc;
+          }, json as Record<string, any>) as PluginSettings // TS luv :man_shrug:
+      );
     },
   });
 

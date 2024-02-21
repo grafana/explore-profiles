@@ -1,27 +1,22 @@
-import { AppEvents } from '@grafana/data';
-import { getAppEvents } from '@grafana/runtime';
-import { displayError } from '@shared/domain/displayStatus';
+import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useEffect, useState } from 'react';
 
-export function useAppConfig() {
-  const { settings, error: fetchSettingsError, mutate } = useFetchPluginSettings();
+export function useSettingsView() {
+  const { settings, error: fetchError, mutate } = useFetchPluginSettings();
 
-  if (fetchSettingsError) {
-    displayError(fetchSettingsError, [
+  if (fetchError) {
+    displayError(fetchError, [
       'Error while retrieving the plugin settings!',
       'Please try to reload the page, sorry for the inconvenience.',
     ]);
   }
 
-  const [collapsedFlamegraphs, setCollapsedFlamegraphs] = useState<boolean>(
-    settings?.collapsedFlamegraphs ?? DEFAULT_SETTINGS.collapsedFlamegraphs
-  );
-  const [maxNodes, setMaxNodes] = useState<number>(settings?.maxNodes ?? DEFAULT_SETTINGS.maxNodes);
-
-  const [enableFlameGraphDotComExport, setEnableFlameGraphDotComExport] = useState<boolean>(
-    settings?.enableFlameGraphDotComExport ?? DEFAULT_SETTINGS.enableFlameGraphDotComExport
+  const [collapsedFlamegraphs, setCollapsedFlamegraphs] = useState(settings?.collapsedFlamegraphs);
+  const [maxNodes, setMaxNodes] = useState(settings?.maxNodes);
+  const [enableFlameGraphDotComExport, setEnableFlameGraphDotComExport] = useState(
+    settings?.enableFlameGraphDotComExport
   );
 
   useEffect(() => {
@@ -51,15 +46,12 @@ export function useAppConfig() {
       async saveSettings() {
         try {
           await mutate({
-            collapsedFlamegraphs,
-            maxNodes,
-            enableFlameGraphDotComExport,
+            collapsedFlamegraphs: collapsedFlamegraphs ?? DEFAULT_SETTINGS.collapsedFlamegraphs,
+            maxNodes: maxNodes ?? DEFAULT_SETTINGS.maxNodes,
+            enableFlameGraphDotComExport: enableFlameGraphDotComExport ?? DEFAULT_SETTINGS.enableFlameGraphDotComExport,
           });
 
-          getAppEvents().publish({
-            type: AppEvents.alertSuccess.name,
-            payload: ['Plugin settings successfully saved!'],
-          });
+          displaySuccess(['Plugin settings successfully saved!']);
         } catch (error) {
           displayError(error, [
             'Error while saving the plugin settings!',

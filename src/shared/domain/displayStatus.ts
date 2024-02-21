@@ -21,8 +21,6 @@ export function displayWarning(msgs: string[]) {
 }
 
 export function displaySuccess(msgs: string[]) {
-  console.info(msgs);
-
   getAppEvents().publish({
     type: AppEvents.alertSuccess.name,
     payload: msgs,

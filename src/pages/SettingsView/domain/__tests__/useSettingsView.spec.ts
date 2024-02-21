@@ -2,7 +2,7 @@ import { AppEvents } from '@grafana/data';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
 import { act, renderHook } from '@testing-library/react';
 
-import { useAppConfig } from '../useAppConfig';
+import { useSettingsView } from '../useSettingsView';
 import plugin from './fixtures/plugin.json';
 
 // appEvents dependency
@@ -27,10 +27,10 @@ jest.mock('@shared/infrastructure/settings/useFetchPluginSettings', () => ({
 }));
 
 // tests
-describe('useAppConfig(plugin)', () => {
+describe('useSettingsView(plugin)', () => {
   it('returns an object with "data" and "actions" fields', () => {
     // @ts-expect-error
-    const { result } = renderHook(() => useAppConfig(plugin));
+    const { result } = renderHook(() => useSettingsView(plugin));
 
     expect(result.current).toEqual({
       data: DEFAULT_SETTINGS,
@@ -46,7 +46,7 @@ describe('useAppConfig(plugin)', () => {
   describe('actions.toggleCollapsedFlamegraphs()', () => {
     it('toggles the value of data.collapsedFlamegraphs', () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useAppConfig(plugin));
+      const { result } = renderHook(() => useSettingsView(plugin));
 
       const { data, actions } = result.current;
 
@@ -63,7 +63,7 @@ describe('useAppConfig(plugin)', () => {
   describe('actions.updateMaxNodes(event)', () => {
     it('updates the value of data.maxNodes', () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useAppConfig(plugin));
+      const { result } = renderHook(() => useSettingsView(plugin));
 
       const { data, actions } = result.current;
 
@@ -80,7 +80,7 @@ describe('useAppConfig(plugin)', () => {
   describe('actions.toggleEnableFlameGraphDotComExport()', () => {
     it('toggles the value of data.enableFlameGraphDotComExport', () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useAppConfig(plugin));
+      const { result } = renderHook(() => useSettingsView(plugin));
 
       const { data, actions } = result.current;
 
@@ -97,7 +97,7 @@ describe('useAppConfig(plugin)', () => {
   describe('actions.saveSettings()', () => {
     it('stores the plugin settings', async () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useAppConfig(plugin));
+      const { result } = renderHook(() => useSettingsView(plugin));
 
       const { saveSettings } = result.current.actions;
 
@@ -111,7 +111,7 @@ describe('useAppConfig(plugin)', () => {
         mutate.mockResolvedValue({ ok: true });
 
         // @ts-expect-error
-        const { result } = renderHook(() => useAppConfig(plugin));
+        const { result } = renderHook(() => useSettingsView(plugin));
 
         const { saveSettings } = result.current.actions;
 
@@ -133,7 +133,7 @@ describe('useAppConfig(plugin)', () => {
         jest.spyOn(console, 'error').mockImplementation(() => {});
 
         // @ts-expect-error
-        const { result } = renderHook(() => useAppConfig(plugin));
+        const { result } = renderHook(() => useSettingsView(plugin));
 
         const { saveSettings } = result.current.actions;
 
