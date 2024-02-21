@@ -1,8 +1,8 @@
 import { AppPlugin } from '@grafana/data';
+import { AppPluginSettings } from '@shared/types/AppPluginSettings';
 import { PAGES } from 'grafana-pyroscope/public/app/pages/urls';
 
 import { App } from './app/App';
-import { AppPluginSettings } from './app/domain/AppPluginSettings';
 import { PLUGIN_BASE_URL } from './constants';
 import { registerExtension } from './extensions/query-links';
 

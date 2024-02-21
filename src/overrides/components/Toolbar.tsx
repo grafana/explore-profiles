@@ -25,7 +25,7 @@ import { userStorage } from '@shared/infrastructure/userStorage';
 import React, { useCallback, useContext, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { PyroscopeStateContext } from '../../app/domain/PyroscopeState/context';
+import { PyroscopeStateContext } from '../../app/components/Routes/domain/PyroscopeState/context';
 
 interface ToolbarProps {
   /** callback to be called when an app is selected via the dropdown */

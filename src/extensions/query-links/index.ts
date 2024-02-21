@@ -1,6 +1,6 @@
 import { AppPlugin } from '@grafana/data';
+import { AppPluginSettings } from '@shared/types/AppPluginSettings';
 
-import { AppPluginSettings } from '../../app/domain/AppPluginSettings';
 import configure from './configure';
 
 const ID = 'plugins/grafana-pyroscope-datasource/query-links';

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
-import { PLUGIN_BASE_URL } from '../../constants';
-import plugin from '../../plugin.json';
+import { PLUGIN_BASE_URL } from '../../../../constants';
+import plugin from '../../../../plugin.json';
 
 // Prefixes the route with the base URL of the plugin
 export function prefixRoute(route: string): string {

@@ -1,7 +1,6 @@
 import * as common from '@grafana/schema';
 import { AppPluginMeta, TimeRange } from '@grafana/data';
-
-import { AppPluginSettings } from '../../app/domain/AppPluginSettings';
+import { AppPluginSettings } from '@shared/types/AppPluginSettings';
 
 export type PyroscopeAppSettings = AppPluginMeta<AppPluginSettings>;
 

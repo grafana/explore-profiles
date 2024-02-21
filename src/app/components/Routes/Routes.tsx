@@ -7,16 +7,16 @@ import TagExplorerView from '@pyroscope/pages/TagExplorerView';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import { ROUTES } from '../../constants';
-import { AdHocView } from '../../pages/AdHocView/AdHocView';
-import ContinuousDiffViewAi from '../../pages/ai/ContinuousDiffViewAi/ContinuousDiffViewAi';
-import ContinuousSingleViewAi from '../../pages/ai/ContinuousSingleViewAi/ContinuousSingleViewAi';
-import { SettingsView } from '../../pages/SettingsView/SettingsView';
-import { SingleView } from '../../pages/SingleView/SingleView';
-import useConsistentTheme from '../ui/useConsistentTheme';
-import { PyroscopeStateWrapper } from './PyroscopeState/PyroscopeStateWrapper';
-import { prefixRoute, useNavigationLinksUpdate } from './useNavigationLinksUpdate';
-import { VersionInfoTooltip } from './VersionInfoTooltip';
+import { ROUTES } from '../../../constants';
+import { AdHocView } from '../../../pages/AdHocView/AdHocView';
+import ContinuousDiffViewAi from '../../../pages/ai/ContinuousDiffViewAi/ContinuousDiffViewAi';
+import ContinuousSingleViewAi from '../../../pages/ai/ContinuousSingleViewAi/ContinuousSingleViewAi';
+import { SettingsView } from '../../../pages/SettingsView/SettingsView';
+import { SingleView } from '../../../pages/SingleView/SingleView';
+import { PyroscopeStateWrapper } from './domain/PyroscopeState/PyroscopeStateWrapper';
+import useConsistentTheme from './domain/useConsistentTheme';
+import { prefixRoute, useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
+import { VersionInfoTooltip } from './ui/VersionInfoTooltip';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   page: css`
@@ -35,9 +35,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
 export function Routes() {
   const styles = useStyles2(getStyles);
-  useConsistentTheme();
 
-  // TODO: remove me when Pyroscope OSS migration is finished
+  useConsistentTheme();
   useNavigationLinksUpdate();
 
   return (

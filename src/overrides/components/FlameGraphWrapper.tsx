@@ -13,7 +13,7 @@ import { flamebearerToDataFrameDTO } from '@pyroscope/util/flamebearer';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import React, { useContext, useEffect } from 'react';
 
-import { PyroscopeStateContext } from '../../app/domain/PyroscopeState/context';
+import { PyroscopeStateContext } from '../../app/components/Routes/domain/PyroscopeState/context';
 
 type Props = {
   profile?: Profile;

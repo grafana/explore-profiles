@@ -1,8 +1,8 @@
 import { act, render, screen } from '@testing-library/react';
 import React from 'react';
 
-import plugin from '../../../plugin.json';
-import { useNavigationLinksUpdate } from '../../domain/useNavigationLinksUpdate';
+import plugin from '../../../../../plugin.json';
+import { useNavigationLinksUpdate } from '../useNavigationLinksUpdate';
 
 function prefixWithPluginPath(path?: string) {
   return ['/a', plugin.id, path].join('/');
