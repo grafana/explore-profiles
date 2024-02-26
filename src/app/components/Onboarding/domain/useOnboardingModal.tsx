@@ -9,7 +9,11 @@ export function useOnboardingModal(): DomainHookReturnValue {
   const [settingsUrl, setSettingsUrl] = useState('https://grafana.com/auth/sign-in/');
 
   if (instances && instances.orgSlug && instances.hpInstanceId) {
-    setSettingsUrl(`https://grafana.com/orgs/${instances.orgSlug}/hosted-profiles/${instances.hpInstanceId}`);
+    const newSettingsUrl = `https://grafana.com/orgs/${instances.orgSlug}/hosted-profiles/${instances.hpInstanceId}`;
+
+    if (settingsUrl !== newSettingsUrl) {
+      setSettingsUrl(newSettingsUrl);
+    }
   }
 
   return {
