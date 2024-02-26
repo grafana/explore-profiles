@@ -21,6 +21,7 @@ export function useFetchServices({ timeRange, enabled }: FetchParams): FetchResp
     // for UX: keep previous data while fetching -> the dropdowns do not re-render (causing layout shifts)
     placeholderData: (previousData) => previousData,
     // we use "raw" to cache relative time ranges between renders, so that only refetch() will trigger a new query
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['services', timeRange.raw.from.toString(), timeRange.raw.to.toString()],
     queryFn: () => {
       servicesApiClient.abort();

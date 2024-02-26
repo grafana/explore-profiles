@@ -47,6 +47,7 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
     placeholderData: (previousData) => previousData,
     enabled,
     // we use "raw" to cache relative time ranges between renders, so that only refetch() will trigger a new query
+    // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [query, timeRange.raw.from.toString(), timeRange.raw.to.toString(), maxNodes],
     queryFn: () => {
       apiClient.abort();

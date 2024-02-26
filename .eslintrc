@@ -1,6 +1,11 @@
 {
-  "extends": ["./.config/.eslintrc", "plugin:jest/recommended", "plugin:sonarjs/recommended"],
-  "plugins": ["jest", "sonarjs"],
+  "plugins": ["jest", "sonarjs", "@tanstack/query"],
+  "extends": [
+    "./.config/.eslintrc",
+    "plugin:jest/recommended",
+    "plugin:sonarjs/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended"
+  ],
   "rules": {
     "no-unused-vars": "error",
     "jest/expect-expect": "error",
