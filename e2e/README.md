@@ -73,6 +73,8 @@ By doing so, we ensure that the screenshots generated always match the ones that
 
 ```shell
 yarn e2e:ci:server:up
+
+yarn e2e:ci:prepare
 yarn e2e:ci
 
 # then once finished
@@ -80,6 +82,14 @@ yarn e2e:ci:server:down
 ```
 
 The screenshots will be generated in subfolders within the [e2e/tests](./tests) folder, next to their corresponding tests.
+
+### Regenerating screenshots
+
+Just pass extra arguments to `yarn e2e:ci`, e.g.:
+
+```shell
+yarn e2e:ci single-view.spec.ts --update-snapshots
+```
 
 ### CI build
 
