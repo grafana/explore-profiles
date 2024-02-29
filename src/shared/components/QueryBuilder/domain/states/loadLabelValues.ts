@@ -4,6 +4,7 @@ import { MESSAGES } from '../../ui/constants';
 import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
 import { getLastFilter } from '../helpers/getLastFilter';
 import { invariant } from '../helpers/invariant';
+import { isPrivateLabel } from '../helpers/isPrivateLabel';
 import { defaultContext } from '../stateMachine';
 import { OperatorKind, QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
 
@@ -13,11 +14,19 @@ export const loadLabelValues: StateNodeConfig<
   QueryBuilderEvent
 > = {
   entry: assign({
-    suggestions: () => ({
-      ...defaultContext.suggestions,
-      isVisible: true,
-      isLoading: true,
-    }),
+    suggestions: (context) => {
+      const targetFilter = context.edition ? getFilterUnderEdition(context) : getLastFilter(context.filters);
+
+      invariant(typeof targetFilter?.operator !== undefined, 'No operator for the target filter!');
+
+      return {
+        ...defaultContext.suggestions,
+        // See https://github.com/grafana/pyroscope-app-plugin/issues/335
+        disabled: isPrivateLabel(targetFilter!.attribute!.value),
+        isVisible: true,
+        isLoading: true,
+      };
+    },
   }),
   invoke: {
     id: 'fetchLabelValues',
@@ -55,6 +64,7 @@ export const displayLabelValues: StateNodeConfig<
   QueryBuilderEvent
 > = {
   entry: assign({
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     suggestions: (context) => {
       const targetFilter = context.edition ? getFilterUnderEdition(context) : getLastFilter(context.filters);
 
@@ -62,7 +72,11 @@ export const displayLabelValues: StateNodeConfig<
 
       const targetOperator = targetFilter!.operator!.value;
 
-      const allowCustomValue = ['=~', '!~'].includes(targetOperator);
+      const allowCustomValue =
+        ['=~', '!~'].includes(targetOperator) ||
+        // See https://github.com/grafana/pyroscope-app-plugin/issues/335
+        context.suggestions.disabled;
+
       const multiple = targetOperator === OperatorKind.in;
 
       let placeholder: string;
@@ -73,11 +87,20 @@ export const displayLabelValues: StateNodeConfig<
         placeholder = multiple ? MESSAGES.SELECT_VALUES : MESSAGES.SELECT_VALUE;
       }
 
+      let noOptionsMessage: string;
+
+      if (context.suggestions.error) {
+        noOptionsMessage = MESSAGES.ERROR_LOAD;
+      } else {
+        noOptionsMessage = context.suggestions.disabled ? MESSAGES.SUGGESTIONS_DISABLED : MESSAGES.SUGGESTIONS_NONE;
+      }
+
       return {
         ...context.suggestions,
         type: SuggestionKind.value,
         isVisible: true,
         placeholder,
+        noOptionsMessage,
         allowCustomValue,
         multiple,
       };

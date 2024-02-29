@@ -45,7 +45,7 @@ export function SingleEditionSelect({ selection, suggestions, onChange, onCloseM
       isOpen
       isLoading={suggestions.isLoading}
       invalid={Boolean(suggestions.error)}
-      noOptionsMessage={suggestions.error ? MESSAGES.ERROR_LOAD : MESSAGES.SUGGESTIONS_NONE}
+      noOptionsMessage={suggestions.noOptionsMessage}
     />
   );
 }

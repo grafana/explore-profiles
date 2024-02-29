@@ -28,8 +28,10 @@ export const defaultContext: QueryBuilderContext = Object.freeze({
     isLoading: false,
     error: null,
     placeholder: '',
+    noOptionsMessage: '',
     allowCustomValue: false,
     multiple: false,
+    disabled: false,
   },
 });
 

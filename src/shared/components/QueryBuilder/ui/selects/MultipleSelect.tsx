@@ -49,7 +49,7 @@ export function MultipleSelect({ suggestions, onFocus, onKeyDown, onCloseMenu }:
       isOpen={suggestions.isVisible}
       isLoading={suggestions.isLoading}
       invalid={Boolean(suggestions.error)}
-      noOptionsMessage={suggestions.error ? MESSAGES.ERROR_LOAD : MESSAGES.SUGGESTIONS_NONE}
+      noOptionsMessage={suggestions.noOptionsMessage}
     />
   );
 }

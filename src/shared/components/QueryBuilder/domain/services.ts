@@ -2,6 +2,7 @@ import { labelsRepository } from '../infrastructure/labelsRepository';
 import { operatorsRepository } from '../infrastructure/operatorsRepository';
 import { filtersToQuery } from './helpers/filtersToQuery';
 import { getLastFilter } from './helpers/getLastFilter';
+import { isPrivateLabel } from './helpers/isPrivateLabel';
 import { logger } from './helpers/logger';
 import { FilterKind, Filters, QueryBuilderContext, QueryBuilderEvent, Suggestions } from './types';
 
@@ -24,7 +25,21 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
     const { from, until } = context.inputParams;
 
     try {
-      return await labelsRepository.listLabels(context.query, from, until);
+      const labels = await labelsRepository.listLabels(context.query, from, until);
+
+      const publicLabels: Suggestions = [];
+      const privateLabels: Suggestions = [];
+
+      // place private labels at the bottom of the suggestions list
+      labels.forEach((label) => {
+        if (isPrivateLabel(label.value)) {
+          privateLabels.push(label);
+        } else {
+          publicLabels.push(label);
+        }
+      });
+
+      return [...publicLabels, ...privateLabels];
     } catch (error) {
       return handleError(error, 'Error while fetching labels!');
     }
@@ -39,7 +54,7 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
   // TODO: refactor indeed
   // eslint-disable-next-line sonarjs/cognitive-complexity
   fetchLabelValues: async (context) => {
-    let { query, edition } = context;
+    let { query, edition, suggestions } = context;
     let targetFilter;
 
     try {
@@ -64,6 +79,10 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
         if (targetFilter?.type !== FilterKind.partial) {
           throw new Error('Impossible to load label values: no partial filter found!');
         }
+      }
+
+      if (suggestions.disabled) {
+        return [];
       }
 
       const labelId = targetFilter.attribute.value;

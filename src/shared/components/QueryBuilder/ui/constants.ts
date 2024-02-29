@@ -8,4 +8,5 @@ export const MESSAGES = {
   LOADING: 'Loading...',
   ERROR_LOAD: 'An unexpected error occurred while loading! Please try again.',
   SUGGESTIONS_NONE: 'No suggestions available.',
+  SUGGESTIONS_DISABLED: 'Suggestions are disabled for this label.',
 };

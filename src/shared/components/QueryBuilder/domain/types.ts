@@ -82,8 +82,10 @@ export type QueryBuilderContext = {
     isLoading: boolean;
     error: Error | null;
     placeholder: string;
+    noOptionsMessage: string;
     allowCustomValue: boolean;
     multiple: boolean;
+    disabled: boolean;
   };
 };
 

@@ -53,6 +53,10 @@ const config = async (env): Promise<Configuration> => {
 
         // More specific rules first
 
+        '@pyroscope/pages/tagExplorer/components/ExploreHeader': path.resolve(
+          __dirname,
+          './src/overrides/components/ExploreHeader'
+        ),
         '@pyroscope/redux/reducers/notifications': path.resolve(__dirname, './src/overrides/redux/notifications'),
 
         '@pyroscope/services/base': path.resolve(__dirname, './src/overrides/services/base'),
