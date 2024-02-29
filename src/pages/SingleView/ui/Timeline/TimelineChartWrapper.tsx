@@ -71,12 +71,53 @@ export function TimelineChartWrapper(props: TimelineChartWrapperProps) {
   const subSelections = new RangeAnnotation();
 
   const selectionMarkings = markingsFromSelection(props.selectionType, props.selection?.left, props.selection?.right);
-  selectionMarkings.forEach((marking: Marking) => {
+
+  const dataLabels = (() => {
+    // These only handle the props.mode === 'singles' case
+    switch (props.id) {
+      case 'timeline-chart-diff':
+      case 'timeline-chart-double':
+        return ['Baseline', 'Comparison'];
+      case 'timeline-chart-left':
+        return ['Baseline'];
+      case 'timeline-chart-right':
+        return ['Comparison'];
+      case 'timeline-chart-single':
+        return [' ']; // Shows a blank entry when hovering over items
+    }
+    return [];
+  })();
+
+  // Set up annotation texts
+  const texts: string[] = [];
+  if (props.selectionType === 'single') {
+    // Only one if visible, we need to find out which one via `dataLabels`
+    const type = dataLabels[0];
+    texts[0] = `${type} range`;
+    texts[1] = `${type} start`;
+    texts[2] = `${type} end`;
+  } else {
+    // Both are available
+    texts[0] = `Baseline range`;
+    texts[1] = `Baseline start`;
+    texts[2] = `Baseline end`;
+    texts[3] = `Comparison range`;
+    texts[4] = `Comparison start`;
+    texts[5] = `Comparison end`;
+  }
+
+  selectionMarkings.forEach((marking: Marking, index) => {
     const color =
       marking.color.alpha() === 0
         ? theme.colors.text.secondary
         : stringifyPyroscopeColor(marking.color) || theme.colors.text.secondary;
-    subSelections.addRange({ time: marking.xaxis.from as number, timeEnd: marking.xaxis.to as number, color });
+
+    subSelections.addRange({
+      time: marking.xaxis.from as number,
+      timeEnd: marking.xaxis.to as number,
+      color,
+      text: texts[index],
+    });
   });
 
   if (subSelections.length > 0) {
@@ -174,8 +215,12 @@ class RangeAnnotation extends MutableDataFrame {
       name: 'color',
       type: FieldType.other,
     });
+    this.addField({
+      name: 'text',
+      type: FieldType.string,
+    });
   }
-  addRange(entry: { time: number; timeEnd: number; color?: string }) {
+  addRange(entry: { time: number; timeEnd: number; color?: string; text: string }) {
     this.add({ ...entry, isRegion: true });
   }
 }
