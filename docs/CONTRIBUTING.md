@@ -18,18 +18,24 @@ Please check the [related documentation](./CONTRIBUTING-PYROSCOPE-DEPENDENCY.md)
 2. Install the dependencies: `yarn install`
 3. Build the plugin backend: `mage`
 4. Build the plugin frontend in dev mode: `yarn dev`
-5. Start the server (with static data): `yarn server:static`
+5. Start the Grafana server (with static data): `yarn server:static`
 
 Then visit http://localhost:3000/a/grafana-pyroscope-app
 
-To use live remote data, read the next section.
+- To use **live remote data**, read the "Using live remote profile data" section below.
+- To use **a local version of Pyroscope**, read the "Using a local version of Pyroscope" section below.
+- To use **a local version of Grafana**, read [this section](./GRAFANA-CROSS-DEVELOPMENT.md).
 
 ### Using live remote profile data
 
 1. Copy the content of the `.env.local` file to a new `.env` file in the root directory
 2. Open the 1Password app and search for the note named "DB FE - Remote profile data credentials"
 3. Fill in the missing values in the `.env` file
-4. Start the server: `yarn server:remote`
+4. Start the Grafana server: `yarn server:remote`
+
+### Using a local version of Pyroscope
+
+_TODO_
 
 ## Backend development
 
@@ -80,6 +86,10 @@ Some requests to http://localhost/api/plugins/grafana-pyroscope-app failing (HTT
   "traceID": ""
 }
 ```
+
+#### Cause
+
+The plugin backend has not been built.
 
 #### Solution
 
