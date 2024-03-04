@@ -9,7 +9,7 @@ enum PromptCategories {
   user = 'user',
 }
 
-type Prompts = Record<string, (profile: string, profileType: string, profileRight?: string) => string>;
+type Prompts = Record<string, (profileType: string, profiles: string[]) => string>;
 
 const prompts: Record<PromptCategories, Prompts> = {
   system: {
@@ -21,7 +21,7 @@ const prompts: Record<PromptCategories, Prompts> = {
   },
   user: {
     // add new user prompts above
-    ryan: (profile: string, profileType: string) => `
+    ryan: (profileType: string, profiles: string[]) => `
     Analyze this flamegraph in DOT format and address these key aspects:
     - **Performance Bottleneck**: Identify the primary factors slowing down the process, consuming excessive memory, or causing a bottleneck in the system.
     - **Root Cause**: Explain clearly why these bottlenecks are occurring.
@@ -32,14 +32,15 @@ const prompts: Record<PromptCategories, Prompts> = {
     - Exclude numeric values, percentages, and node names (e.g., N1, N3, Node 1, Node 2).
     - Focus on user code over low-level runtime optimizations.
     - For standard library or runtime functions, explain their presence/function and link them to user code functions calling them. Avoid repetitive mentions from the same call chain.
-    
+    - Do not mention that the flamegraph profile is in DOT format.
+
     Format the response using markdown headers for each section corresponding to the key aspects.
     
     The profile type is: ${profileType}
     Profile in DOT format:
-    ${profile}
+    ${profiles[0]}
 `,
-    anton: (profile: string, profileType: string) => `
+    anton: (profileType: string, profiles: string[]) => `
 Give me actionable feedback and suggestions on how I improve the application performance.
 
 Do not break function names.
@@ -60,9 +61,9 @@ Avoid mentioning functions from the same call-chain.
 5 suggestions is enough.
 The profile type is ${profileType}
 Below is the performance profile in DOT format:
-${profile}
+${profiles[0]}
 `,
-    diff: (profile: string, profileType: string, profileRight?: string) => `
+    diff: (profileType: string, profiles: string[]) => `
 Two performance profiles in the DOT format will follow. Tell me in what way has performance changed between the first and the second profile, if at all.
 
 Tell me about function names and not nodes.
@@ -70,6 +71,7 @@ Do not break function names.
 Do not show any numeric values, absolute or percents.
 Do not show node names like N1, N3, or Node 1, Node 2.
 Do not suggest low-level runtime optimisations, focus on the user code.
+Do not mention that the flamegraph profile is in DOT format.
 
 Always use full function names.
 Never split function and package name.
@@ -78,9 +80,11 @@ Remove any numeric values, absolute or percents, from the output.
 Remove node names like N1, N3, or Node 1, Node 2 from the output.
 The profile type is ${profileType}
     
-    ${profile}
+First profile in DOT format:
+    ${profiles[0]}
     
-    ${profileRight}
+Second profile in DOT format:
+    ${profiles[1]}
 `,
   },
 };
@@ -88,28 +92,28 @@ The profile type is ${profileType}
 export const buildPrompts = ({
   system,
   user,
-  profile,
   profileType,
-  profileRight,
+  profiles,
 }: {
   system: string;
   user: string;
-  profile: string;
   profileType: string;
-  profileRight?: string;
+  profiles: string[];
 }) => {
   const systemPrompt = prompts.system[system];
+
   if (typeof systemPrompt !== 'function') {
     throw new Error(`Cannot find system prompt "${system}"!`);
   }
 
   const userPrompt = prompts.user[user];
+
   if (typeof userPrompt !== 'function') {
     throw new Error(`Cannot find user prompt "${user}"!`);
   }
 
   return {
-    system: systemPrompt(profile, profileType, profileRight),
-    user: userPrompt(profile, profileType, profileRight),
+    system: systemPrompt(profileType, profiles),
+    user: userPrompt(profileType, profiles),
   };
 };

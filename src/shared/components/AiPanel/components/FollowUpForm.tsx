@@ -1,14 +1,8 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
 import { Button, TextArea, useStyles2 } from '@grafana/ui';
 import React, { KeyboardEvent, useCallback, useState } from 'react';
 
-type AiPanelFollowUpFormProps = {
-  onSubmit: (question: string) => void;
-};
-
-// eslint-disable-next-line no-unused-vars
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = () => ({
   textarea: css`
     margin-bottom: 8px;
   `,
@@ -19,7 +13,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
 });
 
-function useFollowUpForm(onSubmit: AiPanelFollowUpFormProps['onSubmit']) {
+type FollowUpFormProps = {
+  onSubmit: (question: string) => void;
+};
+
+function useFollowUpForm(onSubmit: FollowUpFormProps['onSubmit']) {
   const [question, setQuestion] = useState('');
 
   const onChangeInput = useCallback((event: any) => {
@@ -44,7 +42,7 @@ function useFollowUpForm(onSubmit: AiPanelFollowUpFormProps['onSubmit']) {
   };
 }
 
-export function AiPanelFollowUpForm({ onSubmit }: AiPanelFollowUpFormProps) {
+export function FollowUpForm({ onSubmit }: FollowUpFormProps) {
   const styles = useStyles2(getStyles);
   const { question, onChangeInput, onClickSend } = useFollowUpForm(onSubmit);
 
@@ -58,7 +56,7 @@ export function AiPanelFollowUpForm({ onSubmit }: AiPanelFollowUpFormProps) {
     <div>
       <TextArea
         className={styles.textarea}
-        placeholder="Ask me something else..."
+        placeholder="Ask a follow-up question..."
         value={question}
         onChange={onChangeInput}
         onKeyDown={onKeyDown}

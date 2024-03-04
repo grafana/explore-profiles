@@ -1,4 +1,8 @@
-import { Spinner } from '@grafana/ui';
+import { css } from '@emotion/css';
+import { Spinner, useStyles2 } from '@grafana/ui';
+import { AiPanel } from '@shared/components/AiPanel/AiPanel';
+import { ExplainFlameGraphButton } from '@shared/components/AiPanel/components/ExplainFlameGraphButton';
+import { useToggleAiPanel } from '@shared/components/AiPanel/domain/useToggleAiPanel';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
@@ -11,8 +15,25 @@ import { useSingleView } from './domain/useSingleView';
 import { PageTitle } from './ui/PageTitle';
 import { Timeline } from './ui/Timeline/Timeline';
 
+const getStyles = () => ({
+  flex: css`
+    display: flex;
+  `,
+  flamegraphPanel: css`
+    min-width: 0;
+    flex-grow: 1;
+  `,
+  aiPanel: css`
+    flex: 1 0 50%;
+    margin-left: 4px;
+    padding-left: 4px;
+  `,
+});
+
 export function SingleView() {
+  const styles = useStyles2(getStyles);
   const { data, actions } = useSingleView();
+  const { isOpen: isAiPanelOpen, open: openAiPanel, close: closeAiPanel } = useToggleAiPanel();
 
   if (data.fetchSettingsError) {
     displayWarning([
@@ -53,27 +74,38 @@ export function SingleView() {
         <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
       </Panel>
 
-      <Panel title={data.isLoading ? <Spinner /> : null} isLoading={data.isLoading}>
-        {data.fetchDataError && (
-          <InlineBanner severity="error" title="Error while loading flamegraph data!" error={data.fetchDataError} />
-        )}
-        {data.noDataAvailable && (
-          <InlineBanner
-            severity="warning"
-            title="No data available"
-            message="Please verify that you've selected a proper service, profile type and time range."
-          />
-        )}
-        {/* we don't always display the flamegraph because if there's no data, the UI does not look good */}
-        {/* we probably should open a PR in the @grafana/flamegraph repo to improve this */}
-        {data.shouldDisplayFlamegraph && (
-          <FlameGraph
-            profile={data.profile}
-            enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}
-            collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
-          />
-        )}
-      </Panel>
+      <div className={styles.flex}>
+        <Panel
+          className={styles.flamegraphPanel}
+          title={data.isLoading ? <Spinner /> : null}
+          isLoading={data.isLoading}
+          headerActions={
+            !isAiPanelOpen ? <ExplainFlameGraphButton onClick={openAiPanel} disabled={data.isLoading} /> : null
+          }
+        >
+          {data.fetchDataError && (
+            <InlineBanner severity="error" title="Error while loading flamegraph data!" error={data.fetchDataError} />
+          )}
+          {data.noDataAvailable && (
+            <InlineBanner
+              severity="warning"
+              title="No data available"
+              message="Please verify that you've selected a proper service, profile type and time range."
+            />
+          )}
+          {/* we don't always display the flamegraph because if there's no data, the UI does not look good */}
+          {/* we probably should open a PR in the @grafana/flamegraph repo to improve this */}
+          {data.shouldDisplayFlamegraph && (
+            <FlameGraph
+              profile={data.profile}
+              enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}
+              collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
+            />
+          )}
+        </Panel>
+
+        {isAiPanelOpen && <AiPanel className={styles.aiPanel} onClose={closeAiPanel} />}
+      </div>
     </>
   );
 }

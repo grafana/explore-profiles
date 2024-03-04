@@ -1,4 +1,3 @@
-import { useStyles2 } from '@grafana/ui';
 import ChartTitle from '@pyroscope/components/ChartTitle';
 import { FlameGraphWrapper } from '@pyroscope/components/FlameGraphWrapper';
 import PageTitle from '@pyroscope/components/PageTitle';
@@ -22,20 +21,19 @@ import {
   selectQueries,
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
-import { addQueryToPageTitle } from '@shared/domain/addQueryToPageTitle';
+import { AiPanel } from '@shared/components/AiPanel/AiPanel';
+import { ExplainFlameGraphButton } from '@shared/components/AiPanel/components/ExplainFlameGraphButton';
+import { useToggleAiPanel } from '@shared/components/AiPanel/domain/useToggleAiPanel';
 import React, { useEffect } from 'react';
 
-import { getStyles } from '../../ContinuousSingleViewAi/components/ContinuousSingleView';
-import AiPanel from '../../shared/AiPanel';
-import { AskAiButton } from '../../shared/AskAiButton';
-import { useAiPanel } from '../../shared/hooks/useAiPanel';
-import { isLoadingOrReloading } from '../../shared/isLoadingOrReloading';
+import styles from './ContinuousSingleView.module.css';
+import { formatTitle } from './formatTitle';
+import { isLoadingOrReloading } from './isLoadingOrReloading';
 
-function ComparisonDiffView() {
-  const styles = useStyles2(getStyles);
-
+export function PyroscopeComparisonDiffView() {
   const dispatch = useAppDispatch();
-  const { diffView, refreshToken, leftFrom, rightFrom, leftUntil, rightUntil } = useAppSelector(selectContinuousState);
+  const { diffView, refreshToken, maxNodes, leftFrom, rightFrom, leftUntil, rightUntil } =
+    useAppSelector(selectContinuousState);
   const { leftQuery, rightQuery } = useAppSelector(selectQueries);
   const annotations = useAppSelector(selectAnnotationsOrDefault('diffView'));
 
@@ -65,19 +63,21 @@ function ComparisonDiffView() {
       return fetchData.abort;
     }
     return undefined;
-  }, [dispatch, leftFrom, leftUntil, leftQuery, rightFrom, rightUntil, rightQuery, refreshToken]);
+  }, [dispatch, leftFrom, leftUntil, leftQuery, rightFrom, rightUntil, rightQuery, refreshToken, maxNodes]);
 
-  const { isAiPanelOpen, onClickAskAi, onClickCloseAiPanel } = useAiPanel(leftQuery, leftFrom, leftUntil);
+  const { isOpen: isAiPanelOpen, open: openAiPanel, close: closeAiPanel } = useToggleAiPanel();
 
   return (
     <div>
-      <PageTitle title={addQueryToPageTitle('Diff', leftQuery, rightQuery)} />
+      <PageTitle title={formatTitle('Diff', leftQuery, rightQuery)} />
+
       <PageContentWrapper>
         <Toolbar
           onSelectedApp={(query) => {
             dispatch(actions.setQuery(query));
           }}
         />
+
         <Panel isLoading={isLoading} title={<ChartTitle titleKey={diffView.profile?.metadata.name as any} />}>
           <TimelineChartWrapper
             data-testid="timeline-main"
@@ -118,8 +118,10 @@ function ComparisonDiffView() {
             }}
           />
         </Panel>
+
         <div className="diff-instructions-wrapper">
           <Panel
+            dataTestId="baseline-panel"
             isLoading={isLoading}
             className="diff-instructions-wrapper-side"
             title={<ChartTitle titleKey="baseline" color={leftColor} />}
@@ -133,6 +135,7 @@ function ComparisonDiffView() {
                 dispatch(fetchTagValues({ query, label }));
               }}
             />
+
             <TimelineChartWrapper
               data-testid="timeline-left"
               key="timeline-chart-left"
@@ -155,7 +158,9 @@ function ComparisonDiffView() {
               timezone={timezone}
             />
           </Panel>
+
           <Panel
+            dataTestId="comparison-panel"
             isLoading={isLoading}
             className="diff-instructions-wrapper-side"
             title={<ChartTitle titleKey="comparison" color={rightColor} />}
@@ -169,6 +174,7 @@ function ComparisonDiffView() {
                 dispatch(fetchTagValues({ query, label }));
               }}
             />
+
             <TimelineChartWrapper
               data-testid="timeline-right"
               key="timeline-chart-right"
@@ -192,31 +198,22 @@ function ComparisonDiffView() {
             />
           </Panel>
         </div>
-        <Panel isLoading={isLoading} headerActions={!isAiPanelOpen ? <AskAiButton onClick={onClickAskAi} /> : null}>
-          {isAiPanelOpen ? (
-            <div className={styles.flamegraphContainer}>
-              <div className={styles.flamegraphComponent}>
-                <FlameGraphWrapper profile={diffView.profile} diff={true} />
-              </div>
-              <div className={styles.aiPanel}>
-                <AiPanel
-                  query={leftQuery}
-                  from={leftFrom}
-                  until={leftUntil}
-                  rightQuery={rightQuery}
-                  rightFrom={rightFrom}
-                  rightUntil={rightUntil}
-                  onClickClose={onClickCloseAiPanel}
-                />
-              </div>
-            </div>
-          ) : (
+
+        <div className={styles.flex}>
+          <Panel
+            className={styles.flamegraphPanel}
+            isLoading={isLoading}
+            dataTestId="diff-panel"
+            headerActions={
+              !isAiPanelOpen ? <ExplainFlameGraphButton onClick={openAiPanel} disabled={isLoading} /> : null
+            }
+          >
             <FlameGraphWrapper profile={diffView.profile} diff={true} />
-          )}
-        </Panel>
+          </Panel>
+
+          {isAiPanelOpen && <AiPanel isDiff className={styles.aiPanel} onClose={closeAiPanel} />}
+        </div>
       </PageContentWrapper>
     </div>
   );
 }
-
-export default ComparisonDiffView;

@@ -5,19 +5,24 @@ import { finalize } from 'rxjs';
 import { buildPrompts, model } from './buildLlmPrompts';
 
 // taken from "@grafana/experimental"
-export type Role = 'system' | 'user' | 'assistant' | 'function';
-export type Message = {
+type Role = 'system' | 'user' | 'assistant' | 'function';
+
+type Message = {
   role: Role;
   content: string;
   name?: string;
   function_call?: Object;
 };
-type ProfileContainer = {
-  value: string;
-  valueRight?: string;
+
+export type OpenAiReply = {
+  text: string;
+  hasStarted: boolean;
+  hasFinished: boolean;
+  messages: Message[];
+  addMessages: (messagesToAdd: Message[]) => void;
 };
 
-export function useOpenAiChatCompletions(profile: ProfileContainer, profileType: string) {
+export function useOpenAiChatCompletions(profileType: string, profiles: string[]): OpenAiReply {
   const [reply, setReply] = useState('');
   const [replyHasStarted, setReplyHasStarted] = useState(false);
   const [replyHasFinished, setReplyHasFinished] = useState(false);
@@ -28,6 +33,7 @@ export function useOpenAiChatCompletions(profile: ProfileContainer, profileType:
     setReplyHasStarted(true);
     setReplyHasFinished(false);
     setReply('');
+
     const stream = llms.openai
       .streamChatCompletions({
         model,
@@ -47,12 +53,14 @@ export function useOpenAiChatCompletions(profile: ProfileContainer, profileType:
           setReplyHasFinished(true);
         })
       );
+
     stream.subscribe(setReply);
   }, [messages, setReplyHasStarted, setReplyHasFinished]);
 
   const addMessages = useCallback(
     (messagesToAdd: Message[]): void => {
       messages.push(...messagesToAdd);
+
       setMessages(messages);
       sendMessages();
     },
@@ -60,21 +68,18 @@ export function useOpenAiChatCompletions(profile: ProfileContainer, profileType:
   );
 
   useEffect(() => {
-    if (!profile) {
+    if (!profiles.length) {
       return;
     }
 
     if (messages.length === 0) {
-      let prompts = buildPrompts({ system: 'empty', user: 'ryan', profile: profile.value, profileType });
-      if (profile.valueRight) {
-        prompts = buildPrompts({
-          system: 'empty',
-          user: 'diff',
-          profile: profile.value,
-          profileType,
-          profileRight: profile.valueRight,
-        });
-      }
+      const prompts = buildPrompts({
+        system: 'empty',
+        user: profiles.length === 2 ? 'diff' : 'ryan',
+        profileType,
+        profiles,
+      });
+
       setMessages([
         {
           role: 'system',
@@ -88,19 +93,18 @@ export function useOpenAiChatCompletions(profile: ProfileContainer, profileType:
       return;
     }
 
-    console.log('*** useLlm messages', messages);
-
     if (replyHasStartedRef.current) {
       return;
     }
+
     sendMessages();
-  }, [profile, profileType, messages, setMessages, sendMessages]);
+  }, [profiles, profileType, messages, setMessages, sendMessages]);
 
   return {
     text: reply,
     hasStarted: replyHasStarted,
     hasFinished: replyHasFinished,
-    addMessages: addMessages,
     messages: messages,
+    addMessages,
   };
 }

@@ -1,22 +1,15 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import Markdown from 'markdown-to-jsx';
 import React, { ReactNode } from 'react';
 
-import { Message } from './hooks/useOpenAiChatCompletions';
+import { OpenAiReply } from '../domain/useOpenAiChatCompletions';
 
-type AiPanelReplyProps = {
-  reply: {
-    text: string;
-    hasStarted: boolean;
-    hasFinished: boolean;
-    messages: Message[];
-  };
-};
-
-// eslint-disable-next-line no-unused-vars
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = () => ({
+  container: css`
+    width: 100%;
+    height: 100%;
+  `,
   reply: css`
     padding: 0 16px;
     font-size: 13px;
@@ -25,8 +18,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     & ul {
       margin: 0 0 16px 24px;
     }
-
-    margin-bottom: 24px;
   `,
   searchLink: css`
     color: rgb(255, 136, 51);
@@ -56,7 +47,6 @@ const setNativeValue = (element: Element, value: string) => {
 };
 
 const onClickSearchTerm = (event: any) => {
-  // yeah, I know...
   const searchInputElement = document.querySelector('[placeholder^="Search"]');
 
   if (searchInputElement === null) {
@@ -81,26 +71,35 @@ const SearchTerm = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const markdownOptions = { overrides: { code: { component: SearchTerm } } };
+const MARKDOWN_OPTIONS = {
+  overrides: {
+    code: {
+      component: SearchTerm,
+    },
+  },
+};
 
-export function AiPanelReply({ reply }: AiPanelReplyProps) {
+type AiReplyProps = { reply: OpenAiReply };
+
+export function AiReply({ reply }: AiReplyProps) {
   const styles = useStyles2(getStyles);
 
   return (
-    <>
+    <div className={styles.container}>
       {reply?.messages
         ?.filter((message) => message.role !== 'system')
         .map((message) => (
           <>
             <div className={styles.reply}>
-              <Markdown options={markdownOptions}>{message.content}</Markdown>
+              <Markdown options={MARKDOWN_OPTIONS}>{message.content}</Markdown>
             </div>
             <hr />
           </>
         ))}
+
       <div className={styles.reply}>
-        <Markdown options={markdownOptions}>{reply.text}</Markdown>
+        <Markdown options={MARKDOWN_OPTIONS}>{reply.text}</Markdown>
       </div>
-    </>
+    </div>
   );
 }
