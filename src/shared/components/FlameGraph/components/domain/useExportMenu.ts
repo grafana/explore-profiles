@@ -1,5 +1,3 @@
-// TODO: migrate showModalWithInput
-import showModalWithInput from '@pyroscope/components/Modals/ModalWithInput';
 import { displayError } from '@shared/domain/displayStatus';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
@@ -10,34 +8,17 @@ import { flamegraphDotComApiClient } from '../infrastructure/flamegraphDotComApi
 import { pprofApiClient } from '../infrastructure/pprofApiClient';
 import { getExportFilename } from './getExportFilename';
 
-async function getCustomExportName(defaultExportName: string) {
-  return showModalWithInput({
-    title: 'Enter export name',
-    confirmButtonText: 'Export',
-    input: 'text',
-    inputValue: defaultExportName,
-    inputPlaceholder: 'Export name',
-    type: 'normal',
-    validationMessage: 'Name must not be empty',
-    onConfirm: (value: ShamefulAny) => value,
-  });
-}
-
 export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportDataProps) {
   const [query] = useQueryFromUrl();
   const [timeRange] = useTimeRangeFromUrl();
 
-  const downloadPng = async () => {
-    const customExportName = await getCustomExportName(getExportFilename(timeRange, profile.metadata.appName));
-    if (!customExportName) {
-      return;
-    }
-
+  const downloadPng = () => {
+    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
     const filename = `${customExportName}.png`;
 
-    // TODO use ref
-    // this won't work for comparison side by side
+    // TODO use ref, this won't work for comparison side by side (??!)
     const canvasElement = document.querySelector('canvas[data-testid="flameGraph"]') as HTMLCanvasElement;
+
     canvasElement.toBlob((blob) => {
       if (!blob) {
         const error = new Error('No Blob, the image cannot be created.');
@@ -49,12 +30,8 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
     }, 'image/png');
   };
 
-  const downloadJson = async () => {
-    const customExportName = await getCustomExportName(getExportFilename(timeRange, profile.metadata.appName));
-    if (!customExportName) {
-      return;
-    }
-
+  const downloadJson = () => {
+    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
     const filename = `${customExportName}.json`;
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(profile))}`;
 
@@ -62,10 +39,7 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   };
 
   const downloadPprof = async function () {
-    const customExportName = await getCustomExportName(getExportFilename(timeRange, profile.metadata.appName));
-    if (!customExportName) {
-      return;
-    }
+    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
 
     let response;
 
@@ -83,10 +57,7 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   };
 
   const downloadFlamegraphDotCom = async () => {
-    const customExportName = await getCustomExportName(getExportFilename(timeRange, profile.metadata.appName));
-    if (!customExportName) {
-      return;
-    }
+    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
 
     let response;
 
