@@ -1,6 +1,6 @@
 # Deploying the Grafana Pyroscope App Plugin
 
-## Release / Deployment Process
+## Automatic Releases
 
 ### Dev environment
 
@@ -25,10 +25,34 @@ After an approval from someone from `@pyroscope-secondary-oncall` on Slack, a pu
 
 Note that it takes time for the release to be deployed to all Grafana instances.
 
-### Manual release to dev
+## Manual Releases
+
+### Manual release to a specific dev instance (e.g. for testing purposes)
+
+#### When the artefacts (.zip files) have already been published to Google Cloud Storage
+
+Use the corresponding commit SHA to execute:
 
 ```shell
-gcom-dev /instances/[instance name]/provisioned-plugins/grafana-pyroscope-app -d version=[plugin Git commit SHA]
+gcom-dev /instances/[instance name]/provisioned-plugins/grafana-pyroscope-app -d version=[commit SHA]
+```
+
+#### When the artefacts (.zip files) have not been published to Google Cloud Storage
+
+Tag the commit you want to deploy, e.g.:
+
+```shell
+git tag v0.0.42-qa-remove-modal 3ae97fb
+```
+
+This will trigger a [Drone pipeline](https://drone.grafana.net/grafana/pyroscope-app-plugin) that will build the artefacts and publish them to GCS.
+
+They will be accessible via an URL which looks like `https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-[commit SHA].zip`
+
+Once published, use the corresponding commit SHA to execute:
+
+```shell
+gcom-dev /instances/[instance name]/provisioned-plugins/grafana-pyroscope-app -d version=[commit SHA]
 ```
 
 ### Manual release to prod / ops
@@ -72,7 +96,7 @@ To release something sooner than Monday, follow these **9 simple steps**:
 
    And a confirmation in the [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) Slack channel.
 
-### admin-\* instances
+## admin-\* instances
 
 `admin-\* instances`, such as https://admin-ops-us-east-0.grafana-ops.net/grafana/a/grafana-pyroscope-app/single **are provisioned separately from everything else**.
 
