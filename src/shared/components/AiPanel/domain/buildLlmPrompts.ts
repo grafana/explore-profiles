@@ -64,27 +64,25 @@ Below is the performance profile in DOT format:
 ${profiles[0]}
 `,
     diff: (profileType: string, profiles: string[]) => `
-Two performance profiles in the DOT format will follow. Tell me in what way has performance changed between the first and the second profile, if at all.
+Analyze the differences between these two performance profiles presented in DOT format. Provide a detailed comparison focusing on the following aspects:
 
-Tell me about function names and not nodes.
-Do not break function names.
-Do not show any numeric values, absolute or percents.
-Do not show node names like N1, N3, or Node 1, Node 2.
-Do not suggest low-level runtime optimisations, focus on the user code.
-Do not mention that the flamegraph profile is in DOT format.
+- Performance Change: Determine how the performance has changed from the first profile to the second. Identify if there are new bottlenecks, improved or worsened performance areas, or significant changes in resource consumption.
+- Function Impact: Highlight no more than 3 specific functions that have undergone notable changes in their performance impact. Discuss any new functions that have appeared in the second profile or any existing functions that have significantly increased or decreased in resource usage.
+- Potential Causes: Discuss the possible reasons for these changes in performance, linking them to the differences in function execution or resource usage between the two profiles.
 
-Always use full function names.
-Never split function and package name.
+Guidelines for Analysis:
+- Use full function names without separating them from their package names
+- Focus on user code rather than low-level runtime optimizations or standard library functions unless they are directly relevant to the user code's performance changes
+- Exclude numeric values, percentages, and node names (e.g., N1, N3, Node 1, Node 2) from the analysis
+- Format the response using markdown headers for each section to structure the analysis clearly
 
-Remove any numeric values, absolute or percents, from the output.
-Remove node names like N1, N3, or Node 1, Node 2 from the output.
-The profile type is ${profileType}
-    
-First profile in DOT format:
-    ${profiles[0]}
-    
-Second profile in DOT format:
-    ${profiles[1]}
+The profile type is: ${profileType}
+
+First performance profile in DOT format:
+${profiles[0]}
+
+Second performance profile in DOT format:
+${profiles[1]}
 `,
   },
 };
