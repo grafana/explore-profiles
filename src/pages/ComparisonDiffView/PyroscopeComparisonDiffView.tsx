@@ -205,7 +205,7 @@ export function PyroscopeComparisonDiffView() {
             isLoading={isLoading}
             dataTestId="diff-panel"
             headerActions={
-              !isAiPanelOpen ? <ExplainFlameGraphButton onClick={openAiPanel} disabled={isLoading} /> : null
+              !isAiPanelOpen ? <ExplainFlameGraphButton onClick={openAiPanel} disabled={true} /> : null
             }
           >
             <FlameGraphWrapper profile={diffView.profile} diff={true} />
