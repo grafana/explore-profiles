@@ -19,6 +19,11 @@ services:
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
 
+  qdrant:
+    image: qdrant/qdrant
+    volumes:
+      - qdrant-storage:/qdrant/storage
+
   pyroscope:
     container_name: 'pyroscope-static-e2e'
     build:
@@ -26,3 +31,6 @@ services:
       context: .
     ports:
       - 4100:4100/tcp
+
+volumes:
+  qdrant-storage:

@@ -80,7 +80,9 @@ export function SingleView() {
           title={data.isLoading ? <Spinner /> : null}
           isLoading={data.isLoading}
           headerActions={
-            !isSidePanelOpen ? <ExplainFlameGraphButton onClick={openSidePanel} disabled={data.isLoading} /> : null
+            data.shouldDisplayFlamegraph && !isSidePanelOpen ? (
+              <ExplainFlameGraphButton onClick={openSidePanel} disabled={data.isLoading} />
+            ) : null
           }
         >
           {data.fetchDataError && (
