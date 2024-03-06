@@ -22,16 +22,9 @@ export function useAiPanel(isDiff?: boolean): DomainHookReturnValue {
 
   const reply = useOpenAiChatCompletions(profileType, profiles);
 
-  const isLoading = isFetching || !reply.text.trim();
-
-  if (fetchError) {
-    console.error('Error while asking FlameGrot AI!');
-    console.error(fetchError);
-  }
-
   return {
     data: {
-      isLoading,
+      isLoading: isFetching || !reply.text.trim(),
       fetchError,
       reply,
       shouldDisplayReply: Boolean(reply?.hasStarted || reply?.hasFinished),

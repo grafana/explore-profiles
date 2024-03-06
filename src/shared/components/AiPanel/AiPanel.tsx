@@ -50,7 +50,7 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
         {data.fetchError && (
           <InlineBanner
             severity="error"
-            title="Error while asking FlameGrot AI!"
+            title="Error while fetching profiles!"
             message="Sorry for any inconvenience, please try again later"
           />
         )}
