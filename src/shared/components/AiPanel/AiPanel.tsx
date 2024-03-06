@@ -50,8 +50,17 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
         {data.fetchError && (
           <InlineBanner
             severity="error"
-            title="Error while asking FlameGrot AI!"
-            message="Sorry for any inconvenience, please try again later"
+            title="Error while fetching profiles!"
+            message="Sorry for any inconvenience, please try again later."
+          />
+        )}
+
+        {data.llmError && (
+          <InlineBanner
+            severity="error"
+            title="Failed to generate content using OpenAI!"
+            error={data.llmError}
+            message="Sorry for any inconvenience, please try again later or if the problem persists, contact your organization admin."
           />
         )}
 

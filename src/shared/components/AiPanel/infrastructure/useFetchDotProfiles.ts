@@ -50,7 +50,6 @@ type FetchResponse = {
 
 export function useFetchDotProfiles(fetchParams: FetchParams): FetchResponse {
   const { isFetching, error, data } = useQuery({
-    placeholderData: [],
     queryKey: fetchParams.reduce((acc, { query, timeRange }) => {
       acc.push(query);
       acc.push(timeRange.raw.from.toString());
@@ -74,6 +73,6 @@ export function useFetchDotProfiles(fetchParams: FetchParams): FetchResponse {
   return {
     isFetching,
     error,
-    profiles: data as string[],
+    profiles: data || [],
   };
 }

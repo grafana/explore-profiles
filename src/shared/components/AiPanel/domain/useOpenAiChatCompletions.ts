@@ -1,6 +1,5 @@
 import { llms } from '@grafana/experimental';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { finalize } from 'rxjs';
+import { useCallback, useEffect, useState } from 'react';
 
 import { buildPrompts, model } from './buildLlmPrompts';
 
@@ -15,72 +14,93 @@ type Message = {
 };
 
 export type OpenAiReply = {
-  text: string;
-  hasStarted: boolean;
-  hasFinished: boolean;
-  messages: Message[];
-  addMessages: (messagesToAdd: Message[]) => void;
+  reply: {
+    text: string;
+    hasStarted: boolean;
+    hasFinished: boolean;
+    messages: Message[];
+    askFollowupQuestion: (question: string) => void;
+  };
+  error: Error | null;
 };
 
 export function useOpenAiChatCompletions(profileType: string, profiles: string[]): OpenAiReply {
   const [reply, setReply] = useState('');
   const [replyHasStarted, setReplyHasStarted] = useState(false);
   const [replyHasFinished, setReplyHasFinished] = useState(false);
-  const [messages, setMessages] = useState([] as Message[]);
-  const replyHasStartedRef = useRef(replyHasStarted);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [error, setError] = useState<Error | null>(null);
 
-  const sendMessages = useCallback(() => {
+  const sendMessages = useCallback((messagesToSend: Message[]) => {
+    setMessages(messagesToSend);
+
+    setError(null);
+
+    setReply('');
     setReplyHasStarted(true);
     setReplyHasFinished(false);
-    setReply('');
 
     const stream = llms.openai
       .streamChatCompletions({
         model,
-        messages,
+        messages: messagesToSend,
       })
       .pipe(
         // Accumulate the stream content into a stream of strings, where each
         // element contains the accumulated message so far.
-        llms.openai.accumulateContent(),
-        // The stream is just a regular Observable, so we can use standard rxjs
-        // functionality to update state, e.g. recording when the stream
-        // has completed.
-        // The operator decision tree on the rxjs website is a useful resource:
-        // https://rxjs.dev/operator-decision-tree.
-        finalize(() => {
-          setReplyHasStarted(false);
-          setReplyHasFinished(true);
-        })
+        llms.openai.accumulateContent()
       );
 
-    stream.subscribe(setReply);
-  }, [messages, setReplyHasStarted, setReplyHasFinished]);
+    stream.subscribe({
+      next: setReply,
+      error(e) {
+        setError(e);
+        setReplyHasStarted(false);
+        setReplyHasFinished(true);
+      },
+      complete() {
+        setReplyHasStarted(false);
+        setReplyHasFinished(true);
+      },
+    });
+  }, []);
 
-  const addMessages = useCallback(
-    (messagesToAdd: Message[]): void => {
-      messages.push(...messagesToAdd);
+  const askFollowupQuestion = useCallback(
+    (question: string): void => {
+      const messagesToAdd: Message[] = [
+        {
+          role: 'assistant',
+          content: reply,
+        },
+        {
+          role: 'user',
+          content: question,
+        },
+      ];
 
-      setMessages(messages);
-      sendMessages();
+      try {
+        sendMessages([...messages, ...messagesToAdd]);
+      } catch (error) {
+        setError(error as Error);
+      }
     },
-    [messages, sendMessages]
+    [messages, reply, sendMessages]
   );
 
   useEffect(() => {
-    if (!profiles.length) {
+    if (!profiles.length || messages.length > 0) {
       return;
     }
 
-    if (messages.length === 0) {
-      const prompts = buildPrompts({
-        system: 'empty',
-        user: profiles.length === 2 ? 'diff' : 'ryan',
-        profileType,
-        profiles,
-      });
+    const prompts = buildPrompts({
+      system: 'empty',
+      user: profiles.length === 2 ? 'diff' : 'ryan',
+      profileType,
+      profiles,
+    });
 
-      setMessages([
+    try {
+      sendMessages([
         {
           role: 'system',
           content: prompts.system,
@@ -90,21 +110,19 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
           content: prompts.user,
         },
       ]);
-      return;
+    } catch (error) {
+      setError(error as Error);
     }
-
-    if (replyHasStartedRef.current) {
-      return;
-    }
-
-    sendMessages();
-  }, [profiles, profileType, messages, setMessages, sendMessages]);
+  }, [messages.length, profileType, profiles, sendMessages]);
 
   return {
-    text: reply,
-    hasStarted: replyHasStarted,
-    hasFinished: replyHasFinished,
-    messages: messages,
-    addMessages,
+    reply: {
+      text: reply,
+      hasStarted: replyHasStarted,
+      hasFinished: replyHasFinished,
+      messages: messages,
+      askFollowupQuestion,
+    },
+    error,
   };
 }

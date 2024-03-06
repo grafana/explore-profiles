@@ -12,7 +12,9 @@ apps:
   - type: 'grafana-llm-app'
     disabled: false
     jsonData:
-      openai:
+      openAI:
+        provider: openai
+        url: https://api.openai.com
         organizationId: $OPENAI_ORGANIZATION_ID
       vector:
         enabled: true

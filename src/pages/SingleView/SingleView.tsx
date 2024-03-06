@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { ExplainFlameGraphButton } from '@shared/components/AiPanel/components/ExplainFlameGraphButton';
-import { useToggleAiPanel } from '@shared/components/AiPanel/domain/useToggleAiPanel';
+import { useToggleSidePanel } from '@shared/components/AiPanel/domain/useToggleSidePanel';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
@@ -23,7 +23,7 @@ const getStyles = () => ({
     min-width: 0;
     flex-grow: 1;
   `,
-  aiPanel: css`
+  sidePanel: css`
     flex: 1 0 50%;
     margin-left: 4px;
     padding-left: 4px;
@@ -33,7 +33,7 @@ const getStyles = () => ({
 export function SingleView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useSingleView();
-  const { isOpen: isAiPanelOpen, open: openAiPanel, close: closeAiPanel } = useToggleAiPanel();
+  const { isOpen: isSidePanelOpen, open: openSidePanel, close: closeSidePanel } = useToggleSidePanel();
 
   if (data.fetchSettingsError) {
     displayWarning([
@@ -80,7 +80,7 @@ export function SingleView() {
           title={data.isLoading ? <Spinner /> : null}
           isLoading={data.isLoading}
           headerActions={
-            !isAiPanelOpen ? <ExplainFlameGraphButton onClick={openAiPanel} disabled={data.isLoading} /> : null
+            !isSidePanelOpen ? <ExplainFlameGraphButton onClick={openSidePanel} disabled={data.isLoading} /> : null
           }
         >
           {data.fetchDataError && (
@@ -104,7 +104,7 @@ export function SingleView() {
           )}
         </Panel>
 
-        {isAiPanelOpen && <AiPanel className={styles.aiPanel} onClose={closeAiPanel} />}
+        {isSidePanelOpen && <AiPanel className={styles.sidePanel} onClose={closeSidePanel} />}
       </div>
     </>
   );

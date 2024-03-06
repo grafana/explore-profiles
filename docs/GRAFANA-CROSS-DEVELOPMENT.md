@@ -15,9 +15,10 @@ This section describes how you can set up your local development environment to 
 
 1. Ensure that your local version of the plugin is properly [set up](./CONTRIBUTING.md)
 2. Check out a local copy of Grafana:
-    ```shell
-    git clone https://github.com/grafana/grafana
-    ```
+
+   ```shell
+   git clone https://github.com/grafana/grafana
+   ```
 
 3. Setup your local Grafana development environment by following [Grafana's Developer's guide](https://github.com/grafana/grafana/blob/HEAD/contribute/developer-guide.md).
 

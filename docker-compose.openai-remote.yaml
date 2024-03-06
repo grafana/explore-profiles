@@ -17,6 +17,7 @@ services:
     environment:
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
+      OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
 
   qdrant:
     image: qdrant/qdrant

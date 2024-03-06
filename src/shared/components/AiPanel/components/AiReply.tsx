@@ -79,7 +79,9 @@ const MARKDOWN_OPTIONS = {
   },
 };
 
-type AiReplyProps = { reply: OpenAiReply };
+type AiReplyProps = {
+  reply: OpenAiReply['reply'];
+};
 
 export function AiReply({ reply }: AiReplyProps) {
   const styles = useStyles2(getStyles);

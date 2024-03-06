@@ -20,35 +20,20 @@ export function useAiPanel(isDiff?: boolean): DomainHookReturnValue {
   const { profileMetricId } = parseQuery(fetchProfileParams[0].query);
   const profileType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
-  const reply = useOpenAiChatCompletions(profileType, profiles);
-
-  const isLoading = isFetching || !reply.text.trim();
-
-  if (fetchError) {
-    console.error('Error while asking FlameGrot AI!');
-    console.error(fetchError);
-  }
+  const { reply, error: llmError } = useOpenAiChatCompletions(profileType, profiles);
 
   return {
     data: {
-      isLoading,
+      isLoading: isFetching || (!isFetching && !fetchError && !llmError && !reply.text.trim()),
       fetchError,
+      llmError,
       reply,
       shouldDisplayReply: Boolean(reply?.hasStarted || reply?.hasFinished),
-      shouldDisplayFollowUpForm: !fetchError && Boolean(reply?.hasFinished),
+      shouldDisplayFollowUpForm: !fetchError && !llmError && Boolean(reply?.hasFinished),
     },
     actions: {
       submitFollowupQuestion(question: string) {
-        reply.addMessages([
-          {
-            role: 'assistant',
-            content: reply.text,
-          },
-          {
-            role: 'user',
-            content: question,
-          },
-        ]);
+        reply.askFollowupQuestion(question);
       },
     },
   };

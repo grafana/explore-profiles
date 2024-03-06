@@ -29,14 +29,18 @@ export class HttpClient {
         throw new Error(`HTTP error: ${response.status} (${response.statusText})`);
       }
     } catch (error) {
+      if (response) {
+        (error as any).response = response;
+      }
+
       if (this.isAbortError(error)) {
         (error as any).reason = options?.signal?.reason || signal.reason;
       }
 
       throw error;
+    } finally {
+      this.abortController = null;
     }
-
-    this.abortController = null;
 
     return response;
   }

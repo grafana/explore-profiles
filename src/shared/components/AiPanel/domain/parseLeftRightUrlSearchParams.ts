@@ -7,14 +7,14 @@ export function parseLeftRightUrlSearchParams() {
 
   const leftQuery = urlSearchParams.get('leftQuery') ?? '';
   const leftTimeRange = translatePyroscopeTimeRangeToGrafana(
-    urlSearchParams.get('leftFrom') ?? '',
-    urlSearchParams.get('leftUntil') ?? ''
+    urlSearchParams.get('leftFrom') ?? 'now-1h',
+    urlSearchParams.get('leftUntil') ?? 'now-30m'
   );
 
   const rightQuery = parseUrlSearchParams().get('rightQuery') ?? '';
   const rightTimeRange = translatePyroscopeTimeRangeToGrafana(
-    urlSearchParams.get('rightFrom') ?? '',
-    urlSearchParams.get('rightUntil') ?? ''
+    urlSearchParams.get('rightFrom') ?? 'now-30m',
+    urlSearchParams.get('rightUntil') ?? 'now'
   );
 
   return [
