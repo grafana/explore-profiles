@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { IconName } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 import { useFetchLlmPluginStatus } from '../infrastructure/useFetchLlmPluginStatus';
@@ -35,10 +36,15 @@ export function ExplainFlameGraphButton({ onClick, disabled }: ExplainFlameGraph
     icon = 'fa fa-spinner';
   }
 
+  const onClickInternal = (event: React.MouseEvent<HTMLButtonElement>) => {
+    reportInteraction('g_pyroscope_app_explain_flamegraph_clicked');
+    onClick(event);
+  };
+
   return (
     <Button
       className={styles.askAiButton}
-      onClick={onClick}
+      onClick={onClickInternal}
       disabled={!isEnabled || disabled}
       title={isEnabled ? 'Ask FlameGrot AI' : 'Grafana LLM plugin missing or not configured!'}
       icon={icon}
