@@ -1,7 +1,8 @@
 import { createTheme } from '@grafana/data';
-import { FlameGraph as GrafanaFlameGraph } from '@grafana/flamegraph';
 import { useTheme2 } from '@grafana/ui';
-import React from 'react';
+import { FlameGraph as GrafanaFlameGraph } from '@shared/components/@grafana-experimental-flamegraph';
+import { GetExtraContextMenuButtonsFunction } from '@shared/components/@grafana-experimental-flamegraph/src/FlameGraph/FlameGraphContextMenu';
+import React, { memo, useMemo } from 'react';
 
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
 import { ExportData } from './components/ExportData';
@@ -13,23 +14,29 @@ type FlameGraphProps = {
   vertical?: boolean;
   enableFlameGraphDotComExport?: boolean;
   collapsedFlamegraphs?: boolean;
+  getExtraContextMenuButtons?: GetExtraContextMenuButtonsFunction;
 };
 
-export function FlameGraph({
+function FlameGraphComponent({
   profile,
   diff,
   vertical,
   enableFlameGraphDotComExport,
   collapsedFlamegraphs,
+  getExtraContextMenuButtons,
 }: FlameGraphProps) {
   const { isLight } = useTheme2();
   const getTheme = () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } });
 
-  const dataFrame = flamebearerToDataFrameDTO(
-    profile.flamebearer.levels,
-    profile.flamebearer.names,
-    profile.metadata.units,
-    Boolean(diff)
+  const dataFrame = useMemo(
+    () =>
+      flamebearerToDataFrameDTO(
+        profile.flamebearer.levels,
+        profile.flamebearer.names,
+        profile.metadata.units,
+        Boolean(diff)
+      ),
+    [profile, diff]
   );
 
   return (
@@ -39,6 +46,9 @@ export function FlameGraph({
       extraHeaderElements={<ExportData profile={profile} enableFlameGraphDotComExport={enableFlameGraphDotComExport} />}
       vertical={vertical}
       getTheme={getTheme}
+      getExtraContextMenuButtons={getExtraContextMenuButtons}
     />
   );
 }
+
+export const FlameGraph = memo(FlameGraphComponent);

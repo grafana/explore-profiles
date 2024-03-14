@@ -1,16 +1,26 @@
 import { TimeRange } from '@grafana/data';
 import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { PprofProfile } from '@shared/types/PprofProfile';
 
 import { PprofRequest } from './PprofRequest';
 
+type SelectMergeProfileProps = {
+  profileMetricId: string;
+  labelsSelector: string;
+  start: number;
+  end: number;
+  stacktrace: string[];
+  maxNodes: number;
+};
+
 class PprofApiClient extends ApiClient {
   static buildQuery(query: string, timeRange: TimeRange): Uint8Array {
-    const { profileMetricId, labelSelector } = parseQuery(query);
+    const { profileMetricId, labelsSelector } = parseQuery(query);
     const start = timeRange.from.unix() * 1000;
     const end = timeRange.to.unix() * 1000;
 
-    const message = new PprofRequest(profileMetricId, labelSelector, start, end);
+    const message = new PprofRequest(profileMetricId, labelsSelector, start, end);
 
     return PprofRequest.encode(message).finish();
   }
@@ -24,9 +34,32 @@ class PprofApiClient extends ApiClient {
       body: new Blob([PprofApiClient.buildQuery(query, timeRange)]),
     });
 
-    const blob = await response.blob();
+    return response.blob();
+  }
 
-    return blob;
+  async selectMergeProfileJson({
+    profileMetricId,
+    labelsSelector,
+    start,
+    end,
+    stacktrace,
+    maxNodes,
+  }: SelectMergeProfileProps): Promise<PprofProfile> {
+    const response = await this.fetch('/querier.v1.QuerierService/SelectMergeProfile', {
+      method: 'POST',
+      body: JSON.stringify({
+        profile_typeID: profileMetricId,
+        label_selector: labelsSelector,
+        start,
+        end,
+        stackTraceSelector: {
+          call_site: stacktrace.map((name) => ({ name })),
+        },
+        maxNodes,
+      }),
+    });
+
+    return response.json();
   }
 }
 

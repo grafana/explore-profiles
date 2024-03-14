@@ -8,6 +8,7 @@ apps:
       # 1. our plugin backend expects a string
       # 2. this value must match the one in samples/provisioning/datasources/datasources.yaml (grafanacloud-profiles)
       basicAuthUser: '42'
+      isGitHubIntegrationEnabled: true
     secureJsonData:
   - type: 'grafana-llm-app'
     disabled: false

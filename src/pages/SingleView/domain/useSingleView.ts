@@ -41,14 +41,15 @@ export function useSingleView(): DomainHookReturnValue {
   const isLoading = isFetchingSettings || isFetching;
 
   // TODO: improve?
-  const noDataAvailable = (!isFetchingServices && services.size === 0) || profile?.flamebearer.numTicks === 0;
+  const noDataAvailable =
+    !fetchDataError && ((!isFetchingServices && services.size === 0) || profile?.flamebearer.numTicks === 0);
+
+  const shouldDisplayFlamegraph = Boolean(!fetchDataError && !noDataAvailable && profile);
 
   const timelinePanelTitle =
     getProfileMetric(parseQuery(query).profileMetricId as ProfileMetricId).description ||
     getProfileMetricByType(profile?.metadata.name as string)?.description ||
     '';
-
-  const shouldDisplayFlamegraph = Boolean(!fetchDataError && !noDataAvailable && profile);
 
   return {
     data: {
@@ -58,8 +59,8 @@ export function useSingleView(): DomainHookReturnValue {
       fetchDataError,
       timeline,
       profile,
-      shouldDisplayFlamegraph,
       noDataAvailable,
+      shouldDisplayFlamegraph,
       timelinePanelTitle,
       fetchSettingsError,
       settings,

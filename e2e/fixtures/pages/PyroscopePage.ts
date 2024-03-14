@@ -22,6 +22,10 @@ export class PyroscopePage {
     return this.page.locator(selector, options);
   }
 
+  getByTestid(testId: string | RegExp) {
+    return this.page.getByTestId(testId);
+  }
+
   getByText(text, options?: Record<string, unknown>) {
     return this.page.getByText(text, options);
   }

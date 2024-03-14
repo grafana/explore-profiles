@@ -31,6 +31,10 @@ services:
       - 4100:4100/tcp
     volumes:
       - ./samples/pyroscope:/etc/pyroscope
+    environment:
+      GITHUB_CLIENT_ID: $GITHUB_CLIENT_ID
+      GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET
+      GITHUB_SESSION_SECRET: $GITHUB_SESSION_SECRET
 
   rideshare:
     build:

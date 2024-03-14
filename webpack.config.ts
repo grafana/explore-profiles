@@ -14,8 +14,8 @@ const config = async (env): Promise<Configuration> => {
     return rule.use.loader === 'swc-loader';
   }) as RuleSetRule;
 
-  // Ignore everything except (pyroscope-pyroscope | phlare), since it's used as if it was local code
-  swcLoader.exclude = /node_modules\/(?!grafana-pyroscope|phlare).*/;
+  // Ignore everything except grafana-pyroscope, since it's used as if it was local code
+  swcLoader.exclude = /node_modules\/(?!grafana-pyroscope).*/;
 
   const swcLoaderJsc = (swcLoader?.use as any).options.jsc;
 

@@ -2,18 +2,20 @@ import { css } from '@emotion/css';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { ExplainFlameGraphButton } from '@shared/components/AiPanel/components/ExplainFlameGraphButton';
-import { useToggleSidePanel } from '@shared/components/AiPanel/domain/useToggleSidePanel';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
 import { displayWarning } from '@shared/domain/displayStatus';
+import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import React from 'react';
 
+import { FunctionDetailsPanel } from './components/FunctionDetailsPanel/FunctionDetailsPanel';
+import { Timeline } from './components/Timeline/Timeline';
+import { useGitHubIntegration } from './domain/useGitHubIntegration';
 import { useSingleView } from './domain/useSingleView';
 import { PageTitle } from './ui/PageTitle';
-import { Timeline } from './ui/Timeline/Timeline';
 
 const getStyles = () => ({
   flex: css`
@@ -25,6 +27,7 @@ const getStyles = () => ({
   `,
   sidePanel: css`
     flex: 1 0 50%;
+    max-width: 50%;
     margin-left: 4px;
     padding-left: 4px;
   `,
@@ -32,23 +35,29 @@ const getStyles = () => ({
 
 export function SingleView() {
   const styles = useStyles2(getStyles);
+
+  const sidePanel = useToggleSidePanel();
+  const gitHubIntegration = useGitHubIntegration(sidePanel);
   const { data, actions } = useSingleView();
-  const { isOpen: isSidePanelOpen, open: openSidePanel, close: closeSidePanel } = useToggleSidePanel();
 
   if (data.fetchSettingsError) {
     displayWarning([
       'Error while retrieving the plugin settings!',
       'Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.',
     ]);
-
-    console.error(data.fetchSettingsError);
   }
 
   return (
     <>
       <PageTitle title="Single" />
 
-      <Toolbar isLoading={data.isLoading} onRefresh={actions.refresh} />
+      <Toolbar
+        isLoading={data.isLoading}
+        onRefresh={() => {
+          actions.refresh();
+          sidePanel.close();
+        }}
+      />
 
       <QueryBuilder
         id="query-builder-single"
@@ -59,7 +68,7 @@ export function SingleView() {
         onChangeQuery={actions.setQuery}
       />
 
-      <Panel title={data.timelinePanelTitle} isLoading={data.isLoading}>
+      <Panel title={data.timelinePanelTitle} isLoading={data.isLoading} dataTestId="timeline-panel">
         {data.fetchDataError && (
           <InlineBanner severity="error" title="Error while loading timeline data!" error={data.fetchDataError} />
         )}
@@ -80,10 +89,11 @@ export function SingleView() {
           title={data.isLoading ? <Spinner /> : null}
           isLoading={data.isLoading}
           headerActions={
-            data.shouldDisplayFlamegraph && !isSidePanelOpen ? (
-              <ExplainFlameGraphButton onClick={openSidePanel} disabled={data.isLoading} />
+            data.shouldDisplayFlamegraph && !sidePanel.isOpen('ai') ? (
+              <ExplainFlameGraphButton onClick={() => sidePanel.open('ai')} disabled={data.isLoading} />
             ) : null
           }
+          dataTestId="flamegraph-panel"
         >
           {data.fetchDataError && (
             <InlineBanner severity="error" title="Error while loading flamegraph data!" error={data.fetchDataError} />
@@ -102,11 +112,20 @@ export function SingleView() {
               profile={data.profile}
               enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}
               collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
+              getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
             />
           )}
         </Panel>
 
-        {isSidePanelOpen && <AiPanel className={styles.sidePanel} onClose={closeSidePanel} />}
+        {sidePanel.isOpen('function-details') && (
+          <FunctionDetailsPanel
+            className={styles.sidePanel}
+            stacktrace={gitHubIntegration.data.stacktrace}
+            onClose={sidePanel.close}
+          />
+        )}
+
+        {sidePanel.isOpen('ai') && <AiPanel className={styles.sidePanel} onClose={sidePanel.close} />}
       </div>
     </>
   );

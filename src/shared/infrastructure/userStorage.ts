@@ -5,6 +5,7 @@ class UserStorage {
 
   KEYS = {
     SETTINGS: `${plugin.id}.userSettings`,
+    GITHUB_INTEGRATION: `${plugin.id}.gitHubIntegration`,
   };
 
   has(itemName: string): boolean {
@@ -19,7 +20,8 @@ class UserStorage {
     try {
       return JSON.parse(this.#storage.getItem(itemName) as string);
     } catch (error) {
-      console.error(`Error parsing JSON for storage item "${itemName}":`, error);
+      console.error(`Error parsing JSON for storage item "${itemName}"!`);
+      console.error(error);
       return null;
     }
   }
@@ -27,7 +29,10 @@ class UserStorage {
   set(itemName: string, value: any): void {
     try {
       this.#storage.setItem(itemName, JSON.stringify(value));
-    } catch {}
+    } catch (error) {
+      console.error(`Error setting storage item "${itemName}"!`);
+      console.error(error);
+    }
   }
 }
 

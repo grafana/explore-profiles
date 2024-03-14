@@ -3,6 +3,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import ContinuousComparisonView from '@pyroscope/pages/ContinuousComparisonView';
 import TagExplorerView from '@pyroscope/pages/TagExplorerView';
+import { prefixRouteWithPluginBaseUrl } from '@shared/domain/prefixRouteWithPluginBaseUrl';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
@@ -13,7 +14,7 @@ import { SettingsView } from '../../../pages/SettingsView/SettingsView';
 import { SingleView } from '../../../pages/SingleView/SingleView';
 import { PyroscopeStateWrapper } from './domain/PyroscopeState/PyroscopeStateWrapper';
 import useConsistentTheme from './domain/useConsistentTheme';
-import { prefixRoute, useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
+import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
 import { VersionInfoTooltip } from './ui/VersionInfoTooltip';
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -42,27 +43,27 @@ export function Routes() {
       <div className={styles.page}>
         <PyroscopeStateWrapper>
           <Switch>
-            <Route path={prefixRoute(ROUTES.EXPLORE_VIEW)} exact>
+            <Route path={prefixRouteWithPluginBaseUrl(ROUTES.EXPLORE_VIEW)} exact>
               <TagExplorerView />
             </Route>
-            <Route path={prefixRoute(ROUTES.SINGLE_VIEW)} exact>
+            <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SINGLE_VIEW)} exact>
               <SingleView />
             </Route>
-            <Route path={prefixRoute(ROUTES.COMPARISON_VIEW)} exact>
+            <Route path={prefixRouteWithPluginBaseUrl(ROUTES.COMPARISON_VIEW)} exact>
               <ContinuousComparisonView />
             </Route>
-            <Route path={prefixRoute(ROUTES.COMPARISON_DIFF_VIEW)} exact>
+            <Route path={prefixRouteWithPluginBaseUrl(ROUTES.COMPARISON_DIFF_VIEW)} exact>
               <ComparisonDiffView />
             </Route>
-            <Route path={prefixRoute(ROUTES.ADHOC_VIEW)} exact>
+            <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)} exact>
               <AdHocView />
             </Route>
-            <Route path={prefixRoute(ROUTES.SETTINGS)} exact>
+            <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SETTINGS)} exact>
               <SettingsView />
             </Route>
             {/* Default Route */}
             <Route>
-              <Redirect to={prefixRoute(ROUTES.EXPLORE_VIEW)} />
+              <Redirect to={prefixRouteWithPluginBaseUrl(ROUTES.EXPLORE_VIEW)} />
             </Route>
           </Switch>
         </PyroscopeStateWrapper>

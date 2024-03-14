@@ -1,3 +1,5 @@
+export type HttpClientError = Error & { response?: Response; reason?: any };
+
 export class HttpClient {
   baseUrl = '';
   defaultHeaders = {};
@@ -26,7 +28,7 @@ export class HttpClient {
       response = await fetch(fullUrl, fullOptions);
 
       if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status} (${response.statusText})`);
+        throw new Error(`HTTP error: ${response.status} (${response.statusText || '?'})`);
       }
     } catch (error) {
       if (response) {

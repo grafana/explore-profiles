@@ -24,7 +24,7 @@ if __name__ == "__main__":
     time.sleep(10)
     while True:
         replica = random.randint(1, replicas)
-        host = f'{host_prefix}_{replica}'
+        host = f'{host_prefix}-{replica}'
         vehicle = VEHICLES[random.randint(0, len(VEHICLES) - 1)]
 
         log(f"requesting {vehicle} from {host}")

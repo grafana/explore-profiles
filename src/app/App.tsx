@@ -1,6 +1,7 @@
 import { AppRootProps, PageLayoutType, PluginContextProvider } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
 import store from '@pyroscope/redux/store';
+import { GitHubContextProvider } from '@shared/components/GitHubContextProvider/GitHubContextProvider';
 import { queryClient } from '@shared/infrastructure/react-query/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
@@ -32,17 +33,19 @@ export function App(props: AppRootProps) {
   return (
     <PluginContextProvider meta={props.meta}>
       <QueryClientProvider client={queryClient}>
-        <Provider store={store}>
-          <Onboarding>
-            <PluginPage layout={PageLayoutType.Standard} renderTitle={renderPageTitle}>
-              <pyroscope-app className="app">
-                <div className="pyroscope-app">
-                  <Routes />
-                </div>
-              </pyroscope-app>
-            </PluginPage>
-          </Onboarding>
-        </Provider>
+        <GitHubContextProvider>
+          <Provider store={store}>
+            <Onboarding>
+              <PluginPage layout={PageLayoutType.Standard} renderTitle={renderPageTitle}>
+                <pyroscope-app className="app">
+                  <div className="pyroscope-app">
+                    <Routes />
+                  </div>
+                </pyroscope-app>
+              </PluginPage>
+            </Onboarding>
+          </Provider>
+        </GitHubContextProvider>
       </QueryClientProvider>
     </PluginContextProvider>
   );

@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
-
 	"rideshare/bike"
 	"rideshare/car"
 	"rideshare/scooter"
@@ -72,7 +72,11 @@ func main() {
 		ServerAddress:   serverAddress,
 		AuthToken:       os.Getenv("PYROSCOPE_AUTH_TOKEN"),
 		Logger:          pyroscope.StandardLogger,
-		Tags:            map[string]string{"container_id": containerID},
+		Tags: map[string]string{
+			"container_id":       containerID,
+			"service_git_ref":    randomSha(),
+			"service_repository": "https://github.com/grafana/pyroscope",
+		},
 	})
 	if err != nil {
 		log.Fatalf("error starting pyroscope profiler: %v", err)
@@ -84,6 +88,19 @@ func main() {
 	http.Handle("/car", otelhttp.NewHandler(http.HandlerFunc(carRoute), "CarHandler"))
 
 	log.Fatal(http.ListenAndServe(":5000", nil))
+}
+
+func randomSha() string {
+	shas := []string{
+		"a05c3f3158cc9a996d7f0811f5b3f1d00da9b20f",
+		"f3e93f846e57b7f2dcae57b9f11a407873a8fc88",
+		"14f90bfbb96647db7a8e323c3dd0f8b7c8cf9e84",
+		"9c795e4366a173f09cd0ea189cd80d2b8258697e",
+		"90b411f5190f28078e928a1b7d5ea4d25818d5ab",
+		"25c4dc3a7ae63f98421980cdcb30fcf9bf29ced1",
+	}
+	// return a random sha from the list
+	return shas[rand.Intn(len(shas))]
 }
 
 func setupTracing(appName string, containerID string, pyroscopeURL string) (tp *sdktrace.TracerProvider, err error) {

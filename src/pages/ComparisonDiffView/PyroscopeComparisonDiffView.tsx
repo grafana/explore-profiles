@@ -23,7 +23,7 @@ import {
 } from '@pyroscope/redux/reducers/continuous';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { ExplainFlameGraphButton } from '@shared/components/AiPanel/components/ExplainFlameGraphButton';
-import { useToggleSidePanel } from '@shared/components/AiPanel/domain/useToggleSidePanel';
+import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import React, { useEffect } from 'react';
 
 import styles from './ContinuousSingleView.module.css';
@@ -65,7 +65,7 @@ export function PyroscopeComparisonDiffView() {
     return undefined;
   }, [dispatch, leftFrom, leftUntil, leftQuery, rightFrom, rightUntil, rightQuery, refreshToken, maxNodes]);
 
-  const { isOpen: isSidePanelOpen, open: openSidePanel, close: closeSidePanel } = useToggleSidePanel();
+  const sidePanel = useToggleSidePanel();
 
   return (
     <div>
@@ -205,13 +205,15 @@ export function PyroscopeComparisonDiffView() {
             isLoading={isLoading}
             dataTestId="diff-panel"
             headerActions={
-              !isSidePanelOpen ? <ExplainFlameGraphButton onClick={openSidePanel} disabled={isLoading} /> : null
+              !sidePanel.isOpen('ai') ? (
+                <ExplainFlameGraphButton onClick={() => sidePanel.open('ai')} disabled={isLoading} />
+              ) : null
             }
           >
             <FlameGraphWrapper profile={diffView.profile} diff={true} />
           </Panel>
 
-          {isSidePanelOpen && <AiPanel isDiff className={styles.sidePanel} onClose={closeSidePanel} />}
+          {sidePanel.isOpen('ai') && <AiPanel isDiff className={styles.sidePanel} onClose={sidePanel.close} />}
         </div>
       </PageContentWrapper>
     </div>
