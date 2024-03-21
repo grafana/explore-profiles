@@ -72,7 +72,7 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable }:
   );
 
   return (
-    <>
+    <div data-testid="function-details-code-container">
       <div className={styles.codeContainer}>
         <InlineLabel className={styles.label}>
           <span>Breakdown per line</span>
@@ -91,7 +91,7 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable }:
         </LinkButton>
       </div>
 
-      <pre className={styles.codeBlock}>
+      <pre className={styles.codeBlock} data-testid="function-details-code">
         <span className={styles.highlighted}>
           {formatLine('Total:', formatValue(sumSelf), formatValue(sumTotal), ' (self, total)')}
         </span>
@@ -106,7 +106,7 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable }:
           </div>
         ))}
       </pre>
-    </>
+    </div>
   );
 };
 

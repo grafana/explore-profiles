@@ -11,7 +11,7 @@ import React, { useMemo } from 'react';
 import pkg from '../../../../../package.json';
 import { GIT_COMMIT } from '../../../../version';
 
-const pluginCommitSha = GIT_COMMIT;
+const pluginCommitSha: string = GIT_COMMIT;
 const pluginCommitURL = `https://github.com/grafana/pyroscope-app-plugin/commit/${pluginCommitSha}`;
 const pyroscopeGitInfo = pkg.dependencies['grafana-pyroscope'];
 const pyroscopeCommitSha = pyroscopeGitInfo.split('#')[1];
@@ -64,10 +64,16 @@ export function VersionInfoTooltip() {
         </dd>
         <dt>Plugin Commit SHA</dt>
         <dd>
-          🔗{' '}
-          <a href={pluginCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
-            {pluginCommitSha}
-          </a>
+          {pluginCommitSha === 'dev' ? (
+            pluginCommitSha
+          ) : (
+            <>
+              🔗{' '}
+              <a href={pluginCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
+                {pluginCommitSha}
+              </a>
+            </>
+          )}
         </dd>
         <dt>Pyroscope Commit SHA</dt>
         <dd>

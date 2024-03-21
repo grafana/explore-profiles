@@ -34,8 +34,8 @@ test.describe('URL search parameters', () => {
   }) => {
     await singleViewPage.goto(
       new URLSearchParams({
-        from: '1699688210000',
-        until: '1699705810000',
+        from: '1710354600', // 20-24-03-13 19:30:00
+        until: '1710355320', // 20-24-03-13 19:42:00
       }).toString()
     );
 
@@ -88,10 +88,10 @@ test.describe('URL search parameters', () => {
 
 test.describe('Toolbar', () => {
   test.describe('Service selection', () => {
-    test('Updates the toolbar and the panels data (java)', async ({ singleViewPage, toolbar }) => {
+    test('Updates the toolbar and the panels data (pyroscope)', async ({ singleViewPage, toolbar }) => {
       await singleViewPage.goto();
 
-      await toolbar.selectService('pyroscope-rideshare-java');
+      await toolbar.selectService('pyroscope');
 
       await toolbar.assertNoSpinners();
       await expect(toolbar.getServicesDropdown()).toHaveScreenshot();
@@ -103,10 +103,10 @@ test.describe('Toolbar', () => {
       await expect(singleViewPage.getFlamegraphPanel()).toHaveScreenshot();
     });
 
-    test('Updates the toolbar and the panels data (ruby)', async ({ singleViewPage, toolbar }) => {
+    test('Updates the toolbar and the panels data (load-generator)', async ({ singleViewPage, toolbar }) => {
       await singleViewPage.goto();
 
-      await toolbar.selectService('pyroscope-rideshare-ruby');
+      await toolbar.selectService('load-generator');
 
       await toolbar.assertNoSpinners();
       await expect(toolbar.getServicesDropdown()).toHaveScreenshot();

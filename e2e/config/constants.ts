@@ -25,12 +25,10 @@ export const ENV_VARS = getEnvVars();
 export const DEFAULT_URL_PARAMS = ENV_VARS.E2E_BASE_URL.startsWith('http://localhost')
   ? new URLSearchParams({
       // We use static data in local and PR build (where the host is http://localhost):
-      // pyroscope-rideshare-go app, cpu profile, from from `2023-11-11 08:55:00` to `2023-11-11 13:05:00`
-      query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope-rideshare-go"}',
-      from: '1699688210000',
-      until: '1699705810000',
-      groupBy: 'pyroscope_spy',
-      groupByValue: 'All',
+      query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ride-sharing-app"}',
+      from: '1710352800', // 2024-03-13 19:00:00
+      until: '1710355800', // 2024-03-13 19:50:00
+      maxNodes: '16384',
     }).toString()
   : '';
 

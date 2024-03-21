@@ -26,7 +26,8 @@ services:
 
   pyroscope:
     container_name: 'pyroscope'
-    image: grafana/pyroscope
+    # TODO: set latest tag once the GitHub integration support is published to Docker Hub
+    image: grafana/pyroscope:weekly-f57-48d0e99d9
     ports:
       - 4100:4100/tcp
     volumes:

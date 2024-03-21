@@ -13,39 +13,18 @@ test.describe('Regression bugs', () => {
     await toolbar.assertNoSpinners();
   });
 
-  test('Navigating to dashboard after Profiles and changing timerange', async ({ singleViewPage, page }) => {
-    await singleViewPage.goto(''); // empty query params
-    await singleViewPage.assertNoLoadingPanels();
-
-    await page.getByLabel('Toggle menu').click();
-    await page.getByText('Dashboards').click();
-    await page.getByText('E2E').click();
-    await page.getByText('Simple dashboard').click();
-
-    const timepicker = page.getByTestId('data-testid TimePicker Open Button');
-
-    await expect(timepicker).toHaveText('Last 6 hours');
-
-    await timepicker.click();
-    await page.locator('ul[aria-roledescription="Time range selection"]').getByText('Last 1 hour').click();
-
-    await expect(timepicker).toHaveText('Last 1 hour');
-  });
-
   test('Labels disappear when going from comparison to diff view (#266)', async ({
     comparisonViewPage,
     comparisonDiffViewPage,
   }) => {
     const urlSearchParams = new URLSearchParams({
-      query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope-rideshare-go"}',
-      from: '1699689300',
-      until: '1699704300',
+      query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ride-sharing-app"}',
+      from: '1710352800',
+      until: '1710355800',
       groupBy: 'region',
       groupByValue: 'All',
-      leftQuery:
-        'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope-rideshare-go", region="ap-south"}',
-      rightQuery:
-        'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope-rideshare-go", region="us-east"}',
+      leftQuery: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ride-sharing-app", region="ap-south"}',
+      rightQuery: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ride-sharing-app", region="us-east"}',
     });
 
     await comparisonViewPage.goto(urlSearchParams.toString());

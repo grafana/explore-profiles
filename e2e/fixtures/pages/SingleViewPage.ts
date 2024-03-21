@@ -13,17 +13,25 @@ export class SingleViewPage extends PyroscopePage {
   }
 
   getTimelinePanel() {
-    // TODO: improve with data-testid when migrating Pyroscope OSS
-    return this.page.locator('[class$="-panel-container"]').nth(0);
+    return this.page.getByTestId('timeline-panel');
   }
 
   getFlamegraphPanel() {
-    // TODO: improve with data-testid when migrating Pyroscope OSS
-    return this.page.locator('[class$="-panel-container"]').nth(1);
+    return this.page.getByTestId('flamegraph-panel');
   }
 
   getFlamegraph() {
     return this.page.getByTestId('flameGraph');
+  }
+
+  clickOnFlameGraphNode() {
+    return this.getFlamegraph().click({
+      // go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.(*Handler).ServeHTTP
+      position: {
+        x: 180,
+        y: 160,
+      },
+    });
   }
 
   getExportDataButton() {

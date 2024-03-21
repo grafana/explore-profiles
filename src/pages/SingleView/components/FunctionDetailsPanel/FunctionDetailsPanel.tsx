@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { IconButton, InlineLabel, TextLink, Tooltip, useStyles2 } from '@grafana/ui';
 import { InlineBanner } from '@shared/components/InlineBanner';
-import { Panel } from 'grafana-pyroscope/public/app/components/Panel';
+import { Panel } from '@shared/components/Panel';
 import React from 'react';
 
 import { CodeContainer } from './components/CodeContainer/CodeContainer';
@@ -67,14 +67,14 @@ export function FunctionDetailsPanel({ className, stacktrace, onClose }: Functio
       )}
 
       <div className={styles.container}>
-        <div className={styles.row}>
+        <div className={styles.row} data-testid="row-function-name">
           <InlineLabel width={LABEL_WIDTH}>Function name</InlineLabel>
           <Tooltip content={data.functionDetails.name} placement="top">
             <span className={styles.textValue}>{data.functionDetails.name}</span>
           </Tooltip>
         </div>
 
-        <div className={styles.row}>
+        <div className={styles.row} data-testid="row-start-line">
           <InlineLabel tooltip="The line where this function definition starts" width={LABEL_WIDTH}>
             Start line
           </InlineLabel>
@@ -85,7 +85,7 @@ export function FunctionDetailsPanel({ className, stacktrace, onClose }: Functio
           </span>
         </div>
 
-        <div className={styles.row}>
+        <div className={styles.row} data-testid="row-file-path">
           <InlineLabel tooltip="File path where that function is defined" width={LABEL_WIDTH}>
             File
           </InlineLabel>
@@ -108,12 +108,12 @@ export function FunctionDetailsPanel({ className, stacktrace, onClose }: Functio
         </div>
 
         {data.shouldDisplayGitHubBanner && (
-          <div className={styles.row}>
+          <div className={styles.row} data-testid="row-github-banner">
             <GitHubIntegrationBanner onDismiss={actions.dismissGitHubBanner} />
           </div>
         )}
 
-        <div className={styles.row}>
+        <div className={styles.row} data-testid="row-repository">
           <InlineLabel tooltip="The repository configured for the selected service" width={LABEL_WIDTH}>
             Repository
           </InlineLabel>
@@ -132,7 +132,7 @@ export function FunctionDetailsPanel({ className, stacktrace, onClose }: Functio
           </InlineSpinner>
         </div>
 
-        <div className={styles.row}>
+        <div className={styles.row} data-testid="row-commit">
           <InlineLabel
             width={LABEL_WIDTH}
             tooltip="The version of the application (commit) where the function is defined. Use the dropdown menu to target a specific commit."
