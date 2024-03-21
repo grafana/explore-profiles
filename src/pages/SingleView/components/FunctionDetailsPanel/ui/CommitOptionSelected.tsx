@@ -1,11 +1,12 @@
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { Commit } from '../types/FunctionDetails';
 import { getCommitShortMessage, getCommitShortSha } from './CommitSelect';
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
     display: flex;
     flex-direction: row;
@@ -17,7 +18,7 @@ const getStyles = () => ({
     font-family: monospace;
   `,
   message: css`
-    color: grey;
+    color: ${theme.colors.text.secondary};
   `,
 });
 

@@ -1,11 +1,12 @@
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 import { InlineLabel, LinkButton, Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
 import { LineProfile } from '../../../types/FunctionDetails';
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   codeContainer: css`
     display: flex;
     flex-direction: row;
@@ -27,11 +28,11 @@ const getStyles = () => ({
     font-size: 12px;
     overflow-x: auto;
     white-space: pre;
-    color: gray;
+    color: ${theme.colors.text.secondary};
   `,
 
   highlighted: css`
-    color: #ccccdc;
+    color: ${theme.colors.text.maxContrast};
   `,
 });
 

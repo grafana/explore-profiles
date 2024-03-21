@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -7,7 +8,7 @@ import { formatCommitDate } from '../domain/formatCommitDate';
 import { CommitWithSamples } from '../domain/getCommitsWithSamples';
 import { getCommitShortMessage, getCommitShortSha } from './CommitSelect';
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
     display: flex;
     flex-direction: column;
@@ -30,7 +31,7 @@ const getStyles = () => ({
     flex-direction: row;
     align-items: center;
     font-size: 12px;
-    color: grey;
+    color: ${theme.colors.text.secondary};
   `,
   avatar: css`
     display: inline-block;
@@ -41,8 +42,8 @@ const getStyles = () => ({
     height: 16px;
   `,
   message: css`
-    color: grey;
     font-size: 12px;
+    color: ${theme.colors.text.secondary};
   `,
 });
 
