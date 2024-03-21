@@ -16,7 +16,7 @@ export function InlineBanner({ severity, title, message, error }: InlineBannerPr
 
   return (
     <Alert title={title} severity={severity}>
-      {error ? error.toString() : null}
+      {error ? error.message : null}
       {error && message ? <br /> : null}
       {message}
     </Alert>

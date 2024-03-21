@@ -86,9 +86,14 @@ describe('HttpClient', () => {
 
     describe('if the request returns a non-ok response', () => {
       it('throws an error', async () => {
-        const { client } = buildClient(async () => ({ ok: false, status: -1, statusText: 'Test error' }));
+        const { client } = buildClient(async () => ({
+          ok: false,
+          status: -1,
+          statusText: 'Test error',
+          json: async () => ({}),
+        }));
 
-        await expect(client.fetch('/test')).rejects.toEqual(new Error('HTTP error: -1 (Test error)'));
+        await expect(client.fetch('/test')).rejects.toEqual(new Error('HTTP -1 (Test error)'));
       });
     });
 

@@ -1,4 +1,6 @@
-export type HttpClientError = Error & { response?: Response; reason?: any };
+import { noOp } from '@shared/domain/noOp';
+
+import { HttpClientError } from './HttpClientError';
 
 export class HttpClient {
   baseUrl = '';
@@ -28,13 +30,9 @@ export class HttpClient {
       response = await fetch(fullUrl, fullOptions);
 
       if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status} (${response.statusText || '?'})`);
+        throw new HttpClientError(response, await response.json().catch(noOp));
       }
     } catch (error) {
-      if (response) {
-        (error as any).response = response;
-      }
-
       if (this.isAbortError(error)) {
         (error as any).reason = options?.signal?.reason || signal.reason;
       }

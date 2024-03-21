@@ -29,4 +29,26 @@ describe('ApiClient', () => {
       expect(apiClient.baseUrl).toBe(expectedApiBaseUrl);
     });
   });
+
+  describe('request headers', () => {
+    test('adds default "content-type" and "X-Grafana-Org-Id" headers', () => {
+      jest.doMock('@grafana/runtime', () => ({
+        config: {
+          appUrl: 'https://localhost:3000/',
+          bootData: {
+            user: { orgId: 42 },
+          },
+        },
+      }));
+
+      const { ApiClient } = require('../ApiClient');
+
+      const apiClient = new ApiClient();
+
+      expect(apiClient.defaultHeaders).toEqual({
+        'content-type': 'application/json',
+        'X-Grafana-Org-Id': '42',
+      });
+    });
+  });
 });

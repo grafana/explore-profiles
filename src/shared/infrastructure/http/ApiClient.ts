@@ -7,7 +7,7 @@ import { HttpClient } from './HttpClient';
  */
 export class ApiClient extends HttpClient {
   constructor() {
-    let { appUrl } = config;
+    let { appUrl, bootData } = config;
 
     if (appUrl.at(-1) !== '/') {
       // ensures that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
@@ -18,6 +18,7 @@ export class ApiClient extends HttpClient {
 
     super(apiBaseUrl.toString(), {
       'content-type': 'application/json',
+      'X-Grafana-Org-Id': String(bootData?.user?.orgId || ''),
     });
   }
 }

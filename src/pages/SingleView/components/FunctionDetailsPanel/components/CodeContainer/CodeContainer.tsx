@@ -1,5 +1,5 @@
 import { displayError } from '@shared/domain/displayStatus';
-import { HttpClientError } from '@shared/infrastructure/http/HttpClient';
+import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import React from 'react';
 
 import { FunctionDetails } from '../../types/FunctionDetails';
