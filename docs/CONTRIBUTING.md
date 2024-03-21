@@ -19,23 +19,38 @@ Please check the [related documentation](./CONTRIBUTING-PYROSCOPE-DEPENDENCY.md)
 3. Build the plugin backend: `mage`
 4. Build the plugin frontend in dev mode: `yarn dev`
 5. Start the Grafana server (with static data): `yarn server:static`
+6. Optionally, to enable the **GitHub integration feature**, read the "Enable GitHub integration" section below.
 
 Then visit http://localhost:3000/a/grafana-pyroscope-app
+
+**Alternatively:**
 
 - To use **live remote data**, read the "Using live remote profile data" section below.
 - To use **a local version of Pyroscope**, read the "Using a local version of Pyroscope" section below.
 - To use **a local version of Grafana**, read [this section](./GRAFANA-CROSS-DEVELOPMENT.md).
 
+### Enable GitHub integration
+
+When clicking on a node of the Flame Graph, the plugin can offer to display information about the function being profiled in the form of a "Function details" contextual menu item.
+
+To enable this feature:
+
+1. If not already done, copy the content of the `.env.local` file to a new `.env` file in the root directory
+2. Open the 1Password app and search for the note named "DB FE - GitHub integration credentials"
+3. Fill in the missing values in the `.env` file
+4. Start the Grafana server
+
 ### Using live remote profile data
 
-1. Copy the content of the `.env.local` file to a new `.env` file in the root directory
+1. If not already done, copy the content of the `.env.local` file to a new `.env` file in the root directory
 2. Open the 1Password app and search for the note named "DB FE - Remote profile data credentials"
 3. Fill in the missing values in the `.env` file
 4. Start the Grafana server: `yarn server:remote`
 
 ### Using a local version of Pyroscope
 
-_TODO_
+1. Start the local version of Pyroscope (see [Pyrosocpe's contributing guide](https://github.com/grafana/pyroscope/tree/main/docs/internal/contributing))
+2. Execute `yarn server:local`
 
 ## Backend development
 

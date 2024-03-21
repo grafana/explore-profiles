@@ -9,7 +9,7 @@ Several configurations are provided in the [e2e/config](./config) folder, depend
 - where the tests are launched (locally or CI build),
 - against which environment they should be launched (local host, dev, ops or prod).
 
-When developing tests locally, we use a [Pyroscope server with static data](../docker-compose.e2e.yaml) (2023-11-11 09:00 → 2023-11-11 13:00), to have deterministic and predictable tests.
+When developing tests locally, we use a [Pyroscope server with static data](../docker-compose.e2e.yaml) (2024-03-13 19:00:00 → 2024-03-13 19:50:00), to have deterministic and predictable tests.
 
 ## Develop tests locally
 
@@ -93,7 +93,7 @@ yarn e2e:ci single-view.spec.ts --update-snapshots
 
 ### CI build
 
-In build time (PR and main branch), we run a [Pyroscope server with static data](../docker-compose.e2e.yaml) (2023-11-11 09:00 → 2023-11-11 13:00). This allows us to launch deterministic and predictable tests.
+In build time (PR and main branch), we run a [Pyroscope server with static data](../docker-compose.e2e.yaml) (2024-03-13 19:00:00 → 2024-03-13 19:50:00). This allows us to launch deterministic and predictable tests.
 
 ## FAQ
 
