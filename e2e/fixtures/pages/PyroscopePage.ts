@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page, Request, Route } from '@playwright/test';
 
 export class PyroscopePage {
   readonly page: Page;
@@ -64,5 +64,13 @@ export class PyroscopePage {
 
   waitForTimeout(timeout: number) {
     return this.page.waitForTimeout(timeout);
+  }
+
+  route(url: string, handler: (route: Route, request: Request) => any, options?: Record<string, any>) {
+    return this.page.route(url, handler, options);
+  }
+
+  pause() {
+    return this.page.pause();
   }
 }

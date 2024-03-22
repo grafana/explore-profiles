@@ -24,14 +24,17 @@ export class SingleViewPage extends PyroscopePage {
     return this.page.getByTestId('flameGraph');
   }
 
-  clickOnFlameGraphNode() {
-    return this.getFlamegraph().click({
-      // go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.(*Handler).ServeHTTP
-      position: {
-        x: 180,
-        y: 160,
-      },
-    });
+  // default position = node "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.(*Handler).ServeHTTP"
+  clickOnFlameGraphNode(position = { x: 180, y: 160 }) {
+    return this.getFlamegraph().click({ position });
+  }
+
+  getFunctionDetailsMenuItem() {
+    return this.getByRole('menuitem', { name: 'Function details' });
+  }
+
+  clickOnFunctionDetailsMenuItem() {
+    return this.getFunctionDetailsMenuItem().click();
   }
 
   getExportDataButton() {

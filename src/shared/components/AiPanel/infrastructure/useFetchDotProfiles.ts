@@ -57,8 +57,13 @@ export function useFetchDotProfiles(fetchParams: FetchParams): FetchResponse {
       return acc;
     }, [] as string[]),
     queryFn: () => {
-      apiClient.abort();
+      // TODO FIXME: pass a signal options to fetch to properly abort all in-flight requests
+      // apiClient.abort();
 
+      // we're not using timelineAndProfileApiClient here because timelineAndProfileApiClient
+      // holds the timerange used for each request
+      // this timerange is then used when fetching function details to ensure data consistency
+      // (see https://github.com/grafana/pyroscope-squad/issues/131)
       return Promise.all(
         fetchParams.map(({ query, timeRange }) =>
           apiClient

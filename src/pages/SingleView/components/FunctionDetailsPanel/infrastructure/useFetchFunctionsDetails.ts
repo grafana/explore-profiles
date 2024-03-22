@@ -1,5 +1,5 @@
-import { TimeRange } from '@grafana/data';
 import { pprofApiClient } from '@shared/components/FlameGraph/components/infrastructure/pprofApiClient';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -8,7 +8,6 @@ import { FunctionDetails } from '../types/FunctionDetails';
 import { PLACEHOLDER_COMMIT_DATA, vcsClient } from './vcsClient';
 
 type FetchParams = {
-  timeRange: TimeRange;
   profileMetricId: string;
   labelsSelector: string;
   stacktrace: string[];
@@ -28,14 +27,14 @@ const sortByTotal = (a: FunctionDetails, b: FunctionDetails) => getTotalSum(b) -
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function useFetchFunctionsDetails({
-  timeRange,
   profileMetricId,
   labelsSelector,
   stacktrace,
   isGitHubLogged,
 }: FetchParams): FetchResponse {
-  const start = timeRange.from.unix() * 1000;
-  const end = timeRange.to.unix() * 1000;
+  // we get the timerange that was used for fetching the main timeline and flamegraph data to ensure data consistency
+  // (see https://github.com/grafana/pyroscope-squad/issues/131)
+  const [start, end] = timelineAndProfileApiClient.getLastTimeRange();
 
   const { isFetching, error, data } = useQuery({
     enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0),

@@ -2,7 +2,6 @@ import { useGitHubContext } from '@shared/components/GitHubContextProvider/useGi
 import { displaySuccess } from '@shared/domain/displayStatus';
 import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
-import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { useMemo, useState } from 'react';
@@ -16,7 +15,6 @@ import { isGitHubRepository } from './isGitHubRepository';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function useFunctionDetailsPanel(stacktrace: StackTrace): DomainHookReturnValue {
-  const [timeRange] = useTimeRangeFromUrl();
   const [query] = useQueryFromUrl();
   const { profileMetricId, labelsSelector } = parseQuery(query);
   const { isLoggedIn: isGitHubLogged } = useGitHubContext();
@@ -25,13 +23,7 @@ export function useFunctionDetailsPanel(stacktrace: StackTrace): DomainHookRetur
     functionsDetails,
     error: fetchFunctionDetailsError,
     isFetching,
-  } = useFetchFunctionsDetails({
-    timeRange,
-    profileMetricId,
-    labelsSelector,
-    stacktrace,
-    isGitHubLogged,
-  });
+  } = useFetchFunctionsDetails({ profileMetricId, labelsSelector, stacktrace, isGitHubLogged });
 
   const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
   const [currentFunctionDetails, setCurrentFunctionDetails] = useState<FunctionDetails>(functionsDetails[0]);

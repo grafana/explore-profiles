@@ -1,5 +1,6 @@
-import { dateTimeParse, TimeRange } from '@grafana/data';
+import { TimeRange } from '@grafana/data';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { Timeline } from '@shared/types/Timeline';
 import { useQuery } from '@tanstack/react-query';
@@ -21,26 +22,6 @@ type FetchResponse = {
   refetch: () => void;
 };
 
-function buildSearchParams(query: string, timeRange: TimeRange, maxNodes: number | null): string {
-  // /pyroscope/render requests: timerange can be YYYYDDMM, Unix time, Unix time in ms (unix * 1000)
-  const from = Number(dateTimeParse(timeRange.raw.from).unix()) * 1000;
-  const until = Number(dateTimeParse(timeRange.raw.to).unix()) * 1000;
-
-  const searchParams = new URLSearchParams({
-    query,
-    from: String(from),
-    until: String(until),
-    aggregation: 'sum',
-    format: 'json',
-  });
-
-  if (Number(maxNodes) > 0) {
-    searchParams.set('max-nodes', String(maxNodes));
-  }
-
-  return searchParams.toString();
-}
-
 export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled }: FetchParams): FetchResponse {
   const { isFetching, error, data, refetch } = useQuery({
     // for UX: keep previous data while fetching -> timeline & profile do not re-render with empty panels when refreshing
@@ -50,20 +31,16 @@ export function useFetchProfileAndTimeline({ query, timeRange, maxNodes, enabled
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [query, timeRange.raw.from.toString(), timeRange.raw.to.toString(), maxNodes],
     queryFn: () => {
-      apiClient.abort();
+      timelineAndProfileApiClient.abort();
 
-      // TODO: use ProfileApiClient
-      return apiClient
-        .fetch(`/pyroscope/render?${buildSearchParams(query, timeRange, maxNodes)}`)
-        .then((response) => response.json())
-        .then((json) => ({
-          profile: {
-            version: json.version,
-            flamebearer: json.flamebearer,
-            metadata: json.metadata,
-          },
-          timeline: json.timeline,
-        }));
+      return timelineAndProfileApiClient.get(query, timeRange, maxNodes).then((json) => ({
+        timeline: json.timeline,
+        profile: {
+          version: json.version,
+          flamebearer: json.flamebearer,
+          metadata: json.metadata,
+        },
+      }));
     },
   });
 
