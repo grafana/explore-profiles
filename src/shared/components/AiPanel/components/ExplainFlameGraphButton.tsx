@@ -49,7 +49,7 @@ export function ExplainFlameGraphButton({ onClick, disabled }: ExplainFlameGraph
       title={isEnabled ? 'Ask FlameGrot AI' : 'Grafana LLM plugin missing or not configured!'}
       icon={icon}
     >
-      Explain FlameGraph
+      Explain flame graph
     </Button>
   );
 }
