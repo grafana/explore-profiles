@@ -5,19 +5,23 @@ type InlineBannerProps = {
   severity: AlertVariant;
   title: string;
   message?: string;
-  error?: Error;
+  errors?: Error[];
 };
 
-export function InlineBanner({ severity, title, message, error }: InlineBannerProps) {
-  if (error) {
+export function InlineBanner({ severity, title, message, errors }: InlineBannerProps) {
+  if (errors) {
     console.error(title);
-    console.error(error);
+    console.error(errors);
   }
 
   return (
     <Alert title={title} severity={severity}>
-      {error ? error.message : null}
-      {error && message ? <br /> : null}
+      {errors?.map((e) => (
+        <>
+          {e.message}
+          <br />
+        </>
+      ))}
       {message}
     </Alert>
   );

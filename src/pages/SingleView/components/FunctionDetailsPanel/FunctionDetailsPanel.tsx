@@ -62,7 +62,7 @@ export function FunctionDetailsPanel({ className, stacktrace, onClose }: Functio
         <InlineBanner
           severity="error"
           title="Error while fetching function details!"
-          error={data.fetchFunctionDetailsError}
+          errors={[data.fetchFunctionDetailsError]}
         />
       )}
 

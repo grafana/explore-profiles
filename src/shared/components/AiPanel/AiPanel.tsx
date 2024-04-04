@@ -59,7 +59,7 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
           <InlineBanner
             severity="error"
             title="Failed to generate content using OpenAI!"
-            error={data.llmError}
+            errors={[data.llmError]}
             message="Sorry for any inconvenience, please try again later or if the problem persists, contact your organization admin."
           />
         )}

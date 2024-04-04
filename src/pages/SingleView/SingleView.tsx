@@ -70,7 +70,7 @@ export function SingleView() {
 
       <Panel title={data.timelinePanelTitle} isLoading={data.isLoading} dataTestId="timeline-panel">
         {data.fetchDataError && (
-          <InlineBanner severity="error" title="Error while loading timeline data!" error={data.fetchDataError} />
+          <InlineBanner severity="error" title="Error while loading timeline data!" errors={[data.fetchDataError]} />
         )}
         {data.noDataAvailable && (
           <InlineBanner
@@ -96,7 +96,11 @@ export function SingleView() {
           dataTestId="flamegraph-panel"
         >
           {data.fetchDataError && (
-            <InlineBanner severity="error" title="Error while loading flamegraph data!" error={data.fetchDataError} />
+            <InlineBanner
+              severity="error"
+              title="Error while loading flamegraph data!"
+              errors={[data.fetchDataError]}
+            />
           )}
           {data.noDataAvailable && (
             <InlineBanner
