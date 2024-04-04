@@ -7,4 +7,6 @@ RUN yarn add "@playwright/test@^1.42.0" "dotenv@^16.3.1"
 
 ENV E2E_BASE_URL="http://localhost:3000"
 
+ENV TZ=Europe/Madrid
+
 ENTRYPOINT ["npx", "playwright", "test", "-c", "e2e/config/playwright.config.ci.ts"]

@@ -1,5 +1,4 @@
-# TODO: set latest tag once the GitHub integration support is published to Docker Hub
-FROM docker.io/grafana/pyroscope:weekly-f57-48d0e99d9
+FROM docker.io/grafana/pyroscope:latest
 
 USER root
 
