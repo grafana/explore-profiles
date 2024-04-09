@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { PageLayoutType } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
 import { Button, FieldSet, Form, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
+import { displayError } from '@shared/domain/displayStatus';
 import React from 'react';
 
 import { useSettingsView } from './domain/useSettingsView';
@@ -18,6 +19,13 @@ const getStyles = () => ({
 export function SettingsView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useSettingsView();
+
+  if (data.fetchError) {
+    displayError(data.fetchError, [
+      'Error while retrieving the plugin settings!',
+      'Please try to reload the page, sorry for the inconvenience.',
+    ]);
+  }
 
   return (
     <PluginPage layout={PageLayoutType.Custom} renderTitle={() => null}>

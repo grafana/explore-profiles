@@ -1,55 +1,51 @@
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
+import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
+import { PluginSettings } from '@shared/infrastructure/settings/settingsApiClient';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useEffect, useState } from 'react';
 
 export function useSettingsView() {
   const { settings, error: fetchError, mutate } = useFetchPluginSettings();
+  const [, setMaxNodes] = useMaxNodesFromUrl();
 
-  if (fetchError) {
-    displayError(fetchError, [
-      'Error while retrieving the plugin settings!',
-      'Please try to reload the page, sorry for the inconvenience.',
-    ]);
-  }
-
-  const [collapsedFlamegraphs, setCollapsedFlamegraphs] = useState(settings?.collapsedFlamegraphs);
-  const [maxNodes, setMaxNodes] = useState(settings?.maxNodes);
-  const [enableFlameGraphDotComExport, setEnableFlameGraphDotComExport] = useState(
-    settings?.enableFlameGraphDotComExport
-  );
+  const [currentSettings, setCurrentSettings] = useState<PluginSettings>(settings ?? DEFAULT_SETTINGS);
 
   useEffect(() => {
     if (settings) {
-      setCollapsedFlamegraphs(settings.collapsedFlamegraphs);
-      setMaxNodes(settings.maxNodes);
-      setEnableFlameGraphDotComExport(settings.enableFlameGraphDotComExport);
+      setCurrentSettings(settings);
     }
   }, [settings]);
 
   return {
     data: {
-      collapsedFlamegraphs,
-      maxNodes,
-      enableFlameGraphDotComExport,
+      ...currentSettings,
+      fetchError,
     },
     actions: {
       toggleCollapsedFlamegraphs() {
-        setCollapsedFlamegraphs((v) => !v);
+        setCurrentSettings((s) => ({
+          ...s,
+          collapsedFlamegraphs: !s.collapsedFlamegraphs,
+        }));
       },
       updateMaxNodes(event: React.ChangeEvent<HTMLInputElement>) {
-        setMaxNodes(Number(event.target.value));
+        setCurrentSettings((s) => ({
+          ...s,
+          maxNodes: Number(event.target.value),
+        }));
       },
       toggleEnableFlameGraphDotComExport() {
-        setEnableFlameGraphDotComExport((v) => !v);
+        setCurrentSettings((s) => ({
+          ...s,
+          enableFlameGraphDotComExport: !s.enableFlameGraphDotComExport,
+        }));
       },
       async saveSettings() {
+        setMaxNodes(currentSettings.maxNodes);
+
         try {
-          await mutate({
-            collapsedFlamegraphs: collapsedFlamegraphs ?? DEFAULT_SETTINGS.collapsedFlamegraphs,
-            maxNodes: maxNodes ?? DEFAULT_SETTINGS.maxNodes,
-            enableFlameGraphDotComExport: enableFlameGraphDotComExport ?? DEFAULT_SETTINGS.enableFlameGraphDotComExport,
-          });
+          await mutate(currentSettings);
 
           displaySuccess(['Plugin settings successfully saved!']);
         } catch (error) {

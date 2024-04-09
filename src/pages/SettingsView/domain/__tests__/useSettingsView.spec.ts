@@ -33,7 +33,7 @@ describe('useSettingsView(plugin)', () => {
     const { result } = renderHook(() => useSettingsView(plugin));
 
     expect(result.current).toEqual({
-      data: DEFAULT_SETTINGS,
+      data: { ...DEFAULT_SETTINGS, fetchError: null },
       actions: {
         toggleCollapsedFlamegraphs: expect.any(Function),
         updateMaxNodes: expect.any(Function),
