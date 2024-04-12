@@ -34,7 +34,7 @@ function useSetDefaultMaxNodes(): number | null {
   if (error) {
     displayWarning([
       'Error while retrieving the plugin settings!',
-      'Some features might not work as expected (e.g. flamegraph max nodes). Please try to reload the page, sorry for the inconvenience.',
+      'Some features might not work as expected (e.g. flame graph max nodes). Please try to reload the page, sorry for the inconvenience.',
     ]);
     console.error(error);
 

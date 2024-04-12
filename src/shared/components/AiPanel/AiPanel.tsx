@@ -37,7 +37,7 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
       }
       dataTestId="ai-panel"
     >
-      <h1 className={styles.title}>AI FlameGraph Analysis</h1>
+      <h1 className={styles.title}>AI flame graph analysis</h1>
 
       <div className={styles.content}>
         {data.isLoading && (

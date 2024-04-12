@@ -13,11 +13,11 @@ test.describe('Plugin Settings', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.describe('Smoke tests', () => {
-    test('Flamegraph & Export settings', async ({ settingsPage }) => {
+    test('Flame graph & Export settings', async ({ settingsPage }) => {
       const flamegraphSettings = settingsPage.getFlamegraphSettings();
 
       await expect(flamegraphSettings).toBeVisible();
-      await expect(flamegraphSettings.getByText('Collapsed flamegraphs')).toBeVisible();
+      await expect(flamegraphSettings.getByText('Collapsed flame graphs')).toBeVisible();
       await expect(flamegraphSettings.getByText('Maximum number of nodes')).toBeVisible();
 
       const exportSettings = settingsPage.getExportSettings();
@@ -27,7 +27,7 @@ test.describe('Plugin Settings', () => {
     });
   });
 
-  test.describe('Flamegraph Settings', () => {
+  test.describe('Flame graph settings', () => {
     test('Can be modified', async ({ settingsPage, singleViewPage }) => {
       await settingsPage.resetTestSettings();
 

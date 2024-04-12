@@ -42,7 +42,7 @@ export class SettingsPage extends PyroscopePage {
   }
 
   getCollapsedFlamegraphsCheckbox() {
-    return this.getFlamegraphSettings().getByLabel('Toggle collapsed flamegraphs');
+    return this.getFlamegraphSettings().getByLabel('Toggle collapsed flame graphs');
   }
 
   getMaxNodesInput() {

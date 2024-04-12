@@ -96,11 +96,7 @@ export function SingleView() {
           dataTestId="flamegraph-panel"
         >
           {data.fetchDataError && (
-            <InlineBanner
-              severity="error"
-              title="Error while loading flamegraph data!"
-              errors={[data.fetchDataError]}
-            />
+            <InlineBanner severity="error" title="Error while loading profile data!" errors={[data.fetchDataError]} />
           )}
           {data.noDataAvailable && (
             <InlineBanner

@@ -1,7 +1,7 @@
 import { expect, test } from '../../fixtures';
 
 test.describe('GitHub integration', () => {
-  test('Adds a "Function details" item when clicking on a flamegraph node', async ({ singleViewPage }) => {
+  test('Adds a "Function details" item when clicking on a flame graph node', async ({ singleViewPage }) => {
     await singleViewPage.goto();
 
     await singleViewPage.clickOnFlameGraphNode();
@@ -45,7 +45,7 @@ test.describe('GitHub integration', () => {
     await expect(codeContainer.getByTestId('function-details-code')).toHaveScreenshot();
   });
 
-  test('When a relative timerange is selected, it uses the same fixed timerange for querying the flamegraph & function details', async ({
+  test('When a relative timerange is selected, it uses the same fixed timerange for querying the flame graph & function details', async ({
     singleViewPage,
   }) => {
     let renderParams = '';

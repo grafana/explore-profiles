@@ -32,11 +32,11 @@ export function SettingsView() {
       <Form className={styles.settingsForm} onSubmit={actions.saveSettings}>
         {() => (
           <>
-            <FieldSet label="Flamegraph Settings" data-testid="flamegraph-settings">
+            <FieldSet label="Flame graph settings" data-testid="flamegraph-settings">
               <InlineFieldRow>
-                <InlineField label="Collapsed flamegraphs" labelWidth={24}>
+                <InlineField label="Collapsed flame graphs" labelWidth={24}>
                   <InlineSwitch
-                    label="Toggle collapsed flamegraphs"
+                    label="Toggle collapsed flame graphs"
                     name="collapsed-flamegraphs"
                     value={data.collapsedFlamegraphs}
                     onChange={actions.toggleCollapsedFlamegraphs}
@@ -55,7 +55,7 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
-            <FieldSet label="Export Settings" data-testid="export-settings">
+            <FieldSet label="Export settings" data-testid="export-settings">
               <InlineFieldRow>
                 <InlineField label="Enable flamegraph.com" labelWidth={24}>
                   <InlineSwitch
