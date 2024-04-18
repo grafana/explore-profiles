@@ -6,6 +6,7 @@ class UserStorage {
   KEYS = {
     SETTINGS: `${plugin.id}.userSettings`,
     GITHUB_INTEGRATION: `${plugin.id}.gitHubIntegration`,
+    PROFILES_EXPLORER: `${plugin.id}.profilesExplorer`,
   };
 
   has(itemName: string): boolean {

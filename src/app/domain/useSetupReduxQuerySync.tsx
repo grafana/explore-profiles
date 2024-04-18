@@ -6,8 +6,9 @@ function shouldSetupReduxQuerySync() {
   return [
     '/a/grafana-pyroscope-app/settings',
     '/a/grafana-pyroscope-app/ad-hoc',
-    // TODO Pyroscope OSS migration: add new paths below
     '/a/grafana-pyroscope-app/single',
+    // TODO Pyroscope OSS migration: add new paths below
+    '/a/grafana-pyroscope-app/profiles-explorer',
   ].includes(window.location.pathname);
 }
 export function useSetupReduxQuerySync() {

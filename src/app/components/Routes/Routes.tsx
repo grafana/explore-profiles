@@ -10,6 +10,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { ROUTES } from '../../../constants';
 import { AdHocView } from '../../../pages/AdHocView/AdHocView';
 import { ComparisonDiffView } from '../../../pages/ComparisonDiffView/ComparisonDiffView';
+import { ProfilesExplorerView } from '../../../pages/ProfilesExplorerView/ProfilesExplorerView';
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
 import { SingleView } from '../../../pages/SingleView/SingleView';
 import { PyroscopeStateWrapper } from './domain/PyroscopeState/PyroscopeStateWrapper';
@@ -45,6 +46,9 @@ export function Routes() {
           <Switch>
             <Route path={prefixRouteWithPluginBaseUrl(ROUTES.EXPLORE_VIEW)} exact>
               <TagExplorerView />
+            </Route>
+            <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
+              <ProfilesExplorerView />
             </Route>
             <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SINGLE_VIEW)} exact>
               <SingleView />

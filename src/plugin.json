@@ -23,22 +23,16 @@
   "includes": [
     {
       "type": "page",
-      "name": "Single view AI",
-      "path": "/a/%PLUGIN_ID%/single-ai",
-      "addToNav": false,
-      "defaultNav": false
-    },
-    {
-      "type": "page",
-      "name": "Diff view AI",
-      "path": "/a/%PLUGIN_ID%/comparison-diff-ai",
-      "addToNav": false,
-      "defaultNav": false
-    },
-    {
-      "type": "page",
       "name": "Tag explorer",
       "path": "/a/%PLUGIN_ID%/tag-explorer",
+      "role": "Viewer",
+      "addToNav": true,
+      "defaultNav": false
+    },
+    {
+      "type": "page",
+      "name": "Profiles explorer",
+      "path": "/a/%PLUGIN_ID%/profiles-explorer",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false

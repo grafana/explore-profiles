@@ -8,6 +8,7 @@ export const PLUGIN_BASE_URL = `/a/${PYROSCOPE_APP_ID}`;
 
 export enum ROUTES {
   EXPLORE_VIEW = '/tag-explorer',
+  PROFILES_EXPLORER_VIEW = '/profiles-explorer',
   SINGLE_VIEW = '/single',
   COMPARISON_VIEW = '/comparison',
   COMPARISON_DIFF_VIEW = '/comparison-diff',
@@ -21,6 +22,11 @@ export const NAVIGATION: Record<string, NavModelItem> = {
     id: ROUTES.EXPLORE_VIEW,
     text: 'Tag Explorer',
     url: `${PLUGIN_BASE_URL}/tag-explorer`,
+  },
+  [ROUTES.PROFILES_EXPLORER_VIEW]: {
+    id: ROUTES.PROFILES_EXPLORER_VIEW,
+    text: 'Profiles Explorer',
+    url: `${PLUGIN_BASE_URL}/profiles-explorer`,
   },
   [ROUTES.SINGLE_VIEW]: {
     id: ROUTES.SINGLE_VIEW,

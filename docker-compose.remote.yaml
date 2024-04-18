@@ -6,7 +6,7 @@ services:
     build:
       dockerfile: ./Dockerfile.remote
       args:
-        grafana_version: ${GRAFANA_VERSION:-10.1.1}
+        grafana_version: ${GRAFANA_VERSION:-10.4.2}
         backendUrl: ${REMOTE_BACKEND_URL}
         basicAuthUser: ${REMOTE_BASIC_AUTH_USER}
         basicAuthPassword: ${REMOTE_BASIC_AUTH_PASSWORD}

@@ -1,0 +1,17 @@
+import { SceneQueryRunner } from '@grafana/scenes';
+
+import { PYROSCOPE_DATA_SOURCE } from '../../constants';
+
+export function getServiceLabelsQueryRunner(serviceName: string, labelId: string, labelValues: string[]) {
+  return new SceneQueryRunner({
+    datasource: PYROSCOPE_DATA_SOURCE,
+    queries: labelValues.map((value) => ({
+      refId: value,
+      queryType: 'metrics',
+      profileTypeId: '$profileMetric', // interpolated variable
+      labelSelector: `{service_name="${serviceName}",${labelId}="${value}"}`,
+      // maxDataPoints: 1710,
+      // intervalMs: 200,
+    })),
+  });
+}

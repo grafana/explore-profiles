@@ -4,7 +4,7 @@ import { CacheClient } from './http/CacheClient';
 import { LabelsApiClient } from './http/LabelsApiClient';
 import { QueryBuilderHttpRepository } from './QueryBuilderHttpRepository';
 
-class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
+export class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
   cacheClient: CacheClient;
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
