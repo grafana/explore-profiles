@@ -14,10 +14,10 @@ import {
 import { Services } from '@shared/infrastructure/services/servicesApiClient';
 import { userStorage } from '@shared/infrastructure/userStorage';
 
+import { FavAction } from '../FavAction';
 import { getColorByIndex } from '../getColorByIndex';
 import { getProfileMetricOptions } from '../getProfileMetricOptions';
 import { getServiceOptions } from '../getServiceOptions';
-import { PinServiceAction } from '../PinServiceAction';
 import { SelectProfileMetricAction } from './actions/SelectProfileMetricAction';
 import { getProfileMetricQueryRunner } from './data/getProfileMetricQueryRunner';
 import { SceneProfileDetails } from './SceneProfileDetails';
@@ -53,7 +53,7 @@ export class SceneProfiles extends EmbeddedScene {
               .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions([
                 new SelectProfileMetricAction({ profileMetric }),
-                new PinServiceAction({ key: 'pinnedProfileMetrics', value: profileMetric.value }),
+                new FavAction({ key: 'pinnedProfileMetrics', value: profileMetric.value }),
               ])
               .build(),
           })
@@ -131,7 +131,7 @@ export class SceneProfiles extends EmbeddedScene {
   //         })
   //         .setCustomFieldConfig('fillOpacity', 9)
   //         .setHeaderActions([
-  //           new PinServiceAction({ key: 'pinnedLabels', value: id }),
+  //           new FavAction({ key: 'pinnedLabels', value: id }),
   //           gotoSingleViewAction || new SelectLabelAction({ profileMetric, labelId: id, labelValues: values }),
   //         ])
   //         .build(),

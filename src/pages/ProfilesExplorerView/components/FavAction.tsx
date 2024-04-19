@@ -4,16 +4,16 @@ import { IconButton, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
-interface PinServiceActionState extends SceneObjectState {
+interface FavActionState extends SceneObjectState {
   key: string;
   value: string;
   isFav?: boolean;
 }
 
-export class PinServiceAction extends SceneObjectBase<PinServiceActionState> {
-  isFav: PinServiceActionState['isFav'];
+export class FavAction extends SceneObjectBase<FavActionState> {
+  isFav: FavActionState['isFav'];
 
-  constructor(state: PinServiceActionState) {
+  constructor(state: FavActionState) {
     super(state);
 
     const { key, value } = state;
@@ -45,7 +45,7 @@ export class PinServiceAction extends SceneObjectBase<PinServiceActionState> {
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
   };
 
-  public static Component = ({ model }: SceneComponentProps<PinServiceAction>) => {
+  public static Component = ({ model }: SceneComponentProps<FavAction>) => {
     const styles = useStyles2(getStyles);
     const { isFav } = model.useState();
 

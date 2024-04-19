@@ -14,10 +14,10 @@ import {
 import { Services } from '@shared/infrastructure/services/servicesApiClient';
 import { userStorage } from '@shared/infrastructure/userStorage';
 
+import { FavAction } from '../FavAction';
 import { getColorByIndex } from '../getColorByIndex';
 import { getProfileMetricOptions } from '../getProfileMetricOptions';
 import { getServiceOptions } from '../getServiceOptions';
-import { PinServiceAction } from '../PinServiceAction';
 import { SelectServiceAction } from './actions/SelectServiceAction';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { SceneServiceDetails } from './SceneServiceDetails';
@@ -53,7 +53,7 @@ export class SceneServices extends EmbeddedScene {
               .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions([
                 new SelectServiceAction({ serviceName: service.value }),
-                new PinServiceAction({ key: 'pinnedServices', value: service.value }),
+                new FavAction({ key: 'pinnedServices', value: service.value }),
               ])
               .build(),
           })

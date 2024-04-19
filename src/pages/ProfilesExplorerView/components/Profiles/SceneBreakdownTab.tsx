@@ -14,9 +14,9 @@ import {
 } from '@grafana/scenes';
 import React from 'react';
 
+import { FavAction } from '../FavAction';
 import { fetchLabelsData } from '../fetchLabelsData';
 import { getColorByIndex } from '../getColorByIndex';
-import { PinServiceAction } from '../PinServiceAction';
 import { ViewFlameGraphAction } from '../ViewFlameGraphAction';
 import { CompareAction } from './actions/CompareAction';
 import { SelectLabelAction } from './actions/SelectLabelAction';
@@ -217,7 +217,7 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
           .setCustomFieldConfig('fillOpacity', 9)
           .setHeaderActions([
             gotoSingleViewAction || new SelectLabelAction({ labelId: id }),
-            new PinServiceAction({ key: 'pinnedLabels', value: id }),
+            new FavAction({ key: 'pinnedLabels', value: id }),
           ])
           .build(),
       });
