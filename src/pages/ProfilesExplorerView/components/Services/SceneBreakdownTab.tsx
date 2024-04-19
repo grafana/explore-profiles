@@ -10,7 +10,9 @@ import {
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
+  VizPanel,
 } from '@grafana/scenes';
+import { Drawer } from '@grafana/ui';
 import React from 'react';
 
 import { FavAction } from '../FavAction';
@@ -18,6 +20,7 @@ import { fetchLabelsData } from '../fetchLabelsData';
 import { getColorByIndex } from '../getColorByIndex';
 import { ViewFlameGraphAction } from '../ViewFlameGraphAction';
 import { CompareAction } from './actions/CompareAction';
+import { ExpandAction, ExpandActionState } from './actions/ExpandAction';
 import { SelectLabelAction } from './actions/SelectLabelAction';
 import { getServiceLabelsQueryRunner } from './data/getServiceLabelsQueryRunner';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
@@ -31,7 +34,7 @@ export interface SceneBreakdownTabState extends SceneObjectState {
   labelsData: Array<{ id: string; values: string[] }>;
   labelsForDiff: Array<{ id: string; value: string; index: number }>;
   body: SceneFlexLayout;
-  isFlameGraphOpen: boolean;
+  drawerBody?: VizPanel;
 }
 
 export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
@@ -46,7 +49,6 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
       serviceName: state.serviceName as string,
       labelsData: [],
       labelsForDiff: [],
-      isFlameGraphOpen: false,
       body: new SceneFlexLayout({
         direction: 'column',
         children: [
@@ -188,17 +190,18 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
     const timeRange = sceneGraph.getTimeRange(this).state.value;
 
     return labelsData.map(({ id, values }, i) => {
-      const gotoSingleViewAction =
+      const viewFlameGraphAction =
         values.length === 1
           ? new ViewFlameGraphAction({ serviceName, profileMetricId, labelId: id, labelValue: values[0], timeRange })
           : null;
+
+      const queryRunner = getServiceLabelsQueryRunner(serviceName, id, values);
 
       return new SceneCSSGridItem({
         body: PanelBuilders.timeseries()
           .setTitle(id)
           .setOption('legend', { showLegend: true })
-          .setData(getServiceLabelsQueryRunner(serviceName, id, values))
-          .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i + 1) })
+          .setData(queryRunner)
           .setOverrides((overrides) => {
             values.forEach((value, j) => {
               overrides
@@ -212,7 +215,8 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
           })
           .setCustomFieldConfig('fillOpacity', 9)
           .setHeaderActions([
-            gotoSingleViewAction || new SelectLabelAction({ labelId: id }),
+            viewFlameGraphAction || new SelectLabelAction({ labelId: id }),
+            new ExpandAction({ title: id, queryRunner, index: i, labelValues: values }),
             new FavAction({ key: 'pinnedLabels', value: id }),
           ])
           .build(),
@@ -230,21 +234,14 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
     return labelValues.map((labelValue, i) => {
       const labelSelector = `${labelId}="${labelValue}"`;
 
+      const queryRunner = getServiceQueryRunner(serviceName, labelSelector);
+
       return new SceneCSSGridItem({
         body: PanelBuilders.timeseries()
           .setTitle(labelValue)
-          .setOption('legend', { showLegend: true })
-          .setData(getServiceQueryRunner(serviceName, labelSelector))
+          .setOption('legend', { showLegend: false })
+          .setData(queryRunner)
           .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i + 1) })
-          .setOverrides((overrides) => {
-            overrides
-              .matchFieldsByQuery(`${serviceName}-${labelSelector}`)
-              .overrideColor({
-                mode: 'fixed',
-                fixedColor: getColorByIndex(i),
-              })
-              .overrideDisplayName(labelValue);
-          })
           .setCustomFieldConfig('fillOpacity', 9)
           .setHeaderActions([
             new CompareAction({ key: 'compareAction', index: i, labelId, labelValue }),
@@ -256,15 +253,48 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
               labelValue,
               timeRange,
             }),
+            new ExpandAction({ title: labelValue, queryRunner, index: i, labelValues: [labelValue] }),
           ])
           .build(),
       });
     });
   }
 
-  public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
-    const { body } = model.useState();
+  viewExpandedPanel({ title, queryRunner, index, labelValues }: ExpandActionState) {
+    this.setState({
+      drawerBody: PanelBuilders.timeseries()
+        .setTitle(title)
+        .setOption('legend', { showLegend: true })
+        .setData(queryRunner)
+        .setColor({ mode: 'fixed', fixedColor: getColorByIndex(index + 1) })
+        .setOverrides((overrides) => {
+          labelValues.forEach((value, j) => {
+            overrides
+              .matchFieldsByQuery(value)
+              .overrideColor({
+                mode: 'fixed',
+                fixedColor: getColorByIndex(index + j),
+              })
+              .overrideDisplayName(value);
+          });
+        })
+        .setCustomFieldConfig('fillOpacity', 9)
+        .build(),
+    });
+  }
 
-    return <body.Component model={body} />;
+  public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
+    const { body, drawerBody } = model.useState();
+
+    return (
+      <>
+        <body.Component model={body} />
+        {drawerBody && (
+          <Drawer size="lg" onClose={() => model.setState({ drawerBody: undefined })}>
+            <drawerBody.Component model={drawerBody} />
+          </Drawer>
+        )}
+      </>
+    );
   };
 }

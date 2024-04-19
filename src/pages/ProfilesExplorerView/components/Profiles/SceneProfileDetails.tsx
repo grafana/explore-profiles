@@ -48,7 +48,7 @@ export class SceneProfileDetails extends SceneObjectBase<SceneProfileDetailsStat
               .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions(
                 <Button variant="primary" size="sm" fill="text" onClick={() => this.viewFlameGraph()}>
-                  ✨
+                  🔥
                 </Button>
               )
               .build(),
