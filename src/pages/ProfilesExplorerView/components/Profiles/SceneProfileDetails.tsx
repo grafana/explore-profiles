@@ -42,7 +42,7 @@ export class SceneProfileDetails extends SceneObjectBase<SceneProfileDetailsStat
           new SceneFlexItem({
             body: PanelBuilders.timeseries()
               .setTitle(profileMetric.label)
-              .setOption('legend', { showLegend: true })
+              .setOption('legend', { showLegend: false })
               .setData(getProfileMetricQueryRunner(profileMetric.value))
               .setColor({ mode: 'fixed', fixedColor: color })
               .setCustomFieldConfig('fillOpacity', 9)

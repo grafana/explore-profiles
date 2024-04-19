@@ -42,7 +42,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
           new SceneFlexItem({
             body: PanelBuilders.timeseries()
               .setTitle(serviceName)
-              .setOption('legend', { showLegend: true })
+              .setOption('legend', { showLegend: false })
               .setData(getServiceQueryRunner(serviceName))
               .setColor({ mode: 'fixed', fixedColor: color })
               .setCustomFieldConfig('fillOpacity', 9)
