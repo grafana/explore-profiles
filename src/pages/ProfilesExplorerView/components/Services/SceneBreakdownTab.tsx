@@ -37,6 +37,12 @@ export interface SceneBreakdownTabState extends SceneObjectState {
 }
 
 export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
+  // No update: we can keep the current label selected and cycle through the profile metrics
+  // protected _variableDependency = new VariableDependencyConfig(this, {
+  //   variableNames: ['profileMetric'],
+  //   onReferencedVariableValueChanged: this.onActivate.bind(this),
+  // });
+
   constructor(state: Partial<SceneBreakdownTabState>) {
     super({
       serviceName: state.serviceName as string,
@@ -94,17 +100,24 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
 
   async onActivate() {
     const { serviceName } = this.state;
+    const { labelSelector, labelsGrid } = this.findObjects();
 
     const profileMetric = sceneGraph.lookupVariable('profileMetric', this)!.getValue() as string;
     const query = `${profileMetric}{service_name="${serviceName}"}`;
 
     const timeRange = sceneGraph.getTimeRange(this).state.value;
 
+    labelsGrid.setState({
+      children: [],
+    });
+
+    labelSelector.setState({
+      isLoading: true,
+    });
+
     this.setState({
       labelsData: await fetchLabelsData(query, timeRange),
     });
-
-    const { labelSelector, labelsGrid } = this.findObjects();
 
     labelSelector.setState({
       isLoading: false,
@@ -265,15 +278,20 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
 
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
     const { body, serviceName, isFlameGraphOpen } = model.useState();
+    const profileMetricId = sceneGraph.lookupVariable('profileMetric', model)!.getValue() as string;
 
     return (
       <>
         <body.Component model={body} />
         {isFlameGraphOpen && (
-          <Drawer size="lg" onClose={() => model.setState({ isFlameGraphOpen: false })}>
-            <h3>🔥 Flame graph for {serviceName}</h3>
+          <Drawer
+            size="lg"
+            title={`🔥 Flame graph for ${serviceName}`}
+            subtitle={profileMetricId}
+            onClose={() => model.setState({ isFlameGraphOpen: false })}
+          >
             <div>
-              <em>Work-in-progress...</em>
+              <em>Work-in-progress :)</em>
             </div>
           </Drawer>
         )}

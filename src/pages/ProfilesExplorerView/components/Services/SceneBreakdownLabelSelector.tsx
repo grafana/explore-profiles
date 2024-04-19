@@ -36,20 +36,20 @@ export class SceneBreakdownLabelSelector extends SceneObjectBase<SceneBreakdownL
     }, [labelsData]);
 
     // TODO: error handling
-    if (isLoading) {
-      return <Spinner inline />;
-    }
 
     return (
       <div className={styles.selectorWrapper}>
         <h6>By label</h6>
-        <RadioButtonGroup
-          className={styles.radioButtonGroup}
-          options={labels}
-          value={activeLabelId}
-          onChange={model.onChange}
-          fullWidth={false}
-        />
+        {isLoading && <Spinner inline />}
+        {!isLoading && (
+          <RadioButtonGroup
+            className={styles.radioButtonGroup}
+            options={labels}
+            value={activeLabelId}
+            onChange={model.onChange}
+            fullWidth={false}
+          />
+        )}
       </div>
     );
   };
