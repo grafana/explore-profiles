@@ -6,6 +6,7 @@
   "author": "Grafana",
   "scripts": {
     "build": "webpack -c webpack.config.ts --env production",
+    "predev": "rm -rf node_modules/.cache",
     "dev": "webpack -w -c webpack.config.ts --env development",
     "e2e:ci": " docker run --network host -v $(pwd)/e2e:/app/e2e pyroscope-app-plugin-e2e:latest",
     "e2e:ci:prepare": "docker build --progress=auto -t pyroscope-app-plugin-e2e:latest -f Dockerfile.plugin.e2e .",

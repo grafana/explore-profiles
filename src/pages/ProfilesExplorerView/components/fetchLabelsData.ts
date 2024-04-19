@@ -1,7 +1,11 @@
+import { TimeRange } from '@grafana/data';
 import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
 import { userStorage } from '@shared/infrastructure/userStorage';
 
-export async function fetchLabelsData(query: string, from: number, to: number) {
+export async function fetchLabelsData(query: string, timeRange: TimeRange) {
+  const from = timeRange.from.unix() * 1000;
+  const to = timeRange.to.unix() * 1000;
+
   const labels = await labelsRepository.listLabels(query, from, to);
 
   const labelsData = await Promise.all(

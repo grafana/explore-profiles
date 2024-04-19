@@ -1,21 +1,34 @@
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { FieldColor } from '@grafana/data';
+import {
+  SceneComponentProps,
+  SceneCSSGridItem,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectState,
+  VizPanel,
+} from '@grafana/scenes';
 import { Button } from '@grafana/ui';
 import React from 'react';
 
-import { ServicesExplorer } from '../ServicesExplorer';
+import { SceneServices } from '../SceneServices';
 
-export interface SelectServiceActionState extends SceneObjectState {
+interface SelectServiceActionState extends SceneObjectState {
   serviceName: string;
 }
 
 export class SelectServiceAction extends SceneObjectBase<SelectServiceActionState> {
   public onClick = () => {
-    sceneGraph.getAncestor(this, ServicesExplorer).selectService(this.state);
+    // TODO: use a key on the panel and deal with it in SceneServices?
+    const gridItem = sceneGraph.getAncestor(this, SceneCSSGridItem);
+    const timeseriesPanel = gridItem.state.body as VizPanel;
+    const color = (timeseriesPanel.state.fieldConfig.defaults.color as FieldColor).fixedColor as string;
+
+    sceneGraph.getAncestor(this, SceneServices).selectService(this.state.serviceName, color);
   };
 
   public static Component = ({ model }: SceneComponentProps<SelectServiceAction>) => {
     return (
-      <Button variant="secondary" size="sm" fill="solid" onClick={model.onClick}>
+      <Button variant="primary" size="sm" fill="text" onClick={model.onClick}>
         Select
       </Button>
     );

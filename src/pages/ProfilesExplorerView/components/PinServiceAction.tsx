@@ -3,7 +3,7 @@ import { IconButton } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
-export interface PinServiceActionState extends SceneObjectState {
+interface PinServiceActionState extends SceneObjectState {
   key: string;
   value: string;
   isFav?: boolean;
@@ -49,12 +49,13 @@ export class PinServiceAction extends SceneObjectBase<PinServiceActionState> {
 
     return (
       <IconButton
-        name="favorite"
-        aria-label="Set as favorite"
-        tooltip="Set as favorite"
-        tooltipPlacement="top"
-        variant={isFav ? 'primary' : 'secondary'}
+        style={{ margin: 0 }}
+        name={isFav ? 'favorite' : 'star'}
+        variant="secondary"
         size="sm"
+        aria-label={isFav ? 'Unfavorite' : 'Favorite'}
+        tooltip={isFav ? 'Unfavorite' : 'Favorite'}
+        tooltipPlacement="top"
         onClick={model.onClick}
       />
     );

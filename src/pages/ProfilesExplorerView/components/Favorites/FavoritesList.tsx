@@ -7,14 +7,14 @@ type FavoritesProps = {
   services: Services;
 };
 
-function FavoritesComponent({ timeRange, services }: FavoritesProps) {
+function FavoritesListComponent({ timeRange, services }: FavoritesProps) {
   console.log('*** Favorites', timeRange, services);
 
   return (
     <>
-      <em>Work-in-progress</em>
+      <em>Work-in-progress :)</em>
     </>
   );
 }
 
-export const Favorites = React.memo(FavoritesComponent);
+export const FavoritesList = React.memo(FavoritesListComponent);

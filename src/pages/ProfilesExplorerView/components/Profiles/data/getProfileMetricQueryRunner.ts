@@ -2,14 +2,14 @@ import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from '../../constants';
 
-export function getProfileQueryRunner(profileMetric: string, labelSelector?: string) {
+export function getProfileMetricQueryRunner(profileMetricId: string, labelSelector?: string) {
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [
       {
-        refId: !labelSelector ? profileMetric : `${profileMetric}-${labelSelector}`,
+        refId: !labelSelector ? profileMetricId : `${profileMetricId}-${labelSelector}`,
         queryType: 'metrics',
-        profileTypeId: `${profileMetric}`,
+        profileTypeId: `${profileMetricId}`,
         labelSelector: !labelSelector
           ? // interpolated variable
             '{service_name="$serviceName"}'
