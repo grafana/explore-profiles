@@ -11,7 +11,6 @@ import {
   SceneObjectBase,
   SceneObjectState,
 } from '@grafana/scenes';
-import { Drawer } from '@grafana/ui';
 import React from 'react';
 
 import { fetchLabelsData } from '../fetchLabelsData';
@@ -20,7 +19,6 @@ import { PinServiceAction } from '../PinServiceAction';
 import { ViewFlameGraphAction } from '../ViewFlameGraphAction';
 import { CompareAction } from './actions/CompareAction';
 import { SelectLabelAction } from './actions/SelectLabelAction';
-import { ViewDrawerFlameGraphAction } from './actions/ViewDrawerFlameGraphAction';
 import { getServiceLabelsQueryRunner } from './data/getServiceLabelsQueryRunner';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';
@@ -258,44 +256,15 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
               labelValue,
               timeRange,
             }),
-            new ViewDrawerFlameGraphAction({
-              labelId,
-              labelValue,
-            }),
           ])
           .build(),
       });
     });
   }
 
-  openFlameGraph(labelId: string, labelValue: string) {
-    console.log('*** openFlameGraph', labelId, labelValue);
-
-    this.setState({
-      isFlameGraphOpen: true,
-    });
-  }
-
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
-    const { body, serviceName, isFlameGraphOpen } = model.useState();
-    const profileMetricId = sceneGraph.lookupVariable('profileMetric', model)!.getValue() as string;
+    const { body } = model.useState();
 
-    return (
-      <>
-        <body.Component model={body} />
-        {isFlameGraphOpen && (
-          <Drawer
-            size="lg"
-            title={`🔥 Flame graph for ${serviceName}`}
-            subtitle={profileMetricId}
-            onClose={() => model.setState({ isFlameGraphOpen: false })}
-          >
-            <div>
-              <em>Work-in-progress :)</em>
-            </div>
-          </Drawer>
-        )}
-      </>
-    );
+    return <body.Component model={body} />;
   };
 }

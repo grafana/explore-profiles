@@ -1,5 +1,6 @@
+import { css } from '@emotion/css';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { IconButton } from '@grafana/ui';
+import { IconButton, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
@@ -45,11 +46,12 @@ export class PinServiceAction extends SceneObjectBase<PinServiceActionState> {
   };
 
   public static Component = ({ model }: SceneComponentProps<PinServiceAction>) => {
+    const styles = useStyles2(getStyles);
     const { isFav } = model.useState();
 
     return (
       <IconButton
-        style={{ margin: 0 }}
+        className={isFav ? styles.favedButton : styles.notFavedbutton}
         name={isFav ? 'favorite' : 'star'}
         variant="secondary"
         size="sm"
@@ -61,3 +63,13 @@ export class PinServiceAction extends SceneObjectBase<PinServiceActionState> {
     );
   };
 }
+
+const getStyles = () => ({
+  favedButton: css`
+    color: #f2cc0d;
+    margin: 0;
+  `,
+  notFavedbutton: css`
+    margin: 0;
+  `,
+});

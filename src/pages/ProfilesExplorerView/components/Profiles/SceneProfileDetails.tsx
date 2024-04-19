@@ -11,28 +11,28 @@ import {
 import { Button, Drawer } from '@grafana/ui';
 import React from 'react';
 
-import { getServiceQueryRunner } from './data/getServiceQueryRunner';
-import { SceneServiceDetailsTabs } from './SceneServiceDetailsTabs';
+import { getProfileMetricQueryRunner } from './data/getProfileMetricQueryRunner';
+import { SceneProfileMetricDetailsTabs } from './SceneProfileMetricDetailsTabs';
 
 const MIN_HEIGHT_TIMESERIES = 240;
 
-interface SceneServiceDetailsState extends SceneObjectState {
-  serviceName: string;
+interface SceneProfileDetailsState extends SceneObjectState {
+  profileMetric: { label: string; value: string };
   color: string;
   body?: SceneFlexLayout;
   isFlameGraphOpen?: boolean;
 }
 
-export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsState> {
+export class SceneProfileDetails extends SceneObjectBase<SceneProfileDetailsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['profileMetric'],
+    variableNames: ['serviceName'],
   });
 
-  constructor(state: SceneServiceDetailsState) {
-    const { serviceName, color } = state;
+  constructor(state: SceneProfileDetailsState) {
+    const { profileMetric, color } = state;
 
     super({
-      serviceName,
+      profileMetric,
       color,
       isFlameGraphOpen: false,
       body: new SceneFlexLayout({
@@ -41,9 +41,9 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
         children: [
           new SceneFlexItem({
             body: PanelBuilders.timeseries()
-              .setTitle(serviceName)
+              .setTitle(profileMetric.label)
               .setOption('legend', { showLegend: true })
-              .setData(getServiceQueryRunner(serviceName))
+              .setData(getProfileMetricQueryRunner(profileMetric.value))
               .setColor({ mode: 'fixed', fixedColor: color })
               .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions(
@@ -54,8 +54,8 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
               .build(),
           }),
           new SceneFlexItem({
-            body: new SceneServiceDetailsTabs({
-              serviceName,
+            body: new SceneProfileMetricDetailsTabs({
+              profileMetric,
               activeTabId: 'breakdown',
             }),
           }),
@@ -72,9 +72,9 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     });
   }
 
-  public static Component = ({ model }: SceneComponentProps<SceneServiceDetails>) => {
-    const { body, serviceName, isFlameGraphOpen } = model.useState();
-    const profileMetricId = sceneGraph.lookupVariable('profileMetric', model)!.getValue() as string;
+  public static Component = ({ model }: SceneComponentProps<SceneProfileDetails>) => {
+    const { body, profileMetric, isFlameGraphOpen } = model.useState();
+    const serviceName = sceneGraph.lookupVariable('serviceName', model)!.getValue() as string;
 
     if (!body) {
       return null;
@@ -87,7 +87,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
           <Drawer
             size="lg"
             title={`🔥 Flame graph for ${serviceName}`}
-            subtitle={profileMetricId}
+            subtitle={profileMetric.value}
             onClose={() => model.setState({ isFlameGraphOpen: false })}
           >
             <div>

@@ -12,7 +12,6 @@ import {
   SceneObjectState,
   VariableDependencyConfig,
 } from '@grafana/scenes';
-import { Drawer } from '@grafana/ui';
 import React from 'react';
 
 import { fetchLabelsData } from '../fetchLabelsData';
@@ -21,7 +20,6 @@ import { PinServiceAction } from '../PinServiceAction';
 import { ViewFlameGraphAction } from '../ViewFlameGraphAction';
 import { CompareAction } from './actions/CompareAction';
 import { SelectLabelAction } from './actions/SelectLabelAction';
-import { ViewDrawerFlameGraphAction } from './actions/ViewDrawerFlameGraphAction';
 import { getProfileMetricLabelsQueryRunner } from './data/getProfileMetricLabelsQueryRunner';
 import { getProfileMetricQueryRunner } from './data/getProfileMetricQueryRunner';
 import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';
@@ -34,7 +32,6 @@ export interface SceneBreakdownTabState extends SceneObjectState {
   labelsData: Array<{ id: string; values: string[] }>;
   labelsForDiff: Array<{ id: string; value: string; index: number }>;
   body: SceneFlexLayout;
-  isFlameGraphOpen?: boolean;
 }
 
 export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
@@ -48,7 +45,6 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
       profileMetric: state.profileMetric as SceneBreakdownTabState['profileMetric'],
       labelsData: [],
       labelsForDiff: [],
-      isFlameGraphOpen: false,
       body: new SceneFlexLayout({
         direction: 'column',
         children: [
@@ -228,14 +224,6 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
     });
   }
 
-  openFlameGraph(labelId: string, labelValue: string) {
-    console.log('*** openFlameGraph', labelId, labelValue);
-
-    this.setState({
-      isFlameGraphOpen: true,
-    });
-  }
-
   buildLabelValueGridItems(labelId: string) {
     const { profileMetric, labelsData } = this.state;
     const serviceName = sceneGraph.lookupVariable('serviceName', this)!.getValue() as string;
@@ -271,10 +259,6 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
               labelValue,
               timeRange,
             }),
-            new ViewDrawerFlameGraphAction({
-              labelId,
-              labelValue,
-            }),
           ])
           .build(),
       });
@@ -282,25 +266,8 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
-    const { body, profileMetric, isFlameGraphOpen } = model.useState();
-    const serviceName = sceneGraph.lookupVariable('serviceName', model)!.getValue() as string;
+    const { body } = model.useState();
 
-    return (
-      <>
-        <body.Component model={body} />{' '}
-        {isFlameGraphOpen && (
-          <Drawer
-            size="lg"
-            title={`🔥 Flame graph for ${serviceName}`}
-            subtitle={profileMetric.value}
-            onClose={() => model.setState({ isFlameGraphOpen: false })}
-          >
-            <div>
-              <em>Work-in-progress :)</em>
-            </div>
-          </Drawer>
-        )}
-      </>
-    );
+    return <body.Component model={body} />;
   };
 }
