@@ -9,10 +9,10 @@ type ServicesProps = {
   services: TServices;
 };
 
-function ServicesListComponent({ timeRange, services }: ServicesProps) {
+function ServicesTabComponent({ timeRange, services }: ServicesProps) {
   const servicesScene = new SceneServices(timeRange, services);
 
   return <servicesScene.Component model={servicesScene} />;
 }
 
-export const ServicesList = React.memo(ServicesListComponent);
+export const ServicesTab = React.memo(ServicesTabComponent);

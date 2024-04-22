@@ -6,17 +6,9 @@ import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromU
 import { useFetchServices } from '@shared/infrastructure/services/useFetchServices';
 import React, { useState } from 'react';
 
-import { FavoritesList } from './components/Favorites/FavoritesList';
-import { ProfilesList } from './components/Profiles/ProfilesList';
-import { ServicesList } from './components/Services/ServicesList';
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  tabContent: css`
-    padding: ${theme.spacing(1)};
-    margin: ${theme.spacing(1)};
-    background: transparent;
-  `,
-});
+import { FavoritesTab } from './components/Favorites/FavoritesTab';
+import { ProfilesTab } from './components/Profiles/ProfilesTab';
+import { ServicesTab } from './components/Services/ServicesTab';
 
 export const ProfilesExplorerView = () => {
   const styles = useStyles2(getStyles);
@@ -53,10 +45,17 @@ export const ProfilesExplorerView = () => {
         <Tab label="Favorites" active={activeTabIndex === 2} onChangeTab={() => setActiveTabIndex(2)} />
       </TabsBar>
       <TabContent className={styles.tabContent}>
-        {activeTabIndex === 0 && <ServicesList timeRange={timeRange} services={services} />}
-        {activeTabIndex === 1 && <ProfilesList timeRange={timeRange} services={services} />}
-        {activeTabIndex === 2 && <FavoritesList timeRange={timeRange} services={services} />}
+        {activeTabIndex === 0 && <ServicesTab timeRange={timeRange} services={services} />}
+        {activeTabIndex === 1 && <ProfilesTab timeRange={timeRange} services={services} />}
+        {activeTabIndex === 2 && <FavoritesTab timeRange={timeRange} />}
       </TabContent>
     </div>
   );
 };
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  tabContent: css`
+    background: transparent;
+    margin-top: ${theme.spacing(1)};
+  `,
+});

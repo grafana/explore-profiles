@@ -1,6 +1,6 @@
 import plugin from '../../plugin.json';
 
-class UserStorage {
+export class UserStorage {
   #storage: Storage = window.localStorage;
 
   KEYS = {

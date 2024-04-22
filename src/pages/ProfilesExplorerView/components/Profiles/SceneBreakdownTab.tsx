@@ -8,6 +8,7 @@ import {
   SceneFlexItem,
   SceneFlexLayout,
   sceneGraph,
+  SceneObject,
   SceneObjectBase,
   SceneObjectState,
   VariableDependencyConfig,
@@ -287,8 +288,13 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
 
   viewExpandedPanel({ panelKey }: ExpandActionState) {
     const vizPanel = sceneGraph.findObject(this, (o) => o.state.key === panelKey) as VizPanel;
+    const drawerBody = vizPanel.clone();
 
-    this.setState({ drawerBody: vizPanel.clone() });
+    drawerBody.setState({
+      headerActions: (drawerBody.state.headerActions as SceneObject[]).filter((action) => action instanceof FavAction),
+    });
+
+    this.setState({ drawerBody });
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {

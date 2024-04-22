@@ -1,6 +1,8 @@
 import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { Services } from '@shared/infrastructure/services/servicesApiClient';
 
+export type ProfileMetricOptions = Array<{ value: string; label: string }>;
+
 export function getProfileMetricOptions(services: Services) {
   const allProfileMetricsMap = new Map<ProfileMetric['id'], ProfileMetric>();
 

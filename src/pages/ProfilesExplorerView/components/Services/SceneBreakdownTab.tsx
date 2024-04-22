@@ -8,6 +8,7 @@ import {
   SceneFlexItem,
   SceneFlexLayout,
   sceneGraph,
+  SceneObject,
   SceneObjectBase,
   SceneObjectState,
   VizPanel,
@@ -38,12 +39,6 @@ export interface SceneBreakdownTabState extends SceneObjectState {
 }
 
 export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
-  // No update: we can keep the current label selected and cycle through the profile metrics
-  // protected _variableDependency = new VariableDependencyConfig(this, {
-  //   variableNames: ['profileMetric'],
-  //   onReferencedVariableValueChanged: this.onActivate.bind(this),
-  // });
-
   constructor(state: Partial<SceneBreakdownTabState>) {
     super({
       key: 'breakdown-tab',
@@ -270,8 +265,13 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
 
   viewExpandedPanel({ panelKey }: ExpandActionState) {
     const vizPanel = sceneGraph.findObject(this, (o) => o.state.key === panelKey) as VizPanel;
+    const drawerBody = vizPanel.clone();
 
-    this.setState({ drawerBody: vizPanel.clone() });
+    drawerBody.setState({
+      headerActions: (drawerBody.state.headerActions as SceneObject[]).filter((action) => action instanceof FavAction),
+    });
+
+    this.setState({ drawerBody });
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
