@@ -79,7 +79,6 @@ export class SceneProfilesList extends SceneObjectBase<SceneProfilesListState> {
 
 const getStyles = () => ({
   body: css`
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
     overflow-y: scroll; // does not work :/

@@ -3,12 +3,10 @@ import {
   SceneComponentProps,
   SceneFlexItem,
   SceneFlexLayout,
-  sceneGraph,
   SceneObjectBase,
   SceneObjectState,
-  VariableDependencyConfig,
 } from '@grafana/scenes';
-import { Button, Drawer, DrawStyle } from '@grafana/ui';
+import { DrawStyle } from '@grafana/ui';
 import React from 'react';
 
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
@@ -19,27 +17,25 @@ const MIN_HEIGHT_TIMESERIES = 200;
 interface SceneServiceDetailsState extends SceneObjectState {
   serviceName: string;
   color: string;
-  body?: SceneFlexLayout;
-  isFlameGraphOpen?: boolean;
+  body: SceneFlexLayout;
 }
 
 export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsState> {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['profileMetric'],
-  });
-
-  constructor(state: SceneServiceDetailsState) {
-    const { serviceName, color } = state;
-
+  constructor({
+    serviceName,
+    color,
+  }: {
+    serviceName: SceneServiceDetailsState['serviceName'];
+    color: SceneServiceDetailsState['color'];
+  }) {
     super({
       serviceName,
       color,
-      isFlameGraphOpen: false,
       body: new SceneFlexLayout({
         direction: 'column',
-        minHeight: MIN_HEIGHT_TIMESERIES,
         children: [
           new SceneFlexItem({
+            minHeight: MIN_HEIGHT_TIMESERIES,
             body: PanelBuilders.timeseries()
               .setTitle(serviceName)
               .setOption('legend', { showLegend: false })
@@ -49,11 +45,6 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
               .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
               .setCustomFieldConfig('fillOpacity', 100)
               .setCustomFieldConfig('lineWidth', 0)
-              .setHeaderActions(
-                <Button variant="primary" size="sm" fill="text" onClick={() => this.viewFlameGraph()}>
-                  🔥
-                </Button>
-              )
               .build(),
           }),
           new SceneFlexItem({
@@ -67,38 +58,9 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     });
   }
 
-  viewFlameGraph() {
-    console.log('*** viewFlameGraph');
-
-    this.setState({
-      isFlameGraphOpen: true,
-    });
-  }
-
   public static Component = ({ model }: SceneComponentProps<SceneServiceDetails>) => {
-    const { body, serviceName, isFlameGraphOpen } = model.useState();
-    const profileMetricId = sceneGraph.lookupVariable('profileMetric', model)!.getValue() as string;
+    const { body } = model.useState();
 
-    if (!body) {
-      return null;
-    }
-
-    return (
-      <>
-        <body.Component model={body} />
-        {isFlameGraphOpen && (
-          <Drawer
-            size="lg"
-            title={`🔥 Flame graph for ${serviceName}`}
-            subtitle={profileMetricId}
-            onClose={() => model.setState({ isFlameGraphOpen: false })}
-          >
-            <div>
-              <em>Work-in-progress :)</em>
-            </div>
-          </Drawer>
-        )}
-      </>
-    );
+    return <body.Component model={body} />;
   };
 }

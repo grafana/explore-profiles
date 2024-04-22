@@ -90,19 +90,20 @@ export class SceneServices extends SceneObjectBase<SceneServicesState> {
   static buildBody(body: SceneObject) {
     return new SplitLayout({
       direction: 'column',
-      initialSize: 0.6,
+      // initialSize: 0.6,
       primary: new SceneFlexItem({ body }),
     });
   }
 
   onFilterChange(event: any) {
-    const services = this.filterServices(event?.target.value.trim());
+    const searchText = event?.target.value.trim();
+    const services = this.filterServices(searchText);
 
     if (!services.length) {
       this.setState({
         body: SceneServices.buildBody(
           new EmptyStateScene({
-            message: 'No services found',
+            message: `No services found for text "${searchText}"`,
           })
         ),
       });
@@ -193,7 +194,6 @@ export class SceneServices extends SceneObjectBase<SceneServicesState> {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
-    flex-grow: 1;
     display: flex;
     gap: ${theme.spacing(2)};
     min-height: 100%;
@@ -219,7 +219,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
   `,
   body: css`
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing(1)};

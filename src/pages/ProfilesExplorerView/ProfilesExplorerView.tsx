@@ -55,7 +55,7 @@ export const ProfilesExplorerView = () => {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   tabContent: css`
-    background: transparent;
     margin-top: ${theme.spacing(1)};
+    background: transparent;
   `,
 });

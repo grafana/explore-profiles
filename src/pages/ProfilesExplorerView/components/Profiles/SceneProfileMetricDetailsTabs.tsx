@@ -1,24 +1,30 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Tab, TabContent, TabsBar, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { SceneBreakdownTab } from './SceneBreakdownTab';
+import { SceneFlameGraphTab } from './SceneFlameGraphTab';
 
 interface SceneProfileMetricDetailsTabsState extends SceneObjectState {
   profileMetric: { label: string; value: string };
   activeTabId: string;
-  body?: SceneBreakdownTab;
+  body?: SceneObject;
 }
 
 export class SceneProfileMetricDetailsTabs extends SceneObjectBase<SceneProfileMetricDetailsTabsState> {
-  constructor(state: SceneProfileMetricDetailsTabsState) {
-    const { profileMetric } = state;
-
+  constructor({
+    profileMetric,
+    activeTabId,
+  }: {
+    profileMetric: SceneProfileMetricDetailsTabsState['profileMetric'];
+    activeTabId: SceneProfileMetricDetailsTabsState['activeTabId'];
+  }) {
     super({
-      ...state,
-      body: new SceneBreakdownTab({ profileMetric }),
+      profileMetric,
+      activeTabId,
+      body: undefined,
     });
 
     this.onActivate = this.onActivate.bind(this);
@@ -32,9 +38,26 @@ export class SceneProfileMetricDetailsTabs extends SceneObjectBase<SceneProfileM
   }
 
   setActiveTab(tabId: string) {
-    this.setState({
-      activeTabId: tabId,
-    });
+    const { profileMetric } = this.state;
+
+    switch (tabId) {
+      case 'breakdown':
+        this.setState({
+          activeTabId: tabId,
+          body: new SceneBreakdownTab({ profileMetric }),
+        });
+        break;
+
+      case 'flame-graph':
+        this.setState({
+          activeTabId: tabId,
+          body: new SceneFlameGraphTab({ profileMetric }),
+        });
+        break;
+
+      default:
+        throw new Error(`Unknown tab id="${tabId}"!`);
+    }
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneProfileMetricDetailsTabs>) => {
@@ -48,6 +71,11 @@ export class SceneProfileMetricDetailsTabs extends SceneObjectBase<SceneProfileM
             label="Breakdown"
             active={activeTabId === 'breakdown'}
             onChangeTab={() => model.setActiveTab('breakdown')}
+          />
+          <Tab
+            label="Flame graph"
+            active={activeTabId === 'flame-graph'}
+            onChangeTab={() => model.setActiveTab('flame-graph')}
           />
         </TabsBar>
         <TabContent className={styles.tabContent}>{body && <body.Component model={body} />}</TabContent>

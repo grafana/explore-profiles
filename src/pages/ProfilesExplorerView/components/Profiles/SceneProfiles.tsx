@@ -90,19 +90,20 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
   static buildBody(body: SceneObject) {
     return new SplitLayout({
       direction: 'column',
-      initialSize: 0.6,
+      // initialSize: 0.6,
       primary: new SceneFlexItem({ body }),
     });
   }
 
   onFilterChange(event: any) {
-    const profileMetrics = this.filterProfileMetrics(event?.target.value.trim());
+    const searchText = event?.target.value.trim();
+    const profileMetrics = this.filterProfileMetrics(searchText);
 
     if (!profileMetrics.length) {
       this.setState({
         body: SceneProfiles.buildBody(
           new EmptyStateScene({
-            message: 'No profile metrics found',
+            message: `No profile metrics found for text "${searchText}"`,
           })
         ),
       });
@@ -193,7 +194,6 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
-    flex-grow: 1;
     display: flex;
     gap: ${theme.spacing(2)};
     min-height: 100%;
@@ -219,7 +219,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
   `,
   body: css`
-    flex-grow: 1;
     display: flex;
     flex-direction: column;
     gap: ${theme.spacing(1)};
