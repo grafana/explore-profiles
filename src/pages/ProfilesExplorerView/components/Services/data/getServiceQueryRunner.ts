@@ -2,7 +2,12 @@ import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from '../../constants';
 
-export function getServiceQueryRunner(serviceName: string, labelSelector?: string) {
+type Params = {
+  serviceName: string;
+  labelSelector?: string;
+};
+
+export function getServiceQueryRunner({ serviceName, labelSelector }: Params) {
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [

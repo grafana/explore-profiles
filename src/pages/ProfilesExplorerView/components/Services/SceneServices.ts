@@ -48,7 +48,7 @@ export class SceneServices extends EmbeddedScene {
             body: PanelBuilders.timeseries()
               .setTitle(service.value)
               .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
-              .setData(getServiceQueryRunner(service.value))
+              .setData(getServiceQueryRunner({ serviceName: service.value }))
               .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
               .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions([

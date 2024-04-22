@@ -43,7 +43,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
             body: PanelBuilders.timeseries()
               .setTitle(serviceName)
               .setOption('legend', { showLegend: false })
-              .setData(getServiceQueryRunner(serviceName))
+              .setData(getServiceQueryRunner({ serviceName }))
               .setColor({ mode: 'fixed', fixedColor: color })
               // .setCustomFieldConfig('fillOpacity', 9)
               .setCustomFieldConfig('drawStyle', DrawStyle.Bars)

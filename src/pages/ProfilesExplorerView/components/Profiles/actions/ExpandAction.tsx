@@ -1,18 +1,16 @@
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { IconButton } from '@grafana/ui';
 import React from 'react';
 
 import { SceneBreakdownTab } from '../SceneBreakdownTab';
 
 export interface ExpandActionState extends SceneObjectState {
-  title: string;
-  queryRunner: SceneQueryRunner;
-  index: number;
-  labelValues: string[];
+  panelKey: string;
 }
 
 export class ExpandAction extends SceneObjectBase<ExpandActionState> {
   public onClick = () => {
+    // TODO: find object by key instead to DRY here and in Services scenes
     sceneGraph.getAncestor(this, SceneBreakdownTab).viewExpandedPanel(this.state);
   };
 

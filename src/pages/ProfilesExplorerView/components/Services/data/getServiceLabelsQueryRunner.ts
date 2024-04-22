@@ -2,11 +2,17 @@ import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from '../../constants';
 
-export function getServiceLabelsQueryRunner(serviceName: string, labelId: string, labelValues: string[]) {
+type Params = {
+  serviceName: string;
+  labelId: string;
+  labelValues: string[];
+};
+
+export function getServiceLabelsQueryRunner({ serviceName, labelId, labelValues }: Params) {
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: labelValues.map((value) => ({
-      refId: value,
+      refId: `${serviceName}-${labelId}-${value}`,
       queryType: 'metrics',
       profileTypeId: '$profileMetric', // interpolated variable
       labelSelector: `{service_name="${serviceName}",${labelId}="${value}"}`,

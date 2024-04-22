@@ -2,7 +2,12 @@ import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from '../../constants';
 
-export function getProfileMetricQueryRunner(profileMetricId: string, labelSelector?: string) {
+type Params = {
+  profileMetricId: string;
+  labelSelector?: string;
+};
+
+export function getProfileMetricQueryRunner({ profileMetricId, labelSelector }: Params) {
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [

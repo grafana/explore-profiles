@@ -43,7 +43,7 @@ export class SceneProfileDetails extends SceneObjectBase<SceneProfileDetailsStat
             body: PanelBuilders.timeseries()
               .setTitle(profileMetric.label)
               .setOption('legend', { showLegend: false })
-              .setData(getProfileMetricQueryRunner(profileMetric.value))
+              .setData(getProfileMetricQueryRunner({ profileMetricId: profileMetric.value }))
               .setColor({ mode: 'fixed', fixedColor: color })
               // .setCustomFieldConfig('fillOpacity', 9)
               .setCustomFieldConfig('drawStyle', DrawStyle.Bars)

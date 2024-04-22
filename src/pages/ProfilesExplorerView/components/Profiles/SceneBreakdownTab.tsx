@@ -46,6 +46,7 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
 
   constructor(state: Partial<SceneBreakdownTabState>) {
     super({
+      key: 'breakdown-tab',
       profileMetric: state.profileMetric as SceneBreakdownTabState['profileMetric'],
       labelsData: [],
       labelsForDiff: [],
@@ -201,31 +202,41 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
             })
           : null;
 
-      const queryRunner = getProfileMetricLabelsQueryRunner(profileMetric.value, id, values);
+      const panelKey = `panel-${profileMetric.value}-${id}`;
+
+      const vizPanel: VizPanel = PanelBuilders.timeseries()
+        .setTitle(id)
+        .setOption('legend', { showLegend: true })
+        .setData(
+          getProfileMetricLabelsQueryRunner({
+            profileMetricId: profileMetric.value,
+            labelId: id,
+            labelValues: values,
+          })
+        )
+        .setOverrides((overrides) => {
+          values.forEach((value, j) => {
+            overrides
+              .matchFieldsByQuery(`${profileMetric.value}-${id}-${value}`)
+              .overrideColor({
+                mode: 'fixed',
+                fixedColor: getColorByIndex(i + j),
+              })
+              .overrideDisplayName(value);
+          });
+        })
+        .setCustomFieldConfig('fillOpacity', 9)
+        .setHeaderActions([
+          viewFlameGraphAction || new SelectLabelAction({ labelId: id }),
+          new FavAction({ key: 'pinnedLabels', value: id }),
+          new ExpandAction({ panelKey }),
+        ])
+        .build();
+
+      vizPanel.setState({ key: panelKey });
 
       return new SceneCSSGridItem({
-        body: PanelBuilders.timeseries()
-          .setTitle(id)
-          .setOption('legend', { showLegend: true })
-          .setData(queryRunner)
-          .setOverrides((overrides) => {
-            values.forEach((value, j) => {
-              overrides
-                .matchFieldsByQuery(value)
-                .overrideColor({
-                  mode: 'fixed',
-                  fixedColor: getColorByIndex(i + j),
-                })
-                .overrideDisplayName(value);
-            });
-          })
-          .setCustomFieldConfig('fillOpacity', 9)
-          .setHeaderActions([
-            viewFlameGraphAction || new SelectLabelAction({ labelId: id }),
-            new FavAction({ key: 'pinnedLabels', value: id }),
-            new ExpandAction({ title: id, queryRunner, index: i, labelValues: values }),
-          ])
-          .build(),
+        body: vizPanel,
       });
     });
   }
@@ -239,53 +250,45 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
 
     return labelValues.map((labelValue, i) => {
       const labelSelector = `${labelId}="${labelValue}"`;
-      const queryRunner = getProfileMetricQueryRunner(profileMetric.value, labelSelector);
+      const panelKey = `panel-${profileMetric.value}-${labelId}-${labelValue}`;
+
+      const vizPanel: VizPanel = PanelBuilders.timeseries()
+        .setTitle(labelValue)
+        .setOption('legend', { showLegend: false }) // hide profile metric
+        .setData(
+          getProfileMetricQueryRunner({
+            profileMetricId: profileMetric.value,
+            labelSelector,
+          })
+        )
+        .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i + 1) })
+        .setCustomFieldConfig('fillOpacity', 9)
+        .setHeaderActions([
+          new CompareAction({ key: 'compareAction', index: i, labelId, labelValue }),
+          new ViewFlameGraphAction({
+            key: 'viewFlameGraphAction',
+            profileMetricId: profileMetric.value,
+            serviceName,
+            labelId,
+            labelValue,
+            timeRange,
+          }),
+          new ExpandAction({ panelKey }),
+        ])
+        .build();
+
+      vizPanel.setState({ key: panelKey });
 
       return new SceneCSSGridItem({
-        body: PanelBuilders.timeseries()
-          .setTitle(labelValue)
-          .setOption('legend', { showLegend: false })
-          .setData(queryRunner)
-          .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i + 1) })
-          .setCustomFieldConfig('fillOpacity', 9)
-          .setHeaderActions([
-            new CompareAction({ key: 'compareAction', index: i, labelId, labelValue }),
-            new ViewFlameGraphAction({
-              key: 'viewFlameGraphAction',
-              profileMetricId: profileMetric.value,
-              serviceName,
-              labelId,
-              labelValue,
-              timeRange,
-            }),
-            new ExpandAction({ title: labelValue, queryRunner, index: i, labelValues: [labelValue] }),
-          ])
-          .build(),
+        body: vizPanel,
       });
     });
   }
 
-  viewExpandedPanel({ title, queryRunner, index, labelValues }: ExpandActionState) {
-    this.setState({
-      drawerBody: PanelBuilders.timeseries()
-        .setTitle(title)
-        .setOption('legend', { showLegend: true })
-        .setData(queryRunner)
-        .setColor({ mode: 'fixed', fixedColor: getColorByIndex(index + 1) })
-        .setOverrides((overrides) => {
-          labelValues.forEach((value, j) => {
-            overrides
-              .matchFieldsByQuery(value)
-              .overrideColor({
-                mode: 'fixed',
-                fixedColor: getColorByIndex(index + j),
-              })
-              .overrideDisplayName(value);
-          });
-        })
-        .setCustomFieldConfig('fillOpacity', 9)
-        .build(),
-    });
+  viewExpandedPanel({ panelKey }: ExpandActionState) {
+    const vizPanel = sceneGraph.findObject(this, (o) => o.state.key === panelKey) as VizPanel;
+
+    this.setState({ drawerBody: vizPanel.clone() });
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {

@@ -48,7 +48,7 @@ export class SceneProfiles extends EmbeddedScene {
             body: PanelBuilders.timeseries()
               .setTitle(profileMetric.label)
               .setOption('legend', { showLegend: false }) // hide profile metric
-              .setData(getProfileMetricQueryRunner(profileMetric.value))
+              .setData(getProfileMetricQueryRunner({ profileMetricId: profileMetric.value }))
               .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
               .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions([
