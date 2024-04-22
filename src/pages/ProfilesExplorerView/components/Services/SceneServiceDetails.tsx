@@ -8,13 +8,13 @@ import {
   SceneObjectState,
   VariableDependencyConfig,
 } from '@grafana/scenes';
-import { Button, Drawer } from '@grafana/ui';
+import { Button, Drawer, DrawStyle } from '@grafana/ui';
 import React from 'react';
 
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { SceneServiceDetailsTabs } from './SceneServiceDetailsTabs';
 
-const MIN_HEIGHT_TIMESERIES = 240;
+const MIN_HEIGHT_TIMESERIES = 200;
 
 interface SceneServiceDetailsState extends SceneObjectState {
   serviceName: string;
@@ -45,7 +45,10 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
               .setOption('legend', { showLegend: false })
               .setData(getServiceQueryRunner(serviceName))
               .setColor({ mode: 'fixed', fixedColor: color })
-              .setCustomFieldConfig('fillOpacity', 9)
+              // .setCustomFieldConfig('fillOpacity', 9)
+              .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
+              .setCustomFieldConfig('fillOpacity', 100)
+              .setCustomFieldConfig('lineWidth', 0)
               .setHeaderActions(
                 <Button variant="primary" size="sm" fill="text" onClick={() => this.viewFlameGraph()}>
                   🔥

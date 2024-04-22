@@ -8,13 +8,13 @@ import {
   SceneObjectState,
   VariableDependencyConfig,
 } from '@grafana/scenes';
-import { Button, Drawer } from '@grafana/ui';
+import { Button, Drawer, DrawStyle } from '@grafana/ui';
 import React from 'react';
 
 import { getProfileMetricQueryRunner } from './data/getProfileMetricQueryRunner';
 import { SceneProfileMetricDetailsTabs } from './SceneProfileMetricDetailsTabs';
 
-const MIN_HEIGHT_TIMESERIES = 240;
+const MIN_HEIGHT_TIMESERIES = 200;
 
 interface SceneProfileDetailsState extends SceneObjectState {
   profileMetric: { label: string; value: string };
@@ -45,7 +45,10 @@ export class SceneProfileDetails extends SceneObjectBase<SceneProfileDetailsStat
               .setOption('legend', { showLegend: false })
               .setData(getProfileMetricQueryRunner(profileMetric.value))
               .setColor({ mode: 'fixed', fixedColor: color })
-              .setCustomFieldConfig('fillOpacity', 9)
+              // .setCustomFieldConfig('fillOpacity', 9)
+              .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
+              .setCustomFieldConfig('fillOpacity', 100)
+              .setCustomFieldConfig('lineWidth', 0)
               .setHeaderActions(
                 <Button variant="primary" size="sm" fill="text" onClick={() => this.viewFlameGraph()}>
                   🔥

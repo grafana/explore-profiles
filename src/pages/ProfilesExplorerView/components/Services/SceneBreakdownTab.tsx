@@ -27,7 +27,7 @@ import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
-const GRID_AUTO_ROWS = '260px';
+const GRID_AUTO_ROWS = '240px';
 
 export interface SceneBreakdownTabState extends SceneObjectState {
   serviceName: string;
