@@ -14,7 +14,7 @@ import {
   VariableDependencyConfig,
   VariableValueSelectors,
 } from '@grafana/scenes';
-import { Icon, Input, useStyles2 } from '@grafana/ui';
+import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
 import { Services } from '@shared/infrastructure/services/servicesApiClient';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import debounce from 'lodash.debounce';
@@ -95,8 +95,12 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
     });
   }
 
-  onFilterChange(event: any) {
-    const searchText = event?.target.value.trim();
+  clearSearch() {
+    (document.querySelector('#search-profiles-input') as HTMLInputElement).value = '';
+    this.onFilterChange('');
+  }
+
+  onFilterChange(searchText: string) {
     const profileMetrics = this.filterProfileMetrics(searchText);
 
     if (!profileMetrics.length) {
@@ -171,10 +175,12 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
             {isFilterVisible && (
               <div className={styles.filter}>
                 <Input
+                  id="search-profiles-input"
                   type="text"
                   placeholder="Type to filter profile metrics..."
                   prefix={<Icon name="filter" />}
-                  onChange={model.onFilterChange}
+                  suffix={<IconButton name="times" aria-label="Clear search" onClick={() => model.clearSearch()} />}
+                  onChange={(e: any) => model.onFilterChange(e.target.value.trim())}
                 />
               </div>
             )}
