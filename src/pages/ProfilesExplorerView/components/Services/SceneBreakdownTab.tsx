@@ -14,6 +14,11 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import { Drawer } from '@grafana/ui';
+import {
+  getProfileMetric,
+  ProfileMetric,
+  ProfileMetricId,
+} from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
 import { FavAction } from '../FavAction';
@@ -98,8 +103,8 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
     const { serviceName } = this.state;
     const { labelSelector, labelsGrid } = this.findObjects();
 
-    const profileMetric = sceneGraph.lookupVariable('profileMetric', this)!.getValue() as string;
-    const query = `${profileMetric}{service_name="${serviceName}"}`;
+    const profileMetricId = sceneGraph.lookupVariable('profileMetric', this)!.getValue() as string;
+    const query = `${profileMetricId}{service_name="${serviceName}"}`;
 
     const timeRange = sceneGraph.getTimeRange(this).state.value;
 
@@ -275,13 +280,21 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
-    const { body, drawerBody } = model.useState();
+    const { body, drawerBody, serviceName } = model.useState();
+    const profileMetricId = sceneGraph.lookupVariable('profileMetric', model)!.getValue() as ProfileMetricId;
+    const profileMetric = getProfileMetric(profileMetricId) as ProfileMetric;
 
     return (
       <>
         <body.Component model={body} />
         {drawerBody && (
-          <Drawer size="lg" onClose={() => model.setState({ drawerBody: undefined })}>
+          <Drawer
+            size="lg"
+            title={serviceName}
+            subtitle={`${profileMetric.type} (${profileMetric.group})`}
+            closeOnMaskClick
+            onClose={() => model.setState({ drawerBody: undefined })}
+          >
             <drawerBody.Component model={drawerBody} />
           </Drawer>
         )}

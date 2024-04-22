@@ -298,13 +298,20 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneBreakdownTab>) => {
-    const { body, drawerBody } = model.useState();
+    const { body, drawerBody, profileMetric } = model.useState();
+    const serviceName = sceneGraph.lookupVariable('serviceName', model)!.getValue() as string;
 
     return (
       <>
         <body.Component model={body} />
         {drawerBody && (
-          <Drawer size="lg" onClose={() => model.setState({ drawerBody: undefined })}>
+          <Drawer
+            size="lg"
+            title={serviceName}
+            subtitle={profileMetric.label}
+            closeOnMaskClick
+            onClose={() => model.setState({ drawerBody: undefined })}
+          >
             <drawerBody.Component model={drawerBody} />
           </Drawer>
         )}
