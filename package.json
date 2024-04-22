@@ -133,7 +133,7 @@
     "@types/lodash.map": "^4.6.13",
     "@types/node": "^18.11.9",
     "@types/prismjs": "^1.26.0",
-    "@types/react": "18.2.37",
+    "@types/react": "18.2.0",
     "@types/react-datepicker": "^4.3.4",
     "@types/react-dom": "18.2.15",
     "@types/react-helmet": "^6.1.5",
