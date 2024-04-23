@@ -1,5 +1,5 @@
 import { throttle } from 'lodash';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface MousePosition {
   x: number | null;

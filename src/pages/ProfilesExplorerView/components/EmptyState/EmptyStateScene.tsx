@@ -1,5 +1,6 @@
-import { SceneObjectState, SceneObjectBase, SceneComponentProps } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import React from 'react';
+
 import { EmptyState } from './EmptyState';
 
 interface EmptyStateSceneState extends SceneObjectState {

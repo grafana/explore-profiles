@@ -1,9 +1,8 @@
+import { css } from '@emotion/css';
+import { Box, Stack, Text, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { Box, Stack, Text, useStyles2 } from '@grafana/ui';
-
 import { GrotNotFound } from './GrotNotFound';
-import { css } from '@emotion/css';
 
 export interface Props {
   message: string;

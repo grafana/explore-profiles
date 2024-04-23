@@ -1,4 +1,6 @@
+import { DashboardCursorSync } from '@grafana/data';
 import {
+  behaviors,
   PanelBuilders,
   SceneComponentProps,
   SceneFlexItem,
@@ -46,6 +48,12 @@ export class SceneProfileDetails extends SceneObjectBase<SceneProfileDetailsStat
               .setCustomFieldConfig('fillOpacity', 100)
               .setCustomFieldConfig('lineWidth', 0)
               .build(),
+            $behaviors: [
+              new behaviors.CursorSync({
+                key: 'metricCrosshairSync',
+                sync: DashboardCursorSync.Crosshair,
+              }),
+            ],
           }),
           new SceneFlexItem({
             body: new SceneProfileMetricDetailsTabs({
