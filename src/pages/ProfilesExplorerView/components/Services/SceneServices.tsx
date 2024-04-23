@@ -179,7 +179,7 @@ export class SceneServices extends SceneObjectBase<SceneServicesState> {
                 <Input
                   id="search-services-input"
                   type="text"
-                  placeholder="Type to filter services..."
+                  placeholder="Search services by name"
                   prefix={<Icon name="filter" />}
                   suffix={<IconButton name="times" aria-label="Clear search" onClick={() => model.clearSearch()} />}
                   onChange={(e: any) => model.onFilterChange(e.target.value.trim())}

@@ -50,7 +50,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
           new SceneFlexItem({
             body: new SceneServiceDetailsTabs({
               serviceName,
-              activeTabId: 'breakdown',
+              activeTabId: 'flame-graph',
             }),
           }),
         ],

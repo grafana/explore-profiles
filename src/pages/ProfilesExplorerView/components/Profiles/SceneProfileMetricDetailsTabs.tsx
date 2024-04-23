@@ -68,14 +68,14 @@ export class SceneProfileMetricDetailsTabs extends SceneObjectBase<SceneProfileM
       <div>
         <TabsBar>
           <Tab
-            label="Breakdown"
-            active={activeTabId === 'breakdown'}
-            onChangeTab={() => model.setActiveTab('breakdown')}
-          />
-          <Tab
             label="Flame graph"
             active={activeTabId === 'flame-graph'}
             onChangeTab={() => model.setActiveTab('flame-graph')}
+          />
+          <Tab
+            label="Breakdown"
+            active={activeTabId === 'breakdown'}
+            onChangeTab={() => model.setActiveTab('breakdown')}
           />
         </TabsBar>
         <TabContent className={styles.tabContent}>{body && <body.Component model={body} />}</TabContent>

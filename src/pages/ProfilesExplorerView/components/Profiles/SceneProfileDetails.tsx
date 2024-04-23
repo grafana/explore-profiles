@@ -50,7 +50,7 @@ export class SceneProfileDetails extends SceneObjectBase<SceneProfileDetailsStat
           new SceneFlexItem({
             body: new SceneProfileMetricDetailsTabs({
               profileMetric,
-              activeTabId: 'breakdown',
+              activeTabId: 'flame-graph',
             }),
           }),
         ],

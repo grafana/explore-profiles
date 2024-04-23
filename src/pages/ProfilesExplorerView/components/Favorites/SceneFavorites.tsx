@@ -80,7 +80,7 @@ export class SceneFavorites extends SceneObjectBase<SceneFavoritesState> {
       this.setState({
         body: SceneFavorites.buildBody(
           new EmptyStateScene({
-            message: 'No favorites',
+            message: 'No favorites found',
           })
         ),
       });
@@ -126,7 +126,7 @@ export class SceneFavorites extends SceneObjectBase<SceneFavoritesState> {
               <Input
                 id="search-favorites-input"
                 type="text"
-                placeholder="Type to filter favorites..."
+                placeholder="Search favorites by service name"
                 prefix={<Icon name="filter" />}
                 suffix={
                   <IconButton
