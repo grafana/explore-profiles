@@ -17,6 +17,8 @@ export function getProfileMetricOptions(services: Services) {
     .map(({ id, type, group }) => ({
       value: id,
       label: `${type} (${group})`,
+      type,
+      group,
     }));
 
   return allProfileMetrics;

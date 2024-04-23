@@ -12,7 +12,6 @@ import {
   SceneTimeRange,
   SceneVariableSet,
   SplitLayout,
-  VariableDependencyConfig,
   VariableValueSelectors,
 } from '@grafana/scenes';
 import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
@@ -36,24 +35,12 @@ interface SceneProfilesState extends EmbeddedSceneState {
 }
 
 export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName'],
-    onReferencedVariableValueChanged(variable) {
-      const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-      storage.service = variable.getValue();
-      userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
-    },
-  });
-
   constructor(timeRange: TimeRange, services: Services) {
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
     const serviceOptions = getServiceOptions(services);
     const serviceName = storage.service || serviceOptions[0].value;
 
     const serviceMetric = new ServiceNameVariable({
-      name: 'serviceName',
-      label: '💡 Service',
-      isMulti: false,
       options: serviceOptions,
       value: serviceName,
     });

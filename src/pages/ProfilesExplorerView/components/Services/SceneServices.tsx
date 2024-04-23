@@ -12,7 +12,6 @@ import {
   SceneTimeRange,
   SceneVariableSet,
   SplitLayout,
-  VariableDependencyConfig,
   VariableValueSelectors,
 } from '@grafana/scenes';
 import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
@@ -36,23 +35,11 @@ interface SceneServicesState extends EmbeddedSceneState {
 }
 
 export class SceneServices extends SceneObjectBase<SceneServicesState> {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['profileMetric'],
-    onReferencedVariableValueChanged(variable) {
-      const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-      storage.profileMetric = variable.getValue();
-      userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
-    },
-  });
-
   constructor(timeRange: TimeRange, services: Services) {
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
     const profileMetricId = storage.profileMetric || 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
     const profileMetric = new ProfileMetricVariable({
-      name: 'profileMetric',
-      label: '🔥 Profile',
-      isMulti: false,
       options: getProfileMetricOptions(services),
       value: profileMetricId,
     });
