@@ -19,9 +19,10 @@ import {
   ProfileMetric,
   ProfileMetricId,
 } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
-import { FavAction } from '../FavAction';
+import { FavAction, Favorite } from '../FavAction';
 import { fetchLabelsData } from '../fetchLabelsData';
 import { getColorByIndex } from '../getColorByIndex';
 import { ViewFlameGraphAction } from '../ViewFlameGraphAction';
@@ -185,12 +186,33 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
     });
   }
 
+  sortLabels(labelsData: SceneBreakdownTabState['labelsData']) {
+    const { serviceName } = this.state;
+
+    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+    const favorites: Favorite[] = storage.favorites || [];
+    const profileMetricId = sceneGraph.lookupVariable('profileMetric', this)!.getValue() as string;
+    const relevantFavorites = favorites.filter(
+      (f) => f.profileMetricId === profileMetricId && f.serviceName === serviceName
+    );
+
+    return labelsData.sort((a, b) => {
+      if (relevantFavorites.some((f) => f.labelId === a.id)) {
+        return -1;
+      }
+      if (relevantFavorites.some((f) => f.labelId === b.id)) {
+        return +1;
+      }
+      return 0;
+    });
+  }
+
   buildLabelGridItems() {
     const { serviceName, labelsData } = this.state;
     const profileMetricId = sceneGraph.lookupVariable('profileMetric', this)!.getValue() as string;
     const timeRange = sceneGraph.getTimeRange(this).state.value;
 
-    return labelsData.map(({ id, values }, i) => {
+    return this.sortLabels(labelsData).map(({ id, values }, i) => {
       const viewFlameGraphAction =
         values.length === 1
           ? new ViewFlameGraphAction({ serviceName, profileMetricId, labelId: id, labelValue: values[0], timeRange })
@@ -217,7 +239,12 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
         .setHeaderActions([
           viewFlameGraphAction || new SelectLabelAction({ labelId: id }),
           new ExpandAction({ panelKey }),
-          new FavAction({ key: 'pinnedLabels', value: id }),
+          new FavAction({
+            profileMetricId,
+            serviceName,
+            labelId: id,
+            labelValues: values,
+          }),
         ])
         .build();
 

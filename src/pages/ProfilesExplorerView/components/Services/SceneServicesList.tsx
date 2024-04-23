@@ -58,7 +58,10 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
             .setCustomFieldConfig('fillOpacity', 9)
             .setHeaderActions([
               new SelectServiceAction({ serviceName: service.value }),
-              new FavAction({ key: 'pinnedServices', value: service.value }),
+              new FavAction({
+                serviceName: service.value,
+                labelId: '',
+              }),
             ])
             .build(),
         })

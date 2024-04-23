@@ -15,9 +15,10 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import { Drawer } from '@grafana/ui';
+import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
-import { FavAction } from '../FavAction';
+import { FavAction, Favorite } from '../FavAction';
 import { fetchLabelsData } from '../fetchLabelsData';
 import { getColorByIndex } from '../getColorByIndex';
 import { ViewFlameGraphAction } from '../ViewFlameGraphAction';
@@ -186,12 +187,36 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
     });
   }
 
+  sortLabels(labelsData: SceneBreakdownTabState['labelsData']) {
+    const { value: profileMetricId } = this.state.profileMetric;
+
+    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+    const favorites: Favorite[] = storage.favorites || [];
+    const serviceName = sceneGraph.lookupVariable('serviceName', this)!.getValue() as string;
+    const relevantFavorites = favorites.filter(
+      (f) => f.profileMetricId === profileMetricId && f.serviceName === serviceName
+    );
+
+    console.log('*** profileMetricId', profileMetricId);
+    console.log('*** serviceName', serviceName);
+
+    return labelsData.sort((a, b) => {
+      if (relevantFavorites.some((f) => f.labelId === a.id)) {
+        return -1;
+      }
+      if (relevantFavorites.some((f) => f.labelId === b.id)) {
+        return +1;
+      }
+      return 0;
+    });
+  }
+
   buildLabelGridItems() {
     const { profileMetric, labelsData } = this.state;
     const serviceName = sceneGraph.lookupVariable('serviceName', this)!.getValue() as string;
     const timeRange = sceneGraph.getTimeRange(this).state.value;
 
-    return labelsData.map(({ id, values }, i) => {
+    return this.sortLabels(labelsData).map(({ id, values }, i) => {
       const viewFlameGraphAction =
         values.length === 1
           ? new ViewFlameGraphAction({
@@ -229,7 +254,12 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
         .setCustomFieldConfig('fillOpacity', 9)
         .setHeaderActions([
           viewFlameGraphAction || new SelectLabelAction({ labelId: id }),
-          new FavAction({ key: 'pinnedLabels', value: id }),
+          new FavAction({
+            profileMetricId: profileMetric.value,
+            serviceName,
+            labelId: id,
+            labelValues: values,
+          }),
           new ExpandAction({ panelKey }),
         ])
         .build();

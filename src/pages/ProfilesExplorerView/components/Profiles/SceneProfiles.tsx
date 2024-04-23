@@ -4,6 +4,7 @@ import {
   EmbeddedSceneState,
   SceneComponentProps,
   SceneFlexItem,
+  sceneGraph,
   SceneObject,
   SceneObjectBase,
   SceneRefreshPicker,
@@ -21,7 +22,8 @@ import debounce from 'lodash.debounce';
 import React from 'react';
 
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
-import { getProfileMetricOptions } from '../getProfileMetricOptions';
+import { Favorite } from '../FavAction';
+import { getProfileMetricOptions, ProfileMetricOptions } from '../getProfileMetricOptions';
 import { getServiceOptions } from '../getServiceOptions';
 import { SceneProfileDetails } from './SceneProfileDetails';
 import { SceneProfilesList } from './SceneProfilesList';
@@ -37,7 +39,7 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName'],
     onReferencedVariableValueChanged(variable) {
-      const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER);
+      const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
       storage.service = variable.getValue();
       userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
     },
@@ -45,25 +47,18 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
 
   constructor(timeRange: TimeRange, services: Services) {
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+    const serviceOptions = getServiceOptions(services);
+    const serviceName = storage.service || serviceOptions[0].value;
 
     const serviceMetric = new ServiceNameVariable({
       name: 'serviceName',
       label: '💡 Service',
       isMulti: false,
-      options: getServiceOptions(services),
-      value: storage.service,
+      options: serviceOptions,
+      value: serviceName,
     });
 
-    const pinnedProfileMetrics = storage.pinnedProfileMetrics || [];
-    const sortedProfileMetrics = getProfileMetricOptions(services).sort((a, b) => {
-      if (pinnedProfileMetrics.includes(a.value)) {
-        return -1;
-      }
-      if (pinnedProfileMetrics.includes(b.value)) {
-        return +1;
-      }
-      return 0;
-    });
+    const sortedProfileMetrics = SceneProfiles.sortOptions(getProfileMetricOptions(services), serviceName);
 
     super({
       services,
@@ -87,6 +82,22 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
     this.onFilterChange = debounce(this.onFilterChange.bind(this), 250);
   }
 
+  static sortOptions(profileMetricOptions: ProfileMetricOptions, serviceName: string) {
+    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+    const favorites: Favorite[] = storage.favorites || [];
+    const relevantFavorites = favorites.filter((f) => f.labelId === '' && f.serviceName === serviceName);
+
+    return profileMetricOptions.sort((a, b) => {
+      if (relevantFavorites.some((f) => f.profileMetricId === a.value)) {
+        return -1;
+      }
+      if (relevantFavorites.some((f) => f.profileMetricId === b.value)) {
+        return +1;
+      }
+      return 0;
+    });
+  }
+
   static buildBody(body: SceneObject) {
     return new SplitLayout({
       direction: 'column',
@@ -107,7 +118,7 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
       this.setState({
         body: SceneProfiles.buildBody(
           new EmptyStateScene({
-            message: `No profile metrics found for text "${searchText}"`,
+            message: 'No profile metrics found',
           })
         ),
       });
@@ -132,21 +143,13 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
 
   filterProfileMetrics(searchText: string) {
     const { services } = this.state;
-    const pinnedProfileMetrics = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.pinnedProfileMetrics || [];
+    const serviceName = sceneGraph.lookupVariable('serviceName', this)!.getValue() as string;
 
     const filteredOptions = searchText
       ? getProfileMetricOptions(services).filter((service) => service.label.includes(searchText))
       : getProfileMetricOptions(services);
 
-    return filteredOptions.sort((a, b) => {
-      if (pinnedProfileMetrics.includes(a.value)) {
-        return -1;
-      }
-      if (pinnedProfileMetrics.includes(b.value)) {
-        return +1;
-      }
-      return 0;
-    });
+    return SceneProfiles.sortOptions(filteredOptions, serviceName);
   }
 
   selectProfileMetric(profileMetric: { value: string; label: string }, color: string) {

@@ -58,7 +58,10 @@ export class SceneProfilesList extends SceneObjectBase<SceneProfilesListState> {
             .setCustomFieldConfig('fillOpacity', 9)
             .setHeaderActions([
               new SelectProfileMetricAction({ profileMetric }),
-              new FavAction({ key: 'pinnedProfileMetrics', value: profileMetric.value }),
+              new FavAction({
+                profileMetricId: profileMetric.value,
+                labelId: '',
+              }),
             ])
             .build(),
         })
