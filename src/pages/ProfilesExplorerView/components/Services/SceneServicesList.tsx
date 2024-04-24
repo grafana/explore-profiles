@@ -35,37 +35,40 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
         autoRows: GRID_AUTO_ROWS,
         isLazy: true,
         $behaviors: [new behaviors.CursorSync({ key: 'metricCrosshairSync', sync: DashboardCursorSync.Crosshair })],
-        children: SceneServicesList.buildGridItems(services),
+        children: [],
       }),
     });
+
+    this.update({ services });
   }
 
   update({ services }: { services: ServiceOptions }) {
     this.state.body.setState({
-      children: SceneServicesList.buildGridItems(services),
+      children: this.buildGridItems(services),
     });
   }
 
-  static buildGridItems(services: ServiceOptions) {
-    return services.map(
-      (service, i) =>
-        new SceneCSSGridItem({
-          body: PanelBuilders.timeseries()
-            .setTitle(service.value)
-            .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
-            .setData(getServiceQueryRunner({ serviceName: service.value }))
-            .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
-            .setCustomFieldConfig('fillOpacity', 9)
-            .setHeaderActions([
-              new SelectServiceAction({ serviceName: service.value }),
-              new FavAction({
-                serviceName: service.value,
-                labelId: '',
-              }),
-            ])
-            .build(),
-        })
-    );
+  buildGridItems(services: ServiceOptions) {
+    return services.map((service, i) => {
+      const data = getServiceQueryRunner({ serviceName: service.value });
+
+      return new SceneCSSGridItem({
+        body: PanelBuilders.timeseries()
+          .setTitle(service.value)
+          .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
+          .setData(data)
+          .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
+          .setCustomFieldConfig('fillOpacity', 9)
+          .setHeaderActions([
+            new SelectServiceAction({ serviceName: service.value }),
+            new FavAction({
+              serviceName: service.value,
+              labelId: '',
+            }),
+          ])
+          .build(),
+      });
+    });
   }
 
   static Component = ({ model }: SceneComponentProps<SceneServicesList>) => {

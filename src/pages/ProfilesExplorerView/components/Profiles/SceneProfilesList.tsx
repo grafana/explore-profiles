@@ -35,37 +35,40 @@ export class SceneProfilesList extends SceneObjectBase<SceneProfilesListState> {
         autoRows: GRID_AUTO_ROWS,
         isLazy: true,
         $behaviors: [new behaviors.CursorSync({ key: 'metricCrosshairSync', sync: DashboardCursorSync.Crosshair })],
-        children: SceneProfilesList.buildGridItems(profileMetrics),
+        children: [],
       }),
     });
+
+    this.update({ profileMetrics });
   }
 
   update({ profileMetrics }: { profileMetrics: ProfileMetricOptions }) {
     this.state.body.setState({
-      children: SceneProfilesList.buildGridItems(profileMetrics),
+      children: this.buildGridItems(profileMetrics),
     });
   }
 
-  static buildGridItems(profileMetrics: ProfileMetricOptions) {
-    return profileMetrics.map(
-      (profileMetric, i) =>
-        new SceneCSSGridItem({
-          body: PanelBuilders.timeseries()
-            .setTitle(profileMetric.label)
-            .setOption('legend', { showLegend: false }) // hide profile metric
-            .setData(getProfileMetricQueryRunner({ profileMetricId: profileMetric.value }))
-            .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
-            .setCustomFieldConfig('fillOpacity', 9)
-            .setHeaderActions([
-              new SelectProfileMetricAction({ profileMetric }),
-              new FavAction({
-                profileMetricId: profileMetric.value,
-                labelId: '',
-              }),
-            ])
-            .build(),
-        })
-    );
+  buildGridItems(profileMetrics: ProfileMetricOptions) {
+    return profileMetrics.map((profileMetric, i) => {
+      const data = getProfileMetricQueryRunner({ profileMetricId: profileMetric.value });
+
+      return new SceneCSSGridItem({
+        body: PanelBuilders.timeseries()
+          .setTitle(profileMetric.label)
+          .setOption('legend', { showLegend: false }) // hide profile metric
+          .setData(data)
+          .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
+          .setCustomFieldConfig('fillOpacity', 9)
+          .setHeaderActions([
+            new SelectProfileMetricAction({ profileMetric }),
+            new FavAction({
+              profileMetricId: profileMetric.value,
+              labelId: '',
+            }),
+          ])
+          .build(),
+      });
+    });
   }
 
   static Component = ({ model }: SceneComponentProps<SceneProfilesList>) => {
