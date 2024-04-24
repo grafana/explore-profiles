@@ -11,3 +11,4 @@ datasources:
     basicAuthUser: $REMOTE_BASIC_AUTH_USER
     secureJsonData:
       basicAuthPassword: $REMOTE_BASIC_AUTH_PASSWORD
+    isDefault: true

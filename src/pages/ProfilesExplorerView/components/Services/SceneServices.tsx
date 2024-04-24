@@ -24,6 +24,7 @@ import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { Favorite } from '../FavAction';
 import { getProfileMetricOptions } from '../getProfileMetricOptions';
 import { getServiceOptions, ServiceOptions } from '../getServiceOptions';
+import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
 import { SceneServiceDetails } from './SceneServiceDetails';
 import { SceneServicesList } from './SceneServicesList';
 import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
@@ -39,6 +40,8 @@ export class SceneServices extends SceneObjectBase<SceneServicesState> {
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
     const profileMetricId = storage.profileMetric || 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
+    const dataSource = new ProfilesDataSourceVariable({});
+
     const profileMetric = new ProfileMetricVariable({
       options: getProfileMetricOptions(services),
       value: profileMetricId,
@@ -51,7 +54,7 @@ export class SceneServices extends SceneObjectBase<SceneServicesState> {
       isFilterVisible: true,
       $timeRange: new SceneTimeRange({ value: timeRange }),
       $variables: new SceneVariableSet({
-        variables: [profileMetric],
+        variables: [dataSource, profileMetric],
       }),
       controls: [
         new VariableValueSelectors({}),

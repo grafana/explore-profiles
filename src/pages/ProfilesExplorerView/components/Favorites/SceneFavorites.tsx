@@ -9,7 +9,9 @@ import {
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
+  SceneVariableSet,
   SplitLayout,
+  VariableValueSelectors,
 } from '@grafana/scenes';
 import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
@@ -18,6 +20,7 @@ import React from 'react';
 
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { Favorite } from '../FavAction';
+import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
 import { SceneFavoritesList } from './SceneFavoritesList';
 
 interface SceneFavoritesState extends EmbeddedSceneState {
@@ -30,10 +33,19 @@ export class SceneFavorites extends SceneObjectBase<SceneFavoritesState> {
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
     const favorites = storage.favorites || [];
 
+    const dataSource = new ProfilesDataSourceVariable({});
+
     super({
       favorites,
       $timeRange: new SceneTimeRange({ value: timeRange }),
-      controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
+      $variables: new SceneVariableSet({
+        variables: [dataSource],
+      }),
+      controls: [
+        new VariableValueSelectors({}),
+        new SceneTimePicker({ isOnCanvas: true }),
+        new SceneRefreshPicker({ isOnCanvas: true }),
+      ],
       body: SceneFavorites.buildBody(
         favorites.length
           ? new SceneFavoritesList({
@@ -116,12 +128,13 @@ export class SceneFavorites extends SceneObjectBase<SceneFavoritesState> {
     const styles = useStyles2(getStyles);
     const { controls, body, favorites } = model.useState();
 
-    const [timePickerControl, refreshPickerControl] = controls || [];
+    const [variablesControl, timePickerControl, refreshPickerControl] = controls || [];
 
     return (
       <div className={styles.container}>
         <div className={styles.controls}>
           <div className={styles.variablesControl}>
+            <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />
             <div className={styles.filter}>
               <Input
                 id="search-favorites-input"

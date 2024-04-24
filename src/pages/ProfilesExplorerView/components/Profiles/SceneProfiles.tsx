@@ -24,6 +24,7 @@ import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { Favorite } from '../FavAction';
 import { getProfileMetricOptions, ProfileMetricOptions } from '../getProfileMetricOptions';
 import { getServiceOptions } from '../getServiceOptions';
+import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
 import { SceneProfileDetails } from './SceneProfileDetails';
 import { SceneProfilesList } from './SceneProfilesList';
 import { ServiceNameVariable } from './variables/ServiceNameVariable';
@@ -40,6 +41,8 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
     const serviceOptions = getServiceOptions(services);
     const serviceName = storage.service || serviceOptions[0].value;
 
+    const dataSource = new ProfilesDataSourceVariable({});
+
     const serviceMetric = new ServiceNameVariable({
       options: serviceOptions,
       value: serviceName,
@@ -52,7 +55,7 @@ export class SceneProfiles extends SceneObjectBase<SceneProfilesState> {
       isFilterVisible: true,
       $timeRange: new SceneTimeRange({ value: timeRange }),
       $variables: new SceneVariableSet({
-        variables: [serviceMetric],
+        variables: [dataSource, serviceMetric],
       }),
       controls: [
         new VariableValueSelectors({}),

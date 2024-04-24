@@ -10,6 +10,7 @@ datasources:
     basicAuthUser: '42'
     secureJsonData:
       basicAuthPassword: 'mypassword'
+    isDefault: true
   - uid: other-user-pyroscope
     name: Pyroscope with different user
     type: grafana-pyroscope-datasource
