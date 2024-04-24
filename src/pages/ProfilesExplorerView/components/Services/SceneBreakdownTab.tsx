@@ -23,13 +23,13 @@ import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
 import { FavAction, Favorite } from '../actions/FavAction';
+import { SelectLabelAction } from '../actions/SelectLabelAction';
 import { ViewFlameGraphAction } from '../actions/ViewFlameGraphAction';
 import { fetchLabelsData } from '../data/fetchLabelsData';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
 import { CompareAction } from './actions/CompareAction';
 import { ExpandAction, ExpandActionState } from './actions/ExpandAction';
-import { SelectLabelAction } from './actions/SelectLabelAction';
 import { getServiceLabelsQueryRunner } from './data/getServiceLabelsQueryRunner';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';
@@ -37,6 +37,8 @@ import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_AUTO_ROWS = '240px';
 const GRID_TEMPLATE_ROWS = '1fr';
+
+const MAX_TIMESERIES_LABEL_VALUES = 24;
 
 export interface SceneBreakdownTabState extends SceneObjectState {
   serviceName: string;
@@ -246,12 +248,14 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
 
       const panelKey = `panel-${serviceName}-${id}`;
 
+      const labelValues = values.slice(0, MAX_TIMESERIES_LABEL_VALUES);
+
       const vizPanel: VizPanel = PanelBuilders.timeseries()
         .setTitle(id)
         .setOption('legend', { showLegend: true })
-        .setData(getServiceLabelsQueryRunner({ serviceName, labelId: id, labelValues: values }))
+        .setData(getServiceLabelsQueryRunner({ serviceName, labelId: id, labelValues }))
         .setOverrides((overrides) => {
-          values.forEach((value, j) => {
+          labelValues.forEach((value, j) => {
             overrides
               .matchFieldsByQuery(`${serviceName}-${id}-${value}`)
               .overrideColor({
@@ -263,13 +267,20 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
         })
         .setCustomFieldConfig('fillOpacity', 9)
         .setHeaderActions([
-          viewFlameGraphAction || new SelectLabelAction({ labelId: id }),
+          viewFlameGraphAction ||
+            new SelectLabelAction({
+              labelId: id,
+              tooltip:
+                values.length > labelValues.length
+                  ? `The number of timeseries on this panel has been reduced from ${values.length} to ${MAX_TIMESERIES_LABEL_VALUES} to prevent high loading times. Click to see more.`
+                  : undefined,
+            }),
           new ExpandAction({ panelKey }),
           new FavAction({
             profileMetricId,
             serviceName,
             labelId: id,
-            labelValues: values,
+            labelValues,
           }),
         ])
         .build();
