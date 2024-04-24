@@ -272,7 +272,7 @@ export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
               labelId: id,
               tooltip:
                 values.length > labelValues.length
-                  ? `The number of timeseries on this panel has been reduced from ${values.length} to ${MAX_TIMESERIES_LABEL_VALUES} to prevent high loading times. Click to see more.`
+                  ? `The number of timeseries on this panel has been reduced from ${values.length} to ${MAX_TIMESERIES_LABEL_VALUES} to prevent long loading times. Click to see more.`
                   : undefined,
             }),
           new ExpandAction({ panelKey }),
