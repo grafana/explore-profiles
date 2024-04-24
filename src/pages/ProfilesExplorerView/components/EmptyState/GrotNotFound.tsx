@@ -23,7 +23,14 @@ export const GrotNotFound = ({ width = 'auto', height, show404 = false }: Props)
   const theme = useTheme2();
   const { x, y } = useMousePosition();
   const styles = useStyles2(getStyles, x, y, show404);
-  return <SVG src={theme.isDark ? dark404 : light404} className={styles.svg} height={height} width={width} />;
+  return (
+    <SVG
+      src={(theme.isDark ? dark404 : light404) as unknown as string}
+      className={styles.svg}
+      height={height}
+      width={width}
+    />
+  );
 };
 
 GrotNotFound.displayName = 'GrotNotFound';
