@@ -22,14 +22,14 @@ import {
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
+import { CompareAction } from '../actions/CompareAction';
+import { ExpandAction, ExpandActionState } from '../actions/ExpandAction';
 import { FavAction, Favorite } from '../actions/FavAction';
 import { SelectLabelAction } from '../actions/SelectLabelAction';
 import { ViewFlameGraphAction } from '../actions/ViewFlameGraphAction';
 import { fetchLabelsData } from '../data/fetchLabelsData';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
-import { CompareAction } from './actions/CompareAction';
-import { ExpandAction, ExpandActionState } from './actions/ExpandAction';
 import { getServiceLabelsQueryRunner } from './data/getServiceLabelsQueryRunner';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';

@@ -3,8 +3,6 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Checkbox, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { SceneBreakdownTab } from '../SceneBreakdownTab';
-
 interface CompareActionState extends SceneObjectState {
   index: number;
   labelId: string;
@@ -21,9 +19,13 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
 
     this.setState({ isChecked });
 
-    sceneGraph
-      .getAncestor(this, SceneBreakdownTab)
-      .selectForComparison(this.state.labelId, this.state.labelValue, isChecked, this.state.index);
+    // TOOD: any
+    (sceneGraph.findObject(this, (o) => o.state.key === 'breakdown-tab') as any)!.selectForComparison(
+      this.state.labelId,
+      this.state.labelValue,
+      isChecked,
+      this.state.index
+    );
   };
 
   public static Component = ({ model }: SceneComponentProps<CompareAction>) => {

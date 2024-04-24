@@ -1,7 +1,6 @@
 import { PanelBuilders, SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanel } from '@grafana/scenes';
 import React from 'react';
 
-import { ViewAiAnalysisAction } from './actions/ViewAiAnalysisAction';
 import { getProfileMetricFlameGraphQueryRunner } from './data/getProfileMetricFlameGraphQueryRunner';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -15,7 +14,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       profileMetric,
       body: PanelBuilders.flamegraph()
         .setData(getProfileMetricFlameGraphQueryRunner({ profileMetricId: profileMetric.value }))
-        .setHeaderActions(new ViewAiAnalysisAction({}))
         .build(),
     });
   }
