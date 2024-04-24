@@ -28,6 +28,7 @@ import { FavAction, Favorite } from '../actions/FavAction';
 import { SelectLabelAction } from '../actions/SelectLabelAction';
 import { ViewFlameGraphAction } from '../actions/ViewFlameGraphAction';
 import { fetchLabelsData } from '../data/fetchLabelsData';
+import { MAX_TIMESERIES_LABEL_VALUES } from '../helpers/constants';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
 import { getServiceLabelsQueryRunner } from './data/getServiceLabelsQueryRunner';
@@ -37,8 +38,6 @@ import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_AUTO_ROWS = '240px';
 const GRID_TEMPLATE_ROWS = '1fr';
-
-const MAX_TIMESERIES_LABEL_VALUES = 24;
 
 export interface SceneBreakdownTabState extends SceneObjectState {
   serviceName: string;

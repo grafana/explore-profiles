@@ -13,11 +13,13 @@ export class ProfilesDataSourceVariable extends DataSourceVariable {
       value: storage.dataSource,
     });
 
-    this.subscribeToState((newState) => {
-      if (newState.value) {
-        storage.dataSource = newState.value.toString();
-        userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
-      }
-    });
+    this._subs.add(
+      this.subscribeToState((newState) => {
+        if (newState.value) {
+          storage.dataSource = newState.value.toString();
+          userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
+        }
+      })
+    );
   }
 }
