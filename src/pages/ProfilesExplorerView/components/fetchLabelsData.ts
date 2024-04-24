@@ -1,6 +1,5 @@
 import { TimeRange } from '@grafana/data';
 import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
-import { userStorage } from '@shared/infrastructure/userStorage';
 
 export async function fetchLabelsData(query: string, timeRange: TimeRange) {
   const from = timeRange.from.unix() * 1000;
@@ -18,16 +17,5 @@ export async function fetchLabelsData(query: string, timeRange: TimeRange) {
     })
   );
 
-  const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER);
-  const pinnedLabels = storage?.pinnedLabels || [];
-
-  return labelsData.sort((a, b) => {
-    if (pinnedLabels.includes(a.id)) {
-      return -1;
-    }
-    if (pinnedLabels.includes(b.id)) {
-      return +1;
-    }
-    return 0;
-  });
+  return labelsData;
 }
