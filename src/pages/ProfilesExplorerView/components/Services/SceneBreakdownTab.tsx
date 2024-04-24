@@ -22,6 +22,7 @@ import {
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
+import { SceneLayoutSwitcher } from '../../SceneLayoutSwitcher';
 import { FavAction, Favorite } from '../FavAction';
 import { fetchLabelsData } from '../fetchLabelsData';
 import { getColorByIndex } from '../getColorByIndex';
@@ -35,46 +36,71 @@ import { SceneBreakdownLabelSelector } from './SceneBreakdownLabelSelector';
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_AUTO_ROWS = '240px';
+const GRID_TEMPLATE_ROWS = '1fr';
 
 export interface SceneBreakdownTabState extends SceneObjectState {
   serviceName: string;
   labelsData: Array<{ id: string; values: string[] }>;
   labelsForDiff: Array<{ id: string; value: string; index: number }>;
+  gridLayout: SceneCSSGridLayout;
   body: SceneFlexLayout;
   drawerBody?: VizPanel;
 }
 
 export class SceneBreakdownTab extends SceneObjectBase<SceneBreakdownTabState> {
   constructor(state: Partial<SceneBreakdownTabState>) {
+    const layoutId = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.breakdownLayout || 'grid';
+
+    const gridLayout = new SceneCSSGridLayout({
+      key: 'labelsGrid',
+      templateColumns: layoutId === 'grid' ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+      autoRows: GRID_AUTO_ROWS,
+      isLazy: true,
+      children: [],
+      $behaviors: [
+        new behaviors.CursorSync({
+          key: 'metricCrosshairSync',
+          sync: DashboardCursorSync.Crosshair,
+        }),
+      ],
+    });
+
     super({
       key: 'breakdown-tab',
       serviceName: state.serviceName as string,
       labelsData: [],
       labelsForDiff: [],
+      gridLayout,
       body: new SceneFlexLayout({
         direction: 'column',
         children: [
-          new SceneFlexItem({
-            body: new SceneBreakdownLabelSelector({
-              key: 'labelSelector',
-              isLoading: true,
-              activeLabelId: '',
-            }),
+          new SceneFlexLayout({
+            direction: 'row',
+            children: [
+              new SceneFlexItem({
+                xSizing: 'fill',
+                minWidth: '50%',
+                body: new SceneBreakdownLabelSelector({
+                  key: 'labelSelector',
+                  isLoading: true,
+                  activeLabelId: '',
+                }),
+              }),
+              new SceneFlexItem({
+                xSizing: 'content',
+                body: new SceneLayoutSwitcher({
+                  layoutId,
+                  onSwitch(newLayoutId: string) {
+                    gridLayout.setState({
+                      templateColumns: newLayoutId === 'grid' ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+                    });
+                  },
+                }),
+              }),
+            ],
           }),
           new SceneFlexItem({
-            body: new SceneCSSGridLayout({
-              key: 'labelsGrid',
-              templateColumns: GRID_TEMPLATE_COLUMNS,
-              autoRows: GRID_AUTO_ROWS,
-              isLazy: true,
-              children: [],
-              $behaviors: [
-                new behaviors.CursorSync({
-                  key: 'metricCrosshairSync',
-                  sync: DashboardCursorSync.Crosshair,
-                }),
-              ],
-            }),
+            body: gridLayout,
           }),
         ],
       }),
