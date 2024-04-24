@@ -22,11 +22,11 @@ import {
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
-import { SceneLayoutSwitcher } from '../../SceneLayoutSwitcher';
-import { FavAction, Favorite } from '../FavAction';
-import { fetchLabelsData } from '../fetchLabelsData';
-import { getColorByIndex } from '../getColorByIndex';
-import { ViewFlameGraphAction } from '../ViewFlameGraphAction';
+import { FavAction, Favorite } from '../actions/FavAction';
+import { ViewFlameGraphAction } from '../actions/ViewFlameGraphAction';
+import { fetchLabelsData } from '../data/fetchLabelsData';
+import { getColorByIndex } from '../helpers/getColorByIndex';
+import { SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
 import { CompareAction } from './actions/CompareAction';
 import { ExpandAction, ExpandActionState } from './actions/ExpandAction';
 import { SelectLabelAction } from './actions/SelectLabelAction';

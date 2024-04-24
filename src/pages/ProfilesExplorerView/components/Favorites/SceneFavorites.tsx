@@ -18,9 +18,9 @@ import { userStorage } from '@shared/infrastructure/userStorage';
 import debounce from 'lodash.debounce';
 import React from 'react';
 
+import { Favorite } from '../actions/FavAction';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
-import { Favorite } from '../FavAction';
-import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
+import { ProfilesDataSourceVariable } from '../variables/ProfilesDataSourceVariable';
 import { SceneFavoritesList } from './SceneFavoritesList';
 
 interface SceneFavoritesState extends EmbeddedSceneState {

@@ -20,11 +20,11 @@ import { userStorage } from '@shared/infrastructure/userStorage';
 import debounce from 'lodash.debounce';
 import React from 'react';
 
+import { Favorite } from '../actions/FavAction';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
-import { Favorite } from '../FavAction';
-import { getProfileMetricOptions, ProfileMetricOptions } from '../getProfileMetricOptions';
-import { getServiceOptions } from '../getServiceOptions';
-import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
+import { getProfileMetricOptions, ProfileMetricOptions } from '../helpers/getProfileMetricOptions';
+import { getServiceOptions } from '../helpers/getServiceOptions';
+import { ProfilesDataSourceVariable } from '../variables/ProfilesDataSourceVariable';
 import { SceneProfileDetails } from './SceneProfileDetails';
 import { SceneProfilesList } from './SceneProfilesList';
 import { ServiceNameVariable } from './variables/ServiceNameVariable';

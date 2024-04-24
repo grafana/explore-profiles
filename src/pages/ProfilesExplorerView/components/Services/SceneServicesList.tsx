@@ -12,9 +12,9 @@ import {
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { FavAction } from '../FavAction';
-import { getColorByIndex } from '../getColorByIndex';
-import { ServiceOptions } from '../getServiceOptions';
+import { FavAction } from '../actions/FavAction';
+import { getColorByIndex } from '../helpers/getColorByIndex';
+import { ServiceOptions } from '../helpers/getServiceOptions';
 import { SelectServiceAction } from './actions/SelectServiceAction';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 

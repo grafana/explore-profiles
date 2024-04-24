@@ -12,9 +12,9 @@ import {
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { FavAction } from '../FavAction';
-import { getColorByIndex } from '../getColorByIndex';
-import { ProfileMetricOptions } from '../getProfileMetricOptions';
+import { FavAction } from '../actions/FavAction';
+import { getColorByIndex } from '../helpers/getColorByIndex';
+import { ProfileMetricOptions } from '../helpers/getProfileMetricOptions';
 import { SelectProfileMetricAction } from './actions/SelectProfileMetricAction';
 import { getProfileMetricQueryRunner } from './data/getProfileMetricQueryRunner';
 

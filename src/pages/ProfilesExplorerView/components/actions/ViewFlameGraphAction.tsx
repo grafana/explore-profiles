@@ -4,7 +4,7 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana
 import { LinkButton } from '@grafana/ui';
 import React from 'react';
 
-import { SceneBreakdownTabState } from './Services/SceneBreakdownTab';
+import { SceneBreakdownTabState } from '../Services/SceneBreakdownTab';
 
 interface ViewFlameGraphActionState extends SceneObjectState {
   profileMetricId: string;

@@ -13,8 +13,8 @@ import { useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
-import { FavAction, Favorite } from '../FavAction';
-import { getColorByIndex } from '../getColorByIndex';
+import { FavAction, Favorite } from '../actions/FavAction';
+import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SelectFavoriteAction } from './actions/SelectFavoriteAction';
 import { getLabelsQueryRunner } from './data/getLabelsQueryRunner';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';

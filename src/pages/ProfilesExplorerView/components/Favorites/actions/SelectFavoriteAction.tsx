@@ -10,7 +10,7 @@ import {
 import { Button } from '@grafana/ui';
 import React from 'react';
 
-import { Favorite } from '../../FavAction';
+import { Favorite } from '../../actions/FavAction';
 import { SceneFavorites } from '../SceneFavorites';
 
 interface SelectFavoriteActionState extends SceneObjectState {

@@ -4,7 +4,7 @@ import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 import { of } from 'rxjs';
 
-import { ServiceOptions } from '../../getServiceOptions';
+import { ServiceOptions } from '../../helpers/getServiceOptions';
 
 export class ServiceNameVariable extends CustomVariable {
   constructor({ options, value }: { options: ServiceOptions; value: string }) {

@@ -4,7 +4,7 @@ import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 import { of } from 'rxjs';
 
-import { ProfileMetricOptions } from '../../getProfileMetricOptions';
+import { ProfileMetricOptions } from '../../helpers/getProfileMetricOptions';
 
 export class ProfileMetricVariable extends CustomVariable {
   constructor({ options, value }: { options: ProfileMetricOptions; value: string }) {
