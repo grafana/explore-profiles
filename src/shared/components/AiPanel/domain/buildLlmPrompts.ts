@@ -21,21 +21,23 @@ const prompts: Record<PromptCategories, Prompts> = {
   },
   user: {
     // add new user prompts above
-    ryan: (profileType: string, profiles: string[]) => `
+    single: (profileType: string, profiles: string[]) => `
     Analyze this flamegraph in DOT format and address these key aspects:
     - **Performance Bottleneck**: Identify the primary factors slowing down the process, consuming excessive memory, or causing a bottleneck in the system.
     - **Root Cause**: Explain clearly why these bottlenecks are occurring.
     - **Recommended Fix**: Suggest practical solutions for these issues.
-    
+
     Guidelines:
     - Always use full function names without splitting them from package names.
     - Exclude numeric values, percentages, and node names (e.g., N1, N3, Node 1, Node 2).
     - Focus on user code over low-level runtime optimizations.
     - For standard library or runtime functions, explain their presence/function and link them to user code functions calling them. Avoid repetitive mentions from the same call chain.
     - Do not mention that the flamegraph profile is in DOT format.
+    - Only use h5 and h6 markdown headers (e.g., ##### Performance Bottleneck, ###### Recommended Fix)
+    - Do not use h1,h2,h3,h4 headers (e.g., ## Bottleneck, ### Root Cause, #### Recommended Fix)
 
     Format the response using markdown headers for each section corresponding to the key aspects.
-    
+
     The profile type is: ${profileType}
     Profile in DOT format:
     ${profiles[0]}

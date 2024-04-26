@@ -8,23 +8,27 @@ import { useFetchLlmPluginStatus } from '../infrastructure/useFetchLlmPluginStat
 
 const getStyles = () => ({
   askAiButton: css`
-    height: 24px;
     background-color: #8025ff;
-    position: relative;
-    top: 4px;
     &:not([disabled]):hover {
-      background-color: #8025ff;
-      opacity: 0.8;
+      background-color: #6c27d3;
     }
+    height: 24px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
   `,
 });
 
-type ExplainFlameGraphButtonProps = {
+type AIButtonProps = {
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
+  text: string;
+  interactionName: string;
 };
 
-export function ExplainFlameGraphButton({ onClick, disabled }: ExplainFlameGraphButtonProps) {
+export function AIButton({ onClick, disabled, text, interactionName }: AIButtonProps) {
   const styles = useStyles2(getStyles);
   const { isEnabled, error, isFetching } = useFetchLlmPluginStatus();
 
@@ -37,7 +41,7 @@ export function ExplainFlameGraphButton({ onClick, disabled }: ExplainFlameGraph
   }
 
   const onClickInternal = (event: React.MouseEvent<HTMLButtonElement>) => {
-    reportInteraction('g_pyroscope_app_explain_flamegraph_clicked');
+    reportInteraction(interactionName);
     onClick(event);
   };
 
@@ -49,7 +53,7 @@ export function ExplainFlameGraphButton({ onClick, disabled }: ExplainFlameGraph
       title={isEnabled ? 'Ask FlameGrot AI' : 'Grafana LLM plugin missing or not configured!'}
       icon={icon}
     >
-      Explain flame graph
+      {text}
     </Button>
   );
 }

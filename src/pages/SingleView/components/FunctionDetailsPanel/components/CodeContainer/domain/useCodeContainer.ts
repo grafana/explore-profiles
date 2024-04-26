@@ -1,5 +1,5 @@
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useGitHubContext } from '../../../../../../../shared/components/GitHubContextProvider/useGitHubContext';
 import { FunctionDetails } from '../../../types/FunctionDetails';
@@ -10,6 +10,8 @@ import { buildLineProfiles, buildPlaceholderLineProfiles } from './buildLineProf
 export function useCodeContainer(functionDetails: FunctionDetails): DomainHookReturnValue {
   const { isLoggedIn } = useGitHubContext();
   const { version } = functionDetails;
+
+  const [openAiSuggestions, setOpenAiSuggestions] = useState<boolean>(false);
 
   const {
     fileInfo,
@@ -34,12 +36,15 @@ export function useCodeContainer(functionDetails: FunctionDetails): DomainHookRe
   return {
     data: {
       fetchError,
+      openAiSuggestions,
       isLoadingCode: isFetching,
       unit: functionDetails.unit,
       githubUrl: fileInfo?.URL ? buildGithubUrlForFunction(fileInfo.URL, functionDetails.startLine) : undefined,
       lines,
       noCodeAvailable: Boolean(fetchError) || !lines.length,
     },
-    actions: {},
+    actions: {
+      setOpenAiSuggestions,
+    },
   };
 }

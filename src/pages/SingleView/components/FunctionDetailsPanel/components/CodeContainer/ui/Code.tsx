@@ -1,6 +1,8 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { InlineLabel, LinkButton, Spinner, useStyles2 } from '@grafana/ui';
+import { AIButton } from '@shared/components/AiPanel/components/AIButton';
+import clsx from 'clsx';
 import React from 'react';
 
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
@@ -24,6 +26,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
 
   codeBlock: css`
+    position: relative;
     min-height: 240px;
     font-size: 12px;
     overflow-x: auto;
@@ -34,6 +37,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
   highlighted: css`
     color: ${theme.colors.text.maxContrast};
   `,
+  header: css`
+    margin-bottom: 8px;
+  `,
 });
 
 type CodeProps = {
@@ -42,9 +48,10 @@ type CodeProps = {
   githubUrl?: string;
   isLoadingCode: boolean;
   noCodeAvailable: boolean;
+  onOptimizeCodeClick: () => void;
 };
 
-export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable }: CodeProps) => {
+export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, onOptimizeCodeClick }: CodeProps) => {
   const styles = useStyles2(getStyles);
 
   const fmt = buildUnitFormatter(unit);
@@ -93,10 +100,9 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable }:
       </div>
 
       <pre className={styles.codeBlock} data-testid="function-details-code">
-        <span className={styles.highlighted}>
+        <div className={clsx(styles.highlighted, styles.header)}>
           {formatLine('Total:', formatValue(sumSelf), formatValue(sumTotal), ' (self, total)')}
-        </span>
-
+        </div>
         {lines.map(({ line, number, cum: total, flat: self }) => (
           <div key={line + number + total + self} className={self + total > 0 ? styles.highlighted : ''}>
             {
@@ -106,6 +112,13 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable }:
             }
           </div>
         ))}
+
+        <AIButton
+          disabled={isLoadingCode || noCodeAvailable}
+          onClick={onOptimizeCodeClick}
+          text="Optimize Code"
+          interactionName="g_pyroscope_app_optimize_code_clicked"
+        ></AIButton>
       </pre>
     </div>
   );

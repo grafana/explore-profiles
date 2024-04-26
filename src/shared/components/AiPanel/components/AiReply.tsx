@@ -11,7 +11,6 @@ const getStyles = () => ({
     height: 100%;
   `,
   reply: css`
-    padding: 0 16px;
     font-size: 13px;
 
     & ol,
@@ -23,6 +22,8 @@ const getStyles = () => ({
     color: rgb(255, 136, 51);
     border: 1px solid transparent;
     padding: 2px 4px;
+    cursor: pointer;
+    font-size: 13px;
 
     &:hover,
     &:focus,
@@ -64,10 +65,15 @@ const onClickSearchTerm = (event: any) => {
 const SearchTerm = ({ children }: { children: ReactNode }) => {
   const styles = useStyles2(getStyles);
 
+  // If the code block contains newlines, don't make it a search link
+  if (typeof children === 'string' && children.includes('\n')) {
+    return <code>{children}</code>;
+  }
+
   return (
-    <a href="#" className={styles.searchLink} title="Search for this node" onClick={onClickSearchTerm}>
+    <code className={styles.searchLink} title="Search for this node" onClick={onClickSearchTerm}>
       {children}
-    </a>
+    </code>
   );
 };
 

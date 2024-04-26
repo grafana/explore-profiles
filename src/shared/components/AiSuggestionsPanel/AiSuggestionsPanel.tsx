@@ -1,43 +1,31 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
-import { IconButton, Spinner, useStyles2 } from '@grafana/ui';
-import { Panel } from '@shared/components/Panel';
+import { Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
+import { AiReply } from '../AiPanel/components/AiReply';
+import { FollowUpForm } from '../AiPanel/components/FollowUpForm';
 import { InlineBanner } from '../InlineBanner';
-import { AiReply } from './components/AiReply';
-import { FollowUpForm } from './components/FollowUpForm';
-import { useAiPanel } from './domain/useAiPanel';
+import { SuggestionPromptInputs } from './domain/buildLlmSuggestionPrompts';
+import { useAiSuggestionsPanel } from './domain/useAiSuggestionsPanel';
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = () => ({
   title: css`
     margin: -4px 0 4px 0;
   `,
-  content: css`
-    padding: ${theme.spacing(1)};
-  `,
+  content: css``,
 });
 
-type AiPanelProps = {
-  className: string;
-  onClose: () => void;
-  isDiff?: boolean;
+type AiSuggestionsPanelProps = {
+  suggestionPromptInputs: SuggestionPromptInputs;
 };
 
-export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
+export function AiSuggestionsPanel({ suggestionPromptInputs }: AiSuggestionsPanelProps) {
   const styles = useStyles2(getStyles);
-  const { data, actions } = useAiPanel(isDiff);
+  const { data, actions } = useAiSuggestionsPanel(suggestionPromptInputs);
 
   return (
-    <Panel
-      className={className}
-      title="Flamegraph Analysis"
-      isLoading={data.isLoading}
-      headerActions={
-        <IconButton title="Close panel" name="times-circle" variant="secondary" aria-label="close" onClick={onClose} />
-      }
-      dataTestId="ai-panel"
-    >
+    <>
+      <h6 className={styles.title}>Code Optimization Suggestions</h6>
       <div className={styles.content}>
         {data.isLoading && (
           <>
@@ -67,6 +55,6 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
 
         {data.shouldDisplayFollowUpForm && <FollowUpForm onSubmit={actions.submitFollowupQuestion} />}
       </div>
-    </Panel>
+    </>
   );
 }

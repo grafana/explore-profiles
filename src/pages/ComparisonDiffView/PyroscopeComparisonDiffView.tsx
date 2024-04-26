@@ -22,7 +22,7 @@ import {
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
-import { ExplainFlameGraphButton } from '@shared/components/AiPanel/components/ExplainFlameGraphButton';
+import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import React, { useEffect } from 'react';
 
@@ -206,7 +206,12 @@ export function PyroscopeComparisonDiffView() {
             dataTestId="diff-panel"
             headerActions={
               !sidePanel.isOpen('ai') ? (
-                <ExplainFlameGraphButton onClick={() => sidePanel.open('ai')} disabled={isLoading} />
+                <AIButton
+                  text="Explain Flame Graph"
+                  interactionName="g_pyroscope_app_explain_diff_flamegraph_clicked"
+                  onClick={() => sidePanel.open('ai')}
+                  disabled={isLoading}
+                />
               ) : null
             }
           >

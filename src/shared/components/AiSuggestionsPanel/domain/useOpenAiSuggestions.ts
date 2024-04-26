@@ -1,7 +1,7 @@
 import { llms } from '@grafana/experimental';
 import { useCallback, useEffect, useState } from 'react';
 
-import { buildPrompts, model } from './buildLlmPrompts';
+import { buildSuggestionPrompts, model, SuggestionPromptInputs } from './buildLlmSuggestionPrompts';
 
 // taken from "@grafana/experimental"
 type Role = 'system' | 'user' | 'assistant' | 'function';
@@ -24,7 +24,8 @@ export type OpenAiReply = {
   error: Error | null;
 };
 
-export function useOpenAiChatCompletions(profileType: string, profiles: string[]): OpenAiReply {
+// TODO(@petethepig): this is largely same function as useOpenAiChatCompletions, maybe we should merge them somehow
+export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInputs) {
   const [reply, setReply] = useState('');
   const [replyHasStarted, setReplyHasStarted] = useState(false);
   const [replyHasFinished, setReplyHasFinished] = useState(false);
@@ -88,16 +89,11 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
   );
 
   useEffect(() => {
-    if (!profiles.length || messages.length > 0) {
+    if (messages.length > 0) {
       return;
     }
 
-    const prompts = buildPrompts({
-      system: 'empty',
-      user: profiles.length === 2 ? 'diff' : 'single',
-      profileType,
-      profiles,
-    });
+    const prompts = buildSuggestionPrompts(suggestionPromptInputs);
 
     try {
       sendMessages([
@@ -113,7 +109,7 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
     } catch (error) {
       setError(error as Error);
     }
-  }, [messages.length, profileType, profiles, sendMessages]);
+  }, [messages.length, suggestionPromptInputs, sendMessages]);
 
   return {
     reply: {
