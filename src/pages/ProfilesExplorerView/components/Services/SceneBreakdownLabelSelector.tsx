@@ -24,10 +24,8 @@ export class SceneBreakdownLabelSelector extends SceneObjectBase<SceneBreakdownL
     const { labelsData } = sceneGraph.getAncestor(model, SceneBreakdownTab).useState();
 
     const labels = useMemo(() => {
-      const allCount = labelsData.reduce((acc, l) => acc + l.values.length, 0);
-
       return [
-        { value: 'all', label: `All (${allCount})`, values: [] },
+        { value: 'all', label: `All (${labelsData.length})`, values: [] },
         ...labelsData.map(({ id, values }) => ({
           label: `${id} (${values.length})`,
           value: id,
