@@ -48,7 +48,7 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/hydrogen'
+          node-version: 20
           cache: 'yarn'
 
       - name: Install dependencies
@@ -84,6 +84,12 @@ jobs:
     needs: [backend, frontend]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
