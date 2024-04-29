@@ -21,18 +21,16 @@ export class ComparisonViewPage extends PyroscopePage {
 
     super(page, '/a/grafana-pyroscope-app/comparison', urlParams.toString());
 
-    // TODO: use "main-timeline-panel"
-    this.mainTimeline = new Timeline(page, '[data-testid="panel"]');
+    this.mainTimeline = new Timeline(page, '[data-testid="main-timeline-panel"]');
     this.baselineTimeline = new Timeline(page, '[data-testid="baseline-panel"]');
     this.comparisonTimeline = new Timeline(page, '[data-testid="comparison-panel"]');
 
-    this.baselineQueryBuilder = new QueryBuilder(page, '[data-testid="baseline-panel"] #query-builder-single');
-    this.comparisonQueryBuilder = new QueryBuilder(page, '[data-testid="comparison-panel"] #query-builder-single');
+    this.baselineQueryBuilder = new QueryBuilder(page, '[data-testid="baseline-panel"] #query-builder-baseline');
+    this.comparisonQueryBuilder = new QueryBuilder(page, '[data-testid="comparison-panel"] #query-builder-comparison');
   }
 
   getMainTimelinePanel() {
-    // TODO: use "main-timeline-panel"
-    return this.page.getByTestId('panel');
+    return this.page.getByTestId('main-timeline-panel');
   }
 
   getBaselinePanel() {
