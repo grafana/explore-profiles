@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
-import { ExplainFlameGraphButton } from '@shared/components/AiPanel/components/ExplainFlameGraphButton';
+import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
@@ -90,7 +90,12 @@ export function SingleView() {
           isLoading={data.isLoading}
           headerActions={
             data.shouldDisplayFlamegraph && !sidePanel.isOpen('ai') ? (
-              <ExplainFlameGraphButton onClick={() => sidePanel.open('ai')} disabled={data.isLoading} />
+              <AIButton
+                text="Explain Flame Graph"
+                interactionName="g_pyroscope_app_explain_flamegraph_clicked"
+                onClick={() => sidePanel.open('ai')}
+                disabled={data.isLoading}
+              />
             ) : null
           }
           dataTestId="flamegraph-panel"
@@ -118,11 +123,13 @@ export function SingleView() {
         </Panel>
 
         {sidePanel.isOpen('function-details') && (
-          <FunctionDetailsPanel
-            className={styles.sidePanel}
-            stacktrace={gitHubIntegration.data.stacktrace}
-            onClose={sidePanel.close}
-          />
+          <>
+            <FunctionDetailsPanel
+              className={styles.sidePanel}
+              stacktrace={gitHubIntegration.data.stacktrace}
+              onClose={sidePanel.close}
+            />
+          </>
         )}
 
         {sidePanel.isOpen('ai') && <AiPanel className={styles.sidePanel} onClose={sidePanel.close} />}
