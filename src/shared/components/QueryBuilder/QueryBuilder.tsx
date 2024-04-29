@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
 import React, { memo, useCallback, useRef } from 'react';
@@ -33,6 +33,7 @@ export type QueryBuilderProps = {
   from: number;
   until: number;
   onChangeQuery: (newQuery: string) => void;
+  className?: string;
 };
 
 function QueryBuilderComponent(props: QueryBuilderProps) {
@@ -57,7 +58,7 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
   }, [actor]);
 
   return (
-    <div id={props.id} className={styles.queryBuilder}>
+    <div id={props.id} className={cx(styles.queryBuilder, props.className)}>
       <ChicletsList
         filters={filters}
         onClickChiclet={onClickChiclet}

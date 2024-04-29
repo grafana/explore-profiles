@@ -1,34 +1,14 @@
 import { displayWarning } from '@shared/domain/displayStatus';
-import { parseUrlSearchParams } from '@shared/domain/url-params/parseUrlSearchParams';
-import { pushNewUrl } from '@shared/domain/url-params/pushNewUrl';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { useEffect, useState } from 'react';
 
-const setMaxNodes = (newMaxNodes: number) => {
-  const searchParams = parseUrlSearchParams();
+import { useUrlSearchParams } from './useUrlSearchParams';
 
-  if (searchParams.get('maxNodes') !== String(newMaxNodes)) {
-    searchParams.set('maxNodes', String(newMaxNodes));
-
-    pushNewUrl(searchParams);
-  }
-};
-
-function useSetDefaultMaxNodes(): number | null {
-  const searchParams = parseUrlSearchParams();
-  let maxNodes = null;
-
-  if (searchParams.get('maxNodes')) {
-    maxNodes = Number(searchParams.get('maxNodes'));
-  }
-
-  const hasMaxNodes = Boolean(maxNodes);
-
+function useSetDefaultMaxNodes(hasMaxNodes: boolean, setMaxNodes: (newMaxNodes: number) => void) {
   const { isFetching, error, settings } = useFetchPluginSettings({ enabled: !hasMaxNodes });
 
   if (hasMaxNodes || isFetching) {
-    return maxNodes;
+    return;
   }
 
   if (error) {
@@ -40,37 +20,21 @@ function useSetDefaultMaxNodes(): number | null {
 
     setMaxNodes(DEFAULT_SETTINGS.maxNodes);
 
-    return DEFAULT_SETTINGS.maxNodes;
+    return;
   }
 
-  maxNodes = settings!.maxNodes;
-
-  setMaxNodes(maxNodes);
-
-  return maxNodes;
+  setMaxNodes(settings!.maxNodes);
 }
 
 export function useMaxNodesFromUrl(): [number | null, (newMaxNodes: number) => void] {
-  const defaultMaxNodes = useSetDefaultMaxNodes();
-  const [maxNodes, setInternalMaxNodes] = useState(defaultMaxNodes);
+  const { searchParams, pushNewUrl } = useUrlSearchParams();
+  const maxNodes = Number(searchParams.get('maxNodes') ?? '');
 
-  useEffect(() => {
-    const onHistoryChange = () => {
-      const newMaxNodes = parseUrlSearchParams().get('maxNodes');
+  const setMaxNodes = (newMaxNodes: number) => {
+    pushNewUrl({ maxNodes: String(newMaxNodes) });
+  };
 
-      if (newMaxNodes !== maxNodes) {
-        setInternalMaxNodes(Number(newMaxNodes));
-      }
-    };
-
-    window.addEventListener('pushstate', onHistoryChange);
-    window.addEventListener('popstate', onHistoryChange);
-
-    return () => {
-      window.removeEventListener('popstate', onHistoryChange);
-      window.removeEventListener('pushstate', onHistoryChange);
-    };
-  }, [maxNodes]);
+  useSetDefaultMaxNodes(maxNodes > 0, setMaxNodes);
 
   return [maxNodes, setMaxNodes];
 }

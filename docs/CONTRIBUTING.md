@@ -8,7 +8,7 @@ Please check the [related documentation](./CONTRIBUTING-PYROSCOPE-DEPENDENCY.md)
 ## Requirements
 
 - [Git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/en) v18
+- [Node.js](https://nodejs.org/en) v20
 - [Go](https://go.dev/learn/)
 - [Docker](https://www.docker.com/get-started/) or [OrbStack](https://orbstack.dev/download) (lighter alternative)
 

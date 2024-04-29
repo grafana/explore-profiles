@@ -3,19 +3,23 @@ import { noOp } from '@shared/domain/noOp';
 import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { Timeline as TimelineType } from '@shared/types/Timeline';
+import { Timeline } from '@shared/types/Timeline';
+import Color from 'color';
 import React from 'react';
 
+import { Selection } from './domain/markings';
 import { useTimezone } from './domain/useTimeZone';
 import { TimelineChartWrapper } from './TimelineChartWrapper';
 
-type TimelinePanelProps = {
+type SingleTimelineProps = {
   timeRange: TimeRange;
-  timeline?: TimelineType;
   onSelectTimeRange: (newTimeRange: TimeRange) => void;
+  color?: Color;
+  timeline?: Timeline;
+  selection?: Selection;
 };
 
-export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePanelProps) {
+export function SingleTimeline({ timeRange, onSelectTimeRange, color, timeline, selection }: SingleTimelineProps) {
   const timezone = useTimezone();
 
   const [query] = useQueryFromUrl();
@@ -28,9 +32,12 @@ export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePan
   }
 
   const timelineA = {
+    color,
     data: timeline,
     unit,
   };
+
+  const wrapperSelection = { right: selection };
 
   return (
     <TimelineChartWrapper
@@ -42,6 +49,7 @@ export function Timeline({ timeRange, timeline, onSelectTimeRange }: TimelinePan
       timelineA={timelineA}
       timezone={timezone}
       selectionType="single"
+      selection={wrapperSelection}
       // TODO: FIXME
       onSelect={noOp}
       onSelectTimeRange={onSelectTimeRange}

@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { IconButton, Spinner, useStyles2 } from '@grafana/ui';
+import { Alert, Button, IconButton, Spinner, useStyles2 } from '@grafana/ui';
 import { Panel } from '@shared/components/Panel';
 import React from 'react';
 
@@ -15,6 +15,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   content: css`
     padding: ${theme.spacing(1)};
+  `,
+  retryButton: css`
+    float: right;
   `,
 });
 
@@ -39,13 +42,6 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
       dataTestId="ai-panel"
     >
       <div className={styles.content}>
-        {data.isLoading && (
-          <>
-            <Spinner inline />
-            &nbsp;Analyzing...
-          </>
-        )}
-
         {data.fetchError && (
           <InlineBanner
             severity="error"
@@ -54,16 +50,30 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
           />
         )}
 
-        {data.llmError && (
-          <InlineBanner
-            severity="error"
-            title="Failed to generate content using OpenAI!"
-            errors={[data.llmError]}
-            message="Sorry for any inconvenience, please try again later or if the problem persists, contact your organization admin."
-          />
+        {data.shouldDisplayReply && <AiReply reply={data.reply} />}
+
+        {data.isLoading && (
+          <>
+            <Spinner inline />
+            &nbsp;Analyzing...
+          </>
         )}
 
-        {data.shouldDisplayReply && <AiReply reply={data.reply} />}
+        {data.llmError && (
+          <Alert title="An error occured while generating content using OpenAI!" severity="warning">
+            <div>
+              <div>
+                <p>{data.llmError.message}</p>
+                <p>
+                  Sorry for any inconvenience, please retry or if the problem persists, contact your organization admin.
+                </p>
+              </div>
+            </div>
+            <Button className={styles.retryButton} variant="secondary" fill="outline" onClick={() => actions.retry()}>
+              Retry
+            </Button>
+          </Alert>
+        )}
 
         {data.shouldDisplayFollowUpForm && <FollowUpForm onSubmit={actions.submitFollowupQuestion} />}
       </div>

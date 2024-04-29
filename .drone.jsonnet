@@ -1,8 +1,8 @@
-# this file is based on the one from grafana/phlare
+// this file is based on the one from grafana/phlare
 
 local dockerGoImage = 'golang:1.20.4';
 local dockerGrafanaImage = 'grafana/grafana:9.4.2';
-local dockerNodeImage = 'node:18-bullseye';
+local dockerNodeImage = 'node:20-bullseye';
 local dockerE2EImage = 'mcr.microsoft.com/playwright:v1.29.2-focal';
 local dockerGrafanaPluginCIImage = 'grafana/grafana-plugin-ci-e2e:latest';
 
@@ -314,9 +314,10 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
   pipeline('weekly deploy ops', [
     generateTagsStep(),
     deployStep('ops'),
-  ]) + { depends_on: [
-    'build packages',
-  ],
+  ]) + {
+    depends_on: [
+      'build packages',
+    ],
     image_pull_secrets: ['gcr_reader'],
     trigger+: { ref: ['refs/tags/weekly-f*'] },
   },
@@ -324,9 +325,10 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
   pipeline('weekly deploy prod', [
     generateTagsStep(),
     deployStep('prod'),
-  ]) + { depends_on: [
-    'build packages',
-  ],
+  ]) + {
+    depends_on: [
+      'build packages',
+    ],
     image_pull_secrets: ['gcr_reader'],
     trigger+: { ref: ['refs/tags/weekly-f*'] },
   },
@@ -369,4 +371,3 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
   vault_secret('slack_webhook', 'infra/data/ci/slack_webhooks', 'slack-plugin'),
   vault_secret('argo_token', 'infra/data/ci/argo-workflows/trigger-service-account', 'token'),
 ]
-

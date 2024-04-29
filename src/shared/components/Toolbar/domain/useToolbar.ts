@@ -1,12 +1,37 @@
+import { TimeRange } from '@grafana/data';
 import { noOp } from '@shared/domain/noOp';
+import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 
 import { useFetchServices } from '../../../infrastructure/services/useFetchServices';
-import { useTimeRangePicker } from '../ui/useTimeRangePicker';
+import { ToolbarProps } from '../Toolbar';
 import { useBuildProfileTypeOptions } from './useBuildProfileTypeOptions';
 import { useBuildServiceNameOptions } from './useBuildServiceNameOptions';
 
-export function useToolbar({ isLoading, onRefresh }: { isLoading: boolean; onRefresh: () => void }) {
-  const { timeRange, setTimeRange, zoom, navigate } = useTimeRangePicker();
+const zoom = (timeRange: TimeRange): TimeRange => {
+  const { from, to } = timeRange;
+  const halfDiff = to.diff(from) / 2;
+
+  // These are mutable...
+  from.subtract(halfDiff);
+  to.add(halfDiff);
+
+  return { from, to, raw: { from, to } };
+};
+
+const navigate = (timeRange: TimeRange, forward = true): TimeRange => {
+  const { from, to } = timeRange;
+  const multiplier = forward ? +1 : -1;
+  const halfDiff = (to.diff(from) / 2) * multiplier;
+
+  // These are mutable...
+  from.add(halfDiff);
+  to.add(halfDiff);
+
+  return { from, to, raw: { from, to } };
+};
+
+export function useToolbar({ isLoading, onRefresh, onChangeTimeRange }: ToolbarProps) {
+  const [timeRange] = useTimeRangeFromUrl();
 
   const { services } = useFetchServices({ timeRange });
 
@@ -27,19 +52,19 @@ export function useToolbar({ isLoading, onRefresh }: { isLoading: boolean; onRef
     actions: {
       selectService,
       selectProfile,
-      setTimeRange,
       setTimeZone: noOp,
-      zoom,
+      setTimeRange: onChangeTimeRange,
+      zoom() {
+        onChangeTimeRange(zoom(timeRange));
+      },
       moveTimeRangeBackward() {
-        navigate(false);
+        onChangeTimeRange(navigate(timeRange, false));
       },
       moveTimeRangeForward() {
-        navigate(true);
+        onChangeTimeRange(navigate(timeRange, true));
       },
       setInterval: noOp,
-      refresh() {
-        onRefresh();
-      },
+      refresh: onRefresh,
     },
   };
 }

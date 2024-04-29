@@ -1,72 +1,89 @@
 import { TimeRange } from '@grafana/data';
-import { useEffect, useState } from 'react';
 
 import { translateGrafanaTimeRangeToPyroscope } from '../translation';
 import { parseTimeRangeFromUrl } from './parseTimeRangeFromUrl';
-import { parseUrlSearchParams } from './parseUrlSearchParams';
-import { pushNewUrl } from './pushNewUrl';
+import { useUrlSearchParams } from './useUrlSearchParams';
 
-const DEFAULT_TIMERANGE_PARAMS: Record<string, string> = {
-  from: 'now-1h',
-  until: 'now',
-};
+type TargetTimeline = 'main' | 'left' | 'right';
 
-function setDefaultTimeRange(): TimeRange {
-  const searchParams = parseUrlSearchParams();
-  let shouldPushNewUrl = false;
+const PARAM_NAMES = new Map<TargetTimeline, string[]>([
+  ['main', ['from', 'until']],
+  ['left', ['leftFrom', 'leftUntil']],
+  ['right', ['rightFrom', 'rightUntil']],
+]);
 
-  for (const key in DEFAULT_TIMERANGE_PARAMS) {
-    // empty values will be set to default values
-    if (!searchParams.get(key)) {
-      searchParams.set(key, DEFAULT_TIMERANGE_PARAMS[key]);
-      shouldPushNewUrl = true;
+const DEFAULT_TIMERANGE_VALUES = new Map<string, string>([
+  ['from', 'now-1h'],
+  ['until', 'now'],
+  ['leftFrom', ''],
+  ['leftUntil', ''],
+  ['rightFrom', ''],
+  ['rightUntil', ''],
+]);
+
+function setDefaultTimeRange(
+  paramNames: string[],
+  searchParams: URLSearchParams,
+  setTimeRange: (newTimeRange: TimeRange, useRawValues?: boolean) => void
+): TimeRange {
+  let shouldUpdateUrl = false;
+
+  for (const key of paramNames) {
+    // only empty values will be set to default values
+    if (searchParams.has(key)) {
+      continue;
     }
+
+    const defaultValue = DEFAULT_TIMERANGE_VALUES.get(key);
+    if (defaultValue === undefined) {
+      throw new TypeError(`Undefined default value for URL search parameter "${key}"!`);
+    }
+
+    if (defaultValue === '') {
+      continue;
+    }
+
+    searchParams.set(key, defaultValue);
+
+    shouldUpdateUrl = true;
   }
 
-  if (shouldPushNewUrl) {
-    pushNewUrl(searchParams);
+  const defaultTimeRange = parseTimeRangeFromUrl(paramNames, searchParams);
+
+  if (shouldUpdateUrl) {
+    setTimeRange(defaultTimeRange);
   }
 
-  return parseTimeRangeFromUrl(searchParams);
+  return defaultTimeRange;
 }
 
-const setTimeRange = (newTimeRange: TimeRange) => {
-  const searchParams = parseUrlSearchParams();
-  const pyroscopeTimeRange = translateGrafanaTimeRangeToPyroscope(newTimeRange);
-  let shouldPushNewUrl = false;
-
-  for (const key in pyroscopeTimeRange) {
-    if (searchParams.get(key) !== pyroscopeTimeRange[key as keyof typeof pyroscopeTimeRange]) {
-      searchParams.set(key, pyroscopeTimeRange[key as keyof typeof pyroscopeTimeRange]);
-      shouldPushNewUrl = true;
-    }
+// eslint-disable-next-line sonarjs/cognitive-complexity
+function buildHook(targetTimeline: TargetTimeline) {
+  const paramNames = PARAM_NAMES.get(targetTimeline);
+  if (paramNames === undefined) {
+    throw new TypeError(`Undefined parameter names for "${targetTimeline}" timeline!`);
   }
 
-  if (shouldPushNewUrl) {
-    pushNewUrl(searchParams);
-  }
-};
+  return function useTimeRangeFromUrl(): [TimeRange, (newTimeRange: TimeRange, useRawValues?: boolean) => void] {
+    const { searchParams, pushNewUrl } = useUrlSearchParams();
 
-export function useTimeRangeFromUrl(): [TimeRange, (newTimeRange: TimeRange) => void] {
-  const [timeRange, setInternalTimeRange] = useState<TimeRange>(setDefaultTimeRange());
+    const setTimeRange = (newTimeRange: TimeRange, useRawValues?: boolean) => {
+      const pyroscopeTimeRange = useRawValues
+        ? { from: String(newTimeRange.raw.from), until: String(newTimeRange.raw.to) }
+        : translateGrafanaTimeRangeToPyroscope(newTimeRange);
 
-  useEffect(() => {
-    const onHistoryChange = () => {
-      const newTimeRange = parseTimeRangeFromUrl();
-
-      if (newTimeRange.from !== timeRange.from || newTimeRange.to !== timeRange.to) {
-        setInternalTimeRange(newTimeRange);
-      }
+      pushNewUrl({
+        [paramNames[0]]: pyroscopeTimeRange.from,
+        [paramNames[1]]: pyroscopeTimeRange.until,
+      });
     };
 
-    window.addEventListener('pushstate', onHistoryChange);
-    window.addEventListener('popstate', onHistoryChange);
+    const timeRange = setDefaultTimeRange(paramNames, searchParams, setTimeRange);
 
-    return () => {
-      window.removeEventListener('popstate', onHistoryChange);
-      window.removeEventListener('pushstate', onHistoryChange);
-    };
-  }, [timeRange]);
-
-  return [timeRange, setTimeRange];
+    return [timeRange, setTimeRange];
+  };
 }
+
+export const useTimeRangeFromUrl = buildHook('main');
+export const useLeftTimeRangeFromUrl = buildHook('left');
+export const useRightTimeRangeFromUrl = buildHook('right');
