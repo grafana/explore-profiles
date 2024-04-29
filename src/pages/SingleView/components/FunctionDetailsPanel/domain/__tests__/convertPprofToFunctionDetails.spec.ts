@@ -1,6 +1,6 @@
+import { PLACEHOLDER_COMMIT_DATA } from '@shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { Location, PprofProfile } from '@shared/types/PprofProfile';
 
-import { PLACEHOLDER_COMMIT_DATA } from '../../infrastructure/vcsClient';
 import { CallSiteProps } from '../../types/FunctionDetails';
 import { convertPprofToFunctionDetails } from '../convertPprofToFunctionDetails';
 import PprofData from './fixtures/pprof.json';

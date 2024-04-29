@@ -5,5 +5,5 @@ storage:
   backend: filesystem
 
 limits:
-  max_query_length: 3650d
-  max_query_lookback: 3650d
+  max_query_length: 0
+  max_query_lookback: 0

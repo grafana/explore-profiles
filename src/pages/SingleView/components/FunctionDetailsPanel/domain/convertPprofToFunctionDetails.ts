@@ -1,6 +1,6 @@
+import { PLACEHOLDER_COMMIT_DATA } from '@shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { Function, Location, Mapping, PprofProfile, Sample } from '@shared/types/PprofProfile';
 
-import { PLACEHOLDER_COMMIT_DATA } from '../infrastructure/vcsClient';
 import { CallSiteProps, FunctionDetails } from '../types/FunctionDetails';
 
 const buildDetails = (profile: PprofProfile, func: Function, mapping?: Mapping) => {

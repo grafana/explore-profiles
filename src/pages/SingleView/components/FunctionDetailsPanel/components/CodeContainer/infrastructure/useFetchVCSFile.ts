@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { vcsClient } from '../../../infrastructure/vcsClient';
+import { privateVcsClient } from '../../../../../../../shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 
 type FetchParams = {
   enabled: boolean;
@@ -23,7 +23,7 @@ export function useFetchVCSFile({ enabled, repository, gitRef, path }: FetchPara
     enabled: Boolean(enabled && path),
     queryKey: [repository, gitRef, path],
     queryFn: () =>
-      vcsClient
+      privateVcsClient
         .getFile(repository, gitRef, path)
         .then((code) => ({
           content: code.content,
@@ -34,7 +34,7 @@ export function useFetchVCSFile({ enabled, repository, gitRef, path }: FetchPara
 
   return {
     isFetching,
-    error: vcsClient.isAbortError(error) ? null : error,
+    error: privateVcsClient.isAbortError(error) ? null : error,
     fileInfo: data,
   };
 }

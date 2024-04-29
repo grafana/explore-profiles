@@ -1,9 +1,9 @@
 import { SelectableValue } from '@grafana/data';
 import { FormatOptionLabelMeta, Select } from '@grafana/ui';
+import { PLACEHOLDER_COMMIT_DATA } from '@shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import React from 'react';
 
 import { CommitWithSamples } from '../domain/getCommitsWithSamples';
-import { PLACEHOLDER_COMMIT_DATA } from '../infrastructure/vcsClient';
 import { CommitOption } from './CommitOption';
 import { CommitOptionSelected } from './CommitOptionSelected';
 

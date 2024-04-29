@@ -39,7 +39,7 @@ export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
 
             // login can only happen as a consequence of a user action
             // this is why we check if the session is expired here and not whenever we make a request to the API
-            if (await isSessionExpired()) {
+            if (isSessionExpired) {
               await login();
             }
           },

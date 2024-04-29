@@ -33,10 +33,10 @@ export function usePollGitHubPopup({
       }
 
       try {
-        const searchParms = tryGetWindowSearchParams(externalWindow);
+        const searchParams = tryGetWindowSearchParams(externalWindow);
 
-        if (searchParms !== null) {
-          const sessionCookie = await authFromUrl(searchParms, nonce);
+        if (searchParams !== null) {
+          const sessionCookie = await authFromUrl(searchParams, nonce);
 
           if (sessionCookie) {
             setSessionCookie(sessionCookie);

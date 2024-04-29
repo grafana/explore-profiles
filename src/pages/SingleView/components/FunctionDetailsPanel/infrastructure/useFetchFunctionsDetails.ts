@@ -1,11 +1,14 @@
 import { pprofApiClient } from '@shared/components/FlameGraph/components/infrastructure/pprofApiClient';
+import {
+  PLACEHOLDER_COMMIT_DATA,
+  privateVcsClient,
+} from '@shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { convertPprofToFunctionDetails } from '../domain/convertPprofToFunctionDetails';
 import { FunctionDetails } from '../types/FunctionDetails';
-import { PLACEHOLDER_COMMIT_DATA, vcsClient } from './vcsClient';
 
 type FetchParams = {
   profileMetricId: string;
@@ -66,7 +69,7 @@ export function useFetchFunctionsDetails({
       }));
 
       // TODO: extract to its own hook and simplify useFunctionDetailsPanel()?
-      const commitsInfo = await vcsClient.getCommits(commits);
+      const commitsInfo = await privateVcsClient.getCommits(commits);
 
       commitsInfo.forEach((commit, i) => {
         functionsDetails[i].commit = commit;
@@ -78,7 +81,7 @@ export function useFetchFunctionsDetails({
 
   return {
     isFetching,
-    error: vcsClient.isAbortError(error) ? null : error,
+    error: privateVcsClient.isAbortError(error) ? null : error,
     functionsDetails: useMemo(
       () =>
         data && data.length > 0
