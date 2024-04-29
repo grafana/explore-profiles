@@ -1,5 +1,6 @@
 import { llms } from '@grafana/experimental';
 import { useCallback, useEffect, useState } from 'react';
+import { Subscription } from 'rxjs';
 
 import { buildPrompts, model } from './buildLlmPrompts';
 
@@ -21,6 +22,7 @@ export type OpenAiReply = {
     messages: Message[];
     askFollowupQuestion: (question: string) => void;
   };
+  retry: () => void;
   error: Error | null;
 };
 
@@ -30,6 +32,7 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
   const [replyHasFinished, setReplyHasFinished] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<Error | null>(null);
+  const [subscription, setSubscription] = useState<Subscription>();
 
   const sendMessages = useCallback((messagesToSend: Message[]) => {
     setMessages(messagesToSend);
@@ -51,18 +54,22 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
         llms.openai.accumulateContent()
       );
 
-    stream.subscribe({
+    const subscription = stream.subscribe({
       next: setReply,
       error(e) {
         setError(e);
         setReplyHasStarted(false);
         setReplyHasFinished(true);
+        setSubscription(undefined);
       },
       complete() {
         setReplyHasStarted(false);
         setReplyHasFinished(true);
+        setSubscription(undefined);
       },
     });
+
+    setSubscription(subscription);
   }, []);
 
   const askFollowupQuestion = useCallback(
@@ -113,7 +120,16 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
     } catch (error) {
       setError(error as Error);
     }
-  }, [messages.length, profileType, profiles, sendMessages]);
+  }, [messages.length, profileType, profiles, profiles.length, sendMessages]);
+
+  useEffect(() => {
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+        setSubscription(undefined);
+      }
+    };
+  }, [subscription]);
 
   return {
     reply: {
@@ -122,6 +138,15 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
       hasFinished: replyHasFinished,
       messages: messages,
       askFollowupQuestion,
+    },
+    retry() {
+      if (messages.length > 0) {
+        try {
+          sendMessages(messages);
+        } catch (error) {
+          setError(error as Error);
+        }
+      }
     },
     error,
   };

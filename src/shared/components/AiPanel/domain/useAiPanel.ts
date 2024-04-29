@@ -20,7 +20,7 @@ export function useAiPanel(isDiff?: boolean): DomainHookReturnValue {
   const { profileMetricId } = parseQuery(fetchProfileParams[0].query);
   const profileType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
-  const { reply, error: llmError } = useOpenAiChatCompletions(profileType, profiles);
+  const { reply, error: llmError, retry } = useOpenAiChatCompletions(profileType, profiles);
 
   return {
     data: {
@@ -32,6 +32,7 @@ export function useAiPanel(isDiff?: boolean): DomainHookReturnValue {
       shouldDisplayFollowUpForm: !fetchError && !llmError && Boolean(reply?.hasFinished),
     },
     actions: {
+      retry,
       submitFollowupQuestion(question: string) {
         reply.askFollowupQuestion(question);
       },
