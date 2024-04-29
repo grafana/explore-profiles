@@ -1,9 +1,8 @@
 import { translatePyroscopeTimeRangeToGrafana } from '@shared/domain/translation';
-import { parseUrlSearchParams } from '@shared/domain/url-params/parseUrlSearchParams';
 
 // TODO: define custom hooks like useQueryFromUrl() and useTimeRangeFromUrl()
 export function parseLeftRightUrlSearchParams() {
-  const urlSearchParams = parseUrlSearchParams();
+  const urlSearchParams = new URLSearchParams(window.location.search);
 
   const leftQuery = urlSearchParams.get('leftQuery') ?? '';
   const leftTimeRange = translatePyroscopeTimeRangeToGrafana(
@@ -11,7 +10,7 @@ export function parseLeftRightUrlSearchParams() {
     urlSearchParams.get('leftUntil') ?? 'now-30m'
   );
 
-  const rightQuery = parseUrlSearchParams().get('rightQuery') ?? '';
+  const rightQuery = urlSearchParams.get('rightQuery') ?? '';
   const rightTimeRange = translatePyroscopeTimeRangeToGrafana(
     urlSearchParams.get('rightFrom') ?? 'now-30m',
     urlSearchParams.get('rightUntil') ?? 'now'

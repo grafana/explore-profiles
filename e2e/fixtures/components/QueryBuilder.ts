@@ -16,8 +16,10 @@ export class QueryBuilder {
   async addFilter(parts: any[]) {
     await this.get().getByRole('combobox').click();
 
+    const selectMenu = this.page.getByLabel('Select options menu');
+
     for (const part of parts) {
-      await this.page.getByText(part, { exact: true }).click();
+      await selectMenu.getByText(part, { exact: true }).click();
     }
   }
 

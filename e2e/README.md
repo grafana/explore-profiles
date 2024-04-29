@@ -32,7 +32,7 @@ E2E_PASSWORD=pass
 To launch the tests against a non-local environment (dev, ops, prod):
 
 1. Open the 1Password app
-2. Search for "E2E Pyroscope", choose the enviroment you want to target
+2. Search for "E2E Pyroscope", choose the environment you want to target
 3. Set these values to the `.env` file
 
 By doing so, an [authentication step](https://playwright.dev/docs/auth) will automatically be added before launching the tests.
@@ -63,7 +63,7 @@ You can also run the [code generator](https://playwright.dev/docs/codegen#runnin
 yarn e2e:local:codegen
 ```
 
-If you write tests that generate screenhots, please read the next section.
+If you write tests that generate screenshots, please read the next section.
 
 ### Screenshots testing
 
@@ -101,6 +101,6 @@ In build time (PR and main branch), we run a [Pyroscope server with static data]
 
 - On your GitHub PR, next to the `CI / frontend (pull_request)` job, click on `Details`
 - On the GitHub actions page, click on `🏠 Summary`
-- At the bottom of the page, click on the `e2e-test-reports-and-results` articfact to download it
+- At the bottom of the page, click on the `e2e-test-reports-and-results` artifact to download it
 - Unzip it and open the `test-reports/index.html` page
 - Navigate the failing tests to see screenshots and videos of what happened

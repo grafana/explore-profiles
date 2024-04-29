@@ -11,7 +11,7 @@ export function Panel({ isLoading, title, children, className = '', headerAction
   const loadingState = isLoading ? LoadingState.Loading : LoadingState.Done;
 
   return (
-    <div className={`${className} ${s.panelWrap}`} data-testid={dataTestId}>
+    <div className={`${className} ${s.panelWrap}`} data-testid={dataTestId || 'panel'}>
       <GrafanaPanelBox loadingState={loadingState} title={title as unknown as string} actions={headerActions}>
         {children}
       </GrafanaPanelBox>

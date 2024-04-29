@@ -31,7 +31,7 @@ export function AiPanel({ className, onClose, isDiff }: AiPanelProps) {
   return (
     <Panel
       className={className}
-      title="Flamegraph Analysis"
+      title="Flame graph analysis"
       isLoading={data.isLoading}
       headerActions={
         <IconButton title="Close panel" name="times-circle" variant="secondary" aria-label="close" onClick={onClose} />

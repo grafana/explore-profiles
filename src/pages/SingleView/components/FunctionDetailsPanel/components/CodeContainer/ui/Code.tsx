@@ -12,7 +12,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   codeContainer: css`
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     width: 100%;
   `,
 

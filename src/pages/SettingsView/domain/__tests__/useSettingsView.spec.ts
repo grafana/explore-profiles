@@ -26,6 +26,12 @@ jest.mock('@shared/infrastructure/settings/useFetchPluginSettings', () => ({
   }),
 }));
 
+const setMaxNodes = jest.fn();
+
+jest.mock('@shared/domain/url-params/useMaxNodesFromUrl', () => ({
+  useMaxNodesFromUrl: () => [, setMaxNodes],
+}));
+
 // tests
 describe('useSettingsView(plugin)', () => {
   it('returns an object with "data" and "actions" fields', () => {
@@ -95,7 +101,7 @@ describe('useSettingsView(plugin)', () => {
   });
 
   describe('actions.saveSettings()', () => {
-    it('stores the plugin settings', async () => {
+    it('stores the plugin settings & updates the URL search param', async () => {
       // @ts-expect-error
       const { result } = renderHook(() => useSettingsView(plugin));
 
@@ -104,9 +110,10 @@ describe('useSettingsView(plugin)', () => {
       await saveSettings();
 
       expect(mutate).toHaveBeenCalledWith(DEFAULT_SETTINGS);
+      expect(setMaxNodes).toHaveBeenCalledWith(DEFAULT_SETTINGS.maxNodes);
     });
 
-    describe('if no error occurred', () => {
+    describe('if no error occurred when storing the settings', () => {
       it(`publishes an "${AppEvents.alertSuccess.name}" application event`, async () => {
         mutate.mockResolvedValue({ ok: true });
 
@@ -124,7 +131,7 @@ describe('useSettingsView(plugin)', () => {
       });
     });
 
-    describe('if an error occurred', () => {
+    describe('if an error occurred when storing the settings', () => {
       it(`publishes an "${AppEvents.alertError.name}" application event`, async () => {
         const updateError = new Error('Ooops! settingsApiClient.update error.');
         mutate.mockRejectedValue(updateError);
