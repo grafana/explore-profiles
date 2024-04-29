@@ -2,24 +2,16 @@ import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
-import {
-  getProfileMetric,
-  getProfileMetricByType,
-  ProfileMetricId,
-} from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchServices } from '@shared/infrastructure/services/useFetchServices';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
+import { useFetchTimelineAndProfile } from '@shared/infrastructure/useFetchTimelineAndProfile';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
-
-import { useFetchProfileAndTimeline } from '../infrastructure/useFetchProfileAndTimeline';
 
 export function useSingleView(): DomainHookReturnValue {
   const [query, setQuery] = useQueryFromUrl();
   const [timeRange, setTimeRange] = useTimeRangeFromUrl();
   const [maxNodes] = useMaxNodesFromUrl();
-
-  // determining query and maxNodes can be asynchronous so we enable the main query only when we have values for both
-  const enabled = Boolean(query && maxNodes);
 
   const {
     isFetching,
@@ -27,12 +19,7 @@ export function useSingleView(): DomainHookReturnValue {
     timeline,
     profile,
     refetch: refetchProfileAndTimeline,
-  } = useFetchProfileAndTimeline({
-    enabled,
-    query,
-    timeRange,
-    maxNodes,
-  });
+  } = useFetchTimelineAndProfile({ target: 'main', query, timeRange, maxNodes });
 
   const { services, refetch: refetchServices, isFetching: isFetchingServices } = useFetchServices({ timeRange });
 
@@ -46,13 +33,13 @@ export function useSingleView(): DomainHookReturnValue {
 
   const shouldDisplayFlamegraph = Boolean(!fetchDataError && !noDataAvailable && profile);
 
-  const timelinePanelTitle =
-    getProfileMetric(parseQuery(query).profileMetricId as ProfileMetricId).description ||
-    getProfileMetricByType(profile?.metadata.name as string)?.description ||
-    '';
+  const { profileMetricId } = parseQuery(query);
+  const profileMetric = getProfileMetric(profileMetricId as ProfileMetricId);
+  const title = profileMetric ? profileMetric.description || `${profileMetric.type} (${profileMetric.group})` : '';
 
   return {
     data: {
+      title,
       query,
       timeRange,
       isLoading,
@@ -61,7 +48,6 @@ export function useSingleView(): DomainHookReturnValue {
       profile,
       noDataAvailable,
       shouldDisplayFlamegraph,
-      timelinePanelTitle,
       fetchSettingsError,
       settings,
     },

@@ -15,7 +15,7 @@ interface TimelineGroupData {
 
 interface TimelineData {
   data?: Timeline;
-  color?: string;
+  color?: Color;
 }
 
 interface Selection {
@@ -88,4 +88,6 @@ export type TimelineChartWrapperProps = TimelineDataProps & {
 
   timeRange: TimeRange;
   onSelectTimeRange: (newTimeRange: TimeRange) => void;
+
+  showLegend?: boolean;
 };

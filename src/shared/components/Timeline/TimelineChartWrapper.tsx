@@ -2,7 +2,6 @@ import {
   AbsoluteTimeRange,
   DataFrame,
   dateTime,
-  FieldColorModeId,
   FieldType,
   LoadingState,
   MutableDataFrame,
@@ -24,7 +23,8 @@ import { Timeline } from '@shared/types/Timeline';
 import Color from 'color';
 import React, { useRef, useState } from 'react';
 
-import { markingsFromSelection } from './markings';
+import { convertToDataFrame } from './domain/convertToDataFrame';
+import { markingsFromSelection } from './domain/markings';
 import { TimelineChartWrapperProps } from './types';
 
 const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
@@ -61,7 +61,9 @@ export function TimelineChartWrapper(props: TimelineChartWrapperProps) {
     // As in pyroscope, we override to bars when only one
     format = timelineA && timelineB ? 'lines' : 'bars';
 
-    [timelineA, timelineB].forEach((timeline) => timeline && timelines.push(timeline));
+    [timelineA, timelineB].forEach(
+      (timeline) => timeline && timelines.push({ ...timeline, color: timeline.color?.toString() })
+    );
   }
 
   const series = timelines.map((timeline) => convertToDataFrame(timeline, format));
@@ -225,47 +227,8 @@ class RangeAnnotation extends MutableDataFrame {
   }
 }
 
-type TimelineData = {
+export type TimelineData = {
   data?: Timeline;
   color?: string;
   unit?: string;
 };
-
-export function convertToDataFrame(data: TimelineData, format: 'bars' | 'lines', label?: string) {
-  const custom = format === 'bars' ? { drawStyle: 'bars', fillOpacity: 100, barAlignment: 1 } : { drawStyle: 'lines' };
-
-  const dataframe = new MutableDataFrame();
-  dataframe.addField({ name: 'time', type: FieldType.time });
-  // If there is no color, leave it as undefined so the default can be chosen
-  const color = data?.color
-    ? { mode: FieldColorModeId.Fixed, fixedColor: stringifyPyroscopeColor(data?.color) }
-    : undefined;
-  dataframe.addField({ name: label || ' ', type: FieldType.number, config: { unit: data.unit, custom, color } });
-
-  const timeline = data.data;
-
-  if (!timeline) {
-    return dataframe;
-  }
-
-  const { durationDelta, samples, startTime } = timeline;
-
-  // Prevents processing a timeline with undefined, null, or NaN time entries.
-  if (Number.isNaN(Number(startTime)) || Number.isNaN(Number(durationDelta))) {
-    console.error('The start time or duration delta is not defined. Ignoring timeline.', {
-      startTime,
-      durationDelta,
-      label,
-    });
-    return dataframe;
-  }
-
-  for (let i = 0; i < samples.length; ++i) {
-    const time = (startTime + i * durationDelta) * 1000; // Scale to milliseconds
-    const sample = samples[i];
-
-    dataframe.appendRow([time, sample]);
-  }
-
-  return dataframe;
-}

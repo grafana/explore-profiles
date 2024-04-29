@@ -9,7 +9,6 @@ import { Provider } from 'react-redux';
 
 import { Onboarding } from './components/Onboarding/Onboarding';
 import { Routes } from './components/Routes/Routes';
-import { useSetupReduxQuerySync } from './domain/useSetupReduxQuerySync';
 import './infrastructure/faro';
 import './ui/styles/styles.scss';
 import { TitleReplacement } from './ui/TitleReplacement';
@@ -28,8 +27,6 @@ declare global {
 const renderPageTitle = (title: string) => <TitleReplacement title={title} />;
 
 export function App(props: AppRootProps) {
-  useSetupReduxQuerySync();
-
   return (
     <PluginContextProvider meta={props.meta}>
       <QueryClientProvider client={queryClient}>

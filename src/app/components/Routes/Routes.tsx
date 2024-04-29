@@ -1,7 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-import ContinuousComparisonView from '@pyroscope/pages/ContinuousComparisonView';
 import TagExplorerView from '@pyroscope/pages/TagExplorerView';
 import { prefixRouteWithPluginBaseUrl } from '@shared/domain/prefixRouteWithPluginBaseUrl';
 import React from 'react';
@@ -10,8 +9,9 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { ROUTES } from '../../../constants';
 import { AdHocView } from '../../../pages/AdHocView/AdHocView';
 import { ComparisonDiffView } from '../../../pages/ComparisonDiffView/ComparisonDiffView';
+import { ComparisonView } from '../../../pages/ComparisonView/ComparisonView';
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
-import { SingleView } from '../../../pages/SingleView/SingleView';
+import { SingleView } from '../../../pages/SingleView/components/SingleView';
 import { PyroscopeStateWrapper } from './domain/PyroscopeState/PyroscopeStateWrapper';
 import useConsistentTheme from './domain/useConsistentTheme';
 import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
@@ -50,7 +50,7 @@ export function Routes() {
               <SingleView />
             </Route>
             <Route path={prefixRouteWithPluginBaseUrl(ROUTES.COMPARISON_VIEW)} exact>
-              <ContinuousComparisonView />
+              <ComparisonView />
             </Route>
             <Route path={prefixRouteWithPluginBaseUrl(ROUTES.COMPARISON_DIFF_VIEW)} exact>
               <ComparisonDiffView />

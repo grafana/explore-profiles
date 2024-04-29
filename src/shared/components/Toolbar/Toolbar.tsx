@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
+import { GrafanaTheme2, TimeRange } from '@grafana/data';
 import {
   HorizontalGroup,
   InlineField,
@@ -21,9 +21,10 @@ const getStyles = (theme: GrafanaTheme2) => {
   };
 };
 
-type ToolbarProps = {
+export type ToolbarProps = {
   isLoading: boolean;
   onRefresh: () => void;
+  onChangeTimeRange: (newTimeRange: TimeRange) => void;
 };
 
 export function Toolbar(props: ToolbarProps) {

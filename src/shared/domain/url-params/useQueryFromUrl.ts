@@ -1,32 +1,25 @@
 import { useFetchServices } from '@shared/infrastructure/services/useFetchServices';
 import { userStorage } from '@shared/infrastructure/userStorage';
-import { useEffect, useState } from 'react';
 
 import { getDefaultProfile, getDefaultServiceAndProfile } from './getDefaultServiceAndProfile';
 import { buildQuery } from './parseQuery';
-import { parseUrlSearchParams } from './parseUrlSearchParams';
-import { pushNewUrl } from './pushNewUrl';
 import { useTimeRangeFromUrl } from './useTimeRangeFromUrl';
+import { useUrlSearchParams } from './useUrlSearchParams';
 
-const setQuery = (newQuery: string) => {
-  const searchParams = parseUrlSearchParams();
+type TargetTimeline = 'main' | 'left' | 'right';
 
-  if (searchParams.get('query') !== newQuery) {
-    searchParams.set('query', newQuery);
+const PARAM_NAMES = new Map<TargetTimeline, string>([
+  ['main', 'query'],
+  ['left', 'leftQuery'],
+  ['right', 'rightQuery'],
+]);
 
-    pushNewUrl(searchParams);
-  }
-};
-
-function useSetDefaultQuery(): string {
-  let query = parseUrlSearchParams().get('query') ?? '';
-  const hasQuery = Boolean(query);
-
+function useSetDefaultQuery(hasQuery: boolean, setQuery: (newQuery: string) => void) {
   const [timeRange] = useTimeRangeFromUrl();
   const { services } = useFetchServices({ timeRange, enabled: !hasQuery });
 
   if (hasQuery || !services.size) {
-    return query;
+    return;
   }
 
   const serviceIdFromUserSettings = !hasQuery ? userStorage.get(userStorage.KEYS.SETTINGS)?.defaultApp : '';
@@ -35,44 +28,36 @@ function useSetDefaultQuery(): string {
     const profileMetricId = getDefaultProfile(serviceIdFromUserSettings, services);
 
     if (profileMetricId) {
-      query = buildQuery({ serviceId: serviceIdFromUserSettings, profileMetricId });
-
-      setQuery(query);
-
-      return query;
+      setQuery(buildQuery({ serviceId: serviceIdFromUserSettings, profileMetricId }));
+      return;
     }
   }
 
   const [serviceId, profileMetricId] = getDefaultServiceAndProfile(services);
 
-  query = buildQuery({ serviceId, profileMetricId });
-
-  setQuery(query);
-
-  return query;
+  setQuery(buildQuery({ serviceId, profileMetricId }));
 }
 
-export function useQueryFromUrl(): [string, (newQuery: string) => void] {
-  const defaultQuery = useSetDefaultQuery();
-  const [query, setInternalQuery] = useState(defaultQuery);
+function buildHook(targetTimeline: TargetTimeline) {
+  const paramName = PARAM_NAMES.get(targetTimeline);
+  if (paramName === undefined) {
+    throw new TypeError(`Undefined parameter name for "${targetTimeline}" timeline!`);
+  }
 
-  useEffect(() => {
-    const onHistoryChange = () => {
-      const newQuery = parseUrlSearchParams().get('query');
+  return function useQueryFromUrl(): [string, (newQuery: string) => void] {
+    const { searchParams, pushNewUrl } = useUrlSearchParams();
+    const query = searchParams.get(paramName) ?? '';
 
-      if (newQuery !== query) {
-        setInternalQuery(newQuery ?? '');
-      }
+    const setQuery = (newQuery: string) => {
+      pushNewUrl({ [paramName]: newQuery });
     };
 
-    window.addEventListener('pushstate', onHistoryChange);
-    window.addEventListener('popstate', onHistoryChange);
+    useSetDefaultQuery(Boolean(query), setQuery);
 
-    return () => {
-      window.removeEventListener('popstate', onHistoryChange);
-      window.removeEventListener('pushstate', onHistoryChange);
-    };
-  }, [query]);
-
-  return [query, setQuery];
+    return [query, setQuery];
+  };
 }
+
+export const useQueryFromUrl = buildHook('main');
+export const useLeftQueryFromUrl = buildHook('left');
+export const useRightQueryFromUrl = buildHook('right');

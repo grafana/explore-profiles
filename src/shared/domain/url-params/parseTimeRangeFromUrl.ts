@@ -1,5 +1,4 @@
 import { translatePyroscopeTimeRangeToGrafana } from '../translation';
-import { parseUrlSearchParams } from './parseUrlSearchParams';
 
-export const parseTimeRangeFromUrl = (searchParams: URLSearchParams = parseUrlSearchParams()) =>
-  translatePyroscopeTimeRangeToGrafana(searchParams.get('from') ?? '', searchParams.get('until') ?? '');
+export const parseTimeRangeFromUrl = (paramNames: string[], searchParams: URLSearchParams) =>
+  translatePyroscopeTimeRangeToGrafana(searchParams.get(paramNames[0]) ?? '', searchParams.get(paramNames[1]) ?? '');

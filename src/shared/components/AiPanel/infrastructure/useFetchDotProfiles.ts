@@ -64,6 +64,8 @@ export function useFetchDotProfiles(fetchParams: FetchParams): FetchResponse {
       // holds the timerange used for each request
       // this timerange is then used when fetching function details to ensure data consistency
       // (see https://github.com/grafana/pyroscope-squad/issues/131)
+
+      // TODO: see also useFetchTimelineAndProfile.ts and find a better solution
       return Promise.all(
         fetchParams.map(({ query, timeRange }) =>
           apiClient

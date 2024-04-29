@@ -6,16 +6,16 @@ import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
+import { SingleTimeline } from '@shared/components/Timeline/SingleTimeline';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
+import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { FunctionDetailsPanel } from './components/FunctionDetailsPanel/FunctionDetailsPanel';
-import { Timeline } from './components/Timeline/Timeline';
-import { useGitHubIntegration } from './domain/useGitHubIntegration';
-import { useSingleView } from './domain/useSingleView';
-import { PageTitle } from './ui/PageTitle';
+import { useGitHubIntegration } from '../domain/useGitHubIntegration';
+import { useSingleView } from '../domain/useSingleView';
+import { FunctionDetailsPanel } from './FunctionDetailsPanel/FunctionDetailsPanel';
 
 const getStyles = () => ({
   flex: css`
@@ -57,6 +57,7 @@ export function SingleView() {
           actions.refresh();
           sidePanel.close();
         }}
+        onChangeTimeRange={actions.setTimeRange}
       />
 
       <QueryBuilder
@@ -68,19 +69,21 @@ export function SingleView() {
         onChangeQuery={actions.setQuery}
       />
 
-      <Panel title={data.timelinePanelTitle} isLoading={data.isLoading} dataTestId="timeline-panel">
+      <Panel title={data.title} isLoading={data.isLoading} dataTestId="timeline-panel">
         {data.fetchDataError && (
           <InlineBanner severity="error" title="Error while loading timeline data!" errors={[data.fetchDataError]} />
         )}
+
         {data.noDataAvailable && (
           <InlineBanner
             severity="warning"
-            title="No data available"
+            title="No timeline data available"
             message="Please verify that you've selected a proper service, profile type and time range."
           />
         )}
+
         {/* we always display the timeline to prevent layout shifts */}
-        <Timeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
+        <SingleTimeline timeRange={data.timeRange} timeline={data.timeline} onSelectTimeRange={actions.setTimeRange} />
       </Panel>
 
       <div className={styles.flex}>
@@ -106,7 +109,7 @@ export function SingleView() {
           {data.noDataAvailable && (
             <InlineBanner
               severity="warning"
-              title="No data available"
+              title="No profile data available"
               message="Please verify that you've selected a proper service, profile type and time range."
             />
           )}
