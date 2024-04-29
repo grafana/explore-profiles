@@ -6,8 +6,8 @@ import { PyroscopePage } from './PyroscopePage';
 export class SingleViewPage extends PyroscopePage {
   readonly queryBuilder: QueryBuilder;
 
-  constructor(readonly page: Page, defaultUrlParams: string) {
-    super(page, '/a/grafana-pyroscope-app/single', defaultUrlParams);
+  constructor(readonly page: Page, defaultUrlParams: URLSearchParams) {
+    super(page, '/a/grafana-pyroscope-app/single', defaultUrlParams.toString());
 
     this.queryBuilder = new QueryBuilder(page, '#query-builder-single');
   }

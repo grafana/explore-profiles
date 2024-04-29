@@ -3,8 +3,8 @@ import { type Page } from '@playwright/test';
 import { PyroscopePage } from './PyroscopePage';
 
 export class ComparisonDiffViewPage extends PyroscopePage {
-  constructor(readonly page: Page, defaultUrlParams: string) {
-    super(page, '/a/grafana-pyroscope-app/comparison-diff', defaultUrlParams);
+  constructor(readonly page: Page, defaultUrlParams: URLSearchParams) {
+    super(page, '/a/grafana-pyroscope-app/comparison-diff', defaultUrlParams.toString());
   }
 
   getBaselinePanel() {

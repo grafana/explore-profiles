@@ -29,7 +29,7 @@ export const DEFAULT_URL_PARAMS = ENV_VARS.E2E_BASE_URL.startsWith('http://local
       from: '1710352800', // 2024-03-13 19:00:00
       until: '1710355800', // 2024-03-13 19:50:00
       maxNodes: '16384',
-    }).toString()
-  : '';
+    })
+  : new URLSearchParams();
 
 export const AUTH_FILE = path.join(process.cwd(), 'e2e', 'auth', 'user.json');
