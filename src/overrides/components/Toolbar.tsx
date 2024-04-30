@@ -19,6 +19,9 @@ import {
   selectContinuousState,
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
+import { buildQuery, parseQuery } from '@shared/domain/url-params/parseQuery';
+import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
+import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import { ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useGetProfileMetricByIds } from '@shared/infrastructure/profile-metrics/useProfileMetricsQuery';
 import { userStorage } from '@shared/infrastructure/userStorage';
@@ -53,8 +56,10 @@ const getStyles = (theme: GrafanaTheme2) => {
 
 function useBuildProfileTypeOptions() {
   const styles: ReturnType<typeof getStyles> = useStyles2(getStyles);
-  const { profileTypes, selectedProfileType, setSelectedProfileType } = useContext(PyroscopeStateContext);
+  const [query, setQuery] = useQueryFromUrl();
+  const { serviceId, profileMetricId } = parseQuery(query);
 
+  const { profileTypes, setSelectedProfileType } = useContext(PyroscopeStateContext);
   const { data: profileMetrics } = useGetProfileMetricByIds(profileTypes as ProfileMetricId[]);
 
   const profileTypeOptions: Array<SelectableValue<string>> = useMemo(
@@ -75,15 +80,21 @@ function useBuildProfileTypeOptions() {
 
   return {
     profileTypeOptions,
-    selectedProfileType,
+    selectedProfileType: profileMetricId,
     selectProfileType(selection: SelectableValue<string>) {
-      setSelectedProfileType(selection.value || '');
+      const newProfileMetricId = selection.value || '';
+      setSelectedProfileType(newProfileMetricId);
+
+      setQuery(buildQuery({ serviceId, profileMetricId: newProfileMetricId }));
     },
   };
 }
 
 function useBuildServiceNameOptions() {
-  const { serviceNames, selectedServiceName, setSelectedServiceName } = useContext(PyroscopeStateContext);
+  const [query, setQuery] = useQueryFromUrl();
+  const { serviceId, profileMetricId } = parseQuery(query);
+  const { serviceNames, setSelectedServiceName } = useContext(PyroscopeStateContext);
+  const { selectedProfileType } = useContext(PyroscopeStateContext);
 
   const serviceNameOptions: Array<SelectableValue<string>> = useMemo(
     () =>
@@ -97,13 +108,13 @@ function useBuildServiceNameOptions() {
 
   return {
     serviceNameOptions,
-    selectedServiceName,
+    selectedServiceName: serviceId,
     selectServiceName(selection: SelectableValue<string>) {
-      const serviceName = selection.value || '';
+      const newServiceName = selection.value || '';
+      setSelectedServiceName(newServiceName);
+      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: newServiceName });
 
-      setSelectedServiceName(serviceName);
-
-      userStorage.set(userStorage.KEYS.SETTINGS, { defaultApp: serviceName });
+      setQuery(buildQuery({ serviceId: newServiceName, profileMetricId: selectedProfileType || profileMetricId }));
     },
   };
 }
@@ -121,7 +132,8 @@ function useRefreshAppsPicker() {
 }
 
 function useTimeRangePicker(refreshApps: Function) {
-  const { timeRange, setTimeRange: setPyroscopeTimeRange } = useContext(PyroscopeStateContext);
+  const [timeRange, setTimeRangeFromUrl] = useTimeRangeFromUrl();
+  const { setTimeRange: setPyroscopeTimeRange } = useContext(PyroscopeStateContext);
 
   const zoom = useCallback(() => {
     // Zooming out will double the overall range.
@@ -146,8 +158,9 @@ function useTimeRangePicker(refreshApps: Function) {
     };
 
     setPyroscopeTimeRange(newRange);
+    setTimeRangeFromUrl(newRange);
     // TODO: refreshApps() as well?
-  }, [timeRange, setPyroscopeTimeRange]);
+  }, [timeRange, setPyroscopeTimeRange, setTimeRangeFromUrl]);
 
   const navigate = useCallback(
     (forward = true) => {
@@ -171,15 +184,17 @@ function useTimeRangePicker(refreshApps: Function) {
       };
 
       setPyroscopeTimeRange(newRange);
+      setTimeRangeFromUrl(newRange);
       // TODO: refreshApps() as well?
     },
-    [timeRange, setPyroscopeTimeRange]
+    [timeRange, setPyroscopeTimeRange, setTimeRangeFromUrl]
   );
 
   return {
     timeRange,
     setTimeRange: (newRange: TimeRange) => {
       setPyroscopeTimeRange(newRange);
+      setTimeRangeFromUrl(newRange);
       refreshApps();
     },
     setTimeZone() {}, // no op

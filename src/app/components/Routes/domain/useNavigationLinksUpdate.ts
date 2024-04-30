@@ -2,10 +2,7 @@ import { useEffect } from 'react';
 
 import plugin from '../../../../plugin.json';
 
-const NAVIGATION_ROUTES = plugin.includes
-  .map(({ path }) => path.replace('%PLUGIN_ID%', plugin.id))
-  // filter out pages that don't need URL search parameters update
-  .filter((path) => !/(\/settings|\/ad-hoc)/.test(path));
+const NAVIGATION_ROUTES = plugin.includes.map(({ path }) => path.replace('%PLUGIN_ID%', plugin.id));
 
 const findMenuLinks = () =>
   Array.from(document.querySelectorAll(`a[href^="/a/${plugin.id}/"]`))
@@ -18,37 +15,33 @@ const findMenuLinks = () =>
         link.setAttribute('data-original-href', link.getAttribute('href') as string);
       }
 
-      return link;
+      return link as HTMLAnchorElement;
     });
 
-const onHistoryChange = () => {
-  const newSearch = new URLSearchParams(window.location.search).toString();
-  if (!newSearch) {
+function interceptClick(event: Event) {
+  const link = event.target as HTMLAnchorElement;
+  if (!link) {
     return;
   }
 
-  findMenuLinks().forEach((link: Element) => {
-    const newHref = `${link.getAttribute('data-original-href')}?${newSearch}`;
-    link.setAttribute('href', newHref);
-  });
-};
+  const newSearch = new URLSearchParams(window.location.search).toString();
+  const newHref = `${link.getAttribute('data-original-href')}?${newSearch}`;
+
+  link.setAttribute('href', newHref);
+}
 
 export function useNavigationLinksUpdate() {
   useEffect(() => {
-    onHistoryChange();
+    const menuLinks = findMenuLinks();
 
-    window.addEventListener('pushstate', onHistoryChange);
-    window.addEventListener('popstate', onHistoryChange);
+    menuLinks.forEach((link) => {
+      link.addEventListener('click', interceptClick, true);
+    });
 
     return () => {
-      findMenuLinks().forEach((link: Element) => {
-        if (link.getAttribute('data-original-href')) {
-          link.setAttribute('href', link.getAttribute('data-original-href') as string);
-        }
+      menuLinks.forEach((link) => {
+        link.removeEventListener('click', interceptClick, true);
       });
-
-      window.removeEventListener('popstate', onHistoryChange);
-      window.removeEventListener('pushstate', onHistoryChange);
     };
   }, []);
 }

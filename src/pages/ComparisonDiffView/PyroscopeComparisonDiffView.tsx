@@ -18,12 +18,13 @@ import {
   fetchTagValues,
   selectAnnotationsOrDefault,
   selectContinuousState,
-  selectQueries,
   selectTimelineSides,
 } from '@pyroscope/redux/reducers/continuous';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
+import { useLeftRightParamsFromUrl } from '@shared/domain/url-params/useLeftRightParamsFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
+import { Query } from 'grafana-pyroscope/public/app/models/query';
 import React, { useEffect } from 'react';
 
 import styles from './ContinuousSingleView.module.css';
@@ -31,10 +32,13 @@ import { formatTitle } from './formatTitle';
 import { isLoadingOrReloading } from './isLoadingOrReloading';
 
 export function PyroscopeComparisonDiffView() {
+  const { left, right } = useLeftRightParamsFromUrl();
+  const leftQuery = left.query as Query;
+  const rightQuery = right.query as Query;
+
   const dispatch = useAppDispatch();
   const { diffView, refreshToken, maxNodes, leftFrom, rightFrom, leftUntil, rightUntil } =
     useAppSelector(selectContinuousState);
-  const { leftQuery, rightQuery } = useAppSelector(selectQueries);
   const annotations = useAppSelector(selectAnnotationsOrDefault('diffView'));
 
   usePopulateLeftRightQuery();
@@ -130,7 +134,10 @@ export function PyroscopeComparisonDiffView() {
               query={leftQuery}
               tags={leftTags}
               onRefresh={() => dispatch(actions.refresh())}
-              onSetQuery={(q) => dispatch(actions.setLeftQuery(q))}
+              onSetQuery={(q) => {
+                left.setQuery(q);
+                dispatch(actions.setLeftQuery(q));
+              }}
               onSelectedLabel={(label, query) => {
                 dispatch(fetchTagValues({ query, label }));
               }}
@@ -169,7 +176,10 @@ export function PyroscopeComparisonDiffView() {
               query={rightQuery}
               tags={rightTags}
               onRefresh={() => dispatch(actions.refresh())}
-              onSetQuery={(q) => dispatch(actions.setRightQuery(q))}
+              onSetQuery={(q) => {
+                right.setQuery(q);
+                dispatch(actions.setRightQuery(q));
+              }}
               onSelectedLabel={(label, query) => {
                 dispatch(fetchTagValues({ query, label }));
               }}
