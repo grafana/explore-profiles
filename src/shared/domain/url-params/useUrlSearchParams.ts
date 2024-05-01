@@ -1,5 +1,7 @@
 import { useHistory } from 'react-router-dom';
 
+import { PLUGIN_BASE_URL } from '../../../constants';
+
 export function useUrlSearchParams() {
   const history = useHistory();
 
@@ -14,7 +16,22 @@ export function useUrlSearchParams() {
         newSearchParams.set(key, value);
       }
 
-      history.push({ pathname: window.location.pathname, search: newSearchParams.toString() });
+      const pathname = trimPrefixUntil(window.location.pathname, PLUGIN_BASE_URL);
+      history.push({ pathname, search: newSearchParams.toString() });
     },
   };
+}
+
+/** Trims all leading characters from a string until the pattern is reached. */
+export function trimPrefixUntil(s: string, pattern: string): string {
+  if (pattern === '') {
+    return s;
+  }
+
+  const idx = s.indexOf(pattern);
+  if (idx < 0) {
+    return s;
+  }
+
+  return s.substring(idx);
 }
