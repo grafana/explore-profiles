@@ -82,7 +82,7 @@ To release something sooner than Monday, follow these **9 simple steps**:
 
 6. Select `Target`: specify `ops`, `prod` or `opsprod` for both and click on the `Deploy` button.
 
-7. Wait for the release to be deployed ; monitor the [#pyroscope-ops](https://raintank-corp.slack.com/archives/C04TRP742NN) Slack channel. **Be sure to click the workflow posted in the slack channel**:
+7. Wait for the release to be deployed ; monitor the [#pyroscope-cd](https://raintank-corp.slack.com/archives/C06VCMCPA59) Slack channel. **Be sure to click the workflow posted in the slack channel**:
 
    <img width="390" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/7303134d-0de0-4280-b735-e448dc144d08">
 
