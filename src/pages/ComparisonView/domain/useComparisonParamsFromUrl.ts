@@ -15,6 +15,7 @@ export function useComparisonParamsFromUrl() {
   const [mainTimeRange] = useTimeRangeFromUrl();
   const { left, right } = useLeftRightParamsFromUrl();
 
+  // we set the default values only when mounting
   useEffect(() => {
     if (!areCompatibleQueries(query, left.query, right.query)) {
       left.setQuery(query);
@@ -26,8 +27,16 @@ export function useComparisonParamsFromUrl() {
     } else {
       syncTimelineModes(mainTimeRange, left, right);
     }
-    // we do the above only when mounting
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // we set the left/right query every time the main query (service or profile) changes
+  useEffect(() => {
+    if (query) {
+      left.setQuery(query);
+      right.setQuery(query);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
 
   return {
     left,
