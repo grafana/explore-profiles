@@ -64,30 +64,35 @@ test.describe('URL search parameters', () => {
     await expect(toolbar.getTimePicker()).toContainText('Last 1 hour');
   });
 
-  // TODO: uncomment when the migration is complete - the legacy behaviour doesn't show the same UI elements
-  // eslint-disable-next-line jest/no-commented-out-tests
-  // test('When there is no data during the time range provided, it displays "No data" banners', async ({
-  //   comparisonViewPage,
-  //   toolbar,
-  // }) => {
-  //   await comparisonViewPage.goto(
-  //     new URLSearchParams({
-  //       query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope"}',
-  //       from: 'now-5m',
-  //       until: 'now-4m',
-  //     }).toString()
-  //   );
+  test('When there is no data during the time range provided, it displays "No data" banners', async ({
+    comparisonViewPage,
+    toolbar,
+  }) => {
+    await comparisonViewPage.goto(
+      new URLSearchParams({
+        query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope"}',
+        from: 'now-25m',
+        until: 'now-24m',
+      }).toString()
+    );
 
-  //   await toolbar.assertNoSpinners();
+    await toolbar.assertNoSpinners();
 
-  //   await expect(toolbar.getServicesDropdown()).toContainText('Choose a service (0)');
-  //   await expect(toolbar.getProfileTypesDropdown()).toContainText('Choose a profile type (0)');
+    await expect(toolbar.getServicesDropdown()).toContainText('Choose a service (0)');
+    await expect(toolbar.getProfileTypesDropdown()).toContainText('Choose a profile type (0)');
 
-  //   await comparisonViewPage.assertNoLoadingPanels();
-  //   await expect(comparisonViewPage.getMainTimelinePanel()).toHaveScreenshot();
-  //   await expect(comparisonViewPage.getBaselinePanel()).toHaveScreenshot();
-  //   await expect(comparisonViewPage.getComparisonPanel()).toHaveScreenshot();
-  // });
+    await comparisonViewPage.assertNoLoadingPanels();
+
+    await expect(comparisonViewPage.getMainTimelinePanel()).toContainText('No timeline data available');
+
+    const baselinePanel = comparisonViewPage.getBaselinePanel();
+    await expect(baselinePanel).toContainText('No timeline data available');
+    await expect(baselinePanel).toContainText('No profile data available');
+
+    const comparisonPanel = comparisonViewPage.getComparisonPanel();
+    await expect(comparisonPanel).toContainText('No timeline data available');
+    await expect(comparisonPanel).toContainText('No profile data available');
+  });
 });
 
 test.describe('Time picker', () => {
