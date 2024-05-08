@@ -19,7 +19,7 @@ const findMenuLinks = () =>
     });
 
 function interceptClick(event: Event) {
-  const link = event.target as HTMLAnchorElement;
+  const link = event.currentTarget as HTMLAnchorElement;
   if (!link) {
     return;
   }
