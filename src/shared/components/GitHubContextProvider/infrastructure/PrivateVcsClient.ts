@@ -107,7 +107,7 @@ class PrivateVcsClient extends ApiClient {
   }
 
   async refresh(): Promise<void> {
-    this.refreshSession();
+    return this.refreshSession();
   }
 
   /**
