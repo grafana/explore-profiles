@@ -35,34 +35,34 @@ describe('Faro', () => {
     [
       'grafana-dev.net',
       'pyroscope-app-dev',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/31b6971780839bbf89ec070a092a9490',
+      'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/31b6971780839bbf89ec070a092a9490',
     ],
     [
       'test.grafana-dev.net',
       'pyroscope-app-dev',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/31b6971780839bbf89ec070a092a9490',
+      'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/31b6971780839bbf89ec070a092a9490',
     ],
     // Ops
     [
       'foobar.grafana-ops.net',
       'pyroscope-app-ops',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/2a05f9e7c907b04c28ba5638f5174dde',
+      'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/2a05f9e7c907b04c28ba5638f5174dde',
     ],
     [
       'grafana-ops.net',
       'pyroscope-app-ops',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/2a05f9e7c907b04c28ba5638f5174dde',
+      'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/2a05f9e7c907b04c28ba5638f5174dde',
     ],
     // Prod
     [
       'foobar.grafana.net',
       'pyroscope-app-prod',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/3a26d34f379b4256b828e6da4f5d0cae',
+      'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/3a26d34f379b4256b828e6da4f5d0cae',
     ],
     [
       'grafana.net',
       'pyroscope-app-prod',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/3a26d34f379b4256b828e6da4f5d0cae',
+      'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/3a26d34f379b4256b828e6da4f5d0cae',
     ],
   ])('It initializes faro for environment %s', (host, appName, url) => {
     Object.defineProperty(window, 'location', {

@@ -13,17 +13,17 @@ const ENVS = [
   //  },
   {
     appName: 'pyroscope-app-dev',
-    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/31b6971780839bbf89ec070a092a9490',
+    faroUrl: 'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/31b6971780839bbf89ec070a092a9490',
     matchHost: RegExp('grafana-dev\\.net'),
   },
   {
     appName: 'pyroscope-app-ops',
-    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/2a05f9e7c907b04c28ba5638f5174dde',
+    faroUrl: 'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/2a05f9e7c907b04c28ba5638f5174dde',
     matchHost: RegExp('grafana-ops\\.net'),
   },
   {
     appName: 'pyroscope-app-prod',
-    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/3a26d34f379b4256b828e6da4f5d0cae',
+    faroUrl: 'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/3a26d34f379b4256b828e6da4f5d0cae',
     matchHost: RegExp('grafana\\.net'),
   },
 ];
