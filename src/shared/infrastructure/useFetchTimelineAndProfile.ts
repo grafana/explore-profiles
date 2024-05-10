@@ -13,6 +13,7 @@ type FetchParams = {
   query: string;
   timeRange: TimeRange;
   maxNodes: number | null;
+  disabled?: boolean;
 };
 
 type FetchResponse = {
@@ -37,17 +38,23 @@ const TIMELINE_AND_PROFILE_API_CLIENTS = new Map<Target, TimeLineAndProfileApiCl
   ['right-profile', new TimeLineAndProfileApiClient()],
 ]);
 
-export function useFetchTimelineAndProfile({ target, query, timeRange, maxNodes }: FetchParams): FetchResponse {
+export function useFetchTimelineAndProfile({
+  target,
+  query,
+  timeRange,
+  maxNodes,
+  disabled,
+}: FetchParams): FetchResponse {
   const timelineAndProfileApiClient = TIMELINE_AND_PROFILE_API_CLIENTS.get(target) as TimeLineAndProfileApiClient;
 
   const { isFetching, error, data, refetch } = useQuery({
     // for UX: keep previous data while fetching -> timeline & profile do not re-render with empty panels when refreshing
     placeholderData: (previousData) => previousData,
     // determining query and maxNodes can be asynchronous so we enable the main query only when we have values for both
-    enabled: Boolean(query && maxNodes),
+    enabled: !disabled && Boolean(query && maxNodes),
     // we use "raw" to cache relative time ranges between renders, so that only refetch() will trigger a new query
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: [query, timeRange.raw.from.toString(), timeRange.raw.to.toString(), maxNodes],
+    queryKey: [target, query, timeRange.raw.from.toString(), timeRange.raw.to.toString(), maxNodes],
     queryFn: () => {
       timelineAndProfileApiClient.abort();
 

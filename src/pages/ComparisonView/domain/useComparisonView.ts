@@ -4,29 +4,14 @@ import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
-import Color from 'color';
 
 import { useFetchLeftProfile } from '../infrastructure/useFetchLeftProfile';
 import { useFetchLeftTimeLine } from '../infrastructure/useFetchLeftTimeLine';
 import { useFetchRightProfile } from '../infrastructure/useFetchRightProfile';
 import { useFetchRightTimeline } from '../infrastructure/useFetchRightTimeline';
+import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS } from '../ui/colors';
 import { syncTimelineModes } from './syncTimelineModes';
 import { useComparisonParamsFromUrl } from './useComparisonParamsFromUrl';
-
-export const LEFT_TIMELINE_COLORS = {
-  COLOR: Color('#d066d4'),
-  OVERLAY: Color('#d066d4').alpha(0.3),
-};
-
-export const RIGHT_TIMELINE_COLORS = {
-  COLOR: Color('#1398f6'),
-  OVERLAY: Color('#1398f6').alpha(0.3),
-};
-
-export const GRAY_TIMELINE_SELECTION_COLORS = {
-  COLOR: Color('#f0f0f0'),
-  OVERLAY: Color('#f0f0f0').alpha(0.3),
-};
 
 export function useComparisonView(): DomainHookReturnValue {
   const [mainTimeRange, setMainTimeRange] = useTimeRangeFromUrl();

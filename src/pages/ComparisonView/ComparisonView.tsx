@@ -6,17 +6,19 @@ import { Toolbar } from '@shared/components/Toolbar/Toolbar';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { LeftPanel } from './components/LeftPanel/LeftPanel';
-import { RightPanel } from './components/RightPanel/RightPanel';
-import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS, useComparisonView } from './domain/useComparisonView';
+import { ComparisonPanel } from './components/ComparisonPanel/ComparisonPanel';
+import { useComparisonView } from './domain/useComparisonView';
+import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS } from './ui/colors';
 import { ComparisonViewErrors } from './ui/ComparisonViewErrors';
 import { ComparisonViewWarnings } from './ui/ComparisonViewWarnings';
 
 const getStyles = () => ({
   flex: css`
     display: flex;
-    flex-direction: row;
-    gap: 15px;
+
+    & > :last-child {
+      margin-left: 8px;
+    }
   `,
 });
 
@@ -59,8 +61,8 @@ export function ComparisonView() {
       </Panel>
 
       <div className={styles.flex} data-testid="comparison-container">
-        <LeftPanel />
-        <RightPanel />
+        <ComparisonPanel type="baseline" />
+        <ComparisonPanel type="comparison" />
       </div>
     </>
   );

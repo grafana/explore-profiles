@@ -1,15 +1,16 @@
 import * as React from 'react';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { HorizontalGroup, useStyles2, VerticalGroup } from '@grafana/ui';
+import { HorizontalGroup, useStyles2 } from '@grafana/ui';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   logo: css`
-    width: ${theme.spacing(6)};
-    height: ${theme.spacing(6)};
+    width: ${theme.spacing(5)};
+    height: ${theme.spacing(5)};
   `,
-  subTitle: css`
-    margin-left: 4px;
+  title: css`
+    font-size: ${theme.typography.h3.fontSize};
+    margin-top: ${theme.spacing(1)};
   `,
 });
 
@@ -19,10 +20,9 @@ function TitleReplacementComponent({ title }: { title: string }) {
   return (
     <HorizontalGroup>
       <img src="public/plugins/grafana-pyroscope-app/img/logo.svg" className={styles.logo} />
-      <VerticalGroup spacing="xs">
-        <h1 data-testid="page-title">{title}</h1>
-        <span className={styles.subTitle}>Profiles</span>
-      </VerticalGroup>
+      <h1 className={styles.title} data-testid="page-title">
+        {title}
+      </h1>
     </HorizontalGroup>
   );
 }

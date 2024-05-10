@@ -50,12 +50,15 @@ type FetchResponse = {
 
 export function useFetchDotProfiles(fetchParams: FetchParams): FetchResponse {
   const { isFetching, error, data } = useQuery({
-    queryKey: fetchParams.reduce((acc, { query, timeRange }) => {
-      acc.push(query);
-      acc.push(timeRange.raw.from.toString());
-      acc.push(timeRange.raw.to.toString());
-      return acc;
-    }, [] as string[]),
+    queryKey: fetchParams.reduce(
+      (acc, { query, timeRange }) => {
+        acc.push(query);
+        acc.push(timeRange.raw.from.toString());
+        acc.push(timeRange.raw.to.toString());
+        return acc;
+      },
+      ['dot-profiles'] as string[]
+    ),
     queryFn: () => {
       // TODO FIXME: pass a signal options to fetch to properly abort all in-flight requests
       // apiClient.abort();

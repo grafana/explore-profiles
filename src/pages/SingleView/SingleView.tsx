@@ -13,9 +13,9 @@ import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { useGitHubIntegration } from '../domain/useGitHubIntegration';
-import { useSingleView } from '../domain/useSingleView';
-import { FunctionDetailsPanel } from './FunctionDetailsPanel/FunctionDetailsPanel';
+import { FunctionDetailsPanel } from './components/FunctionDetailsPanel/FunctionDetailsPanel';
+import { useGitHubIntegration } from './domain/useGitHubIntegration';
+import { useSingleView } from './domain/useSingleView';
 
 const getStyles = () => ({
   flex: css`

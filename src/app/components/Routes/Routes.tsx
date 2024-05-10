@@ -11,7 +11,7 @@ import { AdHocView } from '../../../pages/AdHocView/AdHocView';
 import { ComparisonDiffView } from '../../../pages/ComparisonDiffView/ComparisonDiffView';
 import { ComparisonView } from '../../../pages/ComparisonView/ComparisonView';
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
-import { SingleView } from '../../../pages/SingleView/components/SingleView';
+import { SingleView } from '../../../pages/SingleView/SingleView';
 import { PyroscopeStateWrapper } from './domain/PyroscopeState/PyroscopeStateWrapper';
 import useConsistentTheme from './domain/useConsistentTheme';
 import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';

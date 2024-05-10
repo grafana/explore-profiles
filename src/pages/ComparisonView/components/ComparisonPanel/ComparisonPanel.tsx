@@ -1,4 +1,4 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { InlineBanner } from '@shared/components/InlineBanner';
@@ -8,24 +8,33 @@ import { SingleTimeline } from '@shared/components/Timeline/SingleTimeline';
 import { displayWarning } from '@shared/domain/displayStatus';
 import React from 'react';
 
-import { LEFT_TIMELINE_COLORS } from '../../domain/useComparisonView';
-import { useLeftPanel } from './domain/useLeftPanel';
+import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS } from '../../ui/colors';
+import { useComparisonPanel } from './domain/useComparisonPanel';
+
+type ComparisonPanelProps = {
+  type: 'baseline' | 'comparison';
+};
 
 const getStyles = () => ({
-  baselinePanel: css`
+  panel: css`
     flex: 1;
+    max-width: 50%;
   `,
   timeline: css`
     margin-bottom: 16px;
   `,
-  // purple
-  baselineIcon: css`
-    background: ${LEFT_TIMELINE_COLORS.COLOR.toString()};
+  panelIcon: css`
     width: 10px;
     height: 10px;
     border-radius: 50%;
     display: inline-block;
     margin-right: 6px;
+  `,
+  baselineIcon: css`
+    background: ${LEFT_TIMELINE_COLORS.COLOR.toString()};
+  `,
+  comparisonIcon: css`
+    background: ${RIGHT_TIMELINE_COLORS.COLOR.toString()};
   `,
   // prevents the "Add filter..." and "Execute" button to be rendered outside of the panel in certain cases
   queryBuilder: css`
@@ -33,11 +42,16 @@ const getStyles = () => ({
   `,
 });
 
-// Baseline panel
-export function LeftPanel() {
+export function ComparisonPanel({ type }: ComparisonPanelProps) {
   const styles = useStyles2(getStyles);
 
-  const { data, actions } = useLeftPanel();
+  const isBaselinePanel = type === 'baseline';
+  const { data, actions } = useComparisonPanel(isBaselinePanel);
+
+  const title = isBaselinePanel ? 'Baseline time range' : 'Comparison time range';
+  const dataTestId = isBaselinePanel ? 'baseline-panel' : 'comparison-panel';
+  const queryBuilderId = isBaselinePanel ? 'query-builder-baseline' : 'query-builder-comparison';
+  const color = isBaselinePanel ? LEFT_TIMELINE_COLORS.COLOR : RIGHT_TIMELINE_COLORS.COLOR;
 
   if (data.fetchSettingsError) {
     displayWarning([
@@ -48,18 +62,18 @@ export function LeftPanel() {
 
   return (
     <Panel
-      className={styles.baselinePanel}
+      className={styles.panel}
       title={
         <>
-          <div className={styles.baselineIcon} />
-          <span>Baseline time range</span>
+          <div className={cx(styles.panelIcon, isBaselinePanel ? styles.baselineIcon : styles.comparisonIcon)} />
+          <span>{title}</span>
         </>
       }
       isLoading={data.isLoading}
-      dataTestId="baseline-panel"
+      dataTestId={dataTestId}
     >
       <QueryBuilder
-        id="query-builder-baseline"
+        id={queryBuilderId}
         className={styles.queryBuilder}
         query={data.query}
         // FIXME
@@ -88,7 +102,7 @@ export function LeftPanel() {
           timeline={data.timeline}
           timeRange={data.mainTimeRange}
           onSelectTimeRange={actions.selectTimeRange}
-          color={LEFT_TIMELINE_COLORS.COLOR}
+          color={color}
           selection={data.timelineSelection}
         />
       </div>

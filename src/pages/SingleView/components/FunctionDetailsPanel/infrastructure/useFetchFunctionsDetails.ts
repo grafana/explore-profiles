@@ -42,7 +42,7 @@ export function useFetchFunctionsDetails({
   const { isFetching, error, data } = useQuery({
     enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0),
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: [profileMetricId, labelsSelector, start, end, stacktrace, isGitHubLogged],
+    queryKey: ['function-details', profileMetricId, labelsSelector, start, end, stacktrace, isGitHubLogged],
     queryFn: async () => {
       const pprof = await pprofApiClient.selectMergeProfileJson({
         profileMetricId,

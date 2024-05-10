@@ -21,7 +21,7 @@ type FetchResponse = {
 export function useFetchVCSFile({ enabled, repository, gitRef, path }: FetchParams): FetchResponse {
   const { isFetching, error, data } = useQuery({
     enabled: Boolean(enabled && path),
-    queryKey: [repository, gitRef, path],
+    queryKey: ['vcs-file', repository, gitRef, path],
     queryFn: () =>
       privateVcsClient
         .getFile(repository, gitRef, path)
