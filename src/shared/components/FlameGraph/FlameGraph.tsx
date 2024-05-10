@@ -1,7 +1,6 @@
 import { createTheme } from '@grafana/data';
+import { FlameGraph as GrafanaFlameGraph, Props } from '@grafana/flamegraph';
 import { useTheme2 } from '@grafana/ui';
-import { FlameGraph as GrafanaFlameGraph } from '@shared/components/@grafana-experimental-flamegraph';
-import { GetExtraContextMenuButtonsFunction } from '@shared/components/@grafana-experimental-flamegraph/src/FlameGraph/FlameGraphContextMenu';
 import React, { memo, useMemo } from 'react';
 
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
@@ -14,7 +13,7 @@ type FlameGraphProps = {
   vertical?: boolean;
   enableFlameGraphDotComExport?: boolean;
   collapsedFlamegraphs?: boolean;
-  getExtraContextMenuButtons?: GetExtraContextMenuButtonsFunction;
+  getExtraContextMenuButtons?: Props['getExtraContextMenuButtons'];
 };
 
 function FlameGraphComponent({
@@ -41,11 +40,11 @@ function FlameGraphComponent({
 
   return (
     <GrafanaFlameGraph
-      data={dataFrame}
+      data={dataFrame as any}
       disableCollapsing={!collapsedFlamegraphs}
       extraHeaderElements={<ExportData profile={profile} enableFlameGraphDotComExport={enableFlameGraphDotComExport} />}
       vertical={vertical}
-      getTheme={getTheme}
+      getTheme={getTheme as any}
       getExtraContextMenuButtons={getExtraContextMenuButtons}
     />
   );

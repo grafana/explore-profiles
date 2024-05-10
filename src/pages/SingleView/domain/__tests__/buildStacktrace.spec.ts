@@ -1,9 +1,8 @@
 import { DataFrame, FieldType } from '@grafana/data';
-import { LevelItem } from '@shared/components/@grafana-experimental-flamegraph/src/FlameGraph/dataTransform';
 
 import { buildStacktrace } from '../buildStacktrace';
 
-const buildLevelItem = (level: number, itemIndexes: number[], parents: LevelItem[]): LevelItem => ({
+const buildLevelItem = (level: number, itemIndexes: number[], parents: any[]): any => ({
   level,
   itemIndexes,
   parents,

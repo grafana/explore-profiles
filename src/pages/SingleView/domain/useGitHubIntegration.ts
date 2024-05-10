@@ -1,5 +1,5 @@
-import { DataFrame, usePluginContext } from '@grafana/data';
-import { ClickedItemData, ExtraContextMenuButton } from '@shared/components/@grafana-experimental-flamegraph/src/types';
+import { IconName, usePluginContext } from '@grafana/data';
+import { Props as FlameGraphProps } from '@grafana/flamegraph';
 import { useGitHubContext } from '@shared/components/GitHubContextProvider/useGitHubContext';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { AppPluginSettings } from '@shared/types/AppPluginSettings';
@@ -19,8 +19,8 @@ export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
 
   const [stacktrace, setStacktrace] = useState<string[]>([]);
 
-  const getExtraFlameGraphMenuItems = useCallback(
-    ({ item }: ClickedItemData, data: DataFrame) => {
+  const getExtraFlameGraphMenuItems: FlameGraphProps['getExtraContextMenuButtons'] = useCallback(
+    ({ item }: any, data: any) => {
       // clicking on the top-level "total" node doesn't add "Function details" as an extra contextual menu item
       if (!isGitHubIntegrationEnabled || item.level === 0) {
         return [];
@@ -29,8 +29,8 @@ export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
       return [
         {
           label: 'Function details',
-          icon: 'info-circle',
-          onClick: async () => {
+          icon: 'info-circle' as IconName,
+          onClick: () => {
             reportInteraction('g_pyroscope_app_function_details_clicked');
 
             setStacktrace(buildStacktrace(item, data));
@@ -40,11 +40,11 @@ export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
             // login can only happen as a consequence of a user action
             // this is why we check if the session is expired here and not whenever we make a request to the API
             if (isSessionExpired) {
-              await login();
+              login();
             }
           },
         },
-      ] as ExtraContextMenuButton[];
+      ];
     },
     [isGitHubIntegrationEnabled, isSessionExpired, login, sidePanel]
   );

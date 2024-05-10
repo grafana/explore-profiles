@@ -96,8 +96,8 @@ export function FlameGraphWrapper(props: Props) {
       <>
         {props.timelineEl}
         <FlameGraph
-          getTheme={() => createTheme({ colors: { mode: colorMode } })}
-          data={dataFrame}
+          getTheme={() => createTheme({ colors: { mode: colorMode } }) as any}
+          data={dataFrame as any}
           extraHeaderElements={extraEl}
           vertical={props.vertical}
           disableCollapsing={!pluginSettings?.collapsedFlamegraphs}
