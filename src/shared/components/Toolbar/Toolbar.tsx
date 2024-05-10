@@ -25,6 +25,8 @@ export type ToolbarProps = {
   isLoading: boolean;
   onRefresh: () => void;
   onChangeTimeRange: (newTimeRange: TimeRange) => void;
+  onChangeService?: (newServiceId: string) => void;
+  onChangeProfileType?: (newProfileMetricId: string) => void;
 };
 
 export function Toolbar(props: ToolbarProps) {

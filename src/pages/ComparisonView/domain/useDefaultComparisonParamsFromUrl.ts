@@ -10,7 +10,7 @@ import { syncTimelineModes } from './syncTimelineModes';
 
 const isTimeRangeSet = (timeRange: TimeRange): boolean => Boolean(timeRange.from.unix() && timeRange.to.unix());
 
-export function useComparisonParamsFromUrl() {
+export function useDefaultComparisonParamsFromUrl() {
   const [query] = useQueryFromUrl();
   const [mainTimeRange] = useTimeRangeFromUrl();
   const { left, right } = useLeftRightParamsFromUrl();
@@ -28,15 +28,6 @@ export function useComparisonParamsFromUrl() {
       syncTimelineModes(mainTimeRange, left, right);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // we set the left/right query every time the main query (service or profile) changes
-  useEffect(() => {
-    if (query) {
-      left.setQuery(query);
-      right.setQuery(query);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
 
   return {
     left,

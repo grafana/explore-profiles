@@ -4,12 +4,19 @@ import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { Timeline } from '@shared/types/Timeline';
 import { useQuery } from '@tanstack/react-query';
 
-import { TimeLineAndProfileApiClient, timelineAndProfileApiClient } from './timelineAndProfileApiClient';
+import { TimelineAndProfileApiClient, timelineAndProfileApiClient } from './timelineAndProfileApiClient';
 
 const apiClient = new ApiClient();
 
+export type FetchTimelineAndProfileTarget =
+  | 'main'
+  | 'left-timeline'
+  | 'left-profile'
+  | 'right-timeline'
+  | 'right-profile';
+
 type FetchParams = {
-  target: Target;
+  target: FetchTimelineAndProfileTarget;
   query: string;
   timeRange: TimeRange;
   maxNodes: number | null;
@@ -24,18 +31,16 @@ type FetchResponse = {
   refetch: () => void;
 };
 
-type Target = 'main' | 'left-timeline' | 'left-profile' | 'right-timeline' | 'right-profile';
-
-// Each target has its own TimeLineAndProfileApiClient to ensure we abort the correct request
+// Each target has its own TimelineAndProfileApiClient to ensure we abort the correct request
 // TODO: find a better solution
-const TIMELINE_AND_PROFILE_API_CLIENTS = new Map<Target, TimeLineAndProfileApiClient>([
+const TIMELINE_AND_PROFILE_API_CLIENTS = new Map<FetchTimelineAndProfileTarget, TimelineAndProfileApiClient>([
   // ugly: we have to reuse this client, which is used to fetch the main timeline, so that useFetchFunctionsDetails() can work properly
   // TODO: find a better solution
   ['main', timelineAndProfileApiClient],
-  ['left-timeline', new TimeLineAndProfileApiClient()],
-  ['left-profile', new TimeLineAndProfileApiClient()],
-  ['right-timeline', new TimeLineAndProfileApiClient()],
-  ['right-profile', new TimeLineAndProfileApiClient()],
+  ['left-timeline', new TimelineAndProfileApiClient()],
+  ['left-profile', new TimelineAndProfileApiClient()],
+  ['right-timeline', new TimelineAndProfileApiClient()],
+  ['right-profile', new TimelineAndProfileApiClient()],
 ]);
 
 export function useFetchTimelineAndProfile({
@@ -45,7 +50,7 @@ export function useFetchTimelineAndProfile({
   maxNodes,
   disabled,
 }: FetchParams): FetchResponse {
-  const timelineAndProfileApiClient = TIMELINE_AND_PROFILE_API_CLIENTS.get(target) as TimeLineAndProfileApiClient;
+  const timelineAndProfileApiClient = TIMELINE_AND_PROFILE_API_CLIENTS.get(target) as TimelineAndProfileApiClient;
 
   const { isFetching, error, data, refetch } = useQuery({
     // for UX: keep previous data while fetching -> timeline & profile do not re-render with empty panels when refreshing

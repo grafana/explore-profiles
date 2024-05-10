@@ -2,6 +2,7 @@ type ParsedQuery = {
   serviceId: string;
   profileMetricId: string;
   labelsSelector: string;
+  labels: string[];
 };
 
 export function parseQuery(query: string): ParsedQuery {
@@ -10,13 +11,22 @@ export function parseQuery(query: string): ParsedQuery {
 
   const labelsSelector = query.substring(query.indexOf('{'));
 
-  return { serviceId, profileMetricId, labelsSelector };
+  const labels = labelsSelector
+    .replace(/(\{|\})/, '')
+    .split(',')
+    .map((m) => m.match(/\W*([^=!~]+)(=|!=|=~|!~)"(.*)"/)?.[0])
+    .filter((label) => label && !label.includes('service_name')) as string[];
+
+  return { serviceId, profileMetricId, labelsSelector, labels };
 }
 
 type BuildQueryParams = {
   serviceId: string;
   profileMetricId: string;
+  labels?: string[];
 };
 
-export const buildQuery = ({ serviceId, profileMetricId }: BuildQueryParams): string =>
-  `${profileMetricId}{service_name="${serviceId}"}`;
+export const buildQuery = ({ serviceId, profileMetricId, labels }: BuildQueryParams): string =>
+  labels?.length
+    ? `${profileMetricId}{service_name="${serviceId}",${labels.join()}}`
+    : `${profileMetricId}{service_name="${serviceId}"}`;

@@ -34,6 +34,8 @@ export function ComparisonView() {
         isLoading={data.isLoadingMain}
         onRefresh={actions.refresh}
         onChangeTimeRange={actions.setMainTimeRange}
+        onChangeService={actions.resetQueries}
+        onChangeProfileType={actions.updateQueries}
       />
 
       <Panel title={data.title} isLoading={data.isLoadingMain} dataTestId="main-timeline-panel">

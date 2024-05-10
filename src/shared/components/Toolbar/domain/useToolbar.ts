@@ -1,4 +1,4 @@
-import { TimeRange } from '@grafana/data';
+import { SelectableValue, TimeRange } from '@grafana/data';
 import { noOp } from '@shared/domain/noOp';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 
@@ -30,7 +30,13 @@ const navigate = (timeRange: TimeRange, forward = true): TimeRange => {
   return { from, to, raw: { from, to } };
 };
 
-export function useToolbar({ isLoading, onRefresh, onChangeTimeRange }: ToolbarProps) {
+export function useToolbar({
+  isLoading,
+  onRefresh,
+  onChangeTimeRange,
+  onChangeService,
+  onChangeProfileType,
+}: ToolbarProps) {
   const [timeRange] = useTimeRangeFromUrl();
 
   const { services } = useFetchServices({ timeRange });
@@ -50,8 +56,14 @@ export function useToolbar({ isLoading, onRefresh, onChangeTimeRange }: ToolbarP
       isLoading,
     },
     actions: {
-      selectService,
-      selectProfile,
+      selectService(option: SelectableValue<string>) {
+        selectService(option);
+        onChangeService?.(option.value || '');
+      },
+      selectProfile(option: SelectableValue<string>) {
+        selectProfile(option);
+        onChangeProfileType?.(option.value || '');
+      },
       setTimeZone: noOp,
       setTimeRange: onChangeTimeRange,
       zoom() {

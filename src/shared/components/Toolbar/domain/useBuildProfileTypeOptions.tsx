@@ -20,7 +20,7 @@ export function useBuildProfileTypeOptions(services: Services) {
   const styles = useStyles2(getStyles);
 
   const [query, setQuery] = useQueryFromUrl();
-  const { serviceId, profileMetricId } = parseQuery(query);
+  const { serviceId, profileMetricId, labels } = parseQuery(query);
 
   const profileOptions: Array<SelectableValue<string>> = useMemo(() => {
     const profileMetrics = serviceId ? Array.from(services.get(serviceId)?.values() || []) : [];
@@ -46,7 +46,7 @@ export function useBuildProfileTypeOptions(services: Services) {
     selectProfile(option: SelectableValue<string>) {
       const newProfileMetricId = option.value || '';
 
-      setQuery(buildQuery({ serviceId, profileMetricId: newProfileMetricId }));
+      setQuery(buildQuery({ serviceId, profileMetricId: newProfileMetricId, labels }));
     },
   };
 }

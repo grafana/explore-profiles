@@ -1,5 +1,5 @@
 import { TimeRange } from '@grafana/data';
-import { parseQuery } from '@shared/domain/url-params/parseQuery';
+import { buildQuery, parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -11,12 +11,12 @@ import { useFetchRightProfile } from '../infrastructure/useFetchRightProfile';
 import { useFetchRightTimeline } from '../infrastructure/useFetchRightTimeline';
 import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS } from '../ui/colors';
 import { syncTimelineModes } from './syncTimelineModes';
-import { useComparisonParamsFromUrl } from './useComparisonParamsFromUrl';
+import { useDefaultComparisonParamsFromUrl } from './useDefaultComparisonParamsFromUrl';
 
 export function useComparisonView(): DomainHookReturnValue {
   const [mainTimeRange, setMainTimeRange] = useTimeRangeFromUrl();
   const [query] = useQueryFromUrl();
-  const { left, right } = useComparisonParamsFromUrl();
+  const { left, right } = useDefaultComparisonParamsFromUrl();
 
   const {
     isFetching: isFetchingLeftTimeline,
@@ -72,6 +72,30 @@ export function useComparisonView(): DomainHookReturnValue {
       setMainTimeRange(newMainTimeRange: TimeRange) {
         setMainTimeRange(newMainTimeRange);
         syncTimelineModes(newMainTimeRange, left, right);
+      },
+      resetQueries(newServiceId: string) {
+        const newQuery = buildQuery({
+          ...parseQuery(query),
+          serviceId: newServiceId,
+        });
+
+        left.setQuery(newQuery);
+        right.setQuery(newQuery);
+      },
+      updateQueries(newProfileMetricId: string) {
+        left.setQuery(
+          buildQuery({
+            ...parseQuery(left.query),
+            profileMetricId: newProfileMetricId,
+          })
+        );
+
+        right.setQuery(
+          buildQuery({
+            ...parseQuery(right.query),
+            profileMetricId: newProfileMetricId,
+          })
+        );
       },
       refresh() {
         refetchLeftTimeline();

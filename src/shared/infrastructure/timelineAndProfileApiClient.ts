@@ -10,7 +10,7 @@ type TimelineAndProfileResponse = FlamebearerProfile & {
   //   heatmap: null;
 };
 
-export class TimeLineAndProfileApiClient extends ApiClient {
+export class TimelineAndProfileApiClient extends ApiClient {
   lastTimeRange: number[] = [];
 
   async get(query: string, timeRange: TimeRange, maxNodes: number | null): Promise<TimelineAndProfileResponse> {
@@ -44,4 +44,4 @@ export class TimeLineAndProfileApiClient extends ApiClient {
   }
 }
 
-export const timelineAndProfileApiClient = new TimeLineAndProfileApiClient();
+export const timelineAndProfileApiClient = new TimelineAndProfileApiClient();
