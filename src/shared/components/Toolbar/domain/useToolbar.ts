@@ -42,15 +42,15 @@ export function useToolbar({
 
   const { services } = useFetchServices({ timeRange });
 
-  const { serviceOptions, selectedServiceId, selectService } = useBuildServiceNameOptions(services);
-  const { profileOptions, selectedProfileId, selectProfile } = useBuildProfileTypeOptions(services);
+  const { servicePlaceHolder, serviceOptions, selectedServiceId, selectService } = useBuildServiceNameOptions(services);
+  const { profilePlaceHolder, profileOptions, selectedProfileId, selectProfile } = useBuildProfileTypeOptions(services);
 
   return {
     data: {
-      servicePlaceHolder: `Choose a service (${serviceOptions.length})`,
+      servicePlaceHolder,
       serviceOptions,
       selectedServiceId,
-      profilePlaceHolder: `Choose a profile type (${profileOptions.length})`,
+      profilePlaceHolder,
       profileOptions,
       selectedProfileId,
       timeRange,

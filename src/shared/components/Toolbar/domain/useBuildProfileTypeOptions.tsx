@@ -41,6 +41,7 @@ export function useBuildProfileTypeOptions(services: Services) {
   }, [serviceId, services, styles.profileName]);
 
   return {
+    profilePlaceHolder: `Choose a profile type (${profileOptions.length})`,
     profileOptions,
     selectedProfileId: profileOptions.length ? profileMetricId : null,
     selectProfile(newProfileMetricId: string) {

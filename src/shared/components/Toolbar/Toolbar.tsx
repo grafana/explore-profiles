@@ -40,9 +40,9 @@ export function Toolbar(props: ToolbarProps) {
         <InlineFieldRow>
           <InlineField label="Service" data-testid="services-dropdown">
             <Cascader
-              aria-label="Services list"
-              // without the key, the value is not selected when landing :man_shrug:
+              // without the key, the Cascader option is not selected when landing :man_shrug:
               key={data.selectedServiceId}
+              aria-label="Services list"
               width={32}
               separator="/"
               displayAllSelectedLevels
@@ -53,7 +53,6 @@ export function Toolbar(props: ToolbarProps) {
               onSelect={actions.selectService}
             />
           </InlineField>
-
           <InlineField label="Profile" data-testid="profile-types-dropdown">
             <Select<string>
               aria-label="Profiles list"

@@ -15,6 +15,8 @@ type FetchResponse = {
   refetch: () => void;
 };
 
+const EMPTY_SERVICES_MAP = new Map();
+
 export function useFetchServices({ timeRange, enabled }: FetchParams): FetchResponse {
   const { isFetching, error, data, refetch } = useQuery({
     enabled,
@@ -33,7 +35,7 @@ export function useFetchServices({ timeRange, enabled }: FetchParams): FetchResp
   return {
     isFetching,
     error: servicesApiClient.isAbortError(error) ? null : error,
-    services: data || new Map(),
+    services: data || EMPTY_SERVICES_MAP,
     refetch,
   };
 }

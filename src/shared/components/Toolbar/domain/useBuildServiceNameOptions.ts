@@ -1,3 +1,4 @@
+import { CascaderOption } from '@grafana/ui';
 import { getDefaultProfile } from '@shared/domain/url-params/getDefaultServiceAndProfile';
 import { buildQuery, parseQuery } from '@shared/domain/url-params/parseQuery';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
@@ -11,40 +12,45 @@ export function useBuildServiceNameOptions(services: Services) {
   const { serviceId } = parseQuery(query);
 
   const serviceOptions = useMemo(() => {
-    const cascaderServiceOptions = new Map();
+    const options: CascaderOption[] = [];
 
     for (const serviceId of Array.from(services.keys() || []).sort()) {
-      const [namespaceOrService, service] = (serviceId as string).split('/');
+      // serviceId = ebpf/agent-logs/agent ; parts = [ebpf,agent-logs,agent]
+      const parts = serviceId.split('/');
 
-      if (!service) {
-        cascaderServiceOptions.set(namespaceOrService, {
-          value: serviceId,
-          label: serviceId,
-        });
-      } else {
-        const nameSpaceServices = cascaderServiceOptions.get(namespaceOrService) || {
-          value: namespaceOrService,
-          label: namespaceOrService,
-          items: [],
-        };
+      let currentPart: string;
+      const currentValues = [];
+      let currentOptions = options;
 
-        const items = nameSpaceServices.items || [];
+      for (let level = 0; level < parts.length; level += 1) {
+        currentPart = parts[level];
+        currentValues.push(currentPart);
+        const value = currentValues.join('/');
 
-        items.push({
-          value: serviceId,
-          label: service,
-        });
+        const existingOption = currentOptions.find((o) => o.value === value);
 
-        nameSpaceServices.items = items;
+        if (existingOption) {
+          currentOptions = existingOption.items as CascaderOption[];
+        } else {
+          const newOption = {
+            value,
+            label: currentPart,
+            // setting items only for non-terminal nodes is required by the Cascader component
+            // without it, the initial value would not be properly set in the UI
+            items: level < parts.length - 1 ? [] : undefined,
+          };
 
-        cascaderServiceOptions.set(namespaceOrService, nameSpaceServices);
+          currentOptions.push(newOption);
+          currentOptions = newOption.items || [];
+        }
       }
     }
 
-    return Array.from(cascaderServiceOptions.values());
+    return options;
   }, [services]);
 
   return {
+    servicePlaceHolder: `Choose a service (${serviceOptions.length})`,
     serviceOptions,
     selectedServiceId: serviceOptions.length ? serviceId : undefined,
     selectService(newServiceId: string) {
