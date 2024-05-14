@@ -1,21 +1,23 @@
 import { css, cx } from '@emotion/css';
-import { useStyles2 } from '@grafana/ui';
-import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
+import { GrafanaTheme2 } from '@grafana/data';
+import { Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { SingleTimeline } from '@shared/components/Timeline/SingleTimeline';
 import { displayWarning } from '@shared/domain/displayStatus';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
-import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS } from '../../ui/colors';
+import { BASELINE_COLORS, COMPARISON_COLORS } from '../../ui/colors';
 import { useComparisonPanel } from './domain/useComparisonPanel';
 
 type ComparisonPanelProps = {
   type: 'baseline' | 'comparison';
+  isLoading: boolean;
+  children?: ReactNode;
 };
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   panel: css`
     flex: 1;
     max-width: 50%;
@@ -31,18 +33,22 @@ const getStyles = () => ({
     margin-right: 6px;
   `,
   baselineIcon: css`
-    background: ${LEFT_TIMELINE_COLORS.COLOR.toString()};
+    background: ${BASELINE_COLORS.COLOR.toString()};
   `,
   comparisonIcon: css`
-    background: ${RIGHT_TIMELINE_COLORS.COLOR.toString()};
+    background: ${COMPARISON_COLORS.COLOR.toString()};
   `,
   // prevents the "Add filter..." and "Execute" button to be rendered outside of the panel in certain cases
   queryBuilder: css`
     flex-wrap: wrap;
   `,
+  warningIcon: css`
+    margin-left: 8px;
+    color: ${theme.colors.warning.text};
+  `,
 });
 
-export function ComparisonPanel({ type }: ComparisonPanelProps) {
+export function ComparisonPanel({ isLoading, type, children }: ComparisonPanelProps) {
   const styles = useStyles2(getStyles);
 
   const isBaselinePanel = type === 'baseline';
@@ -51,7 +57,7 @@ export function ComparisonPanel({ type }: ComparisonPanelProps) {
   const title = isBaselinePanel ? 'Baseline time range' : 'Comparison time range';
   const dataTestId = isBaselinePanel ? 'baseline-panel' : 'comparison-panel';
   const queryBuilderId = isBaselinePanel ? 'query-builder-baseline' : 'query-builder-comparison';
-  const color = isBaselinePanel ? LEFT_TIMELINE_COLORS.COLOR : RIGHT_TIMELINE_COLORS.COLOR;
+  const color = isBaselinePanel ? BASELINE_COLORS.COLOR : COMPARISON_COLORS.COLOR;
 
   if (data.fetchSettingsError) {
     displayWarning([
@@ -67,9 +73,17 @@ export function ComparisonPanel({ type }: ComparisonPanelProps) {
         <>
           <div className={cx(styles.panelIcon, isBaselinePanel ? styles.baselineIcon : styles.comparisonIcon)} />
           <span>{title}</span>
+          {data.selectionOutOfRange && (
+            <Tooltip
+              content="The timeline selection is out of range, the flame graph does not correspond to the timeseries displayed. Zoom out to see the actual selection."
+              placement="top"
+            >
+              <Icon name="exclamation-triangle" className={styles.warningIcon} />
+            </Tooltip>
+          )}
         </>
       }
-      isLoading={data.isLoading}
+      isLoading={data.isLoading || isLoading}
       dataTestId={dataTestId}
     >
       <QueryBuilder
@@ -107,30 +121,7 @@ export function ComparisonPanel({ type }: ComparisonPanelProps) {
         />
       </div>
 
-      {data.fetchProfileDataError && (
-        <InlineBanner
-          severity="error"
-          title="Error while loading flamegraph data!"
-          errors={[data.fetchProfileDataError]}
-        />
-      )}
-      {data.noProfileDataAvailable && (
-        <InlineBanner
-          severity="warning"
-          title="No profile data available"
-          message="Please verify that you've selected an adequate time range and filters."
-        />
-      )}
-      {/* we don't always display the flamegraph because if there's no data, the UI does not look good */}
-      {/* we probably should open a PR in the @grafana/flamegraph repo to improve this */}
-      {data.shouldDisplayFlamegraph && (
-        <FlameGraph
-          vertical
-          profile={data.profile}
-          enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}
-          collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
-        />
-      )}
+      {children}
     </Panel>
   );
 }

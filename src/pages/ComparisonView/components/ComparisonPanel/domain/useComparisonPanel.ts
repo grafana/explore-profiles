@@ -2,7 +2,6 @@ import { TimeRange } from '@grafana/data';
 import { useLeftRightParamsFromUrl } from '@shared/domain/url-params/useLeftRightParamsFromUrl';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
-import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useFetchTimelineAndProfile } from '@shared/infrastructure/useFetchTimelineAndProfile';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
@@ -36,30 +35,12 @@ export function useComparisonPanel(isBaselinePanel: boolean): DomainHookReturnVa
     maxNodes,
   });
 
-  const {
-    isFetching: isFetchingProfile,
-    error: fetchProfileDataError,
-    profile,
-  } = useFetchTimelineAndProfile({
-    target: isBaselinePanel ? 'left-profile' : 'right-profile',
-    query,
-    timeRange: selectedTimeRange,
-    maxNodes,
-  });
-
-  const { isFetching: isFetchingSettings, error: fetchSettingsError, settings } = useFetchPluginSettings();
-
-  // TODO: improve
-  const noTimelineDataAvailable = !fetchProfileDataError && profileFromTimelineFetch?.flamebearer.numTicks === 0;
-  const noProfileDataAvailable = !fetchProfileDataError && profile?.flamebearer.numTicks === 0;
-
   return {
     data: {
-      isLoading: isFetchingTimeline || isFetchingProfile || isFetchingSettings,
+      isLoading: isFetchingTimeline,
       fetchTimelineDataError,
-      fetchProfileDataError,
-      noTimelineDataAvailable,
-      noProfileDataAvailable,
+      // TODO: improve
+      noTimelineDataAvailable: !fetchTimelineDataError && profileFromTimelineFetch?.flamebearer.numTicks === 0,
       mainTimeRange,
       query,
       timeline,
@@ -69,10 +50,9 @@ export function useComparisonPanel(isBaselinePanel: boolean): DomainHookReturnVa
         color: GRAY_TIMELINE_SELECTION_COLORS.COLOR,
         overlayColor: GRAY_TIMELINE_SELECTION_COLORS.OVERLAY,
       },
-      profile,
-      shouldDisplayFlamegraph: Boolean(!fetchProfileDataError && !noProfileDataAvailable && profile),
-      fetchSettingsError,
-      settings,
+      selectionOutOfRange:
+        selectedTimeRange.to.unix() < mainTimeRange.from.unix() ||
+        selectedTimeRange.from.unix() > mainTimeRange.to.unix(),
     },
     actions: {
       setQuery,

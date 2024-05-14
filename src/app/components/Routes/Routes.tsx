@@ -8,7 +8,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { ROUTES } from '../../../constants';
 import { AdHocView } from '../../../pages/AdHocView/AdHocView';
-import { ComparisonDiffView } from '../../../pages/ComparisonDiffView/ComparisonDiffView';
 import { ComparisonView } from '../../../pages/ComparisonView/ComparisonView';
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
 import { SingleView } from '../../../pages/SingleView/SingleView';
@@ -50,10 +49,10 @@ export function Routes() {
               <SingleView />
             </Route>
             <Route path={prefixRouteWithPluginBaseUrl(ROUTES.COMPARISON_VIEW)} exact>
-              <ComparisonView />
+              <ComparisonView diff={false} />
             </Route>
             <Route path={prefixRouteWithPluginBaseUrl(ROUTES.COMPARISON_DIFF_VIEW)} exact>
-              <ComparisonDiffView />
+              <ComparisonView diff={true} />
             </Route>
             <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)} exact>
               <AdHocView />

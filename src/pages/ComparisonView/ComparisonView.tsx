@@ -3,12 +3,15 @@ import { useStyles2 } from '@grafana/ui';
 import { Panel } from '@shared/components/Panel';
 import { DoubleTimeline } from '@shared/components/Timeline/DoubleTimeline';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
+import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { PageTitle } from '@shared/ui/PageTitle';
-import React from 'react';
+import React, { useState } from 'react';
 
+import { ComparisonDiffPanel } from './components/ComparisonDiffPanel/ComparisonDiffPanel';
 import { ComparisonPanel } from './components/ComparisonPanel/ComparisonPanel';
+import { FlameGraphContainer } from './components/FlameGraphContainer/FlameGraphContainer';
 import { useComparisonView } from './domain/useComparisonView';
-import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS } from './ui/colors';
+import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 import { ComparisonViewErrors } from './ui/ComparisonViewErrors';
 import { ComparisonViewWarnings } from './ui/ComparisonViewWarnings';
 
@@ -22,9 +25,19 @@ const getStyles = () => ({
   `,
 });
 
-export function ComparisonView() {
+type ComparisonDiffViewProps = {
+  diff: boolean;
+};
+
+export function ComparisonView({ diff }: ComparisonDiffViewProps) {
   const styles = useStyles2(getStyles);
-  const { data, actions } = useComparisonView();
+  const { data, actions } = useComparisonView(diff);
+  const sidePanel = useToggleSidePanel();
+
+  const [isLoadingLeft, setIsLoadingLeft] = useState<boolean>(false);
+  const [isLoadingRight, setIsLoadingRight] = useState<boolean>(false);
+  const [isLoadingDiff, setIsLoadingDiff] = useState<boolean>(false);
+  const [showExplainFlameGraphButton, setShowExplainFlameGraphButton] = useState<boolean>(false);
 
   return (
     <>
@@ -32,7 +45,10 @@ export function ComparisonView() {
 
       <Toolbar
         isLoading={data.isLoadingMain}
-        onRefresh={actions.refresh}
+        onRefresh={() => {
+          actions.refresh();
+          sidePanel.close();
+        }}
         onChangeTimeRange={actions.setMainTimeRange}
         onChangeService={actions.resetQueries}
         onChangeProfileType={actions.updateQueries}
@@ -53,19 +69,40 @@ export function ComparisonView() {
         <DoubleTimeline
           timeRange={data.mainTimeRange}
           onSelectTimeRange={actions.setMainTimeRange}
-          leftColor={LEFT_TIMELINE_COLORS.COLOR}
+          leftColor={BASELINE_COLORS.COLOR}
           leftTimeline={data.leftTimeline}
           leftSelection={data.leftTimelineSelection}
-          rightColor={RIGHT_TIMELINE_COLORS.COLOR}
+          rightColor={COMPARISON_COLORS.COLOR}
           rightTimeline={data.rightTimeline}
           rightSelection={data.rightTimelineSelection}
         />
       </Panel>
 
       <div className={styles.flex} data-testid="comparison-container">
-        <ComparisonPanel type="baseline" />
-        <ComparisonPanel type="comparison" />
+        <ComparisonPanel type="baseline" isLoading={isLoadingLeft}>
+          {!diff && <FlameGraphContainer target="left-profile" onLoadingChange={setIsLoadingLeft} />}
+        </ComparisonPanel>
+
+        <ComparisonPanel type="comparison" isLoading={isLoadingRight}>
+          {!diff && <FlameGraphContainer target="right-profile" onLoadingChange={setIsLoadingRight} />}
+        </ComparisonPanel>
       </div>
+
+      {diff && (
+        <ComparisonDiffPanel
+          sidePanel={sidePanel}
+          isLoading={isLoadingDiff}
+          showExplainFlameGraphButton={showExplainFlameGraphButton}
+        >
+          <FlameGraphContainer
+            target="diff-profile"
+            onLoadingChange={(isLoading, hasFlameGraph) => {
+              setIsLoadingDiff(isLoading);
+              setShowExplainFlameGraphButton(hasFlameGraph);
+            }}
+          />
+        </ComparisonDiffPanel>
+      )}
     </>
   );
 }

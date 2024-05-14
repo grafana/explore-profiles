@@ -5,15 +5,16 @@ import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromU
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
+import { useFetchDiffProfile } from '../components/FlameGraphContainer/infrastructure/useFetchDiffProfile';
 import { useFetchLeftProfile } from '../infrastructure/useFetchLeftProfile';
 import { useFetchLeftTimeLine } from '../infrastructure/useFetchLeftTimeLine';
 import { useFetchRightProfile } from '../infrastructure/useFetchRightProfile';
 import { useFetchRightTimeline } from '../infrastructure/useFetchRightTimeline';
-import { LEFT_TIMELINE_COLORS, RIGHT_TIMELINE_COLORS } from '../ui/colors';
+import { BASELINE_COLORS, COMPARISON_COLORS } from '../ui/colors';
 import { syncTimelineModes } from './syncTimelineModes';
 import { useDefaultComparisonParamsFromUrl } from './useDefaultComparisonParamsFromUrl';
 
-export function useComparisonView(): DomainHookReturnValue {
+export function useComparisonView(diff: boolean): DomainHookReturnValue {
   const [mainTimeRange, setMainTimeRange] = useTimeRangeFromUrl();
   const [query] = useQueryFromUrl();
   const { left, right } = useDefaultComparisonParamsFromUrl();
@@ -26,8 +27,6 @@ export function useComparisonView(): DomainHookReturnValue {
     refetch: refetchLeftTimeline,
   } = useFetchLeftTimeLine();
 
-  const { refetch: refetchLeftProfile } = useFetchLeftProfile();
-
   const {
     isFetching: isFetchingRightTimeline,
     error: fetchRightTimelineDataError,
@@ -36,7 +35,9 @@ export function useComparisonView(): DomainHookReturnValue {
     refetch: refetchRightTimeline,
   } = useFetchRightTimeline();
 
+  const { refetch: refetchLeftProfile } = useFetchLeftProfile();
   const { refetch: refetchRightProfile } = useFetchRightProfile();
+  const { refetch: refetchDiffProfile } = useFetchDiffProfile({ disabled: !diff });
 
   const { profileMetricId } = parseQuery(query);
   const profileMetric = getProfileMetric(profileMetricId as ProfileMetricId);
@@ -54,8 +55,8 @@ export function useComparisonView(): DomainHookReturnValue {
       leftTimelineSelection: {
         from: left.timeRange.from.unix(),
         to: left.timeRange.to.unix(),
-        color: LEFT_TIMELINE_COLORS.COLOR,
-        overlayColor: LEFT_TIMELINE_COLORS.OVERLAY,
+        color: BASELINE_COLORS.COLOR,
+        overlayColor: BASELINE_COLORS.OVERLAY,
       },
       fetchRightTimelineDataError,
       // TODO: improve
@@ -64,8 +65,8 @@ export function useComparisonView(): DomainHookReturnValue {
       rightTimelineSelection: {
         from: right.timeRange.from.unix(),
         to: right.timeRange.to.unix(),
-        color: RIGHT_TIMELINE_COLORS.COLOR,
-        overlayColor: RIGHT_TIMELINE_COLORS.OVERLAY,
+        color: COMPARISON_COLORS.COLOR,
+        overlayColor: COMPARISON_COLORS.OVERLAY,
       },
     },
     actions: {
@@ -102,6 +103,7 @@ export function useComparisonView(): DomainHookReturnValue {
         refetchLeftProfile();
         refetchRightTimeline();
         refetchRightProfile();
+        refetchDiffProfile();
       },
     },
   };

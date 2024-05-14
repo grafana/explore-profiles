@@ -4,7 +4,13 @@ import { useEffect, useState } from 'react';
 
 type PanelId = 'ai' | 'function-details' | null;
 
-export function useToggleSidePanel() {
+export type SidePanel = {
+  isOpen: (panelId: PanelId) => boolean;
+  open: (panelId: PanelId) => void;
+  close: () => void;
+};
+
+export function useToggleSidePanel(): SidePanel {
   const [query] = useQueryFromUrl();
   const [timeRange] = useTimeRangeFromUrl();
   const [openPanelId, setOpenPanelId] = useState<PanelId>(null);
