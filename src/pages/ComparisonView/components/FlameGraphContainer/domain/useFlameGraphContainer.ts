@@ -9,6 +9,10 @@ import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
 import { useFetchDiffProfile } from '../infrastructure/useFetchDiffProfile';
 
+/**
+ * This hook is responsible for fetching the left, right or diff profile data, depending on the target passed as parameter.
+ * @param {string} target 'left-profile', 'righ-profile' or 'diff-profile'
+ */
 export function useFlameGraphContainer(target: string): DomainHookReturnValue {
   const [maxNodes] = useMaxNodesFromUrl();
 

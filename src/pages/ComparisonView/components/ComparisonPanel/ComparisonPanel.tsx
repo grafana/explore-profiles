@@ -54,11 +54,6 @@ export function ComparisonPanel({ isLoading, type, children }: ComparisonPanelPr
   const isBaselinePanel = type === 'baseline';
   const { data, actions } = useComparisonPanel(isBaselinePanel);
 
-  const title = isBaselinePanel ? 'Baseline time range' : 'Comparison time range';
-  const dataTestId = isBaselinePanel ? 'baseline-panel' : 'comparison-panel';
-  const queryBuilderId = isBaselinePanel ? 'query-builder-baseline' : 'query-builder-comparison';
-  const color = isBaselinePanel ? BASELINE_COLORS.COLOR : COMPARISON_COLORS.COLOR;
-
   if (data.fetchSettingsError) {
     displayWarning([
       'Error while retrieving the plugin settings!',
@@ -72,10 +67,12 @@ export function ComparisonPanel({ isLoading, type, children }: ComparisonPanelPr
       title={
         <>
           <div className={cx(styles.panelIcon, isBaselinePanel ? styles.baselineIcon : styles.comparisonIcon)} />
-          <span>{title}</span>
+          <span>{isBaselinePanel ? 'Baseline time range' : 'Comparison time range'}</span>
           {data.selectionOutOfRange && (
             <Tooltip
-              content="The timeline selection is out of range, the flame graph does not correspond to the timeseries displayed. Zoom out to see the actual selection."
+              content={`The ${
+                isBaselinePanel ? 'baseline' : 'comparison'
+              } timeline selection is out of range, the flame graph does not correspond to the timeseries displayed. Zoom out to see the actual selection.`}
               placement="top"
             >
               <Icon name="exclamation-triangle" className={styles.warningIcon} />
@@ -84,10 +81,10 @@ export function ComparisonPanel({ isLoading, type, children }: ComparisonPanelPr
         </>
       }
       isLoading={data.isLoading || isLoading}
-      dataTestId={dataTestId}
+      dataTestId={isBaselinePanel ? 'baseline-panel' : 'comparison-panel'}
     >
       <QueryBuilder
-        id={queryBuilderId}
+        id={isBaselinePanel ? 'query-builder-baseline' : 'query-builder-comparison'}
         className={styles.queryBuilder}
         query={data.query}
         // FIXME
@@ -113,10 +110,10 @@ export function ComparisonPanel({ isLoading, type, children }: ComparisonPanelPr
         )}
         {/* we always display the timeline to prevent layout shifts */}
         <SingleTimeline
+          color={isBaselinePanel ? BASELINE_COLORS.COLOR : COMPARISON_COLORS.COLOR}
           timeline={data.timeline}
           timeRange={data.mainTimeRange}
           onSelectTimeRange={actions.selectTimeRange}
-          color={color}
           selection={data.timelineSelection}
         />
       </div>
