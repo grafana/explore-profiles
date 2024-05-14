@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, TimeRange } from '@grafana/data';
 import {
+  Cascader,
   HorizontalGroup,
   InlineField,
   InlineFieldRow,
@@ -38,22 +39,28 @@ export function Toolbar(props: ToolbarProps) {
       <HorizontalGroup justify="space-between" align="flex-start">
         <InlineFieldRow>
           <InlineField label="Service" data-testid="services-dropdown">
-            <Select<string>
+            <Cascader
+              aria-label="Services list"
+              // without the key, the value is not selected when landing :man_shrug:
+              key={data.selectedServiceId}
+              width={32}
+              separator="/"
+              displayAllSelectedLevels
               placeholder={data.servicePlaceHolder}
               options={data.serviceOptions}
-              value={data.selectedServiceId}
-              onChange={actions.selectService}
-              aria-label="Services list"
+              initialValue={data.selectedServiceId}
+              changeOnSelect={false}
+              onSelect={actions.selectService}
             />
           </InlineField>
 
           <InlineField label="Profile" data-testid="profile-types-dropdown">
             <Select<string>
+              aria-label="Profiles list"
               placeholder={data.profilePlaceHolder}
               options={data.profileOptions}
               value={data.selectedProfileId}
               onChange={actions.selectProfile}
-              aria-label="Profiles list"
             />
           </InlineField>
         </InlineFieldRow>

@@ -43,9 +43,7 @@ export function useBuildProfileTypeOptions(services: Services) {
   return {
     profileOptions,
     selectedProfileId: profileOptions.length ? profileMetricId : null,
-    selectProfile(option: SelectableValue<string>) {
-      const newProfileMetricId = option.value || '';
-
+    selectProfile(newProfileMetricId: string) {
       setQuery(buildQuery({ serviceId, profileMetricId: newProfileMetricId, labels }));
     },
   };

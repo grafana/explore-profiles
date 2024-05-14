@@ -1,6 +1,7 @@
 import { SelectableValue, TimeRange } from '@grafana/data';
 import { noOp } from '@shared/domain/noOp';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
+import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
 import { useFetchServices } from '../../../infrastructure/services/useFetchServices';
 import { ToolbarProps } from '../Toolbar';
@@ -36,7 +37,7 @@ export function useToolbar({
   onChangeTimeRange,
   onChangeService,
   onChangeProfileType,
-}: ToolbarProps) {
+}: ToolbarProps): DomainHookReturnValue {
   const [timeRange] = useTimeRangeFromUrl();
 
   const { services } = useFetchServices({ timeRange });
@@ -56,13 +57,15 @@ export function useToolbar({
       isLoading,
     },
     actions: {
-      selectService(option: SelectableValue<string>) {
-        selectService(option);
-        onChangeService?.(option.value || '');
+      selectService(newServiceId: string) {
+        selectService(newServiceId);
+        onChangeService?.(newServiceId);
       },
       selectProfile(option: SelectableValue<string>) {
-        selectProfile(option);
-        onChangeProfileType?.(option.value || '');
+        const newProfileMetricId = option.value || '';
+
+        selectProfile(newProfileMetricId);
+        onChangeProfileType?.(newProfileMetricId);
       },
       setTimeZone: noOp,
       setTimeRange: onChangeTimeRange,

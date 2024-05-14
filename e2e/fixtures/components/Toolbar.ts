@@ -26,6 +26,10 @@ export class Toolbar {
     await this.page.getByText(service, { exact: true }).click();
   }
 
+  async assertSelectedService(expectedService: string) {
+    await expect(this.getServicesDropdown().locator('input')).toHaveValue(expectedService);
+  }
+
   getProfileTypesDropdown() {
     return this.get().getByTestId('profile-types-dropdown');
   }
@@ -35,8 +39,16 @@ export class Toolbar {
     await this.page.getByText(profileType, { exact: true }).click();
   }
 
+  async assertSelectedProfileType(expectedProfileType: string) {
+    await expect(this.getProfileTypesDropdown()).toContainText(expectedProfileType);
+  }
+
   getTimePicker() {
     return this.get().getByTestId('data-testid TimePicker Open Button');
+  }
+
+  async assertSelectedTimeRange(expectedTimeRange: string) {
+    await expect(this.getTimePicker()).toContainText(expectedTimeRange);
   }
 
   async zoomOutTimeRange() {

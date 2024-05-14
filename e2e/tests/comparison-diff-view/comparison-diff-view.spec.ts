@@ -25,9 +25,9 @@ test.describe('URL search parameters', () => {
 
     await toolbar.assertNoSpinners();
 
-    await expect(toolbar.getServicesDropdown()).toContainText('pyroscope');
-    await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-    await expect(toolbar.getTimePicker()).toContainText('Last 1 hour');
+    await toolbar.assertSelectedService('pyroscope');
+    await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+    await toolbar.assertSelectedTimeRange('Last 1 hour');
   });
 
   test('When only the "from" and "until" parameters are provided, it selects the correct service, profile type & time range', async ({
@@ -43,9 +43,9 @@ test.describe('URL search parameters', () => {
 
     await toolbar.assertNoSpinners();
 
-    await expect(toolbar.getServicesDropdown()).toContainText('load-generator');
-    await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-    await expect(toolbar.getTimePicker()).toContainText('2024-03-13 19:30:00 to 2024-03-13 19:42:00');
+    await toolbar.assertSelectedService('load-generator');
+    await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+    await toolbar.assertSelectedTimeRange('2024-03-13 19:30:00 to 2024-03-13 19:42:00');
   });
 
   test('When only the "query" parameter is provided, it selects the correct service, profile type & time range', async ({
@@ -60,9 +60,9 @@ test.describe('URL search parameters', () => {
 
     await toolbar.assertNoSpinners();
 
-    await expect(toolbar.getServicesDropdown()).toContainText('pyroscope');
-    await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-    await expect(toolbar.getTimePicker()).toContainText('Last 1 hour');
+    await toolbar.assertSelectedService('pyroscope');
+    await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+    await toolbar.assertSelectedTimeRange('Last 1 hour');
   });
 
   test('When there is no data during the time range provided, it displays "No data" banners', async ({
@@ -79,8 +79,8 @@ test.describe('URL search parameters', () => {
 
     await toolbar.assertNoSpinners();
 
-    await expect(toolbar.getServicesDropdown()).toContainText('Choose a service (0)');
-    await expect(toolbar.getProfileTypesDropdown()).toContainText('Choose a profile type (0)');
+    await toolbar.assertSelectedService('');
+    await toolbar.assertSelectedProfileType('Choose a profile type (0)');
 
     await comparisonDiffViewPage.assertNoLoadingPanels();
 
@@ -98,9 +98,9 @@ test.describe('Time picker', () => {
     await toolbar.zoomOutTimeRange();
 
     await toolbar.assertNoSpinners();
-    await expect(toolbar.getServicesDropdown()).toContainText('ride-sharing-app');
-    await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-    await expect(toolbar.getTimePicker()).toContainText('2024-03-13 18:35:00 to 2024-03-13 20:15:00');
+    await toolbar.assertSelectedService('ride-sharing-app');
+    await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+    await toolbar.assertSelectedTimeRange('2024-03-13 18:35:00 to 2024-03-13 20:15:00');
 
     await comparisonDiffViewPage.assertNoLoadingPanels();
     await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
@@ -115,9 +115,9 @@ test.describe('Time picker', () => {
     await toolbar.moveTimeRangeBackwards();
 
     await toolbar.assertNoSpinners();
-    await expect(toolbar.getServicesDropdown()).toContainText('ride-sharing-app');
-    await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-    await expect(toolbar.getTimePicker()).toContainText('2024-03-13 18:35:00 to 2024-03-13 19:25:00');
+    await toolbar.assertSelectedService('ride-sharing-app');
+    await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+    await toolbar.assertSelectedTimeRange('2024-03-13 18:35:00 to 2024-03-13 19:25:00');
 
     await comparisonDiffViewPage.assertNoLoadingPanels();
     await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
@@ -132,9 +132,9 @@ test.describe('Time picker', () => {
     await toolbar.moveTimeRangeForwards();
 
     await toolbar.assertNoSpinners();
-    await expect(toolbar.getServicesDropdown()).toContainText('ride-sharing-app');
-    await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-    await expect(toolbar.getTimePicker()).toContainText('2024-03-13 19:25:00 to 2024-03-13 20:15:00');
+    await toolbar.assertSelectedService('ride-sharing-app');
+    await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+    await toolbar.assertSelectedTimeRange('2024-03-13 19:25:00 to 2024-03-13 20:15:00');
 
     await comparisonDiffViewPage.assertNoLoadingPanels();
     await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
@@ -152,9 +152,9 @@ test.describe('Toolbar', () => {
       await toolbar.selectService('pyroscope');
 
       await toolbar.assertNoSpinners();
-      await expect(toolbar.getServicesDropdown()).toContainText('pyroscope');
-      await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-      await expect(toolbar.getTimePicker()).toContainText('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
+      await toolbar.assertSelectedService('pyroscope');
+      await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+      await toolbar.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
 
       await comparisonDiffViewPage.assertNoLoadingPanels();
       await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
@@ -169,9 +169,9 @@ test.describe('Toolbar', () => {
       await toolbar.selectService('load-generator');
 
       await toolbar.assertNoSpinners();
-      await expect(toolbar.getServicesDropdown()).toContainText('load-generator');
-      await expect(toolbar.getProfileTypesDropdown()).toContainText('cpu (process_cpu)');
-      await expect(toolbar.getTimePicker()).toContainText('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
+      await toolbar.assertSelectedService('load-generator');
+      await toolbar.assertSelectedProfileType('cpu (process_cpu)');
+      await toolbar.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
 
       await comparisonDiffViewPage.assertNoLoadingPanels();
       await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
@@ -188,9 +188,9 @@ test.describe('Toolbar', () => {
       await toolbar.selectProfileType('inuse_space (memory)');
 
       await toolbar.assertNoSpinners();
-      await expect(toolbar.getServicesDropdown()).toContainText('ride-sharing-app');
-      await expect(toolbar.getProfileTypesDropdown()).toContainText('inuse_space (memory)');
-      await expect(toolbar.getTimePicker()).toContainText('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
+      await toolbar.assertSelectedService('ride-sharing-app');
+      await toolbar.assertSelectedProfileType('inuse_space (memory)');
+      await toolbar.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
 
       await comparisonDiffViewPage.assertNoLoadingPanels();
       await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
@@ -209,7 +209,7 @@ test.describe('Mouse selections of time ranges on the timelines', () => {
     // baseline timeline selection
     await comparisonDiffViewPage.baselineTimeline.clickAndDrag({ x: 150, y: 100 }, { x: 200, y: 100 });
 
-    await expect(toolbar.getTimePicker()).toContainText('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
+    await toolbar.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
     await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
     await expect(comparisonDiffViewPage.getBaselinePanel()).toHaveScreenshot();
     await expect(comparisonDiffViewPage.getComparisonPanel()).toHaveScreenshot();
@@ -217,7 +217,7 @@ test.describe('Mouse selections of time ranges on the timelines', () => {
     // comparison timeline selection, drag in the reverse direction
     await comparisonDiffViewPage.comparisonTimeline.clickAndDrag({ x: 320, y: 100 }, { x: 240, y: 100 });
 
-    await expect(toolbar.getTimePicker()).toContainText('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
+    await toolbar.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
     await expect(comparisonDiffViewPage.getMainTimelinePanel()).toHaveScreenshot();
     await expect(comparisonDiffViewPage.getBaselinePanel()).toHaveScreenshot();
     await expect(comparisonDiffViewPage.getComparisonPanel()).toHaveScreenshot();
