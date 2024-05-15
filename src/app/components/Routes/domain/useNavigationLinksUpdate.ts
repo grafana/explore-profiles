@@ -1,47 +1,51 @@
+import { History } from 'history';
 import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import plugin from '../../../../plugin.json';
 
 const NAVIGATION_ROUTES = plugin.includes.map(({ path }) => path.replace('%PLUGIN_ID%', plugin.id));
 
-const findMenuLinks = () =>
-  Array.from(document.querySelectorAll(`a[href^="/a/${plugin.id}/"]`))
-    .filter((link: Element) => {
-      const href = link.getAttribute('data-original-href') || link.getAttribute('href');
-      return href && NAVIGATION_ROUTES.includes(href);
-    })
-    .map((link: Element) => {
-      if (!link.getAttribute('data-original-href') && link.getAttribute('href')) {
-        link.setAttribute('data-original-href', link.getAttribute('href') as string);
-      }
-
-      return link as HTMLAnchorElement;
-    });
-
-function interceptClick(event: Event) {
-  const link = event.currentTarget as HTMLAnchorElement;
+const interceptClick = (history: History) => (event: Event) => {
+  const link = (event.target as HTMLElement).closest('a') as HTMLAnchorElement;
   if (!link) {
+    console.warn('Navigation link not found! Pyroscope URL Search parameters will not be preserved.');
     return;
   }
 
-  const newSearch = new URLSearchParams(window.location.search).toString();
-  const newHref = `${link.getAttribute('data-original-href')}?${newSearch}`;
+  const pathname = link.getAttribute('href');
 
-  link.setAttribute('href', newHref);
-}
+  if (!pathname || !NAVIGATION_ROUTES.includes(pathname)) {
+    return;
+  }
+
+  history.replace({
+    pathname,
+    search: new URLSearchParams(window.location.search).toString(),
+  });
+
+  event.preventDefault();
+};
 
 export function useNavigationLinksUpdate() {
-  useEffect(() => {
-    const menuLinks = findMenuLinks();
+  const history = useHistory();
 
-    menuLinks.forEach((link) => {
-      link.addEventListener('click', interceptClick, true);
-    });
+  useEffect(() => {
+    const navMenu = document.querySelector('[aria-label="Navigation"]');
+
+    if (!navMenu) {
+      console.warn(
+        'Navigation menu not found! Pyroscope URL Search parameters will not be preserved when clicking on menu links.'
+      );
+      return;
+    }
+
+    const onClick = interceptClick(history);
+
+    navMenu.addEventListener('click', onClick, true);
 
     return () => {
-      menuLinks.forEach((link) => {
-        link.removeEventListener('click', interceptClick, true);
-      });
+      navMenu.removeEventListener('click', onClick, true);
     };
-  }, []);
+  }, [history]);
 }

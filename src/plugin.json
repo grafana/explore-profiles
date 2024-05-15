@@ -6,6 +6,10 @@
   "id": "grafana-pyroscope-app",
   "backend": true,
   "executable": "gpx_pyroscope_app",
+  "dependencies": {
+    "grafanaDependency": ">=10.4.3",
+    "plugins": []
+  },
   "info": {
     "keywords": ["app"],
     "description": "Continuous profiling service powered by Grafana Pyroscope",
@@ -69,9 +73,5 @@
       "addToNav": true,
       "defaultNav": false
     }
-  ],
-  "dependencies": {
-    "grafanaDependency": ">=9.3.8",
-    "plugins": []
-  }
+  ]
 }
