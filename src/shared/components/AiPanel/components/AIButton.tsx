@@ -1,38 +1,22 @@
-import { css } from '@emotion/css';
 import { IconName } from '@grafana/data';
-import { Button, useStyles2 } from '@grafana/ui';
+import { Button } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 import { useFetchLlmPluginStatus } from '../infrastructure/useFetchLlmPluginStatus';
 
-const getStyles = () => ({
-  askAiButton: css`
-    background-color: #8025ff;
-    &:not([disabled]):hover {
-      background-color: #6c27d3;
-    }
-    height: 24px;
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    padding-left: 8px;
-    padding-right: 8px;
-  `,
-});
-
 type AIButtonProps = {
+  children: ReactNode;
+  className?: string;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
-  text: string;
   interactionName: string;
 };
 
-export function AIButton({ onClick, disabled, text, interactionName }: AIButtonProps) {
-  const styles = useStyles2(getStyles);
+export function AIButton({ children, className, onClick, disabled, interactionName }: AIButtonProps) {
   const { isEnabled, error, isFetching } = useFetchLlmPluginStatus();
 
-  let icon: IconName = 'fire';
+  let icon: IconName = 'ai';
 
   if (error) {
     icon = 'shield-exclamation';
@@ -47,13 +31,14 @@ export function AIButton({ onClick, disabled, text, interactionName }: AIButtonP
 
   return (
     <Button
-      className={styles.askAiButton}
+      className={className}
       onClick={onClickInternal}
       disabled={!isEnabled || disabled}
       title={isEnabled ? 'Ask FlameGrot AI' : 'Grafana LLM plugin missing or not configured!'}
       icon={icon}
+      fill="text"
     >
-      {text}
+      {children}
     </Button>
   );
 }

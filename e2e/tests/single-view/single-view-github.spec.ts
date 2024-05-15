@@ -43,13 +43,8 @@ test.describe('GitHub integration', () => {
     await expect(codeContainer.getByText('Breakdown per line')).toBeVisible();
     await expect(codeContainer.getByText('View on GitHub')).toBeVisible();
 
-    const codeDetailsContainer = codeContainer.getByTestId('function-details-code');
-    await expect(codeDetailsContainer).toHaveScreenshot(
-      'GitHub-integration-After-clicking-on-Function-details-it-opens-a-details-panel-1.png',
-      {
-        // we mask the "Optimize Code" button as it switches from gray to purple after having loaded the code
-        mask: [codeDetailsContainer.locator('button')],
-      }
+    await expect(codeContainer.getByTestId('function-details-code')).toHaveScreenshot(
+      'GitHub-integration-After-clicking-on-Function-details-it-opens-a-details-panel-1.png'
     );
   });
 

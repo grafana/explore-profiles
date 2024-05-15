@@ -12,7 +12,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   codeContainer: css`
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     width: 100%;
   `,
 
@@ -93,10 +93,18 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
           href={githubUrl}
           target="_blank"
           icon="github"
-          variant="secondary"
+          fill="text"
         >
           View on GitHub
         </LinkButton>
+
+        <AIButton
+          onClick={onOptimizeCodeClick}
+          disabled={isLoadingCode || noCodeAvailable}
+          interactionName="g_pyroscope_app_optimize_code_clicked"
+        >
+          Optimize Code
+        </AIButton>
       </div>
 
       <pre className={styles.codeBlock} data-testid="function-details-code">
@@ -112,13 +120,6 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
             }
           </div>
         ))}
-
-        <AIButton
-          disabled={isLoadingCode || noCodeAvailable}
-          onClick={onOptimizeCodeClick}
-          text="Optimize Code"
-          interactionName="g_pyroscope_app_optimize_code_clicked"
-        ></AIButton>
       </pre>
     </div>
   );

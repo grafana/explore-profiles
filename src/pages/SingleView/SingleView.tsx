@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
@@ -17,7 +18,7 @@ import { FunctionDetailsPanel } from './components/FunctionDetailsPanel/Function
 import { useGitHubIntegration } from './domain/useGitHubIntegration';
 import { useSingleView } from './domain/useSingleView';
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   flex: css`
     display: flex;
   `,
@@ -30,6 +31,9 @@ const getStyles = () => ({
     max-width: 50%;
     margin-left: 4px;
     padding-left: 4px;
+  `,
+  aiButton: css`
+    margin-top: ${theme.spacing(1)};
   `,
 });
 
@@ -92,14 +96,14 @@ export function SingleView() {
           title={data.isLoading ? <Spinner /> : null}
           isLoading={data.isLoading}
           headerActions={
-            data.shouldDisplayFlamegraph && !sidePanel.isOpen('ai') ? (
-              <AIButton
-                text="Explain Flame Graph"
-                interactionName="g_pyroscope_app_explain_flamegraph_clicked"
-                onClick={() => sidePanel.open('ai')}
-                disabled={data.isLoading}
-              />
-            ) : null
+            <AIButton
+              className={styles.aiButton}
+              onClick={() => sidePanel.open('ai')}
+              disabled={data.isLoading || !data.shouldDisplayFlamegraph || sidePanel.isOpen('ai')}
+              interactionName="g_pyroscope_app_explain_flamegraph_clicked"
+            >
+              Explain Flame Graph
+            </AIButton>
           }
           dataTestId="flamegraph-panel"
         >
