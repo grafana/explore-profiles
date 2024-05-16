@@ -12,5 +12,6 @@ pyroscope-app {
   .pyroscope-app {
     // Otherwise the app doesn't use full height when it's smaller than the window
     overflow-y: initial;
+    padding: 0 !important;
   }
 }

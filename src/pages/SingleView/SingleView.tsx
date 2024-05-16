@@ -53,7 +53,7 @@ export function SingleView() {
 
   return (
     <>
-      <PageTitle title="Single" />
+      <PageTitle title="Single view" />
 
       <Toolbar
         isLoading={data.isLoading}

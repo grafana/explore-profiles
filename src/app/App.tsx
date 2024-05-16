@@ -11,7 +11,6 @@ import { Onboarding } from './components/Onboarding/Onboarding';
 import { Routes } from './components/Routes/Routes';
 import './infrastructure/faro';
 import './ui/styles/styles.scss';
-import { TitleReplacement } from './ui/TitleReplacement';
 
 // Module augmentation so that typescript sees our 'custom' element
 /* eslint-disable no-unused-vars */
@@ -24,8 +23,6 @@ declare global {
   }
 }
 
-const renderPageTitle = (title: string) => <TitleReplacement title={title} />;
-
 export function App(props: AppRootProps) {
   return (
     <PluginContextProvider meta={props.meta}>
@@ -33,7 +30,7 @@ export function App(props: AppRootProps) {
         <GitHubContextProvider>
           <Provider store={store}>
             <Onboarding>
-              <PluginPage layout={PageLayoutType.Standard} renderTitle={renderPageTitle}>
+              <PluginPage layout={PageLayoutType.Canvas}>
                 <pyroscope-app className="app">
                   <div className="pyroscope-app">
                     <Routes />

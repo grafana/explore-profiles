@@ -1,17 +1,21 @@
 import { css } from '@emotion/css';
-import { PageLayoutType } from '@grafana/data';
-import { PluginPage } from '@grafana/runtime';
+import { GrafanaTheme2 } from '@grafana/data';
 import { Button, FieldSet, Form, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
+import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
 import { useSettingsView } from './domain/useSettingsView';
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   settingsForm: css`
     & > fieldset {
       border: 0 none;
+      border-bottom: 1px solid ${theme.colors.border.weak};
       padding-left: 0;
+    }
+    & > fieldset > legend {
+      font-size: ${theme.typography.h4.fontSize};
     }
   `,
 });
@@ -28,11 +32,12 @@ export function SettingsView() {
   }
 
   return (
-    <PluginPage layout={PageLayoutType.Custom} renderTitle={() => null}>
+    <>
+      <PageTitle title="Profiles settings" />
       <Form className={styles.settingsForm} onSubmit={actions.saveSettings}>
         {() => (
           <>
-            <FieldSet label="Flame graph settings" data-testid="flamegraph-settings">
+            <FieldSet label="Flame graph" data-testid="flamegraph-settings">
               <InlineFieldRow>
                 <InlineField label="Collapsed flame graphs" labelWidth={24}>
                   <InlineSwitch
@@ -55,7 +60,7 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
-            <FieldSet label="Export settings" data-testid="export-settings">
+            <FieldSet label="Export" data-testid="export-settings">
               <InlineFieldRow>
                 <InlineField label="Enable flamegraph.com" labelWidth={24}>
                   <InlineSwitch
@@ -67,7 +72,7 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
-            <FieldSet label="Function details settings" data-testid="function-details-settings">
+            <FieldSet label="Function details" data-testid="function-details-settings">
               <InlineFieldRow>
                 <InlineField
                   label="Enable function details"
@@ -104,6 +109,6 @@ export function SettingsView() {
           </>
         )}
       </Form>
-    </PluginPage>
+    </>
   );
 }

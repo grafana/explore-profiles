@@ -1,13 +1,13 @@
-import { PageLayoutType } from '@grafana/data';
-import { PluginPage } from '@grafana/runtime';
+import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
 import { AdHocTabs } from './ui/AdHocTabs';
 
 export function AdHocView() {
   return (
-    <PluginPage layout={PageLayoutType.Custom}>
+    <>
+      <PageTitle title="Ad hoc view" />
       <AdHocTabs />
-    </PluginPage>
+    </>
   );
 }

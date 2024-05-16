@@ -41,7 +41,7 @@ export function ComparisonView({ diff }: ComparisonDiffViewProps) {
 
   return (
     <>
-      <PageTitle title="Comparison" />
+      <PageTitle title={diff ? 'Comparison diff view' : 'Comparison view'} />
 
       <Toolbar
         isLoading={data.isLoadingMain}

@@ -59,7 +59,7 @@ test.describe('Plugin Settings', () => {
     test('Can be modified', async ({ settingsPage, singleViewPage }) => {
       await settingsPage.resetTestSettings();
 
-      await settingsPage. getEnableFunctionDetailsCheckbox().click();
+      await settingsPage.getEnableFunctionDetailsCheckbox().click();
       await settingsPage.getSaveSettingsButton().click();
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
