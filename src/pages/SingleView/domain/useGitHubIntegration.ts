@@ -1,8 +1,8 @@
-import { IconName, usePluginContext } from '@grafana/data';
+import { IconName } from '@grafana/data';
 import { Props as FlameGraphProps } from '@grafana/flamegraph';
 import { useGitHubContext } from '@shared/components/GitHubContextProvider/useGitHubContext';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { AppPluginSettings } from '@shared/types/AppPluginSettings';
+import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { useCallback, useState } from 'react';
 
@@ -10,19 +10,16 @@ import { buildStacktrace } from './buildStacktrace';
 
 export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
   const { login, isSessionExpired } = useGitHubContext();
+  const { settings } = useFetchPluginSettings();
 
-  const pluginContext = usePluginContext();
-
-  const isGitHubIntegrationEnabled = Boolean(
-    (pluginContext.meta.jsonData as AppPluginSettings).isGitHubIntegrationEnabled
-  );
+  const isFunctionDetailsEnabled = settings?.enableFunctionDetails;
 
   const [stacktrace, setStacktrace] = useState<string[]>([]);
 
   const getExtraFlameGraphMenuItems: FlameGraphProps['getExtraContextMenuButtons'] = useCallback(
     ({ item }: any, data: any) => {
       // clicking on the top-level "total" node doesn't add "Function details" as an extra contextual menu item
-      if (!isGitHubIntegrationEnabled || item.level === 0) {
+      if (!isFunctionDetailsEnabled || item.level === 0) {
         return [];
       }
 
@@ -46,7 +43,7 @@ export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
         },
       ];
     },
-    [isGitHubIntegrationEnabled, isSessionExpired, login, sidePanel]
+    [isFunctionDetailsEnabled, isSessionExpired, login, sidePanel]
   );
 
   return {

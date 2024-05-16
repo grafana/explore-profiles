@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { DEFAULT_SETTINGS } from './default-settings';
-import { PluginSettings, settingsApiClient } from './settingsApiClient';
+import { DEFAULT_SETTINGS, PluginSettings } from './PluginSettings';
+import { settingsApiClient } from './settingsApiClient';
 
 type FetchParams = {
   enabled?: boolean;

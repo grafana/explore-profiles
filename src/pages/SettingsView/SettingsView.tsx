@@ -67,6 +67,36 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
+            <FieldSet label="Function details settings" data-testid="function-details-settings">
+              <InlineFieldRow>
+                <InlineField
+                  label="Enable function details"
+                  labelWidth={24}
+                  tooltip={
+                    <>
+                      <div>
+                        The function details feature enables mapping of resource usage to lines of source code. If the
+                        GitHub integration is configured, then the source code will be downloaded from GitHub.
+                      </div>
+                      <div>
+                        {/* TODO(bryan): Update this with the live GitHub integration docs when they go live. */}
+                        <a href="https://grafana.com/docs/" target="_blank" rel="noreferrer noopener">
+                          Learn more
+                        </a>
+                      </div>
+                    </>
+                  }
+                  interactive
+                >
+                  <InlineSwitch
+                    label="Toggle function details"
+                    name="function-details-feature"
+                    value={data.enableFunctionDetails}
+                    onChange={actions.toggleEnableFunctionDetails}
+                  />
+                </InlineField>
+              </InlineFieldRow>
+            </FieldSet>
 
             <Button variant="primary" type="submit">
               Save settings

@@ -1,13 +1,8 @@
 import { ApiClient } from '../http/ApiClient';
+import { PluginSettings } from './PluginSettings';
 
 type ApiResponse = {
   settings: Array<{ name: string; value: string }>;
-};
-
-export type PluginSettings = {
-  collapsedFlamegraphs: boolean;
-  maxNodes: number;
-  enableFlameGraphDotComExport: boolean;
 };
 
 export class SettingsApiClient extends ApiClient {

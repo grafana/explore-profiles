@@ -54,4 +54,18 @@ test.describe('Plugin Settings', () => {
       await expect(singleViewPage.getByText('flamegraph.com')).not.toBeVisible();
     });
   });
+
+  test.describe('Enable Function Details', () => {
+    test('Can be modified', async ({ settingsPage, singleViewPage }) => {
+      await settingsPage.resetTestSettings();
+
+      await settingsPage. getEnableFunctionDetailsCheckbox().click();
+      await settingsPage.getSaveSettingsButton().click();
+      await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
+
+      await singleViewPage.goto();
+      await singleViewPage.clickOnFlameGraphNode();
+      expect(singleViewPage.getFunctionDetailsMenuItem()).not.toBeVisible();
+    });
+  });
 });

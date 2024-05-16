@@ -1,5 +1,5 @@
 import { displayWarning } from '@shared/domain/displayStatus';
-import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
+import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 
 import { useUrlSearchParams } from './useUrlSearchParams';

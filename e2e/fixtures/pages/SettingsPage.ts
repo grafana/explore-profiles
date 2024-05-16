@@ -1,5 +1,6 @@
 import { type Page } from '@playwright/test';
 
+import { DEFAULT_SETTINGS } from '../../../src/shared/infrastructure/settings/PluginSettings';
 import { PyroscopePage } from './PyroscopePage';
 
 export class SettingsPage extends PyroscopePage {
@@ -25,11 +26,7 @@ export class SettingsPage extends PyroscopePage {
       data: {
         setting: {
           name: 'pluginSettings',
-          value: JSON.stringify({
-            collapsedFlamegraphs: false,
-            maxNodes: 16384,
-            enableFlameGraphDotComExport: true,
-          }),
+          value: JSON.stringify(DEFAULT_SETTINGS),
         },
       },
     });
@@ -53,8 +50,16 @@ export class SettingsPage extends PyroscopePage {
     return this.page.getByTestId('export-settings');
   }
 
+  getFunctionDetailsSettings() {
+    return this.page.getByTestId('function-details-settings');
+  }
+
   getEnableFlamegraphDotComCheckbox() {
     return this.getExportSettings().getByLabel('Toggle export to flamegraph.com');
+  }
+
+  getEnableFunctionDetailsCheckbox() {
+    return this.getFunctionDetailsSettings().getByLabel('Toggle function details');
   }
 
   getSaveSettingsButton() {

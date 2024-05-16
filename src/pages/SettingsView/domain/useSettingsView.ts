@@ -1,7 +1,6 @@
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
-import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
-import { PluginSettings } from '@shared/infrastructure/settings/settingsApiClient';
+import { DEFAULT_SETTINGS, PluginSettings } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useEffect, useState } from 'react';
 
@@ -39,6 +38,12 @@ export function useSettingsView() {
         setCurrentSettings((s) => ({
           ...s,
           enableFlameGraphDotComExport: !s.enableFlameGraphDotComExport,
+        }));
+      },
+      toggleEnableFunctionDetails() {
+        setCurrentSettings((s) => ({
+          ...s,
+          enableFunctionDetails: !s.enableFunctionDetails,
         }));
       },
       async saveSettings() {

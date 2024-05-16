@@ -1,5 +1,5 @@
 import { AppEvents } from '@grafana/data';
-import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/default-settings';
+import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/PluginSettings';
 import { act, renderHook } from '@testing-library/react';
 
 import { useSettingsView } from '../useSettingsView';
@@ -44,6 +44,7 @@ describe('useSettingsView(plugin)', () => {
         toggleCollapsedFlamegraphs: expect.any(Function),
         updateMaxNodes: expect.any(Function),
         toggleEnableFlameGraphDotComExport: expect.any(Function),
+        toggleEnableFunctionDetails: expect.any(Function),
         saveSettings: expect.any(Function),
       },
     });
@@ -97,6 +98,23 @@ describe('useSettingsView(plugin)', () => {
       });
 
       expect(result.current.data.enableFlameGraphDotComExport).toBe(false);
+    });
+  });
+
+  describe('actions.toggleEnableFunctionDetails()', () => {
+    it('toggles the value of data.toggleEnableFunctionDetails', () => {
+      // @ts-expect-error
+      const { result } = renderHook(() => useSettingsView(plugin));
+
+      const { data, actions } = result.current;
+
+      expect(data.enableFunctionDetails).toBe(DEFAULT_SETTINGS.enableFunctionDetails);
+
+      act(() => {
+        actions.toggleEnableFunctionDetails();
+      });
+
+      expect(result.current.data.enableFunctionDetails).toBe(false);
     });
   });
 
