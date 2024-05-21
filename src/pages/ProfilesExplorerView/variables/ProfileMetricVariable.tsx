@@ -69,8 +69,19 @@ export class ProfileMetricVariable extends CustomVariable {
     const { value } = model.useState();
 
     const timeRangeState = sceneGraph.getTimeRange(model).useState();
-    const { services, isFetching } = useFetchServices({ timeRange: timeRangeState.value });
+
     // TODO: handle fetch error?
+    // hack because SceneTimeRange updates the URL in UTC format (e.g. 2024-05-21T10:58:03.805Z)
+    const { services, isFetching } = useFetchServices({
+      timeRange: {
+        raw: {
+          from: timeRangeState.value.from,
+          to: timeRangeState.value.to,
+        },
+        from: timeRangeState.value.from,
+        to: timeRangeState.value.to,
+      },
+    });
 
     const options = useMemo(
       () => ProfileMetricVariable.buildCascaderOptions(ProfileMetricVariable.buildProfileMetricOptions(services)),

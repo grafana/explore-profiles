@@ -27,9 +27,6 @@ const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
 
-// we need an independent client to prevent unswanted aborts
-// const servicesApiClient = new ServicesApiClient();
-
 export class SceneServicesList extends SceneObjectBase<SceneProfilesExplorerState> {
   constructor({ layout }: { layout: LayoutType }) {
     const grid = new SceneCSSGridLayout({
@@ -50,30 +47,6 @@ export class SceneServicesList extends SceneObjectBase<SceneProfilesExplorerStat
       grid,
       body: grid,
     });
-
-    // this.addActivationHandler(() => {
-    //   const fetchServices = (timeRange: TimeRange) => {
-    //     servicesApiClient.abort();
-
-    //     servicesApiClient
-    //       .list({ timeRange })
-    //       .then((services) => this.updateServices(Array.from(services.keys())))
-    //       .catch((error) => {
-    //         if (!servicesApiClient.isAbortError(error)) {
-    //           displayError(error, [
-    //             'Error while fetching the services list! Sorry for the inconvenience. Please try reloading the page.',
-    //             error.message,
-    //           ]);
-    //         }
-    //       });
-    //   };
-
-    //   fetchServices(sceneGraph.getTimeRange(this).state.value);
-
-    //   sceneGraph.getTimeRange(this).subscribeToState((newState) => {
-    //     fetchServices(newState.value);
-    //   });
-    // });
   }
 
   onLayoutChange(newLayout: LayoutType) {
@@ -128,8 +101,18 @@ export class SceneServicesList extends SceneObjectBase<SceneProfilesExplorerStat
     const { body } = model.useState();
 
     const timeRangeState = sceneGraph.getTimeRange(model).useState();
+    // hack because SceneTimeRange updates the URL in UTC format (e.g. 2024-05-21T10:58:03.805Z)
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { services, error: fetchServicesError } = useFetchServices({ timeRange: timeRangeState.value });
+    const { services, error: fetchServicesError } = useFetchServices({
+      timeRange: {
+        raw: {
+          from: timeRangeState.value.from,
+          to: timeRangeState.value.to,
+        },
+        from: timeRangeState.value.from,
+        to: timeRangeState.value.to,
+      },
+    });
 
     if (fetchServicesError) {
       displayError(fetchServicesError, [

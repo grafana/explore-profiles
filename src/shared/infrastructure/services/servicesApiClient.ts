@@ -13,7 +13,7 @@ export class ServicesApiClient extends ApiClient {
     const services: Services = new Map();
 
     if (!data.labelsSet) {
-      console.warn('ServicesApiClient: no data received!');
+      console.warn('Pyroscope ServicesApiClient: no data received!');
       return services;
     }
 
