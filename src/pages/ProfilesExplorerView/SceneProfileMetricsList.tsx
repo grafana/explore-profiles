@@ -18,19 +18,19 @@ import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { getColorByIndex } from './helpers/getColorByIndex';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from './SceneProfilesExplorer';
 
-interface SceneServicesListState extends EmbeddedSceneState {
-  services: SceneProfilesExplorerState['services'];
+interface SceneProfileMetricsListState extends EmbeddedSceneState {
+  profileMetrics: SceneProfilesExplorerState['profileMetrics'];
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
 
-export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
+export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetricsListState> {
   constructor({ layout }: { layout: LayoutType }) {
     super({
       key: 'services-list',
-      services: {
+      profileMetrics: {
         data: [],
         isLoading: false,
         error: null,
@@ -53,22 +53,22 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
       const ancestor = sceneGraph.getAncestor(this, SceneProfilesExplorer);
 
       ancestor.subscribeToState((newState, prevState) => {
-        if (newState.services !== prevState.services) {
-          this.updateServices(newState.services);
+        if (newState.profileMetrics !== prevState.profileMetrics) {
+          this.updateProfileMetrics(newState.profileMetrics);
         }
       });
     });
   }
 
-  updateServices(services: SceneServicesListState['services']) {
-    this.setState({ services });
-    this.updateGridItems(services);
+  updateProfileMetrics(profileMetrics: SceneProfileMetricsListState['profileMetrics']) {
+    this.setState({ profileMetrics });
+    this.updateGridItems(profileMetrics);
   }
 
-  updateGridItems(services: SceneServicesListState['services']) {
+  updateGridItems(profileMetrics: SceneProfileMetricsListState['profileMetrics']) {
     // TODO: render empty state
 
-    const gridItems = services.data.map((serviceName, i) => {
+    const gridItems = ([] || profileMetrics).map((serviceName, i) => {
       const data = getServiceQueryRunner({ serviceName });
 
       return new SceneCSSGridItem({
@@ -102,8 +102,8 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
     const trimmedSearchText = searchText.trim();
 
     const data = trimmedSearchText
-      ? this.state.services.data.filter((serviceName) => serviceName.includes(trimmedSearchText))
-      : this.state.services.data;
+      ? this.state.profileMetrics.data.filter(({ label }) => label.includes(trimmedSearchText))
+      : this.state.profileMetrics.data;
 
     this.updateGridItems({
       data,
@@ -112,12 +112,10 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
     });
   }
 
-  static Component({ model }: SceneComponentProps<SceneServicesList>) {
-    const { body, services } = model.useState();
+  static Component({ model }: SceneComponentProps<SceneProfileMetricsList>) {
+    const { body, profileMetrics } = model.useState();
 
-    console.log('*** services', services);
-
-    if (services.isLoading) {
+    if (profileMetrics.isLoading) {
       return <Spinner />;
     }
 

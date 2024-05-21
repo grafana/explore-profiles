@@ -14,30 +14,30 @@ import React from 'react';
 
 import { LayoutType, SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
 import { SceneQuickFilter } from './components/SceneQuickFilter';
+import { SceneProfileMetricsList } from './SceneProfileMetricsList';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from './SceneProfilesExplorer';
-import { SceneServicesList } from './SceneServicesList';
-import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
+import { ServiceNameVariable } from './variables/ServiceNameVariable';
 
-interface SceneExploreServicesState extends EmbeddedSceneState {
+interface SceneExploreProfileMetricsState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
   layoutSwitcher: SceneLayoutSwitcher;
 }
 
-export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesState> {
+export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProfileMetricsState> {
   constructor() {
-    const quickFilter = new SceneQuickFilter({ placeholder: 'Search services by name' });
+    const quickFilter = new SceneQuickFilter({ placeholder: 'Search profile metrics by name' });
     const layoutSwitcher = new SceneLayoutSwitcher({ layout: LayoutType.GRID });
-    const servicesList = new SceneServicesList({ layout: LayoutType.GRID });
+    const profileMetricsList = new SceneProfileMetricsList({ layout: LayoutType.GRID });
 
     super({
-      key: 'explore-services',
+      key: 'explore-profile-metrics',
       $variables: new SceneVariableSet({
-        variables: [new ProfileMetricVariable()],
+        variables: [new ServiceNameVariable()],
       }),
       controls: [new VariableValueSelectors({})],
       quickFilter,
       layoutSwitcher,
-      body: servicesList,
+      body: profileMetricsList,
     });
 
     this.onFilterChange = debounce(this.onFilterChange.bind(this), 250);
@@ -50,26 +50,26 @@ export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesSt
       const ancestor = sceneGraph.getAncestor(this, SceneProfilesExplorer);
 
       ancestor.subscribeToState((newState, prevState) => {
-        if (newState.profileMetrics !== prevState.profileMetrics) {
-          this.updateProfileMetrics(newState.profileMetrics);
+        if (newState.services !== prevState.services) {
+          this.updateServices(newState.services);
         }
       });
     });
   }
 
-  updateProfileMetrics(profileMetrics: SceneProfilesExplorerState['profileMetrics']) {
-    (this.state.$variables?.getByName('profileMetricId') as ProfileMetricVariable)?.update(profileMetrics);
+  updateServices(services: SceneProfilesExplorerState['services']) {
+    (this.state.$variables?.getByName('serviceName') as ServiceNameVariable)?.update(services);
   }
 
   onFilterChange(searchText: string) {
-    (this.state.body as SceneServicesList).onFilterChange(searchText);
+    // (this.state.body as SceneProfileMetricsList).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
-    (this.state.body as SceneServicesList).onLayoutChange(newLayout);
+    // (this.state.body as SceneProfileMetricsList).onLayoutChange(newLayout);
   }
 
-  static Component({ model }: SceneComponentProps<SceneExploreServices>) {
+  static Component({ model }: SceneComponentProps<SceneExploreProfileMetrics>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
     const { body, controls, quickFilter, layoutSwitcher } = model.useState();
 
@@ -79,9 +79,7 @@ export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesSt
       <div className={styles.container}>
         <div className={styles.controls}>
           <Stack justifyContent="space-between">
-            <div>
-              <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />
-            </div>
+            <div>{/* <variablesControl.Component key={variablesControl.state.key} model={variablesControl} /> */}</div>
             <div className={styles.quickFilter}>
               <quickFilter.Component model={quickFilter} />
             </div>
@@ -91,7 +89,8 @@ export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesSt
           </Stack>
         </div>
 
-        <body.Component model={body} />
+        {/* <body.Component model={body} /> */}
+        {body && <body.Component model={body} />}
       </div>
     );
   }

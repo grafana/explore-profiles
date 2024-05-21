@@ -1,7 +1,9 @@
 import { css } from '@emotion/css';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
 import React from 'react';
+
+import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
 
 interface SceneQuickFilterState extends SceneObjectState {
   placeholder: string;
@@ -10,6 +12,20 @@ interface SceneQuickFilterState extends SceneObjectState {
 }
 
 export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
+  constructor(options: SceneQuickFilterState) {
+    super(options);
+
+    this.addActivationHandler(() => {
+      const ancestor = sceneGraph.getAncestor(this, SceneProfilesExplorer);
+
+      ancestor.subscribeToState((newState, prevState) => {
+        if (newState.services !== prevState.services || newState.profileMetrics !== prevState.profileMetrics) {
+          this.setState({ value: '' });
+        }
+      });
+    });
+  }
+
   onChange = (value: string) => {
     this.setState({ value });
     this.state.onChange?.(value);

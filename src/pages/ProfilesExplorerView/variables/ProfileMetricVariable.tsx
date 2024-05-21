@@ -1,10 +1,9 @@
-import { CustomVariable, MultiValueVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
+import { CustomVariable, MultiValueVariable, SceneComponentProps } from '@grafana/scenes';
 import { Cascader, CascaderOption, Select } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
-import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { Services } from '@shared/infrastructure/services/servicesApiClient';
-import { useFetchServices } from '@shared/infrastructure/services/useFetchServices';
-import React, { useMemo } from 'react';
+import React from 'react';
+
+import { SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
 export class ProfileMetricVariable extends CustomVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
@@ -13,37 +12,29 @@ export class ProfileMetricVariable extends CustomVariable {
     super({
       name: 'profileMetricId',
       isMulti: false,
-      label: '🔥 Profile',
+      label: 'Profile',
+    });
+
+    this.addActivationHandler(() => {
+      this.setState({
+        // hack: we use undefined to monitor loading status - couldn't make it work by using the custom variable state
+        // where "loading" & "error" should exist :man_shrug:
+        options: undefined,
+      });
     });
   }
 
-  static buildProfileMetricOptions(services: Services) {
-    const allProfileMetricsMap = new Map<ProfileMetric['id'], ProfileMetric>();
-
-    for (const profileMetrics of services.values()) {
-      for (const [id, metric] of profileMetrics) {
-        allProfileMetricsMap.set(id, metric);
-      }
-    }
-
-    const allProfileMetrics = Array.from(allProfileMetricsMap.values())
-      .sort((a, b) => a.type.localeCompare(b.type))
-      .map(({ id, type, group }) => ({
-        value: id,
-        label: `${type} (${group})`,
-        type,
-        group,
-      }));
-
-    return allProfileMetrics;
+  update(profileMetrics: SceneProfilesExplorerState['profileMetrics']) {
+    this.setState({
+      // hack: see constructor
+      options: profileMetrics.isLoading ? undefined : ProfileMetricVariable.buildCascaderOptions(profileMetrics),
+    });
   }
 
-  static buildCascaderOptions(
-    options: Array<{ group: string; label: string; type: string; value: string }>
-  ): CascaderOption[] {
+  static buildCascaderOptions(profileMetrics: SceneProfilesExplorerState['profileMetrics']): CascaderOption[] {
     const optionsMap = new Map();
 
-    for (const { value, group, type } of options) {
+    for (const { value, group, type } of profileMetrics.data) {
       const nameSpaceServices = optionsMap.get(group) || {
         value: group,
         label: group,
@@ -66,56 +57,36 @@ export class ProfileMetricVariable extends CustomVariable {
   }
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
-    const { value } = model.useState();
-
-    const timeRangeState = sceneGraph.getTimeRange(model).useState();
-
-    // TODO: handle fetch error?
-    // hack because SceneTimeRange updates the URL in UTC format (e.g. 2024-05-21T10:58:03.805Z)
-    const { services, isFetching } = useFetchServices({
-      timeRange: {
-        raw: {
-          from: timeRangeState.value.from,
-          to: timeRangeState.value.to,
-        },
-        from: timeRangeState.value.from,
-        to: timeRangeState.value.to,
-      },
-    });
-
-    const options = useMemo(
-      () => ProfileMetricVariable.buildCascaderOptions(ProfileMetricVariable.buildProfileMetricOptions(services)),
-      [services]
-    );
+    const { value, options } = model.useState();
 
     function onSelect(newValue: any) {
       model.changeValueTo(newValue, newValue);
     }
 
-    if (!value && options.length) {
+    if (!value && options?.length) {
       onSelect(ProfileMetricVariable.DEFAULT_VALUE);
     }
 
-    // hack to ensure that the Cascader initial value is set :man_shrug:
-    return !isFetching ? (
-      <Cascader
-        aria-label="Profile metrics list"
-        width={32}
-        separator="/"
-        displayAllSelectedLevels
-        placeholder={`Select a profile metric (${options.length})`}
-        options={options}
-        initialValue={value as string}
-        changeOnSelect={false}
-        onSelect={onSelect}
-      />
-    ) : (
+    // hack: see constructor
+    return options === undefined ? (
       <Select
         aria-label="Profile metrics list"
         width={32}
         placeholder="Loading metrics..."
         options={[]}
         onChange={noOp}
+      />
+    ) : (
+      <Cascader
+        aria-label="Profile metrics list"
+        width={32}
+        separator="/"
+        displayAllSelectedLevels
+        placeholder={`Select a metric (${options.length})`}
+        options={options as CascaderOption[]}
+        initialValue={value as string}
+        changeOnSelect={false}
+        onSelect={onSelect}
       />
     );
   };

@@ -14,23 +14,56 @@ import {
   VariableValueSelectors,
 } from '@grafana/scenes';
 import { Stack, Tab, TabContent, TabsBar, useStyles2 } from '@grafana/ui';
+import { displayError } from '@shared/domain/displayStatus';
+import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { servicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
 import React from 'react';
 
+import { SceneExploreProfileMetrics } from './SceneExploreProfileMetrics';
 import { SceneExploreServices } from './SceneExploreServices';
+import { SceneFavorites } from './SceneFavorites';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
 
-interface SceneProfilesExplorerState extends EmbeddedSceneState {
+export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   tab: string;
-  body: SplitLayout;
+  services: {
+    data: string[];
+    isLoading: boolean;
+    error: Error | null;
+  };
+  profileMetrics: {
+    data: Array<{
+      value: string;
+      label: string;
+      type: string;
+      group: string;
+    }>;
+    isLoading: boolean;
+    error: Error | null;
+  };
+  body?: SplitLayout;
 }
 
 export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorerState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['tab'] });
 
   constructor() {
+    const $timeRange = new SceneTimeRange({});
+
     super({
-      tab: 'explore-services',
-      $timeRange: new SceneTimeRange({}),
+      key: 'profiles-explorer',
+      tab: '',
+      services: {
+        data: [],
+        isLoading: false,
+        error: null,
+      },
+      profileMetrics: {
+        data: [],
+        isLoading: false,
+        error: null,
+      },
+      $timeRange,
       $variables: new SceneVariableSet({
         variables: [new ProfilesDataSourceVariable({})],
       }),
@@ -39,11 +72,133 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         new SceneTimePicker({ isOnCanvas: true }),
         new SceneRefreshPicker({ isOnCanvas: true }),
       ],
-      // TOOD: state var to update when switching tab
-      body: new SplitLayout({
-        direction: 'column',
-        primary: new SceneExploreServices(),
-      }),
+    });
+
+    this.addActivationHandler(() => {
+      // we fetch services only here and...
+      this.refreshServicesAndProfileMetrics();
+
+      // ...only when selecting a new tab and only when refreshing the time range, to improve UX.
+      // if not, the whole services list gets re-rendered whenever the user zooms selects a time range
+      // (via the time range picker or directly by selecting a range on a timeseries)
+      const originalRefresh = $timeRange.onRefresh;
+
+      // TODO: remove hack - how?
+      $timeRange.onRefresh = (...args) => {
+        originalRefresh(...args);
+        this.refreshServicesAndProfileMetrics();
+      };
+
+      return () => {
+        $timeRange.onRefresh = originalRefresh;
+        servicesApiClient.abort();
+      };
+    });
+  }
+
+  async refreshServicesAndProfileMetrics() {
+    let services;
+    const timeRangeState = this.state.$timeRange!.state;
+
+    this.setState({
+      services: {
+        data: [],
+        isLoading: true,
+        error: null,
+      },
+      profileMetrics: {
+        data: [],
+        isLoading: true,
+        error: null,
+      },
+    });
+
+    try {
+      // hack because SceneTimeRange updates the URL in UTC format (e.g. 2024-05-21T10:58:03.805Z)
+      services = await servicesApiClient.list({
+        timeRange: {
+          raw: {
+            from: timeRangeState.value.from,
+            to: timeRangeState.value.to,
+          },
+          from: timeRangeState.value.from,
+          to: timeRangeState.value.to,
+        },
+      });
+    } catch (error) {
+      displayError(error, [
+        'Error while fetching the services list! Sorry for the inconvenience. Please try reloading the page.',
+        (error as Error).message,
+      ]);
+
+      this.setState({
+        services: {
+          data: [],
+          isLoading: false,
+          error: error as Error,
+        },
+        profileMetrics: {
+          data: [],
+          isLoading: false,
+          error: error as Error,
+        },
+      });
+
+      return;
+    }
+
+    const allProfileMetricsMap = new Map<ProfileMetric['id'], ProfileMetric>();
+
+    for (const profileMetrics of services.values()) {
+      for (const [id, metric] of profileMetrics) {
+        allProfileMetricsMap.set(id, metric);
+      }
+    }
+
+    this.setState({
+      services: {
+        data: Array.from(services.keys()).sort((a, b) => a.localeCompare(b)),
+        isLoading: false,
+        error: null,
+      },
+      profileMetrics: {
+        data: Array.from(allProfileMetricsMap.values())
+          .sort((a, b) => a.type.localeCompare(b.type))
+          .map(({ id, type, group }) => ({
+            value: id,
+            label: `${type} (${group})`,
+            type,
+            group,
+          })),
+        isLoading: false,
+        error: null,
+      },
+    });
+  }
+
+  static buildBody(tab: string) {
+    let primary;
+
+    switch (tab) {
+      case 'explore-services':
+        primary = new SceneExploreServices();
+        break;
+
+      case 'explore-profile-metrics':
+        primary = new SceneExploreProfileMetrics();
+        break;
+
+      case 'favorites':
+        primary = new SceneFavorites();
+        break;
+
+      default:
+        throw new Error(`Unknown tab "${tab}"!`);
+    }
+
+    return new SplitLayout({
+      direction: 'column',
+      primary,
     });
   }
 
@@ -58,9 +213,19 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     if (typeof values.tab === 'string' && values.tab !== this.state.tab) {
       stateUpdate.tab = values.tab;
+      stateUpdate.body = SceneProfilesExplorer.buildBody(stateUpdate.tab);
     }
 
     this.setState(stateUpdate);
+  }
+
+  selectTab(tab: string) {
+    this.setState({
+      tab,
+      body: SceneProfilesExplorer.buildBody(tab),
+    });
+
+    this.refreshServicesAndProfileMetrics();
   }
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
@@ -89,23 +254,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           <Tab
             label="Explore services"
             active={tab === 'explore-services'}
-            onChangeTab={() => model.setState({ tab: 'explore-services' })}
+            onChangeTab={() => model.selectTab('explore-services')}
           />
           <Tab
             label="Explore profile metrics"
             active={tab === 'explore-profile-metrics'}
-            onChangeTab={() => model.setState({ tab: 'explore-profile-metrics' })}
+            onChangeTab={() => model.selectTab('explore-profile-metrics')}
           />
-          <Tab
-            label="Favorites"
-            active={tab === 'favorites'}
-            onChangeTab={() => model.setState({ tab: 'favorites' })}
-          />
+          <Tab label="Favorites" active={tab === 'favorites'} onChangeTab={() => model.selectTab('favorites')} />
         </TabsBar>
 
-        <TabContent className={styles.tabContent}>
-          <body.Component model={body} />
-        </TabContent>
+        <TabContent className={styles.tabContent}>{body && <body.Component model={body} />}</TabContent>
       </>
     );
   }

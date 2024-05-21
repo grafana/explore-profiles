@@ -1,9 +1,6 @@
 import { SceneQueryRunner } from '@grafana/scenes';
 
-const PYROSCOPE_DATA_SOURCE = Object.freeze({
-  type: 'grafana-pyroscope-datasource',
-  uid: '$dataSource', // interpolated variable
-});
+import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-source';
 
 type Params = {
   serviceName: string;
