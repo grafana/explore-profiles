@@ -41,6 +41,9 @@ export class ServiceNameVariable extends CustomVariable {
       onSelect(options[0]);
     }
 
+    console.log('*** ServiceNameVariable value', value);
+    console.log('*** ServiceNameVariable options', options);
+
     // hack: see constructor
     return options === undefined ? (
       <Select aria-label="Services list" width={32} placeholder="Loading services..." options={[]} onChange={noOp} />

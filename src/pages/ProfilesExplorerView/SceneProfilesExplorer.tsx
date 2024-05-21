@@ -45,6 +45,8 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
 }
 
 export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorerState> {
+  static DEFAULT_TAB = 'explore-services';
+
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['tab'] });
 
   constructor() {
@@ -211,8 +213,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   updateFromUrl(values: SceneObjectUrlValues) {
     const stateUpdate: Partial<SceneProfilesExplorerState> = {};
 
-    if (typeof values.tab === 'string' && values.tab !== this.state.tab) {
-      stateUpdate.tab = values.tab;
+    if (values.tab !== this.state.tab) {
+      stateUpdate.tab = typeof values.tab === 'string' ? values.tab : SceneProfilesExplorer.DEFAULT_TAB;
       stateUpdate.body = SceneProfilesExplorer.buildBody(stateUpdate.tab);
     }
 

@@ -79,7 +79,9 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
       <div className={styles.container}>
         <div className={styles.controls}>
           <Stack justifyContent="space-between">
-            <div>{/* <variablesControl.Component key={variablesControl.state.key} model={variablesControl} /> */}</div>
+            <div>
+              <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />{' '}
+            </div>
             <div className={styles.quickFilter}>
               <quickFilter.Component model={quickFilter} />
             </div>
