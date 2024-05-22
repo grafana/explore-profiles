@@ -12,8 +12,11 @@ import {
 import { Spinner } from '@grafana/ui';
 import React from 'react';
 
+import { FavAction } from '../actions/FavAction';
+import { SelectAction } from '../actions/SelectAction';
+import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
 import { LayoutType } from '../components/SceneLayoutSwitcher';
-import { getServiceQueryRunner } from '../data/getServiceQueryRunner';
+import { getProfileMetricQueryRunner } from '../data/getProfileMetricQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
@@ -28,7 +31,7 @@ const GRID_AUTO_ROWS = '240px';
 export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetricsListState> {
   constructor({ layout }: { layout: LayoutType }) {
     super({
-      key: 'services-list',
+      key: 'profile-metrics-list',
       profileMetrics: {
         data: [],
         isLoading: true,
@@ -65,19 +68,35 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
   }
 
   updateGridItems(profileMetrics: SceneProfileMetricsListState['profileMetrics']) {
-    // TODO: render empty state
+    if (!profileMetrics.isLoading && !profileMetrics.data.length) {
+      (this.state.body as SceneCSSGridLayout).setState({
+        autoRows: '480px',
+        children: [
+          new SceneCSSGridItem({
+            body: new EmptyStateScene({
+              message: 'No profile metrics found',
+            }),
+          }),
+        ],
+      });
 
-    const gridItems = ([] || profileMetrics).map((serviceName, i) => {
-      const data = getServiceQueryRunner({ serviceName });
+      return;
+    }
+
+    const gridItems = profileMetrics.data.map(({ value: profileMetricId, label }, i) => {
+      const serviceNameVariableValue = sceneGraph.lookupVariable('serviceName', this)?.getValue();
+      const serviceName = typeof serviceNameVariableValue === 'string' ? serviceNameVariableValue : '';
+      const color = getColorByIndex(i);
+      const params = { serviceName, profileMetricId, color };
 
       return new SceneCSSGridItem({
         body: PanelBuilders.timeseries()
-          .setTitle(serviceName)
+          .setTitle(label)
           .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
-          .setData(data)
-          .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
+          .setData(getProfileMetricQueryRunner({ profileMetricId }))
+          .setColor({ mode: 'fixed', fixedColor: color })
           .setCustomFieldConfig('fillOpacity', 9)
-          // .setHeaderActions([])
+          .setHeaderActions([new SelectAction({ params }), new FavAction({ params })])
           .build(),
       });
     });

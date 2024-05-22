@@ -62,13 +62,11 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
   }
 
   onFilterChange(searchText: string) {
-    console.log('*** onFilterChange', searchText);
-    // (this.state.body as SceneProfileMetricsList).onFilterChange(searchText);
+    (this.state.body as SceneProfileMetricsList).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
-    console.log('*** onLayoutChange', newLayout);
-    // (this.state.body as SceneProfileMetricsList).onLayoutChange(newLayout);
+    (this.state.body as SceneProfileMetricsList).onLayoutChange(newLayout);
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreProfileMetrics>) {
@@ -93,8 +91,7 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
           </Stack>
         </div>
 
-        {/* <body.Component model={body} /> */}
-        {body && <body.Component model={body} />}
+        <body.Component model={body} />
       </div>
     );
   }
