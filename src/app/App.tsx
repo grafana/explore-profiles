@@ -12,17 +12,6 @@ import { Routes } from './components/Routes/Routes';
 import './infrastructure/faro';
 import './ui/styles/styles.scss';
 
-// Module augmentation so that typescript sees our 'custom' element
-/* eslint-disable no-unused-vars */
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSX {
-    interface IntrinsicElements {
-      'pyroscope-app': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    }
-  }
-}
-
 export function App(props: AppRootProps) {
   return (
     <PluginContextProvider meta={props.meta}>
@@ -31,11 +20,9 @@ export function App(props: AppRootProps) {
           <Provider store={store}>
             <Onboarding>
               <PluginPage layout={PageLayoutType.Canvas}>
-                <pyroscope-app className="app">
-                  <div className="pyroscope-app">
-                    <Routes />
-                  </div>
-                </pyroscope-app>
+                <div className="pyroscope-app">
+                  <Routes />
+                </div>
               </PluginPage>
             </Onboarding>
           </Provider>

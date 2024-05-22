@@ -3,7 +3,7 @@ import { expect, test } from '../fixtures';
 test.describe('Onboarding', () => {
   test('displays an onboarding modal that can be closed', async ({ page }) => {
     await page.route('*/**/querier.v1.QuerierService/Series', async (route) => {
-      const json = {};
+      const json = { labelsSet: [] };
       await route.fulfill({ json });
     });
 

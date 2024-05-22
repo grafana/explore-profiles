@@ -1,21 +1,16 @@
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { useState } from 'react';
 
-import { useCheckForUserData } from '../infrastructure/useCheckForUserData';
+import { useDataPresentCheck } from '../infrastructure/useDataPresentCheck';
 
 export function useOnboarding(): DomainHookReturnValue {
+  const { isFetching, error, hasNoUserData } = useDataPresentCheck();
   const [isModalClosed, setIsModalClosed] = useState(false);
-
-  const { isFetching, error, hasNoUserData } = useCheckForUserData();
-
-  const shouldShowEmptyLoadingPage = isFetching && !error;
-
-  const shouldShowOnboardingPage = hasNoUserData && !error && !isModalClosed;
 
   return {
     data: {
-      shouldShowEmptyLoadingPage,
-      shouldShowOnboardingPage,
+      shouldShowLoadingPage: !error && isFetching,
+      shouldShowOnboardingPage: !error && !isModalClosed && hasNoUserData,
     },
     actions: {
       closeModal() {
