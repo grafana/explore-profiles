@@ -9,8 +9,9 @@ export class ProfileMetricVariable extends CustomVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
   constructor() {
-    // hack: the variable does not sync, if the "var-profileMetricId" serach parameter is present in the URL, it is set to an empty value
-    const value = new URLSearchParams(window.location.search).get('var-profileMetricId') || '';
+    // hack: the variable does not sync, if the "var-profileMetricId" search parameter is present in the URL, it is set to an empty value
+    const value =
+      new URLSearchParams(window.location.search).get('var-profileMetricId') || ProfileMetricVariable.DEFAULT_VALUE;
 
     super({
       name: 'profileMetricId',
@@ -32,6 +33,7 @@ export class ProfileMetricVariable extends CustomVariable {
     this.setState({
       // hack: see constructor
       options: profileMetrics.isLoading ? undefined : ProfileMetricVariable.buildCascaderOptions(profileMetrics),
+      value: this.state.value || ProfileMetricVariable.DEFAULT_VALUE,
     });
   }
 
@@ -67,21 +69,19 @@ export class ProfileMetricVariable extends CustomVariable {
       model.changeValueTo(newValue, newValue);
     }
 
-    if (!value && options?.length) {
-      onSelect(ProfileMetricVariable.DEFAULT_VALUE);
-    }
-
     // hack: see constructor
     return options === undefined ? (
-      <Select
+      <Cascader
+        key="loading-cascader"
         aria-label="Profile metrics list"
         width={32}
         placeholder="Loading metrics..."
         options={[]}
-        onChange={noOp}
+        onSelect={noOp}
       />
     ) : (
       <Cascader
+        key="loaded-cascader"
         aria-label="Profile metrics list"
         width={32}
         separator="/"
