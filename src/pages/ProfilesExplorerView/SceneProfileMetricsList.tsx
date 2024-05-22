@@ -32,7 +32,7 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
       key: 'services-list',
       profileMetrics: {
         data: [],
-        isLoading: false,
+        isLoading: true,
         error: null,
       },
       body: new SceneCSSGridLayout({

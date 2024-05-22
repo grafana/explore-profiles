@@ -32,7 +32,7 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
       key: 'services-list',
       services: {
         data: [],
-        isLoading: false,
+        isLoading: true,
         error: null,
       },
       body: new SceneCSSGridLayout({
@@ -114,8 +114,6 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
 
   static Component({ model }: SceneComponentProps<SceneServicesList>) {
     const { body, services } = model.useState();
-
-    console.log('*** SceneServicesList services', services);
 
     if (services.isLoading) {
       return <Spinner />;

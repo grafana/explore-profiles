@@ -24,8 +24,14 @@ import { SceneExploreServices } from './SceneExploreServices';
 import { SceneFavorites } from './SceneFavorites';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
 
+enum MainTab {
+  EXPLORE_SERVICES = 'explore-services',
+  EXPLORE_PROFILE_METRICS = 'explore-profile-metrics',
+  EXPLORE_FAVORITES = 'explore-favorites',
+}
+
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
-  tab: string;
+  mainTab: MainTab;
   services: {
     data: string[];
     isLoading: boolean;
@@ -45,16 +51,17 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
 }
 
 export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorerState> {
-  static DEFAULT_TAB = 'explore-services';
+  static DEFAULT_TAB = MainTab.EXPLORE_SERVICES;
 
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['tab'] });
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['mainTab'] });
 
   constructor() {
     const $timeRange = new SceneTimeRange({});
 
     super({
       key: 'profiles-explorer',
-      tab: '',
+      mainTab: SceneProfilesExplorer.DEFAULT_TAB,
+      body: undefined,
       services: {
         data: [],
         isLoading: false,
@@ -77,6 +84,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     this.addActivationHandler(() => {
+      this.setState({
+        body: SceneProfilesExplorer.buildBody(this.state.mainTab),
+      });
+
       // we fetch services only here and...
       this.refreshServicesAndProfileMetrics();
 
@@ -178,24 +189,24 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
-  static buildBody(tab: string) {
+  static buildBody(mainTab: MainTab) {
     let primary;
 
-    switch (tab) {
-      case 'explore-services':
+    switch (mainTab) {
+      case MainTab.EXPLORE_SERVICES:
         primary = new SceneExploreServices();
         break;
 
-      case 'explore-profile-metrics':
+      case MainTab.EXPLORE_PROFILE_METRICS:
         primary = new SceneExploreProfileMetrics();
         break;
 
-      case 'favorites':
+      case MainTab.EXPLORE_FAVORITES:
         primary = new SceneFavorites();
         break;
 
       default:
-        throw new Error(`Unknown tab "${tab}"!`);
+        throw new Error(`Unknown tab "${mainTab}"!`);
     }
 
     return new SplitLayout({
@@ -206,25 +217,26 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   getUrlState() {
     return {
-      tab: this.state.tab,
+      mainTab: this.state.mainTab,
     };
   }
 
   updateFromUrl(values: SceneObjectUrlValues) {
     const stateUpdate: Partial<SceneProfilesExplorerState> = {};
 
-    if (values.tab !== this.state.tab) {
-      stateUpdate.tab = typeof values.tab === 'string' ? values.tab : SceneProfilesExplorer.DEFAULT_TAB;
-      stateUpdate.body = SceneProfilesExplorer.buildBody(stateUpdate.tab);
+    if (values.mainTab !== this.state.mainTab) {
+      stateUpdate.mainTab = Object.values(MainTab).includes(values.mainTab as MainTab)
+        ? (values.mainTab as MainTab)
+        : SceneProfilesExplorer.DEFAULT_TAB;
     }
 
     this.setState(stateUpdate);
   }
 
-  selectTab(tab: string) {
+  selectMainTab(mainTab: MainTab) {
     this.setState({
-      tab,
-      body: SceneProfilesExplorer.buildBody(tab),
+      mainTab,
+      body: SceneProfilesExplorer.buildBody(mainTab),
     });
 
     this.refreshServicesAndProfileMetrics();
@@ -232,7 +244,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { controls, tab, body } = model.useState();
+    const { controls, mainTab, body } = model.useState();
 
     const [variablesControl, timePickerControl, refreshPickerControl] = controls || [];
 
@@ -255,15 +267,19 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         <TabsBar>
           <Tab
             label="Explore services"
-            active={tab === 'explore-services'}
-            onChangeTab={() => model.selectTab('explore-services')}
+            active={mainTab === MainTab.EXPLORE_SERVICES}
+            onChangeTab={() => model.selectMainTab(MainTab.EXPLORE_SERVICES)}
           />
           <Tab
             label="Explore profile metrics"
-            active={tab === 'explore-profile-metrics'}
-            onChangeTab={() => model.selectTab('explore-profile-metrics')}
+            active={mainTab === MainTab.EXPLORE_PROFILE_METRICS}
+            onChangeTab={() => model.selectMainTab(MainTab.EXPLORE_PROFILE_METRICS)}
           />
-          <Tab label="Favorites" active={tab === 'favorites'} onChangeTab={() => model.selectTab('favorites')} />
+          <Tab
+            label="Favorites"
+            active={mainTab === MainTab.EXPLORE_FAVORITES}
+            onChangeTab={() => model.selectMainTab(MainTab.EXPLORE_FAVORITES)}
+          />
         </TabsBar>
 
         <TabContent className={styles.tabContent}>{body && <body.Component model={body} />}</TabContent>
