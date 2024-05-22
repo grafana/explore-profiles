@@ -92,7 +92,7 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
       return new SceneCSSGridItem({
         body: PanelBuilders.timeseries()
           .setTitle(serviceName)
-          .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
+          .setOption('legend', { showLegend: true }) // show profile metric ("cpu", etc.)
           .setData(getServiceQueryRunner({ serviceName }))
           .setColor({ mode: 'fixed', fixedColor: color })
           .setCustomFieldConfig('fillOpacity', 9)

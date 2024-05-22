@@ -26,7 +26,7 @@ interface SceneExploreServicesState extends EmbeddedSceneState {
 export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search services by name' });
-    const layoutSwitcher = new SceneLayoutSwitcher({ layout: LayoutType.GRID });
+    const layoutSwitcher = new SceneLayoutSwitcher({});
     const servicesList = new SceneServicesList({ layout: LayoutType.GRID });
 
     super({

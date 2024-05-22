@@ -15,10 +15,22 @@ interface SceneLayoutSwitcherState extends SceneObjectState {
 }
 
 export class SceneLayoutSwitcher extends SceneObjectBase<SceneLayoutSwitcherState> {
-  static options = [
+  static OPTIONS = [
     { label: 'Grid', value: LayoutType.GRID },
     { label: 'Rows', value: LayoutType.ROWS },
   ];
+
+  static DEFAULT_LAYOUT = LayoutType.GRID;
+
+  constructor() {
+    const layout = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.layout || SceneLayoutSwitcher.DEFAULT_LAYOUT;
+
+    super({ layout });
+
+    this.addActivationHandler(() => {
+      this.onChange(layout);
+    });
+  }
 
   onChange = (newLayout: LayoutType) => {
     this.setState({ layout: newLayout });
@@ -41,7 +53,7 @@ export class SceneLayoutSwitcher extends SceneObjectBase<SceneLayoutSwitcherStat
     return (
       <div className={styles.switcher}>
         <RadioButtonGroup
-          options={SceneLayoutSwitcher.options}
+          options={SceneLayoutSwitcher.OPTIONS}
           value={layout}
           onChange={model.onChange}
           fullWidth={false}

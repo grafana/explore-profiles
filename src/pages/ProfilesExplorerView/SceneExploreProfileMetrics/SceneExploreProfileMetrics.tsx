@@ -26,7 +26,7 @@ interface SceneExploreProfileMetricsState extends EmbeddedSceneState {
 export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProfileMetricsState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search profile metrics by name' });
-    const layoutSwitcher = new SceneLayoutSwitcher({ layout: LayoutType.GRID });
+    const layoutSwitcher = new SceneLayoutSwitcher({});
     const profileMetricsList = new SceneProfileMetricsList({ layout: LayoutType.GRID });
 
     super({
