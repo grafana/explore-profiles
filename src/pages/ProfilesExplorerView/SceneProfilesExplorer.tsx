@@ -19,9 +19,9 @@ import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfile
 import { servicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
 import React from 'react';
 
-import { SceneExploreProfileMetrics } from './SceneExploreProfileMetrics';
-import { SceneExploreServices } from './SceneExploreServices';
-import { SceneFavorites } from './SceneFavorites';
+import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
+import { SceneExploreProfileMetrics } from './SceneExploreProfileMetrics/SceneExploreProfileMetrics';
+import { SceneExploreServices } from './SceneExploreServices/SceneExploreServices';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
 
 enum MainTab {
@@ -202,7 +202,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case MainTab.EXPLORE_FAVORITES:
-        primary = new SceneFavorites();
+        primary = new SceneExploreFavorites();
         break;
 
       default:

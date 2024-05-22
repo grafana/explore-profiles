@@ -5,20 +5,20 @@ import { Stack, useStyles2 } from '@grafana/ui';
 import debounce from 'lodash.debounce';
 import React from 'react';
 
-import { LayoutType, SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
-import { SceneQuickFilter } from './components/SceneQuickFilter';
-import { SceneServicesList } from './SceneServicesList';
+import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneQuickFilter } from '../components/SceneQuickFilter';
+import { SceneServicesList } from '../SceneExploreServices/SceneServicesList';
 
-interface SceneProfilesExplorerState extends EmbeddedSceneState {
+interface SceneExploreFavoritesState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
   layoutSwitcher: SceneLayoutSwitcher;
 }
 
-export class SceneFavorites extends SceneObjectBase<SceneProfilesExplorerState> {
+export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavoritesState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search favorites' });
     const layoutSwitcher = new SceneLayoutSwitcher({ layout: LayoutType.GRID });
-    // const favoritesList = new SceneFavoritesList({ layout: LayoutType.GRID });
+    // const favoritesList = new SceneExploreFavoritesList({ layout: LayoutType.GRID });
 
     super({
       key: 'explore-favorites',
@@ -38,14 +38,16 @@ export class SceneFavorites extends SceneObjectBase<SceneProfilesExplorerState> 
   }
 
   onFilterChange(searchText: string) {
-    // (this.state.body as SceneFavoritesList).onFilterChange(searchText);
+    console.log('*** onFilterChange', searchText);
+    // (this.state.body as SceneExploreFavoritesList).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
-    // (this.state.body as SceneFavoritesList).onLayoutChange(newLayout);
+    console.log('*** onLayoutChange', newLayout);
+    // (this.state.body as SceneExploreFavoritesList).onLayoutChange(newLayout);
   }
 
-  static Component({ model }: SceneComponentProps<SceneFavorites>) {
+  static Component({ model }: SceneComponentProps<SceneExploreFavorites>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
     const { body, quickFilter, layoutSwitcher } = model.useState();
 

@@ -12,12 +12,13 @@ import {
 import { Spinner } from '@grafana/ui';
 import React from 'react';
 
-import { SelectServiceAction } from './actions/SelectServiceAction';
-import { EmptyStateScene } from './components/EmptyState/EmptyStateScene';
-import { LayoutType } from './components/SceneLayoutSwitcher';
-import { getServiceQueryRunner } from './data/getServiceQueryRunner';
-import { getColorByIndex } from './helpers/getColorByIndex';
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from './SceneProfilesExplorer';
+import { FavAction } from '../actions/FavAction';
+import { SelectAction } from '../actions/SelectAction';
+import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
+import { LayoutType } from '../components/SceneLayoutSwitcher';
+import { getServiceQueryRunner } from '../data/getServiceQueryRunner';
+import { getColorByIndex } from '../helpers/getColorByIndex';
+import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
 interface SceneServicesListState extends EmbeddedSceneState {
   services: SceneProfilesExplorerState['services'];
@@ -83,22 +84,19 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
     }
 
     const gridItems = services.data.map((serviceName, i) => {
-      const data = getServiceQueryRunner({ serviceName });
+      const profileMetricVariableValue = sceneGraph.lookupVariable('profileMetricId', this)?.getValue();
+      const profileMetricId = typeof profileMetricVariableValue === 'string' ? profileMetricVariableValue : '';
+      const color = getColorByIndex(i);
+      const params = { serviceName, profileMetricId, color };
 
       return new SceneCSSGridItem({
         body: PanelBuilders.timeseries()
           .setTitle(serviceName)
           .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
-          .setData(data)
-          .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
+          .setData(getServiceQueryRunner({ serviceName }))
+          .setColor({ mode: 'fixed', fixedColor: color })
           .setCustomFieldConfig('fillOpacity', 9)
-          .setHeaderActions([
-            new SelectServiceAction({ serviceName }),
-            // new FavAction({
-            //   serviceName: service.value,
-            //   labelId: '',
-            // }),
-          ])
+          .setHeaderActions([new SelectAction({ params }), new FavAction({ params })])
           .build(),
       });
     });

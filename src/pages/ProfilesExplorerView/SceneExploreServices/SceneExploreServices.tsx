@@ -12,11 +12,11 @@ import { Stack, useStyles2 } from '@grafana/ui';
 import debounce from 'lodash.debounce';
 import React from 'react';
 
-import { LayoutType, SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
-import { SceneQuickFilter } from './components/SceneQuickFilter';
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from './SceneProfilesExplorer';
+import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneQuickFilter } from '../components/SceneQuickFilter';
+import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
+import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
 import { SceneServicesList } from './SceneServicesList';
-import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
 
 interface SceneExploreServicesState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;

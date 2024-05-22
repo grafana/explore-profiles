@@ -12,11 +12,10 @@ import {
 import { Spinner } from '@grafana/ui';
 import React from 'react';
 
-import { SelectServiceAction } from './actions/SelectServiceAction';
-import { LayoutType } from './components/SceneLayoutSwitcher';
-import { getServiceQueryRunner } from './data/getServiceQueryRunner';
-import { getColorByIndex } from './helpers/getColorByIndex';
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from './SceneProfilesExplorer';
+import { LayoutType } from '../components/SceneLayoutSwitcher';
+import { getServiceQueryRunner } from '../data/getServiceQueryRunner';
+import { getColorByIndex } from '../helpers/getColorByIndex';
+import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
 interface SceneProfileMetricsListState extends EmbeddedSceneState {
   profileMetrics: SceneProfilesExplorerState['profileMetrics'];
@@ -78,13 +77,7 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
           .setData(data)
           .setColor({ mode: 'fixed', fixedColor: getColorByIndex(i) })
           .setCustomFieldConfig('fillOpacity', 9)
-          .setHeaderActions([
-            new SelectServiceAction({ serviceName }),
-            // new FavAction({
-            //   serviceName: service.value,
-            //   labelId: '',
-            // }),
-          ])
+          // .setHeaderActions([])
           .build(),
       });
     });

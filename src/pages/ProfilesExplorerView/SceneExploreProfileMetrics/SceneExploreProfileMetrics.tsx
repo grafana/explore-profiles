@@ -12,11 +12,11 @@ import { Stack, useStyles2 } from '@grafana/ui';
 import debounce from 'lodash.debounce';
 import React from 'react';
 
-import { LayoutType, SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
-import { SceneQuickFilter } from './components/SceneQuickFilter';
+import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneQuickFilter } from '../components/SceneQuickFilter';
+import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
+import { ServiceNameVariable } from '../variables/ServiceNameVariable';
 import { SceneProfileMetricsList } from './SceneProfileMetricsList';
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from './SceneProfilesExplorer';
-import { ServiceNameVariable } from './variables/ServiceNameVariable';
 
 interface SceneExploreProfileMetricsState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
@@ -62,10 +62,12 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
   }
 
   onFilterChange(searchText: string) {
+    console.log('*** onFilterChange', searchText);
     // (this.state.body as SceneProfileMetricsList).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
+    console.log('*** onLayoutChange', newLayout);
     // (this.state.body as SceneProfileMetricsList).onLayoutChange(newLayout);
   }
 
