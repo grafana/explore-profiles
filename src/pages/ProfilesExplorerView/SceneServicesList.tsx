@@ -13,6 +13,7 @@ import { Spinner } from '@grafana/ui';
 import React from 'react';
 
 import { SelectServiceAction } from './actions/SelectServiceAction';
+import { EmptyStateScene } from './components/EmptyState/EmptyStateScene';
 import { LayoutType } from './components/SceneLayoutSwitcher';
 import { getServiceQueryRunner } from './data/getServiceQueryRunner';
 import { getColorByIndex } from './helpers/getColorByIndex';
@@ -66,7 +67,20 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
   }
 
   updateGridItems(services: SceneServicesListState['services']) {
-    // TODO: render empty state
+    if (!services.isLoading && !services.data.length) {
+      (this.state.body as SceneCSSGridLayout).setState({
+        autoRows: '480px',
+        children: [
+          new SceneCSSGridItem({
+            body: new EmptyStateScene({
+              message: 'No services found',
+            }),
+          }),
+        ],
+      });
+
+      return;
+    }
 
     const gridItems = services.data.map((serviceName, i) => {
       const data = getServiceQueryRunner({ serviceName });
@@ -89,7 +103,10 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
       });
     });
 
-    (this.state.body as SceneCSSGridLayout).setState({ children: gridItems });
+    (this.state.body as SceneCSSGridLayout).setState({
+      autoRows: GRID_AUTO_ROWS,
+      children: gridItems,
+    });
   }
 
   onLayoutChange(newLayout: LayoutType) {
