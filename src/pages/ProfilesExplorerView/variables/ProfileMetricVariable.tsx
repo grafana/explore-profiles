@@ -9,6 +9,9 @@ export class ProfileMetricVariable extends CustomVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
   constructor() {
+    // hack: the variable does not sync, if the "var-profileMetricId" serach parameter is present in the URL, it is set to an empty value
+    const value = new URLSearchParams(window.location.search).get('var-profileMetricId') || '';
+
     super({
       name: 'profileMetricId',
       isMulti: false,
@@ -20,6 +23,7 @@ export class ProfileMetricVariable extends CustomVariable {
         // hack: we use undefined to monitor loading status - couldn't make it work by using the custom variable state
         // where "loading" & "error" should exist :man_shrug:
         options: undefined,
+        value,
       });
     });
   }
