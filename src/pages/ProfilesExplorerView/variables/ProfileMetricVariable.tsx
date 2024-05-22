@@ -1,5 +1,5 @@
 import { CustomVariable, MultiValueVariable, SceneComponentProps } from '@grafana/scenes';
-import { Cascader, CascaderOption, Select } from '@grafana/ui';
+import { Cascader, CascaderOption } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React from 'react';
 
