@@ -115,7 +115,7 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
         key: gridItemKey,
         body: PanelBuilders.timeseries()
           .setTitle(label)
-          .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
+          .setOption('legend', { showLegend: true }) // show profile metric ("cpu", etc.)
           .setData(data)
           .setColor({ mode: 'fixed', fixedColor: color })
           .setCustomFieldConfig('fillOpacity', 9)
