@@ -17,7 +17,7 @@ interface SceneExploreFavoritesState extends EmbeddedSceneState {
 export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavoritesState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search favorites' });
-    const layoutSwitcher = new SceneLayoutSwitcher({ layout: LayoutType.GRID });
+    const layoutSwitcher = new SceneLayoutSwitcher();
     // const favoritesList = new SceneExploreFavoritesList({ layout: LayoutType.GRID });
 
     super({

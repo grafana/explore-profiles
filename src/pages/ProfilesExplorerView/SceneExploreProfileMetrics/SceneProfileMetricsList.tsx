@@ -1,4 +1,4 @@
-import { DashboardCursorSync } from '@grafana/data';
+import { DashboardCursorSync, LoadingState } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -22,6 +22,7 @@ import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfi
 
 interface SceneProfileMetricsListState extends EmbeddedSceneState {
   profileMetrics: SceneProfilesExplorerState['profileMetrics'];
+  hideNoData: boolean;
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
@@ -37,6 +38,7 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
         isLoading: true,
         error: null,
       },
+      hideNoData: false,
       body: new SceneCSSGridLayout({
         templateColumns: layout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
         autoRows: GRID_AUTO_ROWS,
@@ -67,6 +69,7 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
     this.updateGridItems(profileMetrics);
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   updateGridItems(profileMetrics: SceneProfileMetricsListState['profileMetrics']) {
     if (!profileMetrics.isLoading && !profileMetrics.data.length) {
       (this.state.body as SceneCSSGridLayout).setState({
@@ -88,12 +91,32 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
       const serviceName = typeof serviceNameVariableValue === 'string' ? serviceNameVariableValue : '';
       const color = getColorByIndex(i);
       const params = { serviceName, profileMetricId, color };
+      const gridItemKey = `grid-item-${profileMetricId}`;
+
+      const data = getProfileMetricQueryRunner({ profileMetricId });
+
+      if (this.state.hideNoData) {
+        this._subs.add(
+          data.subscribeToState((state) => {
+            if (state.data?.state === LoadingState.Done && !state.data.series.length) {
+              const gridItem = sceneGraph.getAncestor(data, SceneCSSGridItem);
+              const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
+              const { children } = grid.state;
+
+              grid.setState({
+                children: children.filter((c) => c.state.key !== gridItemKey),
+              });
+            }
+          })
+        );
+      }
 
       return new SceneCSSGridItem({
+        key: gridItemKey,
         body: PanelBuilders.timeseries()
           .setTitle(label)
           .setOption('legend', { showLegend: false }) // hide profile metric ("cpu", etc.)
-          .setData(getProfileMetricQueryRunner({ profileMetricId }))
+          .setData(data)
           .setColor({ mode: 'fixed', fixedColor: color })
           .setCustomFieldConfig('fillOpacity', 9)
           .setHeaderActions([new SelectAction({ params }), new FavAction({ params })])
@@ -122,6 +145,14 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
       isLoading: false,
       error: null,
     });
+  }
+
+  onHideNoDataChange(newHideNoData: boolean) {
+    this.setState({
+      hideNoData: newHideNoData,
+    });
+
+    this.updateGridItems(this.state.profileMetrics);
   }
 
   static Component({ model }: SceneComponentProps<SceneProfileMetricsList>) {

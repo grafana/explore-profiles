@@ -13,6 +13,7 @@ import debounce from 'lodash.debounce';
 import React from 'react';
 
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
@@ -21,12 +22,14 @@ import { SceneServicesList } from './SceneServicesList';
 interface SceneExploreServicesState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
   layoutSwitcher: SceneLayoutSwitcher;
+  noDataSwitcher: SceneNoDataSwitcher;
 }
 
 export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search services by name' });
-    const layoutSwitcher = new SceneLayoutSwitcher({});
+    const layoutSwitcher = new SceneLayoutSwitcher();
+    const noDataSwitcher = new SceneNoDataSwitcher();
     const servicesList = new SceneServicesList({ layout: LayoutType.GRID });
 
     super({
@@ -37,14 +40,17 @@ export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesSt
       controls: [new VariableValueSelectors({})],
       quickFilter,
       layoutSwitcher,
+      noDataSwitcher,
       body: servicesList,
     });
 
     this.onFilterChange = debounce(this.onFilterChange.bind(this), 250);
     this.onLayoutChange = this.onLayoutChange.bind(this);
+    this.onHideNoDataChange = this.onHideNoDataChange.bind(this);
 
     quickFilter.addHandler(this.onFilterChange);
     layoutSwitcher.addHandler(this.onLayoutChange);
+    noDataSwitcher.addHandler(this.onHideNoDataChange);
 
     this.addActivationHandler(() => {
       const ancestor = sceneGraph.getAncestor(this, SceneProfilesExplorer);
@@ -69,9 +75,13 @@ export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesSt
     (this.state.body as SceneServicesList).onLayoutChange(newLayout);
   }
 
+  onHideNoDataChange(newHideNoData: boolean) {
+    (this.state.body as SceneServicesList).onHideNoDataChange(newHideNoData);
+  }
+
   static Component({ model }: SceneComponentProps<SceneExploreServices>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { body, controls, quickFilter, layoutSwitcher } = model.useState();
+    const { body, controls, quickFilter, layoutSwitcher, noDataSwitcher } = model.useState();
 
     const [variablesControl] = controls || [];
 
@@ -87,6 +97,9 @@ export class SceneExploreServices extends SceneObjectBase<SceneExploreServicesSt
             </div>
             <div>
               <layoutSwitcher.Component model={layoutSwitcher} />
+            </div>
+            <div>
+              <noDataSwitcher.Component model={noDataSwitcher} />
             </div>
           </Stack>
         </div>

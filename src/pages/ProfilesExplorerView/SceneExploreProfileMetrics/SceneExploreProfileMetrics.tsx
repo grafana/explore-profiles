@@ -13,6 +13,7 @@ import debounce from 'lodash.debounce';
 import React from 'react';
 
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { ServiceNameVariable } from '../variables/ServiceNameVariable';
@@ -21,12 +22,14 @@ import { SceneProfileMetricsList } from './SceneProfileMetricsList';
 interface SceneExploreProfileMetricsState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
   layoutSwitcher: SceneLayoutSwitcher;
+  noDataSwitcher: SceneNoDataSwitcher;
 }
 
 export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProfileMetricsState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search profile metrics by name' });
-    const layoutSwitcher = new SceneLayoutSwitcher({});
+    const layoutSwitcher = new SceneLayoutSwitcher();
+    const noDataSwitcher = new SceneNoDataSwitcher();
     const profileMetricsList = new SceneProfileMetricsList({ layout: LayoutType.GRID });
 
     super({
@@ -37,14 +40,17 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
       controls: [new VariableValueSelectors({})],
       quickFilter,
       layoutSwitcher,
+      noDataSwitcher,
       body: profileMetricsList,
     });
 
     this.onFilterChange = debounce(this.onFilterChange.bind(this), 250);
     this.onLayoutChange = this.onLayoutChange.bind(this);
+    this.onHideNoDataChange = this.onHideNoDataChange.bind(this);
 
     quickFilter.addHandler(this.onFilterChange);
     layoutSwitcher.addHandler(this.onLayoutChange);
+    noDataSwitcher.addHandler(this.onHideNoDataChange);
 
     this.addActivationHandler(() => {
       const ancestor = sceneGraph.getAncestor(this, SceneProfilesExplorer);
@@ -69,9 +75,13 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
     (this.state.body as SceneProfileMetricsList).onLayoutChange(newLayout);
   }
 
+  onHideNoDataChange(newHideNoData: boolean) {
+    (this.state.body as SceneProfileMetricsList).onHideNoDataChange(newHideNoData);
+  }
+
   static Component({ model }: SceneComponentProps<SceneExploreProfileMetrics>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { body, controls, quickFilter, layoutSwitcher } = model.useState();
+    const { body, controls, quickFilter, layoutSwitcher, noDataSwitcher } = model.useState();
 
     const [variablesControl] = controls || [];
 
@@ -87,6 +97,9 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
             </div>
             <div>
               <layoutSwitcher.Component model={layoutSwitcher} />
+            </div>
+            <div>
+              <noDataSwitcher.Component model={noDataSwitcher} />
             </div>
           </Stack>
         </div>
