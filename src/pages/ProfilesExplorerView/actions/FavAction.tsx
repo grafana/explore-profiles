@@ -11,7 +11,7 @@ import { IconButton, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
-interface FavActionState extends SceneObjectState {
+export interface FavActionState extends SceneObjectState {
   params: Record<string, string>;
   isFav?: boolean;
 }

@@ -6,50 +6,55 @@ import debounce from 'lodash.debounce';
 import React from 'react';
 
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
-import { SceneServicesList } from '../SceneExploreServices/SceneServicesList';
+import { SceneExploreFavoritesList } from './SceneExploreFavoritesList';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
   layoutSwitcher: SceneLayoutSwitcher;
+  noDataSwitcher: SceneNoDataSwitcher;
 }
 
 export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavoritesState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search favorites' });
     const layoutSwitcher = new SceneLayoutSwitcher();
-    // const favoritesList = new SceneExploreFavoritesList({ layout: LayoutType.GRID });
+    const noDataSwitcher = new SceneNoDataSwitcher();
+    const favoritesList = new SceneExploreFavoritesList({ layout: LayoutType.GRID });
 
     super({
       key: 'explore-favorites',
       quickFilter,
       layoutSwitcher,
-      //   favoritesList,
-      //   body: favoritesList,
-      // TEMP
-      body: new SceneServicesList({ layout: LayoutType.GRID }),
+      noDataSwitcher,
+      body: favoritesList,
     });
 
     this.onFilterChange = debounce(this.onFilterChange.bind(this), 250);
     this.onLayoutChange = this.onLayoutChange.bind(this);
+    this.onHideNoDataChange = this.onHideNoDataChange.bind(this);
 
     quickFilter.addHandler(this.onFilterChange);
     layoutSwitcher.addHandler(this.onLayoutChange);
+    noDataSwitcher.addHandler(this.onHideNoDataChange);
   }
 
   onFilterChange(searchText: string) {
-    console.log('*** onFilterChange', searchText);
-    // (this.state.body as SceneExploreFavoritesList).onFilterChange(searchText);
+    (this.state.body as SceneExploreFavoritesList).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
-    console.log('*** onLayoutChange', newLayout);
-    // (this.state.body as SceneExploreFavoritesList).onLayoutChange(newLayout);
+    (this.state.body as SceneExploreFavoritesList).onLayoutChange(newLayout);
+  }
+
+  onHideNoDataChange(newHideNoData: boolean) {
+    (this.state.body as SceneExploreFavoritesList).onHideNoDataChange(newHideNoData);
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreFavorites>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { body, quickFilter, layoutSwitcher } = model.useState();
+    const { body, quickFilter, layoutSwitcher, noDataSwitcher } = model.useState();
 
     return (
       <div className={styles.container}>
@@ -61,11 +66,13 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
             <div>
               <layoutSwitcher.Component model={layoutSwitcher} />
             </div>
+            <div>
+              <noDataSwitcher.Component model={noDataSwitcher} />
+            </div>
           </Stack>
         </div>
 
-        {/* <body.Component model={body} /> */}
-        {body && <body.Component model={body} />}
+        <body.Component model={body} />
       </div>
     );
   }
