@@ -14,7 +14,7 @@ type OnboardingProps = {
 export function Onboarding({ children }: OnboardingProps) {
   const { data, actions } = useOnboarding();
 
-  if (data.shouldShowEmptyLoadingPage) {
+  if (data.shouldShowLoadingPage) {
     return <EmptyLoadingPage />;
   }
 

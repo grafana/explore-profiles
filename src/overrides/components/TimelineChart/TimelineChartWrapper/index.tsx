@@ -25,7 +25,7 @@ import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineCh
 import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
 import React, { useContext, useRef, useState } from 'react';
 
-import { PyroscopeStateContext } from '../../../../app/components/Routes/domain/PyroscopeState/context';
+import { PyroscopeStateContext } from '../../../../pages/TagExplorer/PyroscopeState/context';
 
 const POINT_DISTANCE = 10000; // At this time, all points are 10 seconds apart.
 

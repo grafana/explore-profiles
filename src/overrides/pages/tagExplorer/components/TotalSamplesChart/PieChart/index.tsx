@@ -6,7 +6,7 @@ import { stringifyPyroscopeColor } from '@shared/domain/translation';
 import { PieChartProps } from 'grafana-pyroscope/public/app/pages/tagExplorer/components/TotalSamplesChart/PieChart';
 import React, { useContext, useMemo } from 'react';
 
-import { PyroscopeStateContext } from '../../../../../../app/components/Routes/domain/PyroscopeState/context';
+import { PyroscopeStateContext } from '../../../../../../pages/TagExplorer/PyroscopeState/context';
 
 const PieChart = ({ data, width, height }: PieChartProps) => {
   const series = useMemo(() => {

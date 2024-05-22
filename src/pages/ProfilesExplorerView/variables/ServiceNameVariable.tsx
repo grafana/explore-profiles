@@ -48,7 +48,7 @@ export class ServiceNameVariable extends CustomVariable {
         key="loading-cascader"
         aria-label="Services list"
         width={32}
-        placeholder="Loading metrics..."
+        placeholder="Loading services..."
         options={[]}
         onSelect={noOp}
       />
