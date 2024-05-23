@@ -79,8 +79,6 @@
     "color": "^4.2.3",
     "file-saver": "^2.0.5",
     "grafana-pyroscope": "git+https://github.com/grafana/pyroscope.git#bbb5f550adca0c7f3dd5a926ecddc91b73daf983",
-    "lodash.groupby": "^4.6.0",
-    "lodash.map": "^4.6.0",
     "markdown-to-jsx": "^7.3.2",
     "nanoid": "^4.0.2",
     "protobufjs": "^7.2.6",
