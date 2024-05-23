@@ -2,23 +2,29 @@ import { CustomVariable, MultiValueVariable, SceneComponentProps } from '@grafan
 import { RadioButtonGroup } from '@grafana/ui';
 import React from 'react';
 
+export enum ExplorationType {
+  ALL_SERVICES = 'all-services',
+  SINGLE_SERVICE = 'single-services',
+  FAVORITES = 'favorites',
+}
+
 export class ExplorationTypeVariable extends CustomVariable {
   static OPTIONS = [
     {
-      value: 'all-services-exploration',
+      value: ExplorationType.ALL_SERVICES,
       label: 'All services',
     },
     {
-      value: 'single-service-exploration',
+      value: ExplorationType.SINGLE_SERVICE,
       label: 'Single service',
     },
     {
-      value: 'favorites-exploration',
+      value: ExplorationType.FAVORITES,
       label: 'Favorites',
     },
   ];
 
-  static DEFAULT_VALUE = ExplorationTypeVariable.OPTIONS[0].value;
+  static DEFAULT_VALUE = ExplorationType.ALL_SERVICES;
 
   constructor() {
     super({
@@ -35,7 +41,7 @@ export class ExplorationTypeVariable extends CustomVariable {
       model.changeValueTo(newValue, newValue);
     }
 
-    if (!value) {
+    if (!Object.values(ExplorationType).includes(value as ExplorationType)) {
       onChange(ExplorationTypeVariable.DEFAULT_VALUE);
     }
 

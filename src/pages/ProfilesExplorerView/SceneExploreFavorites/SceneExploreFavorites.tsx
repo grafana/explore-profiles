@@ -7,6 +7,8 @@ import { userStorage } from '@shared/infrastructure/userStorage';
 import { debounce, omit } from 'lodash';
 import React from 'react';
 
+import { FavAction } from '../actions/FavAction';
+import { SelectAction } from '../actions/SelectAction';
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
@@ -33,6 +35,10 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
     const favoritesList = new SceneTimeSeriesGrid({
       key: 'favorites-grid',
       items: SceneExploreFavorites.getFavoriteItems(),
+      headerActions: (params) => [
+        new SelectAction({ label: 'Select', params, eventClass: 'EventSelect' }),
+        new FavAction({ params }),
+      ],
     });
 
     super({

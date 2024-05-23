@@ -7,9 +7,9 @@ import React from 'react';
 import { SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
 export class ServiceNameVariable extends CustomVariable {
-  constructor() {
+  constructor({ value }: { value?: string }) {
     // hack: the variable does not sync, if the "var-serviceName" search parameter is present in the URL, it is set to an empty value
-    const value = new URLSearchParams(window.location.search).get('var-serviceName') || '';
+    const initialValue = value || new URLSearchParams(window.location.search).get('var-serviceName') || '';
 
     super({
       name: 'serviceName',
@@ -22,7 +22,7 @@ export class ServiceNameVariable extends CustomVariable {
         // hack: we use undefined to monitor loading status - couldn't make it work by using the custom variable state
         // where "loading" & "error" should exist :man_shrug:
         options: undefined,
-        value,
+        value: initialValue,
       });
     });
   }

@@ -7,7 +7,6 @@ import {
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
-  SceneVariable,
   SceneVariableSet,
   SplitLayout,
   VariableDependencyConfig,
@@ -19,14 +18,14 @@ import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfile
 import { servicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
 import React from 'react';
 
+import { EventExplore } from './events/EventExplore';
 import { SceneExploreAllServices } from './SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
-import { ExplorationTypeVariable } from './variables/ExplorationTypeVariable';
+import { ExplorationType, ExplorationTypeVariable } from './variables/ExplorationTypeVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
-  explorationType: string;
   services: {
     data: string[];
     isLoading: boolean;
@@ -48,7 +47,9 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
 export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorerState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['explorationType'],
-    onReferencedVariableValueChanged: this.selectExplorationType.bind(this),
+    onReferencedVariableValueChanged: () => {
+      this.setExplorationType();
+    },
   });
 
   constructor() {
@@ -56,7 +57,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     super({
       key: 'profiles-explorer',
-      explorationType: ExplorationTypeVariable.DEFAULT_VALUE,
       body: undefined,
       services: {
         data: [],
@@ -80,19 +80,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     this.addActivationHandler(() => {
-      const explorationType =
-        (this.state.$variables?.getByName('explorationType')?.getValue() as string) ||
-        ExplorationTypeVariable.DEFAULT_VALUE;
+      this.subscribeToEvents();
+      this.setExplorationType();
 
-      this.setState({
-        explorationType,
-        body: SceneProfilesExplorer.buildBody(explorationType),
-      });
-
-      // we fetch services only here and...
-      this.refreshServicesAndProfileMetrics();
-
-      // ...only when selecting a new tab and only when refreshing the time range, to improve UX.
+      // we fetch services only when setting a new exploration type and only when refreshing the time range, to improve UX.
       // if not, the whole services list gets re-rendered whenever the user zooms selects a time range
       // (via the time range picker or directly by selecting a range on a timeseries)
       const originalRefresh = $timeRange.onRefresh;
@@ -108,6 +99,37 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         servicesApiClient.abort();
       };
     });
+  }
+
+  subscribeToEvents() {
+    this.subscribeToEvent(EventExplore, (event) => {
+      const { explorationType, params } = event.payload;
+
+      if (explorationType === ExplorationType.ALL_SERVICES) {
+        // TODO: when the body is responsible for fetching its data, pass a noInitialFetch = false param or similar
+        // for a snappier UI
+        this.setExplorationType(ExplorationType.SINGLE_SERVICE, { serviceName: params.serviceName });
+      }
+    });
+  }
+
+  setExplorationType(optionalExplorationType?: ExplorationType, initialBodyState?: Record<string, any>) {
+    const explorationTypeVariable = this.state.$variables!.getByName('explorationType') as ExplorationTypeVariable;
+    const explorationTypeValue = explorationTypeVariable.getValue() as ExplorationType;
+    const explorationType = optionalExplorationType || explorationTypeValue;
+
+    if (explorationTypeValue !== explorationType) {
+      explorationTypeVariable.changeValueTo(explorationType, explorationType);
+    }
+
+    this.setState({
+      body: SceneProfilesExplorer.buildBody(explorationType, initialBodyState),
+    });
+
+    // TODO: the body should be responsible for fetching its data
+    if (explorationType !== ExplorationType.FAVORITES) {
+      this.refreshServicesAndProfileMetrics();
+    }
   }
 
   async refreshServicesAndProfileMetrics() {
@@ -190,41 +212,27 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
-  static buildBody(explorationType: string) {
+  static buildBody(explorationType: ExplorationType, initialBodyState: Record<string, any> = {}) {
     let primary;
 
     switch (explorationType) {
-      case 'all-services-exploration':
-        primary = new SceneExploreAllServices();
+      case ExplorationType.SINGLE_SERVICE:
+        primary = new SceneExploreSingleService(initialBodyState);
         break;
 
-      case 'single-service-exploration':
-        primary = new SceneExploreSingleService();
-        break;
-
-      case 'favorites-exploration':
+      case ExplorationType.FAVORITES:
         primary = new SceneExploreFavorites();
         break;
 
+      case ExplorationType.ALL_SERVICES:
       default:
-        throw new Error(`Unknown exploration type "${explorationType}"!`);
+        primary = new SceneExploreAllServices();
     }
 
     return new SplitLayout({
       direction: 'column',
       primary,
     });
-  }
-
-  selectExplorationType(explorationTypeVariable: SceneVariable) {
-    const explorationType = explorationTypeVariable.getValue() as string;
-
-    this.setState({
-      explorationType,
-      body: SceneProfilesExplorer.buildBody(explorationType),
-    });
-
-    this.refreshServicesAndProfileMetrics();
   }
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {

@@ -12,6 +12,8 @@ import { Stack, useStyles2 } from '@grafana/ui';
 import debounce from 'lodash.debounce';
 import React from 'react';
 
+import { FavAction } from '../actions/FavAction';
+import { SelectAction } from '../actions/SelectAction';
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
@@ -26,19 +28,23 @@ interface SceneExploreSingleServiceState extends EmbeddedSceneState {
 }
 
 export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingleServiceState> {
-  constructor() {
+  constructor({ serviceName }: { serviceName?: string }) {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search profile metrics by name' });
     const layoutSwitcher = new SceneLayoutSwitcher();
     const noDataSwitcher = new SceneNoDataSwitcher();
 
     const profileMetricsList = new SceneTimeSeriesGrid({
       key: 'profile-metrics-grid',
+      headerActions: (params) => [
+        new SelectAction({ label: 'Select', params, eventClass: 'EventSelect' }),
+        new FavAction({ params }),
+      ],
     });
 
     super({
       key: 'explore-profile-metrics',
       $variables: new SceneVariableSet({
-        variables: [new ServiceNameVariable()],
+        variables: [new ServiceNameVariable({ value: serviceName })],
       }),
       controls: [new VariableValueSelectors({})],
       quickFilter,

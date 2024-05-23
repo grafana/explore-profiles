@@ -12,6 +12,8 @@ import { Stack, useStyles2 } from '@grafana/ui';
 import debounce from 'lodash.debounce';
 import React from 'react';
 
+import { FavAction } from '../actions/FavAction';
+import { SelectAction } from '../actions/SelectAction';
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
@@ -33,6 +35,11 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
 
     const servicesList = new SceneTimeSeriesGrid({
       key: 'services-grid',
+      headerActions: (params) => [
+        new SelectAction({ label: 'Explore', params, eventClass: 'EventExplore' }),
+        new SelectAction({ label: 'Select', params, eventClass: 'EventSelect' }),
+        new FavAction({ params }),
+      ],
     });
 
     super({

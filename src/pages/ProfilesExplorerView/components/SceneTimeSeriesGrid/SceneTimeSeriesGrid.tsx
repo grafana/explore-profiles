@@ -9,13 +9,12 @@ import {
   sceneGraph,
   SceneObjectBase,
   VariableDependencyConfig,
+  VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
-import { FavAction } from '../../actions/FavAction';
-import { SelectAction } from '../../actions/SelectAction';
 import { EmptyStateScene } from '../../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../../components/SceneLayoutSwitcher';
 import { buildProfileQueryRunner } from '../../data/buildProfileQueryRunner';
@@ -34,6 +33,7 @@ interface SceneTimeSeriesGridState extends EmbeddedSceneState {
     error: Error | null;
   };
   hideNoData: boolean;
+  headerActions: (params: Record<string, any>) => VizPanelState['headerActions'];
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
@@ -54,7 +54,15 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     },
   });
 
-  constructor({ key, items }: { key: string; items?: SceneTimeSeriesGridState['items'] }) {
+  constructor({
+    key,
+    items,
+    headerActions,
+  }: {
+    key: string;
+    items?: SceneTimeSeriesGridState['items'];
+    headerActions: SceneTimeSeriesGridState['headerActions'];
+  }) {
     const layout = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.layout || SceneLayoutSwitcher.DEFAULT_LAYOUT;
 
     super({
@@ -65,6 +73,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         error: null,
       },
       hideNoData: false,
+      headerActions,
       body: new SceneCSSGridLayout({
         templateColumns: layout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
         autoRows: GRID_AUTO_ROWS,
@@ -139,7 +148,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           .setData(data)
           .setColor({ mode: 'fixed', fixedColor: color })
           .setCustomFieldConfig('fillOpacity', 9)
-          .setHeaderActions([new SelectAction({ params: actionParams }), new FavAction({ params: actionParams })])
+          .setHeaderActions(this.state.headerActions(actionParams))
           .build(),
       });
     });
