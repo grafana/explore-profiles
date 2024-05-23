@@ -3,8 +3,18 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Button, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { Events } from '../events';
+import { EventExplore, EventExplorePayload } from '../events/EventExplore';
+import { EventSelect, EventSelectPayload } from '../events/EventSelect';
 import { ExplorationType, ExplorationTypeVariable } from '../variables/ExplorationTypeVariable';
+
+type EventContructor =
+  | (new (payload: EventExplorePayload) => EventExplore)
+  | (new (payload: EventSelectPayload) => EventSelect);
+
+const Events = new Map<string, EventContructor>([
+  ['EventExplore', EventExplore],
+  ['EventSelect', EventSelect],
+]);
 
 interface SelectActionState extends SceneObjectState {
   label: string;

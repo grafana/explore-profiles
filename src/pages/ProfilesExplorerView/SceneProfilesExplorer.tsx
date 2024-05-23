@@ -80,7 +80,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     this.addActivationHandler(() => {
-      this.subscribeToEvents();
+      const eventsSub = this.subscribeToEvents();
+
       this.setExplorationType();
 
       // we fetch services only when setting a new exploration type and only when refreshing the time range, to improve UX.
@@ -97,12 +98,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       return () => {
         $timeRange.onRefresh = originalRefresh;
         servicesApiClient.abort();
+
+        eventsSub.unsubscribe();
       };
     });
   }
 
   subscribeToEvents() {
-    this.subscribeToEvent(EventExplore, (event) => {
+    return this.subscribeToEvent(EventExplore, (event) => {
       const { explorationType, params } = event.payload;
 
       if (explorationType === ExplorationType.ALL_SERVICES) {

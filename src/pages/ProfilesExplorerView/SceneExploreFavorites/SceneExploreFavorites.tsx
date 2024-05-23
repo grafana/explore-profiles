@@ -4,15 +4,18 @@ import { EmbeddedSceneState, SceneComponentProps, sceneGraph, SceneObjectBase } 
 import { Stack, useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { userStorage } from '@shared/infrastructure/userStorage';
-import { debounce, omit } from 'lodash';
+import { omit } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
-import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { EventChangeFilter } from '../events/EventChangeFilter';
+import { EventChangeHideNoData } from '../events/EventChangeHideNoData';
+import { EventChangeLayout } from '../events/EventChangeLayout';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
@@ -49,15 +52,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       body: favoritesList,
     });
 
-    this.onFilterChange = debounce(this.onFilterChange.bind(this), 250);
-    this.onLayoutChange = this.onLayoutChange.bind(this);
-    this.onHideNoDataChange = this.onHideNoDataChange.bind(this);
-
-    quickFilter.addHandler(this.onFilterChange);
-    layoutSwitcher.addHandler(this.onLayoutChange);
-    noDataSwitcher.addHandler(this.onHideNoDataChange);
-
     this.addActivationHandler(() => {
+      const eventsSub = this.subscribeToEvents();
+
       const $timeRange = sceneGraph.getTimeRange(this);
       const originalRefresh = $timeRange.onRefresh;
 
@@ -69,8 +66,31 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
       return () => {
         $timeRange.onRefresh = originalRefresh;
+        eventsSub.unsubscribe();
       };
     });
+  }
+
+  subscribeToEvents() {
+    const changeFilterSub = this.subscribeToEvent(EventChangeFilter, (event) => {
+      (this.state.body as SceneTimeSeriesGrid).updateFilter(event.payload.searchText);
+    });
+
+    const changeLayoutSub = this.subscribeToEvent(EventChangeLayout, (event) => {
+      (this.state.body as SceneTimeSeriesGrid).updateLayout(event.payload.layout);
+    });
+
+    const changeHideNoDataSub = this.subscribeToEvent(EventChangeHideNoData, (event) => {
+      (this.state.body as SceneTimeSeriesGrid).updateHideNoData(event.payload.hideNoData);
+    });
+
+    return {
+      unsubscribe() {
+        changeHideNoDataSub.unsubscribe();
+        changeLayoutSub.unsubscribe();
+        changeFilterSub.unsubscribe();
+      },
+    };
   }
 
   static getFavoriteItems() {
@@ -91,18 +111,6 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       isLoading: false,
       error: null,
     };
-  }
-
-  onFilterChange(searchText: string) {
-    (this.state.body as SceneTimeSeriesGrid).onFilterChange(searchText);
-  }
-
-  onLayoutChange(newLayout: LayoutType) {
-    (this.state.body as SceneTimeSeriesGrid).onLayoutChange(newLayout);
-  }
-
-  onHideNoDataChange(newHideNoData: boolean) {
-    (this.state.body as SceneTimeSeriesGrid).onHideNoDataChange(newHideNoData);
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreFavorites>) {

@@ -1,8 +1,10 @@
 import { css } from '@emotion/css';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
+import { debounce } from 'lodash';
 import React from 'react';
 
+import { EventChangeFilter } from '../events/EventChangeFilter';
 import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
 
 interface SceneQuickFilterState extends SceneObjectState {
@@ -24,15 +26,17 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
         }
       });
     });
+
+    this.publishChangeEvent = debounce(this.publishChangeEvent, 250);
   }
 
   onChange = (value: string) => {
     this.setState({ value });
-    this.state.onChange?.(value);
+    this.publishChangeEvent(value);
   };
 
-  addHandler(handler: SceneQuickFilterState['onChange']) {
-    this.setState({ onChange: handler });
+  publishChangeEvent(searchText: string) {
+    this.publishEvent(new EventChangeFilter({ searchText }), true);
   }
 
   static Component = ({ model }: SceneComponentProps<SceneQuickFilter>) => {

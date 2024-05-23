@@ -164,13 +164,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     });
   }
 
-  onLayoutChange(newLayout: LayoutType) {
-    (this.state.body as SceneCSSGridLayout).setState({
-      templateColumns: newLayout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
-    });
-  }
-
-  onFilterChange(searchText: string) {
+  updateFilter(searchText: string) {
     const trimmedSearchText = searchText.trim();
 
     const filteredData = trimmedSearchText
@@ -184,7 +178,13 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     });
   }
 
-  onHideNoDataChange(newHideNoData: boolean) {
+  updateLayout(layout: string) {
+    (this.state.body as SceneCSSGridLayout).setState({
+      templateColumns: layout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+    });
+  }
+
+  updateHideNoData(newHideNoData: boolean) {
     this.setState({ hideNoData: newHideNoData });
     this.updateGridItems(this.state.items);
   }

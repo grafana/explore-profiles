@@ -4,6 +4,8 @@ import { InlineSwitch, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
+import { EventChangeHideNoData } from '../events/EventChangeHideNoData';
+
 interface SceneNoDataSwitcherState extends SceneObjectState {
   hideNoData: boolean;
   onChange?: (hideNoData: boolean) => void;
@@ -26,18 +28,18 @@ export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherStat
     });
   }
 
-  onChange = (newHideNoData: boolean) => {
-    this.setState({ hideNoData: newHideNoData });
+  onChange = (hideNoData: boolean) => {
+    this.setState({ hideNoData });
 
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-    storage.hideNoData = newHideNoData;
+    storage.hideNoData = hideNoData;
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
 
-    this.state.onChange?.(newHideNoData);
+    this.publishChangeEvent(hideNoData);
   };
 
-  addHandler(handler: SceneNoDataSwitcherState['onChange']) {
-    this.setState({ onChange: handler });
+  publishChangeEvent(hideNoData: boolean) {
+    this.publishEvent(new EventChangeHideNoData({ hideNoData }), true);
   }
 
   static Component = ({ model }: SceneComponentProps<SceneNoDataSwitcher>) => {

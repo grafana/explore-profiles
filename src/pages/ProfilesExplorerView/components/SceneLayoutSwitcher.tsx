@@ -4,6 +4,8 @@ import { RadioButtonGroup, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
+import { EventChangeLayout } from '../events/EventChangeLayout';
+
 export enum LayoutType {
   GRID = 'grid',
   ROWS = 'rows',
@@ -11,7 +13,7 @@ export enum LayoutType {
 
 interface SceneLayoutSwitcherState extends SceneObjectState {
   layout: LayoutType;
-  onChange?: (newLayout: LayoutType) => void;
+  onChange?: (layout: LayoutType) => void;
 }
 
 export class SceneLayoutSwitcher extends SceneObjectBase<SceneLayoutSwitcherState> {
@@ -32,18 +34,18 @@ export class SceneLayoutSwitcher extends SceneObjectBase<SceneLayoutSwitcherStat
     });
   }
 
-  onChange = (newLayout: LayoutType) => {
-    this.setState({ layout: newLayout });
+  onChange = (layout: LayoutType) => {
+    this.setState({ layout });
 
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-    storage.layout = newLayout;
+    storage.layout = layout;
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
 
-    this.state.onChange?.(newLayout);
+    this.publishChangeEvent(layout);
   };
 
-  addHandler(handler: SceneLayoutSwitcherState['onChange']) {
-    this.setState({ onChange: handler });
+  publishChangeEvent(layout: string) {
+    this.publishEvent(new EventChangeLayout({ layout }), true);
   }
 
   static Component = ({ model }: SceneComponentProps<SceneLayoutSwitcher>) => {
