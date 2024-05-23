@@ -30,6 +30,11 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   buildEvent() {
     const { params, eventClass } = this.state;
 
+    const EventClass = Events.get(eventClass);
+    if (!EventClass) {
+      throw new TypeError(`Unknown event class "${eventClass}"!`);
+    }
+
     const fullParams = {
       ...params,
       serviceName: params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
@@ -37,19 +42,9 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
         params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
     };
 
-    const EventClass = Events.get(eventClass);
-    if (!EventClass) {
-      throw new TypeError(`Unknown event class "${eventClass}"!`);
-    }
-
     const explorationType = (
       sceneGraph.findObject(this, (o) => o instanceof ExplorationTypeVariable) as ExplorationTypeVariable
     )?.getValue() as ExplorationType;
-
-    console.log('*** SelectAction', {
-      explorationType,
-      params: fullParams,
-    });
 
     return new EventClass({
       explorationType,
