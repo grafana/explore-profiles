@@ -8,6 +8,7 @@ import {
   SceneCSSGridLayout,
   sceneGraph,
   SceneObjectBase,
+  VariableDependencyConfig,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
@@ -19,6 +20,7 @@ import { EmptyStateScene } from '../../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../../components/SceneLayoutSwitcher';
 import { buildProfileQueryRunner } from '../../data/buildProfileQueryRunner';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
 
 interface SceneTimeSeriesGridState extends EmbeddedSceneState {
   items: {
@@ -39,6 +41,19 @@ const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
 
 export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridState> {
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['serviceName', 'profileMetricId'],
+    onReferencedVariableValueChanged: () => {
+      const noDataSwitcher = sceneGraph.findObject(this, (o) => o.state.key === 'no-data-switcher');
+
+      if ((noDataSwitcher as SceneNoDataSwitcher)?.state?.hideNoData) {
+        // if we don't do this, we get stuck with the previous grid that might not include the items that had no data before
+        // but that now have data after the variable update
+        this.updateGridItems(this.state.items);
+      }
+    },
+  });
+
   constructor({ key, items }: { key: string; items?: SceneTimeSeriesGridState['items'] }) {
     const layout = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.layout || SceneLayoutSwitcher.DEFAULT_LAYOUT;
 

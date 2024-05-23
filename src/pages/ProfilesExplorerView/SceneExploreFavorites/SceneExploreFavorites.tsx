@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase } from '@grafana/scenes';
+import { EmbeddedSceneState, SceneComponentProps, sceneGraph, SceneObjectBase } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { userStorage } from '@shared/infrastructure/userStorage';
@@ -30,25 +30,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
     const layoutSwitcher = new SceneLayoutSwitcher();
     const noDataSwitcher = new SceneNoDataSwitcher();
 
-    const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
-
     const favoritesList = new SceneTimeSeriesGrid({
       key: 'favorites-grid',
-      items: {
-        data: favorites.map((f: Favorite) => {
-          const profileMetric = getProfileMetric(f.profileMetricId as ProfileMetricId);
-          const profileMetricLabel = `${profileMetric.type} (${profileMetric.group})`;
-
-          return {
-            label: `${f.serviceName} · ${profileMetricLabel}`,
-            value: `${f.serviceName}-${f.profileMetricId}`,
-            color: f.color,
-            queryRunnerParams: omit(f, 'color'),
-          };
-        }),
-        isLoading: false,
-        error: null,
-      },
+      items: SceneExploreFavorites.getFavoriteItems(),
     });
 
     super({
@@ -66,6 +50,41 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
     quickFilter.addHandler(this.onFilterChange);
     layoutSwitcher.addHandler(this.onLayoutChange);
     noDataSwitcher.addHandler(this.onHideNoDataChange);
+
+    this.addActivationHandler(() => {
+      const $timeRange = sceneGraph.getTimeRange(this);
+      const originalRefresh = $timeRange.onRefresh;
+
+      // TODO: remove hack - how?
+      $timeRange.onRefresh = (...args) => {
+        originalRefresh(...args);
+        favoritesList.updateItems(SceneExploreFavorites.getFavoriteItems());
+      };
+
+      return () => {
+        $timeRange.onRefresh = originalRefresh;
+      };
+    });
+  }
+
+  static getFavoriteItems() {
+    const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
+
+    return {
+      data: favorites.map((f: Favorite) => {
+        const profileMetric = getProfileMetric(f.profileMetricId as ProfileMetricId);
+        const profileMetricLabel = `${profileMetric.type} (${profileMetric.group})`;
+
+        return {
+          label: `${f.serviceName} · ${profileMetricLabel}`,
+          value: `${f.serviceName}-${f.profileMetricId}`,
+          color: f.color,
+          queryRunnerParams: omit(f, 'color'),
+        };
+      }),
+      isLoading: false,
+      error: null,
+    };
   }
 
   onFilterChange(searchText: string) {

@@ -16,7 +16,10 @@ export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherStat
     const hideNoData =
       userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.hideNoData || SceneNoDataSwitcher.DEFAULT_VALUE;
 
-    super({ hideNoData });
+    super({
+      key: 'no-data-switcher',
+      hideNoData,
+    });
 
     this.addActivationHandler(() => {
       this.onChange(hideNoData);
