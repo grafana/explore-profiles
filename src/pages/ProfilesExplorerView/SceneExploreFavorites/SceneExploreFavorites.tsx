@@ -2,13 +2,15 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
-import debounce from 'lodash.debounce';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { userStorage } from '@shared/infrastructure/userStorage';
+import { debounce, omit } from 'lodash';
 import React from 'react';
 
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
-import { SceneExploreFavoritesList } from './SceneExploreFavoritesList';
+import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
@@ -16,12 +18,38 @@ interface SceneExploreFavoritesState extends EmbeddedSceneState {
   noDataSwitcher: SceneNoDataSwitcher;
 }
 
+type Favorite = Record<string, any> & {
+  serviceName: string;
+  profileMetricId: string;
+  color: string;
+};
+
 export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavoritesState> {
   constructor() {
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search favorites' });
     const layoutSwitcher = new SceneLayoutSwitcher();
     const noDataSwitcher = new SceneNoDataSwitcher();
-    const favoritesList = new SceneExploreFavoritesList({ layout: LayoutType.GRID });
+
+    const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
+
+    const favoritesList = new SceneTimeSeriesGrid({
+      key: 'favorites-grid',
+      items: {
+        data: favorites.map((f: Favorite) => {
+          const profileMetric = getProfileMetric(f.profileMetricId as ProfileMetricId);
+          const profileMetricLabel = `${profileMetric.type} (${profileMetric.group})`;
+
+          return {
+            label: `${f.serviceName} · ${profileMetricLabel}`,
+            value: `${f.serviceName}-${f.profileMetricId}`,
+            color: f.color,
+            queryRunnerParams: omit(f, 'color'),
+          };
+        }),
+        isLoading: false,
+        error: null,
+      },
+    });
 
     super({
       key: 'explore-favorites',
@@ -41,15 +69,15 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   onFilterChange(searchText: string) {
-    (this.state.body as SceneExploreFavoritesList).onFilterChange(searchText);
+    (this.state.body as SceneTimeSeriesGrid).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
-    (this.state.body as SceneExploreFavoritesList).onLayoutChange(newLayout);
+    (this.state.body as SceneTimeSeriesGrid).onLayoutChange(newLayout);
   }
 
   onHideNoDataChange(newHideNoData: boolean) {
-    (this.state.body as SceneExploreFavoritesList).onHideNoDataChange(newHideNoData);
+    (this.state.body as SceneTimeSeriesGrid).onHideNoDataChange(newHideNoData);
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreFavorites>) {

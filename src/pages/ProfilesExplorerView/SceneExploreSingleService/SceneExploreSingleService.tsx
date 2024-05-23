@@ -15,9 +15,9 @@ import React from 'react';
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
+import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { ServiceNameVariable } from '../variables/ServiceNameVariable';
-import { SceneProfileMetricsList } from './SceneProfileMetricsList';
 
 interface SceneExploreSingleServiceState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
@@ -30,7 +30,10 @@ export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingl
     const quickFilter = new SceneQuickFilter({ placeholder: 'Search profile metrics by name' });
     const layoutSwitcher = new SceneLayoutSwitcher();
     const noDataSwitcher = new SceneNoDataSwitcher();
-    const profileMetricsList = new SceneProfileMetricsList({ layout: LayoutType.GRID });
+
+    const profileMetricsList = new SceneTimeSeriesGrid({
+      key: 'profile-metrics-grid',
+    });
 
     super({
       key: 'explore-profile-metrics',
@@ -59,6 +62,21 @@ export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingl
         if (newState.services !== prevState.services) {
           this.updateServices(newState.services);
         }
+
+        if (newState.profileMetrics !== prevState.profileMetrics) {
+          const data = newState.profileMetrics.data.map(({ label, value }) => ({
+            label,
+            value,
+            queryRunnerParams: {
+              profileMetricId: value,
+            },
+          }));
+
+          profileMetricsList.updateItems({
+            ...newState.profileMetrics,
+            data,
+          });
+        }
       });
     });
   }
@@ -68,15 +86,15 @@ export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingl
   }
 
   onFilterChange(searchText: string) {
-    (this.state.body as SceneProfileMetricsList).onFilterChange(searchText);
+    (this.state.body as SceneTimeSeriesGrid).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
-    (this.state.body as SceneProfileMetricsList).onLayoutChange(newLayout);
+    (this.state.body as SceneTimeSeriesGrid).onLayoutChange(newLayout);
   }
 
   onHideNoDataChange(newHideNoData: boolean) {
-    (this.state.body as SceneProfileMetricsList).onHideNoDataChange(newHideNoData);
+    (this.state.body as SceneTimeSeriesGrid).onHideNoDataChange(newHideNoData);
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreSingleService>) {
