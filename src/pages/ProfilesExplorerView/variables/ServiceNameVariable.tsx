@@ -14,7 +14,7 @@ export class ServiceNameVariable extends CustomVariable {
     super({
       name: 'serviceName',
       isMulti: false,
-      label: 'Service',
+      label: '🚀 Service',
     });
 
     this.addActivationHandler(() => {

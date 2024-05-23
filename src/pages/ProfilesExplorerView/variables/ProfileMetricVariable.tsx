@@ -16,7 +16,7 @@ export class ProfileMetricVariable extends CustomVariable {
     super({
       name: 'profileMetricId',
       isMulti: false,
-      label: 'Profile',
+      label: '🔥 Profile',
     });
 
     this.addActivationHandler(() => {

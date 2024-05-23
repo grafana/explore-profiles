@@ -16,32 +16,32 @@ import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitch
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
-import { ServiceNameVariable } from '../variables/ServiceNameVariable';
-import { SceneProfileMetricsList } from './SceneProfileMetricsList';
+import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
+import { SceneServicesList } from './SceneServicesList';
 
-interface SceneExploreProfileMetricsState extends EmbeddedSceneState {
+interface SceneExploreAllServicesState extends EmbeddedSceneState {
   quickFilter: SceneQuickFilter;
   layoutSwitcher: SceneLayoutSwitcher;
   noDataSwitcher: SceneNoDataSwitcher;
 }
 
-export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProfileMetricsState> {
+export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServicesState> {
   constructor() {
-    const quickFilter = new SceneQuickFilter({ placeholder: 'Search profile metrics by name' });
+    const quickFilter = new SceneQuickFilter({ placeholder: 'Search services by name' });
     const layoutSwitcher = new SceneLayoutSwitcher();
     const noDataSwitcher = new SceneNoDataSwitcher();
-    const profileMetricsList = new SceneProfileMetricsList({ layout: LayoutType.GRID });
+    const servicesList = new SceneServicesList({ layout: LayoutType.GRID });
 
     super({
-      key: 'explore-profile-metrics',
+      key: 'explore-services',
       $variables: new SceneVariableSet({
-        variables: [new ServiceNameVariable()],
+        variables: [new ProfileMetricVariable()],
       }),
       controls: [new VariableValueSelectors({})],
       quickFilter,
       layoutSwitcher,
       noDataSwitcher,
-      body: profileMetricsList,
+      body: servicesList,
     });
 
     this.onFilterChange = debounce(this.onFilterChange.bind(this), 250);
@@ -56,30 +56,30 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
       const ancestor = sceneGraph.getAncestor(this, SceneProfilesExplorer);
 
       ancestor.subscribeToState((newState, prevState) => {
-        if (newState.services !== prevState.services) {
-          this.updateServices(newState.services);
+        if (newState.profileMetrics !== prevState.profileMetrics) {
+          this.updateProfileMetrics(newState.profileMetrics);
         }
       });
     });
   }
 
-  updateServices(services: SceneProfilesExplorerState['services']) {
-    (this.state.$variables?.getByName('serviceName') as ServiceNameVariable)?.update(services);
+  updateProfileMetrics(profileMetrics: SceneProfilesExplorerState['profileMetrics']) {
+    (this.state.$variables?.getByName('profileMetricId') as ProfileMetricVariable)?.update(profileMetrics);
   }
 
   onFilterChange(searchText: string) {
-    (this.state.body as SceneProfileMetricsList).onFilterChange(searchText);
+    (this.state.body as SceneServicesList).onFilterChange(searchText);
   }
 
   onLayoutChange(newLayout: LayoutType) {
-    (this.state.body as SceneProfileMetricsList).onLayoutChange(newLayout);
+    (this.state.body as SceneServicesList).onLayoutChange(newLayout);
   }
 
   onHideNoDataChange(newHideNoData: boolean) {
-    (this.state.body as SceneProfileMetricsList).onHideNoDataChange(newHideNoData);
+    (this.state.body as SceneServicesList).onHideNoDataChange(newHideNoData);
   }
 
-  static Component({ model }: SceneComponentProps<SceneExploreProfileMetrics>) {
+  static Component({ model }: SceneComponentProps<SceneExploreAllServices>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
     const { body, controls, quickFilter, layoutSwitcher, noDataSwitcher } = model.useState();
 
@@ -90,7 +90,7 @@ export class SceneExploreProfileMetrics extends SceneObjectBase<SceneExploreProf
         <div className={styles.controls}>
           <Stack justifyContent="space-between">
             <div>
-              <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />{' '}
+              <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />
             </div>
             <div className={styles.quickFilter}>
               <quickFilter.Component model={quickFilter} />

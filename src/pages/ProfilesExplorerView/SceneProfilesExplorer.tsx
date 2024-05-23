@@ -4,34 +4,29 @@ import {
   EmbeddedSceneState,
   SceneComponentProps,
   SceneObjectBase,
-  SceneObjectUrlSyncConfig,
-  SceneObjectUrlValues,
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
+  SceneVariable,
   SceneVariableSet,
   SplitLayout,
+  VariableDependencyConfig,
   VariableValueSelectors,
 } from '@grafana/scenes';
-import { Stack, Tab, TabContent, TabsBar, useStyles2 } from '@grafana/ui';
+import { Stack, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { servicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
 import React from 'react';
 
+import { SceneExploreAllServices } from './SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
-import { SceneExploreProfileMetrics } from './SceneExploreProfileMetrics/SceneExploreProfileMetrics';
-import { SceneExploreServices } from './SceneExploreServices/SceneExploreServices';
+import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
+import { ExplorationTypeVariable } from './variables/ExplorationTypeVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
 
-enum MainTab {
-  EXPLORE_SERVICES = 'explore-services',
-  EXPLORE_PROFILE_METRICS = 'explore-profile-metrics',
-  EXPLORE_FAVORITES = 'explore-favorites',
-}
-
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
-  mainTab: MainTab;
+  explorationType: string;
   services: {
     data: string[];
     isLoading: boolean;
@@ -51,16 +46,17 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
 }
 
 export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorerState> {
-  static DEFAULT_TAB = MainTab.EXPLORE_SERVICES;
-
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['mainTab'] });
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['explorationType'],
+    onReferencedVariableValueChanged: this.selectExplorationType.bind(this),
+  });
 
   constructor() {
     const $timeRange = new SceneTimeRange({});
 
     super({
       key: 'profiles-explorer',
-      mainTab: SceneProfilesExplorer.DEFAULT_TAB,
+      explorationType: ExplorationTypeVariable.DEFAULT_VALUE,
       body: undefined,
       services: {
         data: [],
@@ -74,7 +70,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       },
       $timeRange,
       $variables: new SceneVariableSet({
-        variables: [new ProfilesDataSourceVariable({})],
+        variables: [new ProfilesDataSourceVariable({}), new ExplorationTypeVariable()],
       }),
       controls: [
         new VariableValueSelectors({}),
@@ -84,8 +80,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     this.addActivationHandler(() => {
+      const explorationType =
+        (this.state.$variables?.getByName('explorationType')?.getValue() as string) ||
+        ExplorationTypeVariable.DEFAULT_VALUE;
+
       this.setState({
-        body: SceneProfilesExplorer.buildBody(this.state.mainTab),
+        explorationType,
+        body: SceneProfilesExplorer.buildBody(explorationType),
       });
 
       // we fetch services only here and...
@@ -189,24 +190,24 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
-  static buildBody(mainTab: MainTab) {
+  static buildBody(explorationType: string) {
     let primary;
 
-    switch (mainTab) {
-      case MainTab.EXPLORE_SERVICES:
-        primary = new SceneExploreServices();
+    switch (explorationType) {
+      case 'all-services-exploration':
+        primary = new SceneExploreAllServices();
         break;
 
-      case MainTab.EXPLORE_PROFILE_METRICS:
-        primary = new SceneExploreProfileMetrics();
+      case 'single-service-exploration':
+        primary = new SceneExploreSingleService();
         break;
 
-      case MainTab.EXPLORE_FAVORITES:
+      case 'favorites-exploration':
         primary = new SceneExploreFavorites();
         break;
 
       default:
-        throw new Error(`Unknown tab "${mainTab}"!`);
+        throw new Error(`Unknown exploration type "${explorationType}"!`);
     }
 
     return new SplitLayout({
@@ -215,28 +216,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
-  getUrlState() {
-    return {
-      mainTab: this.state.mainTab,
-    };
-  }
+  selectExplorationType(explorationTypeVariable: SceneVariable) {
+    const explorationType = explorationTypeVariable.getValue() as string;
 
-  updateFromUrl(values: SceneObjectUrlValues) {
-    const stateUpdate: Partial<SceneProfilesExplorerState> = {};
-
-    if (values.mainTab !== this.state.mainTab) {
-      stateUpdate.mainTab = Object.values(MainTab).includes(values.mainTab as MainTab)
-        ? (values.mainTab as MainTab)
-        : SceneProfilesExplorer.DEFAULT_TAB;
-    }
-
-    this.setState(stateUpdate);
-  }
-
-  selectMainTab(mainTab: MainTab) {
     this.setState({
-      mainTab,
-      body: SceneProfilesExplorer.buildBody(mainTab),
+      explorationType,
+      body: SceneProfilesExplorer.buildBody(explorationType),
     });
 
     this.refreshServicesAndProfileMetrics();
@@ -244,7 +229,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { controls, mainTab, body } = model.useState();
+    const { controls, body } = model.useState();
 
     const [variablesControl, timePickerControl, refreshPickerControl] = controls || [];
 
@@ -253,7 +238,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         <div className={styles.header}>
           <div className={styles.controls}>
             <Stack justifyContent="space-between">
-              <div>
+              <div className={styles.variables}>
                 <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />
               </div>
               <Stack>
@@ -264,25 +249,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           </div>
         </div>
 
-        <TabsBar>
-          <Tab
-            label="Explore services"
-            active={mainTab === MainTab.EXPLORE_SERVICES}
-            onChangeTab={() => model.selectMainTab(MainTab.EXPLORE_SERVICES)}
-          />
-          <Tab
-            label="Explore profile metrics"
-            active={mainTab === MainTab.EXPLORE_PROFILE_METRICS}
-            onChangeTab={() => model.selectMainTab(MainTab.EXPLORE_PROFILE_METRICS)}
-          />
-          <Tab
-            label="Favorites"
-            active={mainTab === MainTab.EXPLORE_FAVORITES}
-            onChangeTab={() => model.selectMainTab(MainTab.EXPLORE_FAVORITES)}
-          />
-        </TabsBar>
-
-        <TabContent className={styles.tabContent}>{body && <body.Component model={body} />}</TabContent>
+        <div className={styles.body}>{body && <body.Component model={body} />}</div>
       </>
     );
   }
@@ -294,16 +261,18 @@ const getStyles = (theme: GrafanaTheme2) => ({
     position: sticky;
     top: 0;
     z-index: 1;
-    margin-bottom: ${theme.spacing(1)};
   `,
   controls: css`
-    padding: 0 0 ${theme.spacing(2)};
+    padding: 0 0 ${theme.spacing(1)};
   `,
-  tabContent: css`
+  variables: css`
+    display: flex;
+    gap: ${theme.spacing(1)};
+  `,
+  body: css`
     position: relative;
     z-index: 0;
     margin-top: ${theme.spacing(1)};
-    padding-top: ${theme.spacing(1)};
     background: transparent;
   `,
 });
