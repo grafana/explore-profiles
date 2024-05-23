@@ -9,17 +9,13 @@ import {
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
+import { omit } from 'lodash';
 import React from 'react';
 
 export interface FavActionState extends SceneObjectState {
   params: Record<string, string>;
   isFav?: boolean;
 }
-
-const omitColor = (params: FavActionState['params']) => {
-  const { color, ...paramsWithoutColor } = params; // eslint-disable-line no-unused-vars
-  return paramsWithoutColor;
-};
 
 export class FavAction extends SceneObjectBase<FavActionState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
@@ -38,7 +34,7 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   isStored() {
-    const paramsForCompare = omitColor(this.state.params);
+    const paramsForCompare = omit(this.state.params, 'color');
 
     ['serviceName', 'profileMetricId'].forEach((key) => {
       const value = sceneGraph.lookupVariable(key, this)?.getValue();
@@ -49,22 +45,28 @@ export class FavAction extends SceneObjectBase<FavActionState> {
 
     return userStorage
       .get(userStorage.KEYS.PROFILES_EXPLORER)
-      ?.favorites?.some((p: FavActionState['params']) => shallowCompare(omitColor(p), paramsForCompare));
+      ?.favorites?.some((p: FavActionState['params']) => shallowCompare(omit(p, 'color'), paramsForCompare));
   }
 
   public onClick = () => {
     const { isFav, params } = this.state;
+    const paramsToStore = {
+      ...params,
+      serviceName: params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
+      profileMetricId:
+        params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
+    };
 
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
     storage.favorites ||= [];
 
     if (!isFav) {
-      storage.favorites.push(params);
+      storage.favorites.push(paramsToStore);
     } else {
-      const paramsForCompare = omitColor(this.state.params);
+      const paramsForCompare = omit(paramsToStore, 'color');
 
       storage.favorites = storage.favorites.filter(
-        (p: FavActionState['params']) => !shallowCompare(omitColor(p), paramsForCompare)
+        (p: FavActionState['params']) => !shallowCompare(omit(p, 'color'), paramsForCompare)
       );
     }
 

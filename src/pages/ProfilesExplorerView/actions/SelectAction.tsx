@@ -1,4 +1,4 @@
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button } from '@grafana/ui';
 import React from 'react';
 
@@ -8,7 +8,15 @@ interface SelectActionState extends SceneObjectState {
 
 export class SelectAction extends SceneObjectBase<SelectActionState> {
   public onClick = () => {
-    console.log('*** SelectAction', this.state.params);
+    const { params } = this.state;
+    const fullParams = {
+      ...params,
+      serviceName: params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
+      profileMetricId:
+        params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
+    };
+
+    console.log('*** SelectAction', fullParams);
   };
 
   public static Component = ({ model }: SceneComponentProps<SelectAction>) => {
