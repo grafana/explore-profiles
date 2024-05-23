@@ -75,7 +75,7 @@ export class ProfileMetricVariable extends CustomVariable {
         key="loading-cascader"
         aria-label="Profile metrics list"
         width={32}
-        placeholder="Loading metrics..."
+        placeholder="Loading profile metrics..."
         options={[]}
         onSelect={noOp}
       />
