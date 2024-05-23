@@ -16,7 +16,7 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
 import { LayoutType } from '../components/SceneLayoutSwitcher';
-import { getProfileMetricQueryRunner } from '../data/getProfileMetricQueryRunner';
+import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
@@ -93,7 +93,7 @@ export class SceneProfileMetricsList extends SceneObjectBase<SceneProfileMetrics
       const params = { serviceName, profileMetricId, color };
       const gridItemKey = `grid-item-${profileMetricId}`;
 
-      const data = getProfileMetricQueryRunner({ profileMetricId });
+      const data = buildProfileQueryRunner({ profileMetricId });
 
       if (this.state.hideNoData) {
         this._subs.add(

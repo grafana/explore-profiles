@@ -17,7 +17,7 @@ import { FavAction, FavActionState } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
 import { LayoutType } from '../components/SceneLayoutSwitcher';
-import { getServiceAndProfileMetricQueryRunner } from '../data/getServiceAndProfileMetricQueryRunner';
+import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
 
 interface SceneExploreFavoritesListState extends EmbeddedSceneState {
   favorites: Array<FavActionState['params']>;
@@ -76,7 +76,7 @@ export class SceneExploreFavoritesList extends SceneObjectBase<SceneExploreFavor
       const { serviceName, profileMetricId, color } = params;
       const gridItemKey = `grid-item-${serviceName}`;
 
-      const data = getServiceAndProfileMetricQueryRunner({ serviceName, profileMetricId });
+      const data = buildProfileQueryRunner({ serviceName, profileMetricId });
 
       if (this.state.hideNoData) {
         this._subs.add(

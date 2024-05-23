@@ -16,7 +16,7 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
 import { LayoutType } from '../components/SceneLayoutSwitcher';
-import { getServiceQueryRunner } from '../data/getServiceQueryRunner';
+import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
@@ -93,7 +93,7 @@ export class SceneServicesList extends SceneObjectBase<SceneServicesListState> {
       const params = { serviceName, profileMetricId, color };
       const gridItemKey = `grid-item-${serviceName}`;
 
-      const data = getServiceQueryRunner({ serviceName });
+      const data = buildProfileQueryRunner({ serviceName });
 
       if (this.state.hideNoData) {
         this._subs.add(
