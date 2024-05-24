@@ -1,46 +1,47 @@
-import { CustomVariable, MultiValueVariable, SceneComponentProps } from '@grafana/scenes';
+import { MultiValueVariable, QueryVariable, SceneComponentProps } from '@grafana/scenes';
 import { Cascader, CascaderOption } from '@grafana/ui';
-import { noOp } from '@shared/domain/noOp';
-import React from 'react';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import React, { useMemo } from 'react';
 
-import { SceneProfilesExplorerState } from '../SceneProfilesExplorer';
+import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-source';
 
-export class ProfileMetricVariable extends CustomVariable {
+type ProfileMetricOptions = Array<{
+  value: string;
+  label: string;
+  type: string;
+  group: string;
+}>;
+
+export class ProfileMetricVariable extends QueryVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
-  constructor() {
+  constructor({ value }: { value?: string }) {
     // hack: the variable does not sync, if the "var-profileMetricId" search parameter is present in the URL, it is set to an empty value
-    const value =
-      new URLSearchParams(window.location.search).get('var-profileMetricId') || ProfileMetricVariable.DEFAULT_VALUE;
+    const initialValue =
+      value ||
+      new URLSearchParams(window.location.search).get('var-profileMetricId') ||
+      ProfileMetricVariable.DEFAULT_VALUE;
 
     super({
       name: 'profileMetricId',
       isMulti: false,
       label: '🔥 Profile',
+      datasource: PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
+      query: 'list', // dummy query, can't be an empty string
     });
 
     this.addActivationHandler(() => {
-      this.setState({
-        // hack: we use undefined to monitor loading status - couldn't make it work by using the custom variable state
-        // where "loading" & "error" should exist :man_shrug:
-        options: undefined,
-        value,
-      });
+      this.setState({ value: initialValue });
     });
   }
 
-  update(profileMetrics: SceneProfilesExplorerState['profileMetrics']) {
-    this.setState({
-      // hack: see constructor
-      options: profileMetrics.isLoading ? undefined : ProfileMetricVariable.buildCascaderOptions(profileMetrics),
-      value: this.state.value || ProfileMetricVariable.DEFAULT_VALUE,
-    });
-  }
-
-  static buildCascaderOptions(profileMetrics: SceneProfilesExplorerState['profileMetrics']): CascaderOption[] {
+  static buildCascaderOptions(options: ProfileMetricOptions): CascaderOption[] {
     const optionsMap = new Map();
 
-    for (const { value, group, type } of profileMetrics.data) {
+    for (const { value } of options) {
+      const profileMetric = getProfileMetric(value as ProfileMetricId);
+      const { group, type } = profileMetric;
+
       const nameSpaceServices = optionsMap.get(group) || {
         value: group,
         label: group,
@@ -63,31 +64,26 @@ export class ProfileMetricVariable extends CustomVariable {
   }
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
-    const { value, options } = model.useState();
+    const { loading, value, options } = model.useState();
+
+    const cascaderOptions = useMemo(() => {
+      return ProfileMetricVariable.buildCascaderOptions(options as ProfileMetricOptions);
+    }, [options]);
 
     function onSelect(newValue: any) {
       model.changeValueTo(newValue, newValue);
     }
 
-    // hack: see constructor
-    return options === undefined ? (
+    return (
       <Cascader
-        key="loading-cascader"
-        aria-label="Profile metrics list"
-        width={32}
-        placeholder="Loading profile metrics..."
-        options={[]}
-        onSelect={noOp}
-      />
-    ) : (
-      <Cascader
-        key="loaded-cascader"
+        // we do this to ensure that the Cascader selects the initial value properly
+        key={String(loading)}
         aria-label="Profile metrics list"
         width={32}
         separator="/"
         displayAllSelectedLevels
-        placeholder={`Select a metric (${options.length})`}
-        options={options as CascaderOption[]}
+        placeholder={loading ? 'Loading profile metrics...' : `Select a profile metric (${options.length})`}
+        options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
         onSelect={onSelect}

@@ -1,12 +1,11 @@
-import { CustomVariable, MultiValueVariable, SceneComponentProps } from '@grafana/scenes';
-import { Cascader, CascaderOption } from '@grafana/ui';
+import { MultiValueVariable, QueryVariable, SceneComponentProps } from '@grafana/scenes';
+import { Cascader } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
-import { noOp } from '@shared/domain/noOp';
-import React from 'react';
+import React, { useMemo } from 'react';
 
-import { SceneProfilesExplorerState } from '../SceneProfilesExplorer';
+import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-source';
 
-export class ServiceNameVariable extends CustomVariable {
+export class ServiceNameVariable extends QueryVariable {
   constructor({ value }: { value?: string }) {
     // hack: the variable does not sync, if the "var-serviceName" search parameter is present in the URL, it is set to an empty value
     const initialValue = value || new URLSearchParams(window.location.search).get('var-serviceName') || '';
@@ -15,52 +14,37 @@ export class ServiceNameVariable extends CustomVariable {
       name: 'serviceName',
       isMulti: false,
       label: '🚀 Service',
+      datasource: PYROSCOPE_SERVICES_DATA_SOURCE,
+      query: 'list', // dummy query, can't be an empty string
     });
 
     this.addActivationHandler(() => {
-      this.setState({
-        // hack: we use undefined to monitor loading status - couldn't make it work by using the custom variable state
-        // where "loading" & "error" should exist :man_shrug:
-        options: undefined,
-        value: initialValue,
-      });
-    });
-  }
-
-  update(services: SceneProfilesExplorerState['services']) {
-    this.setState({
-      // hack: see constructor
-      options: services.isLoading ? undefined : buildServiceNameCascaderOptions(services.data),
-      value: this.state.value || services.data[0],
+      this.setState({ value: initialValue });
     });
   }
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
-    const { value, options } = model.useState();
+    const { loading, value, options } = model.useState();
+
+    const cascaderOptions = useMemo(
+      () => buildServiceNameCascaderOptions(options.map(({ label }) => label)),
+      [options]
+    );
 
     function onSelect(newValue: any) {
       model.changeValueTo(newValue, newValue);
     }
 
-    // hack: see constructor
-    return options === undefined ? (
+    return (
       <Cascader
-        key="loading-cascader"
-        aria-label="Services list"
-        width={32}
-        placeholder="Loading services..."
-        options={[]}
-        onSelect={noOp}
-      />
-    ) : (
-      <Cascader
-        key="loaded-cascader"
+        // we do this to ensure that the Cascader selects the initial value properly
+        key={String(loading)}
         aria-label="Services list"
         width={32}
         separator="/"
         displayAllSelectedLevels
-        placeholder={`Select a service (${options.length})`}
-        options={options as CascaderOption[]}
+        placeholder={loading ? 'Loading services...' : `Select a service (${options.length})`}
+        options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
         onSelect={onSelect}

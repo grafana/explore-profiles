@@ -3,7 +3,6 @@ import { GrafanaTheme2 } from '@grafana/data';
 import {
   EmbeddedSceneState,
   SceneComponentProps,
-  sceneGraph,
   SceneObjectBase,
   SceneVariableSet,
   VariableValueSelectors,
@@ -17,10 +16,10 @@ import { SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-source';
 import { EventChangeFilter } from '../events/EventChangeFilter';
 import { EventChangeHideNoData } from '../events/EventChangeHideNoData';
 import { EventChangeLayout } from '../events/EventChangeLayout';
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
 
 interface SceneExploreAllServicesState extends EmbeddedSceneState {
@@ -31,56 +30,28 @@ interface SceneExploreAllServicesState extends EmbeddedSceneState {
 
 export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServicesState> {
   constructor() {
-    const quickFilter = new SceneQuickFilter({ placeholder: 'Search services by name' });
-    const layoutSwitcher = new SceneLayoutSwitcher();
-    const noDataSwitcher = new SceneNoDataSwitcher();
-
-    const servicesList = new SceneTimeSeriesGrid({
-      key: 'services-grid',
-      headerActions: (params) => [
-        new SelectAction({ label: 'Explore', params, eventClass: 'EventExplore' }),
-        new SelectAction({ label: 'Select', params, eventClass: 'EventSelect' }),
-        new FavAction({ params }),
-      ],
-    });
-
     super({
-      key: 'explore-services',
+      key: 'explore-all-services',
       $variables: new SceneVariableSet({
-        variables: [new ProfileMetricVariable()],
+        variables: [new ProfileMetricVariable({})],
       }),
       controls: [new VariableValueSelectors({})],
-      quickFilter,
-      layoutSwitcher,
-      noDataSwitcher,
-      body: servicesList,
+      quickFilter: new SceneQuickFilter({ placeholder: 'Search services by name' }),
+      layoutSwitcher: new SceneLayoutSwitcher(),
+      noDataSwitcher: new SceneNoDataSwitcher(),
+      body: new SceneTimeSeriesGrid({
+        key: 'all-services-grid',
+        dataSource: PYROSCOPE_SERVICES_DATA_SOURCE,
+        headerActions: (params) => [
+          new SelectAction({ label: 'Explore', params, eventClass: 'EventExplore' }),
+          new SelectAction({ label: 'Select', params, eventClass: 'EventSelect' }),
+          new FavAction({ params }),
+        ],
+      }),
     });
 
     this.addActivationHandler(() => {
       const eventsSub = this.subscribeToEvents();
-
-      const ancestor = sceneGraph.getAncestor(this, SceneProfilesExplorer);
-
-      ancestor.subscribeToState((newState, prevState) => {
-        if (newState.profileMetrics !== prevState.profileMetrics) {
-          this.updateProfileMetrics(newState.profileMetrics);
-        }
-
-        if (newState.services !== prevState.services) {
-          const data = newState.services.data.map((serviceName) => ({
-            label: serviceName,
-            value: serviceName,
-            queryRunnerParams: {
-              serviceName,
-            },
-          }));
-
-          servicesList.updateItems({
-            ...newState.profileMetrics,
-            data,
-          });
-        }
-      });
 
       return () => {
         eventsSub.unsubscribe();
@@ -108,10 +79,6 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
         changeFilterSub.unsubscribe();
       },
     };
-  }
-
-  updateProfileMetrics(profileMetrics: SceneProfilesExplorerState['profileMetrics']) {
-    (this.state.$variables?.getByName('profileMetricId') as ProfileMetricVariable)?.update(profileMetrics);
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreAllServices>) {

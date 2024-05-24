@@ -5,7 +5,6 @@ import React from 'react';
 
 import { EventExplore, EventExplorePayload } from '../events/EventExplore';
 import { EventSelect, EventSelectPayload } from '../events/EventSelect';
-import { ExplorationType, ExplorationTypeVariable } from '../variables/ExplorationTypeVariable';
 
 type EventContructor =
   | (new (payload: EventExplorePayload) => EventExplore)
@@ -35,20 +34,14 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
       throw new TypeError(`Unknown event class "${eventClass}"!`);
     }
 
-    const fullParams = {
-      ...params,
-      serviceName: params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
-      profileMetricId:
-        params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
-    };
-
-    const explorationType = (
-      sceneGraph.findObject(this, (o) => o instanceof ExplorationTypeVariable) as ExplorationTypeVariable
-    )?.getValue() as ExplorationType;
-
     return new EventClass({
-      explorationType,
-      params: fullParams,
+      params: {
+        ...params,
+        serviceName:
+          params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
+        profileMetricId:
+          params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
+      },
     });
   }
 

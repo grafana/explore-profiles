@@ -8,20 +8,31 @@ import {
   SceneCSSGridLayout,
   sceneGraph,
   SceneObjectBase,
+  SceneQueryRunner,
   VariableDependencyConfig,
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React from 'react';
 
 import { EmptyStateScene } from '../../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../../components/SceneLayoutSwitcher';
 import { buildProfileQueryRunner } from '../../data/buildProfileQueryRunner';
+import {
+  PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
+  PYROSCOPE_SERVICES_DATA_SOURCE,
+} from '../../data/pyroscope-data-source';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
 
 interface SceneTimeSeriesGridState extends EmbeddedSceneState {
+  headerActions: (params: Record<string, any>) => VizPanelState['headerActions'];
+  dataSource?: {
+    type: string;
+    uid: string;
+  };
   items: {
     data: Array<{
       label: string;
@@ -33,7 +44,6 @@ interface SceneTimeSeriesGridState extends EmbeddedSceneState {
     error: Error | null;
   };
   hideNoData: boolean;
-  headerActions: (params: Record<string, any>) => VizPanelState['headerActions'];
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
@@ -54,20 +64,25 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     },
   });
 
+  // TODO
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   constructor({
     key,
-    items,
     headerActions,
+    items,
+    dataSource,
   }: {
     key: string;
     items?: SceneTimeSeriesGridState['items'];
     headerActions: SceneTimeSeriesGridState['headerActions'];
+    dataSource?: SceneTimeSeriesGridState['dataSource'];
   }) {
     const layout = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.layout || SceneLayoutSwitcher.DEFAULT_LAYOUT;
 
     super({
       key,
-      items: {
+      dataSource,
+      items: items || {
         data: [],
         isLoading: true,
         error: null,
@@ -88,16 +103,73 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }),
     });
 
+    // TODO: extract to several methods
     this.addActivationHandler(() => {
-      if (items) {
-        this.updateItems(items);
+      if (dataSource) {
+        const profileMetricsQueryRunner = new SceneQueryRunner({
+          datasource: dataSource,
+          queries: [
+            {
+              refId: `${dataSource.type}-${key}`,
+              queryType: 'metrics',
+            },
+          ],
+        });
+
+        const sub = profileMetricsQueryRunner.subscribeToState((newState) => {
+          if (newState.data?.state === LoadingState.Error) {
+            sub.unsubscribe();
+
+            this.updateItems({
+              data: [],
+              isLoading: false,
+              error: new Error(newState.data?.errors?.[0].message || 'Unknown error!'),
+            });
+            return;
+          }
+
+          if (newState.data?.state === LoadingState.Done) {
+            sub.unsubscribe();
+
+            if (dataSource.uid === PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid) {
+              const data = newState.data?.series[0].fields[0].values.map((value) => {
+                const profileMetric = getProfileMetric(value as ProfileMetricId);
+                const { group, type } = profileMetric;
+
+                return {
+                  value,
+                  label: `${type} (${group})`,
+                  queryRunnerParams: {
+                    profileMetricId: value,
+                  },
+                };
+              });
+
+              this.updateItems({ data, isLoading: false, error: null });
+            } else if (dataSource.uid === PYROSCOPE_SERVICES_DATA_SOURCE.uid) {
+              const data = newState.data?.series[0].fields[0].values.map((value) => {
+                return {
+                  value,
+                  label: value,
+                  queryRunnerParams: {
+                    serviceName: value,
+                  },
+                };
+              });
+
+              this.updateItems({ data, isLoading: false, error: null });
+            }
+          }
+        });
+
+        profileMetricsQueryRunner.runQueries();
       }
     });
   }
 
-  updateItems(newItems: SceneTimeSeriesGridState['items']) {
-    this.setState({ items: newItems });
-    this.updateGridItems(newItems);
+  updateItems(items: SceneTimeSeriesGridState['items']) {
+    this.setState({ items });
+    this.updateGridItems(items);
   }
 
   renderEmptyState() {

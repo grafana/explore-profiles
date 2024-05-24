@@ -31,10 +31,6 @@ type Favorite = Record<string, any> & {
 
 export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavoritesState> {
   constructor() {
-    const quickFilter = new SceneQuickFilter({ placeholder: 'Search favorites' });
-    const layoutSwitcher = new SceneLayoutSwitcher();
-    const noDataSwitcher = new SceneNoDataSwitcher();
-
     const favoritesList = new SceneTimeSeriesGrid({
       key: 'favorites-grid',
       items: SceneExploreFavorites.getFavoriteItems(),
@@ -46,9 +42,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
     super({
       key: 'explore-favorites',
-      quickFilter,
-      layoutSwitcher,
-      noDataSwitcher,
+      quickFilter: new SceneQuickFilter({ placeholder: 'Search favorites' }),
+      layoutSwitcher: new SceneLayoutSwitcher(),
+      noDataSwitcher: new SceneNoDataSwitcher(),
       body: favoritesList,
     });
 
