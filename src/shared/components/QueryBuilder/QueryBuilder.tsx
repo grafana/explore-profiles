@@ -17,7 +17,7 @@ export const getStyles = (theme: GrafanaTheme2) => ({
   queryBuilder: css`
     display: flex;
     justify-content: flex-start;
-    align-items: baseline;
+    align-items: flex-end;
     margin: -10px 0 6px 0;
   `,
   executeButton: css`
