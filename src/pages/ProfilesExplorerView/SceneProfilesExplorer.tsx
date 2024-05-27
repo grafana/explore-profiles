@@ -22,8 +22,13 @@ import React from 'react';
 import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from './components/SceneQuickFilter';
+import { FavoritesDataSource } from './data/FavoritesDataSource';
 import { ProfileMetricsDataSource } from './data/ProfileMetricsDataSource';
-import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE, PYROSCOPE_SERVICES_DATA_SOURCE } from './data/pyroscope-data-source';
+import {
+  PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
+  PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
+  PYROSCOPE_SERVICES_DATA_SOURCE,
+} from './data/pyroscope-data-source';
 import { ServicesDataSource } from './data/ServicesDataSource';
 import { EventExplore } from './events/EventExplore';
 import { EventViewDetails } from './events/EventViewDetails';
@@ -134,6 +139,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       dataSource: new ProfileMetricsDataSource(
         PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.type,
         PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid
+      ),
+    });
+
+    sceneUtils.registerRuntimeDataSource({
+      dataSource: new FavoritesDataSource(
+        PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.type,
+        PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid
       ),
     });
   }

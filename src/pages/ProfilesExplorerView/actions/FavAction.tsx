@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import { shallowCompare } from '@grafana/data';
 import {
   SceneComponentProps,
   sceneGraph,
@@ -8,9 +7,9 @@ import {
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
-import { userStorage } from '@shared/infrastructure/userStorage';
-import { omit } from 'lodash';
 import React from 'react';
+
+import { FavoritesDataSource } from '../data/FavoritesDataSource';
 
 export interface FavActionState extends SceneObjectState {
   params: Record<string, any>;
@@ -34,43 +33,36 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   isStored() {
-    const paramsForCompare = omit(this.state.params, 'color');
+    const { params } = this.state;
 
-    ['serviceName', 'profileMetricId'].forEach((key) => {
-      const value = sceneGraph.lookupVariable(key, this)?.getValue();
-      if (typeof value === 'string') {
-        paramsForCompare[key] = value;
-      }
-    });
+    const favoriteForCompare = {
+      ...params,
+      serviceName: params.serviceName
+        ? params.serviceName
+        : (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
+      profileMetricId: params.profileMetricId
+        ? params.profileMetricId
+        : (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
+    };
 
-    return userStorage
-      .get(userStorage.KEYS.PROFILES_EXPLORER)
-      ?.favorites?.some((p: FavActionState['params']) => shallowCompare(omit(p, 'color'), paramsForCompare));
+    return FavoritesDataSource.exists(favoriteForCompare);
   }
 
   public onClick = () => {
     const { isFav, params } = this.state;
-    const paramsToStore = {
+
+    const favorite = {
       ...params,
       serviceName: params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
       profileMetricId:
         params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
     };
 
-    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-    storage.favorites ||= [];
-
     if (!isFav) {
-      storage.favorites.push(paramsToStore);
+      FavoritesDataSource.addFavorite(favorite);
     } else {
-      const paramsForCompare = omit(paramsToStore, 'color');
-
-      storage.favorites = storage.favorites.filter(
-        (p: FavActionState['params']) => !shallowCompare(omit(p, 'color'), paramsForCompare)
-      );
+      FavoritesDataSource.removeFavorite(favorite);
     }
-
-    userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
 
     this.setState({ isFav: !isFav });
   };

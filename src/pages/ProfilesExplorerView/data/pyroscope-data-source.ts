@@ -17,3 +17,8 @@ export const PYROSCOPE_PROFILE_METRICS_DATA_SOURCE: DataSourceDef = Object.freez
   type: 'pyroscope-profile-metrics-datasource',
   uid: 'pyroscope-profile-metrics-datasource',
 });
+
+export const PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE: DataSourceDef = Object.freeze({
+  type: 'pyroscope-favorites-datasource',
+  uid: 'pyroscope-favorites-datasource',
+});

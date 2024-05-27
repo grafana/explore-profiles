@@ -28,9 +28,12 @@ export class ProfileMetricsDataSource extends RuntimeDataSource {
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
     const profileMetrics = await this.metricFindQuery('list', { range: request.range });
 
-    const values = profileMetrics.map(({ value }) => ({
+    const values = profileMetrics.map(({ value, text }) => ({
       value,
-      label: ProfileMetricsDataSource.getProfileMetricLabel(value as string),
+      label: text,
+      queryRunnerParams: {
+        profileMetricId: value,
+      },
     }));
 
     return {

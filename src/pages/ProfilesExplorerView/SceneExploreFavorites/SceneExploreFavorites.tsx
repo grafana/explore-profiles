@@ -1,4 +1,4 @@
-import { EmbeddedSceneState, SceneComponentProps, sceneGraph, SceneObjectBase } from '@grafana/scenes';
+import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { omit } from 'lodash';
 import React from 'react';
@@ -7,6 +7,7 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
+import { PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-source';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {}
 
@@ -18,33 +19,16 @@ type Favorite = Record<string, any> & {
 
 export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavoritesState> {
   constructor() {
-    const favoritesList = new SceneTimeSeriesGrid({
-      key: 'favorites-grid',
-      items: SceneExploreFavorites.getFavoriteItems(),
-      headerActions: (params) => [
-        new SelectAction({ eventClass: 'EventViewDetails', params }),
-        new FavAction({ params }),
-      ],
-    });
-
     super({
       key: 'explore-favorites',
-      body: favoritesList,
-    });
-
-    this.addActivationHandler(() => {
-      const $timeRange = sceneGraph.getTimeRange(this);
-      const originalRefresh = $timeRange.onRefresh;
-
-      // TODO: remove hack - how? favs data source?
-      $timeRange.onRefresh = (...args) => {
-        originalRefresh(...args);
-        favoritesList.updateItems(SceneExploreFavorites.getFavoriteItems());
-      };
-
-      return () => {
-        $timeRange.onRefresh = originalRefresh;
-      };
+      body: new SceneTimeSeriesGrid({
+        key: 'favorites-grid',
+        dataSource: PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
+        headerActions: (params) => [
+          new SelectAction({ eventClass: 'EventViewDetails', params }),
+          new FavAction({ params }),
+        ],
+      }),
     });
   }
 

@@ -27,7 +27,7 @@ import { SceneQuickFilter } from '../SceneQuickFilter';
 
 interface SceneTimeSeriesGridState extends EmbeddedSceneState {
   headerActions: (params: Record<string, any>) => VizPanelState['headerActions'];
-  dataSource?: DataSourceDef;
+  dataSource: DataSourceDef;
   items: {
     data: Array<{
       label: string;
@@ -63,30 +63,26 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
 
   constructor({
     key,
-    headerActions,
-    items,
     dataSource,
+    headerActions,
   }: {
     key: string;
-    items?: SceneTimeSeriesGridState['items'];
+    dataSource: SceneTimeSeriesGridState['dataSource'];
     headerActions: SceneTimeSeriesGridState['headerActions'];
-    dataSource?: SceneTimeSeriesGridState['dataSource'];
   }) {
     super({
       key,
       dataSource,
-      $data: dataSource
-        ? new SceneQueryRunner({
-            datasource: dataSource,
-            queries: [
-              {
-                refId: `${dataSource.type}-${key}`,
-                queryType: 'metrics',
-              },
-            ],
-          })
-        : undefined,
-      items: items || {
+      $data: new SceneQueryRunner({
+        datasource: dataSource,
+        queries: [
+          {
+            refId: `${dataSource.type}-${key}`,
+            queryType: 'metrics',
+          },
+        ],
+      }),
+      items: {
         data: [],
         isLoading: true,
         error: null,
@@ -113,13 +109,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const layoutChangeSub = this.initLayoutChange();
       const hideNoDataSub = this.initHideNoDataChange();
 
-      if (items) {
-        this.updateItems(items);
-      }
-
-      if (dataSource) {
-        this.loadItems();
-      }
+      this.subscribeToItemsLoading();
 
       return () => {
         hideNoDataSub.unsubscribe();
@@ -129,7 +119,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     });
   }
 
-  loadItems() {
+  subscribeToItemsLoading() {
     this.state.$data!.subscribeToState((newState) => {
       if (!newState.data) {
         return;
@@ -148,15 +138,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }
 
       if (state === LoadingState.Done) {
-        const { name, values } = series[0].fields[0];
+        const { values } = series[0].fields[0];
 
         this.updateItems({
-          data: values.map((value) => ({
-            ...value,
-            queryRunnerParams: {
-              [name]: value.value,
-            },
-          })),
+          data: values,
           isLoading: false,
           error: null,
         });
