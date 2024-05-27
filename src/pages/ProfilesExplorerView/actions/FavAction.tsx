@@ -13,7 +13,7 @@ import { omit } from 'lodash';
 import React from 'react';
 
 export interface FavActionState extends SceneObjectState {
-  params: Record<string, string>;
+  params: Record<string, any>;
   isFav?: boolean;
 }
 

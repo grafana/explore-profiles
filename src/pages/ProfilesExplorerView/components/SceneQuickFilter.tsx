@@ -1,43 +1,63 @@
 import { css } from '@emotion/css';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import {
+  SceneComponentProps,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneObjectUrlSyncConfig,
+  SceneObjectUrlValues,
+} from '@grafana/scenes';
 import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
-import { debounce } from 'lodash';
 import React from 'react';
-
-import { EventChangeFilter } from '../events/EventChangeFilter';
 
 interface SceneQuickFilterState extends SceneObjectState {
   placeholder: string;
-  value?: string;
+  searchText: string;
   onChange?: (searchText: string) => void;
 }
 
 export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
-  constructor(options: SceneQuickFilterState) {
-    super(options);
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['searchText'] });
 
-    this.publishChangeEvent = debounce(this.publishChangeEvent, 250);
+  static DEFAULT_SEARCH_TEXT = '';
+
+  constructor({ placeholder }: { placeholder: string }) {
+    super({
+      key: 'quick-filter',
+      placeholder,
+      searchText: SceneQuickFilter.DEFAULT_SEARCH_TEXT,
+    });
   }
 
-  onChange = (value: string) => {
-    this.setState({ value });
-    this.publishChangeEvent(value);
+  getUrlState() {
+    return {
+      searchText: this.state.searchText,
+    };
+  }
+
+  updateFromUrl(values: SceneObjectUrlValues) {
+    const stateUpdate: Partial<SceneQuickFilterState> = {};
+
+    if (typeof values.searchText === 'string' && values.searchText !== this.state.searchText) {
+      stateUpdate.searchText = values.searchText;
+    }
+
+    this.setState(stateUpdate);
+  }
+
+  onChange = (searchText: string) => {
+    this.setState({ searchText });
   };
-
-  publishChangeEvent(searchText: string) {
-    this.publishEvent(new EventChangeFilter({ searchText }), true);
-  }
 
   static Component = ({ model }: SceneComponentProps<SceneQuickFilter>) => {
     const styles = useStyles2(getStyles);
-    const { placeholder, value } = model.useState();
+    const { placeholder, searchText } = model.useState();
 
     return (
       <div className={styles.filter}>
         <Input
           type="text"
           placeholder={placeholder}
-          value={value}
+          value={searchText}
           prefix={<Icon name="filter" />}
           suffix={<IconButton name="times" aria-label="Clear search" onClick={() => model.onChange('')} />}
           onChange={(e: any) => model.onChange(e.target.value)}
@@ -49,6 +69,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
 
 const getStyles = () => ({
   filter: css`
-    width: 100%;
+    flex: 1;
+    min-width: 0;
   `,
 });

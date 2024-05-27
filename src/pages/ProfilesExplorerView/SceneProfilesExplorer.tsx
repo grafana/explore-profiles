@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
+import { dateTimeParse, GrafanaTheme2 } from '@grafana/data';
 import {
   EmbeddedSceneState,
+  getUrlSyncManager,
   SceneComponentProps,
   SceneObjectBase,
   SceneObjectUrlSyncConfig,
@@ -12,25 +13,31 @@ import {
   sceneUtils,
   SceneVariableSet,
   SplitLayout,
-  VariableValueSelectors,
 } from '@grafana/scenes';
-import { InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
+import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
+import { displaySuccess } from '@shared/domain/displayStatus';
 import React from 'react';
 
+import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
+import { SceneQuickFilter } from './components/SceneQuickFilter';
 import { ProfileMetricsDataSource } from './data/ProfileMetricsDataSource';
 import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE, PYROSCOPE_SERVICES_DATA_SOURCE } from './data/pyroscope-data-source';
 import { ServicesDataSource } from './data/ServicesDataSource';
 import { EventExplore } from './events/EventExplore';
-import { EventSelect } from './events/EventSelect';
+import { EventViewDetails } from './events/EventViewDetails';
 import { SceneExploreAllServices } from './SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
 import { SceneServiceDetails } from './SceneServiceDetails/SceneServiceDetails';
+import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
+import { ServiceNameVariable } from './variables/ServiceNameVariable';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
   body?: SplitLayout;
+  subControls: any[]; // TODO
 }
 
 enum ExplorationType {
@@ -65,33 +72,26 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
 
   constructor() {
-    sceneUtils.registerRuntimeDataSource({
-      dataSource: new ServicesDataSource(PYROSCOPE_SERVICES_DATA_SOURCE.type, PYROSCOPE_SERVICES_DATA_SOURCE.uid),
-    });
-
-    sceneUtils.registerRuntimeDataSource({
-      dataSource: new ProfileMetricsDataSource(
-        PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.type,
-        PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid
-      ),
-    });
-
     super({
       key: 'profiles-explorer',
       explorationType: undefined,
       body: undefined,
       $timeRange: new SceneTimeRange({}),
-      $variables: new SceneVariableSet({
-        variables: [new ProfilesDataSourceVariable({})],
-      }),
-      controls: [
-        new VariableValueSelectors({}),
-        new SceneTimePicker({ isOnCanvas: true }),
-        new SceneRefreshPicker({ isOnCanvas: true }),
+      $variables: new SceneVariableSet({ variables: [] }),
+      controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
+      // these scenes sync with the URL so...
+      // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
+      subControls: [
+        new SceneQuickFilter({ placeholder: '' }),
+        new SceneLayoutSwitcher(),
+        new SceneNoDataSwitcher(),
+        // new QueryBuilderVariable({}),
       ],
     });
 
-    this.onChangeExplorationType = this.onChangeExplorationType.bind(this);
+    getUrlSyncManager().initSync(this);
+
+    this.registerRuntimeDataSources();
 
     this.addActivationHandler(() => {
       const eventsSub = this.subscribeToEvents();
@@ -124,12 +124,25 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     this.setState(stateUpdate);
   }
 
+  registerRuntimeDataSources() {
+    sceneUtils.registerRuntimeDataSource({
+      dataSource: new ServicesDataSource(PYROSCOPE_SERVICES_DATA_SOURCE.type, PYROSCOPE_SERVICES_DATA_SOURCE.uid),
+    });
+
+    sceneUtils.registerRuntimeDataSource({
+      dataSource: new ProfileMetricsDataSource(
+        PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.type,
+        PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid
+      ),
+    });
+  }
+
   subscribeToEvents() {
     const exploreSub = this.subscribeToEvent(EventExplore, (event) => {
       this.setExplorationType(ExplorationType.SINGLE_SERVICE, { serviceName: event.payload.params.serviceName });
     });
 
-    const selectSub = this.subscribeToEvent(EventSelect, (event) => {
+    const selectSub = this.subscribeToEvent(EventViewDetails, (event) => {
       const { serviceName, profileMetricId, color } = event.payload.params;
 
       this.setExplorationType(ExplorationType.SINGLE_SERVICE_DETAILS, {
@@ -148,62 +161,101 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   setExplorationType(explorationType: ExplorationType, initialBodyState?: Record<string, any>) {
+    const { body, variables } = this.buildScene(explorationType, initialBodyState);
+
     this.setState({
       explorationType,
-      body: SceneProfilesExplorer.buildBody(explorationType, initialBodyState),
+      body,
+      $variables: new SceneVariableSet({
+        variables: [new ProfilesDataSourceVariable({}), ...variables],
+      }),
     });
   }
 
-  static buildBody(explorationType: ExplorationType, initialBodyState: any = {}) {
+  buildScene(explorationType: ExplorationType, initialBodyState: Record<string, any> = {}) {
     let primary;
+    let variables: any[]; // TODO
 
     switch (explorationType) {
       case ExplorationType.SINGLE_SERVICE:
-        primary = new SceneExploreSingleService(initialBodyState);
+        primary = new SceneExploreSingleService();
+        variables = [new ServiceNameVariable({ value: initialBodyState.serviceName })];
+        this.state.subControls[0].setState({ placeholder: 'Search profile metrics by name' });
         break;
 
       case ExplorationType.SINGLE_SERVICE_DETAILS:
-        primary = new SceneServiceDetails(initialBodyState);
+        primary = new SceneServiceDetails();
+        variables = [
+          new ServiceNameVariable({ value: initialBodyState.serviceName }),
+          new ProfileMetricVariable({ value: initialBodyState.profileMetricId }),
+          // new QueryBuilderVariable({}),
+        ];
         break;
 
       case ExplorationType.FAVORITES:
         primary = new SceneExploreFavorites();
+        variables = [];
+        this.state.subControls[0].setState({ placeholder: 'Search favorites' });
         break;
 
       case ExplorationType.ALL_SERVICES:
       default:
         primary = new SceneExploreAllServices();
+        variables = [new ProfileMetricVariable({ value: initialBodyState.profileMetricId })];
+        this.state.subControls[0].setState({ placeholder: 'Search services by name' });
     }
 
-    return new SplitLayout({
-      direction: 'column',
-      primary,
-    });
+    return {
+      body: new SplitLayout({
+        direction: 'column',
+        primary,
+      }),
+      variables,
+    };
   }
 
-  onChangeExplorationType(explorationType: ExplorationType) {
+  onChangeExplorationType = (explorationType: ExplorationType) => {
     this.setExplorationType(explorationType);
-  }
+  };
+
+  onClickShareLink = async () => {
+    try {
+      const shareableUrl = new URL(window.location.toString());
+
+      ['from', 'to'].forEach((name) => {
+        shareableUrl.searchParams.set(name, String(dateTimeParse(shareableUrl.searchParams.get(name)).valueOf()));
+      });
+
+      await navigator.clipboard.writeText(shareableUrl.toString());
+      displaySuccess(['Link copied to clipboard!']);
+    } catch {}
+  };
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { controls, body, explorationType } = model.useState();
+    const { explorationType, controls, subControls, body, $variables } = model.useState();
 
-    const [variablesControl, timePickerControl, refreshPickerControl] = controls || [];
+    const [timePickerControl, refreshPickerControl] = controls || [];
+    const [dataSourceVariable, ...otherVariables] = $variables?.state.variables || [];
 
     return (
       <>
         <div className={styles.header}>
           <div className={styles.controls}>
-            <Stack justifyContent="space-between" gap={1}>
-              <div className={styles.variables}>
-                <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />
+            <Stack justifyContent="space-between" wrap="wrap">
+              <Stack>
+                <div className={styles.variable}>
+                  <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
+                  <dataSourceVariable.Component model={dataSourceVariable} />
+                </div>
 
                 <div className={styles.explorationType}>
                   <InlineLabel
+                    className={styles.label}
                     width="auto"
                     tooltip={
                       <div className={styles.tooltipContent}>
+                        <h5>Exploration types</h5>
                         <dl>
                           <dt>All</dt>
                           <dd>Overview of all your services, for a given profile metric</dd>
@@ -217,7 +269,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                       </div>
                     }
                   >
-                    Choose your exploration type
+                    Exploration type
                   </InlineLabel>
                   <RadioButtonGroup
                     options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
@@ -226,12 +278,36 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                     onChange={model.onChangeExplorationType}
                   />
                 </div>
-              </div>
+              </Stack>
+
               <Stack>
                 <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
                 <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
+                <IconButton
+                  name="share-alt"
+                  tooltip="Copy shareable link to clipboard"
+                  onClick={model.onClickShareLink}
+                />
               </Stack>
             </Stack>
+          </div>
+
+          <div className={styles.sceneControls}>
+            {subControls.length ? (
+              <Stack wrap="wrap">
+                {otherVariables.map((otherVariable) => (
+                  <div key={otherVariable.state.name} className={styles.variable}>
+                    <InlineLabel className={styles.label} width="auto">
+                      {otherVariable.state.label}
+                    </InlineLabel>
+                    <otherVariable.Component model={otherVariable} />
+                  </div>
+                ))}
+
+                {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
+                  subControls.map((subControl) => <subControl.Component key={subControl.key} model={subControl} />)}
+              </Stack>
+            ) : null}
           </div>
         </div>
 
@@ -249,24 +325,35 @@ const getStyles = (theme: GrafanaTheme2) => ({
     z-index: 1;
   `,
   controls: css`
-    padding: 0 0 ${theme.spacing(1)};
+    padding: ${theme.spacing(1)} 0;
   `,
-  variables: css`
+  label: css``,
+  variable: css`
     display: flex;
-    gap: ${theme.spacing(1)};
   `,
   explorationType: css`
+    display: flex;
+  `,
+  sceneControls: css`
+    padding: ${theme.spacing(1)} 0;
+  `,
+  subControls: css`
     display: flex;
   `,
   tooltipContent: css`
     padding: ${theme.spacing(1)};
 
-    & dt {
-      font-weight: ${theme.typography.fontWeightBold};
+    & dl {
+      display: grid;
+      grid-gap: 4px 16px;
+      grid-template-columns: max-content;
     }
-
+    & dt {
+      font-weight: bold;
+    }
     & dd {
-      margin: 0 0 4px ${theme.spacing(1)};
+      margin: 0;
+      grid-column-start: 2;
     }
   `,
   body: css`

@@ -1,27 +1,14 @@
-import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
 import { EmbeddedSceneState, SceneComponentProps, sceneGraph, SceneObjectBase } from '@grafana/scenes';
-import { Stack, useStyles2 } from '@grafana/ui';
-import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { omit } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
-import { SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
-import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
-import { EventChangeFilter } from '../events/EventChangeFilter';
-import { EventChangeHideNoData } from '../events/EventChangeHideNoData';
-import { EventChangeLayout } from '../events/EventChangeLayout';
+import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 
-interface SceneExploreFavoritesState extends EmbeddedSceneState {
-  quickFilter: SceneQuickFilter;
-  layoutSwitcher: SceneLayoutSwitcher;
-  noDataSwitcher: SceneNoDataSwitcher;
-}
+interface SceneExploreFavoritesState extends EmbeddedSceneState {}
 
 type Favorite = Record<string, any> & {
   serviceName: string;
@@ -35,26 +22,21 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       key: 'favorites-grid',
       items: SceneExploreFavorites.getFavoriteItems(),
       headerActions: (params) => [
-        new SelectAction({ label: 'Select', params, eventClass: 'EventSelect' }),
+        new SelectAction({ eventClass: 'EventViewDetails', params }),
         new FavAction({ params }),
       ],
     });
 
     super({
       key: 'explore-favorites',
-      quickFilter: new SceneQuickFilter({ placeholder: 'Search favorites' }),
-      layoutSwitcher: new SceneLayoutSwitcher(),
-      noDataSwitcher: new SceneNoDataSwitcher(),
       body: favoritesList,
     });
 
     this.addActivationHandler(() => {
-      const eventsSub = this.subscribeToEvents();
-
       const $timeRange = sceneGraph.getTimeRange(this);
       const originalRefresh = $timeRange.onRefresh;
 
-      // TODO: remove hack - how?
+      // TODO: remove hack - how? favs data source?
       $timeRange.onRefresh = (...args) => {
         originalRefresh(...args);
         favoritesList.updateItems(SceneExploreFavorites.getFavoriteItems());
@@ -62,31 +44,8 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
       return () => {
         $timeRange.onRefresh = originalRefresh;
-        eventsSub.unsubscribe();
       };
     });
-  }
-
-  subscribeToEvents() {
-    const changeFilterSub = this.subscribeToEvent(EventChangeFilter, (event) => {
-      (this.state.body as SceneTimeSeriesGrid).updateFilter(event.payload.searchText);
-    });
-
-    const changeLayoutSub = this.subscribeToEvent(EventChangeLayout, (event) => {
-      (this.state.body as SceneTimeSeriesGrid).updateLayout(event.payload.layout);
-    });
-
-    const changeHideNoDataSub = this.subscribeToEvent(EventChangeHideNoData, (event) => {
-      (this.state.body as SceneTimeSeriesGrid).updateHideNoData(event.payload.hideNoData);
-    });
-
-    return {
-      unsubscribe() {
-        changeHideNoDataSub.unsubscribe();
-        changeLayoutSub.unsubscribe();
-        changeFilterSub.unsubscribe();
-      },
-    };
   }
 
   static getFavoriteItems() {
@@ -94,8 +53,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
     return {
       data: favorites.map((f: Favorite) => {
-        const profileMetric = getProfileMetric(f.profileMetricId as ProfileMetricId);
-        const profileMetricLabel = `${profileMetric.type} (${profileMetric.group})`;
+        const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(f.profileMetricId);
 
         return {
           label: `${f.serviceName} · ${profileMetricLabel}`,
@@ -110,40 +68,8 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreFavorites>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { body, quickFilter, layoutSwitcher, noDataSwitcher } = model.useState();
+    const { body } = model.useState();
 
-    return (
-      <div className={styles.container}>
-        <div className={styles.controls}>
-          <Stack justifyContent="space-between">
-            <div className={styles.quickFilter}>
-              <quickFilter.Component model={quickFilter} />
-            </div>
-            <div>
-              <layoutSwitcher.Component model={layoutSwitcher} />
-            </div>
-            <div>
-              <noDataSwitcher.Component model={noDataSwitcher} />
-            </div>
-          </Stack>
-        </div>
-
-        <body.Component model={body} />
-      </div>
-    );
+    return <body.Component model={body} />;
   }
 }
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  container: css`
-    width: 100%;
-    margin-top: ${theme.spacing(1)};
-  `,
-  controls: css`
-    margin-bottom: ${theme.spacing(2)};
-  `,
-  quickFilter: css`
-    width: 100%;
-  `,
-});

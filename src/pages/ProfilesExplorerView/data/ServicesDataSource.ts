@@ -14,16 +14,17 @@ import { servicesApiClient } from '@shared/infrastructure/services/servicesApiCl
 export class ServicesDataSource extends RuntimeDataSource {
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
     const services = await this.metricFindQuery('list', { range: request.range });
-    const values = services.map(({ value }) => value);
+    const values = services.map(({ value }) => ({ value, label: value }));
 
     return {
       state: LoadingState.Done,
       data: [
         {
+          name: 'Services',
           fields: [
             {
-              name: 'ProfileMetrics',
-              type: FieldType.string,
+              name: 'serviceName',
+              type: FieldType.other,
               values,
               config: {},
             },

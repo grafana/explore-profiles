@@ -12,7 +12,6 @@ export class ServiceNameVariable extends QueryVariable {
 
     super({
       name: 'serviceName',
-      isMulti: false,
       label: '🚀 Service',
       datasource: PYROSCOPE_SERVICES_DATA_SOURCE,
       query: 'list', // dummy query, can't be an empty string

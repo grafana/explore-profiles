@@ -24,7 +24,6 @@ export class ProfileMetricVariable extends QueryVariable {
 
     super({
       name: 'profileMetricId',
-      isMulti: false,
       label: '🔥 Profile',
       datasource: PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
       query: 'list', // dummy query, can't be an empty string

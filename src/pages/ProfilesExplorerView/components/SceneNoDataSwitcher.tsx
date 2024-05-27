@@ -1,64 +1,62 @@
-import { css } from '@emotion/css';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { InlineSwitch, useStyles2 } from '@grafana/ui';
-import { userStorage } from '@shared/infrastructure/userStorage';
+import {
+  SceneComponentProps,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneObjectUrlSyncConfig,
+  SceneObjectUrlValues,
+} from '@grafana/scenes';
+import { InlineSwitch } from '@grafana/ui';
 import React from 'react';
 
-import { EventChangeHideNoData } from '../events/EventChangeHideNoData';
-
-interface SceneNoDataSwitcherState extends SceneObjectState {
-  hideNoData: boolean;
-  onChange?: (hideNoData: boolean) => void;
+export interface SceneNoDataSwitcherState extends SceneObjectState {
+  hideNoData: string;
+  onChange?: (hideNoData: string) => void;
 }
 
 export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherState> {
-  static DEFAULT_VALUE = false;
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['hideNoData'] });
+
+  static DEFAULT_VALUE = 'off';
 
   constructor() {
-    const hideNoData =
-      userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.hideNoData || SceneNoDataSwitcher.DEFAULT_VALUE;
-
     super({
       key: 'no-data-switcher',
-      hideNoData,
-    });
-
-    this.addActivationHandler(() => {
-      this.onChange(hideNoData);
+      hideNoData: SceneNoDataSwitcher.DEFAULT_VALUE,
     });
   }
 
-  onChange = (hideNoData: boolean) => {
+  getUrlState() {
+    return {
+      hideNoData: this.state.hideNoData,
+    };
+  }
+
+  updateFromUrl(values: SceneObjectUrlValues) {
+    const stateUpdate: Partial<SceneNoDataSwitcherState> = {};
+
+    if (typeof values.hideNoData === 'string' && values.hideNoData !== this.state.hideNoData) {
+      stateUpdate.hideNoData = ['on', 'off'].includes(values.hideNoData)
+        ? values.hideNoData
+        : SceneNoDataSwitcher.DEFAULT_VALUE;
+    }
+
+    this.setState(stateUpdate);
+  }
+
+  onChange = (hideNoData: string) => {
     this.setState({ hideNoData });
-
-    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-    storage.hideNoData = hideNoData;
-    userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
-
-    this.publishChangeEvent(hideNoData);
   };
 
-  publishChangeEvent(hideNoData: boolean) {
-    this.publishEvent(new EventChangeHideNoData({ hideNoData }), true);
-  }
-
   static Component = ({ model }: SceneComponentProps<SceneNoDataSwitcher>) => {
-    const styles = useStyles2(getStyles);
     const { hideNoData } = model.useState();
 
     return (
-      <div className={styles.switcher}>
-        <InlineSwitch
-          label="Hide panels without data"
-          showLabel={true}
-          value={hideNoData}
-          onChange={(event: any) => model.onChange(event.target.checked)}
-        />
-      </div>
+      <InlineSwitch
+        showLabel
+        label="Hide panels without data"
+        value={hideNoData === 'on'}
+        onChange={(event: any) => model.onChange(event.target.checked ? 'on' : 'off')}
+      />
     );
   };
 }
-
-const getStyles = () => ({
-  switcher: css``,
-});

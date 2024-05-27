@@ -5,5 +5,5 @@ export interface EventExplorePayload {
 }
 
 export class EventExplore extends BusEventWithPayload<EventExplorePayload> {
-  public static type = 'explore-item';
+  public static type = 'explore';
 }

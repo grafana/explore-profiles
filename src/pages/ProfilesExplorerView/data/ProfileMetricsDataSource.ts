@@ -9,22 +9,37 @@ import {
   TestDataSourceResponse,
 } from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
-import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import {
+  getProfileMetric,
+  ProfileMetric,
+  ProfileMetricId,
+} from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { servicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
 
 export class ProfileMetricsDataSource extends RuntimeDataSource {
+  static getProfileMetricLabel(profileMetricId: string) {
+    const profileMetric = getProfileMetric(profileMetricId as ProfileMetricId);
+    const { group, type } = profileMetric;
+    return `${type} (${group})`;
+  }
+
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
     const profileMetrics = await this.metricFindQuery('list', { range: request.range });
-    const values = profileMetrics.map(({ value }) => value);
+
+    const values = profileMetrics.map(({ value }) => ({
+      value,
+      label: ProfileMetricsDataSource.getProfileMetricLabel(value as string),
+    }));
 
     return {
       state: LoadingState.Done,
       data: [
         {
+          name: 'ProfileMetrics',
           fields: [
             {
-              name: 'ProfileMetrics',
-              type: FieldType.string,
+              name: 'profileMetricId',
+              type: FieldType.other,
               values,
               config: {},
             },

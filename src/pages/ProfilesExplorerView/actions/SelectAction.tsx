@@ -4,35 +4,47 @@ import { Button, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { EventExplore, EventExplorePayload } from '../events/EventExplore';
-import { EventSelect, EventSelectPayload } from '../events/EventSelect';
+import { EventViewDetails, EventViewDetailsPayload } from '../events/EventViewDetails';
 
 type EventContructor =
   | (new (payload: EventExplorePayload) => EventExplore)
-  | (new (payload: EventSelectPayload) => EventSelect);
+  | (new (payload: EventViewDetailsPayload) => EventViewDetails);
 
-const Events = new Map<string, EventContructor>([
-  ['EventExplore', EventExplore],
-  ['EventSelect', EventSelect],
+const Events = new Map<string, { EventClass: EventContructor; label: string }>([
+  ['EventExplore', { EventClass: EventExplore, label: 'Explore' }],
+  ['EventViewDetails', { EventClass: EventViewDetails, label: 'View details' }],
 ]);
 
 interface SelectActionState extends SceneObjectState {
-  label: string;
+  EventClass: EventContructor;
   params: Record<string, string>;
-  eventClass: string;
+  label: string;
 }
 
 export class SelectAction extends SceneObjectBase<SelectActionState> {
+  constructor({
+    eventClass,
+    params,
+  }: {
+    eventClass: 'EventExplore' | 'EventViewDetails';
+    params: SelectActionState['params'];
+  }) {
+    const lookup = Events.get(eventClass);
+    if (!lookup) {
+      throw new TypeError(`Unknown event class "${eventClass}"!`);
+    }
+
+    const { EventClass, label } = lookup;
+
+    super({ EventClass, params, label });
+  }
+
   public onClick = () => {
     this.publishEvent(this.buildEvent(), true);
   };
 
   buildEvent() {
-    const { params, eventClass } = this.state;
-
-    const EventClass = Events.get(eventClass);
-    if (!EventClass) {
-      throw new TypeError(`Unknown event class "${eventClass}"!`);
-    }
+    const { EventClass, params } = this.state;
 
     return new EventClass({
       params: {

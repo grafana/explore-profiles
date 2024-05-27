@@ -13,32 +13,27 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
-import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { userStorage } from '@shared/infrastructure/userStorage';
+import { debounce } from 'lodash';
 import React from 'react';
 
 import { EmptyStateScene } from '../../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../../components/SceneLayoutSwitcher';
 import { buildProfileQueryRunner } from '../../data/buildProfileQueryRunner';
-import {
-  PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
-  PYROSCOPE_SERVICES_DATA_SOURCE,
-} from '../../data/pyroscope-data-source';
+import { getDataSourceError } from '../../data/getDataSourceError';
+import { DataSourceDef } from '../../data/pyroscope-data-source';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
+import { SceneQuickFilter } from '../SceneQuickFilter';
 
 interface SceneTimeSeriesGridState extends EmbeddedSceneState {
   headerActions: (params: Record<string, any>) => VizPanelState['headerActions'];
-  dataSource?: {
-    type: string;
-    uid: string;
-  };
+  dataSource?: DataSourceDef;
   items: {
     data: Array<{
       label: string;
       value: string;
-      color?: string;
       queryRunnerParams: Record<string, any>;
+      color?: string;
     }>;
     isLoading: boolean;
     error: Error | null;
@@ -54,9 +49,9 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId'],
     onReferencedVariableValueChanged: () => {
-      const noDataSwitcher = sceneGraph.findObject(this, (o) => o.state.key === 'no-data-switcher');
-
-      if ((noDataSwitcher as SceneNoDataSwitcher)?.state?.hideNoData) {
+      if (
+        (sceneGraph.findObject(this, (o) => o instanceof SceneNoDataSwitcher) as SceneNoDataSwitcher)?.state?.hideNoData
+      ) {
         // if we don't do this, we get stuck with the previous grid that might not include the items that had no data before
         // but that now have data after the variable update
         this.updateGridItems(this.state.items);
@@ -64,8 +59,8 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     },
   });
 
-  // TODO
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+  static DEFAULT_LAYOUT: LayoutType.GRID;
+
   constructor({
     key,
     headerActions,
@@ -77,8 +72,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     headerActions: SceneTimeSeriesGridState['headerActions'];
     dataSource?: SceneTimeSeriesGridState['dataSource'];
   }) {
-    const layout = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.layout || SceneLayoutSwitcher.DEFAULT_LAYOUT;
-
     super({
       key,
       dataSource,
@@ -90,7 +83,8 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       hideNoData: false,
       headerActions,
       body: new SceneCSSGridLayout({
-        templateColumns: layout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+        templateColumns:
+          SceneTimeSeriesGrid.DEFAULT_LAYOUT === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
         autoRows: GRID_AUTO_ROWS,
         isLazy: true,
         $behaviors: [
@@ -103,86 +97,171 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }),
     });
 
-    // TODO: extract to several methods
     this.addActivationHandler(() => {
+      const quickFilterSub = this.initQuickFilterChange();
+      const layoutChangeSub = this.initLayoutChange();
+      const hideNoDataSub = this.initHideNoDataChange();
+
+      const subs = [quickFilterSub, layoutChangeSub, hideNoDataSub];
+
+      if (items) {
+        this.updateItems(items);
+      }
+
       if (dataSource) {
-        const profileMetricsQueryRunner = new SceneQueryRunner({
-          datasource: dataSource,
-          queries: [
-            {
-              refId: `${dataSource.type}-${key}`,
-              queryType: 'metrics',
+        subs.push(this.loadItems(dataSource));
+      }
+
+      return () => {
+        subs.forEach((sub) => sub.unsubscribe());
+      };
+    });
+  }
+
+  loadItems(dataSource: DataSourceDef) {
+    const queryRunner = new SceneQueryRunner({
+      datasource: dataSource,
+      queries: [
+        {
+          refId: `${dataSource.type}-${this.state.key}`,
+          queryType: 'metrics',
+        },
+      ],
+    });
+
+    const sub = queryRunner.subscribeToState((newState) => {
+      if (!newState.data) {
+        return;
+      }
+
+      const { state, series, errors } = newState.data;
+
+      if (state === LoadingState.Error) {
+        sub.unsubscribe();
+
+        this.updateItems({
+          data: [],
+          isLoading: false,
+          error: getDataSourceError(errors),
+        });
+
+        return;
+      }
+
+      if (state === LoadingState.Done) {
+        sub.unsubscribe();
+
+        const { name, values } = series[0].fields[0];
+
+        this.updateItems({
+          data: values.map((value) => ({
+            ...value,
+            queryRunnerParams: {
+              [name]: value.value,
             },
-          ],
+          })),
+          isLoading: false,
+          error: null,
         });
-
-        const sub = profileMetricsQueryRunner.subscribeToState((newState) => {
-          if (newState.data?.state === LoadingState.Error) {
-            sub.unsubscribe();
-
-            this.updateItems({
-              data: [],
-              isLoading: false,
-              error: new Error(newState.data?.errors?.[0].message || 'Unknown error!'),
-            });
-            return;
-          }
-
-          if (newState.data?.state === LoadingState.Done) {
-            sub.unsubscribe();
-
-            if (dataSource.uid === PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid) {
-              const data = newState.data?.series[0].fields[0].values.map((value) => {
-                const profileMetric = getProfileMetric(value as ProfileMetricId);
-                const { group, type } = profileMetric;
-
-                return {
-                  value,
-                  label: `${type} (${group})`,
-                  queryRunnerParams: {
-                    profileMetricId: value,
-                  },
-                };
-              });
-
-              this.updateItems({ data, isLoading: false, error: null });
-            } else if (dataSource.uid === PYROSCOPE_SERVICES_DATA_SOURCE.uid) {
-              const data = newState.data?.series[0].fields[0].values.map((value) => {
-                return {
-                  value,
-                  label: value,
-                  queryRunnerParams: {
-                    serviceName: value,
-                  },
-                };
-              });
-
-              this.updateItems({ data, isLoading: false, error: null });
-            }
-          }
-        });
-
-        profileMetricsQueryRunner.runQueries();
       }
     });
+
+    queryRunner.runQueries();
+
+    return sub;
+  }
+
+  initQuickFilterChange() {
+    const quickFilterScene = sceneGraph.findObject(this, (o) => o instanceof SceneQuickFilter) as SceneQuickFilter;
+
+    const onChangeState = (newState: typeof quickFilterScene.state, prevState?: typeof quickFilterScene.state) => {
+      if (newState.searchText === prevState?.searchText) {
+        return;
+      }
+
+      this.updateGridItems(this.filterItems(quickFilterScene.state.searchText));
+    };
+
+    onChangeState(quickFilterScene.state);
+
+    return quickFilterScene.subscribeToState(debounce(onChangeState, 250));
+  }
+
+  initLayoutChange() {
+    const layoutSwitcherScene = sceneGraph.findObject(
+      this,
+      (o) => o instanceof SceneLayoutSwitcher
+    ) as SceneLayoutSwitcher;
+
+    const body = this.state.body as SceneCSSGridLayout;
+
+    const onChangeState = (
+      newState: typeof layoutSwitcherScene.state,
+      prevState?: typeof layoutSwitcherScene.state
+    ) => {
+      if (newState.layout === prevState?.layout) {
+        return;
+      }
+
+      body.setState({
+        templateColumns: newState.layout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+      });
+    };
+
+    onChangeState(layoutSwitcherScene.state);
+
+    return layoutSwitcherScene.subscribeToState(onChangeState);
+  }
+
+  initHideNoDataChange() {
+    const noDataSwitcherScene = sceneGraph.findObject(
+      this,
+      (o) => o instanceof SceneNoDataSwitcher
+    ) as SceneNoDataSwitcher;
+
+    const onChangeState = (
+      newState: typeof noDataSwitcherScene.state,
+      prevState?: typeof noDataSwitcherScene.state
+    ) => {
+      if (newState.hideNoData === prevState?.hideNoData) {
+        return;
+      }
+
+      this.setState({ hideNoData: newState.hideNoData === 'on' });
+      this.updateGridItems(this.state.items);
+    };
+
+    onChangeState(noDataSwitcherScene.state);
+
+    return noDataSwitcherScene.subscribeToState(onChangeState);
   }
 
   updateItems(items: SceneTimeSeriesGridState['items']) {
     this.setState({ items });
-    this.updateGridItems(items);
+
+    const quickFilterScene = sceneGraph.findObject(this, (o) => o instanceof SceneQuickFilter) as SceneQuickFilter;
+    this.updateGridItems(this.filterItems(quickFilterScene.state.searchText, items));
   }
 
-  renderEmptyState() {
-    (this.state.body as SceneCSSGridLayout).setState({
-      autoRows: '480px',
-      children: [
-        new SceneCSSGridItem({
-          body: new EmptyStateScene({
-            message: 'No results',
-          }),
-        }),
-      ],
-    });
+  filterItems(searchText: string, optionalItems?: SceneTimeSeriesGridState['items']) {
+    const items = optionalItems || this.state.items;
+
+    if (!searchText) {
+      return items;
+    }
+
+    const searchRegex = new RegExp(
+      `(${searchText
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .join('|')})`
+    );
+
+    return {
+      ...items,
+      data: items.data.filter(({ label }) => searchRegex.test(label)),
+    };
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -236,29 +315,17 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     });
   }
 
-  updateFilter(searchText: string) {
-    const trimmedSearchText = searchText.trim();
-
-    const filteredData = trimmedSearchText
-      ? this.state.items.data.filter(({ label }) => label.includes(trimmedSearchText))
-      : this.state.items.data;
-
-    this.updateGridItems({
-      data: filteredData,
-      isLoading: false,
-      error: null,
-    });
-  }
-
-  updateLayout(layout: string) {
+  renderEmptyState() {
     (this.state.body as SceneCSSGridLayout).setState({
-      templateColumns: layout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+      autoRows: '480px',
+      children: [
+        new SceneCSSGridItem({
+          body: new EmptyStateScene({
+            message: 'No results',
+          }),
+        }),
+      ],
     });
-  }
-
-  updateHideNoData(newHideNoData: boolean) {
-    this.setState({ hideNoData: newHideNoData });
-    this.updateGridItems(this.state.items);
   }
 
   static Component({ model }: SceneComponentProps<SceneTimeSeriesGrid>) {

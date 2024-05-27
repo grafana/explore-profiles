@@ -1,5 +1,4 @@
-import { css } from '@emotion/css';
-import { DashboardCursorSync, GrafanaTheme2 } from '@grafana/data';
+import { DashboardCursorSync } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -7,62 +6,74 @@ import {
   SceneComponentProps,
   SceneFlexItem,
   SceneFlexLayout,
+  sceneGraph,
   SceneObjectBase,
-  SceneVariableSet,
-  VariableValueSelectors,
+  VariableDependencyConfig,
+  VizPanel,
 } from '@grafana/scenes';
-import { Stack, useStyles2 } from '@grafana/ui';
-import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { DrawStyle } from '@grafana/ui';
 import React from 'react';
 
+import { FavAction } from '../actions/FavAction';
 import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
+import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
+import { getColorByIndex } from '../helpers/getColorByIndex';
 import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../variables/ServiceNameVariable';
 
 interface SceneServiceDetailsState extends EmbeddedSceneState {}
 
+const MIN_HEIGHT_TIMESERIES = 200;
+
 export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsState> {
-  constructor({
-    serviceName,
-    profileMetricId,
-    color,
-  }: {
-    serviceName: string;
-    profileMetricId: string;
-    color: string;
-  }) {
-    const profileMetricVariable = new ProfileMetricVariable({ value: profileMetricId });
-    const profileMetric = getProfileMetric((profileMetricId || profileMetricVariable.getValue()) as ProfileMetricId);
-    const profileMetricLabel = `${profileMetric.type} (${profileMetric.group})`;
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['serviceName', 'profileMetricId'],
+    onReferencedVariableValueChanged: () => {
+      const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
+        .body as VizPanel;
+
+      timeSeriesPanel.setState({
+        title: SceneServiceDetails.buildtimeSeriesPanelTitle(
+          (
+            sceneGraph.findObject(this, (o) => o instanceof ServiceNameVariable) as ServiceNameVariable
+          )?.getValue() as string,
+          (
+            sceneGraph.findObject(this, (o) => o instanceof ProfileMetricVariable) as ServiceNameVariable
+          )?.getValue() as string
+        ),
+      });
+    },
+  });
+
+  constructor() {
+    const color = getColorByIndex(0);
 
     super({
       key: 'service-details',
-      $variables: new SceneVariableSet({
-        variables: [new ServiceNameVariable({ value: serviceName }), profileMetricVariable],
-      }),
-      controls: [new VariableValueSelectors({})],
       body: new SceneFlexLayout({
-        direction: 'column',
+        direction: 'row',
+        $behaviors: [
+          new behaviors.CursorSync({
+            key: 'metricCrosshairSync',
+            sync: DashboardCursorSync.Crosshair,
+          }),
+        ],
         children: [
           new SceneFlexItem({
+            minHeight: MIN_HEIGHT_TIMESERIES,
             body: PanelBuilders.timeseries()
-              .setTitle(`${serviceName} · ${profileMetricLabel}`)
+              .setTitle('')
               .setOption('legend', { showLegend: true })
               .setData(buildProfileQueryRunner({}))
               .setColor({ mode: 'fixed', fixedColor: color })
-              .setCustomFieldConfig('fillOpacity', 9)
-              // .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
-              // .setCustomFieldConfig('fillOpacity', 100)
-              // .setCustomFieldConfig('lineWidth', 0)
+              .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
+              .setCustomFieldConfig('fillOpacity', 100)
+              .setCustomFieldConfig('lineWidth', 0)
+              .setHeaderActions([new FavAction({ params: { color } })])
               .build(),
-            $behaviors: [
-              new behaviors.CursorSync({
-                key: 'metricCrosshairSync',
-                sync: DashboardCursorSync.Crosshair,
-              }),
-            ],
           }),
           new SceneFlexItem({
+            minHeight: MIN_HEIGHT_TIMESERIES,
             body: undefined,
           }),
         ],
@@ -72,41 +83,13 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     this.addActivationHandler(() => {});
   }
 
+  static buildtimeSeriesPanelTitle(serviceName: string, profileMetricId: string) {
+    return `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
+  }
+
   static Component({ model }: SceneComponentProps<SceneServiceDetails>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { body, controls } = model.useState();
+    const { body } = model.useState();
 
-    const [variablesControl] = controls || [];
-
-    return (
-      <div className={styles.container}>
-        <div className={styles.controls}>
-          <Stack justifyContent="space-between">
-            <div className={styles.variables}>
-              <variablesControl.Component key={variablesControl.state.key} model={variablesControl} />{' '}
-            </div>
-          </Stack>
-        </div>
-
-        <body.Component model={body} />
-      </div>
-    );
+    return <body.Component model={body} />;
   }
 }
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  container: css`
-    width: 100%;
-    margin-top: ${theme.spacing(1)};
-  `,
-  controls: css`
-    margin-bottom: ${theme.spacing(2)};
-  `,
-  variables: css`
-    display: flex;
-    gap: ${theme.spacing(1)};
-  `,
-  quickFilter: css`
-    width: 100%;
-  `,
-});
