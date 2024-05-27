@@ -2,11 +2,11 @@ import {
   DataQueryRequest,
   DataQueryResponse,
   FieldType,
-  getDefaultTimeRange,
   LegacyMetricFindQueryOptions,
   LoadingState,
   MetricFindValue,
   TestDataSourceResponse,
+  TimeRange,
 } from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
 import {
@@ -14,12 +14,14 @@ import {
   ProfileMetric,
   ProfileMetricId,
 } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { servicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
+
+import { ServicesDataSource } from './ServicesDataSource';
 
 export class ProfileMetricsDataSource extends RuntimeDataSource {
   static getProfileMetricLabel(profileMetricId: string) {
     const profileMetric = getProfileMetric(profileMetricId as ProfileMetricId);
     const { group, type } = profileMetric;
+
     return `${type} (${group})`;
   }
 
@@ -51,7 +53,7 @@ export class ProfileMetricsDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    const services = await servicesApiClient.list({ timeRange: options.range || getDefaultTimeRange() });
+    const services = await ServicesDataSource.fetchServices(options.range as TimeRange);
 
     const allProfileMetricsMap = new Map<ProfileMetric['id'], ProfileMetric>();
 

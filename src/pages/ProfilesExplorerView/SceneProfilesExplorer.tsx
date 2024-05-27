@@ -11,6 +11,7 @@ import {
   SceneTimePicker,
   SceneTimeRange,
   sceneUtils,
+  SceneVariable,
   SceneVariableSet,
   SplitLayout,
 } from '@grafana/scenes';
@@ -174,7 +175,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   buildScene(explorationType: ExplorationType, initialBodyState: Record<string, any> = {}) {
     let primary;
-    let variables: any[]; // TODO
+    let variables: SceneVariable[];
 
     switch (explorationType) {
       case ExplorationType.SINGLE_SERVICE:

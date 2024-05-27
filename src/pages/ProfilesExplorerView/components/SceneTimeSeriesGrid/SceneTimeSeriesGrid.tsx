@@ -75,6 +75,17 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     super({
       key,
       dataSource,
+      $data: dataSource
+        ? new SceneQueryRunner({
+            datasource: dataSource,
+            queries: [
+              {
+                refId: `${dataSource.type}-${key}`,
+                queryType: 'metrics',
+              },
+            ],
+          })
+        : undefined,
       items: items || {
         data: [],
         isLoading: true,
@@ -102,34 +113,24 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const layoutChangeSub = this.initLayoutChange();
       const hideNoDataSub = this.initHideNoDataChange();
 
-      const subs = [quickFilterSub, layoutChangeSub, hideNoDataSub];
-
       if (items) {
         this.updateItems(items);
       }
 
       if (dataSource) {
-        subs.push(this.loadItems(dataSource));
+        this.loadItems();
       }
 
       return () => {
-        subs.forEach((sub) => sub.unsubscribe());
+        hideNoDataSub.unsubscribe();
+        layoutChangeSub.unsubscribe();
+        quickFilterSub.unsubscribe();
       };
     });
   }
 
-  loadItems(dataSource: DataSourceDef) {
-    const queryRunner = new SceneQueryRunner({
-      datasource: dataSource,
-      queries: [
-        {
-          refId: `${dataSource.type}-${this.state.key}`,
-          queryType: 'metrics',
-        },
-      ],
-    });
-
-    const sub = queryRunner.subscribeToState((newState) => {
+  loadItems() {
+    this.state.$data!.subscribeToState((newState) => {
       if (!newState.data) {
         return;
       }
@@ -137,8 +138,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const { state, series, errors } = newState.data;
 
       if (state === LoadingState.Error) {
-        sub.unsubscribe();
-
         this.updateItems({
           data: [],
           isLoading: false,
@@ -149,8 +148,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }
 
       if (state === LoadingState.Done) {
-        sub.unsubscribe();
-
         const { name, values } = series[0].fields[0];
 
         this.updateItems({
@@ -165,10 +162,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         });
       }
     });
-
-    queryRunner.runQueries();
-
-    return sub;
   }
 
   initQuickFilterChange() {
