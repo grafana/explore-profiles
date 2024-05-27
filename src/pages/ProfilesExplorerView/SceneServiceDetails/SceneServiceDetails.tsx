@@ -14,6 +14,7 @@ import {
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
+import { SceneTabs } from '../components/SceneTabs';
 import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 import { getColorByIndex } from '../helpers/getColorByIndex';
@@ -71,7 +72,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
           }),
           new SceneFlexItem({
             minHeight: MIN_HEIGHT_TIMESERIES,
-            body: undefined,
+            body: new SceneTabs({ activeTabId: 'flame-graph', tabs: [] }),
           }),
         ],
       }),
