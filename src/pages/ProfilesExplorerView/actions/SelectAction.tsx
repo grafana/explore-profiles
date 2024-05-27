@@ -12,7 +12,7 @@ type EventContructor =
 
 const Events = new Map<string, { EventClass: EventContructor; label: string }>([
   ['EventExplore', { EventClass: EventExplore, label: 'Explore' }],
-  ['EventViewDetails', { EventClass: EventViewDetails, label: 'View details' }],
+  ['EventViewDetails', { EventClass: EventViewDetails, label: 'Details' }],
 ]);
 
 interface SelectActionState extends SceneObjectState {
