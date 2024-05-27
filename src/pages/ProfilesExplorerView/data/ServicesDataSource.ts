@@ -23,8 +23,6 @@ export class ServicesDataSource extends RuntimeDataSource {
       raw: { from: dateTimeParse(from), to: dateTimeParse(to) },
     };
 
-    console.log('*** pyroscopeTimeRange', pyroscopeTimeRange.raw);
-
     return servicesApiClient.list({ timeRange: pyroscopeTimeRange });
   }
 
