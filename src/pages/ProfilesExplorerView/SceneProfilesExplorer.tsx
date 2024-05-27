@@ -285,7 +285,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
                 <IconButton
                   name="share-alt"
-                  tooltip="Copy shareable link to clipboard"
+                  tooltip="Copy shareable link to the clipboard"
                   onClick={model.onClickShareLink}
                 />
               </Stack>
