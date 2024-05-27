@@ -62,7 +62,7 @@ export class ProfileMetricsDataSource extends RuntimeDataSource {
     }
 
     return Array.from(allProfileMetricsMap.values())
-      .sort((a, b) => a.type.localeCompare(b.type))
+      .sort((a, b) => a.group.localeCompare(b.group))
       .map(({ id, type, group }) => ({
         value: id,
         text: `${type} (${group})`,
