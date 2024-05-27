@@ -11,7 +11,6 @@ import {
   VariableDependencyConfig,
   VizPanel,
 } from '@grafana/scenes';
-import { DrawStyle } from '@grafana/ui';
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
@@ -66,9 +65,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
               .setOption('legend', { showLegend: true })
               .setData(buildProfileQueryRunner({}))
               .setColor({ mode: 'fixed', fixedColor: color })
-              .setCustomFieldConfig('drawStyle', DrawStyle.Bars)
-              .setCustomFieldConfig('fillOpacity', 100)
-              .setCustomFieldConfig('lineWidth', 0)
+              .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions([new FavAction({ params: { color } })])
               .build(),
           }),
