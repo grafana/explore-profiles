@@ -255,12 +255,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                     width="auto"
                     tooltip={
                       <div className={styles.tooltipContent}>
-                        <h5>Exploration types</h5>
+                        <h5>Types of exploration</h5>
                         <dl>
                           <dt>All</dt>
-                          <dd>Overview of all your services, for a given profile metric</dd>
+                          <dd>Overview of all your services, for any given profile metric</dd>
                           <dt>Single</dt>
-                          <dd>Overview of a specific service, with all its profile metrics</dd>
+                          <dd>Overview of all the profile metrics for a single service</dd>
                           <dt>Details</dt>
                           <dd>Detailled view a specific service, with its flame graph</dd>
                           <dt>Favorites</dt>
