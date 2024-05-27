@@ -228,7 +228,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }
 
       this.setState({ hideNoData: newState.hideNoData === 'on' });
-      this.updateGridItems(this.state.items);
+      this.updateItems(this.state.items);
     };
 
     onChangeState(noDataSwitcherScene.state);
