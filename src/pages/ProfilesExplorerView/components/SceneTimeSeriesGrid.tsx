@@ -52,11 +52,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId'],
     onReferencedVariableValueChanged: () => {
-      if ((findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher).state.hideNoData) {
-        // if we don't do this, we get stuck with the previous grid that might not include the items that had no data before
-        // but that now have data after the variable update
-        this.updateGridItems(this.state.items);
-      }
+      // if we don't reset the items list to its original value, we might get stuck with items that might not include (e.g.) the ones that had no data before
+      // we also ensure that they are properly filtered after the change
+      const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+      this.updateGridItems(this.filterItems(quickFilterScene.state.searchText));
     },
   });
 
