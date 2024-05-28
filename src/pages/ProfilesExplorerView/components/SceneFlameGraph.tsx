@@ -10,7 +10,6 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
-import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -53,12 +52,14 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
+    const { isLight } = useTheme2();
+    const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
+
     const { $data, title } = model.useState();
 
     const $dataState = $data!.useState();
     const isFetchingProfile = $dataState.data?.state === LoadingState.Loading;
     const data = $dataState.data?.series[0];
-    const shouldHideFlamegraph = $dataState.data?.state === LoadingState.Done && Number(data?.length) <= 1;
 
     const { error: fetchSettingsError, settings } = useFetchPluginSettings();
     if (fetchSettingsError) {
@@ -67,9 +68,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
       ]);
     }
-
-    const { isLight } = useTheme2();
-    const getTheme = () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } });
 
     const panelTitle = useMemo(
       () => (
@@ -83,21 +81,13 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     return (
       <Panel title={panelTitle} isLoading={isFetchingProfile}>
-        {shouldHideFlamegraph ? (
-          <InlineBanner
-            severity="warning"
-            title="No profile data available"
-            message="Please verify that you've selected adequate parameters: time range, profile metric and filters."
-          />
-        ) : (
-          <FlameGraph
-            data={data as any}
-            disableCollapsing={!settings?.collapsedFlamegraphs}
-            getTheme={getTheme as any}
-            // extraHeaderElements={}
-            // getExtraContextMenuButtons={}
-          />
-        )}
+        <FlameGraph
+          data={data as any}
+          disableCollapsing={!settings?.collapsedFlamegraphs}
+          getTheme={getTheme as any}
+          // extraHeaderElements={}
+          // getExtraContextMenuButtons={}
+        />
       </Panel>
     );
   };
