@@ -275,7 +275,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                           <dt>Single</dt>
                           <dd>Overview of all the profile metrics for a single service</dd>
                           <dt>Details</dt>
-                          <dd>Detailled view a specific service, with its flame graph</dd>
+                          <dd>
+                            Detailled view of a specific service, including its flame graph and the ability to explore
+                            labels
+                          </dd>
                           <dt>Favorites</dt>
                           <dd>Overview of your favorite visualizations</dd>
                         </dl>
