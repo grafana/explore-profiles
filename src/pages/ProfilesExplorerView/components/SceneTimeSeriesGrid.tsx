@@ -18,14 +18,14 @@ import { debounce } from 'lodash';
 import React from 'react';
 import { Unsubscribable } from 'rxjs';
 
-import { EmptyStateScene } from '../../components/EmptyState/EmptyStateScene';
-import { LayoutType, SceneLayoutSwitcher } from '../../components/SceneLayoutSwitcher';
-import { buildProfileQueryRunner } from '../../data/buildProfileQueryRunner';
-import { getDataSourceError } from '../../data/getDataSourceError';
-import { DataSourceDef } from '../../data/pyroscope-data-source';
-import { getColorByIndex } from '../../helpers/getColorByIndex';
-import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
-import { SceneQuickFilter } from '../SceneQuickFilter';
+import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
+import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
+import { getDataSourceError } from '../data/getDataSourceError';
+import { DataSourceDef } from '../data/pyroscope-data-source';
+import { getColorByIndex } from '../helpers/getColorByIndex';
+import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
+import { SceneQuickFilter } from './SceneQuickFilter';
 
 interface SceneTimeSeriesGridState extends EmbeddedSceneState {
   headerActions: (params: Record<string, any>) => VizPanelState['headerActions'];

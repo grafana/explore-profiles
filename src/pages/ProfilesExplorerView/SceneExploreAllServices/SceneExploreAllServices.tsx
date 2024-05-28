@@ -3,7 +3,7 @@ import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
-import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
 import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-source';
 
 interface SceneExploreAllServicesState extends EmbeddedSceneState {}
