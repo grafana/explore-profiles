@@ -6,6 +6,7 @@ import {
   SceneComponentProps,
   SceneCSSGridItem,
   SceneCSSGridLayout,
+  SceneDataProvider,
   sceneGraph,
   SceneObjectBase,
   SceneQueryRunner,
@@ -15,6 +16,7 @@ import {
 import { Spinner } from '@grafana/ui';
 import { debounce } from 'lodash';
 import React from 'react';
+import { Unsubscribable } from 'rxjs';
 
 import { EmptyStateScene } from '../../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../../components/SceneLayoutSwitcher';
@@ -109,9 +111,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const layoutChangeSub = this.initLayoutChange();
       const hideNoDataSub = this.initHideNoDataChange();
 
-      this.subscribeToItemsLoading();
+      const itemsLoadingSub = this.subscribeToItemsLoading();
 
       return () => {
+        itemsLoadingSub.unsubscribe();
         hideNoDataSub.unsubscribe();
         layoutChangeSub.unsubscribe();
         quickFilterSub.unsubscribe();
@@ -120,7 +123,21 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   }
 
   subscribeToItemsLoading() {
-    this.state.$data!.subscribeToState((newState) => {
+    let sub: Unsubscribable;
+
+    // start of hack, for a better UX: once we've received the list of items, we unsubscribe from further changes and we "hook into" the
+    // time range to allow the user to reload the list by clicking on the "Refresh" button
+    // if we don't do this, every time the time range changes, all the timeseries present on the screen are re-created, resulting in blinking and a poor UX
+    const $timeRange = sceneGraph.getTimeRange(this);
+    const originalOnRefresh = $timeRange.onRefresh;
+
+    $timeRange.onRefresh = (...args) => {
+      sub = this.state.$data!.subscribeToState(onChangeState);
+      originalOnRefresh(...args);
+    };
+    // end of hack
+
+    const onChangeState = (newState: SceneDataProvider['state']) => {
       if (!newState.data) {
         return;
       }
@@ -138,6 +155,8 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }
 
       if (state === LoadingState.Done) {
+        sub.unsubscribe();
+
         const { values } = series[0].fields[0];
 
         this.updateItems({
@@ -146,7 +165,16 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           error: null,
         });
       }
-    });
+    };
+
+    sub = this.state.$data!.subscribeToState(onChangeState);
+
+    return {
+      unsubscribe() {
+        $timeRange.onRefresh = originalOnRefresh;
+        sub.unsubscribe();
+      },
+    };
   }
 
   initQuickFilterChange() {
