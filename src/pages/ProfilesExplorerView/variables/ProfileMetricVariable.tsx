@@ -1,9 +1,10 @@
-import { MultiValueVariable, QueryVariable, SceneComponentProps } from '@grafana/scenes';
+import { MultiValueVariable, QueryVariable, SceneComponentProps, SceneObject } from '@grafana/scenes';
 import { Cascader, CascaderOption } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
 
 import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-source';
+import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 
 type ProfileMetricOptions = Array<{
   value: string;
@@ -14,6 +15,9 @@ type ProfileMetricOptions = Array<{
 
 export class ProfileMetricVariable extends QueryVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
+
+  static find = (sceneObject: SceneObject) =>
+    findSceneObjectByClass(sceneObject, ProfileMetricVariable) as ProfileMetricVariable;
 
   constructor({ value }: { value?: string }) {
     // hack: the variable does not sync, if the "var-profileMetricId" search parameter is present in the URL, it is set to an empty value

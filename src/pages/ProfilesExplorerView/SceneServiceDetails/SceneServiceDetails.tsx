@@ -6,7 +6,6 @@ import {
   SceneComponentProps,
   SceneFlexItem,
   SceneFlexLayout,
-  sceneGraph,
   SceneObjectBase,
   VariableDependencyConfig,
   VizPanel,
@@ -14,8 +13,9 @@ import {
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
+import { SceneFlameGraph } from '../components/SceneFlameGraph';
 import { SceneTabs } from '../components/SceneTabs';
-import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
+import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
@@ -34,12 +34,8 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
 
       timeSeriesPanel.setState({
         title: SceneServiceDetails.buildtimeSeriesPanelTitle(
-          (
-            sceneGraph.findObject(this, (o) => o instanceof ServiceNameVariable) as ServiceNameVariable
-          )?.getValue() as string,
-          (
-            sceneGraph.findObject(this, (o) => o instanceof ProfileMetricVariable) as ServiceNameVariable
-          )?.getValue() as string
+          ServiceNameVariable.find(this).getValue() as string,
+          ProfileMetricVariable.find(this).getValue() as string
         ),
       });
     },
@@ -51,7 +47,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     super({
       key: 'service-details',
       body: new SceneFlexLayout({
-        direction: 'row',
+        direction: 'column',
         $behaviors: [
           new behaviors.CursorSync({
             key: 'metricCrosshairSync',
@@ -64,15 +60,23 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
             body: PanelBuilders.timeseries()
               .setTitle('')
               .setOption('legend', { showLegend: true })
-              .setData(buildProfileQueryRunner({}))
+              .setData(buildTimeSeriesQueryRunner({}))
               .setColor({ mode: 'fixed', fixedColor: color })
               .setCustomFieldConfig('fillOpacity', 9)
               .setHeaderActions([new FavAction({ params: { color } })])
               .build(),
           }),
           new SceneFlexItem({
-            minHeight: MIN_HEIGHT_TIMESERIES,
-            body: new SceneTabs({ activeTabId: 'flame-graph', tabs: [] }),
+            body: new SceneTabs({
+              activeTabId: 'flame-graph',
+              tabs: [
+                {
+                  id: 'flame-graph',
+                  label: 'Flame graph',
+                  content: new SceneFlameGraph(),
+                },
+              ],
+            }),
           }),
         ],
       }),

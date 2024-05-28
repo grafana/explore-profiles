@@ -20,9 +20,10 @@ import { Unsubscribable } from 'rxjs';
 
 import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
-import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
+import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { getDataSourceError } from '../data/getDataSourceError';
 import { DataSourceDef } from '../data/pyroscope-data-source';
+import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
 import { SceneQuickFilter } from './SceneQuickFilter';
@@ -51,9 +52,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId'],
     onReferencedVariableValueChanged: () => {
-      if (
-        (sceneGraph.findObject(this, (o) => o instanceof SceneNoDataSwitcher) as SceneNoDataSwitcher)?.state?.hideNoData
-      ) {
+      if ((findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher).state.hideNoData) {
         // if we don't do this, we get stuck with the previous grid that might not include the items that had no data before
         // but that now have data after the variable update
         this.updateGridItems(this.state.items);
@@ -178,7 +177,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   }
 
   initQuickFilterChange() {
-    const quickFilterScene = sceneGraph.findObject(this, (o) => o instanceof SceneQuickFilter) as SceneQuickFilter;
+    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
 
     const onChangeState = (newState: typeof quickFilterScene.state, prevState?: typeof quickFilterScene.state) => {
       if (newState.searchText === prevState?.searchText) {
@@ -194,10 +193,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   }
 
   initLayoutChange() {
-    const layoutSwitcherScene = sceneGraph.findObject(
-      this,
-      (o) => o instanceof SceneLayoutSwitcher
-    ) as SceneLayoutSwitcher;
+    const layoutSwitcherScene = findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher;
 
     const body = this.state.body as SceneCSSGridLayout;
 
@@ -220,10 +216,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   }
 
   initHideNoDataChange() {
-    const noDataSwitcherScene = sceneGraph.findObject(
-      this,
-      (o) => o instanceof SceneNoDataSwitcher
-    ) as SceneNoDataSwitcher;
+    const noDataSwitcherScene = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
 
     const onChangeState = (
       newState: typeof noDataSwitcherScene.state,
@@ -245,7 +238,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   updateItems(items: SceneTimeSeriesGridState['items']) {
     this.setState({ items });
 
-    const quickFilterScene = sceneGraph.findObject(this, (o) => o instanceof SceneQuickFilter) as SceneQuickFilter;
+    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
     this.updateGridItems(this.filterItems(quickFilterScene.state.searchText, items));
   }
 
@@ -277,7 +270,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const color = item.color || getColorByIndex(i);
       const actionParams = { ...item.queryRunnerParams, color };
 
-      const data = buildProfileQueryRunner(item.queryRunnerParams);
+      const data = buildTimeSeriesQueryRunner(item.queryRunnerParams);
 
       if (this.state.hideNoData) {
         this._subs.add(

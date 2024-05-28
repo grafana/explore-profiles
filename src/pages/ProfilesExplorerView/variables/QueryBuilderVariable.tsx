@@ -21,11 +21,9 @@ export class QueryBuilderVariable extends CustomVariable {
     this.addActivationHandler(() => {
       this.setState({ value: initialValue });
 
-      (sceneGraph.findObject(this, (o) => o instanceof ServiceNameVariable) as ServiceNameVariable).subscribeToState(
-        () => {
-          this.setState({ value: '' });
-        }
-      );
+      ServiceNameVariable.find(this).subscribeToState(() => {
+        this.setState({ value: '' });
+      });
     });
   }
 
@@ -40,13 +38,8 @@ export class QueryBuilderVariable extends CustomVariable {
         return;
       }
 
-      const serviceName = (
-        sceneGraph.findObject(model, (o) => o instanceof ServiceNameVariable) as ServiceNameVariable
-      )?.getValue() as string;
-
-      const profileMetricId = (
-        sceneGraph.findObject(model, (o) => o instanceof ProfileMetricVariable) as ProfileMetricVariable
-      )?.getValue() as string;
+      const serviceName = ServiceNameVariable.find(model).getValue() as string;
+      const profileMetricId = ProfileMetricVariable.find(model).getValue() as string;
 
       const newValue = `${profileMetricId}{service_name="${serviceName}"}`;
 

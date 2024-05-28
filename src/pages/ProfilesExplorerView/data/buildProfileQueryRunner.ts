@@ -2,22 +2,17 @@ import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-source';
 
-type Params = {
-  serviceName?: string;
-  profileMetricId?: string;
-};
+type Params = {};
 
-export function buildProfileQueryRunner({ serviceName, profileMetricId }: Params) {
+export function buildProfileQueryRunner({}: Params) {
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [
       {
-        refId: `${serviceName}-${profileMetricId}`,
-        queryType: 'metrics',
-        profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: serviceName ? `{service_name="${serviceName}"}` : '{service_name="$serviceName"}',
-        // maxDataPoints: 1710,
-        // intervalMs: 200,
+        refId: 'profile',
+        queryType: 'profile',
+        profileTypeId: '$profileMetricId',
+        labelSelector: `{service_name="$serviceName"}`,
       },
     ],
   });
