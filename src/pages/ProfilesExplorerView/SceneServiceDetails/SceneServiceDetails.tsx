@@ -14,12 +14,12 @@ import {
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
-import { SceneExploreLabels } from '../components/SceneExploreLabels';
-import { SceneFlameGraph } from '../components/SceneFlameGraph';
 import { SceneTabs } from '../components/SceneTabs';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { SceneExploreLabels } from './SceneExploreLabels';
+import { SceneFlameGraph } from './SceneFlameGraph';
 
 interface SceneServiceDetailsState extends EmbeddedSceneState {}
 
