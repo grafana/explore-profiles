@@ -30,6 +30,7 @@ ci/
 e2e/test-reports/
 e2e/test-results/
 e2e/auth/
+e2e/tests/**/*darwin.png
 
 # Editor
 .idea
@@ -45,3 +46,4 @@ e2e/auth/
 
 # Pyroscope
 samples/static/grafana-pyroscope-sample-blocks-public
+
