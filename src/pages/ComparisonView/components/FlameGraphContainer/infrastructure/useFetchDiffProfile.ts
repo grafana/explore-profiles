@@ -13,8 +13,20 @@ export function useFetchDiffProfile({ disabled }: FetchParams) {
   const { isFetching, error, data, refetch } = useQuery({
     // for UX: keep previous data while fetching -> profile does not re-render with empty panels when refreshing
     placeholderData: (previousData) => previousData,
-    // determining the queries can be asynchronous so we enable only when we have values for both
-    enabled: !disabled && Boolean(left.query && right.query),
+    enabled:
+      !disabled &&
+      Boolean(
+        // determining the queries can be asynchronous so we enable only when we have values for both
+        left.query &&
+          right.query &&
+          // determining the correct left/right ranges takes time and can lead to some values being 0
+          // in this case, we would send 0 values to the API, which would make the pods crash
+          // so we enable only when we have non-zero parameters values
+          left.timeRange.raw.from.valueOf() &&
+          left.timeRange.raw.to.valueOf() &&
+          right.timeRange.raw.from.valueOf() &&
+          right.timeRange.raw.to.valueOf()
+      ),
     // we use "raw" to cache relative time ranges between renders, so that only refetch() will trigger a new query
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
