@@ -3,16 +3,22 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Button, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
+import { EventAddToFilters, EventAddToFiltersPayload } from '../events/EventAddToFilters';
 import { EventExplore, EventExplorePayload } from '../events/EventExplore';
+import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
 import { EventViewDetails, EventViewDetailsPayload } from '../events/EventViewDetails';
 
 type EventContructor =
   | (new (payload: EventExplorePayload) => EventExplore)
-  | (new (payload: EventViewDetailsPayload) => EventViewDetails);
+  | (new (payload: EventViewDetailsPayload) => EventViewDetails)
+  | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
+  | (new (payload: EventAddToFiltersPayload) => EventAddToFilters);
 
 const Events = new Map<string, { EventClass: EventContructor; label: string }>([
   ['EventExplore', { EventClass: EventExplore, label: 'Explore' }],
   ['EventViewDetails', { EventClass: EventViewDetails, label: 'Details' }],
+  ['EventSelectLabel', { EventClass: EventSelectLabel, label: 'Select' }],
+  ['EventAddToFilters', { EventClass: EventAddToFilters, label: 'Add to filters' }],
 ]);
 
 interface SelectActionState extends SceneObjectState {
@@ -26,7 +32,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
     eventClass,
     params,
   }: {
-    eventClass: 'EventExplore' | 'EventViewDetails';
+    eventClass: 'EventExplore' | 'EventViewDetails' | 'EventSelectLabel' | 'EventAddToFilters';
     params: SelectActionState['params'];
   }) {
     const lookup = Events.get(eventClass);
@@ -49,10 +55,9 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
     return new EventClass({
       params: {
         ...params,
-        serviceName:
-          params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
+        serviceName: params.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
         profileMetricId:
-          params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
+          params.profileMetricId || (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
       },
     });
   }

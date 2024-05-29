@@ -53,9 +53,9 @@ export class FavAction extends SceneObjectBase<FavActionState> {
 
     const favorite = {
       ...params,
-      serviceName: params.serviceName || (sceneGraph.getVariables(this).getByName('serviceName')?.getValue() as string),
+      serviceName: params.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
       profileMetricId:
-        params.profileMetricId || (sceneGraph.getVariables(this).getByName('profileMetricId')?.getValue() as string),
+        params.profileMetricId || (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
     };
 
     if (!isFav) {

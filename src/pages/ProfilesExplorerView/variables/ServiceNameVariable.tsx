@@ -1,15 +1,11 @@
-import { MultiValueVariable, QueryVariable, SceneComponentProps, SceneObject } from '@grafana/scenes';
+import { MultiValueVariable, QueryVariable, SceneComponentProps } from '@grafana/scenes';
 import { Cascader } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
 import React, { useMemo } from 'react';
 
 import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-source';
-import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 
 export class ServiceNameVariable extends QueryVariable {
-  static find = (sceneObject: SceneObject) =>
-    findSceneObjectByClass(sceneObject, ServiceNameVariable) as ServiceNameVariable;
-
   constructor({ value }: { value?: string }) {
     // hack: the variable does not sync, if the "var-serviceName" search parameter is present in the URL, it is set to an empty value
     const initialValue = value || new URLSearchParams(window.location.search).get('var-serviceName') || '';

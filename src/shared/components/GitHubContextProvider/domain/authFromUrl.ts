@@ -1,4 +1,4 @@
-import { vcsClient } from '../../../../pages/SingleView/components/FunctionDetailsPanel/infrastructure/vcsClient';
+import { vcsClient } from '@shared/components/FunctionDetailsPanel/infrastructure/vcsClient';
 
 export async function authFromUrl(urlSearchParams: URLSearchParams, nonce: string): Promise<string> {
   const code = urlSearchParams.get('code');

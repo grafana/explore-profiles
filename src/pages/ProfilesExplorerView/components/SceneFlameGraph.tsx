@@ -1,21 +1,21 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState } from '@grafana/data';
 import { FlameGraph } from '@grafana/flamegraph';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState, VariableDependencyConfig } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanel } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
+import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
 import { Panel } from '@shared/components/Panel';
 import { displayWarning } from '@shared/domain/displayStatus';
+import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useEffect, useMemo } from 'react';
 
-import { buildProfileQueryRunner } from '../data/buildProfileQueryRunner';
-import { SceneServiceDetails } from '../SceneServiceDetails/SceneServiceDetails';
-import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
-import { ServiceNameVariable } from '../variables/ServiceNameVariable';
+import { buildFlameGraphQueryRunner } from '../data/buildFlameGraphQueryRunner';
+import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
 
 interface SceneFlameGraphState extends SceneObjectState {
   title: string;
@@ -24,23 +24,19 @@ interface SceneFlameGraphState extends SceneObjectState {
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
 // without success: the flame graph dimensions are set in runtime and do not change when the user resizes the layout
 export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId'],
-    onReferencedVariableValueChanged: () => {
-      this.setState({
-        title: SceneServiceDetails.buildtimeSeriesPanelTitle(
-          ServiceNameVariable.find(this).getValue() as string,
-          ProfileMetricVariable.find(this).getValue() as string
-        ),
-      });
-    },
-  });
-
   constructor() {
     super({
       key: 'flame-graph',
       title: '',
-      $data: buildProfileQueryRunner({}),
+      $data: buildFlameGraphQueryRunner({}),
+    });
+
+    this.addActivationHandler(() => {
+      (findSceneObjectByKey(this, 'service-details-timeseries') as VizPanel).subscribeToState((newState) => {
+        if (this.state.title !== newState.title) {
+          this.setState({ title: newState.title });
+        }
+      });
     });
   }
 
@@ -74,8 +70,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
+
     const sidePanel = useToggleSidePanel();
     const { data, actions } = model.useSceneFlameGraph();
+    const gitHubIntegration = useGitHubIntegration(sidePanel);
 
     if (data.fetchSettingsError) {
       displayWarning([
@@ -100,6 +98,15 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       }
     }, [data.isLoading, sidePanel]);
 
+    useEffect(() => {
+      sidePanel.onOpen(() => {
+        // crazy hack to have both panels occupy properly 50% of their parent
+        // if not, the flame graph panel includes the table and a bit of the flame graph (?!) and the
+        // side panel goes out of the boundaries of the viewport
+        (document.querySelector('label[title="Only show flame graph"]') as HTMLElement)?.click();
+      });
+    }, [sidePanel]);
+
     return (
       <div className={styles.flex}>
         <Panel
@@ -111,8 +118,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
               className={styles.aiButton}
               onClick={() => {
                 sidePanel.open('ai');
-                // crazy hack to have both panels occupy properly 50% of their parent
-                (document.querySelector('label[title="Only show flame graph"]') as HTMLElement)?.click();
               }}
               disabled={data.isLoading || !data.hasProfileData || sidePanel.isOpen('ai')}
               interactionName="g_pyroscope_app_explain_flamegraph_clicked"
@@ -125,11 +130,19 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             data={data.profileData as any}
             disableCollapsing={!data.settings?.collapsedFlamegraphs}
             getTheme={actions.getTheme as any}
-            // getExtraContextMenuButtons={}
+            getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
           />
         </Panel>
 
         {sidePanel.isOpen('ai') && <AiPanel className={styles.sidePanel} onClose={sidePanel.close} />}
+
+        {sidePanel.isOpen('function-details') && (
+          <FunctionDetailsPanel
+            className={styles.sidePanel}
+            stacktrace={gitHubIntegration.data.stacktrace}
+            onClose={sidePanel.close}
+          />
+        )}
       </div>
     );
   };

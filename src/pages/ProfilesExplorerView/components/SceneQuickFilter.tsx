@@ -44,8 +44,12 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
     this.setState(stateUpdate);
   }
 
-  onChange = (searchText: string) => {
-    this.setState({ searchText });
+  onChange = (e: any) => {
+    this.setState({ searchText: e.target.value });
+  };
+
+  clear = () => {
+    this.setState({ searchText: '' });
   };
 
   static Component = ({ model }: SceneComponentProps<SceneQuickFilter>) => {
@@ -59,8 +63,13 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
           placeholder={placeholder}
           value={searchText}
           prefix={<Icon name="filter" />}
-          suffix={<IconButton name="times" aria-label="Clear search" onClick={() => model.onChange('')} />}
-          onChange={(e: any) => model.onChange(e.target.value)}
+          suffix={<IconButton name="times" aria-label="Clear search" onClick={model.clear} />}
+          onChange={model.onChange}
+          onKeyDown={(e: any) => {
+            if (e.key === 'Escape') {
+              model.clear();
+            }
+          }}
         />
       </div>
     );

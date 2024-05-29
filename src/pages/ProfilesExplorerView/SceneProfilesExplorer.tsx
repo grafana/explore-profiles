@@ -23,8 +23,10 @@ import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from './components/SceneQuickFilter';
 import { FavoritesDataSource } from './data/FavoritesDataSource';
+import { LabelsDataSource } from './data/LabelsDataSource';
 import { ProfileMetricsDataSource } from './data/ProfileMetricsDataSource';
 import {
+  PYROSCOPE_LABELS_DATA_SOURCE,
   PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
   PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
   PYROSCOPE_SERVICES_DATA_SOURCE,
@@ -32,6 +34,7 @@ import {
 import { ServicesDataSource } from './data/ServicesDataSource';
 import { EventExplore } from './events/EventExplore';
 import { EventViewDetails } from './events/EventViewDetails';
+import { findSceneObjectByClass } from './helpers/findSceneObjectByClass';
 import { SceneExploreAllServices } from './SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
@@ -148,6 +151,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid
       ),
     });
+
+    sceneUtils.registerRuntimeDataSource({
+      dataSource: new LabelsDataSource(PYROSCOPE_LABELS_DATA_SOURCE.type, PYROSCOPE_LABELS_DATA_SOURCE.uid),
+    });
   }
 
   subscribeToEvents() {
@@ -183,6 +190,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables: [new ProfilesDataSourceVariable({}), ...variables],
       }),
     });
+
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.setState({ searchText: '' });
   }
 
   buildScene(explorationType: ExplorationType, initialBodyState: Record<string, any> = {}) {
@@ -193,7 +202,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.SINGLE_SERVICE:
         primary = new SceneExploreSingleService();
         variables = [new ServiceNameVariable({ value: initialBodyState.serviceName })];
-        this.state.subControls[0].setState({ placeholder: 'Search profile metrics by name' });
+
+        (this.state.subControls[0] as SceneQuickFilter).setState({
+          placeholder: 'Search profile metrics by name',
+        });
         break;
 
       case ExplorationType.SINGLE_SERVICE_DETAILS:
@@ -208,14 +220,20 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.FAVORITES:
         primary = new SceneExploreFavorites();
         variables = [];
-        this.state.subControls[0].setState({ placeholder: 'Search favorites' });
+
+        (this.state.subControls[0] as SceneQuickFilter).setState({
+          placeholder: 'Search favorites',
+        });
         break;
 
       case ExplorationType.ALL_SERVICES:
       default:
         primary = new SceneExploreAllServices();
         variables = [new ProfileMetricVariable({ value: initialBodyState.profileMetricId })];
-        this.state.subControls[0].setState({ placeholder: 'Search services by name' });
+
+        (this.state.subControls[0] as SceneQuickFilter).setState({
+          placeholder: 'Search services by name',
+        });
     }
 
     return {
@@ -352,9 +370,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   sceneControls: css`
     padding: ${theme.spacing(1)} 0;
-  `,
-  subControls: css`
-    display: flex;
   `,
   tooltipContent: css`
     padding: ${theme.spacing(1)};

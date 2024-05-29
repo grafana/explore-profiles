@@ -1,6 +1,6 @@
 import { DataFrame, FieldType } from '@grafana/data';
 
-import { buildStacktrace } from '../buildStacktrace';
+import { buildStacktrace } from '../../../../shared/domain/github-integration/buildStacktrace';
 
 const buildLevelItem = (level: number, itemIndexes: number[], parents: any[]): any => ({
   level,

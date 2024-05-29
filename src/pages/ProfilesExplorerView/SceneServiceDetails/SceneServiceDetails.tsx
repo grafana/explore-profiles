@@ -6,6 +6,7 @@ import {
   SceneComponentProps,
   SceneFlexItem,
   SceneFlexLayout,
+  sceneGraph,
   SceneObjectBase,
   VariableDependencyConfig,
   VizPanel,
@@ -13,13 +14,12 @@ import {
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
+import { SceneExploreLabels } from '../components/SceneExploreLabels';
 import { SceneFlameGraph } from '../components/SceneFlameGraph';
 import { SceneTabs } from '../components/SceneTabs';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
-import { ServiceNameVariable } from '../variables/ServiceNameVariable';
 
 interface SceneServiceDetailsState extends EmbeddedSceneState {}
 
@@ -34,8 +34,8 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
 
       timeSeriesPanel.setState({
         title: SceneServiceDetails.buildtimeSeriesPanelTitle(
-          ServiceNameVariable.find(this).getValue() as string,
-          ProfileMetricVariable.find(this).getValue() as string
+          sceneGraph.lookupVariable('serviceName', this)?.getValue() as string,
+          sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string
         ),
       });
     },
@@ -43,6 +43,16 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
 
   constructor() {
     const color = getColorByIndex(0);
+    const timeSeriesPanel = PanelBuilders.timeseries()
+      .setTitle('$serviceName')
+      .setOption('legend', { showLegend: true })
+      .setData(buildTimeSeriesQueryRunner({}))
+      .setColor({ mode: 'fixed', fixedColor: color })
+      .setCustomFieldConfig('fillOpacity', 9)
+      .setHeaderActions([new FavAction({ params: { color } })])
+      .build();
+
+    timeSeriesPanel.setState({ key: 'service-details-timeseries' });
 
     super({
       key: 'service-details',
@@ -57,14 +67,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
         children: [
           new SceneFlexItem({
             minHeight: MIN_HEIGHT_TIMESERIES,
-            body: PanelBuilders.timeseries()
-              .setTitle('')
-              .setOption('legend', { showLegend: true })
-              .setData(buildTimeSeriesQueryRunner({}))
-              .setColor({ mode: 'fixed', fixedColor: color })
-              .setCustomFieldConfig('fillOpacity', 9)
-              .setHeaderActions([new FavAction({ params: { color } })])
-              .build(),
+            body: timeSeriesPanel,
           }),
           new SceneFlexItem({
             body: new SceneTabs({
@@ -75,14 +78,17 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
                   label: 'Flame graph',
                   content: new SceneFlameGraph(),
                 },
+                {
+                  id: 'explore-labels',
+                  label: 'Explore labels',
+                  content: new SceneExploreLabels(),
+                },
               ],
             }),
           }),
         ],
       }),
     });
-
-    this.addActivationHandler(() => {});
   }
 
   static buildtimeSeriesPanelTitle(serviceName: string, profileMetricId: string) {

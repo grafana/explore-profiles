@@ -16,6 +16,7 @@ export type Favorite = {
   serviceName: string;
   profileMetricId: string;
   color?: string;
+  groupBy?: string;
 };
 
 export class FavoritesDataSource extends RuntimeDataSource {
@@ -91,7 +92,9 @@ export class FavoritesDataSource extends RuntimeDataSource {
 
       return {
         value: f,
-        text: `${f.serviceName} · ${profileMetricLabel}`,
+        text: f.groupBy
+          ? `${f.serviceName} · ${profileMetricLabel} · ${f.groupBy}`
+          : `${f.serviceName} · ${profileMetricLabel}`,
       };
     });
   }

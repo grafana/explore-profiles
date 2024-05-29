@@ -4,9 +4,6 @@ import { useStyles2 } from '@grafana/ui';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import React, { useCallback, useEffect } from 'react';
 
-import { ProfileMetricVariable } from './ProfileMetricVariable';
-import { ServiceNameVariable } from './ServiceNameVariable';
-
 export class QueryBuilderVariable extends CustomVariable {
   constructor({ value }: { value?: string }) {
     // hack: the variable does not sync, if the "var-profileMetricId" search parameter is present in the URL, it is set to an empty value
@@ -21,7 +18,7 @@ export class QueryBuilderVariable extends CustomVariable {
     this.addActivationHandler(() => {
       this.setState({ value: initialValue });
 
-      ServiceNameVariable.find(this).subscribeToState(() => {
+      sceneGraph.lookupVariable('serviceName', this)?.subscribeToState(() => {
         this.setState({ value: '' });
       });
     });
@@ -38,8 +35,8 @@ export class QueryBuilderVariable extends CustomVariable {
         return;
       }
 
-      const serviceName = ServiceNameVariable.find(model).getValue() as string;
-      const profileMetricId = ProfileMetricVariable.find(model).getValue() as string;
+      const serviceName = sceneGraph.lookupVariable('serviceName', model)?.getValue() as string;
+      const profileMetricId = sceneGraph.lookupVariable('profileMetricId', model)?.getValue() as string;
 
       const newValue = `${profileMetricId}{service_name="${serviceName}"}`;
 

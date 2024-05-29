@@ -4,7 +4,7 @@ import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-source';
 
 type Params = {};
 
-export function buildProfileQueryRunner({}: Params) {
+export function buildFlameGraphQueryRunner({}: Params) {
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [

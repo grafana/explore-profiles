@@ -22,3 +22,8 @@ export const PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE: DataSourceDef = Object.free
   type: 'pyroscope-favorites-datasource',
   uid: 'pyroscope-favorites-datasource',
 });
+
+export const PYROSCOPE_LABELS_DATA_SOURCE: DataSourceDef = Object.freeze({
+  type: 'pyroscope-labels-datasource',
+  uid: 'pyroscope-labels-datasource',
+});

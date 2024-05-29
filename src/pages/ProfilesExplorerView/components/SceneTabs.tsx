@@ -19,21 +19,29 @@ interface SceneTabsState extends SceneObjectState {
 
 export class SceneTabs extends SceneObjectBase<SceneTabsState> {
   constructor({ activeTabId, tabs }: { activeTabId: SceneTabsState['activeTabId']; tabs: SceneTabsState['tabs'] }) {
-    const tab = tabs.find((tab) => tab.id === activeTabId);
-    if (!tab) {
-      throw new Error(`Unknown tab id="${activeTabId}"!`);
-    }
-
     super({
       key: 'tabs',
       activeTabId,
       tabs,
-      body: tab.content,
+      body: SceneTabs.findTab(activeTabId, tabs).content,
     });
   }
 
+  static findTab(tabId: string, tabs: SceneTabsState['tabs']) {
+    const tab = tabs.find((tab) => tab.id === tabId);
+
+    if (!tab) {
+      throw new Error(`Unknown tab id="${tabId}"!`);
+    }
+
+    return tab;
+  }
+
   onChangeTab = (tabId: string) => {
-    this.setState({ activeTabId: tabId });
+    this.setState({
+      activeTabId: tabId,
+      body: SceneTabs.findTab(tabId, this.state.tabs).content,
+    });
   };
 
   static Component = ({ model }: SceneComponentProps<SceneTabs>) => {

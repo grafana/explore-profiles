@@ -42,6 +42,7 @@ interface SceneTimeSeriesGridState extends EmbeddedSceneState {
     error: Error | null;
   };
   hideNoData: boolean;
+  $data: SceneQueryRunner;
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
@@ -73,15 +74,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     super({
       key,
       dataSource,
-      $data: new SceneQueryRunner({
-        datasource: dataSource,
-        queries: [
-          {
-            refId: `${dataSource.type}-${key}`,
-            queryType: 'metrics',
-          },
-        ],
-      }),
       items: {
         data: [],
         isLoading: true,
@@ -102,6 +94,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         ],
         children: [],
       }),
+      $data: new SceneQueryRunner({
+        datasource: dataSource,
+        queries: [],
+      }),
     });
 
     this.addActivationHandler(() => {
@@ -109,7 +105,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const layoutChangeSub = this.initLayoutChange();
       const hideNoDataSub = this.initHideNoDataChange();
 
-      const itemsLoadingSub = this.subscribeToItemsLoading();
+      const itemsLoadingSub = this.initLoadItems();
 
       return () => {
         itemsLoadingSub.unsubscribe();
@@ -120,7 +116,20 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     });
   }
 
-  subscribeToItemsLoading() {
+  initLoadItems() {
+    // we postpone setting $data in order to be able to interpolate the values passed to the query (serviceName, profileMetricId)
+    // see src/pages/ProfilesExplorerView/data/LabelsDataSource.ts
+    this.state.$data.setState({
+      queries: [
+        {
+          refId: `${this.state.dataSource.type}-${this.state.key}`,
+          queryType: 'metrics',
+          serviceName: '$serviceName',
+          profileMetricId: '$profileMetricId',
+        },
+      ],
+    });
+
     let sub: Unsubscribable;
 
     // start of hack, for a better UX: once we've received the list of items, we unsubscribe from further changes and we "hook into" the

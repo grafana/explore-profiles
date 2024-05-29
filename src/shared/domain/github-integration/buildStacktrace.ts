@@ -1,4 +1,4 @@
-import { StackTrace } from '../components/FunctionDetailsPanel/types/StackTrace';
+import { StackTrace } from '@shared/components/FunctionDetailsPanel/types/StackTrace';
 
 export function buildStacktrace(levelItem: any, data: any): StackTrace {
   const labels: string[] = data.fields.find(({ name }: { name: string }) => name === 'label')?.values || [];
