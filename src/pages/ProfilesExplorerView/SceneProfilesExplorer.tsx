@@ -190,8 +190,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables: [new ProfilesDataSourceVariable({}), ...variables],
       }),
     });
-
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.setState({ searchText: '' });
   }
 
   buildScene(explorationType: ExplorationType, initialBodyState: Record<string, any> = {}) {
@@ -246,6 +244,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   onChangeExplorationType = (explorationType: ExplorationType) => {
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.setState({ searchText: '' });
+
     this.setExplorationType(explorationType);
   };
 

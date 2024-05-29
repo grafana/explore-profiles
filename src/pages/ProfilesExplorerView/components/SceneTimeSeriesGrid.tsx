@@ -96,7 +96,14 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }),
       $data: new SceneQueryRunner({
         datasource: dataSource,
-        queries: [],
+        queries: [
+          {
+            refId: `${dataSource.type}-${key}`,
+            queryType: 'metrics',
+            serviceName: '$serviceName',
+            profileMetricId: '$profileMetricId',
+          },
+        ],
       }),
     });
 
@@ -117,23 +124,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   }
 
   initLoadItems() {
-    // we postpone setting $data in order to be able to interpolate the values passed to the query (serviceName, profileMetricId)
-    // see src/pages/ProfilesExplorerView/data/LabelsDataSource.ts
-    this.state.$data.setState({
-      queries: [
-        {
-          refId: `${this.state.dataSource.type}-${this.state.key}`,
-          queryType: 'metrics',
-          serviceName: '$serviceName',
-          profileMetricId: '$profileMetricId',
-        },
-      ],
-    });
-
     let sub: Unsubscribable;
 
-    // start of hack, for a better UX: once we've received the list of items, we unsubscribe from further changes and we "hook into" the
-    // time range to allow the user to reload the list by clicking on the "Refresh" button
+    // start of hack, for a better UX: once we've received the list of items, we unsubscribe from further changes (see `LoadingState.Done` below) and we
+    // "hook into" the time range to allow the user to reload the list by clicking on the "Refresh" button
     // if we don't do this, every time the time range changes, all the timeseries present on the screen are re-created, resulting in blinking and a poor UX
     const $timeRange = sceneGraph.getTimeRange(this);
     const originalOnRefresh = $timeRange.onRefresh;
