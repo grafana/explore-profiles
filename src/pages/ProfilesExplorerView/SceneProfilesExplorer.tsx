@@ -183,8 +183,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     };
   }
 
-  setExplorationType(explorationType: ExplorationType, initialBodyState?: Record<string, any>) {
-    const { body, variables } = this.buildScene(explorationType, initialBodyState);
+  setExplorationType(explorationType: ExplorationType, initialState?: Record<string, any>) {
+    const { body, variables } = this.buildScene(explorationType, initialState);
 
     this.setState({
       explorationType,
@@ -195,14 +195,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
-  buildScene(explorationType: ExplorationType, initialBodyState: Record<string, any> = {}) {
+  buildScene(explorationType: ExplorationType, initialState: Record<string, any> = {}) {
     let primary;
     let variables: SceneVariable[];
 
     switch (explorationType) {
       case ExplorationType.SINGLE_SERVICE:
         primary = new SceneExploreSingleService();
-        variables = [new ServiceNameVariable({ value: initialBodyState.serviceName })];
+        variables = [new ServiceNameVariable({ value: initialState.serviceName })];
 
         (this.state.subControls[0] as SceneQuickFilter).setState({
           placeholder: 'Search profile metrics by name',
@@ -212,8 +212,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.SINGLE_SERVICE_DETAILS:
         primary = new SceneServiceDetails();
         variables = [
-          new ServiceNameVariable({ value: initialBodyState.serviceName }),
-          new ProfileMetricVariable({ value: initialBodyState.profileMetricId }),
+          new ServiceNameVariable({ value: initialState.serviceName }),
+          new ProfileMetricVariable({ value: initialState.profileMetricId }),
           // new QueryBuilderVariable({}),
         ];
         break;
@@ -230,7 +230,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.ALL_SERVICES:
       default:
         primary = new SceneExploreAllServices();
-        variables = [new ProfileMetricVariable({ value: initialBodyState.profileMetricId })];
+        variables = [new ProfileMetricVariable({ value: initialState.profileMetricId })];
 
         (this.state.subControls[0] as SceneQuickFilter).setState({
           placeholder: 'Search services by name',
@@ -247,9 +247,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   onChangeExplorationType = (explorationType: ExplorationType) => {
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.setState({ searchText: '' });
-
     this.setExplorationType(explorationType);
+
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.setState({ searchText: '' });
   };
 
   onClickShareLink = async () => {
