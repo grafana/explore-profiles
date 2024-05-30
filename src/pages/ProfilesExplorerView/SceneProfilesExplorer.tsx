@@ -134,27 +134,30 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   registerRuntimeDataSources() {
-    sceneUtils.registerRuntimeDataSource({
-      dataSource: new ServicesDataSource(PYROSCOPE_SERVICES_DATA_SOURCE.type, PYROSCOPE_SERVICES_DATA_SOURCE.uid),
-    });
+    // wrapped in a try-catch to prevent error when registered twice, which can easily happen if we go back & forth to the Profiles Explorer page
+    try {
+      sceneUtils.registerRuntimeDataSource({
+        dataSource: new ServicesDataSource(PYROSCOPE_SERVICES_DATA_SOURCE.type, PYROSCOPE_SERVICES_DATA_SOURCE.uid),
+      });
 
-    sceneUtils.registerRuntimeDataSource({
-      dataSource: new ProfileMetricsDataSource(
-        PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.type,
-        PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid
-      ),
-    });
+      sceneUtils.registerRuntimeDataSource({
+        dataSource: new ProfileMetricsDataSource(
+          PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.type,
+          PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid
+        ),
+      });
 
-    sceneUtils.registerRuntimeDataSource({
-      dataSource: new FavoritesDataSource(
-        PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.type,
-        PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid
-      ),
-    });
+      sceneUtils.registerRuntimeDataSource({
+        dataSource: new FavoritesDataSource(
+          PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.type,
+          PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid
+        ),
+      });
 
-    sceneUtils.registerRuntimeDataSource({
-      dataSource: new LabelsDataSource(PYROSCOPE_LABELS_DATA_SOURCE.type, PYROSCOPE_LABELS_DATA_SOURCE.uid),
-    });
+      sceneUtils.registerRuntimeDataSource({
+        dataSource: new LabelsDataSource(PYROSCOPE_LABELS_DATA_SOURCE.type, PYROSCOPE_LABELS_DATA_SOURCE.uid),
+      });
+    } catch {}
   }
 
   subscribeToEvents() {
