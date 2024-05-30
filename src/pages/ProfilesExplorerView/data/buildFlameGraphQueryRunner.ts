@@ -2,9 +2,11 @@ import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-source';
 
-type Params = {};
+type Params = {
+  maxNodes?: number;
+};
 
-export function buildFlameGraphQueryRunner({}: Params) {
+export function buildFlameGraphQueryRunner({ maxNodes }: Params) {
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [
@@ -13,6 +15,7 @@ export function buildFlameGraphQueryRunner({}: Params) {
         queryType: 'profile',
         profileTypeId: '$profileMetricId',
         labelSelector: `{service_name="$serviceName"}`,
+        maxNodes,
       },
     ],
   });

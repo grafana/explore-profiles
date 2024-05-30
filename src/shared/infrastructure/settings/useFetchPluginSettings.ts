@@ -22,8 +22,6 @@ export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResp
     enabled,
     queryKey: ['settings'],
     queryFn: () => {
-      settingsApiClient.abort();
-
       return settingsApiClient.get().then(
         (json) =>
           // provide defaults if any value comes null or undefined from the API (which can be the case ;))

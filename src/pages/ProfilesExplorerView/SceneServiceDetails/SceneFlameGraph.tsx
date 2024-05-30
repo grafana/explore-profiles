@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState } from '@grafana/data';
 import { FlameGraph } from '@grafana/flamegraph';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanel } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner, VizPanel } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
@@ -15,6 +15,7 @@ import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useEffect, useMemo } from 'react';
 
 import { buildFlameGraphQueryRunner } from '../data/buildFlameGraphQueryRunner';
+import { PYROSCOPE_DATA_SOURCE } from '../data/pyroscope-data-source';
 import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -28,7 +29,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     super({
       key: 'flame-graph',
       title: '',
-      $data: buildFlameGraphQueryRunner({}),
+      $data: new SceneQueryRunner({
+        datasource: PYROSCOPE_DATA_SOURCE,
+        queries: [],
+      }),
     });
 
     this.addActivationHandler(() => {
@@ -43,23 +47,34 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   useSceneFlameGraph = (): DomainHookReturnValue => {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
+    const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
+
+    useEffect(() => {
+      if (isFetchingSettingsError) {
+        displayWarning([
+          'Error while retrieving the plugin settings!',
+          'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
+        ]);
+      } else if (settings) {
+        this.setState({
+          $data: buildFlameGraphQueryRunner({ maxNodes: settings?.maxNodes }),
+        });
+      }
+    }, [isFetchingSettingsError, settings]);
 
     const { $data, title } = this.useState();
     const $dataState = $data!.useState();
-    const isFetchingProfileData = $dataState.data?.state === LoadingState.Loading;
-    const profileData = $dataState.data?.series[0];
+    const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
+    const profileData = $dataState?.data?.series[0];
     const hasProfileData = Number(profileData?.length) > 1;
-
-    const { isFetching: isFetchingSettings, error: fetchSettingsError, settings } = useFetchPluginSettings();
 
     return {
       data: {
         timeSeriesTitle: title,
-        isLoading: isFetchingSettings || isFetchingProfileData,
+        isLoading: isFetchingProfileData,
         isFetchingProfileData,
         hasProfileData,
         profileData,
-        fetchSettingsError,
         settings,
       },
       actions: {
@@ -75,12 +90,20 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { data, actions } = model.useSceneFlameGraph();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
-    if (data.fetchSettingsError) {
-      displayWarning([
-        'Error while retrieving the plugin settings!',
-        'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
-      ]);
-    }
+    useEffect(() => {
+      sidePanel.onOpen(() => {
+        // crazy hack to have both panels occupy properly 50% of their parent
+        // if not, the flame graph panel includes the table and a bit of the flame graph (?!) and the
+        // side panel goes out of the boundaries of the viewport
+        (document.querySelector('label[title="Only show flame graph"]') as HTMLElement)?.click();
+      });
+    }, [sidePanel]);
+
+    useEffect(() => {
+      if (data.isLoading) {
+        sidePanel.close();
+      }
+    }, [data.isLoading, sidePanel]);
 
     const panelTitle = useMemo(
       () => (
@@ -91,21 +114,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       ),
       [data.isLoading, data.timeSeriesTitle, styles.spinner]
     );
-
-    useEffect(() => {
-      if (data.isLoading) {
-        sidePanel.close();
-      }
-    }, [data.isLoading, sidePanel]);
-
-    useEffect(() => {
-      sidePanel.onOpen(() => {
-        // crazy hack to have both panels occupy properly 50% of their parent
-        // if not, the flame graph panel includes the table and a bit of the flame graph (?!) and the
-        // side panel goes out of the boundaries of the viewport
-        (document.querySelector('label[title="Only show flame graph"]') as HTMLElement)?.click();
-      });
-    }, [sidePanel]);
 
     return (
       <div className={styles.flex}>
