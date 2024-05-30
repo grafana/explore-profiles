@@ -1,11 +1,4 @@
-import {
-  DataQueryResponse,
-  FieldType,
-  LoadingState,
-  MetricFindValue,
-  shallowCompare,
-  TestDataSourceResponse,
-} from '@grafana/data';
+import { DataQueryResponse, FieldType, LoadingState, MetricFindValue, TestDataSourceResponse } from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { isEqual, omit } from 'lodash';
@@ -46,9 +39,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
 
     const favoriteForCompare = omit(favorite, 'color');
 
-    storage.favorites = storage.favorites.filter(
-      (f: Favorite) => !shallowCompare(omit(f, 'color'), favoriteForCompare)
-    );
+    storage.favorites = storage.favorites.filter((f: Favorite) => !isEqual(omit(f, 'color'), favoriteForCompare));
 
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
   }
