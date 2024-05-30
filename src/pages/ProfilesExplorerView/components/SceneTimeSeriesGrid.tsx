@@ -299,14 +299,12 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         .setOption('legend', { showLegend: true })
         .setData(data)
         .setOverrides((overrides) => {
-          queryRunnerParams.groupBy?.values?.forEach((labelValue: string, j: number) => {
+          data.state.queries.forEach(({ refId }, j: number) => {
+            // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
             overrides
-              .matchFieldsByQuery(
-                // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-                `${queryRunnerParams.serviceName}-${queryRunnerParams.profileMetricId}-${queryRunnerParams.groupBy.label}-${labelValue}`
-              )
+              .matchFieldsByQuery(refId)
               .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(i + j) })
-              .overrideDisplayName(labelValue);
+              .overrideDisplayName(refId.split('-').pop());
           });
         })
         .setColor({ mode: 'fixed', fixedColor: color })

@@ -85,17 +85,12 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       );
 
       const drawerContent = PanelBuilders.piechart()
-        .setTitle(`"${queryRunnerParams.groupBy.label}" breakdown`)
+        .setTitle(`"${queryRunnerParams.groupBy.label}" breakdown (${data.state.queries.length})`)
         .setData(data)
         .setOverrides((overrides) => {
-          // TODO: fix, it should come from the fresh values fetched in buildFreshGroupByData
-          queryRunnerParams.groupBy?.values?.forEach((labelValue: string) => {
-            overrides
-              .matchFieldsByQuery(
-                // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-                `${queryRunnerParams.serviceName}-${queryRunnerParams.profileMetricId}-${queryRunnerParams.groupBy.label}-${labelValue}`
-              )
-              .overrideDisplayName(labelValue);
+          data.state.queries.forEach(({ refId }) => {
+            // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
+            overrides.matchFieldsByQuery(refId).overrideDisplayName(refId.split('-').pop());
           });
         })
         .build();
