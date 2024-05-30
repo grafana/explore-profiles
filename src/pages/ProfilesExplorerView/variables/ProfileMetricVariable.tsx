@@ -3,7 +3,7 @@ import { Cascader, CascaderOption } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
 
-import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-source';
+import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-sources';
 
 type ProfileMetricOptions = Array<{
   value: string;

@@ -30,7 +30,7 @@ import {
   PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
   PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
   PYROSCOPE_SERVICES_DATA_SOURCE,
-} from './data/pyroscope-data-source';
+} from './data/pyroscope-data-sources';
 import { ServicesDataSource } from './data/ServicesDataSource';
 import { EventExplore } from './events/EventExplore';
 import { EventViewDetails } from './events/EventViewDetails';

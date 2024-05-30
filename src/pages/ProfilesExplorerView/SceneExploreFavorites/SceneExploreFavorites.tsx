@@ -7,7 +7,7 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
-import { PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-source';
+import { PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {}
 

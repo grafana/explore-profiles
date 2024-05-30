@@ -1,6 +1,6 @@
 import { SceneQueryRunner } from '@grafana/scenes';
 
-import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-source';
+import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-sources';
 
 type Params = {
   serviceName?: string;

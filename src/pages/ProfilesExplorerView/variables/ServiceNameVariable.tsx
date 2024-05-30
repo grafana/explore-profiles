@@ -3,7 +3,7 @@ import { Cascader } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
 import React, { useMemo } from 'react';
 
-import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-source';
+import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 
 export class ServiceNameVariable extends QueryVariable {
   constructor({ value }: { value?: string }) {

@@ -4,7 +4,7 @@ import React from 'react';
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
-import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-source';
+import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-sources';
 
 interface SceneExploreSingleServiceState extends EmbeddedSceneState {}
 

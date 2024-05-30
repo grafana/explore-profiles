@@ -8,7 +8,7 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
-import { PYROSCOPE_LABELS_DATA_SOURCE } from '../data/pyroscope-data-source';
+import { PYROSCOPE_LABELS_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { EventAddToFilters } from '../events/EventAddToFilters';
 import { EventSelectLabel } from '../events/EventSelectLabel';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';

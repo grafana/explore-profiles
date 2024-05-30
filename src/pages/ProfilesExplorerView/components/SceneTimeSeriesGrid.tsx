@@ -22,7 +22,7 @@ import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { getDataSourceError } from '../data/getDataSourceError';
-import { DataSourceDef } from '../data/pyroscope-data-source';
+import { DataSourceDef, PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
