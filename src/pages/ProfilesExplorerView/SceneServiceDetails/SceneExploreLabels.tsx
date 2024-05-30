@@ -1,7 +1,14 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Spinner, Stack, useStyles2 } from '@grafana/ui';
+import {
+  PanelBuilders,
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectState,
+  VizPanel,
+} from '@grafana/scenes';
+import { Drawer, Spinner, Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
@@ -11,12 +18,14 @@ import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { EventAddToFilters } from '../events/EventAddToFilters';
 import { EventSelectLabel } from '../events/EventSelectLabel';
+import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 
 interface SceneExploreLabelsState extends SceneObjectState {
   body: SceneTimeSeriesGrid;
   controls: SceneProfilesExplorerState['subControls'];
+  drawerContent?: VizPanel;
 }
 
 export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState> {
@@ -27,12 +36,14 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
         key: 'labels-grid',
         dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
         headerActions: (params) => [
-          new SelectAction({ eventClass: 'EventSelectLabel', params }),
-          new SelectAction({ eventClass: 'EventAddToFilters', params }),
+          new SelectAction({ EventClass: EventSelectLabel, params }),
+          new SelectAction({ EventClass: EventAddToFilters, params }),
+          new SelectAction({ EventClass: EventShowPieChart, params }),
           new FavAction({ params }),
         ],
       }),
       controls: [],
+      drawerContent: undefined,
     });
 
     this.addActivationHandler(() => {
@@ -63,8 +74,38 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       console.log('*** EventAddToFilters', event.payload);
     });
 
+    const showPieChartSub = this.subscribeToEvent(EventShowPieChart, async (event) => {
+      const queryRunnerParams = event.payload.params;
+      const timeRange = sceneGraph.getTimeRange(this).state.value;
+
+      const data = await SceneTimeSeriesGrid.buildFreshGroupByData(
+        queryRunnerParams,
+        timeRange,
+        Number.POSITIVE_INFINITY
+      );
+
+      const drawerContent = PanelBuilders.piechart()
+        .setTitle(`"${queryRunnerParams.groupBy.label}" breakdown`)
+        .setData(data)
+        .setOverrides((overrides) => {
+          // TODO: fix, it should come from the fresh values fetched in buildFreshGroupByData
+          queryRunnerParams.groupBy?.values?.forEach((labelValue: string) => {
+            overrides
+              .matchFieldsByQuery(
+                // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
+                `${queryRunnerParams.serviceName}-${queryRunnerParams.profileMetricId}-${queryRunnerParams.groupBy.label}-${labelValue}`
+              )
+              .overrideDisplayName(labelValue);
+          });
+        })
+        .build();
+
+      this.setState({ drawerContent });
+    });
+
     return {
       unsubscribe() {
+        showPieChartSub.unsubscribe();
         addToFiltersSub.unsubscribe();
         selectLabelSub.unsubscribe();
       },
@@ -74,7 +115,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
   static Component = ({ model }: SceneComponentProps<SceneExploreLabels>) => {
     const styles = useStyles2(getStyles);
 
-    const { body, controls } = model.useState();
+    const { body, controls, drawerContent } = model.useState();
 
     const { $data } = body.useState();
     const $dataState = $data?.state;
@@ -98,6 +139,17 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
         </div>
 
         {<body.Component model={body} />}
+
+        {drawerContent && (
+          <Drawer
+            size="lg"
+            title={drawerContent.state.title}
+            closeOnMaskClick
+            onClose={() => model.setState({ drawerContent: undefined })}
+          >
+            <drawerContent.Component model={drawerContent} />
+          </Drawer>
+        )}
       </>
     );
   };

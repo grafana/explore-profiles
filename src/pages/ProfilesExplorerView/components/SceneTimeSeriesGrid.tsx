@@ -1,4 +1,4 @@
-import { DashboardCursorSync, dateTimeParse, LoadingState } from '@grafana/data';
+import { DashboardCursorSync, dateTimeParse, LoadingState, TimeRange } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -11,7 +11,6 @@ import {
   SceneObjectBase,
   SceneQueryRunner,
   VariableDependencyConfig,
-  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
@@ -283,7 +282,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy;
 
       // in case of the favorites grid with a groupBy param, we always update the label values so that the timeseries are up-to-date
-      // see refreshFavoriteData()
+      // see buildFreshGroupByData()
       const data: SceneQueryRunner = shouldRefreshFavoriteData
         ? new SceneQueryRunner({
             datasource: this.state.dataSource,
@@ -316,7 +315,17 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         .build();
 
       if (shouldRefreshFavoriteData) {
-        this.refreshFavoriteData(timeSeriesPanel, queryRunnerParams, gridItemKey);
+        setTimeout(async () => {
+          const timeRange = sceneGraph.getTimeRange(this).state.value;
+
+          const $data = await SceneTimeSeriesGrid.buildFreshGroupByData(queryRunnerParams, timeRange);
+
+          if (this.state.hideNoData) {
+            this.activateHideNoData($data, gridItemKey);
+          }
+
+          timeSeriesPanel.setState({ $data });
+        }, 0);
       }
 
       return new SceneCSSGridItem({
@@ -336,12 +345,17 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     });
   }
 
-  async refreshFavoriteData(timeSeriesPanel: VizPanel, queryRunnerParams: Record<string, any>, gridItemKey: string) {
+  // TOOD: move in data/folder?
+  static async buildFreshGroupByData(
+    queryRunnerParams: Record<string, any>,
+    timeRange: TimeRange,
+    maxLabelValues: number = LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+  ) {
     let labelValues;
 
     try {
       const { serviceName, profileMetricId } = queryRunnerParams;
-      const { from, to } = sceneGraph.getTimeRange(this).state;
+      const { from, to } = timeRange;
 
       labelValues = await LabelsDataSource.fetchLabelValues(
         queryRunnerParams.groupBy.label,
@@ -350,7 +364,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         dateTimeParse(to.valueOf()).unix() * 1000
       );
 
-      labelValues = labelValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES).map(({ value }) => value);
+      labelValues = labelValues.slice(0, maxLabelValues).map(({ value }) => value);
     } catch (error) {
       labelValues = queryRunnerParams.groupBy.values;
 
@@ -358,19 +372,13 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       console.error(error);
     }
 
-    const $data = buildTimeSeriesQueryRunner({
+    return buildTimeSeriesQueryRunner({
       ...queryRunnerParams,
       groupBy: {
         label: queryRunnerParams.groupBy.label,
         values: labelValues,
       },
     });
-
-    if (this.state.hideNoData) {
-      this.activateHideNoData($data, gridItemKey);
-    }
-
-    timeSeriesPanel.setState({ $data });
   }
 
   activateHideNoData(data: SceneQueryRunner, gridItemKey: string) {
