@@ -1,4 +1,4 @@
-import { DashboardCursorSync, LoadingState } from '@grafana/data';
+import { DashboardCursorSync, dateTimeParse, LoadingState } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -11,6 +11,7 @@ import {
   SceneObjectBase,
   SceneQueryRunner,
   VariableDependencyConfig,
+  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
@@ -22,6 +23,7 @@ import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { getDataSourceError } from '../data/getDataSourceError';
+import { LabelsDataSource } from '../data/LabelsDataSource';
 import { DataSourceDef, PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
@@ -237,13 +239,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     return noDataSwitcherScene.subscribeToState(onChangeState);
   }
 
-  updateItems(items: SceneTimeSeriesGridState['items']) {
-    this.setState({ items });
-
-    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-    this.updateGridItems(this.filterItems(quickFilterScene.state.searchText, items));
-  }
-
   filterItems(searchText: string, optionalItems?: SceneTimeSeriesGridState['items']) {
     const items = optionalItems || this.state.items;
 
@@ -265,58 +260,70 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     };
   }
 
+  updateItems(items: SceneTimeSeriesGridState['items']) {
+    this.setState({ items });
+
+    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    this.updateGridItems(this.filterItems(quickFilterScene.state.searchText, items));
+  }
+
   // eslint-disable-next-line sonarjs/cognitive-complexity
   updateGridItems(items: SceneTimeSeriesGridState['items']) {
     const gridItems = items.data.map((item, i) => {
-      const gridItemKey = `grid-item-${item.value}`;
-      const color = item.color || getColorByIndex(i);
-
       const { queryRunnerParams } = item;
-      const actionParams = { ...queryRunnerParams, color };
+      const color = item.color || getColorByIndex(i);
+      const gridItemKey = `grid-item-${item.value}`;
 
-      const data = buildTimeSeriesQueryRunner(queryRunnerParams);
+      const shouldRefreshFavoriteData =
+        this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy;
 
-      if (this.state.hideNoData) {
-        this._subs.add(
-          data.subscribeToState((state) => {
-            if (state.data?.state === LoadingState.Done && !state.data.series.length) {
-              const gridItem = sceneGraph.getAncestor(data, SceneCSSGridItem);
-              const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
-              const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
-
-              if (filteredChildren.length) {
-                grid.setState({ children: filteredChildren });
-              } else {
-                this.renderEmptyState();
-              }
-            }
+      // in case of the favorites grid with a groupBy param, we always update the label values (see refreshFavoriteData())
+      // so that the timeseries are up-to-date
+      let data: SceneQueryRunner = shouldRefreshFavoriteData
+        ? new SceneQueryRunner({
+            datasource: this.state.dataSource,
+            queries: [],
           })
-        );
+        : buildTimeSeriesQueryRunner(queryRunnerParams);
+
+      if (!shouldRefreshFavoriteData && this.state.hideNoData) {
+        this.activateHideNoData(data, gridItemKey);
+      }
+
+      const timeSeriesPanel = PanelBuilders.timeseries()
+        .setTitle(item.label)
+        .setOption('legend', { showLegend: true })
+        .setData(data)
+        .setOverrides((overrides) => {
+          queryRunnerParams.groupBy?.values?.forEach((labelValue: string, j: number) => {
+            overrides
+              .matchFieldsByQuery(
+                `${queryRunnerParams.serviceName}-${queryRunnerParams.profileMetricId}-${queryRunnerParams.groupBy.label}-${labelValue}`
+              )
+              .overrideColor({
+                mode: 'fixed',
+                fixedColor: getColorByIndex(i + j),
+              })
+              .overrideDisplayName(labelValue);
+          });
+        })
+        .setColor({ mode: 'fixed', fixedColor: color })
+        .setCustomFieldConfig('fillOpacity', 9)
+        .setHeaderActions(
+          this.state.headerActions({
+            ...queryRunnerParams,
+            color,
+          })
+        )
+        .build();
+
+      if (shouldRefreshFavoriteData) {
+        this.refreshFavoriteData(timeSeriesPanel, queryRunnerParams, gridItemKey);
       }
 
       return new SceneCSSGridItem({
         key: gridItemKey,
-        body: PanelBuilders.timeseries()
-          .setTitle(item.label)
-          .setOption('legend', { showLegend: true })
-          .setData(data)
-          .setOverrides((overrides) => {
-            queryRunnerParams.groupBy?.values?.forEach((labelValue: string, j: number) => {
-              overrides
-                .matchFieldsByQuery(
-                  `${queryRunnerParams.serviceName}-${queryRunnerParams.profileMetricId}-${queryRunnerParams.groupBy.label}-${labelValue}`
-                )
-                .overrideColor({
-                  mode: 'fixed',
-                  fixedColor: getColorByIndex(i + j),
-                })
-                .overrideDisplayName(labelValue);
-            });
-          })
-          .setColor({ mode: 'fixed', fixedColor: color })
-          .setCustomFieldConfig('fillOpacity', 9)
-          .setHeaderActions(this.state.headerActions(actionParams))
-          .build(),
+        body: timeSeriesPanel,
       });
     });
 
@@ -329,6 +336,61 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       autoRows: GRID_AUTO_ROWS,
       children: gridItems,
     });
+  }
+
+  async refreshFavoriteData(timeSeriesPanel: VizPanel, queryRunnerParams: Record<string, any>, gridItemKey: string) {
+    let labelValues;
+
+    try {
+      const { serviceName, profileMetricId } = queryRunnerParams;
+      const { from, to } = sceneGraph.getTimeRange(this).state;
+
+      labelValues = await LabelsDataSource.fetchLabelValues(
+        queryRunnerParams.groupBy.label,
+        LabelsDataSource.buildPyroscopeQuery({ serviceName, profileMetricId }),
+        dateTimeParse(from.valueOf()).unix() * 1000,
+        dateTimeParse(to.valueOf()).unix() * 1000
+      );
+
+      labelValues = labelValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES).map(({ value }) => value);
+    } catch (error) {
+      labelValues = queryRunnerParams.groupBy.values;
+
+      console.error('Error while refreshing data!', queryRunnerParams);
+      console.error(error);
+    }
+
+    const $data = buildTimeSeriesQueryRunner({
+      ...queryRunnerParams,
+      groupBy: {
+        label: queryRunnerParams.groupBy.label,
+        values: labelValues,
+      },
+    });
+
+    if (this.state.hideNoData) {
+      this.activateHideNoData($data, gridItemKey);
+    }
+
+    timeSeriesPanel.setState({ $data });
+  }
+
+  activateHideNoData(data: SceneQueryRunner, gridItemKey: string) {
+    this._subs.add(
+      data.subscribeToState((state) => {
+        if (state.data?.state === LoadingState.Done && !state.data.series.length) {
+          const gridItem = sceneGraph.getAncestor(data, SceneCSSGridItem);
+          const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
+          const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
+
+          if (filteredChildren.length) {
+            grid.setState({ children: filteredChildren });
+          } else {
+            this.renderEmptyState();
+          }
+        }
+      })
+    );
   }
 
   renderEmptyState() {

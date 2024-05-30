@@ -23,6 +23,10 @@ export class LabelsDataSource extends RuntimeDataSource {
     return `${profileMetricId}{service_name="${serviceName}"}`;
   }
 
+  static fetchLabelValues(labelId: string, query: string, from: number, to: number) {
+    return labelsRepository.listLabelValues(labelId, query, from, to);
+  }
+
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
     const queryRunner = (request.scopedVars.__sceneObject as ScopedVar).value;
 
@@ -49,7 +53,7 @@ export class LabelsDataSource extends RuntimeDataSource {
 
     const labelsWithCounts = await Promise.all(
       labels.map(async ({ value, text }) => {
-        const labelValues = await labelsRepository.listLabelValues(value as string, pyroscopeQuery, from, to);
+        const labelValues = await LabelsDataSource.fetchLabelValues(value as string, pyroscopeQuery, from, to);
         return {
           value,
           text,
