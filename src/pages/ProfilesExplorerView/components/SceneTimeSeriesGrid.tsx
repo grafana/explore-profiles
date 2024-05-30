@@ -118,6 +118,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
 
       return () => {
         itemsLoadingSub.unsubscribe();
+
         hideNoDataSub.unsubscribe();
         layoutChangeSub.unsubscribe();
         quickFilterSub.unsubscribe();
@@ -129,15 +130,22 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     let sub: Unsubscribable;
 
     // start of hack, for a better UX: once we've received the list of items, we unsubscribe from further changes (see `LoadingState.Done` below) and we
-    // "hook into" the time range to allow the user to reload the list by clicking on the "Refresh" button
-    // if we don't do this, every time the time range changes, all the timeseries present on the screen are re-created, resulting in blinking and a poor UX
-    const $timeRange = sceneGraph.getTimeRange(this);
-    const originalOnRefresh = $timeRange.onRefresh;
+    // allow the user to reload the list only by clicking on the "Refresh" button
+    // if we don't do this, every time the time range changes (even with auto-refresh on), all the timeseries present on the screen are re-created,
+    // resulting in blinking and a poor UX
+    const refreshButton = document.querySelector(
+      '[data-testid="data-testid RefreshPicker run button"]'
+    ) as HTMLButtonElement;
 
-    $timeRange.onRefresh = (...args) => {
+    if (!refreshButton) {
+      console.error('SceneTimeSeriesGrid: Refresh button not found! The list of items will never be updated.');
+    }
+
+    const onClickRefresh = () => {
       sub = this.state.$data!.subscribeToState(onChangeState);
-      originalOnRefresh(...args);
     };
+
+    refreshButton?.addEventListener('click', onClickRefresh);
     // end of hack
 
     const onChangeState = (newState: SceneDataProvider['state']) => {
@@ -153,17 +161,14 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           isLoading: false,
           error: getDataSourceError(errors),
         });
-
         return;
       }
 
       if (state === LoadingState.Done) {
         sub.unsubscribe();
 
-        const { values } = series[0].fields[0];
-
         this.updateItems({
-          data: values,
+          data: series[0].fields[0].values,
           isLoading: false,
           error: null,
         });
@@ -174,7 +179,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
 
     return {
       unsubscribe() {
-        $timeRange.onRefresh = originalOnRefresh;
+        refreshButton?.removeEventListener('click', onClickRefresh);
         sub.unsubscribe();
       },
     };
@@ -270,16 +275,16 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   // eslint-disable-next-line sonarjs/cognitive-complexity
   updateGridItems(items: SceneTimeSeriesGridState['items']) {
     const gridItems = items.data.map((item, i) => {
-      const { queryRunnerParams } = item;
-      const color = item.color || getColorByIndex(i);
       const gridItemKey = `grid-item-${item.value}`;
+      const color = item.color || getColorByIndex(i);
+      const { queryRunnerParams } = item;
 
       const shouldRefreshFavoriteData =
         this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy;
 
-      // in case of the favorites grid with a groupBy param, we always update the label values (see refreshFavoriteData())
-      // so that the timeseries are up-to-date
-      let data: SceneQueryRunner = shouldRefreshFavoriteData
+      // in case of the favorites grid with a groupBy param, we always update the label values so that the timeseries are up-to-date
+      // see refreshFavoriteData()
+      const data: SceneQueryRunner = shouldRefreshFavoriteData
         ? new SceneQueryRunner({
             datasource: this.state.dataSource,
             queries: [],
@@ -298,23 +303,16 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           queryRunnerParams.groupBy?.values?.forEach((labelValue: string, j: number) => {
             overrides
               .matchFieldsByQuery(
+                // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
                 `${queryRunnerParams.serviceName}-${queryRunnerParams.profileMetricId}-${queryRunnerParams.groupBy.label}-${labelValue}`
               )
-              .overrideColor({
-                mode: 'fixed',
-                fixedColor: getColorByIndex(i + j),
-              })
+              .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(i + j) })
               .overrideDisplayName(labelValue);
           });
         })
         .setColor({ mode: 'fixed', fixedColor: color })
         .setCustomFieldConfig('fillOpacity', 9)
-        .setHeaderActions(
-          this.state.headerActions({
-            ...queryRunnerParams,
-            color,
-          })
-        )
+        .setHeaderActions(this.state.headerActions({ ...queryRunnerParams, color }))
         .build();
 
       if (shouldRefreshFavoriteData) {
@@ -333,8 +331,8 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     }
 
     (this.state.body as SceneCSSGridLayout).setState({
-      autoRows: GRID_AUTO_ROWS,
       children: gridItems,
+      autoRows: GRID_AUTO_ROWS, // required to have the correct grid items height
     });
   }
 

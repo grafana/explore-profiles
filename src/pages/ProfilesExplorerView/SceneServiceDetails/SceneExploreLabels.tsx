@@ -42,7 +42,9 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
         controls: (findSceneObjectByClass(this, SceneProfilesExplorer) as SceneProfilesExplorer).state.subControls,
       });
 
-      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setState({ placeholder: 'Search labels' });
+      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setState({
+        placeholder: 'Search labels (comma-separated regexes are supported)',
+      });
 
       const eventsSub = this.subscribeToEvents();
 

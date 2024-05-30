@@ -205,7 +205,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables = [new ServiceNameVariable({ value: initialState.serviceName })];
 
         (this.state.subControls[0] as SceneQuickFilter).setState({
-          placeholder: 'Search profile metrics by name',
+          placeholder: 'Search profile metrics (comma-separated regexes are supported)',
         });
         break;
 
@@ -223,7 +223,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables = [];
 
         (this.state.subControls[0] as SceneQuickFilter).setState({
-          placeholder: 'Search favorites',
+          placeholder: 'Search favorites (comma-separated regexes are supported)',
         });
         break;
 
@@ -233,7 +233,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables = [new ProfileMetricVariable({ value: initialState.profileMetricId })];
 
         (this.state.subControls[0] as SceneQuickFilter).setState({
-          placeholder: 'Search services by name',
+          placeholder: 'Search services  (comma-separated regexes are supported)',
         });
     }
 

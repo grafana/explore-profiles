@@ -49,8 +49,11 @@ export class FavoritesDataSource extends RuntimeDataSource {
 
     const values = favorites.map(({ value, text }) => {
       const f = value as unknown as Favorite;
+
       return {
-        value: `${f.serviceName}-${f.profileMetricId}`,
+        value: f.groupBy
+          ? `${f.serviceName}-${f.profileMetricId}-${f.groupBy.label}`
+          : `${f.serviceName}-${f.profileMetricId}`,
         label: text,
         color: f.color,
         queryRunnerParams: omit(f, 'color'),
