@@ -8,7 +8,7 @@ import {
 } from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
-import { omit } from 'lodash';
+import { isEqual, omit } from 'lodash';
 
 import { ProfileMetricsDataSource } from './ProfileMetricsDataSource';
 
@@ -16,7 +16,10 @@ export type Favorite = {
   serviceName: string;
   profileMetricId: string;
   color?: string;
-  groupBy?: string;
+  groupBy?: {
+    label: string;
+    values: string[];
+  };
 };
 
 export class FavoritesDataSource extends RuntimeDataSource {
@@ -25,7 +28,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
 
     return userStorage
       .get(userStorage.KEYS.PROFILES_EXPLORER)
-      ?.favorites?.some((f: Favorite) => shallowCompare(omit(f, 'color'), favoriteForCompare));
+      ?.favorites?.some((f: Favorite) => isEqual(omit(f, 'color'), favoriteForCompare));
   }
 
   static addFavorite(favorite: Favorite) {
@@ -93,7 +96,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
       return {
         value: f,
         text: f.groupBy
-          ? `${f.serviceName} · ${profileMetricLabel} · ${f.groupBy}`
+          ? `${f.serviceName} · ${profileMetricLabel} · ${f.groupBy.label}`
           : `${f.serviceName} · ${profileMetricLabel}`,
       };
     });

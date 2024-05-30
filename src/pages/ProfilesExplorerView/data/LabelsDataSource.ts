@@ -51,6 +51,7 @@ export class LabelsDataSource extends RuntimeDataSource {
         return {
           value,
           text,
+          labelValues,
           count: labelValues.length,
         };
       })
@@ -58,13 +59,16 @@ export class LabelsDataSource extends RuntimeDataSource {
 
     const values = labelsWithCounts
       .sort((a, b) => b.count - a.count)
-      .map(({ value, text, count }) => ({
+      .map(({ value, text, count, labelValues }) => ({
         value,
         label: `${text} (${count})`,
         queryRunnerParams: {
           serviceName,
           profileMetricId,
-          groupBy: value,
+          groupBy: {
+            label: value,
+            values: labelValues.map(({ value }) => value),
+          },
         },
       }));
 

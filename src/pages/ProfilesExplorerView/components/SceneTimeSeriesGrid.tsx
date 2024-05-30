@@ -270,9 +270,11 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     const gridItems = items.data.map((item, i) => {
       const gridItemKey = `grid-item-${item.value}`;
       const color = item.color || getColorByIndex(i);
-      const actionParams = { ...item.queryRunnerParams, color };
 
-      const data = buildTimeSeriesQueryRunner(item.queryRunnerParams);
+      const { queryRunnerParams } = item;
+      const actionParams = { ...queryRunnerParams, color };
+
+      const data = buildTimeSeriesQueryRunner(queryRunnerParams);
 
       if (this.state.hideNoData) {
         this._subs.add(
@@ -298,6 +300,19 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           .setTitle(item.label)
           .setOption('legend', { showLegend: true })
           .setData(data)
+          .setOverrides((overrides) => {
+            queryRunnerParams.groupBy?.values?.forEach((labelValue: string, j: number) => {
+              overrides
+                .matchFieldsByQuery(
+                  `${queryRunnerParams.serviceName}-${queryRunnerParams.profileMetricId}-${queryRunnerParams.groupBy.label}-${labelValue}`
+                )
+                .overrideColor({
+                  mode: 'fixed',
+                  fixedColor: getColorByIndex(i + j),
+                })
+                .overrideDisplayName(labelValue);
+            });
+          })
           .setColor({ mode: 'fixed', fixedColor: color })
           .setCustomFieldConfig('fillOpacity', 9)
           .setHeaderActions(this.state.headerActions(actionParams))

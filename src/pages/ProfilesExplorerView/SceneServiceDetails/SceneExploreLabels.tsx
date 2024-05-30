@@ -81,13 +81,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
 
     return (
       <>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <div className={styles.labelSelector}>
-            <pre>{JSON.stringify(labels)}</pre>
-          </div>
-        )}
+        {isLoading ? <Spinner /> : <div className={styles.labelSelector}>Label selector</div>}
 
         <div className={styles.sceneControls}>
           {controls.length ? (
