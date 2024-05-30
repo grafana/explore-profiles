@@ -17,6 +17,8 @@ import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure
 import { ProfileMetricsDataSource } from './ProfileMetricsDataSource';
 
 export class LabelsDataSource extends RuntimeDataSource {
+  static MAX_TIMESERIES_LABEL_VALUES = 10;
+
   static buildPyroscopeQuery({ serviceName, profileMetricId }: { serviceName: string; profileMetricId: string }) {
     return `${profileMetricId}{service_name="${serviceName}"}`;
   }
@@ -61,13 +63,16 @@ export class LabelsDataSource extends RuntimeDataSource {
       .sort((a, b) => b.count - a.count)
       .map(({ value, text, count, labelValues }) => ({
         value,
-        label: `${text} (${count})`,
+        label:
+          count > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+            ? `${text} (${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES}+)`
+            : `${text} (${count})`,
         queryRunnerParams: {
           serviceName,
           profileMetricId,
           groupBy: {
             label: value,
-            values: labelValues.map(({ value }) => value),
+            values: labelValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES).map(({ value }) => value),
           },
         },
       }));

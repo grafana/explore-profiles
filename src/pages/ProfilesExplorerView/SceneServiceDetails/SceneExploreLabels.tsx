@@ -79,6 +79,8 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     const isLoading = $dataState?.data?.state === LoadingState.Loading;
     const labels = $dataState.data?.series[0].fields[0].values;
 
+    console.log('*** labels', labels);
+
     return (
       <>
         {isLoading ? <Spinner /> : <div className={styles.labelSelector}>Label selector</div>}
