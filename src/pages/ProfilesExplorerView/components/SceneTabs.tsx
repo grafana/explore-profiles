@@ -70,7 +70,8 @@ export class SceneTabs extends SceneObjectBase<SceneTabsState> {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   tabContent: css`
-    padding: ${theme.spacing(1)};
+    padding: ${theme.spacing(2)};
+    ${theme.spacing(1)} 0 ${theme.spacing(1)};
     background: transparent;
   `,
 });

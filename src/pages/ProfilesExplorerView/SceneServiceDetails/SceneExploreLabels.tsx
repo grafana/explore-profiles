@@ -21,7 +21,7 @@ import { EventSelectLabel } from '../events/EventSelectLabel';
 import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
-import { LabelSelector } from './LabelSelector';
+import { GroupBySelector } from './GroupBySelector';
 
 interface SceneExploreLabelsState extends SceneObjectState {
   body: SceneTimeSeriesGrid;
@@ -131,7 +131,12 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
         {isLoading ? (
           <Spinner />
         ) : (
-          <LabelSelector options={labelOptions} mainAttributes={[]} onChange={model.onChangeLabel} />
+          <GroupBySelector
+            options={labelOptions}
+            // TODO: customize
+            mainLabels={labelOptions.slice(0, 8).map(({ value }) => value)}
+            onChange={model.onChangeLabel}
+          />
         )}
 
         <div className={styles.sceneControls}>
