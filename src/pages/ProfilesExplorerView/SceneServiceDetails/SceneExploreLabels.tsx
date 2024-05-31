@@ -9,7 +9,7 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import { Drawer, Spinner, Stack, useStyles2 } from '@grafana/ui';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
@@ -21,6 +21,7 @@ import { EventSelectLabel } from '../events/EventSelectLabel';
 import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
+import { LabelSelector } from './LabelSelector';
 
 interface SceneExploreLabelsState extends SceneObjectState {
   body: SceneTimeSeriesGrid;
@@ -107,6 +108,10 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     };
   }
 
+  onChangeLabel = (label: string) => {
+    console.log('*** onChangeLabel', label);
+  };
+
   static Component = ({ model }: SceneComponentProps<SceneExploreLabels>) => {
     const styles = useStyles2(getStyles);
 
@@ -115,13 +120,19 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     const { $data } = body.useState();
     const $dataState = $data?.state;
     const isLoading = $dataState?.data?.state === LoadingState.Loading;
-    const labels = $dataState.data?.series[0].fields[0].values;
 
-    console.log('*** labels', labels);
+    const labelOptions = useMemo(
+      () => $dataState.data?.series[0].fields[0].values?.map(({ label, value }) => ({ label, value })) || [],
+      [$dataState.data?.series]
+    );
 
     return (
       <>
-        {isLoading ? <Spinner /> : <div className={styles.labelSelector}>Label selector</div>}
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          <LabelSelector options={labelOptions} mainAttributes={[]} onChange={model.onChangeLabel} />
+        )}
 
         <div className={styles.sceneControls}>
           {controls.length ? (
@@ -151,9 +162,6 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  labelSelector: css`
-    margin-bottom: ${theme.spacing(1)};
-  `,
   sceneControls: css`
     padding: ${theme.spacing(1)} 0;
   `,

@@ -9,7 +9,7 @@ import {
 import { IconButton, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { FavoritesDataSource } from '../data/FavoritesDataSource';
+import { Favorite, FavoritesDataSource } from '../data/FavoritesDataSource';
 
 export interface FavActionState extends SceneObjectState {
   params: Record<string, any>;
@@ -51,12 +51,18 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   public onClick = () => {
     const { isFav, params } = this.state;
 
-    const favorite = {
+    const favorite: Favorite = {
       ...params,
       serviceName: params.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
       profileMetricId:
         params.profileMetricId || (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
     };
+
+    if (params.groupBy) {
+      // we don't store the label values with the favorite because we will always update them so that the timeseries are up-to-date
+      // (see src/pages/ProfilesExplorerView/components/SceneTimeSeriesGrid.tsx)
+      favorite.groupBy = { label: params.groupBy.label };
+    }
 
     if (!isFav) {
       FavoritesDataSource.addFavorite(favorite);

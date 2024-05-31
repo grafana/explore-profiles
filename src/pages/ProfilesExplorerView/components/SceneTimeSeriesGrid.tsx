@@ -1,4 +1,4 @@
-import { DashboardCursorSync, dateTimeParse, LoadingState, TimeRange } from '@grafana/data';
+import { DashboardCursorSync, dateTimeParse, FieldMatcherID, LoadingState, TimeRange } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -322,7 +322,20 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
             this.activateHideNoData($data, gridItemKey);
           }
 
-          timeSeriesPanel.setState({ $data });
+          timeSeriesPanel.setState({
+            $data,
+            fieldConfig: {
+              defaults: {},
+              // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
+              overrides: $data.state.queries.map(({ refId }, i) => ({
+                matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
+                properties: [
+                  { id: 'displayName', value: refId.split('-').pop() },
+                  { id: 'color', value: { mode: 'fixed', fixedColor: getColorByIndex(i) } },
+                ],
+              })),
+            },
+          });
         }, 0);
       }
 

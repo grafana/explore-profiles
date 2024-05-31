@@ -93,7 +93,7 @@ export function LabelSelector({ options, mainAttributes, value, onChange }: Prop
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
-    display: 'flex';
+    display: flex;
     gap: theme.spacing(1);
   `,
   select: css`

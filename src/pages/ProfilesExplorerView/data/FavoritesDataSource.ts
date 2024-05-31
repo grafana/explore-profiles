@@ -11,13 +11,13 @@ export type Favorite = {
   color?: string;
   groupBy?: {
     label: string;
-    values: string[];
+    values?: string[];
   };
 };
 
 export class FavoritesDataSource extends RuntimeDataSource {
   static exists(favorite: Favorite) {
-    const favoriteForCompare = omit(favorite, 'color');
+    const favoriteForCompare = omit(favorite, ['color', 'groupBy.values']);
 
     return userStorage
       .get(userStorage.KEYS.PROFILES_EXPLORER)
