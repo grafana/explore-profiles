@@ -21,7 +21,7 @@ const Events = new Map<EventContructor, { label: string; icon?: IconName }>([
   [EventViewDetails, { label: 'Details' }],
   [EventSelectLabel, { label: 'Select' }],
   [EventAddToFilters, { label: 'Add to filters' }],
-  [EventShowPieChart, { label: 'Show pie chart', icon: 'percentage' }],
+  [EventShowPieChart, { label: 'Show values breakdown', icon: 'percentage' }],
 ]);
 
 interface SelectActionState extends SceneObjectState {
@@ -70,8 +70,8 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
         name="percentage"
         variant="secondary"
         size="sm"
-        aria-label="Show pie chart"
-        tooltip="Show pie chart"
+        aria-label={label}
+        tooltip={label}
         tooltipPlacement="top"
         onClick={model.onClick}
       />
