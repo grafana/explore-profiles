@@ -1,7 +1,8 @@
-import { MultiValueVariable, QueryVariable, SceneComponentProps } from '@grafana/scenes';
+import { MultiValueVariable, QueryVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { Cascader, CascaderOption } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
+import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-sources';
 
@@ -31,6 +32,25 @@ export class ProfileMetricVariable extends QueryVariable {
 
     this.addActivationHandler(() => {
       this.setState({ value: initialValue });
+
+      // hack: should be handheld by ProfileMetricsDataSource? How?
+      const $timeRange = sceneGraph.getTimeRange(this);
+      const originalOnRefresh = $timeRange.onRefresh;
+
+      const onRefresh = async () => {
+        originalOnRefresh();
+
+        this.setState({
+          options: await lastValueFrom(this.getValueOptions({})),
+          loading: false,
+        });
+      };
+
+      $timeRange.onRefresh = onRefresh;
+
+      return () => {
+        $timeRange.onRefresh = originalOnRefresh;
+      };
     });
   }
 

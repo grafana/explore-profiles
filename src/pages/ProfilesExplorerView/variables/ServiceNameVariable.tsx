@@ -1,7 +1,8 @@
-import { MultiValueVariable, QueryVariable, SceneComponentProps } from '@grafana/scenes';
+import { MultiValueVariable, QueryVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { Cascader } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
 import React, { useMemo } from 'react';
+import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 
@@ -19,8 +20,29 @@ export class ServiceNameVariable extends QueryVariable {
 
     this.addActivationHandler(() => {
       this.setState({ value: initialValue });
+
+      // hack: should be handheld by ServicesDataSource? How?
+      const $timeRange = sceneGraph.getTimeRange(this);
+      const originalOnRefresh = $timeRange.onRefresh;
+
+      const onRefresh = async () => {
+        originalOnRefresh();
+
+        this.setState({
+          options: await lastValueFrom(this.getValueOptions({})),
+          loading: false,
+        });
+      };
+
+      $timeRange.onRefresh = onRefresh;
+
+      return () => {
+        $timeRange.onRefresh = originalOnRefresh;
+      };
     });
   }
+
+  initOnRefreshTimeRange() {}
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
     const { loading, value, options } = model.useState();
