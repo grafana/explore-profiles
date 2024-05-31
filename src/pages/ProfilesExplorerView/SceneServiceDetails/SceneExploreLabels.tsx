@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2, LoadingState } from '@grafana/data';
+import { GrafanaTheme2, LoadingState, SelectableValue } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -26,10 +26,16 @@ import { GroupBySelector } from './GroupBySelector';
 interface SceneExploreLabelsState extends SceneObjectState {
   body: SceneTimeSeriesGrid;
   controls: SceneProfilesExplorerState['subControls'];
-  drawerContent?: VizPanel;
+  drawer?: {
+    title: string;
+    content: VizPanel;
+  };
+  groupByValue: string;
 }
 
 export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState> {
+  static MAX_MAIN_GROUP_BY_LABELS = 8;
+
   constructor() {
     super({
       key: 'explore-labels',
@@ -44,7 +50,8 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
         ],
       }),
       controls: [],
-      drawerContent: undefined,
+      drawer: undefined,
+      groupByValue: 'all',
     });
 
     this.addActivationHandler(() => {
@@ -85,18 +92,20 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
         Number.POSITIVE_INFINITY
       );
 
-      const drawerContent = PanelBuilders.piechart()
-        .setTitle(`"${queryRunnerParams.groupBy.label}" breakdown (${data.state.queries.length})`)
-        .setData(data)
-        .setOverrides((overrides) => {
-          data.state.queries.forEach(({ refId }) => {
-            // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-            overrides.matchFieldsByQuery(refId).overrideDisplayName(refId.split('-').pop());
-          });
-        })
-        .build();
-
-      this.setState({ drawerContent });
+      this.setState({
+        drawer: {
+          title: `"${queryRunnerParams.groupBy.label}" breakdown (${data.state.queries.length})`,
+          content: PanelBuilders.piechart()
+            .setData(data)
+            .setOverrides((overrides) => {
+              data.state.queries.forEach(({ refId }) => {
+                // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
+                overrides.matchFieldsByQuery(refId).overrideDisplayName(refId.split('-').pop());
+              });
+            })
+            .build(),
+        },
+      });
     });
 
     return {
@@ -108,21 +117,29 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     };
   }
 
-  onChangeLabel = (label: string) => {
-    console.log('*** onChangeLabel', label);
+  onChangeLabel = (labelValue: string) => {
+    this.setState({ groupByValue: labelValue });
   };
+
+  getMainGroupByLabels(groupByOptions: Array<SelectableValue<string>>): string[] {
+    return groupByOptions.slice(0, SceneExploreLabels.MAX_MAIN_GROUP_BY_LABELS).map(({ value }) => value as string);
+  }
 
   static Component = ({ model }: SceneComponentProps<SceneExploreLabels>) => {
     const styles = useStyles2(getStyles);
 
-    const { body, controls, drawerContent } = model.useState();
+    const { body, controls, drawer, groupByValue } = model.useState();
 
     const { $data } = body.useState();
     const $dataState = $data?.state;
     const isLoading = $dataState?.data?.state === LoadingState.Loading;
 
-    const labelOptions = useMemo(
-      () => $dataState.data?.series[0].fields[0].values?.map(({ label, value }) => ({ label, value })) || [],
+    const groupByOptions = useMemo(
+      () =>
+        $dataState.data?.series[0].fields[0].values?.map(({ count, value }) => ({
+          label: `${value} (${count})`,
+          value,
+        })) || [],
       [$dataState.data?.series]
     );
 
@@ -132,9 +149,10 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
           <Spinner />
         ) : (
           <GroupBySelector
-            options={labelOptions}
+            options={groupByOptions}
+            value={groupByValue}
             // TODO: customize
-            mainLabels={labelOptions.slice(0, 8).map(({ value }) => value)}
+            mainLabels={model.getMainGroupByLabels(groupByOptions)}
             onChange={model.onChangeLabel}
           />
         )}
@@ -151,14 +169,9 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
 
         {<body.Component model={body} />}
 
-        {drawerContent && (
-          <Drawer
-            size="lg"
-            title={drawerContent.state.title}
-            closeOnMaskClick
-            onClose={() => model.setState({ drawerContent: undefined })}
-          >
-            <drawerContent.Component model={drawerContent} />
+        {drawer && (
+          <Drawer size="lg" title={drawer.title} closeOnMaskClick onClose={() => model.setState({ drawer: undefined })}>
+            <drawer.content.Component model={drawer.content} />
           </Drawer>
         )}
       </>

@@ -55,11 +55,11 @@ export function GroupBySelector({ options, mainLabels, value, onChange }: Props)
             />
             <Select
               className={styles.select}
-              value={value && otherOptions.some((x) => x.value === value) ? value : null} // remove value from select when radio button clicked
               placeholder="Other labels"
               options={otherOptions}
-              onChange={(selected) => onChange(selected?.value ?? 'All')}
-              isClearable={true}
+              value={value && otherOptions.some((x) => x.value === value) ? value : null} // remove value from select when radio button clicked
+              onChange={(selected) => onChange(selected?.value ?? 'all')}
+              isClearable
             />
           </>
         ) : (

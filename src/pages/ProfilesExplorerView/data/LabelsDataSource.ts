@@ -71,6 +71,7 @@ export class LabelsDataSource extends RuntimeDataSource {
           count > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
             ? `${text} (${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES}+)`
             : `${text} (${count})`,
+        count,
         queryRunnerParams: {
           serviceName,
           profileMetricId,
