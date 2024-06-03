@@ -1,3 +1,4 @@
+import { displayError } from '@shared/domain/displayStatus';
 import React from 'react';
 
 import { vcsClient } from '../../../../pages/SingleView/components/FunctionDetailsPanel/infrastructure/vcsClient';
@@ -33,6 +34,10 @@ export async function githubLogin(
   }
 
   // No session cookie exists, begin the complete login flow.
-  const clientId = await vcsClient.githubApp();
-  setExternalWindow(openLoginPopup(clientId, nonce));
+  try {
+    const clientId = await vcsClient.githubApp();
+    setExternalWindow(openLoginPopup(clientId, nonce));
+  } catch (e) {
+    displayError(e, ['Failed to start login flow.', (e as Error).message]);
+  }
 }
