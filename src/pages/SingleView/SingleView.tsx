@@ -6,6 +6,7 @@ import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
+import { useQueryAnalysis } from '@shared/components/QueryAnalysisTooltip/domain/useQueryAnalysis';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { SingleTimeline } from '@shared/components/Timeline/SingleTimeline';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
@@ -43,6 +44,7 @@ export function SingleView() {
   const sidePanel = useToggleSidePanel();
   const gitHubIntegration = useGitHubIntegration(sidePanel);
   const { data, actions } = useSingleView();
+  const { queryAnalysis, queriedSeriesInfoText } = useQueryAnalysis();
 
   if (data.fetchSettingsError) {
     displayWarning([
@@ -53,7 +55,7 @@ export function SingleView() {
 
   return (
     <>
-      <PageTitle title="Single view" />
+      <PageTitle title="Single view" queryAnalysis={queryAnalysis} />
 
       <Toolbar
         isLoading={data.isLoading}
@@ -73,7 +75,12 @@ export function SingleView() {
         onChangeQuery={actions.setQuery}
       />
 
-      <Panel title={data.title} isLoading={data.isLoading} dataTestId="timeline-panel">
+      <Panel
+        title={data.title}
+        description={queriedSeriesInfoText}
+        isLoading={data.isLoading}
+        dataTestId="timeline-panel"
+      >
         {data.fetchDataError && (
           <InlineBanner severity="error" title="Error while loading timeline data!" errors={[data.fetchDataError]} />
         )}
@@ -94,6 +101,7 @@ export function SingleView() {
         <Panel
           className={styles.flamegraphPanel}
           title={data.isLoading ? <Spinner /> : null}
+          description={queriedSeriesInfoText}
           isLoading={data.isLoading}
           headerActions={
             <AIButton

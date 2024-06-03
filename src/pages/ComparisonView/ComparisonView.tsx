@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
 import { Panel } from '@shared/components/Panel';
+import { useQueryAnalysis } from '@shared/components/QueryAnalysisTooltip/domain/useQueryAnalysis';
 import { DoubleTimeline } from '@shared/components/Timeline/DoubleTimeline';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
@@ -39,9 +40,11 @@ export function ComparisonView({ diff }: ComparisonDiffViewProps) {
   const [isLoadingDiff, setIsLoadingDiff] = useState<boolean>(false);
   const [showExplainFlameGraphButton, setShowExplainFlameGraphButton] = useState<boolean>(false);
 
+  const { queryAnalysis } = useQueryAnalysis();
+
   return (
     <>
-      <PageTitle title={diff ? 'Comparison diff view' : 'Comparison view'} />
+      <PageTitle title={diff ? 'Comparison diff view' : 'Comparison view'} queryAnalysis={queryAnalysis} />
 
       <Toolbar
         isLoading={data.isLoadingMain}

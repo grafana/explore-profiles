@@ -1,6 +1,8 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Stack, useStyles2 } from '@grafana/ui';
+import { QueryAnalysisResult } from '@shared/components/QueryAnalysisTooltip/domain/QueryAnalysis';
+import { QueryAnalysisTooltip } from '@shared/components/QueryAnalysisTooltip/QueryAnalysisTooltip';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import React, { memo, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
@@ -9,9 +11,10 @@ import { VersionInfoTooltip } from './VersionInfoTooltip';
 
 type PageTitleProps = {
   title: ReactNode;
+  queryAnalysis?: QueryAnalysisResult;
 };
 
-function PageTitleComponent({ title }: PageTitleProps) {
+function PageTitleComponent({ title, queryAnalysis }: PageTitleProps) {
   const styles = useStyles2(getStyles);
   const [query] = useQueryFromUrl();
   const fullTitle = typeof title === 'string' ? `${title} | ${query} | Pyroscope` : '...';
@@ -29,8 +32,9 @@ function PageTitleComponent({ title }: PageTitleProps) {
               {title}
             </h1>
           </div>
-          <div className={styles.versionInfo}>
+          <div className={styles.infoArea}>
             <VersionInfoTooltip />
+            {queryAnalysis ? <QueryAnalysisTooltip data={queryAnalysis} /> : <div>&nbsp;</div>}
           </div>
         </Stack>
       </div>
@@ -56,8 +60,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
     top: 10px;
     left: ${theme.spacing(1)};
   `,
-  versionInfo: css`
+  infoArea: css`
     align-self: end;
+    margin-bottom: 0;
+    line-height: 20px;
+    text-align: right;
   `,
 });
 
