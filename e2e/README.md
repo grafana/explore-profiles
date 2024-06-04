@@ -67,9 +67,9 @@ If you write tests that generate screenshots, please read the next section.
 
 ### Screenshots testing
 
-We have to launch Playwright in Docker in order to generate screenshots.
+When launching the tests locally, the screenshots generated are ignored by Git. They're just a convenience while developing.
 
-By doing so, we ensure that the screenshots generated always match the ones that will be generated during the CI build:
+In order to generate the correct screenshots that will always match the ones that will be generated during the CI build, **we have to launch Playwright in Docker**:
 
 ```shell
 yarn e2e:ci:server:up
@@ -81,7 +81,7 @@ yarn e2e:ci
 yarn e2e:ci:server:down
 ```
 
-The screenshots will be generated in subfolders within the [e2e/tests](./tests) folder, next to their corresponding tests.
+The screenshots are generated in subfolders within the [e2e/tests](./tests) folder, next to their corresponding tests. They can be commited to Git.
 
 ### Regenerating screenshots
 

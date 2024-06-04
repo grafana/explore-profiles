@@ -42,6 +42,15 @@ export class PyroscopePage {
     return this.page.getByTestId('page-title');
   }
 
+  async getQueryAnalysisSpan() {
+    const queryAnalysisTooltip = this.page.getByTestId('queryAnalysis-tooltip');
+    const queryAnalysisSpan = queryAnalysisTooltip.locator('span');
+
+    const slowExpect = expect.configure({ timeout: 10000 });
+    await slowExpect(queryAnalysisSpan).toBeVisible();
+    return queryAnalysisSpan;
+  }
+
   async assertNoLoadingPanels() {
     const slowExpect = expect.configure({ timeout: 10000 });
 
