@@ -1,18 +1,10 @@
 import { SceneQueryRunner } from '@grafana/scenes';
 
+import { TimeSeriesQueryRunnerParams } from '../types/TimeSeriesQueryRunnerParams';
 import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-sources';
 
-type Params = {
-  serviceName?: string;
-  profileMetricId?: string;
-  groupBy?: {
-    label: string;
-    values: string[];
-  };
-};
-
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export function buildTimeSeriesQueryRunner({ serviceName, profileMetricId, groupBy }: Params) {
+export function buildTimeSeriesQueryRunner({ serviceName, profileMetricId, groupBy }: TimeSeriesQueryRunnerParams) {
   let queries;
 
   if (!groupBy) {

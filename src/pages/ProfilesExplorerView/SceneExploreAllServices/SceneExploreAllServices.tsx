@@ -17,10 +17,10 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
       body: new SceneTimeSeriesGrid({
         key: 'all-services-grid',
         dataSource: PYROSCOPE_SERVICES_DATA_SOURCE,
-        headerActions: (params) => [
-          new SelectAction({ EventClass: EventExplore, params }),
-          new SelectAction({ EventClass: EventViewDetails, params }),
-          new FavAction({ params }),
+        headerActions: (item) => [
+          new SelectAction({ EventClass: EventExplore, item }),
+          new SelectAction({ EventClass: EventViewDetails, item }),
+          new FavAction({ item }),
         ],
       }),
     });

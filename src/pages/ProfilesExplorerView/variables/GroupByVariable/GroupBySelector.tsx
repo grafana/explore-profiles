@@ -33,7 +33,7 @@ export function GroupBySelector({ options, mainLabels, value, onChange }: Props)
   });
 
   const mainOptions = options.filter((o) => mainLabels.includes(o.value as string));
-  const otherOptions = options.filter((op) => !mainLabels.includes(op.value as string));
+  const otherOptions = options.filter((o) => !mainLabels.includes(o.value as string));
 
   useEffect(() => {
     const { fontSize } = theme.typography;
@@ -48,11 +48,7 @@ export function GroupBySelector({ options, mainLabels, value, onChange }: Props)
       <div ref={controlsContainer} className={styles.container}>
         {useHorizontalLabelSelector ? (
           <>
-            <RadioButtonGroup
-              options={[{ value: 'all', label: 'All' }, ...mainOptions]}
-              value={value}
-              onChange={onChange}
-            />
+            <RadioButtonGroup options={mainOptions} value={value} onChange={onChange} />
             <Select
               className={styles.select}
               placeholder="Other labels"

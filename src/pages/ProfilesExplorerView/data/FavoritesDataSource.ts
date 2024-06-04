@@ -1,27 +1,26 @@
 import { DataQueryResponse, FieldType, LoadingState, MetricFindValue, TestDataSourceResponse } from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
-import { isEqual, omit } from 'lodash';
+import { isEqual } from 'lodash';
 
 import { ProfileMetricsDataSource } from './ProfileMetricsDataSource';
 
 export type Favorite = {
-  serviceName: string;
-  profileMetricId: string;
-  color?: string;
-  groupBy?: {
-    label: string;
-    values?: string[];
+  queryRunnerParams: {
+    serviceName: string;
+    profileMetricId: string;
+    groupBy: {
+      label: string;
+    };
   };
+  index: number; // for colouring purpose only
 };
 
 export class FavoritesDataSource extends RuntimeDataSource {
-  static exists(favorite: Favorite) {
-    const favoriteForCompare = omit(favorite, ['color', 'groupBy.values']);
-
+  static exists(queryRunnerParams: Favorite['queryRunnerParams']) {
     return userStorage
       .get(userStorage.KEYS.PROFILES_EXPLORER)
-      ?.favorites?.some((f: Favorite) => isEqual(omit(f, 'color'), favoriteForCompare));
+      ?.favorites?.some((f: Favorite) => isEqual(f.queryRunnerParams, queryRunnerParams));
   }
 
   static addFavorite(favorite: Favorite) {
@@ -37,26 +36,27 @@ export class FavoritesDataSource extends RuntimeDataSource {
     const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
     storage.favorites ||= [];
 
-    const favoriteForCompare = omit(favorite, 'color');
+    const { queryRunnerParams } = favorite;
 
-    storage.favorites = storage.favorites.filter((f: Favorite) => !isEqual(omit(f, 'color'), favoriteForCompare));
+    storage.favorites = storage.favorites.filter((f: Favorite) => !isEqual(f.queryRunnerParams, queryRunnerParams));
 
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
   }
 
   async query(): Promise<DataQueryResponse> {
-    const favorites = await this.metricFindQuery();
+    const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
 
-    const values = favorites.map(({ value, text }) => {
-      const f = value as unknown as Favorite;
+    const values = favorites.map((f: Favorite) => {
+      const { serviceName, profileMetricId, groupBy } = f.queryRunnerParams;
+      const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId);
 
       return {
-        value: f.groupBy
-          ? `${f.serviceName}-${f.profileMetricId}-${f.groupBy.label}`
-          : `${f.serviceName}-${f.profileMetricId}`,
-        label: text,
-        color: f.color,
-        queryRunnerParams: omit(f, 'color'),
+        index: f.index,
+        value: groupBy ? `${serviceName}-${profileMetricId}-${groupBy.label}` : `${serviceName}-${profileMetricId}`,
+        label: groupBy
+          ? `${serviceName} · ${profileMetricLabel} · ${groupBy.label}`
+          : `${serviceName} · ${profileMetricLabel}`,
+        queryRunnerParams: f.queryRunnerParams,
       };
     });
 
@@ -70,9 +70,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
               name: null,
               type: FieldType.other,
               values,
-              config: {
-                queryRunnersParams: {},
-              },
+              config: {},
             },
           ],
           length: values.length,
@@ -85,13 +83,14 @@ export class FavoritesDataSource extends RuntimeDataSource {
     const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
 
     return favorites.map((f: Favorite) => {
-      const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(f.profileMetricId);
+      const { serviceName, profileMetricId, groupBy } = f.queryRunnerParams;
+      const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId);
 
       return {
         value: f,
-        text: f.groupBy
-          ? `${f.serviceName} · ${profileMetricLabel} · ${f.groupBy.label}`
-          : `${f.serviceName} · ${profileMetricLabel}`,
+        text: groupBy
+          ? `${serviceName} · ${profileMetricLabel} · ${groupBy.label}`
+          : `${serviceName} · ${profileMetricLabel}`,
       };
     });
   }

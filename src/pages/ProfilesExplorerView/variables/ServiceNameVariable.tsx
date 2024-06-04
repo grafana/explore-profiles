@@ -16,33 +16,30 @@ export class ServiceNameVariable extends QueryVariable {
       label: '🚀 Service',
       datasource: PYROSCOPE_SERVICES_DATA_SOURCE,
       query: 'list', // dummy query, can't be an empty string
+      loading: true,
     });
 
     this.addActivationHandler(() => {
       this.setState({ value: initialValue });
 
-      // hack: should be handheld by ServicesDataSource? How?
-      const $timeRange = sceneGraph.getTimeRange(this);
-      const originalOnRefresh = $timeRange.onRefresh;
+      const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
+        this.setState({ loading: true });
 
-      const onRefresh = async () => {
-        originalOnRefresh();
+        const options = await lastValueFrom(this.getValueOptions({}));
 
-        this.setState({
-          options: await lastValueFrom(this.getValueOptions({})),
-          loading: false,
-        });
-      };
+        this.setState({ loading: false, options });
 
-      $timeRange.onRefresh = onRefresh;
+        // empty string to show the user the previous value is not available anymore
+        const value = options.some(({ value }) => value === this.state.value) ? this.state.value : '';
+
+        this.changeValueTo(value, value);
+      });
 
       return () => {
-        $timeRange.onRefresh = originalOnRefresh;
+        sub.unsubscribe();
       };
     });
   }
-
-  initOnRefreshTimeRange() {}
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
     const { loading, value, options } = model.useState();

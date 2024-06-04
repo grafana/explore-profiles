@@ -1,57 +1,67 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2, LoadingState, SelectableValue } from '@grafana/data';
+import { GrafanaTheme2 } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
+  SceneVariableSet,
+  VariableDependencyConfig,
   VizPanel,
 } from '@grafana/scenes';
-import { Drawer, Spinner, Stack, useStyles2 } from '@grafana/ui';
-import React, { useMemo } from 'react';
+import { Drawer, Stack, useStyles2 } from '@grafana/ui';
+import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
+import { buildTimeSeriesGroupByQueryRunner } from '../data/buildTimeSeriesGroupByQueryRunner';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { EventAddToFilters } from '../events/EventAddToFilters';
 import { EventSelectLabel } from '../events/EventSelectLabel';
 import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
+import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
-import { GroupBySelector } from './GroupBySelector';
+import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 
 interface SceneExploreLabelsState extends SceneObjectState {
   body: SceneTimeSeriesGrid;
   controls: SceneProfilesExplorerState['subControls'];
-  drawer?: {
-    title: string;
-    content: VizPanel;
-  };
-  groupByValue: string;
+  drawerContent?: VizPanel;
+  drawerTitle?: string;
 }
 
 export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState> {
-  static MAX_MAIN_GROUP_BY_LABELS = 8;
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['serviceName', 'profileMetricId'],
+    onReferencedVariableValueChanged: () => {
+      // TODO: refresh data
+    },
+  });
 
   constructor() {
     super({
       key: 'explore-labels',
+      $variables: new SceneVariableSet({
+        variables: [new GroupByVariable({})],
+      }),
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
         dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
-        headerActions: (params) => [
-          new SelectAction({ EventClass: EventSelectLabel, params }),
-          new SelectAction({ EventClass: EventAddToFilters, params }),
-          new SelectAction({ EventClass: EventShowPieChart, params }),
-          new FavAction({ params }),
+        headerActions: (item) => [
+          item.queryRunnerParams.groupBy?.values.length
+            ? new SelectAction({ EventClass: EventSelectLabel, item })
+            : new SelectAction({ EventClass: EventAddToFilters, item }),
+          new SelectAction({ EventClass: EventShowPieChart, item }),
+          new FavAction({ item }),
         ],
       }),
       controls: [],
-      drawer: undefined,
-      groupByValue: 'all',
+      drawerContent: undefined,
+      drawerTitle: undefined,
     });
 
     this.addActivationHandler(() => {
@@ -75,36 +85,36 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
 
   subscribeToEvents() {
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
-      console.log('*** EventSelectLabel', event.payload);
+      const [groupByVariable] = this.state.$variables!.state.variables || [];
+
+      const newValue = event.payload.item.queryRunnerParams!.groupBy!.label;
+      (groupByVariable as GroupByVariable).changeValueTo(newValue, newValue);
     });
 
     const addToFiltersSub = this.subscribeToEvent(EventAddToFilters, (event) => {
-      console.log('*** EventAddToFilters', event.payload);
+      console.log('*** SceneExploreLabels EventAddToFilters', event.payload);
     });
 
     const showPieChartSub = this.subscribeToEvent(EventShowPieChart, async (event) => {
-      const queryRunnerParams = event.payload.params;
+      const { queryRunnerParams, index } = event.payload.item;
       const timeRange = sceneGraph.getTimeRange(this).state.value;
 
-      const data = await SceneTimeSeriesGrid.buildFreshGroupByData(
-        queryRunnerParams,
-        timeRange,
-        Number.POSITIVE_INFINITY
-      );
+      const data = await buildTimeSeriesGroupByQueryRunner(queryRunnerParams, timeRange, Number.POSITIVE_INFINITY);
 
       this.setState({
-        drawer: {
-          title: `"${queryRunnerParams.groupBy.label}" breakdown (${data.state.queries.length})`,
-          content: PanelBuilders.piechart()
-            .setData(data)
-            .setOverrides((overrides) => {
-              data.state.queries.forEach(({ refId }) => {
-                // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-                overrides.matchFieldsByQuery(refId).overrideDisplayName(refId.split('-').pop());
-              });
-            })
-            .build(),
-        },
+        drawerTitle: `"${queryRunnerParams.groupBy!.label}" breakdown (${data.state.queries.length})`,
+        drawerContent: PanelBuilders.piechart()
+          .setData(data)
+          .setOverrides((overrides) => {
+            data.state.queries.forEach(({ refId }, j) => {
+              // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
+              overrides
+                .matchFieldsByQuery(refId)
+                .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(index + j) })
+                .overrideDisplayName(refId.split('-').pop());
+            });
+          })
+          .build(),
       });
     });
 
@@ -117,45 +127,15 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     };
   }
 
-  onChangeLabel = (labelValue: string) => {
-    this.setState({ groupByValue: labelValue });
-  };
-
-  getMainGroupByLabels(groupByOptions: Array<SelectableValue<string>>): string[] {
-    return groupByOptions.slice(0, SceneExploreLabels.MAX_MAIN_GROUP_BY_LABELS).map(({ value }) => value as string);
-  }
-
   static Component = ({ model }: SceneComponentProps<SceneExploreLabels>) => {
     const styles = useStyles2(getStyles);
 
-    const { body, controls, drawer, groupByValue } = model.useState();
-
-    const { $data } = body.useState();
-    const $dataState = $data?.state;
-    const isLoading = $dataState?.data?.state === LoadingState.Loading;
-
-    const groupByOptions = useMemo(
-      () =>
-        $dataState.data?.series[0].fields[0].values?.map(({ count, value }) => ({
-          label: `${value} (${count})`,
-          value,
-        })) || [],
-      [$dataState.data?.series]
-    );
+    const { body, controls, drawerContent, drawerTitle, $variables } = model.useState();
+    const [groupByVariable] = $variables?.state.variables || [];
 
     return (
       <>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <GroupBySelector
-            options={groupByOptions}
-            value={groupByValue}
-            // TODO: customize
-            mainLabels={model.getMainGroupByLabels(groupByOptions)}
-            onChange={model.onChangeLabel}
-          />
-        )}
+        <groupByVariable.Component model={groupByVariable} />
 
         <div className={styles.sceneControls}>
           {controls.length ? (
@@ -169,9 +149,14 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
 
         {<body.Component model={body} />}
 
-        {drawer && (
-          <Drawer size="lg" title={drawer.title} closeOnMaskClick onClose={() => model.setState({ drawer: undefined })}>
-            <drawer.content.Component model={drawer.content} />
+        {drawerContent && (
+          <Drawer
+            size="lg"
+            title={drawerTitle}
+            closeOnMaskClick
+            onClose={() => model.setState({ drawerContent: undefined, drawerTitle: undefined })}
+          >
+            <drawerContent.Component model={drawerContent} />
           </Drawer>
         )}
       </>

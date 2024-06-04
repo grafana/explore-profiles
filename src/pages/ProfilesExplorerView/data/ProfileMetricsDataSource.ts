@@ -28,7 +28,8 @@ export class ProfileMetricsDataSource extends RuntimeDataSource {
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
     const profileMetrics = await this.metricFindQuery('list', { range: request.range });
 
-    const values = profileMetrics.map(({ value, text }) => ({
+    const values = profileMetrics.map(({ value, text }, index) => ({
+      index,
       value,
       label: text,
       queryRunnerParams: {
@@ -43,7 +44,7 @@ export class ProfileMetricsDataSource extends RuntimeDataSource {
           name: 'ProfileMetrics',
           fields: [
             {
-              name: 'profileMetricId',
+              name: 'ProfileMetric',
               type: FieldType.other,
               values,
               config: {},

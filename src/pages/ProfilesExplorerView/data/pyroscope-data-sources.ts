@@ -8,6 +8,8 @@ export const PYROSCOPE_DATA_SOURCE: DataSourceDef = Object.freeze({
   uid: '$dataSource', // interpolated variable
 });
 
+/* Runtime data sources */
+
 export const PYROSCOPE_SERVICES_DATA_SOURCE: DataSourceDef = Object.freeze({
   type: 'pyroscope-services-datasource',
   uid: 'pyroscope-services-datasource',

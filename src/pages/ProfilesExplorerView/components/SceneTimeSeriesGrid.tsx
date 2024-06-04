@@ -1,4 +1,4 @@
-import { DashboardCursorSync, dateTimeParse, FieldMatcherID, LoadingState, TimeRange } from '@grafana/data';
+import { DashboardCursorSync, FieldMatcherID, LoadingState } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -18,27 +18,23 @@ import { debounce } from 'lodash';
 import React from 'react';
 import { Unsubscribable } from 'rxjs';
 
-import { EmptyStateScene } from '../components/EmptyState/EmptyStateScene';
-import { LayoutType, SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { buildTimeSeriesGroupByQueryRunner } from '../data/buildTimeSeriesGroupByQueryRunner';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { getDataSourceError } from '../data/getDataSourceError';
-import { LabelsDataSource } from '../data/LabelsDataSource';
 import { DataSourceDef, PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { GridItemData } from '../types/GridItemData';
+import { EmptyStateScene } from './EmptyState/EmptyStateScene';
+import { LayoutType, SceneLayoutSwitcher } from './SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
 import { SceneQuickFilter } from './SceneQuickFilter';
 
 interface SceneTimeSeriesGridState extends EmbeddedSceneState {
-  headerActions: (params: Record<string, any>) => VizPanelState['headerActions'];
+  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   dataSource: DataSourceDef;
   items: {
-    data: Array<{
-      label: string;
-      value: string;
-      queryRunnerParams: Record<string, any>;
-      color?: string;
-    }>;
+    data: GridItemData[];
     isLoading: boolean;
     error: Error | null;
   };
@@ -273,16 +269,15 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   updateGridItems(items: SceneTimeSeriesGridState['items']) {
-    const gridItems = items.data.map((item, i) => {
-      const gridItemKey = `grid-item-${item.value}`;
-      const color = item.color || getColorByIndex(i);
-      const { queryRunnerParams } = item;
+    const gridItems = items.data.map((item) => {
+      const { value, label, queryRunnerParams } = item;
+      const gridItemKey = `grid-item-${value}`;
 
       const shouldRefreshFavoriteData =
         this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy;
 
-      // in case of the favorites grid with a groupBy param, we always update the label values so that the timeseries are up-to-date
-      // see buildFreshGroupByData()
+      // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
+      // see buildTimeSeriesGroupByQueryRunner()
       const data: SceneQueryRunner = shouldRefreshFavoriteData
         ? new SceneQueryRunner({
             datasource: this.state.dataSource,
@@ -291,35 +286,35 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         : buildTimeSeriesQueryRunner(queryRunnerParams);
 
       if (!shouldRefreshFavoriteData && this.state.hideNoData) {
-        this.activateHideNoData(data, gridItemKey);
+        this.setupHideNoData(data, gridItemKey);
       }
 
       const timeSeriesPanel = PanelBuilders.timeseries()
-        .setTitle(item.label)
-        .setOption('legend', { showLegend: true })
+        .setTitle(label)
         .setData(data)
+        .setColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index) })
         .setOverrides((overrides) => {
-          data.state.queries.forEach(({ refId }, j: number) => {
-            // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-            overrides
-              .matchFieldsByQuery(refId)
-              .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(i + j) })
-              .overrideDisplayName(refId.split('-').pop());
-          });
+          if (data.state.queries.length > 1) {
+            data.state.queries.forEach(({ refId }, j: number) => {
+              // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
+              overrides
+                .matchFieldsByQuery(refId)
+                .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index + j) })
+                .overrideDisplayName(refId.split('-').pop());
+            });
+          }
         })
-        .setColor({ mode: 'fixed', fixedColor: color })
         .setCustomFieldConfig('fillOpacity', 9)
-        .setHeaderActions(this.state.headerActions({ ...queryRunnerParams, color }))
+        .setHeaderActions(this.state.headerActions(item))
         .build();
 
       if (shouldRefreshFavoriteData) {
         setTimeout(async () => {
           const timeRange = sceneGraph.getTimeRange(this).state.value;
-
-          const $data = await SceneTimeSeriesGrid.buildFreshGroupByData(queryRunnerParams, timeRange);
+          const $data = await buildTimeSeriesGroupByQueryRunner(queryRunnerParams, timeRange);
 
           if (this.state.hideNoData) {
-            this.activateHideNoData($data, gridItemKey);
+            this.setupHideNoData($data, gridItemKey);
           }
 
           timeSeriesPanel.setState({
@@ -327,11 +322,11 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
             fieldConfig: {
               defaults: {},
               // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-              overrides: $data.state.queries.map(({ refId }, i) => ({
+              overrides: $data.state.queries.map(({ refId }, j) => ({
                 matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
                 properties: [
                   { id: 'displayName', value: refId.split('-').pop() },
-                  { id: 'color', value: { mode: 'fixed', fixedColor: getColorByIndex(i) } },
+                  { id: 'color', value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + j) } },
                 ],
               })),
             },
@@ -356,43 +351,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     });
   }
 
-  // TOOD: move in data/folder?
-  static async buildFreshGroupByData(
-    queryRunnerParams: Record<string, any>,
-    timeRange: TimeRange,
-    maxLabelValues: number = LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
-  ) {
-    let labelValues;
-
-    try {
-      const { serviceName, profileMetricId } = queryRunnerParams;
-      const { from, to } = timeRange;
-
-      labelValues = await LabelsDataSource.fetchLabelValues(
-        queryRunnerParams.groupBy.label,
-        LabelsDataSource.buildPyroscopeQuery({ serviceName, profileMetricId }),
-        dateTimeParse(from.valueOf()).unix() * 1000,
-        dateTimeParse(to.valueOf()).unix() * 1000
-      );
-
-      labelValues = labelValues.slice(0, maxLabelValues).map(({ value }) => value);
-    } catch (error) {
-      labelValues = queryRunnerParams.groupBy.values;
-
-      console.error('Error while refreshing data!', queryRunnerParams);
-      console.error(error);
-    }
-
-    return buildTimeSeriesQueryRunner({
-      ...queryRunnerParams,
-      groupBy: {
-        label: queryRunnerParams.groupBy.label,
-        values: labelValues,
-      },
-    });
-  }
-
-  activateHideNoData(data: SceneQueryRunner, gridItemKey: string) {
+  setupHideNoData(data: SceneQueryRunner, gridItemKey: string) {
     this._subs.add(
       data.subscribeToState((state) => {
         if (state.data?.state === LoadingState.Done && !state.data.series.length) {

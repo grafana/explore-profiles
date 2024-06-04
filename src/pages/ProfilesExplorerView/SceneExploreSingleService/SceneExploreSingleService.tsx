@@ -16,10 +16,7 @@ export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingl
       body: new SceneTimeSeriesGrid({
         key: 'profile-metrics-grid',
         dataSource: PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
-        headerActions: (params) => [
-          new SelectAction({ EventClass: EventViewDetails, params }),
-          new FavAction({ params }),
-        ],
+        headerActions: (item) => [new SelectAction({ EventClass: EventViewDetails, item }), new FavAction({ item })],
       }),
     });
   }

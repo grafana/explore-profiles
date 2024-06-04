@@ -39,6 +39,7 @@ import { SceneExploreAllServices } from './SceneExploreAllServices/SceneExploreA
 import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
 import { SceneServiceDetails } from './SceneServiceDetails/SceneServiceDetails';
+import { GridItemData } from './types/GridItemData';
 import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from './variables/ServiceNameVariable';
@@ -162,17 +163,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   subscribeToEvents() {
     const exploreSub = this.subscribeToEvent(EventExplore, (event) => {
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE, { serviceName: event.payload.params.serviceName });
+      this.setExplorationType(ExplorationType.SINGLE_SERVICE, event.payload.item);
     });
 
     const selectSub = this.subscribeToEvent(EventViewDetails, (event) => {
-      const { serviceName, profileMetricId, color } = event.payload.params;
-
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE_DETAILS, {
-        serviceName,
-        profileMetricId,
-        color,
-      });
+      this.setExplorationType(ExplorationType.SINGLE_SERVICE_DETAILS, event.payload.item);
     });
 
     return {
@@ -183,8 +178,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     };
   }
 
-  setExplorationType(explorationType: ExplorationType, initialState?: Record<string, any>) {
-    const { body, variables } = this.buildScene(explorationType, initialState);
+  setExplorationType(explorationType: ExplorationType, dataItem?: GridItemData) {
+    const { body, variables } = this.buildScene(explorationType, dataItem);
 
     this.setState({
       explorationType,
@@ -195,14 +190,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
-  buildScene(explorationType: ExplorationType, initialState: Record<string, any> = {}) {
+  buildScene(explorationType: ExplorationType, dataItem?: GridItemData) {
     let primary;
     let variables: SceneVariable[];
 
     switch (explorationType) {
       case ExplorationType.SINGLE_SERVICE:
         primary = new SceneExploreSingleService();
-        variables = [new ServiceNameVariable({ value: initialState.serviceName })];
+        variables = [new ServiceNameVariable({ value: dataItem?.queryRunnerParams.serviceName })];
 
         (this.state.subControls[0] as SceneQuickFilter).setState({
           placeholder: 'Search profile metrics (comma-separated regexes are supported)',
@@ -210,10 +205,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.SINGLE_SERVICE_DETAILS:
-        primary = new SceneServiceDetails();
+        primary = new SceneServiceDetails({ item: dataItem });
         variables = [
-          new ServiceNameVariable({ value: initialState.serviceName }),
-          new ProfileMetricVariable({ value: initialState.profileMetricId }),
+          new ServiceNameVariable({ value: dataItem?.queryRunnerParams.serviceName }),
+          new ProfileMetricVariable({ value: dataItem?.queryRunnerParams.profileMetricId }),
           // new QueryBuilderVariable({}),
         ];
         break;
@@ -230,7 +225,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.ALL_SERVICES:
       default:
         primary = new SceneExploreAllServices();
-        variables = [new ProfileMetricVariable({ value: initialState.profileMetricId })];
+        variables = [new ProfileMetricVariable({ value: dataItem?.queryRunnerParams.profileMetricId })];
 
         (this.state.subControls[0] as SceneQuickFilter).setState({
           placeholder: 'Search services  (comma-separated regexes are supported)',

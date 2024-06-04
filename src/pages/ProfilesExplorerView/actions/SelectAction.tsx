@@ -8,6 +8,7 @@ import { EventExplore, EventExplorePayload } from '../events/EventExplore';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
 import { EventShowPieChart, EventShowPieChartPayload } from '../events/EventShowPieChart';
 import { EventViewDetails, EventViewDetailsPayload } from '../events/EventViewDetails';
+import { GridItemData } from '../types/GridItemData';
 
 type EventContructor =
   | (new (payload: EventExplorePayload) => EventExplore)
@@ -26,13 +27,13 @@ const Events = new Map<EventContructor, { label: string; icon?: IconName }>([
 
 interface SelectActionState extends SceneObjectState {
   EventClass: EventContructor;
-  params: Record<string, string>;
+  item: GridItemData;
   label: string;
   icon?: IconName;
 }
 
 export class SelectAction extends SceneObjectBase<SelectActionState> {
-  constructor({ EventClass, params }: { EventClass: EventContructor; params: SelectActionState['params'] }) {
+  constructor({ EventClass, item }: { EventClass: EventContructor; item: SelectActionState['item'] }) {
     const lookup = Events.get(EventClass);
     if (!lookup) {
       throw new TypeError(`Unknown event class "${EventClass}"!`);
@@ -40,7 +41,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
 
     const { label, icon } = lookup;
 
-    super({ EventClass, params, label, icon });
+    super({ EventClass, item, label, icon });
   }
 
   public onClick = () => {
@@ -48,14 +49,20 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   };
 
   buildEvent() {
-    const { EventClass, params } = this.state;
+    const { EventClass, item } = this.state;
+    const { queryRunnerParams } = item;
 
     return new EventClass({
-      params: {
-        ...params,
-        serviceName: params.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
-        profileMetricId:
-          params.profileMetricId || (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
+      item: {
+        ...item,
+        queryRunnerParams: {
+          ...queryRunnerParams,
+          serviceName:
+            queryRunnerParams.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
+          profileMetricId:
+            queryRunnerParams.profileMetricId ||
+            (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
+        },
       },
     });
   }

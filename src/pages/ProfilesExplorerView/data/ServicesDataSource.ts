@@ -29,7 +29,8 @@ export class ServicesDataSource extends RuntimeDataSource {
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
     const services = await this.metricFindQuery('list', { range: request.range });
 
-    const values = services.map(({ value, text }) => ({
+    const values = services.map(({ value, text }, index) => ({
+      index,
       value,
       label: text,
       queryRunnerParams: {

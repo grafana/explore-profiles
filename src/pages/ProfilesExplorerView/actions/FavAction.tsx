@@ -7,12 +7,15 @@ import {
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
+import { userStorage } from '@shared/infrastructure/userStorage';
+import { omit } from 'lodash';
 import React from 'react';
 
 import { Favorite, FavoritesDataSource } from '../data/FavoritesDataSource';
+import { GridItemData } from '../types/GridItemData';
 
 export interface FavActionState extends SceneObjectState {
-  params: Record<string, any>;
+  item: GridItemData;
   isFav?: boolean;
 }
 
@@ -33,36 +36,37 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   isStored() {
-    const { params } = this.state;
+    return FavoritesDataSource.exists(this.interpolateQueryRunnerVariables());
+  }
 
-    const favoriteForCompare = {
-      ...params,
-      serviceName: params.serviceName
-        ? params.serviceName
-        : (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
-      profileMetricId: params.profileMetricId
-        ? params.profileMetricId
-        : (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
-    };
+  interpolateQueryRunnerVariables() {
+    const { queryRunnerParams } = this.state.item;
 
-    return FavoritesDataSource.exists(favoriteForCompare);
+    return omit(
+      {
+        ...queryRunnerParams,
+        serviceName:
+          queryRunnerParams.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
+        profileMetricId:
+          queryRunnerParams.profileMetricId ||
+          (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
+      },
+      // we never store group by values because
+      // we always refetch the label values so that the timeseries are up-to-date
+      // see buildTimeSeriesGroupByQueryRunner()
+      'groupBy.values'
+    ) as Favorite['queryRunnerParams'];
   }
 
   public onClick = () => {
-    const { isFav, params } = this.state;
+    const { isFav, item } = this.state;
 
     const favorite: Favorite = {
-      ...params,
-      serviceName: params.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
-      profileMetricId:
-        params.profileMetricId || (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
+      queryRunnerParams: this.interpolateQueryRunnerVariables(),
+      index: item.index,
     };
 
-    if (params.groupBy) {
-      // we don't store the label values with the favorite because we will always update them so that the timeseries are up-to-date
-      // (see src/pages/ProfilesExplorerView/components/SceneTimeSeriesGrid.tsx)
-      favorite.groupBy = { label: params.groupBy.label };
-    }
+    console.log('*** onClick', userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites);
 
     if (!isFav) {
       FavoritesDataSource.addFavorite(favorite);

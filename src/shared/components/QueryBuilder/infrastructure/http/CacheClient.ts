@@ -3,7 +3,7 @@ type CacheKeyable = { toString(): string };
 export class CacheClient {
   store = new Map<string, any>();
 
-  static buildCacheKey(...args: CacheKeyable[]) {
+  static buildCacheKey(args: CacheKeyable[]) {
     let key = '';
     for (const arg of args) {
       key += String(arg);
@@ -11,14 +11,16 @@ export class CacheClient {
     return key;
   }
 
-  get(...args: CacheKeyable[]): any {
-    const cacheKey = CacheClient.buildCacheKey(...args);
-
-    return this.store.has(cacheKey) ? this.store.get(cacheKey) : null;
+  get(args: CacheKeyable[]): any {
+    return this.store.get(CacheClient.buildCacheKey(args));
   }
 
   // TODO: TTL?
   set(args: CacheKeyable[], data: any) {
-    this.store.set(CacheClient.buildCacheKey(...args), data);
+    this.store.set(CacheClient.buildCacheKey(args), data);
+  }
+
+  delete(args: CacheKeyable[]) {
+    this.store.delete(CacheClient.buildCacheKey(args));
   }
 }

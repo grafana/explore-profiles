@@ -1,7 +1,9 @@
 import { BusEventWithPayload } from '@grafana/data';
 
+import { GridItemData } from '../types/GridItemData';
+
 export interface EventSelectLabelPayload {
-  params: Record<string, any>;
+  item: GridItemData;
 }
 
 export class EventSelectLabel extends BusEventWithPayload<EventSelectLabelPayload> {
