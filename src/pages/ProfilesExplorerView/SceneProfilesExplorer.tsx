@@ -168,6 +168,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     const selectSub = this.subscribeToEvent(EventViewDetails, (event) => {
       this.setExplorationType(ExplorationType.SINGLE_SERVICE_DETAILS, event.payload.item);
+
+      // reset labels search quick filter
+      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.setState({ searchText: '' });
     });
 
     return {
