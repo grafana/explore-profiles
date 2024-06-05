@@ -12,7 +12,7 @@ export type Favorite = {
     groupBy?: {
       label: string;
     };
-    filters?: Array<[string, string]>;
+    filters?: string[];
   };
   index: number; // for colouring purpose only
 };
@@ -52,7 +52,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
       const labelParts = [serviceName, ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)];
 
       if (filters) {
-        labelParts.push(...filters.map(([name, value]) => `${name}="${value}"`));
+        labelParts.push(...filters);
       }
 
       if (groupBy) {

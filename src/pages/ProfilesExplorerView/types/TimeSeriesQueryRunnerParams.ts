@@ -5,5 +5,5 @@ export type TimeSeriesQueryRunnerParams = {
     label: string;
     values: string[];
   };
-  filters?: Array<[string, string]>;
+  filters?: string[];
 };

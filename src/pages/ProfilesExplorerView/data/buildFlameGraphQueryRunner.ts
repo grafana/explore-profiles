@@ -9,9 +9,9 @@ type FlameGraphQueryRunnerParams = TimeSeriesQueryRunnerParams & {
 
 export function buildFlameGraphQueryRunner({ filters, maxNodes }: FlameGraphQueryRunnerParams) {
   const completeFilters = filters ? [...filters] : [];
-  completeFilters.unshift(['service_name', '$serviceName']);
+  completeFilters.unshift('service_name="$serviceName"');
 
-  const selector = completeFilters.map(([name, value]) => `${name}="${value}"`).join(',');
+  const selector = completeFilters.join(',');
 
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
