@@ -28,6 +28,10 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
     });
   }
 
+  setPlaceholder(placeholder: string) {
+    this.setState({ placeholder });
+  }
+
   getUrlState() {
     return {
       searchText: this.state.searchText,

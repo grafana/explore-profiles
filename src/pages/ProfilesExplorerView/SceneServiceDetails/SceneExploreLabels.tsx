@@ -24,12 +24,11 @@ import { EventSelectLabel } from '../events/EventSelectLabel';
 import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
+import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 
 interface SceneExploreLabelsState extends SceneObjectState {
   body: SceneTimeSeriesGrid;
-  controls: SceneProfilesExplorerState['subControls'];
   drawerContent?: VizPanel;
   drawerTitle?: string;
 }
@@ -63,21 +62,14 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
               ].filter(Boolean) as VizPanelState['headerActions'])
             : [new SelectAction({ EventClass: EventAddToFilters, item }), new FavAction({ item })],
       }),
-      controls: [],
       drawerContent: undefined,
       drawerTitle: undefined,
     });
 
     this.addActivationHandler(() => {
-      // hack: we directly reuse the SceneProfilesExplorer's subcontrols without cloning them as recommended (expect to see warnings in the browser's console)
-      // we do this in order to preserve URL sync and SceneTimeSeriesGrid updates (quick filter, layout type, hide "No data")
-      this.setState({
-        controls: (findSceneObjectByClass(this, SceneProfilesExplorer) as SceneProfilesExplorer).state.subControls,
-      });
-
-      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setState({
-        placeholder: 'Search labels (comma-separated regexes are supported)',
-      });
+      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
+        'Search labels (comma-separated regexes are supported)'
+      );
 
       const eventsSub = this.subscribeToEvents();
 
@@ -134,17 +126,19 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
   static Component = ({ model }: SceneComponentProps<SceneExploreLabels>) => {
     const styles = useStyles2(getStyles);
 
-    const { body, controls, drawerContent, drawerTitle } = model.useState();
+    const { body, drawerContent, drawerTitle } = model.useState();
+
     const groupByVariable = findSceneObjectByClass(model, GroupByVariable);
+    const { gridControls } = (findSceneObjectByClass(model, SceneProfilesExplorer) as SceneProfilesExplorer).state;
 
     return (
       <>
         <groupByVariable.Component model={groupByVariable} />
 
         <div className={styles.sceneControls}>
-          {controls.length ? (
+          {gridControls.length ? (
             <Stack wrap="wrap">
-              {controls.map((control) => (
+              {gridControls.map((control) => (
                 <control.Component key={control.key} model={control} />
               ))}
             </Stack>

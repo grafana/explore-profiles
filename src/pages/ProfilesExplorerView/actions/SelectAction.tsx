@@ -22,7 +22,7 @@ const Events = new Map<EventContructor, { label: string; icon?: IconName }>([
   [EventViewDetails, { label: 'Details' }],
   [EventSelectLabel, { label: 'Select' }],
   [EventAddToFilters, { label: 'Add to filters' }],
-  [EventShowPieChart, { label: 'Show values breakdown', icon: 'percentage' }],
+  [EventShowPieChart, { label: 'Show values distribution', icon: 'percentage' }],
 ]);
 
 interface SelectActionState extends SceneObjectState {

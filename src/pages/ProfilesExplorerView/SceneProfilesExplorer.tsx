@@ -48,7 +48,7 @@ import { ServiceNameVariable } from './variables/ServiceNameVariable';
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
   body?: SplitLayout;
-  subControls: any[]; // TODO
+  gridControls: any[]; // TODO
 }
 
 enum ExplorationType {
@@ -88,16 +88,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       explorationType: undefined,
       body: undefined,
       $timeRange: new SceneTimeRange({}),
-      $variables: new SceneVariableSet({ variables: [] }),
+      $variables: new SceneVariableSet({ variables: [] }), // see buildScene()
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
-      subControls: [
-        new SceneQuickFilter({ placeholder: '' }),
-        new SceneLayoutSwitcher(),
-        new SceneNoDataSwitcher(),
-        // new QueryBuilderVariable({}),
-      ],
+      gridControls: [new SceneQuickFilter({ placeholder: '' }), new SceneLayoutSwitcher(), new SceneNoDataSwitcher()],
     });
 
     getUrlSyncManager().initSync(this);
@@ -204,9 +199,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         primary = new SceneExploreSingleService();
         variables = [new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName })];
 
-        (this.state.subControls[0] as SceneQuickFilter).setState({
-          placeholder: 'Search profile metrics (comma-separated regexes are supported)',
-        });
+        (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(
+          'Search profile metrics (comma-separated regexes are supported)'
+        );
         break;
 
       case ExplorationType.SINGLE_SERVICE_DETAILS:
@@ -223,9 +218,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         primary = new SceneExploreFavorites();
         variables = [];
 
-        (this.state.subControls[0] as SceneQuickFilter).setState({
-          placeholder: 'Search favorites (comma-separated regexes are supported)',
-        });
+        (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(
+          'Search favorites (comma-separated regexes are supported)'
+        );
         break;
 
       case ExplorationType.ALL_SERVICES:
@@ -233,9 +228,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         primary = new SceneExploreAllServices();
         variables = [new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId })];
 
-        (this.state.subControls[0] as SceneQuickFilter).setState({
-          placeholder: 'Search services  (comma-separated regexes are supported)',
-        });
+        (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(
+          'Search services  (comma-separated regexes are supported)'
+        );
     }
 
     return {
@@ -268,11 +263,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { explorationType, controls, subControls, body, $variables } = model.useState();
+    const { explorationType, controls, gridControls, body, $variables } = model.useState();
 
     const [timePickerControl, refreshPickerControl] = controls || [];
     const [dataSourceVariable, ...otherVariables] = $variables?.state.variables || [];
-    const variablesToRender = otherVariables.filter((v) => !(v instanceof GroupByVariable));
+    const sceneVariables = otherVariables.filter((v) => !(v instanceof GroupByVariable));
 
     return (
       <>
@@ -332,21 +327,19 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           </div>
 
           <div className={styles.sceneControls}>
-            {subControls.length ? (
-              <Stack wrap="wrap">
-                {variablesToRender.map((otherVariable) => (
-                  <div key={otherVariable.state.name} className={styles.variable}>
-                    <InlineLabel className={styles.label} width="auto">
-                      {otherVariable.state.label}
-                    </InlineLabel>
-                    <otherVariable.Component model={otherVariable} />
-                  </div>
-                ))}
+            <Stack wrap="wrap">
+              {sceneVariables.map((variable) => (
+                <div key={variable.state.name} className={styles.variable}>
+                  <InlineLabel className={styles.label} width="auto">
+                    {variable.state.label}
+                  </InlineLabel>
+                  <variable.Component model={variable} />
+                </div>
+              ))}
 
-                {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
-                  subControls.map((subControl) => <subControl.Component key={subControl.key} model={subControl} />)}
-              </Stack>
-            ) : null}
+              {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
+                gridControls.map((control) => <control.Component key={control.key} model={control} />)}
+            </Stack>
           </div>
         </div>
 
