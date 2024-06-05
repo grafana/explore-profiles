@@ -9,6 +9,7 @@ import {
   SceneVariableSet,
   VariableDependencyConfig,
   VizPanel,
+  VizPanelState,
 } from '@grafana/scenes';
 import { Drawer, Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
@@ -55,13 +56,19 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
         dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
-        headerActions: (item) => [
-          item.queryRunnerParams.groupBy?.values.length
-            ? new SelectAction({ EventClass: EventSelectLabel, item })
-            : new SelectAction({ EventClass: EventAddToFilters, item }),
-          new SelectAction({ EventClass: EventShowPieChart, item }),
-          new FavAction({ item }),
-        ],
+        headerActions: (item) =>
+          item.queryRunnerParams.groupBy
+            ? ([
+                new SelectAction({ EventClass: EventSelectLabel, item }),
+                item.queryRunnerParams.groupBy.values.length === 1
+                  ? new SelectAction({ EventClass: EventAddToFilters, item })
+                  : undefined,
+                item.queryRunnerParams.groupBy.values.length > 1
+                  ? new SelectAction({ EventClass: EventShowPieChart, item })
+                  : undefined,
+                new FavAction({ item }),
+              ].filter(Boolean) as VizPanelState['headerActions'])
+            : [new SelectAction({ EventClass: EventAddToFilters, item }), new FavAction({ item })],
       }),
       controls: [],
       drawerContent: undefined,
