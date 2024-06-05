@@ -295,12 +295,12 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         .setColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index) })
         .setOverrides((overrides) => {
           if (data.state.queries.length > 1) {
-            data.state.queries.forEach(({ refId }, j: number) => {
+            data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
               // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
               overrides
                 .matchFieldsByQuery(refId)
                 .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index + j) })
-                .overrideDisplayName(refId.split('-').pop());
+                .overrideDisplayName(displayNameOverride);
             });
           }
         })
@@ -322,10 +322,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
             fieldConfig: {
               defaults: {},
               // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-              overrides: $data.state.queries.map(({ refId }, j) => ({
+              overrides: $data.state.queries.map(({ refId, displayNameOverride }, j) => ({
                 matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
                 properties: [
-                  { id: 'displayName', value: refId.split('-').pop() },
+                  { id: 'displayName', value: displayNameOverride },
                   { id: 'color', value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + j) } },
                 ],
               })),

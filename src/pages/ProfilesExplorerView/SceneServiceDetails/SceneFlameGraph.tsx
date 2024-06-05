@@ -17,18 +17,21 @@ import React, { useEffect, useMemo } from 'react';
 import { buildFlameGraphQueryRunner } from '../data/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
+import { GridItemData } from '../types/GridItemData';
 
 interface SceneFlameGraphState extends SceneObjectState {
-  title: string;
+  gridItemData?: GridItemData;
+  title?: string;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
 // without success: the flame graph dimensions are set in runtime and do not change when the user resizes the layout
 export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
-  constructor() {
+  constructor({ gridItemData }: { gridItemData?: GridItemData }) {
     super({
       key: 'flame-graph',
-      title: '',
+      gridItemData,
+      title: undefined,
       $data: new SceneQueryRunner({
         datasource: PYROSCOPE_DATA_SOURCE,
         queries: [],
@@ -36,7 +39,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     });
 
     this.addActivationHandler(() => {
-      (findSceneObjectByKey(this, 'service-details-timeseries') as VizPanel).subscribeToState((newState) => {
+      const timeSeriesPanel = findSceneObjectByKey(this, 'service-details-timeseries') as VizPanel;
+
+      this.setState({ title: timeSeriesPanel.state.title });
+
+      timeSeriesPanel.subscribeToState((newState) => {
         if (this.state.title !== newState.title) {
           this.setState({ title: newState.title });
         }
@@ -47,7 +54,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   useSceneFlameGraph = (): DomainHookReturnValue => {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
+
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
+    const { $data, title, gridItemData } = this.useState();
 
     useEffect(() => {
       if (isFetchingSettingsError) {
@@ -57,12 +66,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         ]);
       } else if (settings) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes: settings?.maxNodes }),
+          $data: buildFlameGraphQueryRunner({ ...gridItemData?.queryRunnerParams, maxNodes: settings?.maxNodes }),
         });
       }
-    }, [isFetchingSettingsError, settings]);
+    }, [gridItemData?.queryRunnerParams, isFetchingSettingsError, settings]);
 
-    const { $data, title } = this.useState();
     const $dataState = $data!.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
     const profileData = $dataState?.data?.series[0];
@@ -95,6 +103,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         // crazy hack to have both panels occupy properly 50% of their parent
         // if not, the flame graph panel includes the table and a bit of the flame graph (?!) and the
         // side panel goes out of the boundaries of the viewport
+        // TODO: fix with useResizeObserver?
         (document.querySelector('label[title="Only show flame graph"]') as HTMLElement)?.click();
       });
     }, [sidePanel]);

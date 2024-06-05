@@ -7,7 +7,6 @@ import {
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
-import { userStorage } from '@shared/infrastructure/userStorage';
 import { omit } from 'lodash';
 import React from 'react';
 
@@ -65,8 +64,6 @@ export class FavAction extends SceneObjectBase<FavActionState> {
       queryRunnerParams: this.interpolateQueryRunnerVariables(),
       index: item.index,
     };
-
-    console.log('*** onClick', userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites);
 
     if (!isFav) {
       FavoritesDataSource.addFavorite(favorite);

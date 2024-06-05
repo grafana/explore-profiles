@@ -25,9 +25,11 @@ import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
+import { GridItemData } from '../types/GridItemData';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 
 interface SceneExploreLabelsState extends SceneObjectState {
+  gridItemData?: GridItemData;
   body: SceneTimeSeriesGrid;
   controls: SceneProfilesExplorerState['subControls'];
   drawerContent?: VizPanel;
@@ -36,17 +38,19 @@ interface SceneExploreLabelsState extends SceneObjectState {
 
 export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId'],
+    variableNames: ['serviceName', 'profileMetricId', 'groupBy'],
     onReferencedVariableValueChanged: () => {
-      // TODO: refresh data
+      // here we have to completely refresh the SceneTimeSeriesGrid
+      this.setState({ body: this.state.body.clone() });
     },
   });
 
-  constructor() {
+  constructor({ gridItemData }: { gridItemData?: GridItemData }) {
     super({
       key: 'explore-labels',
+      gridItemData,
       $variables: new SceneVariableSet({
-        variables: [new GroupByVariable({})],
+        variables: [new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label })],
       }),
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
@@ -106,12 +110,12 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
         drawerContent: PanelBuilders.piechart()
           .setData(data)
           .setOverrides((overrides) => {
-            data.state.queries.forEach(({ refId }, j) => {
+            data.state.queries.forEach(({ refId, displayNameOverride }, j) => {
               // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
               overrides
                 .matchFieldsByQuery(refId)
                 .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(index + j) })
-                .overrideDisplayName(refId.split('-').pop());
+                .overrideDisplayName(displayNameOverride);
             });
           })
           .build(),

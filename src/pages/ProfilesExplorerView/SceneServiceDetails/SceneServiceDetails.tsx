@@ -26,7 +26,7 @@ import { SceneExploreLabels } from './SceneExploreLabels';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
 interface SceneServiceDetailsState extends EmbeddedSceneState {
-  item?: GridItemData;
+  gridItemData?: GridItemData;
 }
 
 const MIN_HEIGHT_TIMESERIES = 200;
@@ -38,14 +38,14 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
-      timeSeriesPanel.setState({ title: this.buildtimeSeriesPanelTitle() });
+      timeSeriesPanel?.setState({ title: this.buildtimeSeriesPanelTitle() });
     },
   });
 
-  constructor({ item }: { item?: GridItemData }) {
+  constructor({ gridItemData }: { gridItemData?: GridItemData }) {
     super({
       key: 'service-details',
-      item,
+      gridItemData,
       body: new SceneFlexLayout({
         direction: 'column',
         $behaviors: [
@@ -66,12 +66,12 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
                 {
                   id: 'flame-graph',
                   label: 'Flame graph',
-                  content: new SceneFlameGraph(),
+                  content: new SceneFlameGraph({ gridItemData }),
                 },
                 {
                   id: 'explore-labels',
                   label: 'Explore labels',
-                  content: new SceneExploreLabels(),
+                  content: new SceneExploreLabels({ gridItemData }),
                 },
               ],
             }),
@@ -81,7 +81,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     });
 
     this.addActivationHandler(() => {
-      this.buildTimeSeriesPanel(item);
+      this.buildTimeSeriesPanel(gridItemData);
 
       const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
         this.buildTimeSeriesPanel(event.payload.item);
@@ -93,41 +93,43 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     });
   }
 
-  async buildTimeSeriesPanel(item?: GridItemData) {
-    const thisItem = item || {
+  async buildTimeSeriesPanel(gridItemData?: GridItemData) {
+    const thisGridItemData = gridItemData || {
       index: 0,
       value: '',
-      label: this.buildtimeSeriesPanelTitle(),
+      label: '',
       queryRunnerParams: {},
     };
 
+    this.setState({ gridItemData: thisGridItemData });
+
     let data: SceneQueryRunner;
 
-    if (thisItem.queryRunnerParams.groupBy) {
+    if (thisGridItemData.queryRunnerParams.groupBy) {
       const timeRange = sceneGraph.getTimeRange(this).state.value;
       // TODO: handle error
-      data = await buildTimeSeriesGroupByQueryRunner(thisItem.queryRunnerParams, timeRange);
+      data = await buildTimeSeriesGroupByQueryRunner(thisGridItemData.queryRunnerParams, timeRange);
     } else {
-      data = buildTimeSeriesQueryRunner(thisItem.queryRunnerParams);
+      data = buildTimeSeriesQueryRunner(thisGridItemData.queryRunnerParams);
     }
 
     const timeSeriesPanel = PanelBuilders.timeseries()
-      .setTitle(this.buildtimeSeriesPanelTitle(item?.label))
+      .setTitle(this.buildtimeSeriesPanelTitle())
       .setData(data)
-      .setColor({ mode: 'fixed', fixedColor: getColorByIndex(thisItem.index) })
+      .setColor({ mode: 'fixed', fixedColor: getColorByIndex(thisGridItemData.index) })
       .setOverrides((overrides) => {
         if (data.state.queries.length > 1) {
-          data.state.queries.forEach(({ refId }, j: number) => {
+          data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
             // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
             overrides
               .matchFieldsByQuery(refId)
-              .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(thisItem.index + j) })
-              .overrideDisplayName(refId.split('-').pop());
+              .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(thisGridItemData.index + j) })
+              .overrideDisplayName(displayNameOverride);
           });
         }
       })
       .setCustomFieldConfig('fillOpacity', 9)
-      .setHeaderActions([new FavAction({ item: thisItem })])
+      .setHeaderActions([new FavAction({ item: thisGridItemData })])
       .build();
 
     timeSeriesPanel.setState({ key: 'service-details-timeseries' });
@@ -137,12 +139,13 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     });
   }
 
-  buildtimeSeriesPanelTitle(groupByLabel?: string) {
+  buildtimeSeriesPanelTitle() {
     const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
+    const itemLabel = this.state.gridItemData?.label;
 
-    return groupByLabel
-      ? `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)} · ${groupByLabel}`
+    return itemLabel
+      ? `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)} · ${itemLabel}`
       : `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
   }
 

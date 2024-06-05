@@ -44,6 +44,42 @@ export class LabelsDataSource extends RuntimeDataSource {
     const from = dateTimeParse(timeRange.from.valueOf()).unix() * 1000;
     const to = dateTimeParse(timeRange.to.valueOf()).unix() * 1000;
 
+    const queryRunner = (request.scopedVars.__sceneObject as ScopedVar).value;
+    const groupByLabel = sceneGraph.interpolate(queryRunner, '$groupBy');
+
+    if (groupByLabel !== 'all') {
+      const labelValues = await labelsRepository.listLabelValues(groupByLabel, pyroscopeQuery, from, to);
+
+      const values = labelValues.map(({ value, label }, index) => ({
+        index,
+        value,
+        label,
+        queryRunnerParams: {
+          serviceName,
+          profileMetricId,
+          filters: [[groupByLabel, value]],
+        },
+      }));
+
+      return {
+        state: LoadingState.Done,
+        data: [
+          {
+            name: 'Labels',
+            fields: [
+              {
+                name: 'Label',
+                type: FieldType.other,
+                values,
+                config: {},
+              },
+            ],
+            length: values.length,
+          },
+        ],
+      };
+    }
+
     const labels = await labelsRepository.listLabels(pyroscopeQuery, from, to);
 
     const labelsWithCounts = await Promise.all(

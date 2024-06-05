@@ -4,27 +4,36 @@ import { TimeSeriesQueryRunnerParams } from '../types/TimeSeriesQueryRunnerParam
 import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-sources';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export function buildTimeSeriesQueryRunner({ serviceName, profileMetricId, groupBy }: TimeSeriesQueryRunnerParams) {
+export function buildTimeSeriesQueryRunner({
+  serviceName,
+  profileMetricId,
+  groupBy,
+  filters,
+}: TimeSeriesQueryRunnerParams) {
   let queries;
+
+  const completeFilters = filters ? [...filters] : [];
+  completeFilters.unshift(['service_name', serviceName || '$serviceName']);
+
+  const selector = completeFilters.map(([name, value]) => `${name}="${value}"`).join(',');
 
   if (!groupBy) {
     queries = [
       {
-        refId: `${serviceName}-${profileMetricId}`,
+        refId: `${profileMetricId || '$profileMetricId'}-${completeFilters}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: serviceName ? `{service_name="${serviceName}"}` : '{service_name="$serviceName"}',
+        labelSelector: `{${selector}}`,
       },
     ];
   } else {
     queries = groupBy.values.map((labelValue) => {
       return {
-        refId: `${serviceName}-${profileMetricId}-${groupBy.label}-${labelValue}`,
+        refId: `${profileMetricId || '$profileMetricId'}-${completeFilters}-${groupBy.label}-${labelValue}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: serviceName
-          ? `{service_name="${serviceName}",${groupBy.label}="${labelValue}"}`
-          : `{service_name="$serviceName",${groupBy.label}="${labelValue}"}`,
+        labelSelector: `{${selector},${groupBy.label}="${labelValue}"}`,
+        displayNameOverride: labelValue,
       };
     });
   }

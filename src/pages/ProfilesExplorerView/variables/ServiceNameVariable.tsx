@@ -17,11 +17,10 @@ export class ServiceNameVariable extends QueryVariable {
       datasource: PYROSCOPE_SERVICES_DATA_SOURCE,
       query: 'list', // dummy query, can't be an empty string
       loading: true,
+      value: initialValue,
     });
 
     this.addActivationHandler(() => {
-      this.setState({ value: initialValue });
-
       const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
         this.setState({ loading: true });
 

@@ -9,9 +9,10 @@ export type Favorite = {
   queryRunnerParams: {
     serviceName: string;
     profileMetricId: string;
-    groupBy: {
+    groupBy?: {
       label: string;
     };
+    filters?: Array<[string, string]>;
   };
   index: number; // for colouring purpose only
 };
@@ -47,15 +48,21 @@ export class FavoritesDataSource extends RuntimeDataSource {
     const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
 
     const values = favorites.map((f: Favorite) => {
-      const { serviceName, profileMetricId, groupBy } = f.queryRunnerParams;
-      const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId);
+      const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams;
+      const labelParts = [serviceName, ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)];
+
+      if (filters) {
+        labelParts.push(...filters.map(([name, value]) => `${name}="${value}"`));
+      }
+
+      if (groupBy) {
+        labelParts.push(groupBy.label);
+      }
 
       return {
         index: f.index,
         value: groupBy ? `${serviceName}-${profileMetricId}-${groupBy.label}` : `${serviceName}-${profileMetricId}`,
-        label: groupBy
-          ? `${serviceName} · ${profileMetricLabel} · ${groupBy.label}`
-          : `${serviceName} · ${profileMetricLabel}`,
+        label: labelParts.join(' · '),
         queryRunnerParams: f.queryRunnerParams,
       };
     });

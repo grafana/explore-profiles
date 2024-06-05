@@ -15,7 +15,7 @@ export class GroupByVariable extends QueryVariable {
     onReferencedVariableValueChanged: this.update.bind(this),
   });
 
-  static MAX_MAIN_GROUP_BY_LABELS = 8;
+  static MAX_MAIN_LABELS = 8;
 
   constructor({ value }: { value?: string }) {
     // hack: the variable does not sync, if the "var-groupBy" search parameter is present in the URL, it is set to an empty value
@@ -73,7 +73,7 @@ export class GroupByVariable extends QueryVariable {
     const groupByOptions = options as Array<SelectableValue<string>>;
 
     const getMainLabels = (groupByOptions: Array<SelectableValue<string>>) => {
-      return groupByOptions.slice(0, GroupByVariable.MAX_MAIN_GROUP_BY_LABELS).map(({ value }) => value as string);
+      return groupByOptions.slice(0, GroupByVariable.MAX_MAIN_LABELS).map(({ value }) => value as string);
     };
 
     function onSelect(newValue: any) {
