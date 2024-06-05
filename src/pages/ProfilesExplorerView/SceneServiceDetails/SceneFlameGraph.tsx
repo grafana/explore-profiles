@@ -17,20 +17,17 @@ import React, { useEffect, useMemo } from 'react';
 import { buildFlameGraphQueryRunner } from '../data/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
-import { GridItemData } from '../types/GridItemData';
 
 interface SceneFlameGraphState extends SceneObjectState {
-  gridItemData?: GridItemData;
   title?: string;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
 // without success: the flame graph dimensions are set in runtime and do not change when the user resizes the layout
 export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
-  constructor({ gridItemData }: { gridItemData?: GridItemData }) {
+  constructor() {
     super({
       key: 'flame-graph',
-      gridItemData,
       title: undefined,
       $data: new SceneQueryRunner({
         datasource: PYROSCOPE_DATA_SOURCE,
@@ -56,7 +53,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, title, gridItemData } = this.useState();
+    const { $data, title } = this.useState();
 
     useEffect(() => {
       if (isFetchingSettingsError) {
@@ -66,10 +63,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         ]);
       } else if (settings) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ ...gridItemData?.queryRunnerParams, maxNodes: settings?.maxNodes }),
+          $data: buildFlameGraphQueryRunner({ maxNodes: settings?.maxNodes }),
         });
       }
-    }, [gridItemData?.queryRunnerParams, isFetchingSettingsError, settings]);
+    }, [isFetchingSettingsError, settings]);
 
     const $dataState = $data!.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;

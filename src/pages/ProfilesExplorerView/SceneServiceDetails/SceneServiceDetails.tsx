@@ -8,7 +8,6 @@ import {
   SceneFlexLayout,
   sceneGraph,
   SceneObjectBase,
-  SceneQueryRunner,
   VariableDependencyConfig,
   VizPanel,
 } from '@grafana/scenes';
@@ -16,20 +15,13 @@ import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SceneTabs } from '../components/SceneTabs';
-import { buildTimeSeriesGroupByQueryRunner } from '../data/buildTimeSeriesGroupByQueryRunner';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
-import { EventSelectLabel } from '../events/EventSelectLabel';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { GridItemData } from '../types/GridItemData';
 import { SceneExploreLabels } from './SceneExploreLabels';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
-interface SceneServiceDetailsState extends EmbeddedSceneState {
-  gridItemData?: GridItemData;
-}
-
-const MIN_HEIGHT_TIMESERIES = 200;
+interface SceneServiceDetailsState extends EmbeddedSceneState {}
 
 export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
@@ -42,10 +34,11 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     },
   });
 
-  constructor({ gridItemData }: { gridItemData?: GridItemData }) {
+  static MIN_HEIGHT_TIMESERIES = 200;
+
+  constructor() {
     super({
       key: 'service-details',
-      gridItemData,
       body: new SceneFlexLayout({
         direction: 'column',
         $behaviors: [
@@ -56,7 +49,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
         ],
         children: [
           new SceneFlexItem({
-            minHeight: MIN_HEIGHT_TIMESERIES,
+            minHeight: SceneServiceDetails.MIN_HEIGHT_TIMESERIES,
             body: undefined,
           }),
           new SceneFlexItem({
@@ -66,12 +59,12 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
                 {
                   id: 'flame-graph',
                   label: 'Flame graph',
-                  content: new SceneFlameGraph({ gridItemData }),
+                  content: new SceneFlameGraph(),
                 },
                 {
                   id: 'explore-labels',
                   label: 'Explore labels',
-                  content: new SceneExploreLabels({ gridItemData }),
+                  content: new SceneExploreLabels(),
                 },
               ],
             }),
@@ -81,54 +74,21 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     });
 
     this.addActivationHandler(() => {
-      this.buildTimeSeriesPanel(gridItemData);
-
-      const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
-        this.buildTimeSeriesPanel(event.payload.item);
-      });
-
-      return () => {
-        selectLabelSub.unsubscribe();
-      };
+      this.buildTimeSeriesPanel();
     });
   }
 
-  async buildTimeSeriesPanel(gridItemData?: GridItemData) {
-    const thisGridItemData = gridItemData || {
-      index: 0,
-      value: '',
-      label: '',
-      queryRunnerParams: {},
-    };
-
-    this.setState({ gridItemData: thisGridItemData });
-
-    let data: SceneQueryRunner;
-
-    if (thisGridItemData.queryRunnerParams.groupBy) {
-      const timeRange = sceneGraph.getTimeRange(this).state.value;
-      data = await buildTimeSeriesGroupByQueryRunner(thisGridItemData.queryRunnerParams, timeRange);
-    } else {
-      data = buildTimeSeriesQueryRunner(thisGridItemData.queryRunnerParams);
-    }
-
+  async buildTimeSeriesPanel() {
     const timeSeriesPanel = PanelBuilders.timeseries()
       .setTitle(this.buildtimeSeriesPanelTitle())
-      .setData(data)
-      .setColor({ mode: 'fixed', fixedColor: getColorByIndex(thisGridItemData.index) })
-      .setOverrides((overrides) => {
-        if (data.state.queries.length > 1) {
-          data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
-            // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-            overrides
-              .matchFieldsByQuery(refId)
-              .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(thisGridItemData.index + j) })
-              .overrideDisplayName(displayNameOverride);
-          });
-        }
-      })
+      .setData(buildTimeSeriesQueryRunner({}))
+      .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
-      .setHeaderActions([new FavAction({ item: thisGridItemData })])
+      .setHeaderActions([
+        new FavAction({
+          item: this.buildFavActionItem(),
+        }),
+      ])
       .build();
 
     timeSeriesPanel.setState({ key: 'service-details-timeseries' });
@@ -138,14 +98,26 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     });
   }
 
+  buildFavActionItem() {
+    const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
+    const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
+
+    return {
+      index: 0,
+      value: `${serviceName}-${profileMetricId}`,
+      label: this.buildtimeSeriesPanelTitle(),
+      queryRunnerParams: {
+        serviceName,
+        profileMetricId,
+      },
+    };
+  }
+
   buildtimeSeriesPanelTitle() {
     const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-    const itemLabel = this.state.gridItemData?.label;
 
-    return itemLabel
-      ? `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)} · ${itemLabel}`
-      : `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
+    return `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
   }
 
   static Component({ model }: SceneComponentProps<SceneServiceDetails>) {

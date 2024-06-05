@@ -209,7 +209,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.SINGLE_SERVICE_DETAILS:
-        primary = new SceneServiceDetails({ gridItemData });
+        primary = new SceneServiceDetails();
         variables = [
           new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
           new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),

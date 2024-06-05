@@ -26,11 +26,9 @@ import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
-import { GridItemData } from '../types/GridItemData';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 
 interface SceneExploreLabelsState extends SceneObjectState {
-  gridItemData?: GridItemData;
   body: SceneTimeSeriesGrid;
   controls: SceneProfilesExplorerState['subControls'];
   drawerContent?: VizPanel;
@@ -46,12 +44,11 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     },
   });
 
-  constructor({ gridItemData }: { gridItemData?: GridItemData }) {
+  constructor() {
     super({
       key: 'explore-labels',
-      gridItemData,
       $variables: new SceneVariableSet({
-        variables: [new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label })],
+        variables: [new GroupByVariable({})],
       }),
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
