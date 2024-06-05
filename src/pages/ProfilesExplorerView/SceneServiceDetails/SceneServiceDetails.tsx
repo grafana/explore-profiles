@@ -107,7 +107,6 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
 
     if (thisGridItemData.queryRunnerParams.groupBy) {
       const timeRange = sceneGraph.getTimeRange(this).state.value;
-      // TODO: handle error
       data = await buildTimeSeriesGroupByQueryRunner(thisGridItemData.queryRunnerParams, timeRange);
     } else {
       data = buildTimeSeriesQueryRunner(thisGridItemData.queryRunnerParams);

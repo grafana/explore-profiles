@@ -1,5 +1,13 @@
-import { MultiValueVariable, QueryVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
-import { Cascader, CascaderOption } from '@grafana/ui';
+import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
+import {
+  MultiValueVariable,
+  QueryVariable,
+  SceneComponentProps,
+  sceneGraph,
+  VariableValueOption,
+} from '@grafana/scenes';
+import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
@@ -34,11 +42,18 @@ export class ProfileMetricVariable extends QueryVariable {
 
     this.addActivationHandler(() => {
       const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
+        let options: VariableValueOption[] = [];
+        let error = null;
+
         this.setState({ loading: true });
 
-        const options = await lastValueFrom(this.getValueOptions({}));
-
-        this.setState({ loading: false, options });
+        try {
+          options = await lastValueFrom(this.getValueOptions({}));
+        } catch (e) {
+          error = e;
+        } finally {
+          this.setState({ loading: false, options, error });
+        }
 
         // empty string to show the user the previous value is not available anymore
         const value = options.some(({ value }) => value === this.state.value) ? this.state.value : '';
@@ -81,14 +96,22 @@ export class ProfileMetricVariable extends QueryVariable {
   }
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
-    const { loading, value, options } = model.useState();
+    const styles = useStyles2(getStyles);
+    const { loading, value, options, error } = model.useState();
 
     const cascaderOptions = useMemo(() => {
       return ProfileMetricVariable.buildCascaderOptions(options as ProfileMetricOptions);
     }, [options]);
 
-    function onSelect(newValue: any) {
-      model.changeValueTo(newValue, newValue);
+    if (error) {
+      console.error('Error while loading "serviceName" variable values!');
+      console.error(error);
+
+      return (
+        <Tooltip theme="error" content={error.toString()}>
+          <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
+        </Tooltip>
+      );
     }
 
     return (
@@ -103,8 +126,15 @@ export class ProfileMetricVariable extends QueryVariable {
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
-        onSelect={onSelect}
+        onSelect={(newValue: string) => model.changeValueTo(newValue, newValue)}
       />
     );
   };
 }
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  iconError: css`
+    color: ${theme.colors.error.text};
+    align-self: center;
+  `,
+});

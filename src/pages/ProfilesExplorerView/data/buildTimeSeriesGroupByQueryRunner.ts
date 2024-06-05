@@ -25,7 +25,7 @@ export async function buildTimeSeriesGroupByQueryRunner(
 
     labelValues = labelValues.slice(0, maxLabelValues).map(({ value }) => value);
   } catch (error) {
-    labelValues = queryRunnerParams.groupBy.values;
+    labelValues = queryRunnerParams.groupBy.values || [];
 
     console.error('Error while refreshing data!', queryRunnerParams);
     console.error(error);

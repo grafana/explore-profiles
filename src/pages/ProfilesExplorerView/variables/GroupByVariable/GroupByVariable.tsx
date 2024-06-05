@@ -1,6 +1,13 @@
-import { SelectableValue } from '@grafana/data';
-import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableDependencyConfig } from '@grafana/scenes';
-import { Field, Spinner } from '@grafana/ui';
+import { css } from '@emotion/css';
+import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import {
+  MultiValueVariable,
+  QueryVariable,
+  SceneComponentProps,
+  VariableDependencyConfig,
+  VariableValueOption,
+} from '@grafana/scenes';
+import { Field, Icon, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -54,11 +61,18 @@ export class GroupByVariable extends QueryVariable {
   }
 
   async update() {
+    let options: VariableValueOption[] = [];
+    let error = null;
+
     this.setState({ loading: true });
 
-    const options = await lastValueFrom(this.getValueOptions({}));
-
-    this.setState({ loading: false, options });
+    try {
+      options = await lastValueFrom(this.getValueOptions({}));
+    } catch (e) {
+      error = e;
+    } finally {
+      this.setState({ loading: false, options, error });
+    }
 
     const value = options.some(({ value }) => value === this.state.value)
       ? this.state.value
@@ -68,17 +82,35 @@ export class GroupByVariable extends QueryVariable {
   }
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
-    // TODO: handle error
-    const { loading, value, options } = model.useState();
+    const styles = useStyles2(getStyles);
+    const { loading, value, options, error } = model.useState();
+
+    if (loading) {
+      return (
+        <Field label="Group by">
+          <Spinner />
+        </Field>
+      );
+    }
+
+    if (error) {
+      console.error('Error while loading "groupBy" variable values!');
+      console.error(error);
+
+      return (
+        <Field label="Group by">
+          <Tooltip theme="error" content={error.toString()}>
+            <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
+          </Tooltip>
+        </Field>
+      );
+    }
+
     const groupByOptions = options as Array<SelectableValue<string>>;
 
     const getMainLabels = (groupByOptions: Array<SelectableValue<string>>) => {
       return groupByOptions.slice(0, GroupByVariable.MAX_MAIN_LABELS).map(({ value }) => value as string);
     };
-
-    function onSelect(newValue: any) {
-      model.changeValueTo(newValue, newValue);
-    }
 
     return loading ? (
       <Field label="Group by">
@@ -89,8 +121,15 @@ export class GroupByVariable extends QueryVariable {
         options={groupByOptions}
         value={value as string}
         mainLabels={getMainLabels(groupByOptions)}
-        onChange={onSelect}
+        onChange={(newValue: string) => model.changeValueTo(newValue, newValue)}
       />
     );
   };
 }
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  iconError: css`
+    color: ${theme.colors.error.text};
+    align-self: center;
+  `,
+});
