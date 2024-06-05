@@ -209,8 +209,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables = [
           new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
           new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
-          new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label }),
-          // new QueryBuilderVariable({}),
+          new GroupByVariable({
+            // we make sure to set groupBy to its default value
+            value: gridItemData?.queryRunnerParams.groupBy?.label || GroupByVariable.DEFAULT_VALUE,
+          }),
         ];
         break;
 
