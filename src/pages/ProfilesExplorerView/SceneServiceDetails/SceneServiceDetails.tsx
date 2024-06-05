@@ -30,7 +30,14 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
-      timeSeriesPanel?.setState({ title: this.buildtimeSeriesPanelTitle() });
+      timeSeriesPanel?.setState({
+        title: this.buildtimeSeriesPanelTitle(),
+        headerActions: [
+          new FavAction({
+            item: this.buildFavActionItem(),
+          }),
+        ],
+      });
     },
   });
 

@@ -40,6 +40,7 @@ import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavor
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
 import { SceneServiceDetails } from './SceneServiceDetails/SceneServiceDetails';
 import { GridItemData } from './types/GridItemData';
+import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from './variables/ServiceNameVariable';
@@ -213,6 +214,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables = [
           new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
           new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
+          new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label }),
           // new QueryBuilderVariable({}),
         ];
         break;
@@ -270,6 +272,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     const [timePickerControl, refreshPickerControl] = controls || [];
     const [dataSourceVariable, ...otherVariables] = $variables?.state.variables || [];
+    const variablesToRender = otherVariables.filter((v) => !(v instanceof GroupByVariable));
 
     return (
       <>
@@ -331,7 +334,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           <div className={styles.sceneControls}>
             {subControls.length ? (
               <Stack wrap="wrap">
-                {otherVariables.map((otherVariable) => (
+                {variablesToRender.map((otherVariable) => (
                   <div key={otherVariable.state.name} className={styles.variable}>
                     <InlineLabel className={styles.label} width="auto">
                       {otherVariable.state.label}

@@ -6,7 +6,6 @@ import {
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
-  SceneVariableSet,
   VariableDependencyConfig,
   VizPanel,
   VizPanelState,
@@ -47,9 +46,6 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
   constructor() {
     super({
       key: 'explore-labels',
-      $variables: new SceneVariableSet({
-        variables: [new GroupByVariable({})],
-      }),
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
         dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
@@ -93,10 +89,10 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
 
   subscribeToEvents() {
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
-      const [groupByVariable] = this.state.$variables!.state.variables || [];
+      const labelValue = event.payload.item.queryRunnerParams!.groupBy!.label;
+      const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
 
-      const newValue = event.payload.item.queryRunnerParams!.groupBy!.label;
-      (groupByVariable as GroupByVariable).changeValueTo(newValue, newValue);
+      groupByVariable.changeValueTo(labelValue, labelValue);
     });
 
     const addToFiltersSub = this.subscribeToEvent(EventAddToFilters, (event) => {
@@ -138,8 +134,8 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
   static Component = ({ model }: SceneComponentProps<SceneExploreLabels>) => {
     const styles = useStyles2(getStyles);
 
-    const { body, controls, drawerContent, drawerTitle, $variables } = model.useState();
-    const [groupByVariable] = $variables?.state.variables || [];
+    const { body, controls, drawerContent, drawerTitle } = model.useState();
+    const groupByVariable = findSceneObjectByClass(model, GroupByVariable);
 
     return (
       <>
