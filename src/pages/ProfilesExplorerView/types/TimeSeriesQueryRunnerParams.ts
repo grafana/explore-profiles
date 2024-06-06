@@ -1,3 +1,5 @@
+import { AdHocVariableFilter } from '@grafana/data';
+
 export type TimeSeriesQueryRunnerParams = {
   serviceName?: string;
   profileMetricId?: string;
@@ -5,5 +7,5 @@ export type TimeSeriesQueryRunnerParams = {
     label: string;
     values: string[];
   };
-  filters?: string[];
+  filters?: AdHocVariableFilter[];
 };

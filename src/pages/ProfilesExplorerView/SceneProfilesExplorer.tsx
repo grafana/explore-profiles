@@ -40,6 +40,7 @@ import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavor
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
 import { SceneServiceDetails } from './SceneServiceDetails/SceneServiceDetails';
 import { GridItemData } from './types/GridItemData';
+import { FilterByVariable } from './variables/FilterByVariable';
 import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
@@ -210,9 +211,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
           new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
           new GroupByVariable({
-            // we make sure to set groupBy to its default value
+            // if not specified, we make sure to set groupBy to its default value so it works as expected when coming from favs to details
             value: gridItemData?.queryRunnerParams.groupBy?.label || GroupByVariable.DEFAULT_VALUE,
           }),
+          new FilterByVariable({ initialFilters: gridItemData?.queryRunnerParams.filters }),
         ];
         break;
 
@@ -329,19 +331,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           </div>
 
           <div className={styles.sceneControls}>
-            <Stack wrap="wrap">
-              {sceneVariables.map((variable) => (
-                <div key={variable.state.name} className={styles.variable}>
-                  <InlineLabel className={styles.label} width="auto">
-                    {variable.state.label}
-                  </InlineLabel>
-                  <variable.Component model={variable} />
-                </div>
-              ))}
+            {sceneVariables.map((variable) => (
+              <div key={variable.state.name} className={styles.variable}>
+                <InlineLabel className={styles.label} width="auto">
+                  {variable.state.label}
+                </InlineLabel>
+                <variable.Component model={variable} />
+              </div>
+            ))}
 
-              {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
-                gridControls.map((control) => <control.Component key={control.key} model={control} />)}
-            </Stack>
+            {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
+              gridControls.map((control) => <control.Component key={control.key} model={control} />)}
           </div>
         </div>
 
@@ -369,7 +369,14 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
   `,
   sceneControls: css`
-    padding: ${theme.spacing(1)} 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: ${theme.spacing(1)};
+    padding: 0 0 ${theme.spacing(1)} 0;
+
+    & > div:last-child {
+      flex-grow: 1;
+    }
   `,
   tooltipContent: css`
     padding: ${theme.spacing(1)};

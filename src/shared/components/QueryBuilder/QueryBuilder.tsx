@@ -4,7 +4,14 @@ import { Button, useStyles2 } from '@grafana/ui';
 import React, { memo, useCallback, useRef } from 'react';
 
 import { Actor } from './domain/stateMachine';
-import { CompleteFilter, Filter, FilterPartKind, QueryBuilderContext, Suggestions } from './domain/types';
+import {
+  CompleteFilter,
+  CompleteFilters,
+  Filter,
+  FilterPartKind,
+  QueryBuilderContext,
+  Suggestions,
+} from './domain/types';
 import { useStateMachine } from './domain/useStateMachine';
 import { ChicletsList } from './ui/chiclets/ChicletsList';
 import { DisabledSelect } from './ui/selects/DisabledSelect';
@@ -18,10 +25,9 @@ export const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
-    margin: -10px 0 6px 0;
   `,
   executeButton: css`
-    margin: 7px 0 0 0;
+    align-self: flex-start;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   `,
@@ -32,7 +38,7 @@ export type QueryBuilderProps = {
   query: string;
   from: number;
   until: number;
-  onChangeQuery: (newQuery: string) => void;
+  onChangeQuery: (newQuery: string, filters: CompleteFilters) => void;
   className?: string;
 };
 

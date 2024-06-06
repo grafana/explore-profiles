@@ -36,6 +36,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
   aiButton: css`
     margin-top: ${theme.spacing(1)};
   `,
+  queryBuilder: css`
+    margin: -4px 0 6px 0;
+  `,
 });
 
 export function SingleView() {
@@ -68,6 +71,7 @@ export function SingleView() {
 
       <QueryBuilder
         id="query-builder-single"
+        className={styles.queryBuilder}
         query={data.query}
         // FIXME
         from={data.timeRange.from.unix() * 1000}

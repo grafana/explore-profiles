@@ -57,7 +57,7 @@ export class LabelsDataSource extends RuntimeDataSource {
         queryRunnerParams: {
           serviceName,
           profileMetricId,
-          filters: [`${groupByLabel}="${value}"`],
+          filters: [{ key: groupByLabel, operator: '=', value }],
         },
       }));
 

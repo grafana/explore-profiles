@@ -11,7 +11,6 @@ export const getStyles = () => ({
     align-self: flex-start;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
-    margin: 7px 0 0 0;
   `,
 });
 

@@ -13,9 +13,9 @@ export function buildTimeSeriesQueryRunner({
   let queries;
 
   const completeFilters = filters ? [...filters] : [];
-  completeFilters.unshift(`service_name="${serviceName || '$serviceName'}"`);
+  completeFilters.unshift({ key: 'service_name', operator: '=', value: serviceName || '$serviceName' });
 
-  const selector = completeFilters.join(',');
+  const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
 
   if (!groupBy) {
     queries = [

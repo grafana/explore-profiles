@@ -41,6 +41,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   // prevents the "Add filter..." and "Execute" button to be rendered outside of the panel in certain cases
   queryBuilder: css`
     flex-wrap: wrap;
+    margin: -4px 0 6px 0;
   `,
   warningIcon: css`
     margin-left: 8px;

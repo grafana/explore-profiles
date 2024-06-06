@@ -1,4 +1,11 @@
-import { DataQueryResponse, FieldType, LoadingState, MetricFindValue, TestDataSourceResponse } from '@grafana/data';
+import {
+  AdHocVariableFilter,
+  DataQueryResponse,
+  FieldType,
+  LoadingState,
+  MetricFindValue,
+  TestDataSourceResponse,
+} from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { isEqual } from 'lodash';
@@ -6,15 +13,15 @@ import { isEqual } from 'lodash';
 import { ProfileMetricsDataSource } from './ProfileMetricsDataSource';
 
 export type Favorite = {
+  index: number; // for colouring purpose only
   queryRunnerParams: {
     serviceName: string;
     profileMetricId: string;
     groupBy?: {
       label: string;
     };
-    filters?: string[];
+    filters?: AdHocVariableFilter[];
   };
-  index: number; // for colouring purpose only
 };
 
 export class FavoritesDataSource extends RuntimeDataSource {
@@ -51,12 +58,12 @@ export class FavoritesDataSource extends RuntimeDataSource {
       const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams;
       const labelParts = [serviceName, ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)];
 
-      if (filters) {
-        labelParts.push(...filters);
-      }
-
       if (groupBy) {
         labelParts.push(groupBy.label);
+      }
+
+      if (filters) {
+        labelParts.push(...filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`));
       }
 
       return {

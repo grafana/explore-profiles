@@ -12,7 +12,6 @@ export class QueryBuilderVariable extends CustomVariable {
     super({
       name: 'filters',
       label: 'Filters',
-      isMulti: false,
     });
 
     this.addActivationHandler(() => {
