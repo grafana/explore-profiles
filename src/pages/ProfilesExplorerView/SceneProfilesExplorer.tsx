@@ -40,7 +40,7 @@ import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavor
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
 import { SceneServiceDetails } from './SceneServiceDetails/SceneServiceDetails';
 import { GridItemData } from './types/GridItemData';
-import { FilterByVariable } from './variables/FilterByVariable';
+import { FilterByVariable } from './variables/FilterByVariable/FilterByVariable';
 import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';

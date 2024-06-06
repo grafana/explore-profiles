@@ -25,6 +25,8 @@ import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
+import { FilterByVariable } from '../variables/FilterByVariable/FilterByVariable';
+import { addFilter } from '../variables/FilterByVariable/filters-ops';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 
 interface SceneExploreLabelsState extends SceneObjectState {
@@ -88,7 +90,9 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     });
 
     const addToFiltersSub = this.subscribeToEvent(EventAddToFilters, (event) => {
-      console.log('*** SceneExploreLabels EventAddToFilters', event.payload);
+      const filterByVariable = findSceneObjectByClass(this, FilterByVariable) as FilterByVariable;
+
+      addFilter(filterByVariable, event.payload.item.queryRunnerParams.filters![0]);
     });
 
     const showPieChartSub = this.subscribeToEvent(EventShowPieChart, async (event) => {
