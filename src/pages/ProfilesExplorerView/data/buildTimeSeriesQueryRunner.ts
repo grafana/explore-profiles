@@ -20,7 +20,7 @@ export function buildTimeSeriesQueryRunner({
   if (!groupBy) {
     queries = [
       {
-        refId: `${profileMetricId || '$profileMetricId'}-${completeFilters}`,
+        refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
         labelSelector: `{${selector}}`,
@@ -29,7 +29,9 @@ export function buildTimeSeriesQueryRunner({
   } else {
     queries = groupBy.values.map((labelValue) => {
       return {
-        refId: `${profileMetricId || '$profileMetricId'}-${completeFilters}-${groupBy.label}-${labelValue}`,
+        refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}-${
+          groupBy.label
+        }-${labelValue}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
         labelSelector: `{${selector},${groupBy.label}="${labelValue}"}`,
