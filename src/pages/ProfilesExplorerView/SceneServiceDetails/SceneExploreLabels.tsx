@@ -102,7 +102,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       const data = await buildTimeSeriesGroupByQueryRunner(queryRunnerParams, timeRange, Number.POSITIVE_INFINITY);
 
       this.setState({
-        drawerTitle: `"${queryRunnerParams.groupBy!.label}" breakdown (${data.state.queries.length})`,
+        drawerTitle: `"${queryRunnerParams.groupBy!.label}" values distribution (${data.state.queries.length})`,
         drawerContent: PanelBuilders.piechart()
           .setData(data)
           .setOverrides((overrides) => {
