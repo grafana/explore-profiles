@@ -2,9 +2,12 @@ import { css } from '@emotion/css';
 import { AdHocVariableFilter } from '@grafana/data';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
-import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
+import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import React, { useCallback, useMemo } from 'react';
+
+import { ProfileMetricVariable } from './ProfileMetricVariable';
+import { ServiceNameVariable } from './ServiceNameVariable';
 
 type FilterByVariableState = ConstructorParameters<typeof AdHocFiltersVariable>[0] & {
   baseFilters: AdHocVariableFilter[];
@@ -13,9 +16,6 @@ type FilterByVariableState = ConstructorParameters<typeof AdHocFiltersVariable>[
 
 export class FilterByVariable extends AdHocFiltersVariable {
   constructor({ initialFilters }: { initialFilters?: FilterByVariableState['filters'] }) {
-    // hack: the variable does not sync, if the "var-profileMetricId" search parameter is present in the URL, it is set to an empty value
-    // const initialValue = value || new URLSearchParams(window.location.search).get('var-filters') || '';
-
     super({
       name: 'filters',
       label: 'Filters',
@@ -24,7 +24,7 @@ export class FilterByVariable extends AdHocFiltersVariable {
     });
 
     this.addActivationHandler(() => {
-      // we use baseFilters to be able to update the query required by QueryBuilder
+      // we use baseFilters to be able to easily update the query required by QueryBuilder
       const buildBaseFilters = () => [
         {
           key: 'service_name',
@@ -40,17 +40,25 @@ export class FilterByVariable extends AdHocFiltersVariable {
 
       this.setState({ baseFilters: buildBaseFilters() });
 
-      const serviceNameSub = sceneGraph.lookupVariable('serviceName', this)?.subscribeToState(() => {
-        this.setState({
-          baseFilters: buildBaseFilters(),
-          // filters: [],
-        });
-      });
+      const serviceNameSub = (sceneGraph.lookupVariable('serviceName', this) as ServiceNameVariable)?.subscribeToState(
+        (newState) => {
+          if (newState.value !== this.state.baseFilters?.[0].value) {
+            this.setState({
+              baseFilters: buildBaseFilters(),
+              filters: [],
+            });
+          }
+        }
+      );
 
-      const profileMetricIdSub = sceneGraph.lookupVariable('profileMetricId', this)?.subscribeToState(() => {
-        this.setState({
-          baseFilters: buildBaseFilters(),
-        });
+      const profileMetricIdSub = (
+        sceneGraph.lookupVariable('profileMetricId', this) as ProfileMetricVariable
+      )?.subscribeToState((newState) => {
+        if (newState.value !== this.state.baseFilters?.[1].value) {
+          this.setState({
+            baseFilters: buildBaseFilters(),
+          });
+        }
       });
 
       return () => {
@@ -75,16 +83,14 @@ export class FilterByVariable extends AdHocFiltersVariable {
       return `${baseFilters[1].value}{${selector}}`;
     }, [baseFilters, filters]);
 
-    console.log('*** Component baseFilters', baseFilters);
-    console.log('*** Component filters', filters);
-    console.log('*** Component query', query);
-
     const onChangeQuery = useCallback(
       (query: string, filters: CompleteFilters) => {
-        console.log('*** onChangeQuery', query);
-        console.log('*** onChangeQuery', filters);
         model.setState({
-          filters: filters.map((f) => ({ key: f.attribute.value, operator: f.operator.value, value: f.value.value })),
+          filters: filters.map((f) => ({
+            key: f.attribute.value,
+            operator: f.operator.value === OperatorKind['is-empty'] ? OperatorKind['='] : f.operator.value,
+            value: f.value.value,
+          })),
         });
       },
       [model]
