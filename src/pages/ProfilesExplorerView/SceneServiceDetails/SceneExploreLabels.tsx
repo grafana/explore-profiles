@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
+import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -92,7 +92,21 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     const addToFiltersSub = this.subscribeToEvent(EventAddToFilters, (event) => {
       const filterByVariable = findSceneObjectByClass(this, FilterByVariable) as FilterByVariable;
 
-      addFilter(filterByVariable, event.payload.item.queryRunnerParams.filters![0]);
+      let filterToAdd: AdHocVariableFilter;
+      const { filters, groupBy } = event.payload.item.queryRunnerParams;
+
+      if (filters?.[0]) {
+        filterToAdd = filters?.[0];
+      } else if (groupBy?.values.length === 1) {
+        filterToAdd = { key: groupBy.label, operator: '=', value: groupBy.values[0] };
+      } else {
+        const error = new Error('Cannot build filter! Missing "filters" and "groupBy" value.');
+        console.error(error);
+        console.info(event.payload.item);
+        throw error;
+      }
+
+      addFilter(filterByVariable, filterToAdd);
     });
 
     const showPieChartSub = this.subscribeToEvent(EventShowPieChart, async (event) => {
