@@ -4,7 +4,9 @@ export function findSceneObjectByClass(sceneObject: SceneObject, Class: Function
   const objectFound = sceneGraph.findObject(sceneObject, (o) => o instanceof Class);
 
   if (!objectFound) {
-    throw `Unable to find any scene object for class "${Class}"!`;
+    const error = new Error(`Unable to find any scene object for class "${Class.name}"!`);
+    console.error(error);
+    throw error;
   }
 
   return objectFound;

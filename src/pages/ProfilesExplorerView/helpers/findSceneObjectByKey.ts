@@ -4,7 +4,9 @@ export function findSceneObjectByKey(sceneObject: SceneObject, key: string): Sce
   const objectFound = sceneGraph.findObject(sceneObject, (o) => o.state.key === key);
 
   if (!objectFound) {
-    throw `Unable to find any scene object with key="${key}"!`;
+    const error = new Error(`Unable to find any scene object with key="${key}"!`);
+    console.error(error);
+    throw error;
   }
 
   return objectFound;

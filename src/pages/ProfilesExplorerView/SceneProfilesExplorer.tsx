@@ -4,6 +4,7 @@ import {
   EmbeddedSceneState,
   getUrlSyncManager,
   SceneComponentProps,
+  sceneGraph,
   SceneObject,
   SceneObjectBase,
   SceneObjectUrlSyncConfig,
@@ -246,7 +247,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     this.setExplorationType(explorationType);
 
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
-    (findSceneObjectByClass(this, GroupByVariable) as GroupByVariable)?.changeValueTo(
+
+    // findSceneObjectByClass() throws if not found
+    (sceneGraph.findObject(this, (o) => o instanceof GroupByVariable) as GroupByVariable)?.changeValueTo(
       GroupByVariable.DEFAULT_VALUE,
       GroupByVariable.DEFAULT_VALUE
     );
