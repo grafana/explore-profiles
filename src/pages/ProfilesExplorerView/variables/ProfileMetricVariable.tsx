@@ -42,29 +42,33 @@ export class ProfileMetricVariable extends QueryVariable {
 
     this.addActivationHandler(() => {
       const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
-        let options: VariableValueOption[] = [];
-        let error = null;
-
-        this.setState({ loading: true });
-
-        try {
-          options = await lastValueFrom(this.getValueOptions({}));
-        } catch (e) {
-          error = e;
-        } finally {
-          this.setState({ loading: false, options, error });
-        }
-
-        // empty string to show the user the previous value is not available anymore
-        const value = options.some(({ value }) => value === this.state.value) ? this.state.value : '';
-
-        this.changeValueTo(value, value);
+        this.update();
       });
 
       return () => {
         sub.unsubscribe();
       };
     });
+  }
+
+  async update() {
+    let options: VariableValueOption[] = [];
+    let error = null;
+
+    this.setState({ loading: true });
+
+    try {
+      options = await lastValueFrom(this.getValueOptions({}));
+    } catch (e) {
+      error = e;
+    } finally {
+      this.setState({ loading: false, options, error });
+    }
+
+    // empty string to show the user the previous value is not available anymore
+    const value = options.some(({ value }) => value === this.state.value) ? this.state.value : '';
+
+    this.changeValueTo(value, value);
   }
 
   static buildCascaderOptions(options: ProfileMetricOptions): CascaderOption[] {
