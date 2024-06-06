@@ -5,10 +5,12 @@ import { useStyles2 } from '@grafana/ui';
 import { CompleteFilter, CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { isEqual } from 'lodash';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
+import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { ProfileMetricVariable } from '../ProfileMetricVariable';
-import { convertPyroscopeToVariableFilter, updateBaseFilters, updateFilters } from './filters-ops';
+import { ServiceNameVariable } from '../ServiceNameVariable';
+import { convertPyroscopeToVariableFilter, expressionBuilder } from './filters-ops';
 
 type FilterByVariableState = ConstructorParameters<typeof AdHocFiltersVariable>[0] & {
   baseFilters: AdHocVariableFilter[];
@@ -20,47 +22,37 @@ export class FilterByVariable extends AdHocFiltersVariable {
     super({
       name: 'filters',
       label: 'Filters',
-      baseFilters: [],
       filters: initialFilters || [],
-      filterExpression: '',
-    });
-
-    this.addActivationHandler(() => {
-      updateBaseFilters(this);
-
-      // const serviceNameSub = (sceneGraph.lookupVariable('serviceName', this) as ServiceNameVariable)?.subscribeToState(
-      //   (newState) => {
-      //     if (newState.value !== this.state.baseFilters?.[0]?.value) {
-      //       updateBaseFilters(this);
-      //       updateFilters(this, []); // reset
-      //     }
-      //   }
-      // );
-
-      const profileMetricIdSub = (
-        sceneGraph.lookupVariable('profileMetricId', this) as ProfileMetricVariable
-      )?.subscribeToState((newState) => {
-        if (newState.value !== this.state.baseFilters?.[1].value) {
-          updateBaseFilters(this);
-        }
-      });
-
-      return () => {
-        profileMetricIdSub?.unsubscribe();
-        // serviceNameSub?.unsubscribe();
-      };
     });
   }
 
   static Component = ({ model }: SceneComponentProps<FilterByVariable>) => {
     const styles = useStyles2(getStyles);
-    const { filterExpression, filters } = model.useState();
+    const { filters } = model.useState();
+
+    const { value: serviceName } = (
+      findSceneObjectByClass(model, ServiceNameVariable) as ServiceNameVariable
+    ).useState();
+
+    const { value: profileMetricId } = (
+      findSceneObjectByClass(model, ProfileMetricVariable) as ProfileMetricVariable
+    ).useState();
+
+    // TODO: fix these errors when trying to reset the filters whenever the servcie name changes
+    // SceneVariableSet.js:161 SceneVariableSet updateAndValidate error Discarded by user
+    // runRequest.catchError Discarded by user
+    // Data source errors
+
+    const filterExpression = useMemo(
+      () => expressionBuilder(serviceName as string, profileMetricId as string, filters),
+      [filters, profileMetricId, serviceName]
+    );
+
+    const { from, to } = sceneGraph.getTimeRange(model).state.value;
 
     const onChangeQuery = useCallback(
       (query: string, filters: CompleteFilters) => {
-        const newFilters = filters.map(convertPyroscopeToVariableFilter);
-
-        updateFilters(model, newFilters);
+        model.setState({ filters: filters.map(convertPyroscopeToVariableFilter) });
       },
       [model]
     );
@@ -68,14 +60,10 @@ export class FilterByVariable extends AdHocFiltersVariable {
     const onRemoveChiclet = useCallback(
       (filter: CompleteFilter) => {
         const filterForCompare = convertPyroscopeToVariableFilter(filter);
-        const newFilters = filters.filter((f) => !isEqual(f, filterForCompare));
-
-        updateFilters(model, newFilters);
+        model.setState({ filters: filters.filter((f) => !isEqual(f, filterForCompare)) });
       },
       [filters, model]
     );
-
-    const { from, to } = sceneGraph.getTimeRange(model).state.value;
 
     return (
       <QueryBuilder
