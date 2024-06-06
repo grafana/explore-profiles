@@ -54,9 +54,15 @@ export const updateFilters = (model: FilterByVariable, filters: AdHocVariableFil
 };
 
 export const addFilter = (model: FilterByVariable, filter: AdHocVariableFilter) => {
-  const filters = model.state.filters.filter((f) => f.key !== filter.key);
+  const found = model.state.filters.find((f) => f.key === filter.key);
 
-  updateFilters(model, [...filters, filter]);
+  if (found) {
+    found.value = filter.value;
+    updateFilters(model, model.state.filters);
+    return;
+  }
+
+  updateFilters(model, [...model.state.filters, filter]);
 };
 
 export const convertPyroscopeToVariableFilter = (filter: CompleteFilter) => ({
