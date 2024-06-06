@@ -4,6 +4,7 @@ import {
   EmbeddedSceneState,
   getUrlSyncManager,
   SceneComponentProps,
+  SceneObject,
   SceneObjectBase,
   SceneObjectUrlSyncConfig,
   SceneObjectUrlValues,
@@ -191,6 +192,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
+  updateQuickFilterPlaceholder(newPlaceholder: string) {
+    (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(newPlaceholder);
+  }
+
   buildScene(explorationType: ExplorationType, gridItemData?: GridItemData) {
     let primary;
     let variables: SceneVariable[];
@@ -200,9 +205,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         primary = new SceneExploreSingleService();
         variables = [new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName })];
 
-        (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(
-          'Search profile metrics (comma-separated regexes are supported)'
-        );
+        this.updateQuickFilterPlaceholder('Search profile metrics (comma-separated regexes are supported)');
         break;
 
       case ExplorationType.SINGLE_SERVICE_DETAILS:
@@ -210,10 +213,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         variables = [
           new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
           new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
-          new GroupByVariable({
-            // if not specified, we make sure to set groupBy to its default value so it works as expected when coming from favs to details
-            value: gridItemData?.queryRunnerParams.groupBy?.label || GroupByVariable.DEFAULT_VALUE,
-          }),
+          new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label }),
           new FilterByVariable({ initialFilters: gridItemData?.queryRunnerParams.filters }),
         ];
         break;
@@ -222,9 +222,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         primary = new SceneExploreFavorites();
         variables = [];
 
-        (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(
-          'Search favorites (comma-separated regexes are supported)'
-        );
+        this.updateQuickFilterPlaceholder('Search favorites (comma-separated regexes are supported)');
         break;
 
       case ExplorationType.ALL_SERVICES:
@@ -232,9 +230,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         primary = new SceneExploreAllServices();
         variables = [new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId })];
 
-        (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(
-          'Search services  (comma-separated regexes are supported)'
-        );
+        this.updateQuickFilterPlaceholder('Search services  (comma-separated regexes are supported)');
     }
 
     return {
@@ -250,6 +246,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     this.setExplorationType(explorationType);
 
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
+    (findSceneObjectByClass(this, GroupByVariable) as GroupByVariable)?.changeValueTo(
+      GroupByVariable.DEFAULT_VALUE,
+      GroupByVariable.DEFAULT_VALUE
+    );
   };
 
   onClickShareLink = async () => {
@@ -269,8 +269,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
     const { explorationType, controls, gridControls, body, $variables } = model.useState();
 
-    const [timePickerControl, refreshPickerControl] = controls || [];
-    const [dataSourceVariable, ...otherVariables] = $variables?.state.variables || [];
+    const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
+    const [dataSourceVariable, ...otherVariables] = $variables!.state.variables;
     const sceneVariables = otherVariables.filter((v) => !(v instanceof GroupByVariable));
 
     return (
@@ -340,6 +340,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
               </div>
             ))}
 
+            {/* Render scene controls in All, Single and Favorites exploration types */}
             {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
               gridControls.map((control) => <control.Component key={control.key} model={control} />)}
           </div>
