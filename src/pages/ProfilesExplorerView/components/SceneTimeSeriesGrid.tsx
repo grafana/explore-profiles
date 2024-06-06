@@ -292,17 +292,14 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const timeSeriesPanel = PanelBuilders.timeseries()
         .setTitle(label)
         .setData(data)
-        .setColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index) })
         .setOverrides((overrides) => {
-          if (data.state.queries.length > 1) {
-            data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
-              // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
-              overrides
-                .matchFieldsByQuery(refId)
-                .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index + j) })
-                .overrideDisplayName(displayNameOverride);
-            });
-          }
+          data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
+            // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
+            overrides
+              .matchFieldsByQuery(refId)
+              .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index + j) })
+              .overrideDisplayName(displayNameOverride);
+          });
         })
         .setCustomFieldConfig('fillOpacity', 9)
         .setHeaderActions(this.state.headerActions(item))
