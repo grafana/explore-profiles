@@ -330,7 +330,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             </Stack>
           </div>
 
-          <div className={styles.sceneControls}>
+          <div id={`scene-controls-${explorationType}`} className={styles.sceneControls}>
             {sceneVariables.map((variable) => (
               <div key={variable.state.name} className={styles.variable}>
                 <InlineLabel className={styles.label} width="auto">
@@ -374,7 +374,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     gap: ${theme.spacing(1)};
     padding: 0 0 ${theme.spacing(1)} 0;
 
-    & > div:last-child {
+    &#scene-controls-details > div:last-child {
       flex-grow: 1;
     }
   `,
