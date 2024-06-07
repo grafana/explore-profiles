@@ -1,4 +1,4 @@
-import { FunctionDetails, LineProfile } from '@shared/components/FunctionDetailsPanel/types/FunctionDetails';
+import { FunctionDetails, LineProfile } from '../../../components/FunctionDetailsPanel/types/FunctionDetails';
 
 /* https://platform.openai.com/docs/models/overview */
 

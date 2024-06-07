@@ -1,4 +1,4 @@
-import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { ApiClient } from '../../../infrastructure/http/ApiClient';
 
 type GithubLoginResponse = {
   cookie: string;

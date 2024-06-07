@@ -20,7 +20,6 @@ const inactiveBorderColor = '#4a4b52';
 export const getStyles = (theme: GrafanaTheme2) => ({
   chiclet: css`
     display: flex;
-    margin: 0 4px 0 0;
     align-items: center;
     border: 1px solid ${activeBackgroundColor};
     border-radius: 2px;

@@ -7,8 +7,6 @@ import { MESSAGES } from '../constants';
 
 export const getStyles = () => ({
   select: css`
-    flex: 1 0 240px;
-    align-self: flex-start;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
   `,

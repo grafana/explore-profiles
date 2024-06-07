@@ -1,5 +1,6 @@
-import { privateVcsClient } from '@shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { useQuery } from '@tanstack/react-query';
+
+import { privateVcsClient } from '../../../../../components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 
 type FetchParams = {
   enabled: boolean;

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
   "name": "Profiles",
   "preload": false,
@@ -80,6 +80,14 @@
       "role": "Admin",
       "addToNav": true,
       "defaultNav": false
+    }
+  ],
+  "extensions": [
+    {
+      "extensionPointId": "plugins/grafana-pyroscope-datasource/query-links",
+      "title": "Profiles App",
+      "description": "Open query in Profiles App",
+      "type": "link"
     }
   ]
 }

@@ -21,16 +21,15 @@ export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResp
   const { isFetching, error, data } = useQuery({
     enabled,
     queryKey: ['settings'],
-    queryFn: () => {
-      return settingsApiClient.get().then(
+    queryFn: () =>
+      settingsApiClient.get().then(
         (json) =>
           // provide defaults if any value comes null or undefined from the API (which can be the case ;))
           Object.keys(DEFAULT_SETTINGS).reduce((acc, key) => {
             acc[key] ??= DEFAULT_SETTINGS[key as keyof PluginSettings]; // TS luv :man_shrug:
             return acc;
           }, json as Record<string, any>) as PluginSettings // TS luv :man_shrug:
-      );
-    },
+      ),
   });
 
   const { mutateAsync: mutate } = useMutation({
