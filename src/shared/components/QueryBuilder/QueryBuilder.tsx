@@ -43,7 +43,6 @@ export type QueryBuilderProps = {
   from: number;
   until: number;
   onChangeQuery: (newQuery: string, filters: CompleteFilters) => void;
-  onRemoveChiclet?: (filter: CompleteFilter) => void;
   className?: string;
 };
 
@@ -53,7 +52,7 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
   const { actor, internalProps } = useStateMachine(props);
   const { filters, edition, isQueryUpToDate, suggestions } = internalProps;
 
-  const { onClickChiclet, onRemoveChiclet } = useChicletHandlers(actor, props.onRemoveChiclet);
+  const { onClickChiclet, onRemoveChiclet } = useChicletHandlers(actor);
 
   const {
     onFocus,
@@ -114,7 +113,7 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
   );
 }
 
-function useChicletHandlers(actor: Actor, onRemoveChicletCallback: QueryBuilderProps['onRemoveChiclet']) {
+function useChicletHandlers(actor: Actor) {
   const onClickChiclet = useCallback(
     (event: any, filter: Filter, part: FilterPartKind) => {
       actor.send({ type: 'EDIT_FILTER', data: { filterId: filter.id, part } });
@@ -125,10 +124,8 @@ function useChicletHandlers(actor: Actor, onRemoveChicletCallback: QueryBuilderP
   const onRemoveChiclet = useCallback(
     (event: any, filter: CompleteFilter) => {
       actor.send({ type: 'REMOVE_FILTER', data: filter.id });
-
-      onRemoveChicletCallback?.(filter);
     },
-    [actor, onRemoveChicletCallback]
+    [actor]
   );
 
   return {

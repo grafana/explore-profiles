@@ -2,9 +2,8 @@ import { css } from '@emotion/css';
 import { AdHocVariableFilter } from '@grafana/data';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
-import { CompleteFilter, CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
+import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
-import { isEqual } from 'lodash';
 import React, { useCallback, useMemo } from 'react';
 
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
@@ -57,14 +56,6 @@ export class FilterByVariable extends AdHocFiltersVariable {
       [model]
     );
 
-    const onRemoveChiclet = useCallback(
-      (filter: CompleteFilter) => {
-        const filterForCompare = convertPyroscopeToVariableFilter(filter);
-        model.setState({ filters: filters.filter((f) => !isEqual(f, filterForCompare)) });
-      },
-      [filters, model]
-    );
-
     return (
       <QueryBuilder
         id="query-builder-explore"
@@ -73,7 +64,6 @@ export class FilterByVariable extends AdHocFiltersVariable {
         from={from.unix() * 1000}
         until={to.unix() * 1000}
         onChangeQuery={onChangeQuery}
-        onRemoveChiclet={onRemoveChiclet}
       />
     );
   };
