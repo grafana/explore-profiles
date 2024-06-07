@@ -42,7 +42,7 @@ import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavor
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
 import { SceneServiceDetails } from './SceneServiceDetails/SceneServiceDetails';
 import { GridItemData } from './types/GridItemData';
-import { FilterByVariable } from './variables/FilterByVariable/FilterByVariable';
+import { FiltersVariable } from './variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
@@ -192,9 +192,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       $variables: new SceneVariableSet({
         variables: [
           new ProfilesDataSourceVariable({}),
-          // we instantiate FilterByVariable here so that we can always interpolate its value in all our queries (grid, main timeseries, flame graph)
+          // we instantiate FiltersVariable here so that we can always interpolate its value in all our queries (grid, main timeseries, flame graph)
           // see data/buildXYZQueryRunner.ts
-          new FilterByVariable({ initialFilters: gridItemData?.queryRunnerParams.filters }),
+          new FiltersVariable({ initialFilters: gridItemData?.queryRunnerParams.filters }),
           ...variables,
         ],
       }),

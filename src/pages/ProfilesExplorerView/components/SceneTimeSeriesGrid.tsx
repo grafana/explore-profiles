@@ -278,7 +278,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       let data: SceneQueryRunner;
 
       const shouldRefreshFavoriteData =
-        this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy;
+        this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy?.label;
 
       if (shouldRefreshFavoriteData) {
         // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date

@@ -17,7 +17,7 @@ export function buildTimeSeriesQueryRunner({
 
   const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
 
-  if (!groupBy) {
+  if (!groupBy?.label) {
     queries = [
       {
         refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}`,

@@ -18,7 +18,7 @@ export type Favorite = {
     serviceName: string;
     profileMetricId: string;
     groupBy?: {
-      label: string;
+      label?: string;
     };
     filters?: AdHocVariableFilter[];
   };
@@ -58,12 +58,12 @@ export class FavoritesDataSource extends RuntimeDataSource {
       const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams;
       const labelParts = [serviceName, ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)];
 
-      if (groupBy) {
+      if (groupBy?.label) {
         labelParts.push(groupBy.label);
       }
 
-      if (filters) {
-        labelParts.push(...filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`));
+      if (filters?.length) {
+        labelParts.push(filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(', '));
       }
 
       return {

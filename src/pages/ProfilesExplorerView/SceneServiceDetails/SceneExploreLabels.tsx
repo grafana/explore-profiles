@@ -25,8 +25,8 @@ import { EventShowPieChart } from '../events/EventShowPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
-import { FilterByVariable } from '../variables/FilterByVariable/FilterByVariable';
-import { addFilter } from '../variables/FilterByVariable/filters-ops';
+import { addFilter } from '../variables/FiltersVariable/filters-ops';
+import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 
 interface SceneExploreLabelsState extends SceneObjectState {
@@ -94,7 +94,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     });
 
     const addToFiltersSub = this.subscribeToEvent(EventAddToFilters, (event) => {
-      const filterByVariable = findSceneObjectByClass(this, FilterByVariable) as FilterByVariable;
+      const filterByVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
 
       let filterToAdd: AdHocVariableFilter;
       const { filters, groupBy } = event.payload.item.queryRunnerParams;

@@ -16,7 +16,7 @@ type FilterByVariableState = ConstructorParameters<typeof AdHocFiltersVariable>[
   filters: AdHocVariableFilter[];
 };
 
-export class FilterByVariable extends AdHocFiltersVariable {
+export class FiltersVariable extends AdHocFiltersVariable {
   constructor({ initialFilters }: { initialFilters?: FilterByVariableState['filters'] }) {
     super({
       name: 'filters',
@@ -25,7 +25,7 @@ export class FilterByVariable extends AdHocFiltersVariable {
     });
   }
 
-  static Component = ({ model }: SceneComponentProps<FilterByVariable>) => {
+  static Component = ({ model }: SceneComponentProps<FiltersVariable>) => {
     const styles = useStyles2(getStyles);
     const { filters } = model.useState();
 

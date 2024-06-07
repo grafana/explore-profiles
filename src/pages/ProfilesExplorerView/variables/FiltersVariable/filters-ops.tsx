@@ -1,7 +1,8 @@
 import { AdHocVariableFilter } from '@grafana/data';
+import { parseRawFilters } from '@shared/components/QueryBuilder/domain/helpers/queryToFilters';
 import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 
-import { FilterByVariable } from './FilterByVariable';
+import { FiltersVariable } from './FiltersVariable';
 
 export const convertPyroscopeToVariableFilter = (filter: CompleteFilter) => ({
   key: filter.attribute.value,
@@ -9,7 +10,7 @@ export const convertPyroscopeToVariableFilter = (filter: CompleteFilter) => ({
   value: filter.value.value,
 });
 
-export const addFilter = (model: FilterByVariable, filter: AdHocVariableFilter) => {
+export const addFilter = (model: FiltersVariable, filter: AdHocVariableFilter) => {
   const found = model.state.filters.find((f) => f.key === filter.key);
 
   if (found) {
@@ -31,3 +32,17 @@ export const expressionBuilder = (serviceName: string, profileMetricId: string, 
 
   return `${profileMetricId}{${selector}}`;
 };
+
+export const parseVariableValue = (variableValue = '') =>
+  !variableValue
+    ? []
+    : (parseRawFilters(variableValue)
+        .map((filterPartsOrNull) => {
+          if (!filterPartsOrNull) {
+            console.error(`Error while parsing filters variable "${variableValue}"!`);
+            return null;
+          }
+
+          return { key: filterPartsOrNull[0], operator: filterPartsOrNull[1], value: filterPartsOrNull[2] };
+        })
+        .filter(Boolean) as AdHocVariableFilter[]);

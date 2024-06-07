@@ -7,11 +7,12 @@ import {
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
-import { omit } from 'lodash';
+import { clone, defaults, omit, uniqBy } from 'lodash';
 import React from 'react';
 
 import { Favorite, FavoritesDataSource } from '../data/FavoritesDataSource';
 import { GridItemData } from '../types/GridItemData';
+import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 
 export interface FavActionState extends SceneObjectState {
   item: GridItemData;
@@ -20,7 +21,7 @@ export interface FavActionState extends SceneObjectState {
 
 export class FavAction extends SceneObjectBase<FavActionState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId'],
+    variableNames: ['serviceName', 'profileMetricId', 'filters'],
     onReferencedVariableValueChanged: this.update.bind(this),
   });
 
@@ -41,20 +42,35 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   interpolateQueryRunnerVariables() {
     const { queryRunnerParams } = this.state.item;
 
-    return omit(
-      {
-        ...queryRunnerParams,
-        serviceName:
-          queryRunnerParams.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
-        profileMetricId:
-          queryRunnerParams.profileMetricId ||
-          (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
-      },
-      // we never store group by values because
-      // we always refetch the label values so that the timeseries are up-to-date
-      // see buildTimeSeriesGroupByQueryRunner()
-      'groupBy.values'
-    ) as Favorite['queryRunnerParams'];
+    const interpolatedParams: Favorite['queryRunnerParams'] = defaults(omit(clone(queryRunnerParams), 'groupBy'), {
+      serviceName: sceneGraph.lookupVariable('serviceName', this)?.getValue(),
+      profileMetricId: sceneGraph.lookupVariable('profileMetricId', this)?.getValue(),
+    });
+
+    const groupByLabel = queryRunnerParams.groupBy?.label;
+    if (groupByLabel) {
+      interpolatedParams.groupBy = {
+        // we never store groupBy values because
+        // we always refetch the label values so that the timeseries are up-to-date
+        // see buildTimeSeriesGroupByQueryRunner()
+        label: groupByLabel,
+      };
+    }
+
+    const filtersVariableValue = sceneGraph.lookupVariable('filters', this)?.getValue() as string;
+    const parsedFilters = parseVariableValue(filtersVariableValue);
+
+    if (interpolatedParams.filters?.length || parsedFilters.length) {
+      interpolatedParams.filters = uniqBy(
+        [...(interpolatedParams.filters || []), ...parsedFilters],
+        ({ key, operator, value }) => `${key}${operator}${value}`
+      );
+    }
+
+    console.log('*** queryRunnerParams', queryRunnerParams);
+    console.log('*** interpolatedParams', interpolatedParams);
+
+    return interpolatedParams;
   }
 
   public onClick = () => {
