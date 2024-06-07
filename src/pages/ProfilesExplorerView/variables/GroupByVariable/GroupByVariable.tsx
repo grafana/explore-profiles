@@ -12,6 +12,7 @@ import React from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../../data/pyroscope-data-sources';
+import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { GroupBySelector } from './GroupBySelector';
 
 export class GroupByVariable extends QueryVariable {
@@ -114,6 +115,10 @@ export class GroupByVariable extends QueryVariable {
       return groupByOptions.slice(0, GroupByVariable.MAX_MAIN_LABELS).map(({ value }) => value as string);
     };
 
+    const onRefresh = () => {
+      (findSceneObjectByClass(model, GroupByVariable) as GroupByVariable).update();
+    };
+
     return loading ? (
       <Field label="Group by">
         <Spinner />
@@ -124,6 +129,7 @@ export class GroupByVariable extends QueryVariable {
         value={value as string}
         mainLabels={getMainLabels(groupByOptions)}
         onChange={(newValue: string) => model.changeValueTo(newValue, newValue)}
+        onRefresh={onRefresh}
       />
     );
   };

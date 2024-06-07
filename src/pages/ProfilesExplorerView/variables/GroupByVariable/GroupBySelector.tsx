@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { Field, measureText, RadioButtonGroup, Select, useStyles2, useTheme2 } from '@grafana/ui';
+import { Field, measureText, RadioButtonGroup, RefreshPicker, Select, useStyles2, useTheme2 } from '@grafana/ui';
 import { useResizeObserver } from '@react-aria/utils';
+import { noOp } from '@shared/domain/noOp';
 import React, { useEffect, useRef, useState } from 'react';
 
 type Props = {
@@ -9,9 +10,10 @@ type Props = {
   mainLabels: string[];
   value?: string;
   onChange: (label: string) => void;
+  onRefresh: () => void;
 };
 
-export function GroupBySelector({ options, mainLabels, value, onChange }: Props) {
+export function GroupBySelector({ options, mainLabels, value, onChange, onRefresh }: Props) {
   const styles = useStyles2(getStyles);
   const theme = useTheme2();
 
@@ -68,6 +70,7 @@ export function GroupBySelector({ options, mainLabels, value, onChange }: Props)
             isClearable
           />
         )}
+        <RefreshPicker noIntervalPicker onRefresh={onRefresh} isOnCanvas={false} onIntervalChanged={noOp} />
       </div>
     </Field>
   );
