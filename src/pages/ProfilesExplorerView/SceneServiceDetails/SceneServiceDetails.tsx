@@ -61,7 +61,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
           }),
           new SceneFlexItem({
             body: new SceneTabs({
-              activeTabId: 'explore-labels', // TODO: temp
+              activeTabId: 'flame-graph',
               tabs: [
                 {
                   id: 'flame-graph',
