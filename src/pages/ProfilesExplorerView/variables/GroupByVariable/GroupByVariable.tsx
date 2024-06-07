@@ -38,26 +38,28 @@ export class GroupByVariable extends QueryVariable {
       value: initialValue,
     });
 
-    this.addActivationHandler(() => {
-      // hack
-      const refreshButton = document.querySelector(
-        '[data-testid="data-testid RefreshPicker run button"]'
-      ) as HTMLButtonElement;
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
 
-      if (!refreshButton) {
-        console.error('GroupByVariable: Refresh button not found! The list of labels will never be updated.');
-      }
+  onActivate() {
+    // hack
+    const refreshButton = document.querySelector(
+      '[data-testid="data-testid RefreshPicker run button"]'
+    ) as HTMLButtonElement;
 
-      const onClickRefresh = () => {
-        this.update();
-      };
+    if (!refreshButton) {
+      console.error('GroupByVariable: Refresh button not found! The list of labels will never be updated.');
+    }
 
-      refreshButton?.addEventListener('click', onClickRefresh);
+    const onClickRefresh = () => {
+      this.update();
+    };
 
-      return () => {
-        refreshButton?.removeEventListener('click', onClickRefresh);
-      };
-    });
+    refreshButton?.addEventListener('click', onClickRefresh);
+
+    return () => {
+      refreshButton?.removeEventListener('click', onClickRefresh);
+    };
   }
 
   async update() {

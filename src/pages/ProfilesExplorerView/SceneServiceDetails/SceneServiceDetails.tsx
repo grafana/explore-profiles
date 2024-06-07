@@ -80,9 +80,11 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
       }),
     });
 
-    this.addActivationHandler(() => {
-      this.buildTimeSeriesPanel();
-    });
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  onActivate() {
+    this.buildTimeSeriesPanel();
   }
 
   async buildTimeSeriesPanel() {

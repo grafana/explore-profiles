@@ -28,15 +28,17 @@ export class ServiceNameVariable extends QueryVariable {
       value: initialValue,
     });
 
-    this.addActivationHandler(() => {
-      const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
-        this.update();
-      });
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
 
-      return () => {
-        sub.unsubscribe();
-      };
+  onActivate() {
+    const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
+      this.update();
     });
+
+    return () => {
+      sub.unsubscribe();
+    };
   }
 
   async update() {

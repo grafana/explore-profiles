@@ -102,19 +102,21 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.registerRuntimeDataSources();
 
-    this.addActivationHandler(() => {
-      const eventsSub = this.subscribeToEvents();
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
 
-      const explorationType = Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
-        ? (this.state.explorationType as ExplorationType)
-        : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE;
+  onActivate() {
+    const eventsSub = this.subscribeToEvents();
 
-      this.setExplorationType(explorationType);
+    const explorationType = Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
+      ? (this.state.explorationType as ExplorationType)
+      : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE;
 
-      return () => {
-        eventsSub.unsubscribe();
-      };
-    });
+    this.setExplorationType(explorationType);
+
+    return () => {
+      eventsSub.unsubscribe();
+    };
   }
 
   getUrlState() {

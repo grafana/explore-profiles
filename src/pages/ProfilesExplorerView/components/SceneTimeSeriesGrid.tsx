@@ -104,21 +104,23 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }),
     });
 
-    this.addActivationHandler(() => {
-      const quickFilterSub = this.initQuickFilterChange();
-      const layoutChangeSub = this.initLayoutChange();
-      const hideNoDataSub = this.initHideNoDataChange();
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
 
-      const itemsLoadingSub = this.initLoadItems();
+  onActivate() {
+    const quickFilterSub = this.initQuickFilterChange();
+    const layoutChangeSub = this.initLayoutChange();
+    const hideNoDataSub = this.initHideNoDataChange();
 
-      return () => {
-        itemsLoadingSub.unsubscribe();
+    const itemsLoadingSub = this.initLoadItems();
 
-        hideNoDataSub.unsubscribe();
-        layoutChangeSub.unsubscribe();
-        quickFilterSub.unsubscribe();
-      };
-    });
+    return () => {
+      itemsLoadingSub.unsubscribe();
+
+      hideNoDataSub.unsubscribe();
+      layoutChangeSub.unsubscribe();
+      quickFilterSub.unsubscribe();
+    };
   }
 
   initLoadItems() {

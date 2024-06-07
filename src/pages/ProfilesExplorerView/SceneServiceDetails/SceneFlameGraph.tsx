@@ -35,16 +35,18 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       }),
     });
 
-    this.addActivationHandler(() => {
-      const timeSeriesPanel = findSceneObjectByKey(this, 'service-details-timeseries') as VizPanel;
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
 
-      this.setState({ title: timeSeriesPanel.state.title });
+  onActivate() {
+    const timeSeriesPanel = findSceneObjectByKey(this, 'service-details-timeseries') as VizPanel;
 
-      timeSeriesPanel.subscribeToState((newState) => {
-        if (this.state.title !== newState.title) {
-          this.setState({ title: newState.title });
-        }
-      });
+    this.setState({ title: timeSeriesPanel.state.title });
+
+    timeSeriesPanel.subscribeToState((newState) => {
+      if (this.state.title !== newState.title) {
+        this.setState({ title: newState.title });
+      }
     });
   }
 

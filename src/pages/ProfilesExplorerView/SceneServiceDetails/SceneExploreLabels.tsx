@@ -68,17 +68,19 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       drawerTitle: undefined,
     });
 
-    this.addActivationHandler(() => {
-      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
-        'Search labels (comma-separated regexes are supported)'
-      );
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
 
-      const eventsSub = this.subscribeToEvents();
+  onActivate() {
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
+      'Search labels (comma-separated regexes are supported)'
+    );
 
-      return () => {
-        eventsSub.unsubscribe();
-      };
-    });
+    const eventsSub = this.subscribeToEvents();
+
+    return () => {
+      eventsSub.unsubscribe();
+    };
   }
 
   subscribeToEvents() {
@@ -87,6 +89,8 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
 
       groupByVariable.changeValueTo(labelValue, labelValue);
+
+      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
     });
 
     const addToFiltersSub = this.subscribeToEvent(EventAddToFilters, (event) => {
