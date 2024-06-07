@@ -22,6 +22,7 @@ export const getStyles = () => ({
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    gap: 4px;
   `,
   editChicletContainer: css`
     position: relative;

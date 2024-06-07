@@ -44,38 +44,56 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
   async listLabels(query: string, from: number, until: number): Promise<Suggestions> {
     LabelsRepository.assertParams(query, from, until);
 
-    const labelsFromCache = this.cacheClient.get(query, from, until);
-    if (labelsFromCache) {
-      return labelsFromCache;
+    const labelsFromCacheP = this.cacheClient.get([query, from, until]);
+    if (labelsFromCacheP) {
+      const json = await labelsFromCacheP;
+      const labels = LabelsRepository.parseLabelsResponse(json);
+
+      if (!labels.length) {
+        this.cacheClient.delete([query, from, until]);
+      }
+
+      return labels;
     }
 
-    const json = await this.httpClient.fetchLabels(query, from, until);
+    const fetchP = this.httpClient.fetchLabels(query, from, until);
+    this.cacheClient.set([query, from, until], fetchP);
 
-    const labels = LabelsRepository.parseLabelsResponse(json);
-    if (labels.length) {
-      this.cacheClient.set([query, from, until], labels);
+    try {
+      const json = await fetchP;
+      return LabelsRepository.parseLabelsResponse(json);
+    } catch (error) {
+      this.cacheClient.delete([query, from, until]);
+      throw error;
     }
-
-    return labels;
   }
 
   async listLabelValues(labelId: string, query: string, from: number, until: number): Promise<Suggestions> {
     LabelsRepository.assertParams(query, from, until);
     invariant(Boolean(labelId), 'Missing label id!');
 
-    const labelValuesFromCache = this.cacheClient.get(labelId, query, from, until);
-    if (labelValuesFromCache) {
-      return labelValuesFromCache;
+    const labelValuesFromCacheP = this.cacheClient.get([labelId, query, from, until]);
+    if (labelValuesFromCacheP) {
+      const json = await labelValuesFromCacheP;
+      const labelValues = LabelsRepository.parseLabelsResponse(json);
+
+      if (!labelValues.length) {
+        this.cacheClient.delete([labelId, query, from, until]);
+      }
+
+      return labelValues;
     }
 
-    const json = await this.httpClient.fetchLabelValues(labelId, query, from, until);
+    const fetchP = this.httpClient.fetchLabelValues(labelId, query, from, until);
+    this.cacheClient.set([labelId, query, from, until], fetchP);
 
-    const labelValues = LabelsRepository.parseLabelValuesResponse(json);
-    if (labelValues.length) {
-      this.cacheClient.set([labelId, query, from, until], labelValues);
+    try {
+      const json = await fetchP;
+      return LabelsRepository.parseLabelValuesResponse(json);
+    } catch (error) {
+      this.cacheClient.delete([labelId, query, from, until]);
+      throw error;
     }
-
-    return labelValues;
   }
 }
 

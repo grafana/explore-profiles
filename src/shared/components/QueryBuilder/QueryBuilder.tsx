@@ -1,27 +1,38 @@
 import { css, cx } from '@emotion/css';
-import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { SelectableValue } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
 import React, { memo, useCallback, useRef } from 'react';
 
 import { Actor } from './domain/stateMachine';
-import { CompleteFilter, Filter, FilterPartKind, QueryBuilderContext, Suggestions } from './domain/types';
+import {
+  CompleteFilter,
+  CompleteFilters,
+  Filter,
+  FilterPartKind,
+  QueryBuilderContext,
+  Suggestions,
+} from './domain/types';
 import { useStateMachine } from './domain/useStateMachine';
 import { ChicletsList } from './ui/chiclets/ChicletsList';
 import { DisabledSelect } from './ui/selects/DisabledSelect';
 import { MultipleSelect } from './ui/selects/MultipleSelect';
 import { SingleSelect } from './ui/selects/SingleSelect';
 
-// TODO: use the Grafana theme
-// eslint-disable-next-line no-unused-vars
-export const getStyles = (theme: GrafanaTheme2) => ({
+export const getStyles = () => ({
   queryBuilder: css`
     display: flex;
     justify-content: flex-start;
     align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
     margin: -10px 0 6px 0;
   `,
+  controls: css`
+    display: flex;
+    align-self: flex-start;
+    flex-grow: 1;
+  `,
   executeButton: css`
-    margin: 7px 0 0 0;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
   `,
@@ -32,7 +43,7 @@ export type QueryBuilderProps = {
   query: string;
   from: number;
   until: number;
-  onChangeQuery: (newQuery: string) => void;
+  onChangeQuery: (newQuery: string, filters: CompleteFilters) => void;
   className?: string;
 };
 
@@ -70,33 +81,35 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
         onCloseMultipleSuggestionsMenu={onCloseMultipleMenu}
       />
 
-      {edition ? (
-        <DisabledSelect />
-      ) : suggestions.multiple ? (
-        <MultipleSelect
-          suggestions={suggestions}
-          onFocus={onFocus}
-          onKeyDown={onMultipleSelectKeyDown}
-          onCloseMenu={onCloseMultipleMenu}
-        />
-      ) : (
-        <SingleSelect
-          suggestions={suggestions}
-          onFocus={onFocus}
-          onChange={onChangeSingleSuggestion}
-          onKeyDown={onSingleSelectKeyDown}
-          onCloseMenu={onCloseSingleMenu}
-        />
-      )}
+      <div className={styles.controls}>
+        {edition ? (
+          <DisabledSelect />
+        ) : suggestions.multiple ? (
+          <MultipleSelect
+            suggestions={suggestions}
+            onFocus={onFocus}
+            onKeyDown={onMultipleSelectKeyDown}
+            onCloseMenu={onCloseMultipleMenu}
+          />
+        ) : (
+          <SingleSelect
+            suggestions={suggestions}
+            onFocus={onFocus}
+            onChange={onChangeSingleSuggestion}
+            onKeyDown={onSingleSelectKeyDown}
+            onCloseMenu={onCloseSingleMenu}
+          />
+        )}
 
-      <Button
-        onClick={onClickExecute}
-        tooltip={!isQueryUpToDate ? 'Execute new query' : 'Nothing to execute, all filters applied'}
-        className={styles.executeButton}
-        disabled={isQueryUpToDate}
-      >
-        Execute
-      </Button>
+        <Button
+          onClick={onClickExecute}
+          tooltip={!isQueryUpToDate ? 'Execute new query' : 'Nothing to execute, all filters applied'}
+          className={styles.executeButton}
+          disabled={isQueryUpToDate}
+        >
+          Execute
+        </Button>
+      </div>
     </div>
   );
 }

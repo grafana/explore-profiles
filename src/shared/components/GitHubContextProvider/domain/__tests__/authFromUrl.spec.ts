@@ -1,8 +1,7 @@
-import { vcsClient } from 'src/pages/SingleView/components/FunctionDetailsPanel/infrastructure/vcsClient';
-
+import { vcsClient } from '../../../../components/FunctionDetailsPanel/infrastructure/vcsClient';
 import { authFromUrl } from '../authFromUrl';
 
-jest.mock('../../../../../pages/SingleView/components/FunctionDetailsPanel/infrastructure/vcsClient', () => ({
+jest.mock('../../../../components/FunctionDetailsPanel/infrastructure/vcsClient', () => ({
   vcsClient: {
     githubLogin: jest.fn(),
   },

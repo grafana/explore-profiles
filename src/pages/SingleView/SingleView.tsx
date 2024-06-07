@@ -4,6 +4,7 @@ import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
+import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
 import { InlineBanner } from '@shared/components/InlineBanner';
 import { Panel } from '@shared/components/Panel';
 import { useQueryAnalysis } from '@shared/components/QueryAnalysisTooltip/domain/useQueryAnalysis';
@@ -11,12 +12,11 @@ import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { SingleTimeline } from '@shared/components/Timeline/SingleTimeline';
 import { Toolbar } from '@shared/components/Toolbar/Toolbar';
 import { displayWarning } from '@shared/domain/displayStatus';
+import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { FunctionDetailsPanel } from './components/FunctionDetailsPanel/FunctionDetailsPanel';
-import { useGitHubIntegration } from './domain/useGitHubIntegration';
 import { useSingleView } from './domain/useSingleView';
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -35,6 +35,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   aiButton: css`
     margin-top: ${theme.spacing(1)};
+  `,
+  queryBuilder: css`
+    margin: -4px 0 6px 0;
   `,
 });
 
@@ -68,6 +71,7 @@ export function SingleView() {
 
       <QueryBuilder
         id="query-builder-single"
+        className={styles.queryBuilder}
         query={data.query}
         // FIXME
         from={data.timeRange.from.unix() * 1000}
@@ -137,17 +141,15 @@ export function SingleView() {
           )}
         </Panel>
 
-        {sidePanel.isOpen('function-details') && (
-          <>
-            <FunctionDetailsPanel
-              className={styles.sidePanel}
-              stacktrace={gitHubIntegration.data.stacktrace}
-              onClose={sidePanel.close}
-            />
-          </>
-        )}
-
         {sidePanel.isOpen('ai') && <AiPanel className={styles.sidePanel} onClose={sidePanel.close} />}
+
+        {sidePanel.isOpen('function-details') && (
+          <FunctionDetailsPanel
+            className={styles.sidePanel}
+            stacktrace={gitHubIntegration.data.stacktrace}
+            onClose={sidePanel.close}
+          />
+        )}
       </div>
     </>
   );

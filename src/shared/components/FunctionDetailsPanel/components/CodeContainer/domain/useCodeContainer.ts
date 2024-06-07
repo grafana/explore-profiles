@@ -1,7 +1,7 @@
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { useMemo, useState } from 'react';
 
-import { useGitHubContext } from '../../../../../../../shared/components/GitHubContextProvider/useGitHubContext';
+import { useGitHubContext } from '../../../../../components/GitHubContextProvider/useGitHubContext';
 import { FunctionDetails } from '../../../types/FunctionDetails';
 import { useFetchVCSFile } from '../infrastructure/useFetchVCSFile';
 import { buildGithubUrlForFunction } from './buildGithubUrlForFunction';

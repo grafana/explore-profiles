@@ -10,11 +10,12 @@ export type Services = Map<string, ServiceProfileMetrics>;
 class ServicesApiClient extends ApiClient {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   static formatResponseData(data: any): Services {
-    if (!data.labelsSet) {
-      throw new TypeError('No labelsSet received!');
-    }
-
     const services: Services = new Map();
+
+    if (!data.labelsSet) {
+      console.warn('Pyroscope ServicesApiClient: no data received!');
+      return services;
+    }
 
     for (const { labels } of data.labelsSet) {
       let serviceName;

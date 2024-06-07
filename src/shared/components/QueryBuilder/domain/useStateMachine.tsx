@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { QueryBuilderProps } from '../QueryBuilder';
 // import { logger } from './helpers/logger';
 import { buildStateMachine } from './stateMachine';
-import { QueryBuilderContext } from './types';
+import { CompleteFilters, QueryBuilderContext } from './types';
 
 export function useStateMachine({ query, from, until, onChangeQuery }: QueryBuilderProps) {
   const { actor, initialContext } = useMemo(
@@ -28,7 +28,7 @@ export function useStateMachine({ query, from, until, onChangeQuery }: QueryBuil
       // logger.debug('*** ---------------------> "%s"', state);
 
       if (event.type === 'EXECUTE_QUERY') {
-        onChangeQuery(context.query);
+        onChangeQuery(context.query, context.filters as CompleteFilters);
       }
 
       setInternalProps(context);

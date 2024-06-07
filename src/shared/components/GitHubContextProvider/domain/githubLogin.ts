@@ -1,7 +1,7 @@
 import { displayError } from '@shared/domain/displayStatus';
 import React from 'react';
 
-import { vcsClient } from '../../../../pages/SingleView/components/FunctionDetailsPanel/infrastructure/vcsClient';
+import { vcsClient } from '../../../components/FunctionDetailsPanel/infrastructure/vcsClient';
 import { nonce } from '../GitHubContextProvider';
 import { GitSessionCookie } from '../infrastructure/GitSessionCookie';
 import { gitSessionCookieManager } from '../infrastructure/GitSessionCookieManager';

@@ -1,7 +1,4 @@
-import {
-  FunctionDetails,
-  LineProfile,
-} from 'src/pages/SingleView/components/FunctionDetailsPanel/types/FunctionDetails';
+import { FunctionDetails, LineProfile } from '../../../components/FunctionDetailsPanel/types/FunctionDetails';
 
 /* https://platform.openai.com/docs/models/overview */
 
