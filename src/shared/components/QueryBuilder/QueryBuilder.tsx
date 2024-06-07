@@ -25,7 +25,6 @@ export const getStyles = () => ({
     align-items: flex-end;
     flex-wrap: wrap;
     gap: 4px;
-    margin: -10px 0 6px 0;
   `,
   controls: css`
     display: flex;
