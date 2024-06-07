@@ -23,7 +23,7 @@ export function buildTimeSeriesQueryRunner({
         refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: `{${selector}}`,
+        labelSelector: `{${selector},$filters}`,
       },
     ];
   } else {
@@ -34,7 +34,7 @@ export function buildTimeSeriesQueryRunner({
         }-${labelValue}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: `{${selector},${groupBy.label}="${labelValue}"}`,
+        labelSelector: `{${selector},${groupBy.label}="${labelValue}",$filters}`,
         displayNameOverride: labelValue,
       };
     });

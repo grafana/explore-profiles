@@ -20,7 +20,7 @@ export function buildFlameGraphQueryRunner({ filters, maxNodes }: FlameGraphQuer
         refId: 'profile',
         queryType: 'profile',
         profileTypeId: '$profileMetricId',
-        labelSelector: `{${selector}}`,
+        labelSelector: `{${selector},$filters}`,
         maxNodes,
       },
     ],

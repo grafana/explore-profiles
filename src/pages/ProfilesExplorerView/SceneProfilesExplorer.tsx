@@ -190,7 +190,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       explorationType,
       body,
       $variables: new SceneVariableSet({
-        variables: [new ProfilesDataSourceVariable({}), ...variables],
+        variables: [
+          new ProfilesDataSourceVariable({}),
+          // we instantiate FilterByVariable here so that we can always interpolate its value in all our queries (grid, main timeseries, flame graph)
+          // see data/buildXYZQueryRunner.ts
+          new FilterByVariable({ initialFilters: gridItemData?.queryRunnerParams.filters }),
+          ...variables,
+        ],
       }),
     });
   }
@@ -217,7 +223,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
           new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
           new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label }),
-          new FilterByVariable({ initialFilters: gridItemData?.queryRunnerParams.filters }),
         ];
         break;
 
@@ -275,7 +280,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { explorationType, controls, gridControls, body, $variables } = model.useState();
 
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
-    const [dataSourceVariable, ...otherVariables] = $variables!.state.variables;
+    const [dataSourceVariable, filterByVariable, ...otherVariables] = $variables!.state.variables;
     const sceneVariables = otherVariables.filter((v) => !(v instanceof GroupByVariable));
 
     return (
@@ -344,6 +349,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 <variable.Component model={variable} />
               </div>
             ))}
+
+            {explorationType === ExplorationType.SINGLE_SERVICE_DETAILS && (
+              <div className={styles.variable}>
+                <InlineLabel className={styles.label} width="auto">
+                  {filterByVariable.state.label}
+                </InlineLabel>
+                <filterByVariable.Component model={filterByVariable} />
+              </div>
+            )}
 
             {/* Render scene controls in All, Single and Favorites exploration types */}
             {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
