@@ -137,6 +137,12 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
 
   const onChangeTimeRange = (timeRange: AbsoluteTimeRange) => {
     const { from, until } = translateGrafanaAbsoluteTimeRangeToPyroscope(timeRange);
+
+    const newSearchParams = new URLSearchParams(window.location.search);
+    newSearchParams.set('from', from);
+    newSearchParams.set('until', until);
+    window.location.search = newSearchParams.toString();
+
     props.onSelect(from, until);
   };
 
