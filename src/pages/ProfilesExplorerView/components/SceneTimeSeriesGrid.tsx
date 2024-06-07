@@ -275,20 +275,24 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       const { value, label, queryRunnerParams } = item;
       const gridItemKey = `grid-item-${value}`;
 
+      let data: SceneQueryRunner;
+
       const shouldRefreshFavoriteData =
         this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy;
 
-      // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
-      // see buildTimeSeriesGroupByQueryRunner()
-      const data: SceneQueryRunner = shouldRefreshFavoriteData
-        ? new SceneQueryRunner({
-            datasource: this.state.dataSource,
-            queries: [],
-          })
-        : buildTimeSeriesQueryRunner(queryRunnerParams);
+      if (shouldRefreshFavoriteData) {
+        // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
+        // see buildTimeSeriesGroupByQueryRunner()
+        data = new SceneQueryRunner({
+          datasource: this.state.dataSource,
+          queries: [],
+        });
+      } else {
+        data = buildTimeSeriesQueryRunner(queryRunnerParams);
 
-      if (!shouldRefreshFavoriteData && this.state.hideNoData) {
-        this.setupHideNoData(data, gridItemKey);
+        if (this.state.hideNoData) {
+          this.setupHideNoData(data, gridItemKey);
+        }
       }
 
       const timeSeriesPanel = PanelBuilders.timeseries()
@@ -296,7 +300,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         .setData(data)
         .setOverrides((overrides) => {
           data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
-            // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
             overrides
               .matchFieldsByQuery(refId)
               .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index + j) })
@@ -308,9 +311,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         .build();
 
       if (shouldRefreshFavoriteData) {
+        // don't block the initial render
         setTimeout(async () => {
           const timeRange = sceneGraph.getTimeRange(this).state.value;
-          const $data = await buildTimeSeriesGroupByQueryRunner(queryRunnerParams, timeRange);
+          const $data = await buildTimeSeriesGroupByQueryRunner({ queryRunnerParams, timeRange });
 
           if (this.state.hideNoData) {
             this.setupHideNoData($data, gridItemKey);
@@ -320,7 +324,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
             $data,
             fieldConfig: {
               defaults: {},
-              // matches "refId" in src/pages/ProfilesExplorerView/data/buildTimeSeriesQueryRunner.ts
               overrides: $data.state.queries.map(({ refId, displayNameOverride }, j) => ({
                 matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
                 properties: [

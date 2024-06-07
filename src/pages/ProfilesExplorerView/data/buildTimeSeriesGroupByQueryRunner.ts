@@ -1,31 +1,43 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
 import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
 
+import { TimeSeriesQueryRunnerParams } from '../types/TimeSeriesQueryRunnerParams';
 import { buildPyroscopeQuery } from './buildPyroscopeQuery';
 import { buildTimeSeriesQueryRunner } from './buildTimeSeriesQueryRunner';
 import { LabelsDataSource } from './LabelsDataSource';
 
-export async function buildTimeSeriesGroupByQueryRunner(
-  queryRunnerParams: Record<string, any>,
-  timeRange: TimeRange,
-  maxLabelValues: number = LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
-) {
+type TimeSeriesQueryGroupByRunnerParams = {
+  queryRunnerParams: TimeSeriesQueryRunnerParams;
+  timeRange: TimeRange;
+  maxLabelValues?: number;
+};
+
+export async function buildTimeSeriesGroupByQueryRunner({
+  queryRunnerParams,
+  timeRange,
+  maxLabelValues,
+}: TimeSeriesQueryGroupByRunnerParams) {
+  const serviceName = queryRunnerParams.serviceName as string;
+  const profileMetricId = queryRunnerParams.profileMetricId as string;
+  const groupBy = queryRunnerParams.groupBy;
+
   let labelValues;
 
   try {
-    const { serviceName, profileMetricId } = queryRunnerParams;
     const { from, to } = timeRange;
 
     labelValues = await labelsRepository.listLabelValues(
-      queryRunnerParams.groupBy.label,
+      groupBy!.label,
       buildPyroscopeQuery({ serviceName, profileMetricId }),
       dateTimeParse(from.valueOf()).unix() * 1000,
       dateTimeParse(to.valueOf()).unix() * 1000
     );
 
-    labelValues = labelValues.slice(0, maxLabelValues).map(({ value }) => value);
+    labelValues = labelValues
+      .slice(0, maxLabelValues || LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES)
+      .map(({ value }) => value);
   } catch (error) {
-    labelValues = queryRunnerParams.groupBy.values || [];
+    labelValues = groupBy!.values || [];
 
     console.error('Error while refreshing data!', queryRunnerParams);
     console.error(error);
@@ -34,7 +46,7 @@ export async function buildTimeSeriesGroupByQueryRunner(
   return buildTimeSeriesQueryRunner({
     ...queryRunnerParams,
     groupBy: {
-      label: queryRunnerParams.groupBy.label,
+      label: groupBy!.label,
       values: labelValues,
     },
   });

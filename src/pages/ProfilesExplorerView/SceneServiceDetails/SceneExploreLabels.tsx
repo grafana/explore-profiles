@@ -117,7 +117,11 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       const { queryRunnerParams, index } = event.payload.item;
       const timeRange = sceneGraph.getTimeRange(this).state.value;
 
-      const data = await buildTimeSeriesGroupByQueryRunner(queryRunnerParams, timeRange, Number.POSITIVE_INFINITY);
+      const data = await buildTimeSeriesGroupByQueryRunner({
+        queryRunnerParams,
+        timeRange,
+        maxLabelValues: Number.POSITIVE_INFINITY,
+      });
 
       this.setState({
         drawerTitle: `"${queryRunnerParams.groupBy!.label}" values distribution (${data.state.queries.length})`,
