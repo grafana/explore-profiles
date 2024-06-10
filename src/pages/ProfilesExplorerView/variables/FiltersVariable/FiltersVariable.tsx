@@ -17,11 +17,36 @@ type FilterByVariableState = ConstructorParameters<typeof AdHocFiltersVariable>[
 };
 
 export class FiltersVariable extends AdHocFiltersVariable {
+  static DEFAULT_VALUE = [];
+
   constructor({ initialFilters }: { initialFilters?: FilterByVariableState['filters'] }) {
+    let initialValue = initialFilters;
+
+    // hack: the variable does not sync, if the "var-filters" search parameter is present in the URL, it is set to an empty value
+    if (!initialValue) {
+      const urlValues = new URLSearchParams(window.location.search).getAll('var-filters');
+
+      initialValue = urlValues
+        .map((value) => value.match(/([^|]+)\|([^|]+)\|(.*)/))
+        .filter(Boolean)
+        .map((part) => {
+          const [, key, operator, value] = part as string[];
+          return {
+            key,
+            operator,
+            value,
+          };
+        });
+    }
+
+    if (!initialValue.length) {
+      initialValue = FiltersVariable.DEFAULT_VALUE;
+    }
+
     super({
       name: 'filters',
       label: 'Filters',
-      filters: initialFilters || [],
+      filters: initialValue,
     });
   }
 
