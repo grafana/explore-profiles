@@ -126,7 +126,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
 
-    return `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
+    return `${serviceName || '?'} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
   }
 
   static Component({ model }: SceneComponentProps<SceneServiceDetails>) {

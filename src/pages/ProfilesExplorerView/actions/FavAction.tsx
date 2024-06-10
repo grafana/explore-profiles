@@ -67,9 +67,6 @@ export class FavAction extends SceneObjectBase<FavActionState> {
       );
     }
 
-    console.log('*** queryRunnerParams', queryRunnerParams);
-    console.log('*** interpolatedParams', interpolatedParams);
-
     return interpolatedParams;
   }
 

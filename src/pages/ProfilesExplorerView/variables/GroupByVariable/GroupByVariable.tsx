@@ -7,7 +7,8 @@ import {
   VariableDependencyConfig,
   VariableValueOption,
 } from '@grafana/scenes';
-import { Field, Icon, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
+import { Field, Icon, RefreshPicker, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
+import { noOp } from '@shared/domain/noOp';
 import React from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -88,10 +89,14 @@ export class GroupByVariable extends QueryVariable {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
 
+    const onRefresh = () => {
+      (findSceneObjectByClass(model, GroupByVariable) as GroupByVariable).update();
+    };
+
     if (loading) {
       return (
         <Field label="Group by">
-          <Spinner />
+          <Spinner className={styles.spinner} />
         </Field>
       );
     }
@@ -101,11 +106,16 @@ export class GroupByVariable extends QueryVariable {
       console.error(error);
 
       return (
-        <Field label="Group by">
-          <Tooltip theme="error" content={error.toString()}>
-            <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
-          </Tooltip>
-        </Field>
+        <>
+          <Field label="Group by">
+            <div className={styles.groupByErrorContainer}>
+              <Tooltip theme="error" content={error.toString()}>
+                <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
+              </Tooltip>
+              <RefreshPicker noIntervalPicker onRefresh={onRefresh} isOnCanvas={false} onIntervalChanged={noOp} />
+            </div>
+          </Field>
+        </>
       );
     }
 
@@ -113,10 +123,6 @@ export class GroupByVariable extends QueryVariable {
 
     const getMainLabels = (groupByOptions: Array<SelectableValue<string>>) => {
       return groupByOptions.slice(0, GroupByVariable.MAX_MAIN_LABELS).map(({ value }) => value as string);
-    };
-
-    const onRefresh = () => {
-      (findSceneObjectByClass(model, GroupByVariable) as GroupByVariable).update();
     };
 
     return loading ? (
@@ -136,6 +142,13 @@ export class GroupByVariable extends QueryVariable {
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
+  spinner: css`
+    height: 32px;
+    line-height: 32px;
+  `,
+  groupByErrorContainer: css`
+    display: flex;
+  `,
   iconError: css`
     color: ${theme.colors.error.text};
     align-self: center;
