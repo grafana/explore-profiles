@@ -37,6 +37,12 @@ Use the corresponding commit SHA to execute:
 gcom-dev /instances/[instance name]/provisioned-plugins/grafana-pyroscope-app -d version=[commit SHA]
 ```
 
+Then restart the instance:
+
+```shell
+gcom-dev /instances/[instance name]/restart -XPOST
+```
+
 #### When the artefacts (.zip files) have not been published to Google Cloud Storage
 
 Tag the commit you want to deploy, e.g.:
@@ -53,6 +59,12 @@ Once published, use the corresponding commit SHA to execute:
 
 ```shell
 gcom-dev /instances/[instance name]/provisioned-plugins/grafana-pyroscope-app -d version=[commit SHA]
+```
+
+Then restart the instance:
+
+```shell
+gcom-dev /instances/[instance name]/restart -XPOST
 ```
 
 ### Manual release to prod / ops
