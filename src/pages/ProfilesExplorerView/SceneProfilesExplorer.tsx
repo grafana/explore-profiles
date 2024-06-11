@@ -260,6 +260,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       GroupByVariable.DEFAULT_VALUE,
       GroupByVariable.DEFAULT_VALUE
     );
+
+    (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
+      filters: FiltersVariable.DEFAULT_VALUE,
+    });
   };
 
   onClickShareLink = async () => {
