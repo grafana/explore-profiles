@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -48,5 +49,11 @@ func NewProxy(logger log.Logger, settings Settings) (*Proxy, error) {
 }
 
 func (p *Proxy) HandleHTTP(w http.ResponseWriter, req *http.Request) {
+	names := []string{}
+	for _, cookie := range req.Cookies() {
+		names = append(names, cookie.Name)
+	}
+
+	p.logger.Error("msg", "handling request", "cookie", fmt.Sprintf("%#v", names))
 	p.reverseProxy.ServeHTTP(w, req)
 }
