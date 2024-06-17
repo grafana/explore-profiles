@@ -9,10 +9,14 @@ import {
 } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
-import React, { useMemo } from 'react';
+import { buildQuery, parseQuery } from '@shared/domain/url-params/parseQuery';
+import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
+import React, { useEffect, useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
+import { FiltersVariable } from './FiltersVariable/FiltersVariable';
 
 export class ServiceNameVariable extends QueryVariable {
   constructor({ value }: { value?: string }) {
@@ -64,6 +68,7 @@ export class ServiceNameVariable extends QueryVariable {
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
+    const [query, setQuery] = useQueryFromUrl();
 
     const cascaderOptions = useMemo(
       () => buildServiceNameCascaderOptions(options.map(({ label }) => label)),
@@ -81,6 +86,23 @@ export class ServiceNameVariable extends QueryVariable {
       );
     }
 
+    const onSelect = (newValue: string) => {
+      model.changeValueTo(newValue, newValue);
+
+      // manually reset filters - the "Scenes way" would be to listen to the variable changes but it leads to errors
+      // see comments in src/pages/ProfilesExplorerView/variables/FiltersVariable/FiltersVariable.tsx
+      const filtersVariable = findSceneObjectByClass(model, FiltersVariable) as FiltersVariable;
+      filtersVariable.setState({ filters: [] });
+    };
+
+    useEffect(() => {
+      if (typeof value === 'string') {
+        // Explain Flame Graph (AI button) depends on the query value so we have to sync it here
+        const { profileMetricId, labels } = parseQuery(query);
+        setQuery(buildQuery({ serviceId: value, profileMetricId, labels }));
+      }
+    }, [query, setQuery, value]);
+
     return (
       <Cascader
         // we do this to ensure that the Cascader selects the initial value properly
@@ -93,7 +115,7 @@ export class ServiceNameVariable extends QueryVariable {
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
-        onSelect={(newValue: string) => model.changeValueTo(newValue, newValue)}
+        onSelect={onSelect}
       />
     );
   };

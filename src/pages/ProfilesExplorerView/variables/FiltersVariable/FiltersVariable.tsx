@@ -4,7 +4,8 @@ import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/
 import { useStyles2 } from '@grafana/ui';
 import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
-import React, { useCallback, useMemo } from 'react';
+import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { ProfileMetricVariable } from '../ProfileMetricVariable';
@@ -53,6 +54,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
   static Component = ({ model }: SceneComponentProps<FiltersVariable>) => {
     const styles = useStyles2(getStyles);
     const { filters } = model.useState();
+    const [, setQuery] = useQueryFromUrl();
 
     const { value: serviceName } = (
       findSceneObjectByClass(model, ServiceNameVariable) as ServiceNameVariable
@@ -62,7 +64,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
       findSceneObjectByClass(model, ProfileMetricVariable) as ProfileMetricVariable
     ).useState();
 
-    // TODO: fix these errors when trying to reset the filters whenever the servcie name changes
+    // TODO: fix these errors when trying to reset the filters whenever the service name changes
     // SceneVariableSet.js:161 SceneVariableSet updateAndValidate error Discarded by user
     // runRequest.catchError Discarded by user
     // Data source errors
@@ -80,6 +82,13 @@ export class FiltersVariable extends AdHocFiltersVariable {
       },
       [model]
     );
+
+    useEffect(() => {
+      if (typeof filterExpression === 'string') {
+        // Explain Flame Graph (AI button) depends on the query value so we have to sync it here
+        setQuery(filterExpression);
+      }
+    }, [filterExpression, setQuery]);
 
     return (
       <QueryBuilder
