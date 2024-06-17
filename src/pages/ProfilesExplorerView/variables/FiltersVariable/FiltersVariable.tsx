@@ -47,7 +47,11 @@ export class FiltersVariable extends AdHocFiltersVariable {
     super({
       name: 'filters',
       label: 'Filters',
-      filters: initialValue,
+    });
+
+    this.addActivationHandler(() => {
+      // ensures the URL search params are properly updated
+      this.setState({ filters: initialValue });
     });
   }
 

@@ -8,10 +8,8 @@ import {
   VariableValueOption,
 } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
-import { buildQuery, parseQuery } from '@shared/domain/url-params/parseQuery';
-import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-sources';
@@ -106,7 +104,6 @@ export class ProfileMetricVariable extends QueryVariable {
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
-    const [query, setQuery] = useQueryFromUrl();
 
     const cascaderOptions = useMemo(() => {
       return ProfileMetricVariable.buildCascaderOptions(options as ProfileMetricOptions);
@@ -122,14 +119,6 @@ export class ProfileMetricVariable extends QueryVariable {
         </Tooltip>
       );
     }
-
-    useEffect(() => {
-      if (typeof value === 'string') {
-        // Explain Flame Graph (AI button) depends on the query value so we have to sync it here
-        const { serviceId, labels } = parseQuery(query);
-        setQuery(buildQuery({ profileMetricId: value, serviceId, labels }));
-      }
-    }, [query, setQuery, value]);
 
     return (
       <Cascader
