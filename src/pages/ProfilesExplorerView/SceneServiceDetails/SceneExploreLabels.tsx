@@ -111,6 +111,9 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       }
 
       addFilter(filterByVariable, filterToAdd);
+
+      const goupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+      goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
     });
 
     const showPieChartSub = this.subscribeToEvent(EventShowPieChart, async (event) => {
