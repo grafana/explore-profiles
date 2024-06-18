@@ -26,11 +26,7 @@ export class GroupByVariable extends QueryVariable {
 
   static MAX_MAIN_LABELS = 8;
 
-  constructor({ value }: { value?: string }) {
-    // hack: the variable does not sync, if the "var-groupBy" search parameter is present in the URL, it is set to an empty value
-    const initialValue =
-      value || new URLSearchParams(window.location.search).get('var-groupBy') || GroupByVariable.DEFAULT_VALUE;
-
+  constructor() {
     super({
       name: 'groupBy',
       label: 'Group by',
@@ -39,11 +35,13 @@ export class GroupByVariable extends QueryVariable {
       loading: true,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, initialValue));
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onActivate(initialValue: string) {
-    this.setState({ value: initialValue });
+  onActivate() {
+    if (!this.state.value) {
+      this.setState({ value: GroupByVariable.DEFAULT_VALUE });
+    }
 
     // hack
     const refreshButton = document.querySelector(
@@ -78,12 +76,6 @@ export class GroupByVariable extends QueryVariable {
     } finally {
       this.setState({ loading: false, options, error });
     }
-
-    const value = options.some(({ value }) => value === this.state.value)
-      ? this.state.value
-      : GroupByVariable.DEFAULT_VALUE;
-
-    this.changeValueTo(value, value);
   }
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {

@@ -14,8 +14,7 @@ import {
   ProfileMetric,
   ProfileMetricId,
 } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-
-import { ServicesDataSource } from './ServicesDataSource';
+import { servicesRepository } from '@shared/infrastructure/services/servicesRepository';
 
 export class ProfileMetricsDataSource extends RuntimeDataSource {
   static getProfileMetricLabel(profileMetricId: string) {
@@ -25,8 +24,27 @@ export class ProfileMetricsDataSource extends RuntimeDataSource {
     return `${type} (${group})`;
   }
 
+  async fetchProfileMetrics(timeRange: TimeRange) {
+    const services = await servicesRepository.listServices(timeRange);
+
+    const allProfileMetricsMap = new Map<ProfileMetric['id'], ProfileMetric>();
+
+    for (const profileMetrics of services.values()) {
+      for (const [id, metric] of profileMetrics) {
+        allProfileMetricsMap.set(id, metric);
+      }
+    }
+
+    return Array.from(allProfileMetricsMap.values())
+      .sort((a, b) => a.group.localeCompare(b.group))
+      .map(({ id, type, group }) => ({
+        value: id,
+        text: `${type} (${group})`,
+      }));
+  }
+
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
-    const profileMetrics = await this.metricFindQuery('list', { range: request.range });
+    const profileMetrics = await this.fetchProfileMetrics(request.range);
 
     const values = profileMetrics.map(({ value, text }, index) => ({
       index,
@@ -57,22 +75,7 @@ export class ProfileMetricsDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    const services = await ServicesDataSource.fetchServices(options.range as TimeRange);
-
-    const allProfileMetricsMap = new Map<ProfileMetric['id'], ProfileMetric>();
-
-    for (const profileMetrics of services.values()) {
-      for (const [id, metric] of profileMetrics) {
-        allProfileMetricsMap.set(id, metric);
-      }
-    }
-
-    return Array.from(allProfileMetricsMap.values())
-      .sort((a, b) => a.group.localeCompare(b.group))
-      .map(({ id, type, group }) => ({
-        value: id,
-        text: `${type} (${group})`,
-      }));
+    return this.fetchProfileMetrics(options.range as TimeRange);
   }
 
   async testDatasource(): Promise<TestDataSourceResponse> {

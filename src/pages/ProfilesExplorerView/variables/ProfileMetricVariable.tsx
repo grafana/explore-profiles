@@ -24,13 +24,7 @@ type ProfileMetricOptions = Array<{
 export class ProfileMetricVariable extends QueryVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
-  constructor({ value }: { value?: string }) {
-    // hack: the variable does not sync, if the "var-profileMetricId" search parameter is present in the URL, it is set to an empty value
-    const initialValue =
-      value ||
-      new URLSearchParams(window.location.search).get('var-profileMetricId') ||
-      ProfileMetricVariable.DEFAULT_VALUE;
-
+  constructor() {
     super({
       name: 'profileMetricId',
       label: '🔥 Profile',
@@ -39,11 +33,13 @@ export class ProfileMetricVariable extends QueryVariable {
       loading: true,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, initialValue));
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onActivate(initialValue: string) {
-    this.setState({ value: initialValue });
+  onActivate() {
+    if (!this.state.value) {
+      this.setState({ value: ProfileMetricVariable.DEFAULT_VALUE });
+    }
 
     const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
       this.update();
@@ -67,11 +63,6 @@ export class ProfileMetricVariable extends QueryVariable {
     } finally {
       this.setState({ loading: false, options, error });
     }
-
-    // empty string to show the user the previous value is not available anymore
-    const value = options.some(({ value }) => value === this.state.value) ? this.state.value : '';
-
-    this.changeValueTo(value, value);
   }
 
   static buildCascaderOptions(options: ProfileMetricOptions): CascaderOption[] {

@@ -1,9 +1,8 @@
 import { DataSourceVariable } from '@grafana/scenes';
 
 export class ProfilesDataSourceVariable extends DataSourceVariable {
-  constructor(options: any) {
+  constructor() {
     super({
-      ...options,
       pluginId: 'phlare',
       name: 'dataSource',
       label: 'Data source',

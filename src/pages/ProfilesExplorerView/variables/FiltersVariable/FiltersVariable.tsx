@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import { AdHocVariableFilter } from '@grafana/data';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
 import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
@@ -12,46 +11,14 @@ import { ProfileMetricVariable } from '../ProfileMetricVariable';
 import { ServiceNameVariable } from '../ServiceNameVariable';
 import { convertPyroscopeToVariableFilter, expressionBuilder } from './filters-ops';
 
-type FilterByVariableState = ConstructorParameters<typeof AdHocFiltersVariable>[0] & {
-  baseFilters: AdHocVariableFilter[];
-  filters: AdHocVariableFilter[];
-};
-
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
 
-  constructor({ initialFilters }: { initialFilters?: FilterByVariableState['filters'] }) {
-    let initialValue = initialFilters;
-
-    // hack: the variable does not sync, if the "var-filters" search parameter is present in the URL, it is set to an empty value
-    if (!initialValue) {
-      const urlValues = new URLSearchParams(window.location.search).getAll('var-filters');
-
-      initialValue = urlValues
-        .map((value) => value.match(/([^|]+)\|([^|]+)\|(.*)/))
-        .filter(Boolean)
-        .map((part) => {
-          const [, key, operator, value] = part as string[];
-          return {
-            key,
-            operator,
-            value,
-          };
-        });
-    }
-
-    if (!initialValue.length) {
-      initialValue = FiltersVariable.DEFAULT_VALUE;
-    }
-
+  constructor() {
     super({
       name: 'filters',
       label: 'Filters',
-    });
-
-    this.addActivationHandler(() => {
-      // ensures the URL search params are properly updated
-      this.setState({ filters: initialValue });
+      filters: FiltersVariable.DEFAULT_VALUE,
     });
   }
 

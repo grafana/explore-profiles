@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { dateTimeParse, GrafanaTheme2 } from '@grafana/data';
 import {
+  DataSourceVariable,
   EmbeddedSceneState,
   getUrlSyncManager,
   SceneComponentProps,
@@ -105,7 +106,21 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       explorationType: undefined,
       body: undefined,
       $timeRange: new SceneTimeRange({}),
-      $variables: new SceneVariableSet({ variables: [] }), // see buildScene()
+      $variables: new SceneVariableSet({
+        // in order to sync with the URL and...
+        // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
+        // also, we prevent re-creating all variables when switching exploration type, which would lead to unecessary work and layout shifts in the UI
+        // (because values would be empty before loading, then populated after fetched)
+        // it's ok from a perf pov because fetching values will not occur if their components are not rendered
+        // see setExplorationType() for dynamic updates
+        variables: [
+          new ProfilesDataSourceVariable(),
+          new ServiceNameVariable(),
+          new ProfileMetricVariable(),
+          new FiltersVariable(),
+          new GroupByVariable(),
+        ],
+      }),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -205,59 +220,36 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   setExplorationType(explorationType: ExplorationType, gridItemData?: GridItemData) {
-    const { body, variables } = this.buildScene(explorationType, gridItemData);
-
     this.setState({
       explorationType,
-      body,
-      $variables: new SceneVariableSet({
-        variables: [
-          new ProfilesDataSourceVariable({}),
-          // we instantiate FiltersVariable here so that we can always interpolate its value in all our queries (grid, main timeseries, flame graph)
-          // see data/buildXYZQueryRunner.ts
-          new FiltersVariable({ initialFilters: gridItemData?.queryRunnerParams.filters }),
-          ...variables,
-        ],
-      }),
+      body: this.buildBodyScene(explorationType),
     });
+
+    if (gridItemData) {
+      this.updateVariables(gridItemData.queryRunnerParams);
+    }
   }
 
-  updateQuickFilterPlaceholder(newPlaceholder: string) {
-    (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(newPlaceholder);
-  }
-
-  buildScene(explorationType: ExplorationType, gridItemData?: GridItemData) {
+  buildBodyScene(explorationType: ExplorationType) {
     let primary;
-    let variables: SceneVariable[];
 
     switch (explorationType) {
       case ExplorationType.SINGLE_SERVICE:
         primary = new SceneExploreSingleService();
-        variables = [new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName })];
 
         this.updateQuickFilterPlaceholder('Search profile metrics (comma-separated regexes are supported)');
         break;
 
       case ExplorationType.SINGLE_SERVICE_LABELS:
         primary = new SceneExploreServiceLabels();
-        variables = [
-          new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
-          new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
-          new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label }),
-        ];
         break;
 
       case ExplorationType.SINGLE_SERVICE_FLAME_GRAPH:
         primary = new SceneServiceFlameGraph();
-        variables = [
-          new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
-          new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
-        ];
         break;
 
       case ExplorationType.FAVORITES:
         primary = new SceneExploreFavorites();
-        variables = [];
 
         this.updateQuickFilterPlaceholder('Search favorites (comma-separated regexes are supported)');
         break;
@@ -265,18 +257,81 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.ALL_SERVICES:
       default:
         primary = new SceneExploreAllServices();
-        variables = [new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId })];
 
         this.updateQuickFilterPlaceholder('Search services  (comma-separated regexes are supported)');
     }
 
-    return {
-      body: new SplitLayout({
-        direction: 'column',
-        primary,
-      }),
-      variables,
-    };
+    return new SplitLayout({
+      direction: 'column',
+      primary,
+    });
+  }
+
+  updateQuickFilterPlaceholder(newPlaceholder: string) {
+    (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(newPlaceholder);
+  }
+
+  updateVariables(queryRunnerParams: GridItemData['queryRunnerParams']) {
+    const [, serviceNameVariable, profileMetricVariable, filtersVariable, groupByVariable] = this.state.$variables!
+      .state.variables as [
+      DataSourceVariable,
+      ServiceNameVariable,
+      ProfileMetricVariable,
+      FiltersVariable,
+      GroupByVariable
+    ];
+
+    const { serviceName, profileMetricId, filters, groupBy } = queryRunnerParams;
+
+    if (serviceName) {
+      serviceNameVariable.changeValueTo(serviceName, serviceName);
+    }
+
+    if (profileMetricId) {
+      profileMetricVariable.changeValueTo(profileMetricId);
+    }
+
+    if (filters) {
+      filtersVariable.setState({ filters });
+    }
+
+    if (groupBy?.label) {
+      groupByVariable.changeValueTo(groupBy.label, groupBy.label);
+    }
+  }
+
+  getVariablesAndGridControls(explorationType: ExplorationType) {
+    const [dataSourceVariable, serviceNameVariable, profileMetricVariable, filtersVariable] = this.state.$variables!
+      .state.variables as [DataSourceVariable, ServiceNameVariable, ProfileMetricVariable, FiltersVariable];
+
+    switch (explorationType) {
+      case ExplorationType.ALL_SERVICES:
+        return {
+          variables: [dataSourceVariable, profileMetricVariable],
+          gridControls: this.state.gridControls,
+        };
+
+      case ExplorationType.SINGLE_SERVICE:
+        return {
+          variables: [dataSourceVariable, serviceNameVariable],
+          gridControls: this.state.gridControls,
+        };
+
+      case ExplorationType.SINGLE_SERVICE_LABELS:
+      case ExplorationType.SINGLE_SERVICE_FLAME_GRAPH:
+        return {
+          // note that SceneGroupByLabels will directly get groupByVariable and gridControls as the layout is a bit different
+          variables: [dataSourceVariable, serviceNameVariable, profileMetricVariable, filtersVariable],
+          gridControls: [],
+        };
+
+      case ExplorationType.FAVORITES:
+      default:
+        return {
+          variables: [dataSourceVariable],
+          gridControls: this.state.gridControls,
+        };
+    }
   }
 
   onChangeExplorationType = (explorationType: ExplorationType) => {
@@ -314,11 +369,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { explorationType, controls, gridControls, body, $variables } = model.useState();
+    const { explorationType, controls, body } = model.useState();
 
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
-    const [dataSourceVariable, filtersVariable, ...otherVariables] = $variables!.state.variables;
-    const sceneVariables = otherVariables.filter((v) => !(v instanceof GroupByVariable));
+
+    const { variables, gridControls } = model.getVariablesAndGridControls(explorationType as ExplorationType);
+    const [dataSourceVariable, ...sceneVariables] = variables as SceneVariable[];
 
     return (
       <>
@@ -359,18 +415,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
               </div>
             ))}
 
-            {[ExplorationType.ALL_SERVICES, ExplorationType.SINGLE_SERVICE, ExplorationType.FAVORITES].includes(
-              explorationType as ExplorationType
-            ) && gridControls.map((control) => <control.Component key={control.key} model={control} />)}
-
-            {[ExplorationType.SINGLE_SERVICE_LABELS, ExplorationType.SINGLE_SERVICE_FLAME_GRAPH].includes(
-              explorationType as ExplorationType
-            ) && (
-              <div className={styles.variable}>
-                <InlineLabel width="auto">{filtersVariable.state.label}</InlineLabel>
-                <filtersVariable.Component model={filtersVariable} />
-              </div>
-            )}
+            {gridControls.map((control) => (
+              <control.Component key={control.key} model={control} />
+            ))}
           </div>
         </div>
 

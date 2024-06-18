@@ -1,6 +1,6 @@
 type CacheKeyable = { toString(): string };
 
-export class CacheClient {
+export class MemoryCacheClient {
   store = new Map<string, any>();
 
   static buildCacheKey(args: CacheKeyable[]) {
@@ -12,15 +12,15 @@ export class CacheClient {
   }
 
   get(args: CacheKeyable[]): any {
-    return this.store.get(CacheClient.buildCacheKey(args));
+    return this.store.get(MemoryCacheClient.buildCacheKey(args));
   }
 
   // TODO: TTL?
   set(args: CacheKeyable[], data: any) {
-    this.store.set(CacheClient.buildCacheKey(args), data);
+    this.store.set(MemoryCacheClient.buildCacheKey(args), data);
   }
 
   delete(args: CacheKeyable[]) {
-    this.store.delete(CacheClient.buildCacheKey(args));
+    this.store.delete(MemoryCacheClient.buildCacheKey(args));
   }
 }

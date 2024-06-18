@@ -1,7 +1,6 @@
 import {
   DataQueryRequest,
   DataQueryResponse,
-  dateTimeParse,
   FieldType,
   LegacyMetricFindQueryOptions,
   LoadingState,
@@ -10,27 +9,22 @@ import {
   TimeRange,
 } from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
-import { ServicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
-
-// we need our own instance to prevent abort() (see src/shared/infrastructure/services/useFetchServices.ts)
-const servicesApiClient = new ServicesApiClient();
+import { servicesRepository } from '@shared/infrastructure/services/servicesRepository';
 
 export class ServicesDataSource extends RuntimeDataSource {
-  static fetchServices(timeRange: TimeRange) {
-    const from = timeRange.from.valueOf();
-    const to = timeRange.to.valueOf();
+  async fetchServices(timeRange: TimeRange) {
+    const services = await servicesRepository.listServices(timeRange);
 
-    const pyroscopeTimeRange = {
-      from: dateTimeParse(from),
-      to: dateTimeParse(to),
-      raw: { from: dateTimeParse(from), to: dateTimeParse(to) },
-    };
-
-    return servicesApiClient.list({ timeRange: pyroscopeTimeRange });
+    return Array.from(services.keys())
+      .sort((a, b) => a.localeCompare(b))
+      .map((serviceName) => ({
+        text: serviceName,
+        value: serviceName,
+      }));
   }
 
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
-    const services = await this.metricFindQuery('list', { range: request.range });
+    const services = await this.fetchServices(request.range);
 
     const values = services.map(({ value, text }, index) => ({
       index,
@@ -61,14 +55,7 @@ export class ServicesDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    const services = await ServicesDataSource.fetchServices(options.range as TimeRange);
-
-    return Array.from(services.keys())
-      .sort((a, b) => a.localeCompare(b))
-      .map((serviceName) => ({
-        text: serviceName,
-        value: serviceName,
-      }));
+    return this.fetchServices(options.range as TimeRange);
   }
 
   async testDatasource(): Promise<TestDataSourceResponse> {

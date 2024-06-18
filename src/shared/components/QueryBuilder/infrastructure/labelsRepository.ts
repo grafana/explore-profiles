@@ -1,11 +1,11 @@
+import { MemoryCacheClient } from '../../../infrastructure/MemoryCacheClient';
 import { invariant } from '../domain/helpers/invariant';
 import { Suggestions } from '../domain/types';
-import { CacheClient } from './http/CacheClient';
 import { LabelsApiClient } from './http/LabelsApiClient';
 import { QueryBuilderHttpRepository } from './QueryBuilderHttpRepository';
 
 class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
-  cacheClient: CacheClient;
+  cacheClient: MemoryCacheClient;
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
 
@@ -29,7 +29,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
     return labelValues.map((label) => ({ value: label, label }));
   }
 
-  constructor(httpClient: LabelsApiClient, cacheClient: CacheClient) {
+  constructor(httpClient: LabelsApiClient, cacheClient: MemoryCacheClient) {
     super(httpClient);
 
     this.cacheClient = cacheClient;
@@ -97,4 +97,4 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
   }
 }
 
-export const labelsRepository = new LabelsRepository(new LabelsApiClient(), new CacheClient());
+export const labelsRepository = new LabelsRepository(new LabelsApiClient(), new MemoryCacheClient());
