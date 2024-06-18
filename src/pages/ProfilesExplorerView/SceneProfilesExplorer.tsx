@@ -412,7 +412,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     z-index: 1;
   `,
   controls: css`
-    padding: 0 0 ${theme.spacing(1)} 0;
+    padding: ${theme.spacing(1)} 0;
   `,
   label: css``,
   variable: css`
