@@ -37,13 +37,14 @@ export class GroupByVariable extends QueryVariable {
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,
       query: 'list', // dummy query, can't be an empty string
       loading: true,
-      value: initialValue,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this));
+    this.addActivationHandler(this.onActivate.bind(this, initialValue));
   }
 
-  onActivate() {
+  onActivate(initialValue: string) {
+    this.setState({ value: initialValue });
+
     // hack
     const refreshButton = document.querySelector(
       '[data-testid="data-testid RefreshPicker run button"]'

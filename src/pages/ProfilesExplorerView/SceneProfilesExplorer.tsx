@@ -251,8 +251,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   onChangeExplorationType = (explorationType: ExplorationType) => {
-    this.setExplorationType(explorationType);
-
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
     // findSceneObjectByClass() throws if not found
@@ -264,6 +262,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
       filters: FiltersVariable.DEFAULT_VALUE,
     });
+
+    this.setExplorationType(explorationType);
   };
 
   onClickShareLink = async () => {
