@@ -5,8 +5,9 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
 import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-sources';
-import { EventExplore } from '../events/EventExplore';
-import { EventViewDetails } from '../events/EventViewDetails';
+import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
+import { EventViewServiceProfiles } from '../events/EventViewServiceProfiles';
 
 interface SceneExploreAllServicesState extends EmbeddedSceneState {}
 
@@ -18,8 +19,9 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
         key: 'all-services-grid',
         dataSource: PYROSCOPE_SERVICES_DATA_SOURCE,
         headerActions: (item) => [
-          new SelectAction({ EventClass: EventExplore, item }),
-          new SelectAction({ EventClass: EventViewDetails, item }),
+          new SelectAction({ EventClass: EventViewServiceProfiles, item }),
+          new SelectAction({ EventClass: EventViewServiceLabels, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
           new FavAction({ item }),
         ],
       }),

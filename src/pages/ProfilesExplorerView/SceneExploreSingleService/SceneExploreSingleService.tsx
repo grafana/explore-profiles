@@ -5,7 +5,8 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
 import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-sources';
-import { EventViewDetails } from '../events/EventViewDetails';
+import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 
 interface SceneExploreSingleServiceState extends EmbeddedSceneState {}
 
@@ -16,7 +17,11 @@ export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingl
       body: new SceneTimeSeriesGrid({
         key: 'profile-metrics-grid',
         dataSource: PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
-        headerActions: (item) => [new SelectAction({ EventClass: EventViewDetails, item }), new FavAction({ item })],
+        headerActions: (item) => [
+          new SelectAction({ EventClass: EventViewServiceLabels, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new FavAction({ item }),
+        ],
       }),
     });
   }

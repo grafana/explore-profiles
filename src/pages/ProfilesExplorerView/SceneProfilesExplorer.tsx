@@ -34,13 +34,15 @@ import {
   PYROSCOPE_SERVICES_DATA_SOURCE,
 } from './data/pyroscope-data-sources';
 import { ServicesDataSource } from './data/ServicesDataSource';
-import { EventExplore } from './events/EventExplore';
-import { EventViewDetails } from './events/EventViewDetails';
+import { EventViewServiceFlameGraph } from './events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from './events/EventViewServiceLabels';
+import { EventViewServiceProfiles } from './events/EventViewServiceProfiles';
 import { findSceneObjectByClass } from './helpers/findSceneObjectByClass';
 import { SceneExploreAllServices } from './SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
+import { SceneExploreServiceLabels } from './SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
-import { SceneServiceDetails } from './SceneServiceDetails/SceneServiceDetails';
+import { SceneServiceFlameGraph } from './SceneServiceFlameGraph/SceneServiceFlameGraph';
 import { GridItemData } from './types/GridItemData';
 import { FiltersVariable } from './variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
@@ -57,7 +59,8 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
 enum ExplorationType {
   ALL_SERVICES = 'all',
   SINGLE_SERVICE = 'single',
-  SINGLE_SERVICE_DETAILS = 'details',
+  SINGLE_SERVICE_LABELS = 'labels',
+  SINGLE_SERVICE_FLAME_GRAPH = 'flame-graph',
   FAVORITES = 'favorites',
 }
 
@@ -65,15 +68,19 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   static EXPLORATION_TYPE_OPTIONS = [
     {
       value: ExplorationType.ALL_SERVICES,
-      label: 'All',
+      label: 'All services',
     },
     {
       value: ExplorationType.SINGLE_SERVICE,
-      label: 'Single',
+      label: 'Single service',
     },
     {
-      value: ExplorationType.SINGLE_SERVICE_DETAILS,
-      label: 'Details',
+      value: ExplorationType.SINGLE_SERVICE_LABELS,
+      label: 'Service labels',
+    },
+    {
+      value: ExplorationType.SINGLE_SERVICE_FLAME_GRAPH,
+      label: 'Flame graph',
     },
     {
       value: ExplorationType.FAVORITES,
@@ -163,22 +170,29 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   subscribeToEvents() {
-    const exploreSub = this.subscribeToEvent(EventExplore, (event) => {
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE, event.payload.item);
-
+    const profilesSub = this.subscribeToEvent(EventViewServiceProfiles, (event) => {
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
+
+      this.setExplorationType(ExplorationType.SINGLE_SERVICE, event.payload.item);
     });
 
-    const selectSub = this.subscribeToEvent(EventViewDetails, (event) => {
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE_DETAILS, event.payload.item);
-
+    const labelsSub = this.subscribeToEvent(EventViewServiceLabels, (event) => {
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
+
+      this.setExplorationType(ExplorationType.SINGLE_SERVICE_LABELS, event.payload.item);
+    });
+
+    const flameGraphSub = this.subscribeToEvent(EventViewServiceFlameGraph, (event) => {
+      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
+
+      this.setExplorationType(ExplorationType.SINGLE_SERVICE_FLAME_GRAPH, event.payload.item);
     });
 
     return {
       unsubscribe() {
-        selectSub.unsubscribe();
-        exploreSub.unsubscribe();
+        flameGraphSub.unsubscribe();
+        labelsSub.unsubscribe();
+        profilesSub.unsubscribe();
       },
     };
   }
@@ -217,12 +231,20 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         this.updateQuickFilterPlaceholder('Search profile metrics (comma-separated regexes are supported)');
         break;
 
-      case ExplorationType.SINGLE_SERVICE_DETAILS:
-        primary = new SceneServiceDetails();
+      case ExplorationType.SINGLE_SERVICE_LABELS:
+        primary = new SceneExploreServiceLabels();
         variables = [
           new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
           new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
           new GroupByVariable({ value: gridItemData?.queryRunnerParams.groupBy?.label }),
+        ];
+        break;
+
+      case ExplorationType.SINGLE_SERVICE_FLAME_GRAPH:
+        primary = new SceneServiceFlameGraph();
+        variables = [
+          new ServiceNameVariable({ value: gridItemData?.queryRunnerParams.serviceName }),
+          new ProfileMetricVariable({ value: gridItemData?.queryRunnerParams.profileMetricId }),
         ];
         break;
 
@@ -284,7 +306,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { explorationType, controls, gridControls, body, $variables } = model.useState();
 
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
-    const [dataSourceVariable, filterByVariable, ...otherVariables] = $variables!.state.variables;
+    const [dataSourceVariable, filtersVariable, ...otherVariables] = $variables!.state.variables;
     const sceneVariables = otherVariables.filter((v) => !(v instanceof GroupByVariable));
 
     return (
@@ -306,15 +328,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                       <div className={styles.tooltipContent}>
                         <h5>Types of exploration</h5>
                         <dl>
-                          <dt>All</dt>
+                          <dt>All services</dt>
                           <dd>Overview of all your services, for any given profile metric</dd>
-                          <dt>Single</dt>
+                          <dt>Single service</dt>
                           <dd>Overview of all the profile metrics for a single service</dd>
-                          <dt>Details</dt>
-                          <dd>
-                            Detailled view of a specific service, including its flame graph and the ability to explore
-                            labels
-                          </dd>
+                          <dt>Service labels</dt>
+                          <dd>Single service labels exploration and filtering</dd>
+                          <dt>Flame graph</dt>
+                          <dd>Single service flame graph</dd>
                           <dt>Favorites</dt>
                           <dd>Overview of your favorite visualizations</dd>
                         </dl>
@@ -354,18 +375,20 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
               </div>
             ))}
 
-            {explorationType === ExplorationType.SINGLE_SERVICE_DETAILS && (
+            {[ExplorationType.ALL_SERVICES, ExplorationType.SINGLE_SERVICE, ExplorationType.FAVORITES].includes(
+              explorationType as ExplorationType
+            ) && gridControls.map((control) => <control.Component key={control.key} model={control} />)}
+
+            {[ExplorationType.SINGLE_SERVICE_LABELS, ExplorationType.SINGLE_SERVICE_FLAME_GRAPH].includes(
+              explorationType as ExplorationType
+            ) && (
               <div className={styles.variable}>
                 <InlineLabel className={styles.label} width="auto">
-                  {filterByVariable.state.label}
+                  {filtersVariable.state.label}
                 </InlineLabel>
-                <filterByVariable.Component model={filterByVariable} />
+                <filtersVariable.Component model={filtersVariable} />
               </div>
             )}
-
-            {/* Render scene controls in All, Single and Favorites exploration types */}
-            {explorationType !== ExplorationType.SINGLE_SERVICE_DETAILS &&
-              gridControls.map((control) => <control.Component key={control.key} model={control} />)}
           </div>
         </div>
 
@@ -398,7 +421,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
     gap: ${theme.spacing(1)};
     padding: 0 0 ${theme.spacing(1)} 0;
 
-    &#scene-controls-details > div:last-child {
+    &#scene-controls-labels > div:last-child,
+    &#scene-controls-flame-graph > div:last-child {
       flex-grow: 1;
     }
   `,

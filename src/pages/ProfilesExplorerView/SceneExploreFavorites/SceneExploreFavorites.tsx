@@ -5,7 +5,8 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
 import { PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
-import { EventViewDetails } from '../events/EventViewDetails';
+import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {}
 
@@ -16,7 +17,11 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       body: new SceneTimeSeriesGrid({
         key: 'favorites-grid',
         dataSource: PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
-        headerActions: (item) => [new SelectAction({ EventClass: EventViewDetails, item }), new FavAction({ item })],
+        headerActions: (item) => [
+          new SelectAction({ EventClass: EventViewServiceLabels, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new FavAction({ item }),
+        ],
       }),
     });
   }

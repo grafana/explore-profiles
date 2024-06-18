@@ -19,9 +19,9 @@ import { SceneQuickFilter } from '../components/SceneQuickFilter';
 import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
 import { buildTimeSeriesGroupByQueryRunner } from '../data/buildTimeSeriesGroupByQueryRunner';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../data/pyroscope-data-sources';
-import { EventAddToFilters } from '../events/EventAddToFilters';
+import { EventAddLabelToFilters } from '../events/EventAddLabelToFilters';
 import { EventSelectLabel } from '../events/EventSelectLabel';
-import { EventShowPieChart } from '../events/EventShowPieChart';
+import { EventViewLabelsPieChart } from '../events/EventViewLabelsPieChart';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
@@ -29,13 +29,13 @@ import { addFilter } from '../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 
-interface SceneExploreLabelsState extends SceneObjectState {
+interface SceneGroupByLabelsState extends SceneObjectState {
   body: SceneTimeSeriesGrid;
   drawerContent?: VizPanel;
   drawerTitle?: string;
 }
 
-export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState> {
+export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId', 'groupBy'],
     onReferencedVariableValueChanged: () => {
@@ -46,7 +46,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
 
   constructor() {
     super({
-      key: 'explore-labels',
+      key: 'group-by-labels',
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
         dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
@@ -55,14 +55,14 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
             ? ([
                 new SelectAction({ EventClass: EventSelectLabel, item }),
                 item.queryRunnerParams.groupBy.values.length === 1
-                  ? new SelectAction({ EventClass: EventAddToFilters, item })
+                  ? new SelectAction({ EventClass: EventAddLabelToFilters, item })
                   : undefined,
                 item.queryRunnerParams.groupBy.values.length > 1
-                  ? new SelectAction({ EventClass: EventShowPieChart, item })
+                  ? new SelectAction({ EventClass: EventViewLabelsPieChart, item })
                   : undefined,
                 new FavAction({ item }),
               ].filter(Boolean) as VizPanelState['headerActions'])
-            : [new SelectAction({ EventClass: EventAddToFilters, item }), new FavAction({ item })],
+            : [new SelectAction({ EventClass: EventAddLabelToFilters, item }), new FavAction({ item })],
       }),
       drawerContent: undefined,
       drawerTitle: undefined,
@@ -93,7 +93,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
     });
 
-    const addToFiltersSub = this.subscribeToEvent(EventAddToFilters, (event) => {
+    const addToFiltersSub = this.subscribeToEvent(EventAddLabelToFilters, (event) => {
       const filterByVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
 
       let filterToAdd: AdHocVariableFilter;
@@ -116,7 +116,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
       goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
     });
 
-    const showPieChartSub = this.subscribeToEvent(EventShowPieChart, async (event) => {
+    const showPieChartSub = this.subscribeToEvent(EventViewLabelsPieChart, async (event) => {
       const { queryRunnerParams, index } = event.payload.item;
       const timeRange = sceneGraph.getTimeRange(this).state.value;
 
@@ -152,7 +152,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     };
   }
 
-  static Component = ({ model }: SceneComponentProps<SceneExploreLabels>) => {
+  static Component = ({ model }: SceneComponentProps<SceneGroupByLabels>) => {
     const styles = useStyles2(getStyles);
 
     const { body, drawerContent, drawerTitle } = model.useState();
@@ -161,7 +161,7 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
     const { gridControls } = (findSceneObjectByClass(model, SceneProfilesExplorer) as SceneProfilesExplorer).state;
 
     return (
-      <>
+      <div className={styles.container}>
         <groupByVariable.Component model={groupByVariable} />
 
         <div className={styles.sceneControls}>
@@ -186,13 +186,16 @@ export class SceneExploreLabels extends SceneObjectBase<SceneExploreLabelsState>
             <drawerContent.Component model={drawerContent} />
           </Drawer>
         )}
-      </>
+      </div>
     );
   };
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
+  container: css`
+    margin-top: ${theme.spacing(1)};
+  `,
   sceneControls: css`
-    padding: ${theme.spacing(1)} 0;
+    margin-bottom: ${theme.spacing(1)};
   `,
 });

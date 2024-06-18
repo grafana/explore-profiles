@@ -20,6 +20,12 @@ import { buildPyroscopeQuery } from './buildPyroscopeQuery';
 export class LabelsDataSource extends RuntimeDataSource {
   static MAX_TIMESERIES_LABEL_VALUES = 10;
 
+  static formatItemLabel(labelName: string, labelValuesCount: number) {
+    return labelValuesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+      ? `${labelName} (${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES}+)`
+      : `${labelName} (${labelValuesCount})`;
+  }
+
   static buildPyroscopeQuery(scopedVars: ScopedVars) {
     const queryRunner = (scopedVars.__sceneObject as ScopedVar).value;
 
@@ -99,10 +105,7 @@ export class LabelsDataSource extends RuntimeDataSource {
       .map(({ value, text, count, labelValues }, index) => ({
         index,
         value,
-        label:
-          count > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
-            ? `${text} (${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES}+)`
-            : `${text} (${count})`,
+        label: LabelsDataSource.formatItemLabel(text, count),
         count,
         queryRunnerParams: {
           serviceName,

@@ -1,35 +1,39 @@
 import { css } from '@emotion/css';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Button, IconButton, IconName, useStyles2 } from '@grafana/ui';
+import { Button, IconName, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { EventAddToFilters, EventAddToFiltersPayload } from '../events/EventAddToFilters';
-import { EventExplore, EventExplorePayload } from '../events/EventExplore';
+import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
-import { EventShowPieChart, EventShowPieChartPayload } from '../events/EventShowPieChart';
-import { EventViewDetails, EventViewDetailsPayload } from '../events/EventViewDetails';
+import { EventViewLabelsPieChart, EventViewLabelsPieChartPayload } from '../events/EventViewLabelsPieChart';
+import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
+import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
 import { GridItemData } from '../types/GridItemData';
 
 type EventContructor =
-  | (new (payload: EventExplorePayload) => EventExplore)
-  | (new (payload: EventViewDetailsPayload) => EventViewDetails)
+  | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
   | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
-  | (new (payload: EventAddToFiltersPayload) => EventAddToFilters)
-  | (new (payload: EventShowPieChartPayload) => EventShowPieChart);
+  | (new (payload: EventViewLabelsPieChartPayload) => EventViewLabelsPieChart)
+  | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
+  | (new (payload: EventViewServiceLabelsPayload) => EventViewServiceLabels)
+  | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
 
-const Events = new Map<EventContructor, { label: string; icon?: IconName }>([
-  [EventExplore, { label: 'Explore' }],
-  [EventViewDetails, { label: 'Details' }],
-  [EventSelectLabel, { label: 'Select' }],
-  [EventAddToFilters, { label: 'Add to filters' }],
-  [EventShowPieChart, { label: 'Show values distribution', icon: 'percentage' }],
+const Events = new Map<EventContructor, { label?: string; icon?: IconName; tooltip?: string }>([
+  [EventAddLabelToFilters, { label: 'Add to filters' }],
+  [EventSelectLabel, { label: 'Select', tooltip: '' }],
+  [EventViewLabelsPieChart, { label: '', icon: 'percentage', tooltip: 'Show values distribution' }],
+  [EventViewServiceFlameGraph, { label: 'Flame graph', tooltip: '' }],
+  [EventViewServiceLabels, { label: 'Labels', tooltip: '' }],
+  [EventViewServiceProfiles, { label: 'Profiles', tooltip: '' }],
 ]);
 
 interface SelectActionState extends SceneObjectState {
   EventClass: EventContructor;
   item: GridItemData;
-  label: string;
+  label?: string;
   icon?: IconName;
+  tooltip?: string;
 }
 
 export class SelectAction extends SceneObjectBase<SelectActionState> {
@@ -39,9 +43,9 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
       throw new TypeError(`Unknown event class "${EventClass}"!`);
     }
 
-    const { label, icon } = lookup;
+    const { label, icon, tooltip } = lookup;
 
-    super({ EventClass, item, label, icon });
+    super({ EventClass, item, label, icon, tooltip });
   }
 
   public onClick = () => {
@@ -69,21 +73,19 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
 
   public static Component = ({ model }: SceneComponentProps<SelectAction>) => {
     const styles = useStyles2(getStyles);
-    const { label, icon } = model.useState();
+    const { label, icon, tooltip } = model.useState();
 
-    return icon ? (
-      <IconButton
+    return (
+      <Button
         className={styles.selectButton}
-        name="percentage"
-        variant="secondary"
+        variant="primary"
         size="sm"
-        aria-label={label}
-        tooltip={label}
-        tooltipPlacement="top"
+        fill="text"
         onClick={model.onClick}
-      />
-    ) : (
-      <Button className={styles.selectButton} variant="primary" size="sm" fill="text" onClick={model.onClick}>
+        icon={icon}
+        tooltip={tooltip}
+        tooltipPlacement="top"
+      >
         {label}
       </Button>
     );

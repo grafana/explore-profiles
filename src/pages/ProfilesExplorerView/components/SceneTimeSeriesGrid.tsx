@@ -271,6 +271,11 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   updateGridItems(items: SceneTimeSeriesGridState['items']) {
+    if (!items.data.length) {
+      this.renderEmptyState();
+      return;
+    }
+
     const gridItems = items.data.map((item) => {
       const { value, label, queryRunnerParams } = item;
       const gridItemKey = `grid-item-${value}`;
@@ -342,14 +347,9 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       });
     });
 
-    if (!gridItems.length) {
-      this.renderEmptyState();
-      return;
-    }
-
     (this.state.body as SceneCSSGridLayout).setState({
-      children: gridItems,
       autoRows: GRID_AUTO_ROWS, // required to have the correct grid items height
+      children: gridItems,
     });
   }
 

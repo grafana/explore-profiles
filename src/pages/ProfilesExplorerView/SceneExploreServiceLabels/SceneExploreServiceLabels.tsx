@@ -14,16 +14,14 @@ import {
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
-import { SceneTabs } from '../components/SceneTabs';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { SceneExploreLabels } from './SceneExploreLabels';
-import { SceneFlameGraph } from './SceneFlameGraph';
+import { SceneGroupByLabels } from './SceneGroupByLabels';
 
-interface SceneServiceDetailsState extends EmbeddedSceneState {}
+interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
 
-export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsState> {
+export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServiceLabelsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId'],
     onReferencedVariableValueChanged: () => {
@@ -45,7 +43,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
 
   constructor() {
     super({
-      key: 'service-details',
+      key: 'explore-service-labels',
       body: new SceneFlexLayout({
         direction: 'column',
         $behaviors: [
@@ -56,25 +54,11 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
         ],
         children: [
           new SceneFlexItem({
-            minHeight: SceneServiceDetails.MIN_HEIGHT_TIMESERIES,
+            minHeight: SceneExploreServiceLabels.MIN_HEIGHT_TIMESERIES,
             body: undefined,
           }),
           new SceneFlexItem({
-            body: new SceneTabs({
-              activeTabId: 'flame-graph',
-              tabs: [
-                {
-                  id: 'flame-graph',
-                  label: 'Flame graph',
-                  content: new SceneFlameGraph(),
-                },
-                {
-                  id: 'explore-labels',
-                  label: 'Explore labels',
-                  content: new SceneExploreLabels(),
-                },
-              ],
-            }),
+            body: new SceneGroupByLabels(),
           }),
         ],
       }),
@@ -129,7 +113,7 @@ export class SceneServiceDetails extends SceneObjectBase<SceneServiceDetailsStat
     return `${serviceName || '?'} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
   }
 
-  static Component({ model }: SceneComponentProps<SceneServiceDetails>) {
+  static Component({ model }: SceneComponentProps<SceneExploreServiceLabels>) {
     const { body } = model.useState();
 
     return <body.Component model={body} />;
