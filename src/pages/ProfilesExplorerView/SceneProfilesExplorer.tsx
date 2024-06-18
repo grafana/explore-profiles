@@ -281,9 +281,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       GroupByVariable.DEFAULT_VALUE
     );
 
-    (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
-      filters: FiltersVariable.DEFAULT_VALUE,
-    });
+    if (
+      ![ExplorationType.SINGLE_SERVICE_LABELS, ExplorationType.SINGLE_SERVICE_FLAME_GRAPH].includes(explorationType)
+    ) {
+      (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
+        filters: FiltersVariable.DEFAULT_VALUE,
+      });
+    }
 
     this.setExplorationType(explorationType);
   };
