@@ -10,7 +10,10 @@ import {
   TimeRange,
 } from '@grafana/data';
 import { RuntimeDataSource } from '@grafana/scenes';
-import { servicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
+import { ServicesApiClient } from '@shared/infrastructure/services/servicesApiClient';
+
+// we need our own instance to prevent abort() (see src/shared/infrastructure/services/useFetchServices.ts)
+const servicesApiClient = new ServicesApiClient();
 
 export class ServicesDataSource extends RuntimeDataSource {
   static fetchServices(timeRange: TimeRange) {

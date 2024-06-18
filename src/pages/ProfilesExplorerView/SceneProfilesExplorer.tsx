@@ -19,6 +19,7 @@ import {
 } from '@grafana/scenes';
 import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
 import { displaySuccess } from '@shared/domain/displayStatus';
+import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
 
 import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
@@ -365,6 +366,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                   tooltip="Copy shareable link to the clipboard"
                   onClick={model.onClickShareLink}
                 />
+                <VersionInfoTooltip />
               </Stack>
             </Stack>
           </div>
@@ -410,7 +412,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     z-index: 1;
   `,
   controls: css`
-    padding: ${theme.spacing(1)} 0;
+    padding: 0 0 ${theme.spacing(1)} 0;
   `,
   label: css``,
   variable: css`

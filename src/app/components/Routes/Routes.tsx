@@ -19,7 +19,7 @@ export function Routes() {
       <Route path={prefixRouteWithPluginBaseUrl(ROUTES.EXPLORE_VIEW)} exact>
         <TagExplorerView />
       </Route>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER)} exact>
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
         <ProfilesExplorerView />
       </Route>
       <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SINGLE_VIEW)} exact>

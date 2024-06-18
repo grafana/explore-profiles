@@ -35,8 +35,8 @@
     },
     {
       "type": "page",
-      "name": "Profiles explorer",
-      "path": "/a/%PLUGIN_ID%/profiles-explorer",
+      "name": "Explore profiles",
+      "path": "/a/%PLUGIN_ID%/explore",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false
