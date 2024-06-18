@@ -14,9 +14,12 @@ import {
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
+import { SelectAction } from '../actions/SelectAction';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
+import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 import { SceneGroupByLabels } from './SceneGroupByLabels';
 
 interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
@@ -31,9 +34,8 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
       timeSeriesPanel?.setState({
         title: this.buildtimeSeriesPanelTitle(),
         headerActions: [
-          new FavAction({
-            item: this.buildFavActionItem(),
-          }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item: this.buildActionItem() }),
+          new FavAction({ item: this.buildActionItem() }),
         ],
       });
     },
@@ -78,9 +80,8 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
       .setHeaderActions([
-        new FavAction({
-          item: this.buildFavActionItem(),
-        }),
+        new SelectAction({ EventClass: EventViewServiceFlameGraph, item: this.buildActionItem() }),
+        new FavAction({ item: this.buildActionItem() }),
       ])
       .build();
 
@@ -91,17 +92,21 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     });
   }
 
-  buildFavActionItem() {
+  buildActionItem() {
     const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
 
+    const filtersVariableValue = sceneGraph.lookupVariable('filters', this)?.getValue() as string;
+    const filters = parseVariableValue(filtersVariableValue);
+
     return {
       index: 0,
-      value: `${serviceName}-${profileMetricId}`,
+      value: `${serviceName}-${profileMetricId}-${filtersVariableValue}`,
       label: this.buildtimeSeriesPanelTitle(),
       queryRunnerParams: {
         serviceName,
         profileMetricId,
+        filters,
       },
     };
   }
