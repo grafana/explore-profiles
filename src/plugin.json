@@ -36,7 +36,7 @@
     {
       "type": "page",
       "name": "Explore profiles",
-      "path": "/a/%PLUGIN_ID%/explore",
+      "path": "/a/%PLUGIN_ID%/explore-profiles",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false
