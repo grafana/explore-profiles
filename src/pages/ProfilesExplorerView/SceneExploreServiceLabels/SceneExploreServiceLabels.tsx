@@ -26,18 +26,26 @@ interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
 
 export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServiceLabelsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId'],
-    onReferencedVariableValueChanged: () => {
+    variableNames: ['serviceName', 'profileMetricId', 'filters'],
+    onReferencedVariableValueChanged: (variable) => {
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
-      timeSeriesPanel?.setState({
-        title: this.buildtimeSeriesPanelTitle(),
-        headerActions: [
-          new SelectAction({ EventClass: EventViewServiceFlameGraph, item: this.buildActionItem() }),
-          new FavAction({ item: this.buildActionItem() }),
-        ],
-      });
+      const headerActionItem = this.buildHeaderActionItem();
+      const headerActions = [
+        new SelectAction({ EventClass: EventViewServiceFlameGraph, item: headerActionItem }),
+        new FavAction({ item: headerActionItem }),
+      ];
+
+      const newState =
+        variable.state.name === 'filters'
+          ? { headerActions }
+          : {
+              title: this.buildtimeSeriesPanelTitle(),
+              headerActions,
+            };
+
+      timeSeriesPanel?.setState(newState);
     },
   });
 
@@ -74,14 +82,16 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
   }
 
   async buildTimeSeriesPanel() {
+    const headerActionItem = this.buildHeaderActionItem();
+
     const timeSeriesPanel = PanelBuilders.timeseries()
       .setTitle(this.buildtimeSeriesPanelTitle())
       .setData(buildTimeSeriesQueryRunner({}))
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
       .setHeaderActions([
-        new SelectAction({ EventClass: EventViewServiceFlameGraph, item: this.buildActionItem() }),
-        new FavAction({ item: this.buildActionItem() }),
+        new SelectAction({ EventClass: EventViewServiceFlameGraph, item: headerActionItem }),
+        new FavAction({ item: headerActionItem }),
       ])
       .build();
 
@@ -92,7 +102,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     });
   }
 
-  buildActionItem() {
+  buildHeaderActionItem() {
     const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
 

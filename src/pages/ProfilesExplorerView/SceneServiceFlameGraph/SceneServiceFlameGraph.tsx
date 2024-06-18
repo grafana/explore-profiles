@@ -14,28 +14,38 @@ import {
 import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
+import { SelectAction } from '../actions/SelectAction';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
 import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
+import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
 interface SceneServiceFlameGraphState extends EmbeddedSceneState {}
 
 export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGraphState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId'],
-    onReferencedVariableValueChanged: () => {
+    variableNames: ['serviceName', 'profileMetricId', 'filters'],
+    onReferencedVariableValueChanged: (variable) => {
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
-      timeSeriesPanel?.setState({
-        title: this.buildtimeSeriesPanelTitle(),
-        headerActions: [
-          new FavAction({
-            item: this.buildFavActionItem(),
-          }),
-        ],
-      });
+      const headerActionItem = this.buildHeaderActionItem();
+      const headerActions = [
+        new SelectAction({ EventClass: EventViewServiceLabels, item: headerActionItem }),
+        new FavAction({ item: headerActionItem }),
+      ];
+
+      const newState =
+        variable.state.name === 'filters'
+          ? { headerActions }
+          : {
+              title: this.buildtimeSeriesPanelTitle(),
+              headerActions,
+            };
+
+      timeSeriesPanel?.setState(newState);
     },
   });
 
@@ -72,15 +82,16 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
   }
 
   async buildTimeSeriesPanel() {
+    const headerActionItem = this.buildHeaderActionItem();
+
     const timeSeriesPanel = PanelBuilders.timeseries()
       .setTitle(this.buildtimeSeriesPanelTitle())
       .setData(buildTimeSeriesQueryRunner({}))
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
       .setHeaderActions([
-        new FavAction({
-          item: this.buildFavActionItem(),
-        }),
+        new SelectAction({ EventClass: EventViewServiceLabels, item: headerActionItem }),
+        new FavAction({ item: headerActionItem }),
       ])
       .build();
 
@@ -91,17 +102,21 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
     });
   }
 
-  buildFavActionItem() {
+  buildHeaderActionItem() {
     const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
 
+    const filtersVariableValue = sceneGraph.lookupVariable('filters', this)?.getValue() as string;
+    const filters = parseVariableValue(filtersVariableValue);
+
     return {
       index: 0,
-      value: `${serviceName}-${profileMetricId}`,
+      value: `${serviceName}-${profileMetricId}-${filtersVariableValue}`,
       label: this.buildtimeSeriesPanelTitle(),
       queryRunnerParams: {
         serviceName,
         profileMetricId,
+        filters,
       },
     };
   }
