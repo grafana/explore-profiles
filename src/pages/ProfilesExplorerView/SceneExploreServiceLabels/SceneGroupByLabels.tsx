@@ -21,10 +21,10 @@ import { buildTimeSeriesGroupByQueryRunner } from '../data/buildTimeSeriesGroupB
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { EventAddLabelToFilters } from '../events/EventAddLabelToFilters';
 import { EventSelectLabel } from '../events/EventSelectLabel';
-import { EventViewLabelsPieChart } from '../events/EventViewLabelsPieChart';
+import { EventViewLabelValuesDistribution } from '../events/EventViewLabelValuesDistribution';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
+import { SceneProfilesExplorer } from '../SceneProfilesExplorer/SceneProfilesExplorer';
 import { addFilter } from '../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
@@ -50,19 +50,23 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
         dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
-        headerActions: (item) =>
-          item.queryRunnerParams.groupBy
-            ? ([
-                new SelectAction({ EventClass: EventSelectLabel, item }),
-                item.queryRunnerParams.groupBy.values.length === 1
-                  ? new SelectAction({ EventClass: EventAddLabelToFilters, item })
-                  : undefined,
-                item.queryRunnerParams.groupBy.values.length > 1
-                  ? new SelectAction({ EventClass: EventViewLabelsPieChart, item })
-                  : undefined,
-                new FavAction({ item }),
-              ].filter(Boolean) as VizPanelState['headerActions'])
-            : [new SelectAction({ EventClass: EventAddLabelToFilters, item }), new FavAction({ item })],
+        headerActions: (item) => {
+          if (!item.queryRunnerParams.groupBy) {
+            return [new SelectAction({ EventClass: EventAddLabelToFilters, item }), new FavAction({ item })];
+          }
+
+          const actions: VizPanelState['headerActions'] = [new SelectAction({ EventClass: EventSelectLabel, item })];
+
+          if (item.queryRunnerParams.groupBy.values.length === 1) {
+            actions.push(new SelectAction({ EventClass: EventAddLabelToFilters, item }));
+          } else {
+            actions.push(new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }));
+          }
+
+          actions.push(new FavAction({ item }));
+
+          return actions;
+        },
       }),
       drawerContent: undefined,
       drawerTitle: undefined,
@@ -116,7 +120,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
     });
 
-    const showPieChartSub = this.subscribeToEvent(EventViewLabelsPieChart, async (event) => {
+    const labelValuesDistSub = this.subscribeToEvent(EventViewLabelValuesDistribution, async (event) => {
       const { queryRunnerParams, index } = event.payload.item;
       const timeRange = sceneGraph.getTimeRange(this).state.value;
 
@@ -145,7 +149,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     return {
       unsubscribe() {
-        showPieChartSub.unsubscribe();
+        labelValuesDistSub.unsubscribe();
         addToFiltersSub.unsubscribe();
         selectLabelSub.unsubscribe();
       },

@@ -17,39 +17,40 @@ import {
   SceneVariableSet,
   SplitLayout,
 } from '@grafana/scenes';
-import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
+import { IconButton, InlineLabel, Stack, useStyles2 } from '@grafana/ui';
 import { displaySuccess } from '@shared/domain/displayStatus';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
 
-import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
-import { SceneQuickFilter } from './components/SceneQuickFilter';
-import { FavoritesDataSource } from './data/FavoritesDataSource';
-import { LabelsDataSource } from './data/LabelsDataSource';
-import { ProfileMetricsDataSource } from './data/ProfileMetricsDataSource';
+import { SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
+import { SceneQuickFilter } from '../components/SceneQuickFilter';
+import { FavoritesDataSource } from '../data/FavoritesDataSource';
+import { LabelsDataSource } from '../data/LabelsDataSource';
+import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 import {
   PYROSCOPE_LABELS_DATA_SOURCE,
   PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
   PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
   PYROSCOPE_SERVICES_DATA_SOURCE,
-} from './data/pyroscope-data-sources';
-import { ServicesDataSource } from './data/ServicesDataSource';
-import { EventViewServiceFlameGraph } from './events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from './events/EventViewServiceLabels';
-import { EventViewServiceProfiles } from './events/EventViewServiceProfiles';
-import { findSceneObjectByClass } from './helpers/findSceneObjectByClass';
-import { SceneExploreAllServices } from './SceneExploreAllServices/SceneExploreAllServices';
-import { SceneExploreFavorites } from './SceneExploreFavorites/SceneExploreFavorites';
-import { SceneExploreServiceLabels } from './SceneExploreServiceLabels/SceneExploreServiceLabels';
-import { SceneExploreSingleService } from './SceneExploreSingleService/SceneExploreSingleService';
-import { SceneServiceFlameGraph } from './SceneServiceFlameGraph/SceneServiceFlameGraph';
-import { GridItemData } from './types/GridItemData';
-import { FiltersVariable } from './variables/FiltersVariable/FiltersVariable';
-import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
-import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
-import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from './variables/ServiceNameVariable';
+} from '../data/pyroscope-data-sources';
+import { ServicesDataSource } from '../data/ServicesDataSource';
+import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
+import { EventViewServiceProfiles } from '../events/EventViewServiceProfiles';
+import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
+import { SceneExploreAllServices } from '../SceneExploreAllServices/SceneExploreAllServices';
+import { SceneExploreFavorites } from '../SceneExploreFavorites/SceneExploreFavorites';
+import { SceneExploreServiceLabels } from '../SceneExploreServiceLabels/SceneExploreServiceLabels';
+import { SceneExploreSingleService } from '../SceneExploreSingleService/SceneExploreSingleService';
+import { SceneServiceFlameGraph } from '../SceneServiceFlameGraph/SceneServiceFlameGraph';
+import { GridItemData } from '../types/GridItemData';
+import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
+import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
+import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
+import { ProfilesDataSourceVariable } from '../variables/ProfilesDataSourceVariable';
+import { ServiceNameVariable } from '../variables/ServiceNameVariable';
+import { ExplorationTypeSelector } from './ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
@@ -57,7 +58,7 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   gridControls: any[]; // TODO
 }
 
-enum ExplorationType {
+export enum ExplorationType {
   ALL_SERVICES = 'all',
   SINGLE_SERVICE = 'single',
   SINGLE_SERVICE_LABELS = 'labels',
@@ -70,22 +71,27 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     {
       value: ExplorationType.ALL_SERVICES,
       label: 'All services',
+      description: '', // no tooltip (see src/pages/ProfilesExplorerView/SceneProfilesExplorer/ExplorationTypeSelector.tsx)
     },
     {
       value: ExplorationType.SINGLE_SERVICE,
       label: 'Single service',
+      description: '',
     },
     {
       value: ExplorationType.SINGLE_SERVICE_LABELS,
       label: 'Service labels',
+      description: '',
     },
     {
       value: ExplorationType.SINGLE_SERVICE_FLAME_GRAPH,
       label: 'Flame graph',
+      description: '',
     },
     {
       value: ExplorationType.FAVORITES,
       label: 'Favorites',
+      description: '',
     },
   ];
 
@@ -325,37 +331,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                   <dataSourceVariable.Component model={dataSourceVariable} />
                 </div>
 
-                <div className={styles.explorationType}>
-                  <InlineLabel
-                    className={styles.label}
-                    width="auto"
-                    tooltip={
-                      <div className={styles.tooltipContent}>
-                        <h5>Types of exploration</h5>
-                        <dl>
-                          <dt>All services</dt>
-                          <dd>Overview of all your services, for any given profile metric</dd>
-                          <dt>Single service</dt>
-                          <dd>Overview of all the profile metrics for a single service</dd>
-                          <dt>Service labels</dt>
-                          <dd>Single service labels exploration and filtering</dd>
-                          <dt>Flame graph</dt>
-                          <dd>Single service flame graph</dd>
-                          <dt>Favorites</dt>
-                          <dd>Overview of your favorite visualizations</dd>
-                        </dl>
-                      </div>
-                    }
-                  >
-                    Exploration type
-                  </InlineLabel>
-                  <RadioButtonGroup
-                    options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
-                    value={explorationType}
-                    fullWidth={false}
-                    onChange={model.onChangeExplorationType}
-                  />
-                </div>
+                <ExplorationTypeSelector
+                  options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
+                  value={explorationType as ExplorationType}
+                  onChange={model.onChangeExplorationType}
+                />
               </Stack>
 
               <Stack>
@@ -374,9 +354,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           <div id={`scene-controls-${explorationType}`} className={styles.sceneControls}>
             {sceneVariables.map((variable) => (
               <div key={variable.state.name} className={styles.variable}>
-                <InlineLabel className={styles.label} width="auto">
-                  {variable.state.label}
-                </InlineLabel>
+                <InlineLabel width="auto">{variable.state.label}</InlineLabel>
                 <variable.Component model={variable} />
               </div>
             ))}
@@ -389,9 +367,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
               explorationType as ExplorationType
             ) && (
               <div className={styles.variable}>
-                <InlineLabel className={styles.label} width="auto">
-                  {filtersVariable.state.label}
-                </InlineLabel>
+                <InlineLabel width="auto">{filtersVariable.state.label}</InlineLabel>
                 <filtersVariable.Component model={filtersVariable} />
               </div>
             )}
@@ -414,11 +390,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   controls: css`
     padding: ${theme.spacing(1)} 0;
   `,
-  label: css``,
   variable: css`
-    display: flex;
-  `,
-  explorationType: css`
     display: flex;
   `,
   sceneControls: css`
@@ -430,22 +402,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     &#scene-controls-labels > div:last-child,
     &#scene-controls-flame-graph > div:last-child {
       flex-grow: 1;
-    }
-  `,
-  tooltipContent: css`
-    padding: ${theme.spacing(1)};
-
-    & dl {
-      display: grid;
-      grid-gap: 4px 16px;
-      grid-template-columns: max-content;
-    }
-    & dt {
-      font-weight: bold;
-    }
-    & dd {
-      margin: 0;
-      grid-column-start: 2;
     }
   `,
   body: css`

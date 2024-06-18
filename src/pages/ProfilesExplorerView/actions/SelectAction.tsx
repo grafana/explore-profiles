@@ -5,7 +5,10 @@ import React from 'react';
 
 import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
-import { EventViewLabelsPieChart, EventViewLabelsPieChartPayload } from '../events/EventViewLabelsPieChart';
+import {
+  EventViewLabelValuesDistribution,
+  EventViewLabelValuesDistributionPayload,
+} from '../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
@@ -14,7 +17,7 @@ import { GridItemData } from '../types/GridItemData';
 type EventContructor =
   | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
   | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
-  | (new (payload: EventViewLabelsPieChartPayload) => EventViewLabelsPieChart)
+  | (new (payload: EventViewLabelValuesDistributionPayload) => EventViewLabelValuesDistribution)
   | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
   | (new (payload: EventViewServiceLabelsPayload) => EventViewServiceLabels)
   | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
@@ -22,7 +25,7 @@ type EventContructor =
 const Events = new Map<EventContructor, { label?: string; icon?: IconName; tooltip?: string }>([
   [EventAddLabelToFilters, { label: 'Add to filters' }],
   [EventSelectLabel, { label: 'Select', tooltip: '' }],
-  [EventViewLabelsPieChart, { label: '', icon: 'percentage', tooltip: 'Show values distribution' }],
+  [EventViewLabelValuesDistribution, { label: '', icon: 'percentage', tooltip: 'Show all values distribution' }],
   [EventViewServiceFlameGraph, { label: 'Flame graph', tooltip: '' }],
   [EventViewServiceLabels, { label: 'Labels', tooltip: '' }],
   [EventViewServiceProfiles, { label: 'Profiles', tooltip: '' }],
