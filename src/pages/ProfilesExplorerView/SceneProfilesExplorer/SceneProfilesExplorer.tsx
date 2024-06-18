@@ -382,7 +382,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           <div className={styles.controls}>
             <Stack justifyContent="space-between" wrap="wrap">
               <Stack>
-                <div className={styles.variable}>
+                <div className={styles.dataSourceVariable}>
                   <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
                   <dataSourceVariable.Component model={dataSourceVariable} />
                 </div>
@@ -436,6 +436,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   controls: css`
     padding: ${theme.spacing(1)} 0;
+  `,
+  dataSourceVariable: css`
+    display: flex;
+
+    & > div {
+      max-width: 180px;
+    }
   `,
   variable: css`
     display: flex;
