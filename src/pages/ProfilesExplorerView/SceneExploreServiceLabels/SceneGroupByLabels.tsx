@@ -224,7 +224,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     timeSeriesPanel.setState({
       // TS: we should be thorough and use all action types (FavAction as well) but it's good enough for what we want to do here
       headerActions: (timeSeriesPanel.state.headerActions as SelectAction[]).filter(
-        (action) => !(action.state.EventClass instanceof EventExpandPanel)
+        (action) => action.state.EventClass !== EventExpandPanel
       ),
     });
 
