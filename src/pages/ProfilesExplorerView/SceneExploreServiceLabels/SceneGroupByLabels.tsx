@@ -206,6 +206,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     const goupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
     goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
+
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
   }
 
   selectForCompare({ isChecked, action, item }: { isChecked: boolean; action: CompareAction; item: GridItemData }) {
