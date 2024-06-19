@@ -272,15 +272,17 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     diffUrl.searchParams.set('query', query);
 
     // left & right queries
-    const [leftQuery, rightQuery] = itemsForComparison.map(({ item }) => {
-      const { serviceName: serviceId, profileMetricId, filters } = item.queryRunnerParams;
+    const [leftQuery, rightQuery] = itemsForComparison
+      .sort((a, b) => a.item.index - b.item.index)
+      .map(({ item }) => {
+        const { serviceName: serviceId, profileMetricId, filters } = item.queryRunnerParams;
 
-      const labels = [...queryFilters, ...(filters || [])].map(
-        ({ key, operator, value }) => `${key}${operator}"${value}"`
-      );
+        const labels = [...queryFilters, ...(filters || [])].map(
+          ({ key, operator, value }) => `${key}${operator}"${value}"`
+        );
 
-      return buildQuery({ serviceId, profileMetricId, labels: uniq(labels) });
-    });
+        return buildQuery({ serviceId, profileMetricId, labels: uniq(labels) });
+      });
 
     diffUrl.searchParams.set('leftQuery', leftQuery);
     diffUrl.searchParams.set('rightQuery', rightQuery);
