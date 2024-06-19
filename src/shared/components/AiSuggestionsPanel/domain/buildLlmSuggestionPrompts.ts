@@ -2,7 +2,7 @@ import { FunctionDetails, LineProfile } from '../../../components/FunctionDetail
 
 /* https://platform.openai.com/docs/models/overview */
 
-export const model = 'gpt-4-1106-preview';
+export const model = 'gpt-4o';
 
 /* https://platform.openai.com/docs/guides/prompt-engineering/tactics */
 
