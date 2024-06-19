@@ -339,7 +339,10 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       .setOverrides((overrides) => {
         overrides.matchFieldsWithName(queryRunnerParams.groupBy!.label).overrideUnit('string');
       })
-      .setHeaderActions([new SelectAction({ EventClass: EventExpandPanel, item })])
+      .setHeaderActions([
+        new SelectAction({ EventClass: EventSelectLabel, item }),
+        new SelectAction({ EventClass: EventExpandPanel, item }),
+      ])
       .build();
 
     transformedData.subscribeToState((newState) => {
