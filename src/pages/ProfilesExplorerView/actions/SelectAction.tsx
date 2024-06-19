@@ -1,9 +1,11 @@
 import { css } from '@emotion/css';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, IconName, useStyles2 } from '@grafana/ui';
+import { merge } from 'lodash';
 import React from 'react';
 
 import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
+import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
 import {
   EventViewLabelValuesDistribution,
@@ -13,9 +15,11 @@ import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '.
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
 import { GridItemData } from '../types/GridItemData';
+import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 
 type EventContructor =
   | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
+  | (new (payload: EventExpandPanelPayload) => EventExpandPanel)
   | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
   | (new (payload: EventViewLabelValuesDistributionPayload) => EventViewLabelValuesDistribution)
   | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
@@ -23,12 +27,16 @@ type EventContructor =
   | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
 
 const Events = new Map<EventContructor, { label?: string; icon?: IconName; tooltip?: string }>([
-  [EventAddLabelToFilters, { label: 'Add to filters' }],
-  [EventSelectLabel, { label: 'Select', tooltip: '' }],
-  [EventViewLabelValuesDistribution, { label: '', icon: 'percentage', tooltip: 'Show all values distribution' }],
-  [EventViewServiceFlameGraph, { label: 'Flame graph', tooltip: '' }],
-  [EventViewServiceLabels, { label: 'Labels', tooltip: '' }],
-  [EventViewServiceProfiles, { label: 'Profiles', tooltip: '' }],
+  [EventAddLabelToFilters, Object.freeze({ label: 'Add to filters' })],
+  [EventExpandPanel, Object.freeze({ icon: 'expand-arrows', tooltip: 'Expand panel' })],
+  [EventSelectLabel, Object.freeze({ label: 'Select' })],
+  [
+    EventViewLabelValuesDistribution,
+    Object.freeze({ icon: 'list-ul', tooltip: 'Show values distribution for the selected filters' }),
+  ],
+  [EventViewServiceFlameGraph, Object.freeze({ label: 'Flame graph' })],
+  [EventViewServiceLabels, Object.freeze({ label: 'Labels' })],
+  [EventViewServiceProfiles, Object.freeze({ label: 'Profiles' })],
 ]);
 
 interface SelectActionState extends SceneObjectState {
@@ -40,15 +48,23 @@ interface SelectActionState extends SceneObjectState {
 }
 
 export class SelectAction extends SceneObjectBase<SelectActionState> {
-  constructor({ EventClass, item }: { EventClass: EventContructor; item: SelectActionState['item'] }) {
+  constructor({
+    EventClass,
+    item,
+    icon,
+    tooltip,
+  }: {
+    EventClass: EventContructor;
+    item: SelectActionState['item'];
+    icon?: SelectActionState['icon'];
+    tooltip?: SelectActionState['tooltip'];
+  }) {
     const lookup = Events.get(EventClass);
     if (!lookup) {
       throw new TypeError(`Unknown event class "${EventClass}"!`);
     }
 
-    const { label, icon, tooltip } = lookup;
-
-    super({ EventClass, item, label, icon, tooltip });
+    super({ EventClass, item, ...merge({}, lookup, { icon, tooltip }) });
   }
 
   public onClick = () => {
@@ -69,6 +85,9 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
           profileMetricId:
             queryRunnerParams.profileMetricId ||
             (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
+          filters:
+            queryRunnerParams.filters ||
+            parseVariableValue(sceneGraph.lookupVariable('filters', this)?.getValue() as string),
         },
       },
     });

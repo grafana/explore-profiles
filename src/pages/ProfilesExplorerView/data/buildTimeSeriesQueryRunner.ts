@@ -4,12 +4,10 @@ import { TimeSeriesQueryRunnerParams } from '../types/TimeSeriesQueryRunnerParam
 import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-sources';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export function buildTimeSeriesQueryRunner({
-  serviceName,
-  profileMetricId,
-  groupBy,
-  filters,
-}: TimeSeriesQueryRunnerParams) {
+export function buildTimeSeriesQueryRunner(
+  { serviceName, profileMetricId, groupBy, filters }: TimeSeriesQueryRunnerParams,
+  useSingleGroupByQuery = false
+) {
   let queries;
 
   const completeFilters = filters ? [...filters] : [];
@@ -27,17 +25,27 @@ export function buildTimeSeriesQueryRunner({
       },
     ];
   } else {
-    queries = groupBy.values.map((labelValue) => {
-      return {
-        refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}-${
-          groupBy.label
-        }-${labelValue}`,
-        queryType: 'metrics',
-        profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: `{${selector},${groupBy.label}="${labelValue}",$filters}`,
-        displayNameOverride: labelValue,
-      };
-    });
+    queries = useSingleGroupByQuery
+      ? [
+          {
+            refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}-${groupBy.label}`,
+            queryType: 'metrics',
+            profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
+            labelSelector: `{service_name="${serviceName}",$filters}`,
+            groupBy: [groupBy.label],
+          },
+        ]
+      : groupBy.values.map((labelValue) => {
+          return {
+            refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}-${
+              groupBy.label
+            }-${labelValue}`,
+            queryType: 'metrics',
+            profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
+            labelSelector: `{${selector},${groupBy.label}="${labelValue}",$filters}`,
+            displayNameOverride: labelValue,
+          };
+        });
   }
 
   return new SceneQueryRunner({

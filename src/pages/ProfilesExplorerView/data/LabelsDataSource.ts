@@ -102,20 +102,25 @@ export class LabelsDataSource extends RuntimeDataSource {
 
     const values = labelsWithCounts
       .sort((a, b) => b.count - a.count)
-      .map(({ value, text, count, labelValues }, index) => ({
-        index,
-        value,
-        label: LabelsDataSource.formatItemLabel(text, count),
-        count,
-        queryRunnerParams: {
-          serviceName,
-          profileMetricId,
-          groupBy: {
-            label: value,
-            values: labelValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES).map(({ value }) => value),
+      .map(({ value, text, count, labelValues }, index) => {
+        const allValues = labelValues.map(({ value }) => value);
+
+        return {
+          index,
+          value,
+          label: LabelsDataSource.formatItemLabel(text, count),
+          count,
+          queryRunnerParams: {
+            serviceName,
+            profileMetricId,
+            groupBy: {
+              label: value,
+              values: allValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES),
+              allValues,
+            },
           },
-        },
-      }));
+        };
+      });
 
     return {
       state: LoadingState.Done,

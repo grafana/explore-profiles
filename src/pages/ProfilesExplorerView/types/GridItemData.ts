@@ -7,5 +7,10 @@ export type GridItemData = {
   queryRunnerParams: TimeSeriesQueryRunnerParams & {
     serviceName: string;
     profileMetricId: string;
+    groupBy?: {
+      label: string;
+      values: string[];
+      allValues?: string[];
+    };
   };
 };

@@ -19,9 +19,12 @@ import { servicesRepository } from '@shared/infrastructure/services/servicesRepo
 export class ProfileMetricsDataSource extends RuntimeDataSource {
   static getProfileMetricLabel(profileMetricId: string) {
     const profileMetric = getProfileMetric(profileMetricId as ProfileMetricId);
-    const { group, type } = profileMetric;
+    return `${profileMetric.type} (${profileMetric.group})`;
+  }
 
-    return `${type} (${group})`;
+  static getProfileMetricUnit(profileMetricId: string) {
+    const profileMetric = getProfileMetric(profileMetricId as ProfileMetricId);
+    return profileMetric.unit;
   }
 
   async fetchProfileMetrics(timeRange: TimeRange) {

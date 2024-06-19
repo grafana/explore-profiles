@@ -59,6 +59,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
 
   static DEFAULT_LAYOUT: LayoutType.GRID;
 
+  static buildGridItemKey(item: GridItemData) {
+    return `grid-item-${item.value}`;
+  }
+
   constructor({
     key,
     dataSource,
@@ -277,8 +281,8 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     }
 
     const gridItems = items.data.map((item) => {
-      const { value, label, queryRunnerParams } = item;
-      const gridItemKey = `grid-item-${value}`;
+      const { label, queryRunnerParams } = item;
+      const gridItemKey = SceneTimeSeriesGrid.buildGridItemKey(item);
 
       let data: SceneQueryRunner;
 

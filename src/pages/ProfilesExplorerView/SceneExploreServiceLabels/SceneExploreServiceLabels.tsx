@@ -27,7 +27,7 @@ interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
 export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServiceLabelsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId', 'filters'],
-    onReferencedVariableValueChanged: (variable) => {
+    onReferencedVariableValueChanged: () => {
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
@@ -37,15 +37,10 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
         new FavAction({ item: headerActionItem }),
       ];
 
-      const newState =
-        variable.state.name === 'filters'
-          ? { headerActions }
-          : {
-              title: this.buildtimeSeriesPanelTitle(),
-              headerActions,
-            };
-
-      timeSeriesPanel?.setState(newState);
+      timeSeriesPanel?.setState({
+        title: this.buildtimeSeriesPanelTitle(),
+        headerActions,
+      });
     },
   });
 
@@ -125,7 +120,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
 
-    return `${serviceName || '?'} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
+    return `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreServiceLabels>) {
