@@ -16,8 +16,8 @@ import React from 'react';
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
-import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
 import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
+import { buildtimeSeriesPanelTitle } from '../helpers/buildtimeSeriesPanelTitle';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 import { SceneFlameGraph } from './SceneFlameGraph';
@@ -38,7 +38,7 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
       ];
 
       timeSeriesPanel?.setState({
-        title: this.buildtimeSeriesPanelTitle(),
+        title: buildtimeSeriesPanelTitle(this),
         headerActions,
       });
     },
@@ -80,7 +80,7 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
     const headerActionItem = this.buildHeaderActionItem();
 
     const timeSeriesPanel = PanelBuilders.timeseries()
-      .setTitle(this.buildtimeSeriesPanelTitle())
+      .setTitle(buildtimeSeriesPanelTitle(this))
       .setData(buildTimeSeriesQueryRunner({}))
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
@@ -107,20 +107,13 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
     return {
       index: 0,
       value: `${serviceName}-${profileMetricId}-${filtersVariableValue}`,
-      label: this.buildtimeSeriesPanelTitle(),
+      label: buildtimeSeriesPanelTitle(this),
       queryRunnerParams: {
         serviceName,
         profileMetricId,
         filters,
       },
     };
-  }
-
-  buildtimeSeriesPanelTitle() {
-    const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
-    const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-
-    return `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`;
   }
 
   static Component({ model }: SceneComponentProps<SceneServiceFlameGraph>) {

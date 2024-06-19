@@ -4,7 +4,7 @@ import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/do
 
 import { FiltersVariable } from './FiltersVariable';
 
-export const convertPyroscopeToVariableFilter = (filter: CompleteFilter) => ({
+export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocVariableFilter => ({
   key: filter.attribute.value,
   operator: filter.operator.value === OperatorKind['is-empty'] ? OperatorKind['='] : filter.operator.value,
   value: filter.value.value,

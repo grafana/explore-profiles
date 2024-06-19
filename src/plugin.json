@@ -27,7 +27,7 @@
   "includes": [
     {
       "type": "page",
-      "name": "Tag explorer (LEGACY)",
+      "name": "Tag explorer",
       "path": "/a/%PLUGIN_ID%/tag-explorer",
       "role": "Viewer",
       "addToNav": true,

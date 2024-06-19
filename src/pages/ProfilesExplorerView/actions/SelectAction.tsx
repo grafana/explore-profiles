@@ -28,11 +28,17 @@ type EventContructor =
 
 const Events = new Map<EventContructor, { label?: string; icon?: IconName; tooltip?: string }>([
   [EventAddLabelToFilters, Object.freeze({ label: 'Add to filters' })],
-  [EventExpandPanel, Object.freeze({ icon: 'expand-arrows', tooltip: 'Expand panel' })],
+  [
+    EventExpandPanel,
+    Object.freeze({
+      icon: 'expand-arrows',
+      tooltip: 'Expand this panel to view all the timeseries for the current filters',
+    }),
+  ],
   [EventSelectLabel, Object.freeze({ label: 'Select' })],
   [
     EventViewLabelValuesDistribution,
-    Object.freeze({ icon: 'list-ul', tooltip: 'Show values distribution for the selected filters' }),
+    Object.freeze({ icon: 'list-ul', tooltip: 'View the distribution of all the values for the current filters' }),
   ],
   [EventViewServiceFlameGraph, Object.freeze({ label: 'Flame graph' })],
   [EventViewServiceLabels, Object.freeze({ label: 'Labels' })],

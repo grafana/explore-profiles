@@ -109,7 +109,6 @@ export class LabelsDataSource extends RuntimeDataSource {
           index,
           value,
           label: LabelsDataSource.formatItemLabel(text, count),
-          count,
           queryRunnerParams: {
             serviceName,
             profileMetricId,
