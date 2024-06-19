@@ -5,6 +5,8 @@ import { useResizeObserver } from '@react-aria/utils';
 import { noOp } from '@shared/domain/noOp';
 import React, { useEffect, useRef, useState } from 'react';
 
+import { GroupByVariable } from './GroupByVariable';
+
 type Props = {
   options: Array<SelectableValue<string>>;
   mainLabels: string[];
@@ -66,7 +68,7 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
             value={value}
             placeholder="Select label"
             options={options}
-            onChange={(selected) => onChange(selected?.value ?? 'All')}
+            onChange={(selected) => onChange(selected?.value || GroupByVariable.DEFAULT_VALUE)}
             isClearable
           />
         )}
