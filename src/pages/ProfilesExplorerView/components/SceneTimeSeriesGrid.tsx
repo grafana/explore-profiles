@@ -332,7 +332,9 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           timeSeriesPanel.setState({
             $data,
             fieldConfig: {
-              defaults: {},
+              defaults: {
+                custom: { fillOpacity: 9 },
+              },
               overrides: $data.state.queries.map(({ refId, displayNameOverride }, j) => ({
                 matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
                 properties: [
