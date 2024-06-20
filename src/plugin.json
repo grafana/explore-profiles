@@ -81,13 +81,5 @@
       "addToNav": true,
       "defaultNav": false
     }
-  ],
-  "extensions": [
-    {
-      "extensionPointId": "plugins/grafana-pyroscope-datasource/query-links",
-      "title": "Profiles App",
-      "description": "Open query in Profiles App",
-      "type": "link"
-    }
   ]
 }
