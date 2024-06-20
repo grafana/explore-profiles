@@ -7,15 +7,17 @@ import {
   LoadingState,
   MetricFindValue,
   ScopedVar,
-  ScopedVars,
   TestDataSourceResponse,
   TimeRange,
 } from '@grafana/data';
-import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
+import { RuntimeDataSource, sceneGraph, SceneObject } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
 import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
 
-import { buildPyroscopeQuery } from './buildPyroscopeQuery';
+import { buildPyroscopeQuery } from '../helpers/buildPyroscopeQuery';
+import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
+import { DataSourceProxyClientBuilder } from '../series/http/DataSourceProxyClientBuilder';
+import { LabelsApiClient } from './http/LabelsApiClient';
 
 export class LabelsDataSource extends RuntimeDataSource {
   static MAX_TIMESERIES_LABEL_VALUES = 10;
@@ -26,11 +28,9 @@ export class LabelsDataSource extends RuntimeDataSource {
       : `${labelName} (${labelValuesCount})`;
   }
 
-  static buildPyroscopeQuery(scopedVars: ScopedVars) {
-    const queryRunner = (scopedVars.__sceneObject as ScopedVar).value;
-
-    const serviceName = sceneGraph.interpolate(queryRunner, '$serviceName');
-    const profileMetricId = sceneGraph.interpolate(queryRunner, '$profileMetricId');
+  static buildPyroscopeQuery(sceneObject: SceneObject) {
+    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
+    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
 
     return {
       query: buildPyroscopeQuery({ serviceName, profileMetricId }),
@@ -39,22 +39,40 @@ export class LabelsDataSource extends RuntimeDataSource {
     };
   }
 
+  constructor() {
+    super(PYROSCOPE_LABELS_DATA_SOURCE.type, PYROSCOPE_LABELS_DATA_SOURCE.uid);
+  }
+
+  async fetchLabels(dataSourceUid: string, pyroscopeQuery: string, from: number, to: number) {
+    const labelsApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, LabelsApiClient) as LabelsApiClient;
+
+    labelsRepository.setApiClient(labelsApiClient);
+
+    return labelsRepository.listLabels(pyroscopeQuery, from, to);
+  }
+
+  async fetchLabelValues(dataSourceUid: string, pyroscopeQuery: string, from: number, to: number, labelValue: string) {
+    const labelsApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, LabelsApiClient) as LabelsApiClient;
+
+    labelsRepository.setApiClient(labelsApiClient);
+
+    return labelsRepository.listLabelValues(labelValue, pyroscopeQuery, from, to);
+  }
+
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
-    const {
-      query: pyroscopeQuery,
-      serviceName,
-      profileMetricId,
-    } = LabelsDataSource.buildPyroscopeQuery(request.scopedVars);
+    const sceneObject = (request.scopedVars.__sceneObject as ScopedVar).value;
+    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
+
+    const { query: pyroscopeQuery, serviceName, profileMetricId } = LabelsDataSource.buildPyroscopeQuery(sceneObject);
 
     const timeRange = request.range;
     const from = dateTimeParse(timeRange.from.valueOf()).unix() * 1000;
     const to = dateTimeParse(timeRange.to.valueOf()).unix() * 1000;
 
-    const queryRunner = (request.scopedVars.__sceneObject as ScopedVar).value;
-    const groupByLabel = sceneGraph.interpolate(queryRunner, '$groupBy');
+    const groupByLabel = sceneGraph.interpolate(sceneObject, '$groupBy');
 
     if (groupByLabel !== 'all') {
-      const labelValues = await labelsRepository.listLabelValues(groupByLabel, pyroscopeQuery, from, to);
+      const labelValues = await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, groupByLabel);
 
       const values = labelValues.map(({ value, label }, index) => ({
         index,
@@ -86,11 +104,11 @@ export class LabelsDataSource extends RuntimeDataSource {
       };
     }
 
-    const labels = await labelsRepository.listLabels(pyroscopeQuery, from, to);
+    const labels = await this.fetchLabels(dataSourceUid, pyroscopeQuery, from, to);
 
     const labelsWithCounts = await Promise.all(
       labels.map(async ({ value, label: text }) => {
-        const labelValues = await labelsRepository.listLabelValues(value as string, pyroscopeQuery, from, to);
+        const labelValues = await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, value);
         return {
           value,
           text,
@@ -141,21 +159,26 @@ export class LabelsDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    // TODO: use variables, query, interpolateVariablesInQuery?
-    const { query: pyroscopeQuery } = LabelsDataSource.buildPyroscopeQuery(options?.scopedVars!);
+    const { scopedVars, range } = options;
+    const sceneObject = scopedVars?.__sceneObject?.value;
+    const timeRange = range as TimeRange;
 
-    const timeRange = options.range as TimeRange;
-    const from = dateTimeParse(timeRange.from.valueOf()).unix() * 1000;
-    const to = dateTimeParse(timeRange.to.valueOf()).unix() * 1000;
+    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
 
-    const labels = await labelsRepository.listLabels(pyroscopeQuery, from, to);
+    const { query: pyroscopeQuery } = LabelsDataSource.buildPyroscopeQuery(sceneObject);
+
+    // round to 10s
+    const from = Math.floor((timeRange.from.valueOf() || 0) / 10000) * 10000;
+    const to = Math.floor((timeRange.to.valueOf() || 0) / 10000) * 10000;
+
+    const labels = await this.fetchLabels(dataSourceUid, pyroscopeQuery, from, to);
 
     const labelsWithCounts = await Promise.all(
       labels
         .filter(({ value }) => !isPrivateLabel(value))
         .sort((a, b) => a.label.localeCompare(b.label))
         .map(async ({ value }) => {
-          const labelValues = await labelsRepository.listLabelValues(value, pyroscopeQuery, from, to);
+          const labelValues = await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, value);
           const count = labelValues.length;
           return {
             value,
@@ -165,10 +188,14 @@ export class LabelsDataSource extends RuntimeDataSource {
         })
     );
 
+    console.log('*** labelsWithCounts', labelsWithCounts);
+
+    const sortedLabels = labelsWithCounts.sort((a, b) => b.count - a.count).map(({ value, text }) => ({ value, text }));
+
     return [
-      // we have to do this here because GroupByVariable seems to set its value to the 1st element at some point (?!)
+      // we do this here because GroupByVariable may set its default value to the 1st element
       { value: 'all', text: 'All' },
-      ...labelsWithCounts.sort((a, b) => b.count - a.count).map(({ value, text }) => ({ value, text })),
+      ...sortedLabels,
     ];
   }
 

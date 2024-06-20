@@ -15,7 +15,7 @@ import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
-import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
+import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 import { buildtimeSeriesPanelTitle } from '../helpers/buildtimeSeriesPanelTitle';
 import { getColorByIndex } from '../helpers/getColorByIndex';

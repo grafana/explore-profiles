@@ -12,7 +12,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
-import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 
 type ProfileMetricOptions = Array<{
   value: string;
@@ -28,8 +28,8 @@ export class ProfileMetricVariable extends QueryVariable {
     super({
       name: 'profileMetricId',
       label: '🔥 Profile',
-      datasource: PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
-      query: 'list', // dummy query, can't be an empty string
+      datasource: PYROSCOPE_SERIES_DATA_SOURCE,
+      query: 'profileMetricId',
       loading: true,
     });
 

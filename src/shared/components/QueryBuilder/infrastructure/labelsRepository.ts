@@ -29,10 +29,14 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
     return labelValues.map((label) => ({ value: label, label }));
   }
 
-  constructor(httpClient: LabelsApiClient, cacheClient: MemoryCacheClient) {
-    super(httpClient);
+  constructor(options: { apiClient: LabelsApiClient; cacheClient: MemoryCacheClient }) {
+    super({ apiClient: options.apiClient });
 
-    this.cacheClient = cacheClient;
+    this.cacheClient = options.cacheClient;
+  }
+
+  setApiClient(apiClient: LabelsApiClient) {
+    this.apiClient = apiClient;
   }
 
   static assertParams(query: string, from: number, until: number) {
@@ -56,7 +60,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
       return labels;
     }
 
-    const fetchP = this.httpClient.fetchLabels(query, from, until);
+    const fetchP = this.apiClient!.fetchLabels(query, from, until);
     this.cacheClient.set([query, from, until], fetchP);
 
     try {
@@ -84,7 +88,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
       return labelValues;
     }
 
-    const fetchP = this.httpClient.fetchLabelValues(labelId, query, from, until);
+    const fetchP = this.apiClient!.fetchLabelValues(labelId, query, from, until);
     this.cacheClient.set([labelId, query, from, until], fetchP);
 
     try {
@@ -97,4 +101,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
   }
 }
 
-export const labelsRepository = new LabelsRepository(new LabelsApiClient(), new MemoryCacheClient());
+export const labelsRepository = new LabelsRepository({
+  apiClient: new LabelsApiClient(),
+  cacheClient: new MemoryCacheClient(),
+});

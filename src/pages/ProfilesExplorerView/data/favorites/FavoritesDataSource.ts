@@ -10,7 +10,8 @@ import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { isEqual } from 'lodash';
 
-import { ProfileMetricsDataSource } from './ProfileMetricsDataSource';
+import { PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../pyroscope-data-sources';
+import { getProfileMetricLabel } from '../series/helpers/getProfileMetricLabel';
 
 export type Favorite = {
   index: number; // for colouring purpose only
@@ -51,12 +52,16 @@ export class FavoritesDataSource extends RuntimeDataSource {
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
   }
 
+  constructor() {
+    super(PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE.type, PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE.uid);
+  }
+
   async query(): Promise<DataQueryResponse> {
     const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
 
     const values = favorites.map((f: Favorite) => {
       const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams;
-      const labelParts = [serviceName, ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)];
+      const labelParts = [serviceName, getProfileMetricLabel(profileMetricId)];
 
       if (groupBy?.label) {
         labelParts.push(groupBy.label);
@@ -98,7 +103,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
 
     return favorites.map((f: Favorite) => {
       const { serviceName, profileMetricId, groupBy } = f.queryRunnerParams;
-      const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId);
+      const profileMetricLabel = getProfileMetricLabel(profileMetricId);
 
       return {
         value: f,

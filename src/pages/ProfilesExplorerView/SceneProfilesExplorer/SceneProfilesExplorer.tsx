@@ -26,16 +26,10 @@ import React from 'react';
 import { SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
-import { FavoritesDataSource } from '../data/FavoritesDataSource';
-import { LabelsDataSource } from '../data/LabelsDataSource';
-import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
-import {
-  PYROSCOPE_LABELS_DATA_SOURCE,
-  PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
-  PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
-  PYROSCOPE_SERVICES_DATA_SOURCE,
-} from '../data/pyroscope-data-sources';
-import { ServicesDataSource } from '../data/ServicesDataSource';
+import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { FavoritesDataSource } from '../data/favorites/FavoritesDataSource';
+import { LabelsDataSource } from '../data/labels/LabelsDataSource';
+import { SeriesDataSource } from '../data/series/SeriesDataSource';
 import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../events/EventViewServiceProfiles';
@@ -45,7 +39,6 @@ import { SceneExploreFavorites } from '../SceneExploreFavorites/SceneExploreFavo
 import { SceneExploreServiceLabels } from '../SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreSingleService } from '../SceneExploreSingleService/SceneExploreSingleService';
 import { SceneServiceFlameGraph } from '../SceneServiceFlameGraph/SceneServiceFlameGraph';
-import { GridItemData } from '../types/GridItemData';
 import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
@@ -167,27 +160,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   registerRuntimeDataSources() {
     // wrapped in a try-catch to prevent error when registered twice, which can easily happen if we go back & forth to the Profiles Explorer page
     try {
-      sceneUtils.registerRuntimeDataSource({
-        dataSource: new ServicesDataSource(PYROSCOPE_SERVICES_DATA_SOURCE.type, PYROSCOPE_SERVICES_DATA_SOURCE.uid),
-      });
-
-      sceneUtils.registerRuntimeDataSource({
-        dataSource: new ProfileMetricsDataSource(
-          PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.type,
-          PYROSCOPE_PROFILE_METRICS_DATA_SOURCE.uid
-        ),
-      });
-
-      sceneUtils.registerRuntimeDataSource({
-        dataSource: new FavoritesDataSource(
-          PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.type,
-          PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid
-        ),
-      });
-
-      sceneUtils.registerRuntimeDataSource({
-        dataSource: new LabelsDataSource(PYROSCOPE_LABELS_DATA_SOURCE.type, PYROSCOPE_LABELS_DATA_SOURCE.uid),
-      });
+      sceneUtils.registerRuntimeDataSource({ dataSource: new SeriesDataSource() });
+      sceneUtils.registerRuntimeDataSource({ dataSource: new FavoritesDataSource() });
+      sceneUtils.registerRuntimeDataSource({ dataSource: new LabelsDataSource() });
     } catch {}
   }
 

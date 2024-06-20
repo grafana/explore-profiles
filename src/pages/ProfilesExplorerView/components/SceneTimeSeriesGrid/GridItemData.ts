@@ -1,4 +1,4 @@
-import { TimeSeriesQueryRunnerParams } from './TimeSeriesQueryRunnerParams';
+import { TimeSeriesQueryRunnerParams } from '../../data/timeseries/TimeSeriesQueryRunnerParams';
 
 export type GridItemData = {
   index: number; // for coloring purposes only

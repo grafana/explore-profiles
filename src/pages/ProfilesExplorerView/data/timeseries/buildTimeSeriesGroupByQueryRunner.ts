@@ -1,10 +1,10 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
 import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
 
-import { TimeSeriesQueryRunnerParams } from '../types/TimeSeriesQueryRunnerParams';
-import { buildPyroscopeQuery } from './buildPyroscopeQuery';
+import { buildPyroscopeQuery } from '../helpers/buildPyroscopeQuery';
+import { LabelsDataSource } from '../labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from './buildTimeSeriesQueryRunner';
-import { LabelsDataSource } from './LabelsDataSource';
+import { TimeSeriesQueryRunnerParams } from './TimeSeriesQueryRunnerParams';
 
 type TimeSeriesQueryGroupByRunnerParams = {
   queryRunnerParams: TimeSeriesQueryRunnerParams;

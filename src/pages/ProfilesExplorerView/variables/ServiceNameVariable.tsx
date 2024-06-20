@@ -12,7 +12,7 @@ import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/doma
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
-import { PYROSCOPE_SERVICES_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
 
@@ -21,8 +21,8 @@ export class ServiceNameVariable extends QueryVariable {
     super({
       name: 'serviceName',
       label: '🚀 Service',
-      datasource: PYROSCOPE_SERVICES_DATA_SOURCE,
-      query: 'list', // dummy query, can't be an empty string
+      datasource: PYROSCOPE_SERIES_DATA_SOURCE,
+      query: 'serviceName',
       loading: true,
     });
 

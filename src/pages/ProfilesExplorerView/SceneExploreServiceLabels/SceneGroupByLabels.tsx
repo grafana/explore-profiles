@@ -22,11 +22,13 @@ import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
 import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../components/SceneQuickFilter';
-import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
-import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
-import { LabelsDataSource } from '../data/LabelsDataSource';
-import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
+import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { LabelsDataSource } from '../data/labels/LabelsDataSource';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { getProfileMetricLabel } from '../data/series/helpers/getProfileMetricLabel';
+import { getProfileMetricUnit } from '../data/series/helpers/getProfileMetricUnit';
+import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventAddLabelToFilters } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../events/EventExpandPanel';
 import { EventSelectForCompare } from '../events/EventSelectForCompare';
@@ -37,7 +39,6 @@ import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { SceneProfilesExplorer } from '../SceneProfilesExplorer/SceneProfilesExplorer';
-import { GridItemData } from '../types/GridItemData';
 import { addFilter } from '../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
@@ -80,7 +81,9 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       key: 'group-by-labels',
       body: new SceneTimeSeriesGrid({
         key: 'labels-grid',
-        dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
+        query: {
+          dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
+        },
         headerActions: (item) => {
           if (!item.queryRunnerParams.groupBy) {
             return [
@@ -333,8 +336,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     });
 
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-    const profileMetricUnit = ProfileMetricsDataSource.getProfileMetricUnit(profileMetricId);
-    const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId);
+    const profileMetricUnit = getProfileMetricUnit(profileMetricId);
+    const profileMetricLabel = getProfileMetricLabel(profileMetricId);
 
     const tablePanel = PanelBuilders.table()
       .setData(transformedData)

@@ -18,21 +18,24 @@ import { debounce } from 'lodash';
 import React from 'react';
 import { Unsubscribable } from 'rxjs';
 
-import { buildTimeSeriesGroupByQueryRunner } from '../data/buildTimeSeriesGroupByQueryRunner';
-import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
-import { getDataSourceError } from '../data/getDataSourceError';
-import { DataSourceDef, PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
-import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
-import { getColorByIndex } from '../helpers/getColorByIndex';
-import { GridItemData } from '../types/GridItemData';
-import { EmptyStateScene } from './EmptyState/EmptyStateScene';
-import { LayoutType, SceneLayoutSwitcher } from './SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
-import { SceneQuickFilter } from './SceneQuickFilter';
+import { getDataSourceError } from '../../data/helpers/getDataSourceError';
+import { DataSourceDef, PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../../data/pyroscope-data-sources';
+import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTimeSeriesGroupByQueryRunner';
+import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
+import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
+import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
+import { LayoutType, SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
+import { SceneQuickFilter } from '../SceneQuickFilter';
+import { GridItemData } from './GridItemData';
 
 interface SceneTimeSeriesGridState extends EmbeddedSceneState {
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-  dataSource: DataSourceDef;
+  query: {
+    dataSource: DataSourceDef;
+    target?: string;
+  };
   items: {
     data: GridItemData[];
     isLoading: boolean;
@@ -70,16 +73,16 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
 
   constructor({
     key,
-    dataSource,
+    query,
     headerActions,
   }: {
     key: string;
-    dataSource: SceneTimeSeriesGridState['dataSource'];
+    query: SceneTimeSeriesGridState['query'];
     headerActions: SceneTimeSeriesGridState['headerActions'];
   }) {
     super({
       key,
-      dataSource,
+      query,
       items: {
         data: [],
         isLoading: true,
@@ -101,13 +104,11 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         children: [],
       }),
       $data: new SceneQueryRunner({
-        datasource: dataSource,
+        datasource: query.dataSource,
         queries: [
           {
-            refId: `${dataSource.type}-${key}`,
-            queryType: 'metrics',
-            serviceName: '$serviceName',
-            profileMetricId: '$profileMetricId',
+            refId: `${key}-${query.dataSource.type}-${query?.target || ''}`,
+            resource: query?.target || '',
           },
         ],
       }),
@@ -285,6 +286,8 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       return;
     }
 
+    const { query, hideNoData, headerActions, body } = this.state;
+
     const gridItems = items.data.map((item) => {
       const { label, queryRunnerParams } = item;
       const gridItemKey = SceneTimeSeriesGrid.buildGridItemKey(item);
@@ -292,19 +295,19 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       let data: SceneQueryRunner;
 
       const shouldRefreshFavoriteData =
-        this.state.dataSource.uid === PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE.uid && queryRunnerParams.groupBy?.label;
+        query.dataSource.uid === PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE.uid && queryRunnerParams.groupBy?.label;
 
       if (shouldRefreshFavoriteData) {
         // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
         // see buildTimeSeriesGroupByQueryRunner()
         data = new SceneQueryRunner({
-          datasource: this.state.dataSource,
+          datasource: query.dataSource,
           queries: [],
         });
       } else {
         data = buildTimeSeriesQueryRunner(queryRunnerParams);
 
-        if (this.state.hideNoData) {
+        if (hideNoData) {
           this.setupHideNoData(data, gridItemKey);
         }
       }
@@ -321,7 +324,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           });
         })
         .setCustomFieldConfig('fillOpacity', 9)
-        .setHeaderActions(this.state.headerActions(item))
+        .setHeaderActions(headerActions(item))
         .build();
 
       if (shouldRefreshFavoriteData) {
@@ -330,7 +333,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           const timeRange = sceneGraph.getTimeRange(this).state.value;
           const $data = await buildTimeSeriesGroupByQueryRunner({ queryRunnerParams, timeRange });
 
-          if (this.state.hideNoData) {
+          if (hideNoData) {
             this.setupHideNoData($data, gridItemKey);
           }
 
@@ -358,7 +361,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       });
     });
 
-    (this.state.body as SceneCSSGridLayout).setState({
+    (body as SceneCSSGridLayout).setState({
       autoRows: GRID_AUTO_ROWS, // required to have the correct grid items height
       children: gridItems,
     });

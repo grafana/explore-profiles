@@ -1,7 +1,7 @@
 import { SceneQueryRunner } from '@grafana/scenes';
 
-import { TimeSeriesQueryRunnerParams } from '../types/TimeSeriesQueryRunnerParams';
-import { PYROSCOPE_DATA_SOURCE } from './pyroscope-data-sources';
+import { PYROSCOPE_DATA_SOURCE } from '../pyroscope-data-sources';
+import { TimeSeriesQueryRunnerParams } from '../timeseries/TimeSeriesQueryRunnerParams';
 
 type FlameGraphQueryRunnerParams = TimeSeriesQueryRunnerParams & {
   maxNodes?: number;

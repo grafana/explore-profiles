@@ -1,6 +1,6 @@
 import { BusEventWithPayload } from '@grafana/data';
 
-import { GridItemData } from '../types/GridItemData';
+import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
 
 export interface EventViewLabelValuesDistributionPayload {
   item: GridItemData;

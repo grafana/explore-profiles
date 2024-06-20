@@ -4,6 +4,7 @@ import { Button, IconName, useStyles2 } from '@grafana/ui';
 import { merge } from 'lodash';
 import React from 'react';
 
+import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
 import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
@@ -14,7 +15,6 @@ import {
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
-import { GridItemData } from '../types/GridItemData';
 import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 
 type EventContructor =

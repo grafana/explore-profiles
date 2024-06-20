@@ -3,8 +3,8 @@ import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
-import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
-import { PYROSCOPE_PROFILE_METRICS_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 
@@ -16,7 +16,10 @@ export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingl
       key: 'explore-single-service',
       body: new SceneTimeSeriesGrid({
         key: 'profile-metrics-grid',
-        dataSource: PYROSCOPE_PROFILE_METRICS_DATA_SOURCE,
+        query: {
+          dataSource: PYROSCOPE_SERIES_DATA_SOURCE,
+          target: 'profileMetricId',
+        },
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceLabels, item }),
           new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),

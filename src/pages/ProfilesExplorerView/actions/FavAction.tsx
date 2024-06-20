@@ -10,8 +10,8 @@ import { IconButton, useStyles2 } from '@grafana/ui';
 import { clone, defaults, omit, uniqBy } from 'lodash';
 import React from 'react';
 
-import { Favorite, FavoritesDataSource } from '../data/FavoritesDataSource';
-import { GridItemData } from '../types/GridItemData';
+import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { Favorite, FavoritesDataSource } from '../data/favorites/FavoritesDataSource';
 import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 
 export interface FavActionState extends SceneObjectState {

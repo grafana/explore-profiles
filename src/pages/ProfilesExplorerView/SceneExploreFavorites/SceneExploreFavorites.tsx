@@ -15,17 +15,17 @@ import React from 'react';
 
 import { FavAction } from '../actions/FavAction';
 import { SelectAction } from '../actions/SelectAction';
-import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid';
-import { buildTimeSeriesQueryRunner } from '../data/buildTimeSeriesQueryRunner';
-import { ProfileMetricsDataSource } from '../data/ProfileMetricsDataSource';
-import { PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { getProfileMetricUnit } from '../data/series/helpers/getProfileMetricUnit';
+import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventExpandPanel } from '../events/EventExpandPanel';
 import { EventViewLabelValuesDistribution } from '../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { GridItemData } from '../types/GridItemData';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawerContent?: VizPanel;
@@ -39,7 +39,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       key: 'explore-favorites',
       body: new SceneTimeSeriesGrid({
         key: 'favorites-grid',
-        dataSource: PYROSCOPE_PROFILE_FAVORIES_DATA_SOURCE,
+        query: {
+          dataSource: PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE,
+        },
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [
             new SelectAction({ EventClass: EventViewServiceLabels, item }),
@@ -116,7 +118,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
     });
 
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-    const profileMetricUnit = ProfileMetricsDataSource.getProfileMetricUnit(profileMetricId);
+    const profileMetricUnit = getProfileMetricUnit(profileMetricId);
 
     const timeSeriesPanel = (findSceneObjectByKey(this, SceneTimeSeriesGrid.buildGridItemKey(item)) as SceneCSSGridItem)
       .state.body as VizPanel;

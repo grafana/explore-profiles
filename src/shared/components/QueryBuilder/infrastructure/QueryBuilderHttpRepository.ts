@@ -1,13 +1,17 @@
 import { HttpClient } from '../../../infrastructure/http/HttpClient';
 
 export class QueryBuilderHttpRepository<THttpClient extends HttpClient> {
-  httpClient: THttpClient;
+  apiClient: THttpClient | undefined;
 
-  constructor(httpClient: THttpClient) {
-    this.httpClient = httpClient;
+  constructor(options: { apiClient?: THttpClient }) {
+    this.apiClient = options.apiClient;
+  }
+
+  setApiClient(apiClient: THttpClient) {
+    this.apiClient = apiClient;
   }
 
   cancel(reason: any) {
-    this.httpClient.abort(reason);
+    this.apiClient!.abort(reason);
   }
 }

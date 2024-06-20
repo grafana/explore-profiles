@@ -14,7 +14,7 @@ import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetch
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useEffect, useMemo } from 'react';
 
-import { buildFlameGraphQueryRunner } from '../data/buildFlameGraphQueryRunner';
+import { buildFlameGraphQueryRunner } from '../data/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
 
