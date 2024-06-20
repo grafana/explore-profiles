@@ -32,6 +32,7 @@ import { EventExpandPanel } from '../events/EventExpandPanel';
 import { EventSelectForCompare } from '../events/EventSelectForCompare';
 import { EventSelectLabel } from '../events/EventSelectLabel';
 import { EventViewLabelValuesDistribution } from '../events/EventViewLabelValuesDistribution';
+import { buildtimeSeriesPanelTitle } from '../helpers/buildtimeSeriesPanelTitle';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
 import { getColorByIndex } from '../helpers/getColorByIndex';
@@ -53,6 +54,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId', 'groupBy', 'filters'],
     onReferencedVariableValueChanged: (variable) => {
+      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
+      if (notReady) {
+        return;
+      }
+
       if (variable.state.name === 'filters') {
         const { itemsForComparison } = this.state;
         const isDiffEnabled = itemsForComparison.length === 2;
@@ -327,8 +333,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     });
 
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-    const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId);
     const profileMetricUnit = ProfileMetricsDataSource.getProfileMetricUnit(profileMetricId);
+    const profileMetricLabel = ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId);
 
     const tablePanel = PanelBuilders.table()
       .setData(transformedData)
@@ -398,11 +404,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       ),
     });
 
-    const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
-    const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-
     this.setState({
-      drawerTitle: `${serviceName} · ${ProfileMetricsDataSource.getProfileMetricLabel(profileMetricId)}`,
+      drawerTitle: buildtimeSeriesPanelTitle(this),
       drawerSubtitle: '',
       drawerContent: timeSeriesPanel as VizPanel,
     });

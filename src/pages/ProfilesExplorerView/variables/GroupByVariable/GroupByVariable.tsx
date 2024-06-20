@@ -4,6 +4,7 @@ import {
   MultiValueVariable,
   QueryVariable,
   SceneComponentProps,
+  sceneGraph,
   VariableDependencyConfig,
   VariableValueOption,
 } from '@grafana/scenes';
@@ -21,7 +22,14 @@ export class GroupByVariable extends QueryVariable {
 
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId'],
-    onReferencedVariableValueChanged: this.update.bind(this),
+    onReferencedVariableValueChanged: () => {
+      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
+      if (notReady) {
+        return;
+      }
+
+      this.update();
+    },
   });
 
   static MAX_MAIN_LABELS = 8;

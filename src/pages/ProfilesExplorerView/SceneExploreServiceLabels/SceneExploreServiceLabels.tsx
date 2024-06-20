@@ -28,6 +28,11 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId', 'filters'],
     onReferencedVariableValueChanged: () => {
+      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
+      if (notReady) {
+        return;
+      }
+
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
