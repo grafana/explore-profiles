@@ -1,4 +1,4 @@
-import { AppRootProps, PageLayoutType, PluginContextProvider } from '@grafana/data';
+import { PageLayoutType } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
 import store from '@pyroscope/redux/store';
 import { GitHubContextProvider } from '@shared/components/GitHubContextProvider/GitHubContextProvider';
@@ -12,22 +12,20 @@ import { Routes } from './components/Routes/Routes';
 import './infrastructure/faro';
 import './ui/styles/styles.scss';
 
-export function App(props: AppRootProps) {
+export function App() {
   return (
-    <PluginContextProvider meta={props.meta}>
-      <QueryClientProvider client={queryClient}>
-        <GitHubContextProvider>
-          <Provider store={store}>
-            <Onboarding>
-              <PluginPage layout={PageLayoutType.Canvas}>
-                <div className="pyroscope-app">
-                  <Routes />
-                </div>
-              </PluginPage>
-            </Onboarding>
-          </Provider>
-        </GitHubContextProvider>
-      </QueryClientProvider>
-    </PluginContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <GitHubContextProvider>
+        <Provider store={store}>
+          <Onboarding>
+            <PluginPage layout={PageLayoutType.Canvas}>
+              <div className="pyroscope-app">
+                <Routes />
+              </div>
+            </PluginPage>
+          </Onboarding>
+        </Provider>
+      </GitHubContextProvider>
+    </QueryClientProvider>
   );
 }
