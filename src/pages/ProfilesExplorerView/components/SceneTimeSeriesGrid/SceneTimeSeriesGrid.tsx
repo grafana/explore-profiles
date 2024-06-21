@@ -24,6 +24,7 @@ import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTi
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { ProfilesDataSourceVariable } from '../../variables/ProfilesDataSourceVariable';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
@@ -136,6 +137,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
   initLoadItems() {
     let sub: Unsubscribable;
 
+    const subscribeOnceToDataChange = () => {
+      sub = this.state.$data!.subscribeToState(onDataStateChange);
+    };
+
     // start of hack, for a better UX: once we've received the list of items, we unsubscribe from further changes (see `LoadingState.Done` below) and we
     // allow the user to reload the list only by clicking on the "Refresh" button
     // if we don't do this, every time the time range changes (even with auto-refresh on), all the timeseries present on the screen are re-created,
@@ -148,14 +153,18 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       console.error('SceneTimeSeriesGrid: Refresh button not found! The list of items will never be updated.');
     }
 
-    const onClickRefresh = () => {
-      sub = this.state.$data!.subscribeToState(onChangeState);
-    };
-
-    refreshButton?.addEventListener('click', onClickRefresh);
+    refreshButton?.addEventListener('click', subscribeOnceToDataChange);
     // end of hack
 
-    const onChangeState = (newState: SceneDataProvider['state']) => {
+    // we need to refresh the data when the data source changes as well
+    const dataSourceSub = (
+      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
+    ).subscribeToState(() => {
+      subscribeOnceToDataChange();
+      this.state.$data.runQueries();
+    });
+
+    const onDataStateChange = (newState: SceneDataProvider['state']) => {
       if (!newState.data) {
         return;
       }
@@ -172,7 +181,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }
 
       if (state === LoadingState.Done) {
-        sub.unsubscribe();
+        sub.unsubscribe(); // once
 
         this.updateItems({
           data: series[0].fields[0].values,
@@ -182,11 +191,12 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       }
     };
 
-    sub = this.state.$data!.subscribeToState(onChangeState);
+    subscribeOnceToDataChange();
 
     return {
       unsubscribe() {
-        refreshButton?.removeEventListener('click', onClickRefresh);
+        dataSourceSub.unsubscribe();
+        refreshButton?.removeEventListener('click', subscribeOnceToDataChange);
         sub.unsubscribe();
       },
     };
