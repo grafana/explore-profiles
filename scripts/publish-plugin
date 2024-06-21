@@ -7,8 +7,8 @@ BUCKET=grafana-pyroscope-app
 # I think this URL doesn't matter when download is provided
 URL=https://github.com/grafana/explore-profiles
 
-curl \
-  --fail-with-body \
+response=$(curl \
+  -w "%{http_code}" -o response_body.txt -s \
   -H "Authorization: Bearer $GCOM_TOKEN" \
   -H "Content-Type: application/json" https://grafana.com/api/plugins -d "{
   \"url\": \"$URL\",
@@ -38,4 +38,9 @@ curl \
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-darwin_arm64.zip")\"
     }
   }
-}"
+}")
+
+if [ "$response" -ne 200 ]; then
+  cat response_body.txt
+  exit 1
+fi
