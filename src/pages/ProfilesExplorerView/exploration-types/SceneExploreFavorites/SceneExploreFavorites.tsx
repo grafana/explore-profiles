@@ -13,19 +13,19 @@ import { Drawer, TableCellDisplayMode } from '@grafana/ui';
 import { merge } from 'lodash';
 import React from 'react';
 
-import { FavAction } from '../actions/FavAction';
-import { SelectAction } from '../actions/SelectAction';
-import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
-import { SceneTimeSeriesGrid } from '../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
-import { PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../data/pyroscope-data-sources';
-import { getProfileMetricUnit } from '../data/series/helpers/getProfileMetricUnit';
-import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
-import { EventExpandPanel } from '../events/EventExpandPanel';
-import { EventViewLabelValuesDistribution } from '../events/EventViewLabelValuesDistribution';
-import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
-import { findSceneObjectByKey } from '../helpers/findSceneObjectByKey';
-import { getColorByIndex } from '../helpers/getColorByIndex';
+import { FavAction } from '../../actions/FavAction';
+import { SelectAction } from '../../actions/SelectAction';
+import { GridItemData } from '../../components/SceneTimeSeriesGrid/GridItemData';
+import { SceneTimeSeriesGrid } from '../../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../../data/pyroscope-data-sources';
+import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
+import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
+import { EventExpandPanel } from '../../events/EventExpandPanel';
+import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
+import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
+import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
+import { getColorByIndex } from '../../helpers/getColorByIndex';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawerContent?: VizPanel;

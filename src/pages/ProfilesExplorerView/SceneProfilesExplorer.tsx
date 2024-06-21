@@ -18,33 +18,32 @@ import {
   SceneVariableSet,
   SplitLayout,
 } from '@grafana/scenes';
-import { IconButton, InlineLabel, Stack, useStyles2 } from '@grafana/ui';
+import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
 import { displaySuccess } from '@shared/domain/displayStatus';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
 
-import { SceneLayoutSwitcher } from '../components/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from '../components/SceneNoDataSwitcher';
-import { SceneQuickFilter } from '../components/SceneQuickFilter';
-import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
-import { FavoritesDataSource } from '../data/favorites/FavoritesDataSource';
-import { LabelsDataSource } from '../data/labels/LabelsDataSource';
-import { SeriesDataSource } from '../data/series/SeriesDataSource';
-import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
-import { EventViewServiceProfiles } from '../events/EventViewServiceProfiles';
-import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
-import { SceneExploreAllServices } from '../SceneExploreAllServices/SceneExploreAllServices';
-import { SceneExploreFavorites } from '../SceneExploreFavorites/SceneExploreFavorites';
-import { SceneExploreServiceLabels } from '../SceneExploreServiceLabels/SceneExploreServiceLabels';
-import { SceneExploreSingleService } from '../SceneExploreSingleService/SceneExploreSingleService';
-import { SceneServiceFlameGraph } from '../SceneServiceFlameGraph/SceneServiceFlameGraph';
-import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
-import { GroupByVariable } from '../variables/GroupByVariable/GroupByVariable';
-import { ProfileMetricVariable } from '../variables/ProfileMetricVariable';
-import { ProfilesDataSourceVariable } from '../variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from '../variables/ServiceNameVariable';
-import { ExplorationTypeSelector } from './ExplorationTypeSelector';
+import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
+import { SceneQuickFilter } from './components/SceneQuickFilter';
+import { GridItemData } from './components/SceneTimeSeriesGrid/GridItemData';
+import { FavoritesDataSource } from './data/favorites/FavoritesDataSource';
+import { LabelsDataSource } from './data/labels/LabelsDataSource';
+import { SeriesDataSource } from './data/series/SeriesDataSource';
+import { EventViewServiceFlameGraph } from './events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from './events/EventViewServiceLabels';
+import { EventViewServiceProfiles } from './events/EventViewServiceProfiles';
+import { SceneExploreAllServices } from './exploration-types/SceneExploreAllServices/SceneExploreAllServices';
+import { SceneExploreFavorites } from './exploration-types/SceneExploreFavorites/SceneExploreFavorites';
+import { SceneExploreServiceLabels } from './exploration-types/SceneExploreServiceLabels/SceneExploreServiceLabels';
+import { SceneExploreSingleService } from './exploration-types/SceneExploreSingleService/SceneExploreSingleService';
+import { SceneServiceFlameGraph } from './exploration-types/SceneServiceFlameGraph/SceneServiceFlameGraph';
+import { findSceneObjectByClass } from './helpers/findSceneObjectByClass';
+import { FiltersVariable } from './variables/FiltersVariable/FiltersVariable';
+import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
+import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
+import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
+import { ServiceNameVariable } from './variables/ServiceNameVariable';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
@@ -362,11 +361,37 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                   <dataSourceVariable.Component model={dataSourceVariable} />
                 </div>
 
-                <ExplorationTypeSelector
-                  options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
-                  value={explorationType as ExplorationType}
-                  onChange={model.onChangeExplorationType}
-                />
+                <div className={styles.explorationType}>
+                  <InlineLabel
+                    width="auto"
+                    tooltip={
+                      <div className={styles.tooltipContent}>
+                        <h5>Types of exploration</h5>
+                        <dl>
+                          <dt>All services</dt>
+                          <dd>Overview of all your services, for any given profile metric</dd>
+                          <dt>Single service</dt>
+                          <dd>Overview of all the profile metrics for a single service</dd>
+                          <dt>Service labels</dt>
+                          <dd>Single service labels exploration and filtering</dd>
+                          <dt>Flame graph</dt>
+                          <dd>Single service flame graph</dd>
+                          <dt>Favorites</dt>
+                          <dd>Overview of your favorite visualizations</dd>
+                        </dl>
+                      </div>
+                    }
+                  >
+                    Exploration type
+                  </InlineLabel>
+
+                  <RadioButtonGroup
+                    options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
+                    value={explorationType}
+                    fullWidth={false}
+                    onChange={model.onChangeExplorationType}
+                  />
+                </div>
               </Stack>
 
               <Stack>
@@ -417,6 +442,26 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
     & > div {
       max-width: 180px;
+    }
+  `,
+  explorationType: css`
+    display: flex;
+  `,
+  tooltipContent: css`
+    padding: ${theme.spacing(1)};
+
+    & dl {
+      margin-top: ${theme.spacing(2)};
+      display: grid;
+      grid-gap: ${theme.spacing(1)} ${theme.spacing(2)};
+      grid-template-columns: max-content;
+    }
+    & dt {
+      font-weight: bold;
+    }
+    & dd {
+      margin: 0;
+      grid-column-start: 2;
     }
   `,
   variable: css`

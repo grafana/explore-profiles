@@ -13,13 +13,13 @@ import {
 } from '@grafana/scenes';
 import React from 'react';
 
-import { FavAction } from '../actions/FavAction';
-import { SelectAction } from '../actions/SelectAction';
-import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
-import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
-import { buildtimeSeriesPanelTitle } from '../helpers/buildtimeSeriesPanelTitle';
-import { getColorByIndex } from '../helpers/getColorByIndex';
-import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
+import { FavAction } from '../../actions/FavAction';
+import { SelectAction } from '../../actions/SelectAction';
+import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
+import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
+import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
+import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { parseVariableValue } from '../../variables/FiltersVariable/filters-ops';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
 interface SceneServiceFlameGraphState extends EmbeddedSceneState {}
