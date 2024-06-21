@@ -120,7 +120,7 @@ local uploadStep(platform) = step('publish platrofm specific (${platform}) zip t
       from_secret: 'gcs_service_account_key',
     },
   },
-}) + releaseOnly;
+} + releaseOnly;
 
 
 // NB: Former deployStep() replaced by argo-workflows api call using argo-cli container
