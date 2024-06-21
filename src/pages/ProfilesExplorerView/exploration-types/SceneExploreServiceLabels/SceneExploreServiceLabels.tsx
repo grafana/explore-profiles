@@ -26,13 +26,8 @@ interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
 
 export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServiceLabelsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId', 'filters'],
-    onReferencedVariableValueChanged: () => {
-      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
-      if (notReady) {
-        return;
-      }
-
+    variableNames: ['dataSource', 'serviceName', 'profileMetricId', 'filters'],
+    onVariableUpdateCompleted: () => {
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
