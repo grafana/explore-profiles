@@ -1,0 +1,28 @@
+#!/bin/bash
+
+mkdir -p ./gpx_files
+mv ./dist/gpx_* ./gpx_files
+
+DRONE_BUILD_NUMBER=$1
+
+platforms=("darwin_amd64" "darwin_arm64" "linux_amd64" "linux_arm" "linux_arm64" "windows_amd64.exe")
+
+for platform in "${platforms[@]}"; do
+  mv "gpx_files/gpx_pyroscope_app_${platform}" ./dist
+  yarn sign
+  ls -1 ./dist
+
+  # Adjust zip file name for the Windows .exe file
+  if [[ $platform == *.exe ]]; then
+    zip -r "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-windows_amd64.zip" ./dist
+  else
+    zip -r "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-${platform}.zip" ./dist
+  fi
+
+  rm "dist/gpx_pyroscope_app_${platform}"
+done
+
+# for compatibility with the old naming scheme
+cp "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-linux_amd64.zip" "grafana-pyroscope-app-$DRONE_BUILD_NUMBER.zip"
+
+ls -lah grafana-pyroscope-app-*.zip
