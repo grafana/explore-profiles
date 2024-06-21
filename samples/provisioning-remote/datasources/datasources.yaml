@@ -12,3 +12,4 @@ datasources:
     secureJsonData:
       basicAuthPassword: $REMOTE_BASIC_AUTH_PASSWORD
     isDefault: true
+    keepCookies: [GitSession]
