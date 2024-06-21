@@ -24,9 +24,7 @@ import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTi
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
-import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
@@ -163,7 +161,11 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     const dataSourceSub = (
       findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
     ).subscribeToState(() => {
+      // prevent "flash of error" on each timeseries in the grid
+      (this.state.body as SceneCSSGridLayout).setState({ children: [] });
+
       subscribeOnceToDataChange();
+
       this.state.$data.runQueries();
     });
 
@@ -191,16 +193,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
           isLoading: false,
           error: null,
         });
-
-        // we do this to ensure that the non-active (not rendered in the UI) variables have the correct values
-        // after switching DS then going to a different exploration type
-        const variables = [ServiceNameVariable, ProfileMetricVariable]
-          .map((VariableClass) => {
-            return findSceneObjectByClass(this, VariableClass) as ServiceNameVariable | ProfileMetricVariable;
-          })
-          .filter((variable) => !variable.isActive);
-
-        variables.forEach((variable) => variable.update(true));
       }
     };
 

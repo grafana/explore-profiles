@@ -43,7 +43,7 @@ export class ProfileMetricVariable extends QueryVariable {
       this.setState({ value: ProfileMetricVariable.DEFAULT_VALUE });
     }
 
-    const sub = sceneGraph.getTimeRange(this).subscribeToState(() => this.update());
+    const sub = sceneGraph.getTimeRange(this).subscribeToState(() => this.update(false));
 
     // VariableDependencyConfig does not work :man_shrug: (never called)
     const dataSourceSub = (
