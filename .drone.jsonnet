@@ -152,11 +152,16 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     ], image=dockerNodeImage),
 
     step('build backend packages', [
-      // 'mage -v test',
       'mage -v build:linux',
+      'mage -v build:darwin',
+      'mage -v build:darwinARM64',
+      'mage -v build:linuxARM',
+      'mage -v build:linuxARM64',
+      'mage -v build:windows',
     ], image=dockerGrafanaPluginCIImage),
 
     step('build frontend packages', [
+      'export NODE_ENV=production',
       'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
       'yarn build',
     ], image=dockerNodeImage) + {
@@ -166,24 +171,10 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       ],
     } + nonReleaseOnly,
 
-    step('build frontend packages (with tag)', [
-      'export NODE_ENV=production',
-      'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
-      'yarn build',
-    ], image=dockerNodeImage) + {
-      depends_on: [
-        'install dependencies',
-        'build backend packages',
-      ],
-    } + releaseOnly,
-
-    step('sign and package packages', [
+    step('package and sign', [
       'apt update',
       'apt install zip',
-      'yarn sign',
-      'ls -1 ./dist',
-      'git status',
-      'zip -r grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip ./dist',
+      './scripts/package-and-sign',
     ], image=dockerNodeImage) + {
       environment: {
         GRAFANA_API_KEY: {
@@ -192,7 +183,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       },
       depends_on: [
         'build frontend packages',
-        'build frontend packages (with tag)',
       ],
     } + mainOrReleaseOnly,
 
