@@ -27,12 +27,7 @@ interface SceneServiceFlameGraphState extends EmbeddedSceneState {}
 export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGraphState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId', 'filters'],
-    onReferencedVariableValueChanged: () => {
-      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
-      if (notReady) {
-        return;
-      }
-
+    onVariableUpdateCompleted: () => {
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
