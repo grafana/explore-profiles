@@ -163,7 +163,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     // hack: we need to refresh the data when the data source changes
     const dataSourceSub = findSceneObjectByClass(this, ProfilesDataSourceVariable).subscribeToState(async () => {
       // prevent "flash of error" on each timeseries in the grid
-      this.updateItems({ data: [], isLoading: true, error: null });
+      this.resetToLoadingState();
 
       // we do this to ensure that non-active variables (not rendered in the UI) have the correct values
       // after switching DS then going to a different exploration type
@@ -225,6 +225,10 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         sub.unsubscribe();
       },
     };
+  }
+
+  resetToLoadingState() {
+    this.updateItems({ data: [], isLoading: true, error: null });
   }
 
   initQuickFilterChange() {

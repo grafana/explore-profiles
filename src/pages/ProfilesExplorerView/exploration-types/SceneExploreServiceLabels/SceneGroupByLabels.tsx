@@ -135,15 +135,32 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToEvents() {
-    (findSceneObjectByClass(this, GroupByVariable) as GroupByVariable).subscribeToState((newState, prevState) => {
-      // we refresh the grid either when clicking on a groupBy value or when it finishes loading
-      // which happens every time serviceName or profileMetricId changes
-      // (see src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx)
-      if (newState.value !== prevState.value || (!newState.loading && prevState.loading)) {
+    const groupByVariable = sceneGraph.lookupVariable('groupBy', this) as GroupByVariable;
+
+    groupByVariable.subscribeToState((newState, prevState) => {
+      if (newState.loading) {
+        this.state.body.resetToLoadingState();
+        return;
+      }
+
+      // we refresh the grid either when clicking on a groupBy value...
+      if (newState.value !== prevState.value) {
         this.setState({
           body: this.state.body.clone(),
           itemsForComparison: [],
         });
+        return;
+      }
+
+      // ...or when it finishes loading, which happens every time serviceName or profileMetricId changes
+      // (see src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx)
+      if (!newState.loading && prevState.loading) {
+        this.setState({
+          body: this.state.body.clone(),
+          itemsForComparison: [],
+        });
+
+        groupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
       }
     });
 
