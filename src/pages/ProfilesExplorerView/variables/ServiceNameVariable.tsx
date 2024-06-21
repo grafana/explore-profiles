@@ -31,6 +31,10 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   onActivate() {
+    if (!this.state.value) {
+      this.setState({ value: this.state.options[0].value });
+    }
+
     const sub = sceneGraph.getTimeRange(this).subscribeToState(() => this.update(false));
 
     // VariableDependencyConfig does not work :man_shrug: (never called)
