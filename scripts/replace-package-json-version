@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Check if an argument is passed
+if [ -z "$1" ]; then
+  echo "Please provide the version number as an argument."
+  exit 1
+fi
+
+# Remove the leading 'v' if present
+new_version=$(echo $1 | sed 's/^v//')
+
+# Regular expression to match the d.d.d format
+version_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+# Check if the new version number matches the regex
+if [[ ! $new_version =~ $version_regex ]]; then
+  echo "The provided version number does not conform to d.d.d format. Setting it to 0.0.0."
+  new_version="0.0.0"
+fi
+
+# Use sed to replace the version number in package.json
+sed -i '' -e "s/\"version\": \"[^\"]*\"/\"version\": \"$new_version\"/" package.json
+
+echo "Version number updated to $new_version in package.json"

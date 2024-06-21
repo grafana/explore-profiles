@@ -179,6 +179,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     step('build frontend packages', [
       'export NODE_ENV=production',
       'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
+      './scripts/replace-package-json-version ${DRONE_TAG}',
       'yarn build',
     ], image=dockerNodeImage) + {
       depends_on: [
