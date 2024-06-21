@@ -188,7 +188,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -202,7 +202,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with commit SHA', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -216,7 +216,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with latest-dev', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -230,7 +230,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with dev-tag', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -244,7 +244,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with latest', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -258,7 +258,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with tag', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
         'generate tags',
       ],
       settings: {
@@ -281,7 +281,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       },
       depends_on: [
         'generate tags',
-        'sign and package packages',
+        'package and sign',
       ],
     } + releaseOnly,
   ]),
