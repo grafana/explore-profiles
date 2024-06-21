@@ -15,6 +15,7 @@ import { lastValueFrom } from 'rxjs';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
+import { ProfilesDataSourceVariable } from './ProfilesDataSourceVariable';
 
 export class ServiceNameVariable extends QueryVariable {
   constructor() {
@@ -30,16 +31,20 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   onActivate() {
-    const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
-      this.update();
-    });
+    const sub = sceneGraph.getTimeRange(this).subscribeToState(() => this.update(false));
+
+    // VariableDependencyConfig does not work :man_shrug: (never called)
+    const dataSourceSub = (
+      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
+    ).subscribeToState(() => this.update(true));
 
     return () => {
+      dataSourceSub.unsubscribe();
       sub.unsubscribe();
     };
   }
 
-  async update() {
+  async update(selectDefaultValue = false) {
     let options: VariableValueOption[] = [];
     let error = null;
 
@@ -51,10 +56,23 @@ export class ServiceNameVariable extends QueryVariable {
       error = e;
     } finally {
       this.setState({ loading: false, options, error });
+
+      if (selectDefaultValue) {
+        this.selectNewValue(options[0].value as string);
+      }
     }
   }
 
-  static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
+  selectNewValue = (newValue: string) => {
+    this.changeValueTo(newValue, newValue);
+
+    // manually reset filters - the "Scenes way" would be to listen to the variable changes but it leads to errors
+    // see comments in src/pages/ProfilesExplorerView/variables/FiltersVariable/FiltersVariable.tsx
+    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+    filtersVariable.setState({ filters: [] });
+  };
+
+  static Component = ({ model }: SceneComponentProps<MultiValueVariable & { selectNewValue?: any }>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
 
@@ -74,15 +92,6 @@ export class ServiceNameVariable extends QueryVariable {
       );
     }
 
-    const onSelect = (newValue: string) => {
-      model.changeValueTo(newValue, newValue);
-
-      // manually reset filters - the "Scenes way" would be to listen to the variable changes but it leads to errors
-      // see comments in src/pages/ProfilesExplorerView/variables/FiltersVariable/FiltersVariable.tsx
-      const filtersVariable = findSceneObjectByClass(model, FiltersVariable) as FiltersVariable;
-      filtersVariable.setState({ filters: [] });
-    };
-
     return (
       <Cascader
         // we do this to ensure that the Cascader selects the initial value properly
@@ -95,7 +104,7 @@ export class ServiceNameVariable extends QueryVariable {
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
-        onSelect={onSelect}
+        onSelect={model.selectNewValue}
       />
     );
   };

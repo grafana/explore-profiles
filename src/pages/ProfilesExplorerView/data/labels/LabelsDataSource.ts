@@ -188,8 +188,6 @@ export class LabelsDataSource extends RuntimeDataSource {
         })
     );
 
-    console.log('*** labelsWithCounts', labelsWithCounts);
-
     const sortedLabels = labelsWithCounts.sort((a, b) => b.count - a.count).map(({ value, text }) => ({ value, text }));
 
     return [

@@ -16,10 +16,9 @@ class SeriesRepository extends AbstractRepository<SeriesApiClient, MemoryCacheCl
     const from = Math.floor((timeRange.from.valueOf() || 0) / 10000) * 10000;
     const to = Math.floor((timeRange.to.valueOf() || 0) / 10000) * 10000;
 
-    const cacheParams = [from, to];
+    const cacheParams = [this.apiClient!.baseUrl, from, to];
 
     const servicesFromCacheP = this.cacheClient!.get(cacheParams);
-
     if (servicesFromCacheP) {
       const services = await servicesFromCacheP;
 

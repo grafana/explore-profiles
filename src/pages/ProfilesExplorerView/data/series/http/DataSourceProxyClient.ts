@@ -2,6 +2,8 @@ import { config } from '@grafana/runtime';
 import { HttpClient } from '@shared/infrastructure/http/HttpClient';
 
 export class DataSourceProxyClient extends HttpClient {
+  dataSourceUid: string;
+
   constructor(options: { dataSourceUid: string }) {
     const { dataSourceUid } = options;
 
@@ -17,5 +19,7 @@ export class DataSourceProxyClient extends HttpClient {
       'content-type': 'application/json',
       'X-Grafana-Org-Id': String(bootData?.user?.orgId || ''),
     });
+
+    this.dataSourceUid = options.dataSourceUid;
   }
 }

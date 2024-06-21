@@ -48,26 +48,28 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
   async listLabels(query: string, from: number, until: number): Promise<Suggestions> {
     LabelsRepository.assertParams(query, from, until);
 
-    const labelsFromCacheP = this.cacheClient.get([query, from, until]);
+    const cacheParams = [this.apiClient!.baseUrl, query, from, until];
+
+    const labelsFromCacheP = this.cacheClient.get(cacheParams);
     if (labelsFromCacheP) {
       const json = await labelsFromCacheP;
       const labels = LabelsRepository.parseLabelsResponse(json);
 
       if (!labels.length) {
-        this.cacheClient.delete([query, from, until]);
+        this.cacheClient.delete(cacheParams);
       }
 
       return labels;
     }
 
     const fetchP = this.apiClient!.fetchLabels(query, from, until);
-    this.cacheClient.set([query, from, until], fetchP);
+    this.cacheClient.set(cacheParams, fetchP);
 
     try {
       const json = await fetchP;
       return LabelsRepository.parseLabelsResponse(json);
     } catch (error) {
-      this.cacheClient.delete([query, from, until]);
+      this.cacheClient.delete(cacheParams);
       throw error;
     }
   }

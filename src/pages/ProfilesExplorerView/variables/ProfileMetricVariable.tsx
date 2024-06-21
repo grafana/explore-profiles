@@ -13,6 +13,8 @@ import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
+import { ProfilesDataSourceVariable } from './ProfilesDataSourceVariable';
 
 type ProfileMetricOptions = Array<{
   value: string;
@@ -41,16 +43,20 @@ export class ProfileMetricVariable extends QueryVariable {
       this.setState({ value: ProfileMetricVariable.DEFAULT_VALUE });
     }
 
-    const sub = sceneGraph.getTimeRange(this).subscribeToState(async () => {
-      this.update();
-    });
+    const sub = sceneGraph.getTimeRange(this).subscribeToState(() => this.update());
+
+    // VariableDependencyConfig does not work :man_shrug: (never called)
+    const dataSourceSub = (
+      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
+    ).subscribeToState(() => this.update(true));
 
     return () => {
+      dataSourceSub.unsubscribe();
       sub.unsubscribe();
     };
   }
 
-  async update() {
+  async update(selectDefaultValue = false) {
     let options: VariableValueOption[] = [];
     let error = null;
 
@@ -62,6 +68,10 @@ export class ProfileMetricVariable extends QueryVariable {
       error = e;
     } finally {
       this.setState({ loading: false, options, error });
+
+      if (selectDefaultValue) {
+        this.changeValueTo(ProfileMetricVariable.DEFAULT_VALUE, ProfileMetricVariable.DEFAULT_VALUE);
+      }
     }
   }
 
@@ -93,7 +103,11 @@ export class ProfileMetricVariable extends QueryVariable {
     return Array.from(optionsMap.values()).sort((a, b) => a.label.localeCompare(b.label));
   }
 
-  static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
+  selectNewValue = (newValue: string) => {
+    this.changeValueTo(newValue, newValue);
+  };
+
+  static Component = ({ model }: SceneComponentProps<MultiValueVariable & { selectNewValue?: any }>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
 
@@ -124,7 +138,7 @@ export class ProfileMetricVariable extends QueryVariable {
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
-        onSelect={(newValue: string) => model.changeValueTo(newValue, newValue)}
+        onSelect={model.selectNewValue}
       />
     );
   };
