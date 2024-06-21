@@ -30,7 +30,7 @@ export class SeriesDataSource extends RuntimeDataSource {
     return seriesRepository.list({ timeRange });
   }
 
-  async query(request: DataQueryRequest<{ refId: string; resource: string }>): Promise<DataQueryResponse> {
+  async query(request: DataQueryRequest<{ refId: string; target: string }>): Promise<DataQueryResponse> {
     const sceneObject = request.scopedVars.__sceneObject?.value;
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
 
@@ -38,9 +38,9 @@ export class SeriesDataSource extends RuntimeDataSource {
 
     let values = [];
 
-    const { resource } = request.targets[0];
+    const { target } = request.targets[0];
 
-    switch (resource) {
+    switch (target) {
       case 'serviceName':
         values = formatSeriesToServices(serviceToProfileMetricsMap);
         break;
@@ -50,7 +50,7 @@ export class SeriesDataSource extends RuntimeDataSource {
         break;
 
       default:
-        throw new TypeError(`Unsupported query "${resource}"!`);
+        throw new TypeError(`Unsupported target "${target}"!`);
     }
 
     const gridItems = values.map(({ value, text }, index) => ({
@@ -58,7 +58,7 @@ export class SeriesDataSource extends RuntimeDataSource {
       value,
       label: text,
       queryRunnerParams: {
-        [resource]: value,
+        [target]: value,
       },
     }));
 

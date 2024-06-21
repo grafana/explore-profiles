@@ -1,7 +1,6 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
 import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
 
-import { buildPyroscopeQuery } from '../helpers/buildPyroscopeQuery';
 import { LabelsDataSource } from '../labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from './buildTimeSeriesQueryRunner';
 import { TimeSeriesQueryRunnerParams } from './TimeSeriesQueryRunnerParams';
@@ -28,7 +27,7 @@ export async function buildTimeSeriesGroupByQueryRunner({
 
     labelValues = await labelsRepository.listLabelValues(
       groupBy!.label,
-      buildPyroscopeQuery({ serviceName, profileMetricId }),
+      `${profileMetricId}{service_name="${serviceName}"}`,
       dateTimeParse(from.valueOf()).unix() * 1000,
       dateTimeParse(to.valueOf()).unix() * 1000
     );

@@ -46,7 +46,7 @@ export class ServiceNameVariable extends QueryVariable {
 
     this.changeValueTo('', '');
 
-    this.setState({ loading: true });
+    this.setState({ loading: true, options: [], error: null });
 
     try {
       options = await lastValueFrom(this.getValueOptions({}));

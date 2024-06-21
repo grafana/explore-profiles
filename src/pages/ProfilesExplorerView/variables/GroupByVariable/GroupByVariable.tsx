@@ -39,7 +39,7 @@ export class GroupByVariable extends QueryVariable {
       name: 'groupBy',
       label: 'Group by',
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,
-      query: 'list', // dummy query, can't be an empty string
+      query: '$profileMetricId{service_name="$serviceName"}',
       loading: true,
     });
 
@@ -71,13 +71,11 @@ export class GroupByVariable extends QueryVariable {
     };
   }
 
-  async update() {
+  update = async () => {
     let options: VariableValueOption[] = [];
     let error = null;
 
-    this.changeValueTo('', '');
-
-    this.setState({ loading: true });
+    this.setState({ loading: true, options: [], error: null });
 
     try {
       options = await lastValueFrom(this.getValueOptions({}));
@@ -86,15 +84,11 @@ export class GroupByVariable extends QueryVariable {
     } finally {
       this.setState({ loading: false, options, error });
     }
-  }
+  };
 
-  static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
+  static Component = ({ model }: SceneComponentProps<MultiValueVariable & { update?: any }>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
-
-    const onRefresh = () => {
-      (findSceneObjectByClass(model, GroupByVariable) as GroupByVariable).update();
-    };
 
     if (loading) {
       return (
@@ -115,7 +109,7 @@ export class GroupByVariable extends QueryVariable {
               <Tooltip theme="error" content={error.toString()}>
                 <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
               </Tooltip>
-              <RefreshPicker noIntervalPicker onRefresh={onRefresh} isOnCanvas={false} onIntervalChanged={noOp} />
+              <RefreshPicker noIntervalPicker onRefresh={model.update} isOnCanvas={false} onIntervalChanged={noOp} />
             </div>
           </Field>
         </>
@@ -138,7 +132,7 @@ export class GroupByVariable extends QueryVariable {
         value={value as string}
         mainLabels={getMainLabels(groupByOptions)}
         onChange={(newValue: string) => model.changeValueTo(newValue, newValue)}
-        onRefresh={onRefresh}
+        onRefresh={model.update}
       />
     );
   };

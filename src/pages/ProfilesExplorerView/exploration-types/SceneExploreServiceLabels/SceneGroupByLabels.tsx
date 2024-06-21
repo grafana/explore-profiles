@@ -83,6 +83,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         key: 'labels-grid',
         query: {
           dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
+          target: '$profileMetricId{service_name="$serviceName"}',
         },
         headerActions: (item) => {
           if (!item.queryRunnerParams.groupBy) {

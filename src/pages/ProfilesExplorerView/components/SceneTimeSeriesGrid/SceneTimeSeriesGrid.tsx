@@ -111,7 +111,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         queries: [
           {
             refId: `${key}-${query.dataSource.type}-${query?.target || ''}`,
-            resource: query?.target || '',
+            target: query?.target || '',
           },
         ],
       }),

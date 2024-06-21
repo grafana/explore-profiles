@@ -1,6 +1,7 @@
 import { TimeRange } from '@grafana/data';
 import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
 
+import { computeRoundedTimeRange } from '../../../helpers/computeRoundedTimeRange';
 import { AbstractRepository } from './AbstractRepository';
 import { SeriesApiClient, ServiceToProfileMetricsMap } from './SeriesApiClient';
 
@@ -10,11 +11,7 @@ class SeriesRepository extends AbstractRepository<SeriesApiClient, MemoryCacheCl
   }
 
   async list(options: { timeRange: TimeRange }): Promise<ServiceToProfileMetricsMap> {
-    const { timeRange } = options;
-
-    // round to 10s
-    const from = Math.floor((timeRange.from.valueOf() || 0) / 10000) * 10000;
-    const to = Math.floor((timeRange.to.valueOf() || 0) / 10000) * 10000;
+    const { from, to } = computeRoundedTimeRange(options.timeRange);
 
     const cacheParams = [this.apiClient!.baseUrl, from, to];
 

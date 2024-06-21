@@ -1,7 +1,6 @@
 import {
   DataQueryRequest,
   DataQueryResponse,
-  dateTimeParse,
   FieldType,
   LegacyMetricFindQueryOptions,
   LoadingState,
@@ -10,11 +9,11 @@ import {
   TestDataSourceResponse,
   TimeRange,
 } from '@grafana/data';
-import { RuntimeDataSource, sceneGraph, SceneObject } from '@grafana/scenes';
+import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
 import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
 
-import { buildPyroscopeQuery } from '../helpers/buildPyroscopeQuery';
+import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
 import { DataSourceProxyClientBuilder } from '../series/http/DataSourceProxyClientBuilder';
 import { LabelsApiClient } from './http/LabelsApiClient';
@@ -26,17 +25,6 @@ export class LabelsDataSource extends RuntimeDataSource {
     return labelValuesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
       ? `${labelName} (${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES}+)`
       : `${labelName} (${labelValuesCount})`;
-  }
-
-  static buildPyroscopeQuery(sceneObject: SceneObject) {
-    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
-    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
-
-    return {
-      query: buildPyroscopeQuery({ serviceName, profileMetricId }),
-      serviceName,
-      profileMetricId,
-    };
   }
 
   constructor() {
@@ -61,13 +49,14 @@ export class LabelsDataSource extends RuntimeDataSource {
 
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
     const sceneObject = (request.scopedVars.__sceneObject as ScopedVar).value;
+
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
 
-    const { query: pyroscopeQuery, serviceName, profileMetricId } = LabelsDataSource.buildPyroscopeQuery(sceneObject);
+    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
+    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+    const pyroscopeQuery = `${profileMetricId}{service_name="${serviceName}"}`;
 
-    const timeRange = request.range;
-    const from = dateTimeParse(timeRange.from.valueOf()).unix() * 1000;
-    const to = dateTimeParse(timeRange.to.valueOf()).unix() * 1000;
+    const { from, to } = computeRoundedTimeRange(request.range);
 
     const groupByLabel = sceneGraph.interpolate(sceneObject, '$groupBy');
 
@@ -161,15 +150,11 @@ export class LabelsDataSource extends RuntimeDataSource {
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
     const { scopedVars, range } = options;
     const sceneObject = scopedVars?.__sceneObject?.value;
-    const timeRange = range as TimeRange;
 
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
+    const pyroscopeQuery = sceneGraph.interpolate(sceneObject, query);
 
-    const { query: pyroscopeQuery } = LabelsDataSource.buildPyroscopeQuery(sceneObject);
-
-    // round to 10s
-    const from = Math.floor((timeRange.from.valueOf() || 0) / 10000) * 10000;
-    const to = Math.floor((timeRange.to.valueOf() || 0) / 10000) * 10000;
+    const { from, to } = computeRoundedTimeRange(range as TimeRange);
 
     const labels = await this.fetchLabels(dataSourceUid, pyroscopeQuery, from, to);
 
