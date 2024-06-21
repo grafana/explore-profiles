@@ -315,7 +315,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     ], image=dockerGrafanaPluginCIImage) + {
       environment: {
         GCOM_TOKEN: {
-          from_secret: gcom_publish_token,
+          from_secret: 'gcom_publish_token',
         },
       },
       depends_on: [
