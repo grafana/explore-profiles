@@ -163,12 +163,15 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       // prevent "flash of error" on each timeseries in the grid
       this.updateItems({ data: [], isLoading: true, error: null });
 
-      // we do this to ensure that active and non-active variables (not rendered in the UI) have the correct values
+      // we do this to ensure that non-active variables (not rendered in the UI) have the correct values
       // after switching DS then going to a different exploration type
-      // note: serviceName and profileMetricId are QueryVariable, we could have used VariableDependencyConfig but it doesn't work for them (handlers never called)
-      const updatesP = [ServiceNameVariable, ProfileMetricVariable].map((VariableClass) =>
-        (findSceneObjectByClass(this, VariableClass) as ServiceNameVariable | ProfileMetricVariable).update(true)
-      );
+      // note: when active, serviceName and profileMetricId also subscribe to data source changes
+      const updatesP = [ServiceNameVariable, ProfileMetricVariable]
+        .map(
+          (VariableClass) => findSceneObjectByClass(this, VariableClass) as ServiceNameVariable | ProfileMetricVariable
+        )
+        .filter((variable) => !variable.isActive)
+        .map((variable) => variable.update(true));
 
       await updatesP;
 

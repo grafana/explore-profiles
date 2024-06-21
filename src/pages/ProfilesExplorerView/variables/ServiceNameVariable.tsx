@@ -9,6 +9,7 @@ import { lastValueFrom } from 'rxjs';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
+import { ProfilesDataSourceVariable } from './ProfilesDataSourceVariable';
 
 export class ServiceNameVariable extends QueryVariable {
   constructor() {
@@ -28,6 +29,15 @@ export class ServiceNameVariable extends QueryVariable {
     if (!this.state.value && this.state.options.length) {
       this.setState({ value: this.state.options[0].value });
     }
+
+    // VariableDependencyConfig does not work :man_shrug: (never called)
+    const dataSourceSub = (
+      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
+    ).subscribeToState(() => this.update(true));
+
+    return () => {
+      dataSourceSub.unsubscribe();
+    };
   }
 
   async update(selectDefaultValue = false) {

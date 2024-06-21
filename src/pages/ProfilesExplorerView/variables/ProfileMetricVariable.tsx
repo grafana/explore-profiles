@@ -7,6 +7,8 @@ import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
+import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
+import { ProfilesDataSourceVariable } from './ProfilesDataSourceVariable';
 
 type ProfileMetricOptions = Array<{
   value: string;
@@ -35,6 +37,15 @@ export class ProfileMetricVariable extends QueryVariable {
     if (!this.state.value) {
       this.setState({ value: ProfileMetricVariable.DEFAULT_VALUE });
     }
+
+    // VariableDependencyConfig does not work :man_shrug: (never called)
+    const dataSourceSub = (
+      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
+    ).subscribeToState(() => this.update(true));
+
+    return () => {
+      dataSourceSub.unsubscribe();
+    };
   }
 
   async update(selectDefaultValue = false) {
