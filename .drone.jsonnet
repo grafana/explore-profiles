@@ -107,21 +107,21 @@ local vault_secret(name, vault_path, key) = {
   },
 };
 
-local uploadStep(platform) = step('placeholder', [], 'plugins/gcs') + {
-  name: 'publish platform specific (${platform}) zip to GCS with tag',
-  depends_on: [
-    'package and sign',
-    'generate tags',
-  ],
-  settings: {
-    acl: 'allUsers:READER',
-    source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}-${platform}.zip',
-    target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_TAG}-${platform}.zip',
-    token: {
-      from_secret: 'gcs_service_account_key',
+local uploadStep = function(platform)
+  step('publish platform specific (${platform}) zip to GCS with tag', [], 'plugins/gcs') + {
+    depends_on: [
+      'package and sign',
+      'generate tags',
+    ],
+    settings: {
+      acl: 'allUsers:READER',
+      source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}-${platform}.zip',
+      target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_TAG}-${platform}.zip',
+      token: {
+        from_secret: 'gcs_service_account_key',
+      },
     },
-  },
-} + releaseOnly;
+  } + releaseOnly;
 
 
 // NB: Former deployStep() replaced by argo-workflows api call using argo-cli container
