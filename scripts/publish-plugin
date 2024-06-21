@@ -1,0 +1,39 @@
+#!/bin/bash
+
+PLUGIN_ID=grafana-pyroscope-app
+VERSION=$(jq -r '.version' package.json)
+BUCKET=grafana-pyroscope-app
+# I think this URL doesn't matter when download is provided
+URL=https://github.com/grafana/explore-profiles
+
+curl \
+  -H "Authorization: Bearer $GCOM_TOKEN" \
+  -H "Content-Type: application/json" https://grafana.com/api/plugins -d "{
+  \"url\": \"$URL\",
+  \"download\": {
+    \"linux-amd64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/$PLUGIN_ID/release/$VERSION/$PLUGIN_ID-$VERSION-linux_amd64.zip\",
+      \"md5\": \"$(md5sum $PLUGIN_ID-$VERSION-linux_amd64.zip)\"
+    },
+    \"linux-arm64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/$PLUGIN_ID/release/$VERSION/$PLUGIN_ID-$VERSION-linux_arm64.zip\",
+      \"md5\": \"$(md5sum $PLUGIN_ID-$VERSION-linux_arm64.zip)\"
+    },
+    \"linux-arm\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/$PLUGIN_ID/release/$VERSION/$PLUGIN_ID-$VERSION-linux_arm.zip\",
+      \"md5\": \"$(md5sum $PLUGIN_ID-$VERSION-linux_arm.zip)\"
+    },
+    \"windows-amd64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/$PLUGIN_ID/release/$VERSION/$PLUGIN_ID-$VERSION-windows_amd64.zip\",
+      \"md5\": \"$(md5sum $PLUGIN_ID-$VERSION-windows_amd64.zip)\"
+    },
+    \"darwin-amd64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/$PLUGIN_ID/release/$VERSION/$PLUGIN_ID-$VERSION-darwin_amd64.zip\",
+      \"md5\": \"$(md5sum $PLUGIN_ID-$VERSION-darwin_amd64.zip)\"
+    },
+    \"darwin-arm64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/$PLUGIN_ID/release/$VERSION/$PLUGIN_ID-$VERSION-darwin_arm64.zip\",
+      \"md5\": \"$(md5sum $PLUGIN_ID-$VERSION-darwin_arm64.zip)\"
+    }
+  }
+}"
