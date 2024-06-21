@@ -102,7 +102,7 @@ export class ProfileMetricVariable extends QueryVariable {
       optionsMap.set(group, nameSpaceServices);
     }
 
-    return Array.from(optionsMap.values()).sort((a, b) => a.label.localeCompare(b.label));
+    return Array.from(optionsMap.values()).sort((a, b) => b.label.localeCompare(a.label));
   }
 
   selectNewValue = (newValue: string) => {
