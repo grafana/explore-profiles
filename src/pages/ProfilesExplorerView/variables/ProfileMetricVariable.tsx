@@ -60,6 +60,8 @@ export class ProfileMetricVariable extends QueryVariable {
     let options: VariableValueOption[] = [];
     let error = null;
 
+    this.changeValueTo('', '');
+
     this.setState({ loading: true });
 
     try {

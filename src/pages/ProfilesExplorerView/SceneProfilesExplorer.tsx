@@ -48,7 +48,7 @@ import { ServiceNameVariable } from './variables/ServiceNameVariable';
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
   body?: SplitLayout;
-  gridControls: any[]; // TODO
+  gridControls: Array<SceneObject & { key?: string }>;
 }
 
 export enum ExplorationType {

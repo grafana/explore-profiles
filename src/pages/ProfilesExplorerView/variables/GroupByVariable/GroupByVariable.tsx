@@ -75,6 +75,8 @@ export class GroupByVariable extends QueryVariable {
     let options: VariableValueOption[] = [];
     let error = null;
 
+    this.changeValueTo('', '');
+
     this.setState({ loading: true });
 
     try {

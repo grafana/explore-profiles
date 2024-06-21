@@ -134,6 +134,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     };
   }
 
+  // hack -> another option: pass an GridItemsFetcher class that handles the loading and can subscribe to variables changes
   initLoadItems() {
     let sub: Unsubscribable;
 
@@ -156,7 +157,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     refreshButton?.addEventListener('click', subscribeOnceToDataChange);
     // end of hack
 
-    // we need to refresh the data when the data source changes as well
+    // hack: we need to refresh the data when the data source changes as well
     const dataSourceSub = (
       findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
     ).subscribeToState(() => {
