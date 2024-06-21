@@ -7,19 +7,24 @@ DRONE_BUILD_NUMBER=$1
 
 platforms=("darwin_amd64" "darwin_arm64" "linux_amd64" "linux_arm" "linux_arm64" "windows_amd64.exe")
 
+# Have to move the dist directory, otherwise when we submit plugin we get this error:
+# > Archive root directory named dist. It should contain a directory named grafana-pyroscope-app
+
+mv ./dist ./grafana-pyroscope-app
+
 for platform in "${platforms[@]}"; do
-  mv "gpx_files/gpx_pyroscope_app_${platform}" ./dist
+  mv "gpx_files/gpx_pyroscope_app_${platform}" ./grafana-pyroscope-app
   yarn sign
-  ls -1 ./dist
+  ls -1 ./grafana-pyroscope-app
 
   # Adjust zip file name for the Windows .exe file
   if [[ $platform == *.exe ]]; then
-    zip -r "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-windows_amd64.zip" ./dist
+    zip -r "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-windows_amd64.zip" ./grafana-pyroscope-app
   else
-    zip -r "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-${platform}.zip" ./dist
+    zip -r "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-${platform}.zip" ./grafana-pyroscope-app
   fi
 
-  rm "dist/gpx_pyroscope_app_${platform}"
+  rm "grafana-pyroscope-app/gpx_pyroscope_app_${platform}"
 done
 
 # for compatibility with the old naming scheme

@@ -174,6 +174,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       'mage -v build:linuxARM',
       'mage -v build:linuxARM64',
       'mage -v build:windows',
+      'mage -v build:generateManifestFile',
     ], image=dockerGrafanaPluginCIImage),
 
     step('build frontend packages', [
