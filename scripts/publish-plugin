@@ -14,27 +14,27 @@ response=$(curl \
   \"url\": \"$URL\",
   \"download\": {
     \"linux-amd64\": {
-      \"url\": \"https://storage.googleapis.com/$BUCKET/release/$PLUGIN_ID-$VERSION-linux_amd64.zip\",
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-linux_amd64.zip\",
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-linux_amd64.zip")\"
     },
     \"linux-arm64\": {
-      \"url\": \"https://storage.googleapis.com/$BUCKET/release/$PLUGIN_ID-$VERSION-linux_arm64.zip\",
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-linux_arm64.zip\",
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-linux_arm64.zip")\"
     },
     \"linux-arm\": {
-      \"url\": \"https://storage.googleapis.com/$BUCKET/release/$PLUGIN_ID-$VERSION-linux_arm.zip\",
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-linux_arm.zip\",
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-linux_arm.zip")\"
     },
     \"windows-amd64\": {
-      \"url\": \"https://storage.googleapis.com/$BUCKET/release/$PLUGIN_ID-$VERSION-windows_amd64.zip\",
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-windows_amd64.zip\",
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-windows_amd64.zip")\"
     },
     \"darwin-amd64\": {
-      \"url\": \"https://storage.googleapis.com/$BUCKET/release/$PLUGIN_ID-$VERSION-darwin_amd64.zip\",
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-darwin_amd64.zip\",
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-darwin_amd64.zip")\"
     },
     \"darwin-arm64\": {
-      \"url\": \"https://storage.googleapis.com/$BUCKET/release/$PLUGIN_ID-$VERSION-darwin_arm64.zip\",
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-darwin_arm64.zip\",
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-darwin_arm64.zip")\"
     }
   }
