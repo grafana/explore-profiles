@@ -169,7 +169,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         'install dependencies',
         'build backend packages',
       ],
-    } + nonReleaseOnly,
+    },
 
     step('package and sign', [
       'apt update',
