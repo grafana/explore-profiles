@@ -307,6 +307,22 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         'package and sign',
       ],
     } + releaseOnly,
+
+    step('publish to grafana.com', [
+      'apt update',
+      'apt install jq',
+      './scripts/publish-plugin'
+    ], image=dockerGrafanaPluginCIImage) + {
+      environment: {
+        GCOM_TOKEN: {
+          from_secret: gcom_publish_token,
+        },
+      },
+      depends_on: [
+        'generate tags',
+        'package and sign',
+      ],
+    } + releaseOnly,
   ]),
 
   pipeline('deploy dev', [
@@ -383,4 +399,5 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
   vault_secret('gh_token', 'infra/data/ci/github/grafanabot', 'pat'),
   vault_secret('slack_webhook', 'infra/data/ci/slack_webhooks', 'slack-plugin'),
   vault_secret('argo_token', 'infra/data/ci/argo-workflows/trigger-service-account', 'token'),
+  vault_secret('gcom_publish_token', 'infra/data/ci/drone-plugins', 'gcom_publish_token'),
 ]
