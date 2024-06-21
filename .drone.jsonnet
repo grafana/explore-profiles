@@ -108,15 +108,15 @@ local vault_secret(name, vault_path, key) = {
 };
 
 local uploadStep = function(platform)
-  step('publish platform specific (${platform}) zip to GCS with tag', [], 'plugins/gcs') + {
+  step('publish platform specific (' + platform + ') zip to GCS with tag', [], 'plugins/gcs') + {
     depends_on: [
       'package and sign',
       'generate tags',
     ],
     settings: {
       acl: 'allUsers:READER',
-      source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}-${platform}.zip',
-      target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_TAG}-${platform}.zip',
+      source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}-' + platform + '.zip',
+      target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_TAG}-' + platform + '.zip',
       token: {
         from_secret: 'gcs_service_account_key',
       },
