@@ -107,7 +107,8 @@ local vault_secret(name, vault_path, key) = {
   },
 };
 
-local uploadStep(platform) = step('publish platrofm specific (${platform}) zip to GCS with tag', [], 'plugins/gcs') + {
+local uploadStep(platform) = step('placeholder', [], 'plugins/gcs') + {
+  name: 'publish platform specific (${platform}) zip to GCS with tag',
   depends_on: [
     'package and sign',
     'generate tags',
