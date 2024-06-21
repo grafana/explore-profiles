@@ -18,6 +18,24 @@ import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
 import { DataSourceProxyClientBuilder } from '../series/http/DataSourceProxyClientBuilder';
 import { LabelsApiClient } from './http/LabelsApiClient';
 
+const EMPTY_QUERY_RETURN_VALUE = {
+  state: LoadingState.Done,
+  data: [
+    {
+      name: 'Labels',
+      fields: [
+        {
+          name: 'Label',
+          type: FieldType.other,
+          values: [],
+          config: {},
+        },
+      ],
+      length: 0,
+    },
+  ],
+};
+
 export class LabelsDataSource extends RuntimeDataSource {
   static MAX_TIMESERIES_LABEL_VALUES = 10;
 
@@ -51,14 +69,29 @@ export class LabelsDataSource extends RuntimeDataSource {
     const sceneObject = (request.scopedVars.__sceneObject as ScopedVar).value;
 
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
-
     const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
     const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+
+    if (!serviceName || !profileMetricId) {
+      console.warn(
+        'LabelsDataSource: either serviceName="%s" and/or profileMetricId="%s" is empty! Discarding request.',
+        serviceName,
+        profileMetricId
+      );
+
+      return EMPTY_QUERY_RETURN_VALUE;
+    }
+
     const pyroscopeQuery = `${profileMetricId}{service_name="${serviceName}"}`;
 
     const { from, to } = computeRoundedTimeRange(request.range);
 
     const groupByLabel = sceneGraph.interpolate(sceneObject, '$groupBy');
+    if (!groupByLabel) {
+      console.warn('LabelsDataSource: groupByLabel is empty! Discarding request.');
+
+      return EMPTY_QUERY_RETURN_VALUE;
+    }
 
     if (groupByLabel !== 'all') {
       const labelValues = await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, groupByLabel);
@@ -152,7 +185,19 @@ export class LabelsDataSource extends RuntimeDataSource {
     const sceneObject = scopedVars?.__sceneObject?.value;
 
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
-    const pyroscopeQuery = sceneGraph.interpolate(sceneObject, query);
+    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
+    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+
+    if (!serviceName || !profileMetricId) {
+      console.warn(
+        'LabelsDataSource: either serviceName="%s" and/or profileMetricId="%s" is empty! Discarding request.',
+        serviceName,
+        profileMetricId
+      );
+      return [];
+    }
+
+    const pyroscopeQuery = `${profileMetricId}{service_name="${serviceName}"}`;
 
     const { from, to } = computeRoundedTimeRange(range as TimeRange);
 

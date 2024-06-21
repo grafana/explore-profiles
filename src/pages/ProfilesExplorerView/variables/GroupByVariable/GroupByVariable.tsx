@@ -1,36 +1,16 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import {
-  MultiValueVariable,
-  QueryVariable,
-  SceneComponentProps,
-  sceneGraph,
-  VariableDependencyConfig,
-  VariableValueOption,
-} from '@grafana/scenes';
+import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Field, Icon, RefreshPicker, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../../data/pyroscope-data-sources';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { GroupBySelector } from './GroupBySelector';
 
 export class GroupByVariable extends QueryVariable {
   static DEFAULT_VALUE = 'all';
-
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId'],
-    onReferencedVariableValueChanged: () => {
-      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
-      if (notReady) {
-        return;
-      }
-
-      this.update();
-    },
-  });
 
   static MAX_MAIN_LABELS = 8;
 
@@ -39,7 +19,8 @@ export class GroupByVariable extends QueryVariable {
       name: 'groupBy',
       label: 'Group by',
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,
-      query: '$profileMetricId{service_name="$serviceName"}',
+      // hack: we want to subscribe to changes of dataSource, serviceName and profileMetricId
+      query: '$dataSource and $profileMetricId{service_name="$serviceName"}',
       loading: true,
     });
 
@@ -72,6 +53,10 @@ export class GroupByVariable extends QueryVariable {
   }
 
   update = async () => {
+    if (this.state.loading) {
+      return;
+    }
+
     let options: VariableValueOption[] = [];
     let error = null;
 

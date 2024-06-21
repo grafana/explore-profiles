@@ -53,26 +53,12 @@ interface SceneGroupByLabelsState extends SceneObjectState {
 
 export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId', 'groupBy', 'filters'],
-    onReferencedVariableValueChanged: (variable) => {
-      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
-      if (notReady) {
-        return;
-      }
+    variableNames: ['filters'],
+    onReferencedVariableValueChanged: () => {
+      const { itemsForComparison } = this.state;
+      const isDiffEnabled = itemsForComparison.length === 2;
 
-      if (variable.state.name === 'filters') {
-        const { itemsForComparison } = this.state;
-        const isDiffEnabled = itemsForComparison.length === 2;
-
-        this.updateItemsForComparison(itemsForComparison, isDiffEnabled);
-        return;
-      }
-
-      this.setState({
-        // here we have to completely refresh the SceneTimeSeriesGrid
-        body: this.state.body.clone(),
-        itemsForComparison: [],
-      });
+      this.updateItemsForComparison(itemsForComparison, isDiffEnabled);
     },
   });
 
@@ -149,6 +135,18 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToEvents() {
+    (findSceneObjectByClass(this, GroupByVariable) as GroupByVariable).subscribeToState((newState, prevState) => {
+      // we refresh the grid either when clicking on a groupBy value or when it finishes loading
+      // which happens every time serviceName or profileMetricId changes
+      // (see src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx)
+      if (newState.value !== prevState.value || (!newState.loading && prevState.loading)) {
+        this.setState({
+          body: this.state.body.clone(),
+          itemsForComparison: [],
+        });
+      }
+    });
+
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
       this.selectLabel(event.payload.item);
     });

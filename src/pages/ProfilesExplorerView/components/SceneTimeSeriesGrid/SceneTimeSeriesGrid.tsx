@@ -24,6 +24,7 @@ import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTi
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
@@ -136,6 +137,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     };
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   initLoadItems() {
     let sub: Unsubscribable;
 
@@ -158,14 +160,14 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     refreshButton?.addEventListener('click', subscribeOnceToDataChange);
     // end of hack
 
-    // hack: we need to refresh the data when the data source changes as well
+    // hack: we need to refresh the data when the data source changes
     const dataSourceSub = findSceneObjectByClass(this, ProfilesDataSourceVariable).subscribeToState(async () => {
       // prevent "flash of error" on each timeseries in the grid
       this.updateItems({ data: [], isLoading: true, error: null });
 
       // we do this to ensure that non-active variables (not rendered in the UI) have the correct values
       // after switching DS then going to a different exploration type
-      // note: when active, serviceName and profileMetricId also subscribe to data source changes
+      // note: when active variables also subscribe to data source changes
       const updatesP = [ServiceNameVariable, ProfileMetricVariable]
         .map(
           (VariableClass) => findSceneObjectByClass(this, VariableClass) as ServiceNameVariable | ProfileMetricVariable
@@ -174,6 +176,14 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         .map((variable) => variable.update(true));
 
       await updatesP;
+
+      // groupBy depends on serviceName & profileMetricId for building a Pyroscope query
+      // so we do it after the previous updates
+      // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
+      const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+      if (!groupByVariable.isActive) {
+        await groupByVariable.update();
+      }
 
       subscribeOnceToDataChange();
       this.state.$data.runQueries();

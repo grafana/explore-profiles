@@ -88,10 +88,10 @@ export class SeriesDataSource extends RuntimeDataSource {
     const serviceToProfileMetricsMap = await this.fetchSeries(dataSourceUid, options.range as TimeRange);
 
     switch (query) {
-      case 'serviceName':
+      case '$dataSource and serviceName please':
         return formatSeriesToServices(serviceToProfileMetricsMap);
 
-      case 'profileMetricId':
+      case '$dataSource and profileMetricId please':
         return formatSeriesToProfileMetrics(serviceToProfileMetricsMap);
 
       default:
