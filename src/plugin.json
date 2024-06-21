@@ -20,7 +20,12 @@
       "small": "img/logo.svg",
       "large": "img/logo.svg"
     },
-    "screenshots": [],
+    "screenshots": [
+      {
+        "name": "Hero Image",
+        "path": "img/hero-image.png"
+      }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
