@@ -309,6 +309,8 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     } + releaseOnly,
 
     step('publish to grafana.com', [
+      'apt update',
+      'apt install curl',
       './scripts/publish-plugin ${DRONE_BUILD_NUMBER}'
     ], image=dockerGrafanaPluginCIImage) + {
       environment: {
