@@ -24,7 +24,9 @@ import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTi
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../variables/ProfilesDataSourceVariable';
+import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
@@ -158,11 +160,20 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     // end of hack
 
     // hack: we need to refresh the data when the data source changes as well
-    const dataSourceSub = (
-      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
-    ).subscribeToState(() => {
+    const dataSourceSub = findSceneObjectByClass(this, ProfilesDataSourceVariable).subscribeToState(async () => {
       // prevent "flash of error" on each timeseries in the grid
       (this.state.body as SceneCSSGridLayout).setState({ children: [] });
+
+      // we do this to ensure that the non-active (not rendered in the UI) variables have the correct values
+      // after switching DS then going to a different exploration type
+      const updatesP = [ServiceNameVariable, ProfileMetricVariable]
+        .map(
+          (VariableClass) => findSceneObjectByClass(this, VariableClass) as ServiceNameVariable | ProfileMetricVariable
+        )
+        .filter((variable) => !variable.isActive)
+        .map((variable) => variable.update(true));
+
+      await updatesP;
 
       subscribeOnceToDataChange();
 
