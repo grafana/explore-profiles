@@ -174,7 +174,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     step('package and sign', [
       'apt update',
       'apt install zip',
-      './scripts/package-and-sign',
+      './scripts/package-and-sign ${DRONE_BUILD_NUMBER}',
     ], image=dockerNodeImage) + {
       environment: {
         GRAFANA_API_KEY: {
