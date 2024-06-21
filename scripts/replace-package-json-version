@@ -1,23 +1,37 @@
 #!/bin/bash
 
+# Function to get the latest git tag matching v\d.\d.\d format
+get_latest_git_tag() {
+  git fetch --tags
+  latest_tag=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+  echo $latest_tag
+}
+
 # Check if an argument is passed
 if [ -z "$1" ]; then
-  echo "Please provide the version number as an argument."
-  exit 1
+  # If no argument, get the latest git tag
+  new_version=$(get_latest_git_tag)
+  if [ -z "$new_version" ]; then
+    echo "No valid git tag found. Setting version to 0.0.0."
+    new_version="0.0.0"
+  else
+    # Remove the leading 'v' if present
+    new_version=$(echo $new_version | sed 's/^v//')
+    echo "Using latest git tag: $new_version"
+  fi
+else
+  # Remove the leading 'v' if present
+  new_version=$(echo $1 | sed 's/^v//')
 fi
 
-# Remove the leading 'v' if present
-new_version=$(echo $1 | sed 's/^v//')
-
-# Regular expression to match the d.d.d format
-version_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
+# Regular expression to match valid semver format
+version_regex='^([0-9]+\.){2}[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
 
 # Check if the new version number matches the regex
 if [[ ! $new_version =~ $version_regex ]]; then
-  echo "The provided version number does not conform to d.d.d format. Setting it to 0.0.0."
+  echo "The provided version number does not conform to valid semver format. Setting it to 0.0.0."
   new_version="0.0.0"
 fi
-
 # Use sed to replace the version number in package.json
 sed -i '' -e "s/\"version\": \"[^\"]*\"/\"version\": \"$new_version\"/" package.json
 
