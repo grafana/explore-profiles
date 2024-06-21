@@ -1,20 +1,12 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
-import {
-  MultiValueVariable,
-  QueryVariable,
-  SceneComponentProps,
-  sceneGraph,
-  VariableValueOption,
-} from '@grafana/scenes';
+import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
+import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
-import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
-import { ProfilesDataSourceVariable } from './ProfilesDataSourceVariable';
 
 type ProfileMetricOptions = Array<{
   value: string;
@@ -33,6 +25,7 @@ export class ProfileMetricVariable extends QueryVariable {
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: 'profileMetricId',
       loading: true,
+      refresh: VariableRefresh.onTimeRangeChanged,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -42,18 +35,6 @@ export class ProfileMetricVariable extends QueryVariable {
     if (!this.state.value) {
       this.setState({ value: ProfileMetricVariable.DEFAULT_VALUE });
     }
-
-    const sub = sceneGraph.getTimeRange(this).subscribeToState(() => this.update(false));
-
-    // VariableDependencyConfig does not work :man_shrug: (never called)
-    const dataSourceSub = (
-      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
-    ).subscribeToState(() => this.update(true));
-
-    return () => {
-      dataSourceSub.unsubscribe();
-      sub.unsubscribe();
-    };
   }
 
   async update(selectDefaultValue = false) {

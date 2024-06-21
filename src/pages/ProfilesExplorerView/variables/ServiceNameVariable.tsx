@@ -1,12 +1,6 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
-import {
-  MultiValueVariable,
-  QueryVariable,
-  SceneComponentProps,
-  sceneGraph,
-  VariableValueOption,
-} from '@grafana/scenes';
+import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
+import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
 import React, { useMemo } from 'react';
@@ -15,7 +9,6 @@ import { lastValueFrom } from 'rxjs';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../data/pyroscope-data-sources';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
-import { ProfilesDataSourceVariable } from './ProfilesDataSourceVariable';
 
 export class ServiceNameVariable extends QueryVariable {
   constructor() {
@@ -25,27 +18,16 @@ export class ServiceNameVariable extends QueryVariable {
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: 'serviceName',
       loading: true,
+      refresh: VariableRefresh.onTimeRangeChanged,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
   onActivate() {
-    if (!this.state.value) {
+    if (!this.state.value && this.state.options.length) {
       this.setState({ value: this.state.options[0].value });
     }
-
-    const sub = sceneGraph.getTimeRange(this).subscribeToState(() => this.update(false));
-
-    // VariableDependencyConfig does not work :man_shrug: (never called)
-    const dataSourceSub = (
-      findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
-    ).subscribeToState(() => this.update(true));
-
-    return () => {
-      dataSourceSub.unsubscribe();
-      sub.unsubscribe();
-    };
   }
 
   async update(selectDefaultValue = false) {

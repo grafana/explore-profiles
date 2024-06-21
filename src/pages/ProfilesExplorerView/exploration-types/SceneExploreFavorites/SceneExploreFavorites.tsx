@@ -5,7 +5,6 @@ import {
   SceneComponentProps,
   SceneCSSGridItem,
   SceneDataTransformer,
-  sceneGraph,
   SceneObjectBase,
   VizPanel,
 } from '@grafana/scenes';
@@ -117,9 +116,6 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       ],
     });
 
-    const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-    const profileMetricUnit = getProfileMetricUnit(profileMetricId);
-
     const timeSeriesPanel = (findSceneObjectByKey(this, SceneTimeSeriesGrid.buildGridItemKey(item)) as SceneCSSGridItem)
       .state.body as VizPanel;
 
@@ -133,7 +129,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       .setCustomFieldConfig('filterable', true)
       .setCustomFieldConfig('cellOptions', { type: TableCellDisplayMode.ColorText })
       .setColor({ mode: 'fixed', fixedColor: '#CCCCDC' })
-      .setUnit(profileMetricUnit)
+      .setUnit(getProfileMetricUnit(queryRunnerParams.profileMetricId))
       .setOverrides((overrides) => {
         overrides.matchFieldsWithName(queryRunnerParams.groupBy!.label).overrideUnit('string');
       })

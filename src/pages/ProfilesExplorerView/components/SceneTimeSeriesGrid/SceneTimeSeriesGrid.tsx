@@ -64,7 +64,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
       // if we don't reset the items list to its original value, we might get stuck with items that might not include (e.g.) the ones that had no data before
       // we also ensure that they are properly filtered after the change
       const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-      this.updateGridItems(this.filterItems(quickFilterScene.state.searchText));
+      this.renderGridItems(this.filterItems(quickFilterScene.state.searchText));
     },
   });
 
@@ -136,7 +136,6 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     };
   }
 
-  // hack -> another option: pass an GridItemsFetcher class that handles the loading and can subscribe to variables changes
   initLoadItems() {
     let sub: Unsubscribable;
 
@@ -162,21 +161,18 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     // hack: we need to refresh the data when the data source changes as well
     const dataSourceSub = findSceneObjectByClass(this, ProfilesDataSourceVariable).subscribeToState(async () => {
       // prevent "flash of error" on each timeseries in the grid
-      (this.state.body as SceneCSSGridLayout).setState({ children: [] });
+      this.updateItems({ data: [], isLoading: true, error: null });
 
-      // we do this to ensure that the non-active (not rendered in the UI) variables have the correct values
+      // we do this to ensure that active and non-active variables (not rendered in the UI) have the correct values
       // after switching DS then going to a different exploration type
-      const updatesP = [ServiceNameVariable, ProfileMetricVariable]
-        .map(
-          (VariableClass) => findSceneObjectByClass(this, VariableClass) as ServiceNameVariable | ProfileMetricVariable
-        )
-        .filter((variable) => !variable.isActive)
-        .map((variable) => variable.update(true));
+      // note: serviceName and profileMetricId are QueryVariable, we could have used VariableDependencyConfig but it doesn't work for them (handlers never called)
+      const updatesP = [ServiceNameVariable, ProfileMetricVariable].map((VariableClass) =>
+        (findSceneObjectByClass(this, VariableClass) as ServiceNameVariable | ProfileMetricVariable).update(true)
+      );
 
       await updatesP;
 
       subscribeOnceToDataChange();
-
       this.state.$data.runQueries();
     });
 
@@ -226,7 +222,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
         return;
       }
 
-      this.updateGridItems(this.filterItems(quickFilterScene.state.searchText));
+      this.renderGridItems(this.filterItems(quickFilterScene.state.searchText));
     };
 
     onChangeState(quickFilterScene.state);
@@ -302,11 +298,11 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     this.setState({ items });
 
     const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-    this.updateGridItems(this.filterItems(quickFilterScene.state.searchText, items));
+    this.renderGridItems(this.filterItems(quickFilterScene.state.searchText, items));
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  updateGridItems(items: SceneTimeSeriesGridState['items']) {
+  renderGridItems(items: SceneTimeSeriesGridState['items']) {
     if (!items.data.length) {
       this.renderEmptyState();
       return;
