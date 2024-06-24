@@ -27,7 +27,7 @@ type App struct {
 }
 
 // NewApp creates a new example *App instance.
-func NewApp(appInstanceSettings backend.AppInstanceSettings) (instancemgmt.Instance, error) {
+func NewApp(_ context.Context, appInstanceSettings backend.AppInstanceSettings) (instancemgmt.Instance, error) {
 	var app App
 	logger := log.DefaultLogger
 

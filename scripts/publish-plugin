@@ -1,0 +1,46 @@
+#!/bin/bash
+
+PLUGIN_ID=grafana-pyroscope-app
+BUILD_ID=$1
+VERSION=$2
+BUCKET=grafana-pyroscope-app
+# I think this URL doesn't matter when download is provided
+URL=https://github.com/grafana/explore-profiles
+
+response=$(curl \
+  -w "%{http_code}" -o response_body.txt -s \
+  -H "Authorization: Bearer $GCOM_TOKEN" \
+  -H "Content-Type: application/json" https://grafana.com/api/plugins -d "{
+  \"url\": \"$URL\",
+  \"download\": {
+    \"linux-amd64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-linux_amd64.zip\",
+      \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-linux_amd64.zip" | awk '{ print $1 }')\"
+    },
+    \"linux-arm64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-linux_arm64.zip\",
+      \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-linux_arm64.zip" | awk '{ print $1 }')\"
+    },
+    \"linux-arm\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-linux_arm.zip\",
+      \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-linux_arm.zip" | awk '{ print $1 }')\"
+    },
+    \"windows-amd64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-windows_amd64.zip\",
+      \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-windows_amd64.zip" | awk '{ print $1 }')\"
+    },
+    \"darwin-amd64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-darwin_amd64.zip\",
+      \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-darwin_amd64.zip" | awk '{ print $1 }')\"
+    },
+    \"darwin-arm64\": {
+      \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-darwin_arm64.zip\",
+      \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-darwin_arm64.zip" | awk '{ print $1 }')\"
+    }
+  }
+}")
+
+if [ "$response" -ne 200 ]; then
+  cat response_body.txt
+  exit 1
+fi
