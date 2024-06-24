@@ -2,7 +2,6 @@
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
   "name": "Profiles",
-  "preload": false,
   "id": "grafana-pyroscope-app",
   "backend": true,
   "executable": "gpx_pyroscope_app",
