@@ -107,6 +107,22 @@ local vault_secret(name, vault_path, key) = {
   },
 };
 
+local uploadStep = function(platform)
+  step('publish platform specific (' + platform + ') zip to GCS with tag', [], 'plugins/gcs') + {
+    depends_on: [
+      'package and sign',
+      'generate tags',
+    ],
+    settings: {
+      acl: 'allUsers:READER',
+      source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}-' + platform + '.zip',
+      target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_TAG}-' + platform + '.zip',
+      token: {
+        from_secret: 'gcs_service_account_key',
+      },
+    },
+  } + releaseOnly;
+
 
 // NB: Former deployStep() replaced by argo-workflows api call using argo-cli container
 //     as `argoWorkflowStep('phlare-cd', 'deploy-<wave>-envs')`, with <wave> in ['dev', 'ops', 'prod'] see:
@@ -152,38 +168,31 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     ], image=dockerNodeImage),
 
     step('build backend packages', [
-      // 'mage -v test',
       'mage -v build:linux',
+      'mage -v build:darwin',
+      'mage -v build:darwinARM64',
+      'mage -v build:linuxARM',
+      'mage -v build:linuxARM64',
+      'mage -v build:windows',
+      'mage -v build:generateManifestFile',
     ], image=dockerGrafanaPluginCIImage),
 
     step('build frontend packages', [
-      'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
-      'yarn build',
-    ], image=dockerNodeImage) + {
-      depends_on: [
-        'install dependencies',
-        'build backend packages',
-      ],
-    } + nonReleaseOnly,
-
-    step('build frontend packages (with tag)', [
       'export NODE_ENV=production',
       'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
+      './scripts/replace-package-json-version ${DRONE_TAG}',
       'yarn build',
     ], image=dockerNodeImage) + {
       depends_on: [
         'install dependencies',
         'build backend packages',
       ],
-    } + releaseOnly,
+    },
 
-    step('sign and package packages', [
+    step('package and sign', [
       'apt update',
       'apt install zip',
-      'yarn sign',
-      'ls -1 ./dist',
-      'git status',
-      'zip -r grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip ./dist',
+      './scripts/package-and-sign ${DRONE_BUILD_NUMBER}',
     ], image=dockerNodeImage) + {
       environment: {
         GRAFANA_API_KEY: {
@@ -192,13 +201,12 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       },
       depends_on: [
         'build frontend packages',
-        'build frontend packages (with tag)',
       ],
     } + mainOrReleaseOnly,
 
     step('publish zip to GCS', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -212,7 +220,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with commit SHA', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -226,7 +234,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with latest-dev', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -240,7 +248,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with dev-tag', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -254,7 +262,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with latest', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
       ],
       settings: {
         acl: 'allUsers:READER',
@@ -268,7 +276,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
 
     step('publish zip to GCS with tag', [], image='plugins/gcs') + {
       depends_on: [
-        'sign and package packages',
+        'package and sign',
         'generate tags',
       ],
       settings: {
@@ -280,7 +288,12 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         },
       },
     } + releaseOnly,
-
+    uploadStep('darwin_amd64'),
+    uploadStep('darwin_arm64'),
+    uploadStep('linux_amd64'),
+    uploadStep('linux_arm'),
+    uploadStep('linux_arm64'),
+    uploadStep('windows_amd64'),
     step('publish release to Github', [], image='plugins/github-release') + {
       settings: {
         api_key: {
@@ -291,7 +304,23 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       },
       depends_on: [
         'generate tags',
-        'sign and package packages',
+        'package and sign',
+      ],
+    } + releaseOnly,
+
+    step('publish to grafana.com', [
+      'apt update',
+      'apt install -y curl',
+      './scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}'
+    ], image=dockerGrafanaPluginCIImage) + {
+      environment: {
+        GCOM_TOKEN: {
+          from_secret: 'gcom_publish_token',
+        },
+      },
+      depends_on: [
+        'generate tags',
+        'package and sign',
       ],
     } + releaseOnly,
   ]),
@@ -370,4 +399,5 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
   vault_secret('gh_token', 'infra/data/ci/github/grafanabot', 'pat'),
   vault_secret('slack_webhook', 'infra/data/ci/slack_webhooks', 'slack-plugin'),
   vault_secret('argo_token', 'infra/data/ci/argo-workflows/trigger-service-account', 'token'),
+  vault_secret('gcom_publish_token', 'infra/data/ci/drone-plugins', 'gcom_publish_token'),
 ]

@@ -4,12 +4,10 @@ import { PAGES } from 'grafana-pyroscope/public/app/pages/urls';
 
 import { App } from './app/App';
 import { PLUGIN_BASE_URL } from './constants';
-import { registerExtension } from './extensions/query-links';
 
 export const plugin = new AppPlugin<AppPluginSettings>().setRootPage(App);
 
-// Note that this code will be executed immediately on the start of Grafana due to plugin.json `preload: true`
-registerExtension(plugin);
+// Note that this code will be executed the first time the plugin app pages is accessed
 updatePyroscopePageUrls();
 
 function updatePyroscopePageUrls() {
