@@ -16,12 +16,12 @@ export class TimelineAndProfileApiClient extends ApiClient {
   async get(query: string, timeRange: TimeRange, maxNodes: number | null): Promise<TimelineAndProfileResponse> {
     // /pyroscope/render requests: timerange can be YYYYDDMM, Unix time, Unix time in ms (unix * 1000)
     const from = Number(dateTimeParse(timeRange.raw.from).unix()) * 1000;
-    const until = Number(dateTimeParse(timeRange.raw.to).unix()) * 1000;
+    const to = Number(dateTimeParse(timeRange.raw.to).unix()) * 1000;
 
     const searchParams = new URLSearchParams({
       query,
       from: String(from),
-      until: String(until),
+      until: String(to),
       aggregation: 'sum',
       format: 'json',
     });
@@ -34,7 +34,7 @@ export class TimelineAndProfileApiClient extends ApiClient {
 
     const json = await response.json();
 
-    this.lastTimeRange = [from, until];
+    this.lastTimeRange = [from, to];
 
     return json;
   }

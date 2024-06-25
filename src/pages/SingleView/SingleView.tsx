@@ -75,7 +75,7 @@ export function SingleView() {
         query={data.query}
         // FIXME
         from={data.timeRange.from.unix() * 1000}
-        until={data.timeRange.to.unix() * 1000}
+        to={data.timeRange.to.unix() * 1000}
         onChangeQuery={actions.setQuery}
       />
 

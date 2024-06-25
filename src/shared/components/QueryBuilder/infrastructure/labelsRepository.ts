@@ -7,7 +7,7 @@ import { MemoryCacheClient } from './http/MemoryCacheClient';
 type ListLabelsOptions = {
   query: string;
   from: number;
-  until: number;
+  to: number;
 };
 
 type ListLabelValuesOptions = ListLabelsOptions & {
@@ -45,16 +45,16 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient> {
     this.cacheClient = options.cacheClient;
   }
 
-  static assertParams(query: string, from: number, until: number) {
+  static assertParams(query: string, from: number, to: number) {
     invariant(Boolean(query), 'Missing "query" parameter!');
     invariant(from > 0, 'Invalid "from" parameter!');
-    invariant(until > 0 && until > from, 'Invalid "until" parameter!');
+    invariant(to > 0 && to > from, 'Invalid "to" parameter!');
   }
 
-  async listLabels({ query, from, until }: ListLabelsOptions): Promise<Suggestions> {
-    LabelsRepository.assertParams(query, from, until);
+  async listLabels({ query, from, to }: ListLabelsOptions): Promise<Suggestions> {
+    LabelsRepository.assertParams(query, from, to);
 
-    const cacheParams = [this.apiClient!.baseUrl, query, from, until];
+    const cacheParams = [this.apiClient!.baseUrl, query, from, to];
 
     const labelsFromCacheP = this.cacheClient.get(cacheParams);
     if (labelsFromCacheP) {
@@ -68,7 +68,7 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient> {
       return labels;
     }
 
-    const fetchP = this.apiClient!.fetchLabels(query, from, until);
+    const fetchP = this.apiClient!.fetchLabels(query, from, to);
     this.cacheClient.set(cacheParams, fetchP);
 
     try {
@@ -80,11 +80,11 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient> {
     }
   }
 
-  async listLabelValues({ label, query, from, until }: ListLabelValuesOptions): Promise<Suggestions> {
-    LabelsRepository.assertParams(query, from, until);
+  async listLabelValues({ label, query, from, to }: ListLabelValuesOptions): Promise<Suggestions> {
+    LabelsRepository.assertParams(query, from, to);
     invariant(Boolean(label), 'Missing label value!');
 
-    const cacheParams = [this.apiClient!.baseUrl, label, query, from, until];
+    const cacheParams = [this.apiClient!.baseUrl, label, query, from, to];
 
     const labelValuesFromCacheP = this.cacheClient.get(cacheParams);
     if (labelValuesFromCacheP) {
@@ -98,7 +98,7 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient> {
       return labelValues;
     }
 
-    const fetchP = this.apiClient!.fetchLabelValues(label, query, from, until);
+    const fetchP = this.apiClient!.fetchLabelValues(label, query, from, to);
     this.cacheClient.set(cacheParams, fetchP);
 
     try {

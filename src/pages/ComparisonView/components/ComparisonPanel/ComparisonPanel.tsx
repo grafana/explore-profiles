@@ -88,7 +88,7 @@ export function ComparisonPanel({ isLoading, type, children }: ComparisonPanelPr
         query={data.query}
         // FIXME
         from={data.mainTimeRange.from.unix() * 1000}
-        until={data.mainTimeRange.to.unix() * 1000}
+        to={data.mainTimeRange.to.unix() * 1000}
         onChangeQuery={actions.setQuery}
       />
 
