@@ -7,7 +7,7 @@ type ServiceProfileMetrics = Map<ProfileMetric['id'], ProfileMetric>;
 
 export type Services = Map<string, ServiceProfileMetrics>;
 
-class ServicesApiClient extends ApiClient {
+export class ServicesApiClient extends ApiClient {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   static formatResponseData(data: any): Services {
     const services: Services = new Map();

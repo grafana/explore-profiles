@@ -2,6 +2,12 @@ import { nanoid } from 'nanoid';
 
 import { FilterKind, Filters, OperatorKind } from '../types';
 
+export const parseRawFilters = (rawFilters: string) =>
+  rawFilters.split(',').map((f) => {
+    const parts = f.match(/\W*([^=!~]+)(=|!=|=~|!~)"(.*)"/);
+    return parts === null ? null : [parts[1], parts[2], parts[3]];
+  });
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
   // 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ebpf/gcp-logs-ops/grafana-agent", namespace="gcp-logs-ops"}'
@@ -15,7 +21,8 @@ export function queryToFilters(query: string): Filters {
     return [];
   }
 
-  const rawFilters = rawLabels[1].split(',').map((m) => m.match(/\W*([^=!~]+)(=|!=|=~|!~)"(.*)"/));
+  const rawFilters = parseRawFilters(rawLabels[1]);
+
   // [[_, service_name, =, ebpf/gcp-logs-ops/grafana-agent] [_, namespace, =, gcp-logs-ops]] or [null, null]
   if (rawFilters.some((m) => m === null)) {
     // let's be strict on parsing
@@ -23,8 +30,8 @@ export function queryToFilters(query: string): Filters {
   }
 
   return (rawFilters as string[][])
-    .filter(([, attribute]) => attribute !== 'service_name')
-    .map(([, attribute, operator, value]) => {
+    .filter(([attribute]) => attribute !== 'service_name')
+    .map(([attribute, operator, value]) => {
       const shouldChangeToIsEmptyOperator = operator === OperatorKind['='] && value === '';
       if (shouldChangeToIsEmptyOperator) {
         return {
