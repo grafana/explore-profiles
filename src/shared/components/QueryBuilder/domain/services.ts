@@ -25,7 +25,7 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
     const { from, until } = context.inputParams;
 
     try {
-      const labels = await labelsRepository.listLabels(context.query, from, until);
+      const labels = await labelsRepository.listLabels({ query: context.query, from, until });
 
       const publicLabels: Suggestions = [];
       const privateLabels: Suggestions = [];
@@ -88,7 +88,7 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
       const labelId = targetFilter.attribute.value;
       const { from, until } = context.inputParams;
 
-      return await labelsRepository.listLabelValues(labelId, query, from, until);
+      return await labelsRepository.listLabelValues({ label: labelId, query, from, until });
     } catch (error) {
       return handleError(error, 'Error while fetching label values!');
     }

@@ -25,7 +25,6 @@ export const getStyles = () => ({
     align-items: flex-end;
     flex-wrap: wrap;
     gap: 4px;
-    margin: -10px 0 6px 0;
   `,
   controls: css`
     display: flex;
@@ -70,16 +69,18 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
 
   return (
     <div id={props.id} className={cx(styles.queryBuilder, props.className)}>
-      <ChicletsList
-        filters={filters}
-        onClickChiclet={onClickChiclet}
-        onRemoveChiclet={onRemoveChiclet}
-        edition={edition}
-        suggestions={suggestions}
-        onChangeSingleSuggestion={onChangeSingleSuggestion}
-        onCloseSingleSuggestionsMenu={onCloseSingleMenu}
-        onCloseMultipleSuggestionsMenu={onCloseMultipleMenu}
-      />
+      {filters.length > 0 ? (
+        <ChicletsList
+          filters={filters}
+          onClickChiclet={onClickChiclet}
+          onRemoveChiclet={onRemoveChiclet}
+          edition={edition}
+          suggestions={suggestions}
+          onChangeSingleSuggestion={onChangeSingleSuggestion}
+          onCloseSingleSuggestionsMenu={onCloseSingleMenu}
+          onCloseMultipleSuggestionsMenu={onCloseMultipleMenu}
+        />
+      ) : null}
 
       <div className={styles.controls}>
         {edition ? (
