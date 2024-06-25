@@ -1,14 +1,15 @@
 apiVersion: 1
 
 datasources:
-  - uid: grafanacloud-profiles-local
+  - uid: grafanacloud-profiles-dev
     type: grafana-pyroscope-datasource
-    name: 🔥 Local (http://pyroscope:4100)
-    url: http://pyroscope:4100
+    name: 🔥 Dev (profiles-dev-001)
+    url: $REMOTE_BACKEND_URL
+    basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
-    basicAuthUser: '42'
+    basicAuthUser: $REMOTE_BASIC_AUTH_USER
     secureJsonData:
-      basicAuthPassword: 'mypassword'
+      basicAuthPassword: $REMOTE_BASIC_AUTH_PASSWORD
     isDefault: true
     keepCookies: [GitSession]

@@ -53,7 +53,7 @@ test.describe('GitHub integration', () => {
   }) => {
     let renderParams = '';
 
-    await singleViewPage.route('**/resources/pyroscope/render?*', async (route, request) => {
+    await singleViewPage.route('**/pyroscope/render?*', async (route, request) => {
       const { searchParams } = new URL(request.url());
       renderParams = `${searchParams.get('from')}-${searchParams.get('until')}`;
       await route.continue();
@@ -72,7 +72,7 @@ test.describe('GitHub integration', () => {
     await singleViewPage.clickOnFlameGraphNode({ x: 110, y: 30 });
 
     const [profileRequest] = await Promise.all([
-      singleViewPage.waitForRequest('**/resources/querier.v1.QuerierService/SelectMergeProfile'),
+      singleViewPage.waitForRequest('**/querier.v1.QuerierService/SelectMergeProfile'),
       singleViewPage.clickOnFunctionDetailsMenuItem(),
     ]);
 

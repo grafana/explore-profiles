@@ -27,5 +27,8 @@ USER root
 COPY ./samples/provisioning-remote/plugins/app.yaml  /etc/grafana/provisioning/plugins
 RUN sed -i "s/\$REMOTE_BASIC_AUTH_USER/'$REMOTE_BASIC_AUTH_USER'/g" /etc/grafana/provisioning/plugins/app.yaml
 
+COPY ./samples/provisioning-remote/datasources/datasources.yaml  /etc/grafana/provisioning/datasources
+RUN sed -i "s/\$REMOTE_BASIC_AUTH_USER/'$REMOTE_BASIC_AUTH_USER'/g" /etc/grafana/provisioning/datasources/datasources.yaml
+
 # Inject livereload script into grafana index.html
 RUN sed -i 's/<\/body><\/html>/<script src=\"http:\/\/localhost:35729\/livereload.js\"><\/script><\/body><\/html>/g' /usr/share/grafana/public/views/index.html
