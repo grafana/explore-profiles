@@ -22,6 +22,7 @@ export function queryToFilters(query: string): Filters {
   }
 
   const rawFilters = parseRawFilters(rawLabels[1]);
+
   // [[_, service_name, =, ebpf/gcp-logs-ops/grafana-agent] [_, namespace, =, gcp-logs-ops]] or [null, null]
   if (rawFilters.some((m) => m === null)) {
     // let's be strict on parsing
