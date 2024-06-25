@@ -1,5 +1,5 @@
+import { invariant } from '../../../../types/helpers/invariant';
 import { Filter, FilterKind } from '../types';
-import { invariant } from './invariant';
 
 export const isPartialFilter = (filter: Filter): boolean => {
   invariant(Boolean(filter), 'The filter is falsy!');

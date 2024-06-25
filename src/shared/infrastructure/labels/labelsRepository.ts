@@ -1,7 +1,7 @@
 import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
 
-import { invariant } from '../../components/QueryBuilder/domain/helpers/invariant';
 import { Suggestions } from '../../components/QueryBuilder/domain/types';
+import { invariant } from '../../types/helpers/invariant';
 import { AbstractRepository } from '../AbstractRepository';
 import { LabelsApiClient } from './LabelsApiClient';
 
