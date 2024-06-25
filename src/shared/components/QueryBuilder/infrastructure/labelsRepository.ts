@@ -1,8 +1,9 @@
+import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
+
 import { AbstractRepository } from '../../../infrastructure/AbstractRepository';
 import { invariant } from '../domain/helpers/invariant';
 import { Suggestions } from '../domain/types';
 import { LabelsApiClient } from './http/LabelsApiClient';
-import { MemoryCacheClient } from './http/MemoryCacheClient';
 
 type ListLabelsOptions = {
   query: string;
