@@ -1,5 +1,4 @@
-# TODO: Replace with grafana/pyroscope:latest when Pyroscope 1.7 is released
-FROM docker.io/grafana/pyroscope:weekly-f69-0c63617ef
+FROM docker.io/grafana/pyroscope:latest
 
 USER root
 
