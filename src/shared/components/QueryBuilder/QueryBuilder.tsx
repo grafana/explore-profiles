@@ -69,16 +69,18 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
 
   return (
     <div id={props.id} className={cx(styles.queryBuilder, props.className)}>
-      <ChicletsList
-        filters={filters}
-        onClickChiclet={onClickChiclet}
-        onRemoveChiclet={onRemoveChiclet}
-        edition={edition}
-        suggestions={suggestions}
-        onChangeSingleSuggestion={onChangeSingleSuggestion}
-        onCloseSingleSuggestionsMenu={onCloseSingleMenu}
-        onCloseMultipleSuggestionsMenu={onCloseMultipleMenu}
-      />
+      {filters.length > 0 ? (
+        <ChicletsList
+          filters={filters}
+          onClickChiclet={onClickChiclet}
+          onRemoveChiclet={onRemoveChiclet}
+          edition={edition}
+          suggestions={suggestions}
+          onChangeSingleSuggestion={onChangeSingleSuggestion}
+          onCloseSingleSuggestionsMenu={onCloseSingleMenu}
+          onCloseMultipleSuggestionsMenu={onCloseMultipleMenu}
+        />
+      ) : null}
 
       <div className={styles.controls}>
         {edition ? (

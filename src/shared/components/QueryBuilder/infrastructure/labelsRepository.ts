@@ -1,10 +1,20 @@
-import { MemoryCacheClient } from '../../../infrastructure/MemoryCacheClient';
+import { AbstractRepository } from '../../../infrastructure/AbstractRepository';
 import { invariant } from '../domain/helpers/invariant';
 import { Suggestions } from '../domain/types';
 import { LabelsApiClient } from './http/LabelsApiClient';
-import { QueryBuilderHttpRepository } from './QueryBuilderHttpRepository';
+import { MemoryCacheClient } from './http/MemoryCacheClient';
 
-class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
+type ListLabelsOptions = {
+  query: string;
+  from: number;
+  until: number;
+};
+
+type ListLabelValuesOptions = ListLabelsOptions & {
+  label: string;
+};
+
+class LabelsRepository extends AbstractRepository<LabelsApiClient> {
   cacheClient: MemoryCacheClient;
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
@@ -45,7 +55,7 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
     invariant(until > 0 && until > from, 'Invalid "until" parameter!');
   }
 
-  async listLabels(query: string, from: number, until: number): Promise<Suggestions> {
+  async listLabels({ query, from, until }: ListLabelsOptions): Promise<Suggestions> {
     LabelsRepository.assertParams(query, from, until);
 
     const cacheParams = [this.apiClient!.baseUrl, query, from, until];
@@ -74,30 +84,32 @@ class LabelsRepository extends QueryBuilderHttpRepository<LabelsApiClient> {
     }
   }
 
-  async listLabelValues(labelId: string, query: string, from: number, until: number): Promise<Suggestions> {
+  async listLabelValues({ label, query, from, until }: ListLabelValuesOptions): Promise<Suggestions> {
     LabelsRepository.assertParams(query, from, until);
-    invariant(Boolean(labelId), 'Missing label id!');
+    invariant(Boolean(label), 'Missing label value!');
 
-    const labelValuesFromCacheP = this.cacheClient.get([labelId, query, from, until]);
+    const cacheParams = [this.apiClient!.baseUrl, label, query, from, until];
+
+    const labelValuesFromCacheP = this.cacheClient.get(cacheParams);
     if (labelValuesFromCacheP) {
       const json = await labelValuesFromCacheP;
       const labelValues = LabelsRepository.parseLabelsResponse(json);
 
       if (!labelValues.length) {
-        this.cacheClient.delete([labelId, query, from, until]);
+        this.cacheClient.delete(cacheParams);
       }
 
       return labelValues;
     }
 
-    const fetchP = this.apiClient!.fetchLabelValues(labelId, query, from, until);
-    this.cacheClient.set([labelId, query, from, until], fetchP);
+    const fetchP = this.apiClient!.fetchLabelValues(label, query, from, until);
+    this.cacheClient.set(cacheParams, fetchP);
 
     try {
       const json = await fetchP;
       return LabelsRepository.parseLabelValuesResponse(json);
     } catch (error) {
-      this.cacheClient.delete([labelId, query, from, until]);
+      this.cacheClient.delete(cacheParams);
       throw error;
     }
   }

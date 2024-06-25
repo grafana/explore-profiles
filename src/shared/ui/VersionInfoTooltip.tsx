@@ -88,7 +88,7 @@ export function VersionInfoTooltip() {
 
   return (
     <Toggletip content={versionInfo} theme="info" placement="top-start">
-      <IconButton name="info-circle" aria-label="Version info" title="Plugin info" />
+      <IconButton name="info-circle" aria-label="Plugin info" title="Plugin info" />
     </Toggletip>
   );
 }

@@ -6,6 +6,7 @@ import { Result } from '@pyroscope/util/fp';
 // Move various functions into /utils/backend, but ensure the expected override exports
 // are still exported from here.
 import backendFetch from '@shared/infrastructure/backend/fetch';
+import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { firstValueFrom } from 'rxjs';
 
 import {
@@ -70,7 +71,7 @@ export async function requestWrapper(
 ): Promise<Result<unknown, RequestError>> {
   try {
     // Prepend plugin resources proxy URL and replace any double slashes
-    const url = ['api/plugins/grafana-pyroscope-app/resources', requestInfo].join('/').replace(/\/{2,}/g, '/');
+    const url = [ApiClient.getBaseUrl().pathname, requestInfo].join('/').replace(/\/{2,}/g, '/');
 
     const response = await backendFetch(url, config);
     return Result.ok(response.data);
@@ -88,7 +89,7 @@ export async function downloadWithOrgID(
 ): Promise<Result<Response, RequestError>> {
   try {
     // Replace any double slashes
-    const url = ['api/plugins/grafana-pyroscope-app/resources', request].join('/').replace(/\/{2,}/g, '/');
+    const url = [ApiClient.getBaseUrl().pathname, request].join('/').replace(/\/{2,}/g, '/');
 
     const response = getBackendSrv().fetch<Blob>({
       responseType: 'blob',
