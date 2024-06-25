@@ -6,7 +6,19 @@ import { convertPprofToFunctionDetails } from '../convertPprofToFunctionDetails'
 import PprofData from './fixtures/pprof.json';
 import YugePprofData from './fixtures/yuge.json';
 
-jest.mock('@grafana/runtime', () => ({ config: { appUrl: 'https://localhost:3000/' } }));
+jest.mock('@grafana/runtime', () => ({
+  config: {
+    appUrl: 'https://localhost:3000/',
+    datasources: {
+      'Test Data Source': {
+        id: 1,
+        isDefault: true,
+        type: 'grafana-pyroscope-datasource',
+        name: 'Test Data Source',
+      },
+    },
+  },
+}));
 
 function buildJsonPprof(fnName: string, location: Location[]): PprofProfile {
   return Object.freeze({
