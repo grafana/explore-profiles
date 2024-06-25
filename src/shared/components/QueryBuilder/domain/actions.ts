@@ -1,7 +1,7 @@
 import { nanoid } from 'nanoid';
 import { assign } from 'xstate';
 
-import { labelsRepository } from '../infrastructure/labelsRepository';
+import { labelsRepository } from '../../../infrastructure/labels/labelsRepository';
 import { areFiltersEqual } from './helpers/areFiltersEqual';
 import { filtersToQuery } from './helpers/filtersToQuery';
 import { getLastFilter } from './helpers/getLastFilter';

@@ -1,5 +1,5 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
-import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
+import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 
 import { LabelsDataSource } from '../labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from './buildTimeSeriesQueryRunner';

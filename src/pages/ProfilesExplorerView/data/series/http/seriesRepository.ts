@@ -1,8 +1,8 @@
 import { TimeRange } from '@grafana/data';
+import { AbstractRepository } from '@shared/infrastructure/AbstractRepository';
 import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
 
 import { computeRoundedTimeRange } from '../../../helpers/computeRoundedTimeRange';
-import { AbstractRepository } from './AbstractRepository';
 import { SeriesApiClient, ServiceToProfileMetricsMap } from './SeriesApiClient';
 
 class SeriesRepository extends AbstractRepository<SeriesApiClient, MemoryCacheClient> {

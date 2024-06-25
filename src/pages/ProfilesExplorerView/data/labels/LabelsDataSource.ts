@@ -11,7 +11,7 @@ import {
 } from '@grafana/data';
 import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
-import { labelsRepository } from '@shared/components/QueryBuilder/infrastructure/labelsRepository';
+import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
