@@ -46,10 +46,6 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient> {
     this.cacheClient = options.cacheClient;
   }
 
-  setApiClient(apiClient: LabelsApiClient) {
-    this.apiClient = apiClient;
-  }
-
   static assertParams(query: string, from: number, until: number) {
     invariant(Boolean(query), 'Missing "query" parameter!');
     invariant(from > 0, 'Invalid "from" parameter!');
