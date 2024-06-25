@@ -55,7 +55,7 @@ test.describe('GitHub integration', () => {
 
     await singleViewPage.route('**/pyroscope/render?*', async (route, request) => {
       const { searchParams } = new URL(request.url());
-      renderParams = `${searchParams.get('from')}-${searchParams.get('to')}`;
+      renderParams = `${searchParams.get('from')}-${searchParams.get('until')}`;
       await route.continue();
     });
 
