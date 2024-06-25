@@ -97,10 +97,16 @@ In build time (PR and main branch), we run a [Pyroscope server with static data]
 
 ## FAQ
 
-### The build of my PR has failed, why?
+### The build of my PR has failed, how can I see the test reports?
 
 - On your GitHub PR, next to the `CI / frontend (pull_request)` job, click on `Details`
 - On the GitHub actions page, click on `🏠 Summary`
 - At the bottom of the page, click on the `e2e-test-reports-and-results` artifact to download it
 - Unzip it and open the `test-reports/index.html` page
 - Navigate the failing tests to see screenshots and videos of what happened
+
+### The build of my PR has failed because Playwright was just updated, how to fix it?
+
+- In a terminal: `yarn upgrade @playwright/test --latest`
+- Open `Dockerfile.plugin.e2e` and upgrade Playwright versions to the latest one
+- Open a PR to verify that the E2E are passing in the build
