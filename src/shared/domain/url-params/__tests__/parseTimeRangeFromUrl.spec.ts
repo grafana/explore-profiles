@@ -87,10 +87,10 @@ const cases: TestCase[] = [
     },
   ],
   [
-    ['leftFrom', 'leftto'],
+    ['leftFrom', 'leftUntil'],
     new URLSearchParams([
       ['leftFrom', '1710352800'],
-      ['leftto', '1710355800'],
+      ['leftUntil', '1710355800'],
     ]),
     {
       from: dateTime(1710352800 * 1000),
