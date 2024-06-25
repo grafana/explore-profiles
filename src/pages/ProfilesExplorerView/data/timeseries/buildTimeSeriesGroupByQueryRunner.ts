@@ -25,12 +25,12 @@ export async function buildTimeSeriesGroupByQueryRunner({
   try {
     const { from, to } = timeRange;
 
-    labelValues = await labelsRepository.listLabelValues(
-      groupBy!.label,
-      `${profileMetricId}{service_name="${serviceName}"}`,
-      dateTimeParse(from.valueOf()).unix() * 1000,
-      dateTimeParse(to.valueOf()).unix() * 1000
-    );
+    labelValues = await labelsRepository.listLabelValues({
+      label: groupBy!.label,
+      query: `${profileMetricId}{service_name="${serviceName}"}`,
+      from: dateTimeParse(from.valueOf()).unix() * 1000,
+      until: dateTimeParse(to.valueOf()).unix() * 1000,
+    });
 
     labelValues = labelValues
       .slice(0, maxLabelValues || LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES)

@@ -49,20 +49,20 @@ export class LabelsDataSource extends RuntimeDataSource {
     super(PYROSCOPE_LABELS_DATA_SOURCE.type, PYROSCOPE_LABELS_DATA_SOURCE.uid);
   }
 
-  async fetchLabels(dataSourceUid: string, pyroscopeQuery: string, from: number, to: number) {
+  async fetchLabels(dataSourceUid: string, query: string, from: number, until: number) {
     const labelsApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, LabelsApiClient) as LabelsApiClient;
 
     labelsRepository.setApiClient(labelsApiClient);
 
-    return labelsRepository.listLabels(pyroscopeQuery, from, to);
+    return labelsRepository.listLabels({ query, from, until });
   }
 
-  async fetchLabelValues(dataSourceUid: string, pyroscopeQuery: string, from: number, to: number, labelValue: string) {
+  async fetchLabelValues(dataSourceUid: string, query: string, from: number, until: number, label: string) {
     const labelsApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, LabelsApiClient) as LabelsApiClient;
 
     labelsRepository.setApiClient(labelsApiClient);
 
-    return labelsRepository.listLabelValues(labelValue, pyroscopeQuery, from, to);
+    return labelsRepository.listLabelValues({ query, from, until, label });
   }
 
   async query(request: DataQueryRequest): Promise<DataQueryResponse> {
