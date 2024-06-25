@@ -55,13 +55,13 @@ test.describe('GitHub integration', () => {
 
     await singleViewPage.route('**/pyroscope/render?*', async (route, request) => {
       const { searchParams } = new URL(request.url());
-      renderParams = `${searchParams.get('from')}-${searchParams.get('until')}`;
+      renderParams = `${searchParams.get('from')}-${searchParams.get('to')}`;
       await route.continue();
     });
 
     const urlSearchParams = new URLSearchParams({
       from: 'now-1m',
-      until: 'now',
+      to: 'now',
       query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope"}',
     });
 
