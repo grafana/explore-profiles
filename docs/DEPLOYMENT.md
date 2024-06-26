@@ -9,7 +9,7 @@ Every time a pull request gets merged into the `main` branch, the code gets depl
 It takes usually ~30m for the release to be deployed by the [stack-state-service](https://github.com/grafana/stack-state-service) to all Grafana instances.
 
 > [!NOTE]
-> Sometimes Drone does not pick up new commits on `main` branch. When that happens, you can manually trigger a build from [the Drone UI](https://drone.grafana.net/grafana/pyroscope-app-plugin/branches):
+> Sometimes Drone does not pick up new commits on `main` branch. When that happens, you can manually trigger a build from [the Drone UI](https://drone.grafana.net/grafana/explore-profiles/branches):
 
 <img width="1189" alt="Screenshot_2023-11-06_at_12_06_57_PM" src="https://github.com/grafana/pyroscope-app-plugin/assets/662636/f21d1763-e1aa-41cd-8317-75eddad68b67">
 
@@ -45,13 +45,14 @@ gcom-dev /instances/[instance name]/restart -XPOST
 
 #### When the artefacts (.zip files) have not been published to Google Cloud Storage
 
-Tag the commit you want to deploy, e.g.:
+Tag and push the commit you want to deploy, e.g.:
 
 ```shell
 git tag v0.0.42-qa-remove-modal 3ae97fb
+git push origin v0.0.42-qa-remove-modal
 ```
 
-This will trigger a [Drone pipeline](https://drone.grafana.net/grafana/pyroscope-app-plugin) that will build the artefacts and publish them to GCS.
+This will trigger a [Drone pipeline](https://drone.grafana.net/grafana/explore-profiles) that will build the artefacts and publish them to GCS.
 
 They will be accessible via an URL which looks like `https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-[commit SHA].zip`
 
@@ -80,7 +81,7 @@ To release something sooner than Monday, follow these **9 simple steps**:
 
    This will increment and push the newest tag to github
 
-2. [Go to Drone CI](https://drone.grafana.net/grafana/pyroscope-app-plugin)
+2. [Go to Drone CI](https://drone.grafana.net/grafana/explore-profiles)
 
 3. Find the latest **versioned build** on main branch. Make sure it's a `v*.*.*` build. E.g:
 
