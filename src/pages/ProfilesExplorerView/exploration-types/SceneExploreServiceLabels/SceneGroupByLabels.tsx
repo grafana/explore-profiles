@@ -97,7 +97,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
                     groupBy.allValues!.length
                   } to ${
                     LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
-                  } to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to view all the values.`,
+                  } to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`,
                 };
 
           actions.push(new SelectAction(selectActionParams));
@@ -420,9 +420,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     timeSeriesPanel.setState({
       title: `${label} (${allValues!.length})`,
       $data: buildTimeSeriesQueryRunner(queryRunnerParams, true),
-      headerActions: (timeSeriesPanel.state.headerActions as SelectAction[]).filter(
-        (action) => action.state.EventClass !== EventExpandPanel
-      ),
+      headerActions: [
+        new SelectAction({ EventClass: EventSelectLabel, item }),
+        new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
+        new FavAction({ item }),
+      ],
     });
 
     this.setState({
