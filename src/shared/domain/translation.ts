@@ -79,17 +79,15 @@ function getPyroscopeCompatibleRawRange(timeRange: TimeRange): RawTimeRange {
 
 export function translateGrafanaTimeRangeToPyroscope(timeRange: TimeRange): PyroscopeTimeRange {
   const raw = getPyroscopeCompatibleRawRange(timeRange);
-
   const from = stringifyRawTimeRangePart(raw.from);
-  const until = stringifyRawTimeRangePart(raw.to);
-
-  return { from, until };
+  const to = stringifyRawTimeRangePart(raw.to);
+  return { from, until: to };
 }
 
 export function translateGrafanaAbsoluteTimeRangeToPyroscope(timeRange: AbsoluteTimeRange): PyroscopeTimeRange {
   const from = stringifyRawTimeRangePart(floorTenSeconds(timeRange.from));
-  const until = stringifyRawTimeRangePart(ceilTenSeconds(timeRange.to));
-  return { from, until };
+  const to = stringifyRawTimeRangePart(ceilTenSeconds(timeRange.to));
+  return { from, until: to };
 }
 
 export function floorTenSeconds(milliseconds: number): number {

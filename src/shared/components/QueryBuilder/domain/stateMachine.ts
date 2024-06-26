@@ -15,7 +15,7 @@ export const defaultContext: QueryBuilderContext = Object.freeze({
   inputParams: {
     query: '',
     from: 0,
-    until: 0,
+    to: 0,
   },
   query: '',
   filters: [],

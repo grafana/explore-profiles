@@ -55,7 +55,7 @@ export type TimelineChartWrapperProps = TimelineDataProps & {
   id: string;
 
   ['data-testid']?: string;
-  onSelect: (from: string, until: string) => void;
+  onSelect: (from: string, to: string) => void;
   format: 'lines' | 'bars';
 
   height?: string;

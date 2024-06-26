@@ -16,22 +16,22 @@ export class LabelsApiClient extends ApiClient {
     return [`{__profile_type__=\"${query}\"}`];
   }
 
-  async fetchLabels(query: string, from: number, until: number) {
+  async fetchLabels(query: string, from: number, to: number) {
     // all /querier requests: timerange in Unix time ms (unix * 1000)
     return this._post('/querier.v1.QuerierService/LabelNames', {
       matchers: LabelsApiClient.queryToMatchers(query),
       start: from,
-      end: until,
+      end: to,
     }).then((response) => response.json());
   }
 
-  async fetchLabelValues(labelId: string, query: string, from: number, until: number) {
+  async fetchLabelValues(labelId: string, query: string, from: number, to: number) {
     // all /querier requests: timerange in Unix time ms (unix * 1000)
     return this._post('/querier.v1.QuerierService/LabelValues', {
       name: labelId,
       matchers: LabelsApiClient.queryToMatchers(query),
       start: from,
-      end: until,
+      end: to,
     }).then((response) => response.json());
   }
 

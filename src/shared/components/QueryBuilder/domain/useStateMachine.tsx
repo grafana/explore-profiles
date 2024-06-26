@@ -5,17 +5,17 @@ import { QueryBuilderProps } from '../QueryBuilder';
 import { buildStateMachine } from './stateMachine';
 import { CompleteFilters, QueryBuilderContext } from './types';
 
-export function useStateMachine({ query, from, until, onChangeQuery }: QueryBuilderProps) {
+export function useStateMachine({ query, from, to, onChangeQuery }: QueryBuilderProps) {
   const { actor, initialContext } = useMemo(
-    () => buildStateMachine({ query, from, until }),
+    () => buildStateMachine({ query, from, to }),
     // We don't want to build a new state machine when the props change, props change is handheld via the CHANGE_INPUT_PARAMS action below
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
   useEffect(() => {
-    actor.send({ type: 'CHANGE_INPUT_PARAMS', data: { query, from, until } });
-  }, [actor, query, from, until]);
+    actor.send({ type: 'CHANGE_INPUT_PARAMS', data: { query, from, to } });
+  }, [actor, query, from, to]);
 
   const [internalProps, setInternalProps] = useState<QueryBuilderContext>(initialContext);
 

@@ -6,7 +6,7 @@ type TestCase = [string[], URLSearchParams, TimeRange];
 
 const cases: TestCase[] = [
   [
-    ['from', 'until'],
+    ['from', 'to'],
     new URLSearchParams(),
     {
       from: dateTime(0),
@@ -18,7 +18,7 @@ const cases: TestCase[] = [
     },
   ],
   [
-    ['from', 'until'],
+    ['from', 'to'],
     new URLSearchParams([['from', '1710352800']]),
     {
       from: dateTime(1710352800 * 1000),
@@ -30,8 +30,8 @@ const cases: TestCase[] = [
     },
   ],
   [
-    ['from', 'until'],
-    new URLSearchParams([['until', '1710355800']]),
+    ['from', 'to'],
+    new URLSearchParams([['to', '1710355800']]),
     {
       from: dateTime(0),
       to: dateTime(1710355800 * 1000),
@@ -42,10 +42,10 @@ const cases: TestCase[] = [
     },
   ],
   [
-    ['from', 'until'],
+    ['from', 'to'],
     new URLSearchParams([
       ['from', '1710352800'],
-      ['until', '1710355800'],
+      ['to', '1710355800'],
     ]),
     {
       from: dateTime(1710352800 * 1000),
@@ -57,7 +57,7 @@ const cases: TestCase[] = [
     },
   ],
   [
-    ['from', 'until'],
+    ['from', 'to'],
     new URLSearchParams([
       ['start', '1710352800'],
       ['end', '1710355800'],
@@ -75,7 +75,7 @@ const cases: TestCase[] = [
     ['start', 'end'],
     new URLSearchParams([
       ['from', '1710352800'],
-      ['until', '1710355800'],
+      ['to', '1710355800'],
     ]),
     {
       from: dateTime(0),

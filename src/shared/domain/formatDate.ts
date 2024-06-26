@@ -40,28 +40,6 @@ export function convertPresetsToDate(from: string) {
   return { _from, number, _multiplier };
 }
 
-export function readableRange(from: string, until: string, offsetInMinutes: number) {
-  const dateFormat = 'yyyy-MM-dd hh:mm a';
-  if (/^now-/.test(from) && until === 'now') {
-    const { number, _multiplier } = convertPresetsToDate(from);
-    const multiplier = parseInt(number, 10) >= 2 ? _multiplier : _multiplier.slice(0, -1);
-    return `Last ${number} ${multiplier}`;
-  }
-
-  const d1 = getUTCdate(parseUnixTime(from), offsetInMinutes);
-  const d2 = getUTCdate(parseUnixTime(until), offsetInMinutes);
-
-  if (!isValidDate(d1) || !isValidDate(d2)) {
-    return '';
-  }
-
-  return `${format(d1, dateFormat)} - ${format(d2, dateFormat)}`;
-}
-
-function isValidDate(d: Date) {
-  return d instanceof Date && !isNaN(d.getTime());
-}
-
 /**
  * formateAsOBject() returns a Date object
  * based on the passed-in parameter value
