@@ -69,7 +69,7 @@ export class SceneTimeSeriesGrid extends SceneObjectBase<SceneTimeSeriesGridStat
     },
   });
 
-  static DEFAULT_LAYOUT: LayoutType.GRID;
+  static DEFAULT_LAYOUT = LayoutType.GRID;
 
   static buildGridItemKey(item: GridItemData) {
     return `grid-item-${item.value}`;
