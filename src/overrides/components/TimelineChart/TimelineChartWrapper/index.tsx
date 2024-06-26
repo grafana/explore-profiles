@@ -24,6 +24,7 @@ import Color from 'color';
 import { TimelineData } from 'grafana-pyroscope/public/app/components/TimelineChart/centerTimelineData';
 import PyroscopeTimelineChartWrapper from 'grafana-pyroscope/public/app/components/TimelineChart/TimelineChartWrapper';
 import React, { useContext, useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { PyroscopeStateContext } from '../../../../pages/TagExplorer/PyroscopeState/context';
 
@@ -41,6 +42,7 @@ type Marking = {
 // eslint-disable-next-line sonarjs/cognitive-complexity
 function TimelineChartWrapper(props: TimelineChartWrapperProps) {
   const theme = useTheme2();
+  const history = useHistory();
 
   const { timeRange } = useContext(PyroscopeStateContext);
 
@@ -140,8 +142,9 @@ function TimelineChartWrapper(props: TimelineChartWrapperProps) {
 
     const newSearchParams = new URLSearchParams(window.location.search);
     newSearchParams.set('from', from);
-    newSearchParams.set('until', until);
-    window.location.search = newSearchParams.toString();
+    newSearchParams.set('to', until);
+
+    history.replace({ search: newSearchParams.toString() });
 
     props.onSelect(from, until);
   };

@@ -41,7 +41,7 @@ export type QueryBuilderProps = {
   id: string;
   query: string;
   from: number;
-  until: number;
+  to: number;
   onChangeQuery: (newQuery: string, filters: CompleteFilters) => void;
   className?: string;
 };

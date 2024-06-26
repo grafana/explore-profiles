@@ -9,12 +9,12 @@ const MAX_NODES = 100;
 function buildSearchParams(query: string, timeRange: TimeRange): string {
   // /pyroscope/render requests: timerange can be YYYYDDMM, Unix time, Unix time in ms (unix * 1000)
   const from = Number(dateTimeParse(timeRange.raw.from).unix()) * 1000;
-  const until = Number(dateTimeParse(timeRange.raw.to).unix()) * 1000;
+  const to = Number(dateTimeParse(timeRange.raw.to).unix()) * 1000;
 
   const searchParams = new URLSearchParams({
     query,
     from: String(from),
-    until: String(until),
+    until: String(to),
     format: 'dot',
     'max-nodes': String(MAX_NODES),
   });

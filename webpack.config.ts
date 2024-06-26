@@ -72,7 +72,6 @@ const config = async (env): Promise<Configuration> => {
           './src/overrides/hooks/util/determineDefaultApp'
         ),
 
-        '@pyroscope/components/TagsBar': path.resolve(__dirname, './src/overrides/components/TagsBar/index.tsx'),
         '@pyroscope/components/Toolbar': path.resolve(__dirname, './src/overrides/components/Toolbar'),
         '@pyroscope/components/TimelineChart/TimelineChartWrapper': path.resolve(
           __dirname,

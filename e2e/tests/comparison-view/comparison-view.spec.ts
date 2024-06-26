@@ -29,14 +29,14 @@ test.describe('URL search parameters', () => {
     await toolbar.assertSelectedTimeRange('Last 1 hour');
   });
 
-  test('When only the "from" and "until" parameters are provided, it selects the correct service, profile type & time range', async ({
+  test('When only the "from" and "to" parameters are provided, it selects the correct service, profile type & time range', async ({
     comparisonViewPage,
     toolbar,
   }) => {
     await comparisonViewPage.goto(
       new URLSearchParams({
         from: '1710354600', // 2024-03-13 19:30:00
-        until: '1710355320', // 2024-03-13 19:42:00
+        to: '1710355320', // 2024-03-13 19:42:00
       }).toString()
     );
 
@@ -72,7 +72,7 @@ test.describe('URL search parameters', () => {
       new URLSearchParams({
         query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope"}',
         from: 'now-25m',
-        until: 'now-24m',
+        to: 'now-24m',
       }).toString()
     );
 

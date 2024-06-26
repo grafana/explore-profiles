@@ -61,7 +61,7 @@ test.describe('GitHub integration', () => {
 
     const urlSearchParams = new URLSearchParams({
       from: 'now-1m',
-      until: 'now',
+      to: 'now',
       query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope"}',
     });
 
