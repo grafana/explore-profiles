@@ -195,8 +195,8 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       './scripts/package-and-sign ${DRONE_BUILD_NUMBER}',
     ], image=dockerNodeImage) + {
       environment: {
-        GRAFANA_API_KEY: {
-          from_secret: 'GRAFANA_API_KEY',
+        GRAFANA_ACCESS_POLICY_TOKEN: {
+          from_secret: 'GRAFANA_ACCESS_POLICY_TOKEN',
         },
       },
       depends_on: [
@@ -311,7 +311,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     step('publish to grafana.com', [
       'apt update',
       'apt install -y curl',
-      './scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}'
+      './scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}',
     ], image=dockerGrafanaPluginCIImage) + {
       environment: {
         GCOM_TOKEN: {
