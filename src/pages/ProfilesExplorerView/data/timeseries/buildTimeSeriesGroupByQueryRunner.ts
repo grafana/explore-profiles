@@ -29,7 +29,7 @@ export async function buildTimeSeriesGroupByQueryRunner({
       label: groupBy!.label,
       query: `${profileMetricId}{service_name="${serviceName}"}`,
       from: dateTimeParse(from.valueOf()).unix() * 1000,
-      until: dateTimeParse(to.valueOf()).unix() * 1000,
+      to: dateTimeParse(to.valueOf()).unix() * 1000,
     });
 
     labelValues = labelValues

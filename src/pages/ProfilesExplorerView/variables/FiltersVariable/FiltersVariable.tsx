@@ -75,7 +75,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
         className={styles.queryBuilder}
         query={filterExpression as string}
         from={from.unix() * 1000}
-        until={to.unix() * 1000}
+        to={to.unix() * 1000}
         onChangeQuery={model.updateQuery}
       />
     );
