@@ -99,7 +99,7 @@ To release something sooner than Monday, follow these **9 simple steps**:
 
    <img width="390" alt="image" src="https://github.com/grafana/pyroscope-app-plugin/assets/23323466/7303134d-0de0-4280-b735-e448dc144d08">
 
-8. On the Argo page, click on the `RESUME` or ÀPPROVE PROD` button to complete the workflow:
+8. On the Argo page, click on the `RESUME` or `APPROVE PROD` button to complete the workflow:
 
    ![image](https://github.com/grafana/pyroscope-app-plugin/assets/23323466/e0d428a5-de7e-4e31-802f-d14f92dd462b)
 
