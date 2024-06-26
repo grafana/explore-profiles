@@ -34,6 +34,7 @@ import { EventExpandPanel } from '../../events/EventExpandPanel';
 import { EventSelectForCompare } from '../../events/EventSelectForCompare';
 import { EventSelectLabel } from '../../events/EventSelectLabel';
 import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
+import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
@@ -74,6 +75,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         headerActions: (item) => {
           if (!item.queryRunnerParams.groupBy) {
             return [
+              new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
               new SelectAction({ EventClass: EventAddLabelToFilters, item }),
               new CompareAction({ item }),
               new FavAction({ item }),
