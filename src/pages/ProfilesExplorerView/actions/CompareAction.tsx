@@ -3,7 +3,7 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Checkbox, LinkButton, Tooltip, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
-import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
 import { EventSelectForCompare } from '../events/EventSelectForCompare';
 import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 

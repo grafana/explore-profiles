@@ -4,7 +4,7 @@ import { Button, IconName, useStyles2 } from '@grafana/ui';
 import { merge } from 'lodash';
 import React from 'react';
 
-import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
 import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';

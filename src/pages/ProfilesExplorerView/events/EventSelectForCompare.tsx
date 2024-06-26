@@ -1,7 +1,7 @@
 import { BusEventWithPayload } from '@grafana/data';
 
 import { CompareAction } from '../actions/CompareAction';
-import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
 
 export interface EventSelectForComparePayload {
   item: GridItemData;

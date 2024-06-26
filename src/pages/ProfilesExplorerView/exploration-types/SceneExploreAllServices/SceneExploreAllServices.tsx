@@ -3,8 +3,7 @@ import React from 'react';
 
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
-import { SceneTimeSeriesGrid } from '../../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
-import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../data/pyroscope-data-sources';
+import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../events/EventViewServiceProfiles';
@@ -15,12 +14,10 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
   constructor() {
     super({
       key: 'explore-all-services',
-      body: new SceneTimeSeriesGrid({
-        key: 'all-services-grid',
-        query: {
-          dataSource: PYROSCOPE_SERIES_DATA_SOURCE,
-          target: 'serviceName',
-        },
+      body: new SceneByVariableRepeaterGrid({
+        key: 'explore-all-services-grid',
+        variableName: 'serviceName',
+        dependentVariableNames: ['profileMetricId'],
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceProfiles, item }),
           new SelectAction({ EventClass: EventViewServiceLabels, item }),

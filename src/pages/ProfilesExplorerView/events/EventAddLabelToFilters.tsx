@@ -1,6 +1,6 @@
 import { BusEventWithPayload } from '@grafana/data';
 
-import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
 
 export interface EventAddLabelToFiltersPayload {
   item: GridItemData;

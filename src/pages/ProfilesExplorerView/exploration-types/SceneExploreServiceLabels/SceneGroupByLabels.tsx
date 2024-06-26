@@ -20,12 +20,12 @@ import React from 'react';
 import { CompareAction } from '../../actions/CompareAction';
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
+import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
+import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { SceneTimeSeriesGrid } from '../../components/SceneByVariableRepeaterGrid/SceneTimeSeriesGrid';
 import { SceneNoDataSwitcher } from '../../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../../components/SceneQuickFilter';
-import { GridItemData } from '../../components/SceneTimeSeriesGrid/GridItemData';
-import { SceneTimeSeriesGrid } from '../../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
 import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
-import { PYROSCOPE_LABELS_DATA_SOURCE } from '../../data/pyroscope-data-sources';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
 import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
@@ -45,7 +45,7 @@ import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable
 import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable';
 
 interface SceneGroupByLabelsState extends SceneObjectState {
-  body: SceneTimeSeriesGrid;
+  body: SceneByVariableRepeaterGrid;
   drawerContent?: VizPanel;
   drawerTitle?: string;
   drawerSubtitle?: string;
@@ -65,13 +65,14 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   constructor() {
     super({
-      key: 'group-by-labels',
-      body: new SceneTimeSeriesGrid({
+      key: 'explore-service-labels-grid',
+      body: new SceneByVariableRepeaterGrid({
         key: 'labels-grid',
-        query: {
-          dataSource: PYROSCOPE_LABELS_DATA_SOURCE,
-          target: '$profileMetricId{service_name="$serviceName"}',
-        },
+        variableName: 'groupBy',
+        // no explicit dependency because they are already expressed in GroupByVariable
+        // see "query" passed to src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx
+        // also, we could add filters, but we would reload all labels each time they are modified
+        dependentVariableNames: [],
         headerActions: (item) => {
           if (!item.queryRunnerParams.groupBy) {
             return [
@@ -83,21 +84,16 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           }
 
           const actions = [];
-
           const { groupBy } = item.queryRunnerParams;
 
           const selectActionParams =
-            groupBy.values.length === groupBy.allValues!.length
+            groupBy.values?.length === groupBy.allValues?.length
               ? { EventClass: EventSelectLabel, item }
               : {
                   EventClass: EventSelectLabel,
                   item,
                   icon: 'exclamation-circle' as IconName,
-                  tooltip: `The number of timeseries on this panel has been reduced from ${
-                    groupBy.allValues!.length
-                  } to ${
-                    LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
-                  } to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`,
+                  tooltip: `The number of timeseries on this panel has been reduced from ${groupBy.allValues?.length} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`,
                 };
 
           actions.push(new SelectAction(selectActionParams));
@@ -137,34 +133,34 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToEvents() {
-    const groupByVariable = sceneGraph.lookupVariable('groupBy', this) as GroupByVariable;
+    // const groupByVariable = sceneGraph.lookupVariable('groupBy', this) as GroupByVariable;
 
-    groupByVariable.subscribeToState((newState, prevState) => {
-      if (newState.loading) {
-        this.state.body.resetToLoadingState();
-        return;
-      }
+    // groupByVariable.subscribeToState((newState, prevState) => {
+    //   if (newState.loading) {
+    //     this.state.body.resetToLoadingState();
+    //     return;
+    //   }
 
-      // we refresh the grid either when clicking on a groupBy value...
-      if (newState.value !== prevState.value) {
-        this.setState({
-          body: this.state.body.clone(),
-          itemsForComparison: [],
-        });
-        return;
-      }
+    //   // we refresh the grid either when clicking on a groupBy value...
+    //   if (newState.value !== prevState.value) {
+    //     this.setState({
+    //       body: this.state.body.clone(),
+    //       itemsForComparison: [],
+    //     });
+    //     return;
+    //   }
 
-      // ...or when it finishes loading, which happens every time serviceName or profileMetricId changes
-      // (see src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx)
-      if (!newState.loading && prevState.loading) {
-        this.setState({
-          body: this.state.body.clone(),
-          itemsForComparison: [],
-        });
+    //   // ...or when it finishes loading, which happens every time serviceName or profileMetricId changes
+    //   // (see src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx)
+    //   if (!newState.loading && prevState.loading) {
+    //     this.setState({
+    //       body: this.state.body.clone(),
+    //       itemsForComparison: [],
+    //     });
 
-        groupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
-      }
-    });
+    //     groupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
+    //   }
+    // });
 
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
       this.selectLabel(event.payload.item);

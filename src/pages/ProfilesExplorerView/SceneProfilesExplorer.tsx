@@ -21,12 +21,13 @@ import {
 import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
 import { displaySuccess } from '@shared/domain/displayStatus';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
+import { uniqBy } from 'lodash';
 import React from 'react';
 
+import { GridItemData } from './components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from './components/SceneQuickFilter';
-import { GridItemData } from './components/SceneTimeSeriesGrid/GridItemData';
 import { FavoritesDataSource } from './data/favorites/FavoritesDataSource';
 import { LabelsDataSource } from './data/labels/LabelsDataSource';
 import { SeriesDataSource } from './data/series/SeriesDataSource';
@@ -103,7 +104,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
         // also, we prevent re-creating all variables when switching exploration type, which would lead to unecessary work and layout shifts in the UI
         // (because values would be empty before loading, then populated after fetched)
-        // it's ok from a perf pov because fetching values will not occur if their components are not rendered
         // see setExplorationType() for dynamic updates
         variables: [
           new ProfilesDataSourceVariable(),
@@ -181,7 +181,18 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const flameGraphSub = this.subscribeToEvent(EventViewServiceFlameGraph, (event) => {
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE_FLAME_GRAPH, event.payload.item);
+      const filters = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).state.filters;
+
+      const { item } = event.payload;
+      const itemFilters = item.queryRunnerParams.filters || [];
+
+      // not the best to mutate it but it works
+      item.queryRunnerParams.filters = uniqBy(
+        [...filters, ...itemFilters],
+        ({ key, operator, value }) => `${key}${operator}${value}`
+      );
+
+      this.setExplorationType(ExplorationType.SINGLE_SERVICE_FLAME_GRAPH, item);
     });
 
     return {

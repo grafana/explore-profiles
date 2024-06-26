@@ -1,5 +1,4 @@
 import {
-  DataQueryRequest,
   DataQueryResponse,
   FieldType,
   LegacyMetricFindQueryOptions,
@@ -30,38 +29,7 @@ export class SeriesDataSource extends RuntimeDataSource {
     return seriesRepository.list({ timeRange });
   }
 
-  async query(request: DataQueryRequest<{ refId: string; target: string }>): Promise<DataQueryResponse> {
-    const sceneObject = request.scopedVars.__sceneObject?.value;
-    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
-
-    const serviceToProfileMetricsMap = await this.fetchSeries(dataSourceUid, request.range);
-
-    let values = [];
-
-    const { target } = request.targets[0];
-
-    switch (target) {
-      case 'serviceName':
-        values = formatSeriesToServices(serviceToProfileMetricsMap);
-        break;
-
-      case 'profileMetricId':
-        values = formatSeriesToProfileMetrics(serviceToProfileMetricsMap);
-        break;
-
-      default:
-        throw new TypeError(`Unsupported target "${target}"!`);
-    }
-
-    const gridItems = values.map(({ value, text }, index) => ({
-      index,
-      value,
-      label: text,
-      queryRunnerParams: {
-        [target]: value,
-      },
-    }));
-
+  async query(): Promise<DataQueryResponse> {
     return {
       state: LoadingState.Done,
       data: [
@@ -71,11 +39,11 @@ export class SeriesDataSource extends RuntimeDataSource {
             {
               name: 'Service',
               type: FieldType.other,
-              values: gridItems,
+              values: [],
               config: {},
             },
           ],
-          length: values.length,
+          length: 0,
         },
       ],
     };

@@ -10,7 +10,7 @@ import { IconButton, useStyles2 } from '@grafana/ui';
 import { clone, defaults, omit, uniqBy } from 'lodash';
 import React from 'react';
 
-import { GridItemData } from '../components/SceneTimeSeriesGrid/GridItemData';
+import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
 import { Favorite, FavoritesDataSource } from '../data/favorites/FavoritesDataSource';
 import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 

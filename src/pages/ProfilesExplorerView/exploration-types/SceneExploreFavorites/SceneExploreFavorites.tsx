@@ -14,8 +14,8 @@ import React from 'react';
 
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
-import { GridItemData } from '../../components/SceneTimeSeriesGrid/GridItemData';
-import { SceneTimeSeriesGrid } from '../../components/SceneTimeSeriesGrid/SceneTimeSeriesGrid';
+import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
+import { SceneTimeSeriesGrid } from '../../components/SceneByVariableRepeaterGrid/SceneTimeSeriesGrid';
 import { PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../../data/pyroscope-data-sources';
 import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';

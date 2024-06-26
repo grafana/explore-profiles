@@ -3,7 +3,7 @@ import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Field, Icon, RefreshPicker, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../../data/pyroscope-data-sources';
@@ -19,7 +19,8 @@ export class GroupByVariable extends QueryVariable {
       name: 'groupBy',
       label: 'Group by',
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,
-      // hack: we want to subscribe to changes of dataSource, serviceName and profileMetricId
+      // "hack": we want to subscribe to changes of dataSource, serviceName and profileMetricId
+      // we could also add filters, but the Service labels exploration type would reload all labels each time they are modified
       query: '$dataSource and $profileMetricId{service_name="$serviceName"}',
       loading: true,
     });
@@ -75,6 +76,27 @@ export class GroupByVariable extends QueryVariable {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
 
+    const groupByOptions = useMemo(
+      () =>
+        options.map(({ label, value }) => {
+          if (value === 'all') {
+            return { label, value };
+          }
+
+          // see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts
+          const { labelName } = JSON.parse(String(value)) as unknown as {
+            labelName: string;
+            labelValues: string[];
+          };
+
+          return {
+            label,
+            value: labelName,
+          };
+        }),
+      [options]
+    );
+
     if (loading) {
       return (
         <Field label="Group by">
@@ -100,8 +122,6 @@ export class GroupByVariable extends QueryVariable {
         </>
       );
     }
-
-    const groupByOptions = options as Array<SelectableValue<string>>;
 
     const getMainLabels = (groupByOptions: Array<SelectableValue<string>>) => {
       return groupByOptions.slice(0, GroupByVariable.MAX_MAIN_LABELS).map(({ value }) => value as string);
