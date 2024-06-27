@@ -388,16 +388,24 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     ).state.body!.clone() as VizPanel;
 
     const { queryRunnerParams } = item;
-    const { label, allValues } = queryRunnerParams.groupBy!;
+    const { label } = queryRunnerParams.groupBy!;
 
     timeSeriesPanel.setState({
-      title: `${label} (${allValues!.length})`,
+      title: label,
       $data: buildTimeSeriesQueryRunner(queryRunnerParams, true),
       headerActions: [
         new SelectAction({ EventClass: EventSelectLabel, item }),
         new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
         new FavAction({ item }),
       ],
+      fieldConfig: {
+        defaults: {
+          custom: {
+            fillOpacity: 0,
+          },
+        },
+        overrides: [],
+      },
     });
 
     this.setState({

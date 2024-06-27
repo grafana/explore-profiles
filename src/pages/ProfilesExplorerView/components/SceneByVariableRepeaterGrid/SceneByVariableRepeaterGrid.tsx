@@ -18,6 +18,7 @@ import { Spinner } from '@grafana/ui';
 import { debounce } from 'lodash';
 import React from 'react';
 
+import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
 import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTimeSeriesGroupByQueryRunner';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
@@ -229,7 +230,11 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const groupByOptions = options.filter(({ value }) => value !== 'all');
 
     if (variableValue === 'all') {
-      return groupByOptions;
+      return groupByOptions.map(({ value }) => ({
+        // remove the count in the parentheses, because it's not updated dynamically when applying filters
+        label: JSON.parse(value as string).value,
+        value,
+      }));
     }
 
     const currentOption = groupByOptions.find((o) => variableValue === JSON.parse(o.value as string).value);
@@ -349,10 +354,14 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         .setData(data)
         .setMin(0)
         .setOverrides((overrides) => {
-          data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
+          const { queries } = data.state;
+          const fillOpacity = queries.length <= LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 9 : 0;
+
+          queries.forEach(({ refId, displayNameOverride }, j: number) => {
             overrides
               .matchFieldsByQuery(refId)
               .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index + j) })
+              .overrideCustomFieldConfig('fillOpacity', fillOpacity)
               .overrideDisplayName(displayNameOverride);
           });
         })

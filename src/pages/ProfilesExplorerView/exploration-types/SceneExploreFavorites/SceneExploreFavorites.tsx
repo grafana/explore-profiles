@@ -186,6 +186,14 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       headerActions: (timeSeriesPanel.state.headerActions as SelectAction[]).filter(
         (action) => action.state.EventClass !== EventExpandPanel
       ),
+      fieldConfig: {
+        defaults: {
+          custom: {
+            fillOpacity: 0,
+          },
+        },
+        overrides: [],
+      },
     });
 
     this.setState({
