@@ -48,7 +48,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   static DEFAULT_LAYOUT = LayoutType.GRID;
 
   static buildGridItemKey(item: GridItemData) {
-    return `grid-item-${item.value}`;
+    return `grid-item-${item.index}-${item.value}`;
   }
 
   protected _variableDependency: VariableDependencyConfig<SceneByVariableRepeaterGridState> =
@@ -220,7 +220,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   getCurrentOptions(variable: QueryVariable): VariableValueOption[] {
-    const { options, value } = variable.state;
+    const { options, value: variableValue } = variable.state;
 
     if (this.state.variableName !== 'groupBy') {
       return options;
@@ -228,15 +228,34 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
     const groupByOptions = options.filter(({ value }) => value !== 'all');
 
-    if (value === 'all') {
+    if (variableValue === 'all') {
       return groupByOptions;
     }
 
-    const currentOption = groupByOptions.find((o) => value === JSON.parse(o.value as string).value);
+    const currentOption = groupByOptions.find((o) => variableValue === JSON.parse(o.value as string).value);
 
-    return currentOption
-      ? JSON.parse(currentOption.value as string).groupBy.allValues.map((value: string) => ({ label: value, value }))
-      : [];
+    if (!currentOption) {
+      return [];
+    }
+
+    return JSON.parse(currentOption.value as string).groupBy.allValues.map((labelValue: string) => {
+      const valueObject = {
+        value: labelValue,
+        // we need this for the "Flame graph" & "Add to filters" actions to work
+        filters: [
+          {
+            key: variableValue,
+            operator: '=',
+            value: labelValue,
+          },
+        ],
+      };
+
+      return {
+        label: labelValue,
+        value: JSON.stringify(valueObject),
+      };
+    });
   }
 
   buildItemsData(variable: QueryVariable) {
@@ -251,24 +270,24 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           // see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts
           value,
           groupBy,
+          filters,
           // see src/pages/ProfilesExplorerView/data/favorites/FavoritesDataSource.ts
           index,
           queryRunnerParams,
         } = parsedValue;
 
         return {
-          index: index || i,
+          index: index !== undefined ? index : i,
           value: value as string,
           label: option.label,
           queryRunnerParams: queryRunnerParams || {
             serviceName,
             profileMetricId,
             groupBy,
+            filters: filters || [],
           },
         };
       } catch {
-        const value = variableName === 'groupBy' ? undefined : option.value;
-
         return {
           index: i,
           value: option.value as string,
@@ -276,7 +295,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           queryRunnerParams: {
             serviceName,
             profileMetricId,
-            [variableName as keyof GridItemData['queryRunnerParams']]: value,
+            [variableName as keyof GridItemData['queryRunnerParams']]: option.value,
           },
         };
       }

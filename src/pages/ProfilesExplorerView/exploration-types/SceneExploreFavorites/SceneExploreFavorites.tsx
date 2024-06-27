@@ -131,7 +131,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       .setCustomFieldConfig('filterable', true)
       .setCustomFieldConfig('cellOptions', { type: TableCellDisplayMode.ColorText })
       .setColor({ mode: 'fixed', fixedColor: '#CCCCDC' })
-      .setUnit(getProfileMetricUnit(queryRunnerParams.profileMetricId))
+      .setUnit(getProfileMetricUnit(queryRunnerParams.profileMetricId!))
       .setOverrides((overrides) => {
         overrides.matchFieldsWithName(queryRunnerParams.groupBy!.label).overrideUnit('string');
       })

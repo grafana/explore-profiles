@@ -6,7 +6,6 @@ import {
   SceneComponentProps,
   SceneFlexItem,
   SceneFlexLayout,
-  sceneGraph,
   SceneObjectBase,
   VariableDependencyConfig,
   VizPanel,
@@ -19,28 +18,18 @@ import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSerie
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
-import { parseVariableValue } from '../../variables/FiltersVariable/filters-ops';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
 interface SceneServiceFlameGraphState extends EmbeddedSceneState {}
 
 export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGraphState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId', 'filters'],
+    variableNames: ['serviceName', 'profileMetricId'],
     onVariableUpdateCompleted: () => {
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
-      const headerActionItem = this.buildHeaderActionItem();
-      const headerActions = [
-        new SelectAction({ EventClass: EventViewServiceLabels, item: headerActionItem }),
-        new FavAction({ item: headerActionItem }),
-      ];
-
-      timeSeriesPanel?.setState({
-        title: buildtimeSeriesPanelTitle(this),
-        headerActions,
-      });
+      timeSeriesPanel?.setState({ title: buildtimeSeriesPanelTitle(this) });
     },
   });
 
@@ -77,7 +66,13 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
   }
 
   async buildTimeSeriesPanel() {
-    const headerActionItem = this.buildHeaderActionItem();
+    const headerActionItem = {
+      index: 0,
+      value: '',
+      label: '',
+      // let FavAction interpolate
+      queryRunnerParams: {},
+    };
 
     const timeSeriesPanel = PanelBuilders.timeseries()
       .setTitle(buildtimeSeriesPanelTitle(this))
@@ -95,25 +90,6 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
     ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).setState({
       body: timeSeriesPanel,
     });
-  }
-
-  buildHeaderActionItem() {
-    const serviceName = sceneGraph.lookupVariable('serviceName', this)?.getValue() as string;
-    const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-
-    const filtersVariableValue = sceneGraph.lookupVariable('filters', this)?.getValue() as string;
-    const filters = parseVariableValue(filtersVariableValue);
-
-    return {
-      index: 0,
-      value: `${serviceName}-${profileMetricId}-${filtersVariableValue}`,
-      label: buildtimeSeriesPanelTitle(this),
-      queryRunnerParams: {
-        serviceName,
-        profileMetricId,
-        filters,
-      },
-    };
   }
 
   static Component({ model }: SceneComponentProps<SceneServiceFlameGraph>) {

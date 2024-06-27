@@ -21,7 +21,6 @@ import {
 import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
 import { displaySuccess } from '@shared/domain/displayStatus';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
-import { uniqBy } from 'lodash';
 import React from 'react';
 
 import { GridItemData } from './components/SceneByVariableRepeaterGrid/GridItemData';
@@ -181,18 +180,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const flameGraphSub = this.subscribeToEvent(EventViewServiceFlameGraph, (event) => {
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
-      const filters = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).state.filters;
-
-      const { item } = event.payload;
-      const itemFilters = item.queryRunnerParams.filters || [];
-
-      // not the best to mutate it but it works
-      item.queryRunnerParams.filters = uniqBy(
-        [...filters, ...itemFilters],
-        ({ key, operator, value }) => `${key}${operator}${value}`
-      );
-
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE_FLAME_GRAPH, item);
+      this.setExplorationType(ExplorationType.SINGLE_SERVICE_FLAME_GRAPH, event.payload.item);
     });
 
     return {

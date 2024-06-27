@@ -1,18 +1,11 @@
 import { css } from '@emotion/css';
-import {
-  SceneComponentProps,
-  sceneGraph,
-  SceneObjectBase,
-  SceneObjectState,
-  VariableDependencyConfig,
-} from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState, VariableDependencyConfig } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
-import { clone, defaults, omit, uniqBy } from 'lodash';
 import React from 'react';
 
 import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
 import { Favorite, FavoritesDataSource } from '../data/favorites/FavoritesDataSource';
-import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
+import { interpolateQueryRunnerVariables } from '../data/helpers/interpolateQueryRunnerVariables';
 
 export interface FavActionState extends SceneObjectState {
   item: GridItemData;
@@ -38,55 +31,41 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   isStored() {
-    return FavoritesDataSource.exists(this.interpolateQueryRunnerVariables());
+    return FavoritesDataSource.exists(this.buildFavorite());
   }
 
-  interpolateQueryRunnerVariables() {
-    const { queryRunnerParams } = this.state.item;
+  buildFavorite(): Favorite {
+    const { item } = this.state;
+    const queryRunnerParams = interpolateQueryRunnerVariables(this, item) as Favorite['queryRunnerParams'];
 
-    const interpolatedParams: Favorite['queryRunnerParams'] = defaults(omit(clone(queryRunnerParams), 'groupBy'), {
-      serviceName: sceneGraph.lookupVariable('serviceName', this)?.getValue(),
-      profileMetricId: sceneGraph.lookupVariable('profileMetricId', this)?.getValue(),
-    });
-
-    const groupByLabel = queryRunnerParams.groupBy?.label;
-    if (groupByLabel) {
-      interpolatedParams.groupBy = {
-        // we never store groupBy values because
-        // we always refetch the label values so that the timeseries are up-to-date
-        // see buildTimeSeriesGroupByQueryRunner()
-        label: groupByLabel,
+    // we never store the label values because we will always refresh them when rendering the favorites timeseries
+    if (queryRunnerParams.groupBy) {
+      queryRunnerParams.groupBy = {
+        label: queryRunnerParams.groupBy.label,
       };
+    } else {
+      delete queryRunnerParams.groupBy;
     }
 
-    const filtersVariableValue = sceneGraph.lookupVariable('filters', this)?.getValue() as string;
-    const parsedFilters = parseVariableValue(filtersVariableValue);
-
-    if (interpolatedParams.filters?.length || parsedFilters.length) {
-      interpolatedParams.filters = uniqBy(
-        [...(interpolatedParams.filters || []), ...parsedFilters],
-        ({ key, operator, value }) => `${key}${operator}${value}`
-      );
+    // we don't store filters if empty
+    if (!queryRunnerParams.filters?.length) {
+      delete queryRunnerParams.filters;
     }
 
-    return interpolatedParams;
+    return {
+      index: item.index,
+      queryRunnerParams,
+    };
   }
 
   public onClick = () => {
-    const { isFav, item } = this.state;
-
-    const favorite: Favorite = {
-      queryRunnerParams: this.interpolateQueryRunnerVariables(),
-      index: item.index,
-    };
-
-    if (!isFav) {
-      FavoritesDataSource.addFavorite(favorite);
+    if (!this.state.isFav) {
+      FavoritesDataSource.addFavorite(this.buildFavorite());
     } else {
-      FavoritesDataSource.removeFavorite(favorite);
+      FavoritesDataSource.removeFavorite(this.buildFavorite());
     }
 
-    this.setState({ isFav: !isFav });
+    this.setState({ isFav: !this.state.isFav });
   };
 
   public static Component = ({ model }: SceneComponentProps<FavAction>) => {

@@ -19,17 +19,17 @@ export type Favorite = {
     serviceName: string;
     profileMetricId: string;
     groupBy?: {
-      label?: string;
+      label: string;
     };
     filters?: AdHocVariableFilter[];
   };
 };
 
 export class FavoritesDataSource extends RuntimeDataSource {
-  static exists(queryRunnerParams: Favorite['queryRunnerParams']) {
+  static exists(favorite: Favorite) {
     return userStorage
       .get(userStorage.KEYS.PROFILES_EXPLORER)
-      ?.favorites?.some((f: Favorite) => isEqual(f.queryRunnerParams, queryRunnerParams));
+      ?.favorites?.some((f: Favorite) => isEqual(f.queryRunnerParams, favorite.queryRunnerParams));
   }
 
   static addFavorite(favorite: Favorite) {

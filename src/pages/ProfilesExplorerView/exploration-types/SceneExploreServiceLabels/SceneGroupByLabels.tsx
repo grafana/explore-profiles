@@ -24,6 +24,7 @@ import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridI
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { SceneNoDataSwitcher } from '../../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../../components/SceneQuickFilter';
+import { interpolateQueryRunnerVariables } from '../../data/helpers/interpolateQueryRunnerVariables';
 import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
 import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
@@ -261,7 +262,10 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     diffUrl.searchParams.set('to', to.toString());
 
     const { filters: queryFilters } = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).state;
-    const { serviceName: serviceId, profileMetricId } = itemsForComparison[0].item.queryRunnerParams;
+    const { serviceName: serviceId, profileMetricId } = interpolateQueryRunnerVariables(
+      this,
+      itemsForComparison[0].item
+    );
 
     // query - just in case
     const query = buildQuery({
@@ -275,9 +279,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const [leftQuery, rightQuery] = itemsForComparison
       .sort((a, b) => a.item.index - b.item.index)
       .map(({ item }) => {
-        const { serviceName: serviceId, profileMetricId, filters } = item.queryRunnerParams;
-
-        const labels = [...queryFilters, ...(filters || [])].map(
+        const labels = [...queryFilters, ...(item.queryRunnerParams.filters || [])].map(
           ({ key, operator, value }) => `${key}${operator}"${value}"`
         );
 

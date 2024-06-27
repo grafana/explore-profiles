@@ -1,10 +1,11 @@
 import { css } from '@emotion/css';
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, IconName, useStyles2 } from '@grafana/ui';
 import { merge } from 'lodash';
 import React from 'react';
 
 import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
+import { interpolateQueryRunnerVariables } from '../data/helpers/interpolateQueryRunnerVariables';
 import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
@@ -15,7 +16,6 @@ import {
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
-import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 
 type EventContructor =
   | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
@@ -79,22 +79,16 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
 
   buildEvent() {
     const { EventClass, item } = this.state;
-    const { queryRunnerParams } = item;
+
+    console.log('*** buildEvent', {
+      ...item,
+      queryRunnerParams: interpolateQueryRunnerVariables(this, item),
+    });
 
     return new EventClass({
       item: {
         ...item,
-        queryRunnerParams: {
-          ...queryRunnerParams,
-          serviceName:
-            queryRunnerParams.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
-          profileMetricId:
-            queryRunnerParams.profileMetricId ||
-            (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
-          filters:
-            queryRunnerParams.filters ||
-            parseVariableValue(sceneGraph.lookupVariable('filters', this)?.getValue() as string),
-        },
+        queryRunnerParams: interpolateQueryRunnerVariables(this, item),
       },
     });
   }
