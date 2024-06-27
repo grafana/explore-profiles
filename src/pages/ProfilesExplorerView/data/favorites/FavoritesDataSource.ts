@@ -80,7 +80,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
     const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
 
     return favorites.map((f: Favorite) => {
-      const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams;
+      const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams || {};
       const textParts = [serviceName, getProfileMetricLabel(profileMetricId)];
 
       if (groupBy?.label) {
