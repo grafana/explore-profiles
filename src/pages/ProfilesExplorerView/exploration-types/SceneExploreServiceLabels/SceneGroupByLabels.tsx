@@ -36,6 +36,7 @@ import { EventSelectLabel } from '../../events/EventSelectLabel';
 import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
+import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
@@ -257,7 +258,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const diffUrl = new URL('a/grafana-pyroscope-app/comparison-diff', appUrl);
 
     // time range
-    const { from, to } = sceneGraph.getTimeRange(this).state.value.raw;
+    const { from, to } = computeRoundedTimeRange(sceneGraph.getTimeRange(this).state.value);
     diffUrl.searchParams.set('from', from.toString());
     diffUrl.searchParams.set('to', to.toString());
 
