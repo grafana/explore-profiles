@@ -131,34 +131,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToEvents() {
-    // const groupByVariable = sceneGraph.lookupVariable('groupBy', this) as GroupByVariable;
+    const groupByVariable = sceneGraph.lookupVariable('groupBy', this) as GroupByVariable;
 
-    // groupByVariable.subscribeToState((newState, prevState) => {
-    //   if (newState.loading) {
-    //     this.state.body.resetToLoadingState();
-    //     return;
-    //   }
-
-    //   // we refresh the grid either when clicking on a groupBy value...
-    //   if (newState.value !== prevState.value) {
-    //     this.setState({
-    //       body: this.state.body.clone(),
-    //       itemsForComparison: [],
-    //     });
-    //     return;
-    //   }
-
-    //   // ...or when it finishes loading, which happens every time serviceName or profileMetricId changes
-    //   // (see src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx)
-    //   if (!newState.loading && prevState.loading) {
-    //     this.setState({
-    //       body: this.state.body.clone(),
-    //       itemsForComparison: [],
-    //     });
-
-    //     groupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
-    //   }
-    // });
+    const variableSub = groupByVariable.subscribeToState(() => {
+      this.setState({ itemsForComparison: [] });
+    });
 
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
       this.selectLabel(event.payload.item);
@@ -190,6 +167,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         selectForCompareSub.unsubscribe();
         addToFiltersSub.unsubscribe();
         selectLabelSub.unsubscribe();
+        variableSub.unsubscribe();
       },
     };
   }
