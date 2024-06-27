@@ -347,6 +347,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       const timeSeriesPanel = PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(data)
+        .setMin(0)
         .setOverrides((overrides) => {
           data.state.queries.forEach(({ refId, displayNameOverride }, j: number) => {
             overrides
@@ -356,7 +357,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           });
         })
         .setCustomFieldConfig('fillOpacity', 9)
-        .setMin(0)
         .setHeaderActions(headerActions(item))
         .build();
 
