@@ -48,7 +48,7 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
 
   constructor() {
     super({
-      key: 'service-flame-graph',
+      key: 'explore-service-flame-graph',
       body: new SceneFlexLayout({
         direction: 'column',
         $behaviors: [

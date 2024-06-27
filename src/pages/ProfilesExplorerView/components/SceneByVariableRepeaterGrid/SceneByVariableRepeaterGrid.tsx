@@ -1,4 +1,4 @@
-import { DashboardCursorSync, LoadingState, VariableRefresh } from '@grafana/data';
+import { DashboardCursorSync, FieldMatcherID, LoadingState, VariableRefresh } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -11,13 +11,14 @@ import {
   SceneObjectBase,
   SceneQueryRunner,
   VariableDependencyConfig,
+  VariableValueOption,
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
 import { debounce } from 'lodash';
 import React from 'react';
 
-import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
+import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTimeSeriesGroupByQueryRunner';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
@@ -25,6 +26,7 @@ import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
+import { ErrorStateScene } from '../ErrorState/ErrorStateScene';
 import { LayoutType, SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../SceneQuickFilter';
@@ -94,22 +96,30 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   onActivate() {
-    // here we try to emulate VariableDependencyConfig.onVariableUpdateCompleted
-    const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
-
     this.renderGridItems();
 
-    const variableSub = variable.subscribeToState((newState, prevState) => {
-      if (!newState.loading && prevState.loading) {
-        this.renderGridItems();
-        return;
-      }
+    // here we try to emulate VariableDependencyConfig.onVariableUpdateCompleted
+    const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
 
-      // TODO: create a dedicated variable?
-      if (variable.state.name === 'groupBy' && !newState.loading && newState.value !== prevState.value) {
-        this.renderGridItems();
+    const variableSub = variable.subscribeToState((newState, prevState) => {
+      if (!newState.loading) {
+        if (prevState.loading) {
+          this.renderGridItems();
+          return;
+        }
+
+        // TODO: create a dedicated variable instead of looking at the groupBy value?
+        if (variable.state.name === 'groupBy' && newState.value !== prevState.value) {
+          this.renderGridItems();
+          return;
+        }
       }
     });
+
+    // the "groupBy" variable data source will not fetch values if the variable is inactive
+    // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
+    // so we force an update here to be sure we have the latest values
+    variable.update();
 
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
@@ -148,10 +158,12 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     }
 
     refreshButton?.addEventListener('click', onClickRefresh);
+    refreshButton?.setAttribute('title', 'Click to completely refresh all the panels present on the screen');
     // end of hack
 
     return {
       unsubscribe() {
+        refreshButton?.removeAttribute('title');
         refreshButton?.removeEventListener('click', onClickRefresh);
         variable.setState({ refresh: originalRefresh });
       },
@@ -186,6 +198,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       }
     };
 
+    onChangeState(layoutSwitcherScene.state);
+
     return layoutSwitcherScene.subscribeToState(onChangeState);
   }
 
@@ -205,111 +219,110 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return noDataSwitcherScene.subscribeToState(onChangeState);
   }
 
-  // TODO: refactor - split/extract method
-  buildItemsData() {
-    const { variableName } = this.state;
-    const variable = sceneGraph.lookupVariable(variableName, this) as QueryVariable;
+  getCurrentOptions(variable: QueryVariable): VariableValueOption[] {
+    const { options, value } = variable.state;
+
+    if (this.state.variableName !== 'groupBy') {
+      return options;
+    }
+
+    const groupByOptions = options.filter(({ value }) => value !== 'all');
+
+    if (value === 'all') {
+      return groupByOptions;
+    }
+
+    const currentOption = groupByOptions.find((o) => value === JSON.parse(o.value as string).value);
+
+    return currentOption
+      ? JSON.parse(currentOption.value as string).groupBy.allValues.map((value: string) => ({ label: value, value }))
+      : [];
+  }
+
+  buildItemsData(variable: QueryVariable) {
+    const { name: variableName } = variable.state;
     const serviceName = getSceneVariableValue(this, ServiceNameVariable);
     const profileMetricId = getSceneVariableValue(this, ProfileMetricVariable);
 
-    // TODO: find a better way
-    if (variableName !== 'groupBy') {
-      const items = variable.state.options.map(({ value, label }, index) => ({
-        index: Number(index),
-        value: String(value),
-        label: String(label),
-        queryRunnerParams: {
-          serviceName,
-          profileMetricId,
-          [variableName as keyof GridItemData['queryRunnerParams']]: String(value),
-          filters: [],
-        },
-      }));
+    const items = this.getCurrentOptions(variable).map((option, i) => {
+      try {
+        const parsedValue = JSON.parse(option.value as string);
+        const {
+          // see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts
+          value,
+          groupBy,
+          // see src/pages/ProfilesExplorerView/data/favorites/FavoritesDataSource.ts
+          index,
+          queryRunnerParams,
+        } = parsedValue;
 
-      return this.filterItems(items);
-    }
-
-    let options = variable.state.options.filter(({ value }) => value !== 'all');
-
-    if (variable.state.value !== 'all') {
-      const currentOption = options.find(({ value }) => {
-        // see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts
-        const { labelName } = JSON.parse(String(value)) as unknown as {
-          labelName: string;
-          labelValues: string[];
-        };
-
-        return labelName === variable.state.value;
-      });
-
-      if (!currentOption) {
-        return [];
-      }
-
-      const { labelName, labelValues } = JSON.parse(String(currentOption?.value)) as unknown as {
-        labelName: string;
-        labelValues: string[];
-      };
-
-      const items = labelValues.map((value, index) => ({
-        index,
-        label: value,
-        value,
-        queryRunnerParams: {
-          serviceName,
-          profileMetricId,
-          filters: [{ key: labelName, operator: '=', value }],
-        },
-      }));
-
-      return this.filterItems(items);
-    }
-
-    const items = options.map(({ value }, index) => {
-      // see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts
-      const { labelName, labelValues } = JSON.parse(String(value)) as unknown as {
-        labelName: string;
-        labelValues: string[];
-      };
-
-      return {
-        index: Number(index),
-        value: labelName,
-        label: labelName,
-        queryRunnerParams: {
-          serviceName,
-          profileMetricId,
-          filters: [],
-          groupBy: {
-            label: labelName,
-            values: labelValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES),
-            allValues: labelValues,
+        return {
+          index: index || i,
+          value: value as string,
+          label: option.label,
+          queryRunnerParams: queryRunnerParams || {
+            serviceName,
+            profileMetricId,
+            groupBy,
           },
-        },
-      };
+        };
+      } catch {
+        const value = variableName === 'groupBy' ? undefined : option.value;
+
+        return {
+          index: i,
+          value: option.value as string,
+          label: option.label,
+          queryRunnerParams: {
+            serviceName,
+            profileMetricId,
+            [variableName as keyof GridItemData['queryRunnerParams']]: value,
+          },
+        };
+      }
     });
 
     return this.filterItems(items);
   }
 
   // TODO: prevent too many re-renders
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   renderGridItems() {
-    this.setState({ items: this.buildItemsData() });
+    const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
+
+    if (variable.state.error) {
+      this.renderErrorState(variable.state.error);
+      return;
+    }
+
+    this.setState({ items: this.buildItemsData(variable) });
 
     if (!this.state.items.length) {
       this.renderEmptyState();
       return;
     }
 
-    const { headerActions, hideNoData } = this.state;
+    const { headerActions, hideNoData, variableName } = this.state;
 
     const gridItems = this.state.items.map((item) => {
       const gridItemKey = SceneByVariableRepeaterGrid.buildGridItemKey(item);
 
-      const data = buildTimeSeriesQueryRunner(item.queryRunnerParams);
+      let data: SceneQueryRunner;
 
-      if (hideNoData) {
-        this.setupHideNoData(data, gridItemKey);
+      const shouldRefreshFavoriteData = variableName === 'favorite' && item.queryRunnerParams.groupBy?.label;
+
+      if (shouldRefreshFavoriteData) {
+        // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
+        // see buildTimeSeriesGroupByQueryRunner()
+        data = new SceneQueryRunner({
+          queries: [],
+        });
+      } else {
+        data = buildTimeSeriesQueryRunner(item.queryRunnerParams);
+
+        if (hideNoData) {
+          this.setupHideNoData(data, gridItemKey);
+        }
       }
 
       const timeSeriesPanel = PanelBuilders.timeseries()
@@ -326,6 +339,36 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         .setCustomFieldConfig('fillOpacity', 9)
         .setHeaderActions(headerActions(item))
         .build();
+
+      if (shouldRefreshFavoriteData) {
+        // don't block the initial render
+        setTimeout(async () => {
+          const $data = await buildTimeSeriesGroupByQueryRunner({
+            queryRunnerParams: item.queryRunnerParams,
+            timeRange: sceneGraph.getTimeRange(this).state.value,
+          });
+
+          if (hideNoData) {
+            this.setupHideNoData($data, gridItemKey);
+          }
+
+          timeSeriesPanel.setState({
+            $data,
+            fieldConfig: {
+              defaults: {
+                custom: { fillOpacity: 9 },
+              },
+              overrides: $data.state.queries.map(({ refId, displayNameOverride }, j) => ({
+                matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
+                properties: [
+                  { id: 'displayName', value: displayNameOverride },
+                  { id: 'color', value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + j) } },
+                ],
+              })),
+            },
+          });
+        }, 0);
+      }
 
       return new SceneCSSGridItem({
         key: gridItemKey,
@@ -387,6 +430,21 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         new SceneCSSGridItem({
           body: new EmptyStateScene({
             message: 'No results',
+          }),
+        }),
+      ],
+    });
+  }
+
+  renderErrorState(error: Error) {
+    const body = this.state.body as SceneCSSGridLayout;
+
+    body.setState({
+      autoRows: '480px',
+      children: [
+        new SceneCSSGridItem({
+          body: new ErrorStateScene({
+            message: error.toString(),
           }),
         }),
       ],

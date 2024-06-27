@@ -10,7 +10,7 @@ import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { isEqual } from 'lodash';
 
-import { PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../pyroscope-data-sources';
+import { PYROSCOPE_FAVORITES_DATA_SOURCE } from '../pyroscope-data-sources';
 import { getProfileMetricLabel } from '../series/helpers/getProfileMetricLabel';
 
 export type Favorite = {
@@ -53,32 +53,10 @@ export class FavoritesDataSource extends RuntimeDataSource {
   }
 
   constructor() {
-    super(PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE.type, PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE.uid);
+    super(PYROSCOPE_FAVORITES_DATA_SOURCE.type, PYROSCOPE_FAVORITES_DATA_SOURCE.uid);
   }
 
   async query(): Promise<DataQueryResponse> {
-    const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
-
-    const values = favorites.map((f: Favorite) => {
-      const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams;
-      const labelParts = [serviceName, getProfileMetricLabel(profileMetricId)];
-
-      if (groupBy?.label) {
-        labelParts.push(groupBy.label);
-      }
-
-      if (filters?.length) {
-        labelParts.push(filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(', '));
-      }
-
-      return {
-        index: f.index,
-        value: groupBy ? `${serviceName}-${profileMetricId}-${groupBy.label}` : `${serviceName}-${profileMetricId}`,
-        label: labelParts.join(' · '),
-        queryRunnerParams: f.queryRunnerParams,
-      };
-    });
-
     return {
       state: LoadingState.Done,
       data: [
@@ -88,28 +66,34 @@ export class FavoritesDataSource extends RuntimeDataSource {
             {
               name: null,
               type: FieldType.other,
-              values,
+              values: [],
               config: {},
             },
           ],
-          length: values.length,
+          length: 0,
         },
       ],
     };
   }
 
-  metricFindQuery(): Promise<MetricFindValue[]> {
+  async metricFindQuery(): Promise<MetricFindValue[]> {
     const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
 
     return favorites.map((f: Favorite) => {
-      const { serviceName, profileMetricId, groupBy } = f.queryRunnerParams;
-      const profileMetricLabel = getProfileMetricLabel(profileMetricId);
+      const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams;
+      const textParts = [serviceName, getProfileMetricLabel(profileMetricId)];
+
+      if (groupBy?.label) {
+        textParts.push(groupBy.label);
+      }
+
+      if (filters?.length) {
+        textParts.push(filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(', '));
+      }
 
       return {
-        value: f,
-        text: groupBy
-          ? `${serviceName} · ${profileMetricLabel} · ${groupBy.label}`
-          : `${serviceName} · ${profileMetricLabel}`,
+        value: JSON.stringify({ value: JSON.stringify(f), ...f }),
+        text: textParts.join(' · '),
       };
     });
   }

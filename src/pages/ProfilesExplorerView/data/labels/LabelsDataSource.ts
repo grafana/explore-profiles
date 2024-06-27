@@ -12,6 +12,7 @@ import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/i
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
+import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
 import { DataSourceProxyClientBuilder } from '../series/http/DataSourceProxyClientBuilder';
 import { LabelsApiClient } from './http/LabelsApiClient';
@@ -61,7 +62,11 @@ export class LabelsDataSource extends RuntimeDataSource {
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
     const { scopedVars, range } = options;
-    const sceneObject = scopedVars?.__sceneObject?.value;
+    const sceneObject = scopedVars?.__sceneObject?.value as GroupByVariable;
+
+    if (!sceneObject.isActive) {
+      return [];
+    }
 
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
     const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
@@ -91,16 +96,20 @@ export class LabelsDataSource extends RuntimeDataSource {
           .filter(({ value }) => !isPrivateLabel(value))
           .sort((a, b) => a.label.localeCompare(b.label))
           .map(async ({ value }) => {
-            const labelValues = (await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, value)).map(
+            const allLabelValues = (await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, value)).map(
               ({ value }) => value
             );
-            const count = labelValues.length;
+            const count = allLabelValues.length;
 
             return {
               // TODO: check if there's a better way
               value: JSON.stringify({
-                labelName: value,
-                labelValues,
+                value,
+                groupBy: {
+                  label: value,
+                  values: allLabelValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES),
+                  allValues: allLabelValues,
+                },
               }),
               text: `${value} (${count})`,
               count,
@@ -112,7 +121,7 @@ export class LabelsDataSource extends RuntimeDataSource {
       .map(({ value, text }) => ({ value, text }));
 
     return [
-      // we do this here because GroupByVariable may set its default value to the 1st element
+      // we do this here because GroupByVariable may set its default value to the 1st element automatically
       {
         value: 'all',
         text: 'All',

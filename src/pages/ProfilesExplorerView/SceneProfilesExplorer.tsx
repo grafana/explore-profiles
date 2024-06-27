@@ -287,7 +287,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   getVariablesAndGridControls(explorationType: ExplorationType) {
     const [dataSourceVariable, serviceNameVariable, profileMetricVariable, filtersVariable] = this.state.$variables!
-      .state.variables as [DataSourceVariable, ServiceNameVariable, ProfileMetricVariable, FiltersVariable];
+      .state.variables as [
+      DataSourceVariable,
+      ServiceNameVariable,
+      ProfileMetricVariable,
+      FiltersVariable
+      // GroupByVariable,
+      // FavoriteVariable
+    ];
 
     switch (explorationType) {
       case ExplorationType.ALL_SERVICES:

@@ -15,7 +15,7 @@ export const PYROSCOPE_SERIES_DATA_SOURCE: DataSourceDef = Object.freeze({
   uid: 'grafana-pyroscope-series-datasource',
 });
 
-export const PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE: DataSourceDef = Object.freeze({
+export const PYROSCOPE_FAVORITES_DATA_SOURCE: DataSourceDef = Object.freeze({
   type: 'grafana-pyroscope-favorites-datasource',
   uid: 'grafana-pyroscope-favorites-datasource',
 });

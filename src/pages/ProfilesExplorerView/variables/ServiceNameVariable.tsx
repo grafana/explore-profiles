@@ -16,7 +16,7 @@ export class ServiceNameVariable extends QueryVariable {
       name: 'serviceName',
       label: '🚀 Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
-      // hack: we want to subscribe to changes of dataSource
+      // "hack": we want to subscribe to changes of dataSource
       query: '$dataSource and serviceName please',
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,

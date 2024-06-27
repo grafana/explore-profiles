@@ -22,7 +22,6 @@ import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
-import { SceneTimeSeriesGrid } from '../../components/SceneByVariableRepeaterGrid/SceneTimeSeriesGrid';
 import { SceneNoDataSwitcher } from '../../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../../components/SceneQuickFilter';
 import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
@@ -65,12 +64,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   constructor() {
     super({
-      key: 'explore-service-labels-grid',
+      key: 'group-by-labels',
       body: new SceneByVariableRepeaterGrid({
-        key: 'labels-grid',
+        key: 'service-labels-grid',
         variableName: 'groupBy',
         // no explicit dependency because they are already expressed in GroupByVariable
-        // see "query" passed to src/pages/ProfilesExplorerView/variables/GroupByVariable/GroupByVariable.tsx
         // also, we could add filters, but we would reload all labels each time they are modified
         dependentVariableNames: [],
         headerActions: (item) => {
@@ -282,8 +280,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     // time range
     const { from, to } = sceneGraph.getTimeRange(this).state.value.raw;
     diffUrl.searchParams.set('from', from.toString());
-    // FIXME: the param name should be the same as in the rest of Grafana
-    diffUrl.searchParams.set('until', to.toString());
+    diffUrl.searchParams.set('to', to.toString());
 
     const { filters: queryFilters } = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).state;
     const { serviceName: serviceId, profileMetricId } = itemsForComparison[0].item.queryRunnerParams;
@@ -407,7 +404,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   openExpandedPanelDrawer(item: GridItemData) {
     const timeSeriesPanel = (
-      findSceneObjectByKey(this, SceneTimeSeriesGrid.buildGridItemKey(item)) as SceneCSSGridItem
+      findSceneObjectByKey(this, SceneByVariableRepeaterGrid.buildGridItemKey(item)) as SceneCSSGridItem
     ).state.body!.clone() as VizPanel;
 
     const { queryRunnerParams } = item;

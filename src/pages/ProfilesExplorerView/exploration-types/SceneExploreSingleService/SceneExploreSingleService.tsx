@@ -12,7 +12,7 @@ interface SceneExploreSingleServiceState extends EmbeddedSceneState {}
 export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingleServiceState> {
   constructor() {
     super({
-      key: 'explore-single-service-grid',
+      key: 'explore-single-service',
       body: new SceneByVariableRepeaterGrid({
         key: 'profile-metrics-grid',
         variableName: 'profileMetricId',

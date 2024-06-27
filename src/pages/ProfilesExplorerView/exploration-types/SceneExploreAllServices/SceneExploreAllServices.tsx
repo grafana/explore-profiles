@@ -15,7 +15,7 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
     super({
       key: 'explore-all-services',
       body: new SceneByVariableRepeaterGrid({
-        key: 'explore-all-services-grid',
+        key: 'all-services-grid',
         variableName: 'serviceName',
         dependentVariableNames: ['profileMetricId'],
         headerActions: (item) => [

@@ -6,6 +6,7 @@ import {
   SceneCSSGridItem,
   SceneDataTransformer,
   SceneObjectBase,
+  SceneVariableSet,
   VizPanel,
 } from '@grafana/scenes';
 import { Drawer, TableCellDisplayMode } from '@grafana/ui';
@@ -15,8 +16,7 @@ import React from 'react';
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
-import { SceneTimeSeriesGrid } from '../../components/SceneByVariableRepeaterGrid/SceneTimeSeriesGrid';
-import { PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE } from '../../data/pyroscope-data-sources';
+import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
@@ -25,6 +25,7 @@ import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGr
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
 import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { FavoriteVariable } from '../../variables/FavoriteVariable';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawerContent?: VizPanel;
@@ -36,11 +37,11 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   constructor() {
     super({
       key: 'explore-favorites',
-      body: new SceneTimeSeriesGrid({
+      $variables: new SceneVariableSet({ variables: [new FavoriteVariable()] }),
+      body: new SceneByVariableRepeaterGrid({
         key: 'favorites-grid',
-        query: {
-          dataSource: PYROSCOPE_PROFILE_FAVORITES_DATA_SOURCE,
-        },
+        variableName: 'favorite',
+        dependentVariableNames: [],
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [
             new SelectAction({ EventClass: EventViewServiceLabels, item }),
@@ -116,8 +117,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       ],
     });
 
-    const timeSeriesPanel = (findSceneObjectByKey(this, SceneTimeSeriesGrid.buildGridItemKey(item)) as SceneCSSGridItem)
-      .state.body as VizPanel;
+    const timeSeriesPanel = (
+      findSceneObjectByKey(this, SceneByVariableRepeaterGrid.buildGridItemKey(item)) as SceneCSSGridItem
+    ).state.body as VizPanel;
 
     const headerActions = (timeSeriesPanel.state.headerActions as SelectAction[])
       .filter((action) => action.state.EventClass !== EventViewLabelValuesDistribution)
@@ -173,7 +175,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
   openExpandedPanelDrawer(item: GridItemData) {
     const timeSeriesPanel = (
-      findSceneObjectByKey(this, SceneTimeSeriesGrid.buildGridItemKey(item)) as SceneCSSGridItem
+      findSceneObjectByKey(this, SceneByVariableRepeaterGrid.buildGridItemKey(item)) as SceneCSSGridItem
     ).state.body!.clone() as VizPanel;
 
     timeSeriesPanel.setState({

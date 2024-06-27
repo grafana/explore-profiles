@@ -32,25 +32,6 @@ export class GroupByVariable extends QueryVariable {
     if (!this.state.value) {
       this.setState({ value: GroupByVariable.DEFAULT_VALUE });
     }
-
-    // hack
-    const refreshButton = document.querySelector(
-      '[data-testid="data-testid RefreshPicker run button"]'
-    ) as HTMLButtonElement;
-
-    if (!refreshButton) {
-      console.error('GroupByVariable: Refresh button not found! The list of labels will never be updated.');
-    }
-
-    const onClickRefresh = () => {
-      this.update();
-    };
-
-    refreshButton?.addEventListener('click', onClickRefresh);
-
-    return () => {
-      refreshButton?.removeEventListener('click', onClickRefresh);
-    };
   }
 
   update = async () => {
@@ -79,20 +60,13 @@ export class GroupByVariable extends QueryVariable {
     const groupByOptions = useMemo(
       () =>
         options.map(({ label, value }) => {
-          if (value === 'all') {
-            return { label, value };
-          }
-
-          // see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts
-          const { labelName } = JSON.parse(String(value)) as unknown as {
-            labelName: string;
-            labelValues: string[];
-          };
-
-          return {
-            label,
-            value: labelName,
-          };
+          return value === 'all'
+            ? { label, value }
+            : {
+                label,
+                // see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts
+                value: JSON.parse(String(value)).value,
+              };
         }),
       [options]
     );

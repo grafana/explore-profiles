@@ -18,7 +18,7 @@ export function buildTimeSeriesQueryRunner(
   if (!groupBy?.label) {
     queries = [
       {
-        refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}`,
+        refId: `${profileMetricId || '$profileMetricId'}-${selector}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
         labelSelector: `{${selector},$filters}`,
@@ -28,7 +28,7 @@ export function buildTimeSeriesQueryRunner(
     queries = useSingleGroupByQuery
       ? [
           {
-            refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}-${groupBy.label}`,
+            refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy.label}`,
             queryType: 'metrics',
             profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
             labelSelector: `{service_name="${serviceName}",$filters}`,
@@ -37,9 +37,7 @@ export function buildTimeSeriesQueryRunner(
         ]
       : groupBy.values.map((labelValue) => {
           return {
-            refId: `${profileMetricId || '$profileMetricId'}-${JSON.stringify(completeFilters)}-${
-              groupBy.label
-            }-${labelValue}`,
+            refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy.label}-${labelValue}`,
             queryType: 'metrics',
             profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
             labelSelector: `{${selector},${groupBy.label}="${labelValue}",$filters}`,
