@@ -356,6 +356,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           });
         })
         .setCustomFieldConfig('fillOpacity', 9)
+        .setMin(0)
         .setHeaderActions(headerActions(item))
         .build();
 

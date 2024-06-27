@@ -77,6 +77,7 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
     const timeSeriesPanel = PanelBuilders.timeseries()
       .setTitle(buildtimeSeriesPanelTitle(this))
       .setData(buildTimeSeriesQueryRunner({}))
+      .setMin(0)
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
       .setHeaderActions([
