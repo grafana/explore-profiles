@@ -23,11 +23,6 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['serviceName', 'profileMetricId', 'filters'],
     onReferencedVariableValueChanged: () => {
-      const notReady = sceneGraph.hasVariableDependencyInLoadingState(this);
-      if (notReady) {
-        return;
-      }
-
       this.update();
     },
   });
