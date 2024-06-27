@@ -25,6 +25,8 @@ export class GroupByVariable extends QueryVariable {
       loading: true,
     });
 
+    this.changeValueTo = this.changeValueTo.bind(this);
+
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
@@ -110,7 +112,7 @@ export class GroupByVariable extends QueryVariable {
         options={groupByOptions}
         value={value as string}
         mainLabels={getMainLabels(groupByOptions)}
-        onChange={(newValue: string) => model.changeValueTo(newValue, newValue)}
+        onChange={model.changeValueTo}
         onRefresh={model.update}
       />
     );

@@ -29,6 +29,8 @@ export class ProfileMetricVariable extends QueryVariable {
       refresh: VariableRefresh.onTimeRangeChanged,
     });
 
+    this.changeValueTo = this.changeValueTo.bind(this);
+
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
@@ -46,7 +48,7 @@ export class ProfileMetricVariable extends QueryVariable {
     let options: VariableValueOption[] = [];
     let error = null;
 
-    this.changeValueTo('', '');
+    this.changeValueTo('');
 
     this.setState({ loading: true, options: [], error: null });
 
@@ -58,7 +60,7 @@ export class ProfileMetricVariable extends QueryVariable {
       this.setState({ loading: false, options, error });
 
       if (selectDefaultValue) {
-        this.changeValueTo(ProfileMetricVariable.DEFAULT_VALUE, ProfileMetricVariable.DEFAULT_VALUE);
+        this.changeValueTo(ProfileMetricVariable.DEFAULT_VALUE);
       }
     }
   }
@@ -91,11 +93,7 @@ export class ProfileMetricVariable extends QueryVariable {
     return Array.from(optionsMap.values()).sort((a, b) => b.label.localeCompare(a.label));
   }
 
-  selectNewValue = (newValue: string) => {
-    this.changeValueTo(newValue, newValue);
-  };
-
-  static Component = ({ model }: SceneComponentProps<MultiValueVariable & { selectNewValue?: any }>) => {
+  static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
 
@@ -126,7 +124,7 @@ export class ProfileMetricVariable extends QueryVariable {
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
-        onSelect={model.selectNewValue}
+        onSelect={model.changeValueTo}
       />
     );
   };

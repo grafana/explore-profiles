@@ -269,7 +269,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { serviceName, profileMetricId, filters, groupBy } = queryRunnerParams;
 
     if (serviceName) {
-      serviceNameVariable.changeValueTo(serviceName, serviceName);
+      serviceNameVariable.changeValueTo(serviceName);
     }
 
     if (profileMetricId) {
@@ -281,7 +281,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
 
     if (groupBy?.label) {
-      groupByVariable.changeValueTo(groupBy.label, groupBy.label);
+      groupByVariable.changeValueTo(groupBy.label);
     }
   }
 
@@ -331,7 +331,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     // findSceneObjectByClass() throws if not found
     (sceneGraph.findObject(this, (o) => o instanceof GroupByVariable) as GroupByVariable)?.changeValueTo(
-      GroupByVariable.DEFAULT_VALUE,
       GroupByVariable.DEFAULT_VALUE
     );
 

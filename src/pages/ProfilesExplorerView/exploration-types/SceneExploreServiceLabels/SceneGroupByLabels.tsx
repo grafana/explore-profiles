@@ -176,7 +176,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const labelValue = queryRunnerParams!.groupBy!.label;
     const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
 
-    groupByVariable.changeValueTo(labelValue, labelValue);
+    groupByVariable.changeValueTo(labelValue);
 
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
@@ -204,7 +204,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     addFilter(filterByVariable, filterToAdd);
 
     const goupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
-    goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE, GroupByVariable.DEFAULT_VALUE);
+    goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE);
 
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
   }

@@ -39,7 +39,7 @@ export class ServiceNameVariable extends QueryVariable {
     let options: VariableValueOption[] = [];
     let error = null;
 
-    this.changeValueTo('', '');
+    this.changeValueTo('');
 
     this.setState({ loading: true, options: [], error: null });
 
@@ -57,7 +57,7 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   selectNewValue = (newValue: string) => {
-    this.changeValueTo(newValue, newValue);
+    this.changeValueTo(newValue);
 
     // manually reset filters - the "Scenes way" would be to listen to the variable changes but it leads to errors
     // see comments in src/pages/ProfilesExplorerView/variables/FiltersVariable/FiltersVariable.tsx
