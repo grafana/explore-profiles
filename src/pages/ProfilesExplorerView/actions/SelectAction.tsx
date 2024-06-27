@@ -80,11 +80,6 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   buildEvent() {
     const { EventClass, item } = this.state;
 
-    console.log('*** buildEvent', {
-      ...item,
-      queryRunnerParams: interpolateQueryRunnerVariables(this, item),
-    });
-
     return new EventClass({
       item: {
         ...item,

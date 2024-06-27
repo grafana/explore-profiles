@@ -1,11 +1,11 @@
 import { css } from '@emotion/css';
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Checkbox, LinkButton, Tooltip, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
 import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
+import { interpolateQueryRunnerVariables } from '../data/helpers/interpolateQueryRunnerVariables';
 import { EventSelectForCompare } from '../events/EventSelectForCompare';
-import { parseVariableValue } from '../variables/FiltersVariable/filters-ops';
 
 interface CompareActionState extends SceneObjectState {
   item: GridItemData;
@@ -38,24 +38,13 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
 
   buildEvent() {
     const { item } = this.state;
-    const { queryRunnerParams } = item;
 
     return new EventSelectForCompare({
       isChecked: this.state.isChecked,
       action: this,
       item: {
         ...item,
-        queryRunnerParams: {
-          ...queryRunnerParams,
-          serviceName:
-            queryRunnerParams.serviceName || (sceneGraph.lookupVariable('serviceName', this)?.getValue() as string),
-          profileMetricId:
-            queryRunnerParams.profileMetricId ||
-            (sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string),
-          filters:
-            queryRunnerParams.filters ||
-            parseVariableValue(sceneGraph.lookupVariable('filters', this)?.getValue() as string),
-        },
+        queryRunnerParams: interpolateQueryRunnerVariables(this, item),
       },
     });
   }
