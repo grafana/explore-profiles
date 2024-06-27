@@ -10,6 +10,7 @@ import { interpolateQueryRunnerVariables } from '../data/helpers/interpolateQuer
 export interface FavActionState extends SceneObjectState {
   item: GridItemData;
   isFav?: boolean;
+  skipVariablesInterpolation?: boolean;
 }
 
 export class FavAction extends SceneObjectBase<FavActionState> {
@@ -35,8 +36,11 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   buildFavorite(): Favorite {
-    const { item } = this.state;
-    const queryRunnerParams = interpolateQueryRunnerVariables(this, item) as Favorite['queryRunnerParams'];
+    const { item, skipVariablesInterpolation } = this.state;
+
+    const queryRunnerParams = (
+      skipVariablesInterpolation ? item.queryRunnerParams : interpolateQueryRunnerVariables(this, item)
+    ) as Favorite['queryRunnerParams'];
 
     // we never store the label values because we will always refresh them when rendering the favorites timeseries
     if (queryRunnerParams.groupBy) {

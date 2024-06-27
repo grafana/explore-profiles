@@ -51,6 +51,7 @@ interface SelectActionState extends SceneObjectState {
   label?: string;
   icon?: IconName;
   tooltip?: string;
+  skipVariablesInterpolation?: boolean;
 }
 
 export class SelectAction extends SceneObjectBase<SelectActionState> {
@@ -59,18 +60,20 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
     item,
     icon,
     tooltip,
+    skipVariablesInterpolation,
   }: {
     EventClass: EventContructor;
     item: SelectActionState['item'];
     icon?: SelectActionState['icon'];
     tooltip?: SelectActionState['tooltip'];
+    skipVariablesInterpolation?: SelectActionState['skipVariablesInterpolation'];
   }) {
     const lookup = Events.get(EventClass);
     if (!lookup) {
       throw new TypeError(`Unknown event class "${EventClass}"!`);
     }
 
-    super({ EventClass, item, ...merge({}, lookup, { icon, tooltip }) });
+    super({ EventClass, item, ...merge({}, lookup, { icon, tooltip, skipVariablesInterpolation }) });
   }
 
   public onClick = () => {
@@ -78,13 +81,17 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   };
 
   buildEvent() {
-    const { EventClass, item } = this.state;
+    const { EventClass, item, skipVariablesInterpolation } = this.state;
+
+    const completeItem = {
+      ...item,
+      queryRunnerParams: skipVariablesInterpolation
+        ? item.queryRunnerParams
+        : interpolateQueryRunnerVariables(this, item),
+    };
 
     return new EventClass({
-      item: {
-        ...item,
-        queryRunnerParams: interpolateQueryRunnerVariables(this, item),
-      },
+      item: completeItem,
     });
   }
 

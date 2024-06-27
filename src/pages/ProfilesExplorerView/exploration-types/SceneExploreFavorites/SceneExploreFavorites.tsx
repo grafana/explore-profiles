@@ -44,8 +44,8 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
         dependentVariableNames: [],
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [
-            new SelectAction({ EventClass: EventViewServiceLabels, item }),
-            new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+            new SelectAction({ EventClass: EventViewServiceLabels, item, skipVariablesInterpolation: true }),
+            new SelectAction({ EventClass: EventViewServiceFlameGraph, item, skipVariablesInterpolation: true }),
           ];
 
           if (item.queryRunnerParams.groupBy) {
@@ -54,16 +54,18 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
                 EventClass: EventViewLabelValuesDistribution,
                 item,
                 tooltip: 'View the distribution of all the values',
+                skipVariablesInterpolation: true,
               }),
               new SelectAction({
                 EventClass: EventExpandPanel,
                 item,
                 tooltip: 'Expand this panel to view all the timeseries',
+                skipVariablesInterpolation: true,
               })
             );
           }
 
-          actions.push(new FavAction({ item }));
+          actions.push(new FavAction({ item, skipVariablesInterpolation: true }));
 
           return actions;
         },
