@@ -12,7 +12,7 @@ import pkg from '../../../package.json';
 import { GIT_COMMIT } from '../../version';
 
 const pluginCommitSha: string = GIT_COMMIT;
-const pluginCommitURL = `https://github.com/grafana/pyroscope-app-plugin/commit/${pluginCommitSha}`;
+const pluginCommitURL = `https://github.com/grafana/explore-profiles/commit/${pluginCommitSha}`;
 const pyroscopeGitInfo = pkg.dependencies['grafana-pyroscope'];
 const pyroscopeCommitSha = pyroscopeGitInfo.split('#')[1];
 const pyroscopeCommitURL = `https://github.com/grafana/pyroscope/commit/${pyroscopeCommitSha}`;
