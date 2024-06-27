@@ -22,7 +22,8 @@ export class ApiClient extends HttpClient {
 
     const pyroscopeDataSource =
       pyroscopeDataSources.find(({ uid }) => uid === initDataSourceUid) ||
-      pyroscopeDataSources.find(({ isDefault }) => isDefault);
+      pyroscopeDataSources.find(({ isDefault }) => isDefault) ||
+      pyroscopeDataSources[0];
 
     if (!pyroscopeDataSource) {
       throw new Error(
