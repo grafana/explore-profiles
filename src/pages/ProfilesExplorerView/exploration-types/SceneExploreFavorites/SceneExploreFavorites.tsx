@@ -135,6 +135,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
         overrides.matchFieldsWithName(queryRunnerParams.groupBy!.label).overrideUnit('string');
       })
       .setHeaderActions(headerActions)
+      .setOption('sortBy', [{ displayName: 'Total', desc: true }])
       .build();
 
     transformedData.subscribeToState((newState) => {
