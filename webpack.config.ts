@@ -14,9 +14,6 @@ const config = async (env): Promise<Configuration> => {
     return rule.use.loader === 'swc-loader';
   }) as RuleSetRule;
 
-  // Ignore everything except grafana-pyroscope, since it's used as if it was local code
-  swcLoader.exclude = /node_modules\/(?!grafana-pyroscope).*/;
-
   const swcLoaderJsc = (swcLoader?.use as any).options.jsc;
 
   // required
@@ -50,53 +47,6 @@ const config = async (env): Promise<Configuration> => {
       extensions: ['.ts', '.tsx', '.js', '.json'],
       alias: {
         '@shared': path.resolve(__dirname, './src/shared'),
-
-        // More specific rules first
-
-        '@pyroscope/pages/tagExplorer/components/ExploreHeader': path.resolve(
-          __dirname,
-          './src/overrides/components/ExploreHeader'
-        ),
-        '@pyroscope/pages/tagExplorer/components/TagsSelector': path.resolve(
-          __dirname,
-          './src/overrides/components/TagsSelector'
-        ),
-        '@pyroscope/redux/reducers/notifications': path.resolve(__dirname, './src/overrides/redux/notifications'),
-
-        '@pyroscope/services/base': path.resolve(__dirname, './src/overrides/services/base'),
-
-        '@pyroscope/util/history': path.resolve(__dirname, './src/overrides/util/history'),
-
-        '@pyroscope/hooks/util/determineDefaultApp': path.resolve(
-          __dirname,
-          './src/overrides/hooks/util/determineDefaultApp'
-        ),
-
-        '@pyroscope/components/Toolbar': path.resolve(__dirname, './src/overrides/components/Toolbar'),
-        '@pyroscope/components/TimelineChart/TimelineChartWrapper': path.resolve(
-          __dirname,
-          './src/overrides/components/TimelineChart/TimelineChartWrapper'
-        ),
-
-        '@pyroscope/components/ChartTitle': path.resolve(__dirname, './src/overrides/components/ChartTitle'),
-        '@pyroscope/components/Panel': path.resolve(__dirname, './src/overrides/components/Panel'),
-        '@pyroscope/pages/PageContentWrapper': path.resolve(__dirname, './src/overrides/pages/PageContentWrapper'),
-        '@pyroscope/pages/tagExplorer/components/TotalSamplesChart/PieChart': path.resolve(
-          __dirname,
-          './src/overrides/pages/tagExplorer/components/TotalSamplesChart/PieChart'
-        ),
-        '@pyroscope/ui/Box': path.resolve(__dirname, './src/overrides/ui/Box'),
-
-        '@pyroscope/components/FlameGraphWrapper': path.resolve(
-          __dirname,
-          './src/overrides/components/FlameGraphWrapper'
-        ),
-
-        // General rules later
-        '@pyroscope': path.resolve(__dirname, './node_modules/grafana-pyroscope/public/app'),
-
-        // Otherwise we may end up using zod from pyroscope-pyroscope, which is an older version
-        zod: path.resolve(__dirname, './node_modules/zod'),
       },
     },
     module: {
