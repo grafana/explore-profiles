@@ -66,7 +66,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
           type="text"
           placeholder={placeholder}
           value={searchText}
-          prefix={<Icon name="filter" />}
+          prefix={<Icon name="search" />}
           suffix={<IconButton name="times" aria-label="Clear search" onClick={model.clear} />}
           onChange={model.onChange}
           onKeyDown={(e: any) => {
