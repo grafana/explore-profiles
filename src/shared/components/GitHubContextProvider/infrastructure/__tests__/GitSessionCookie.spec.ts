@@ -38,6 +38,9 @@ describe('Create GitSessionCookie', () => {
   });
 
   it('returns undefined when given an invalid base64 string', () => {
+    // prevent console noise in the output
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
     const illegalValue = 'a===a';
     const sessionCookie = GitSessionCookie.decode(illegalValue);
     expect(sessionCookie).toBeUndefined();
