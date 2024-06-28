@@ -177,9 +177,11 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       findSceneObjectByKey(this, SceneByVariableRepeaterGrid.buildGridItemKey(item)) as SceneCSSGridItem
     ).state.body!.clone() as VizPanel;
 
+    const { label, queryRunnerParams } = item;
+
     timeSeriesPanel.setState({
       title: '',
-      $data: buildTimeSeriesQueryRunner(item.queryRunnerParams, true),
+      $data: buildTimeSeriesQueryRunner(queryRunnerParams, true),
       headerActions: (timeSeriesPanel.state.headerActions as SelectAction[]).filter(
         (action) => action.state.EventClass !== EventExpandPanel
       ),
@@ -194,7 +196,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
     });
 
     this.state.drawer.open({
-      title: item.label,
+      title: label,
       body: timeSeriesPanel,
     });
   }

@@ -15,7 +15,7 @@ import {
   VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
-import { Spinner } from '@grafana/ui';
+import { GraphGradientMode, Spinner } from '@grafana/ui';
 import { debounce } from 'lodash';
 import React from 'react';
 
@@ -370,6 +370,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         )
         .setData(data)
         .setMin(0)
+        .setCustomFieldConfig('fillOpacity', 9)
+        .setCustomFieldConfig('gradientMode', GraphGradientMode.Opacity)
         .setOverrides((overrides) => {
           const { queries } = data.state;
           const fillOpacity = queries.length < LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 9 : 0;
@@ -382,7 +384,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
               .overrideDisplayName(displayNameOverride);
           });
         })
-        .setCustomFieldConfig('fillOpacity', 9)
         .setHeaderActions(headerActions(item))
         .build();
 
@@ -402,7 +403,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
             $data,
             fieldConfig: {
               defaults: {
-                custom: { fillOpacity: 9 },
+                custom: {
+                  fillOpacity: 9,
+                  gradientMode: GraphGradientMode.Opacity,
+                },
               },
               overrides: $data.state.queries.map(({ refId, displayNameOverride }, j) => ({
                 matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
