@@ -9,7 +9,7 @@ import {
   SceneVariableSet,
   VizPanel,
 } from '@grafana/scenes';
-import { Drawer, TableCellDisplayMode } from '@grafana/ui';
+import { TableCellDisplayMode } from '@grafana/ui';
 import { merge } from 'lodash';
 import React from 'react';
 
@@ -17,6 +17,7 @@ import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { SceneDrawer } from '../../components/SceneDrawer';
 import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
@@ -28,9 +29,7 @@ import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { FavoriteVariable } from '../../variables/FavoriteVariable';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
-  drawerContent?: VizPanel;
-  drawerTitle?: string;
-  drawerSubtitle?: string;
+  drawer: SceneDrawer;
 }
 
 export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavoritesState> {
@@ -70,9 +69,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
           return actions;
         },
       }),
-      drawerContent: undefined,
-      drawerTitle: undefined,
-      drawerSubtitle: undefined,
+      drawer: new SceneDrawer(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -168,10 +165,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       tablePanel.setState({ fieldConfig: newFieldConfig });
     });
 
-    this.setState({
-      drawerTitle: item.label,
-      drawerSubtitle: '',
-      drawerContent: tablePanel,
+    this.state.drawer.open({
+      title: item.label,
+      body: tablePanel,
     });
   }
 
@@ -196,29 +192,19 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       },
     });
 
-    this.setState({
-      drawerTitle: item.label,
-      drawerSubtitle: '',
-      drawerContent: timeSeriesPanel as VizPanel,
+    this.state.drawer.open({
+      title: item.label,
+      body: timeSeriesPanel,
     });
   }
 
-  closeDrawer = () => {
-    this.setState({ drawerContent: undefined, drawerTitle: undefined, drawerSubtitle: undefined });
-  };
-
   static Component({ model }: SceneComponentProps<SceneExploreFavorites>) {
-    const { body, drawerContent, drawerTitle, drawerSubtitle } = model.useState();
+    const { body, drawer } = model.useState();
 
     return (
       <>
         <body.Component model={body} />
-
-        {drawerContent && (
-          <Drawer size="lg" title={drawerTitle} subtitle={drawerSubtitle} closeOnMaskClick onClose={model.closeDrawer}>
-            <drawerContent.Component model={drawerContent} />
-          </Drawer>
-        )}
+        <drawer.Component model={drawer} />
       </>
     );
   }

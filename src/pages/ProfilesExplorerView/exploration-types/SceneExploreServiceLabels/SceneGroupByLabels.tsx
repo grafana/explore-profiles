@@ -12,7 +12,7 @@ import {
   VariableDependencyConfig,
   VizPanel,
 } from '@grafana/scenes';
-import { Drawer, Stack, TableCellDisplayMode, useStyles2 } from '@grafana/ui';
+import { Stack, TableCellDisplayMode, useStyles2 } from '@grafana/ui';
 import { buildQuery } from '@shared/domain/url-params/parseQuery';
 import { merge, uniq } from 'lodash';
 import React from 'react';
@@ -22,6 +22,7 @@ import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { SceneDrawer } from '../../components/SceneDrawer';
 import { SceneNoDataSwitcher } from '../../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../../components/SceneQuickFilter';
 import { interpolateQueryRunnerVariables } from '../../data/helpers/interpolateQueryRunnerVariables';
@@ -46,9 +47,7 @@ import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable
 
 interface SceneGroupByLabelsState extends SceneObjectState {
   body: SceneByVariableRepeaterGrid;
-  drawerContent?: VizPanel;
-  drawerTitle?: string;
-  drawerSubtitle?: string;
+  drawer: SceneDrawer;
   itemsForComparison: Array<{ action: CompareAction; item: GridItemData }>;
 }
 
@@ -92,9 +91,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           ];
         },
       }),
-      drawerContent: undefined,
-      drawerTitle: undefined,
-      drawerSubtitle: undefined,
+      drawer: new SceneDrawer(),
       itemsForComparison: [],
     });
 
@@ -164,7 +161,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
     // the event may be published from an expanded panel in the drawer
-    this.closeDrawer();
+    this.state.drawer.close();
   }
 
   addLabelValueToFilters(item: GridItemData) {
@@ -357,10 +354,9 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       tablePanel.setState({ fieldConfig: newFieldConfig });
     });
 
-    this.setState({
-      drawerTitle: `${profileMetricLabel} values distribution for label "${queryRunnerParams.groupBy!.label}"`,
-      drawerSubtitle: '',
-      drawerContent: tablePanel,
+    this.state.drawer.open({
+      title: `${profileMetricLabel} values distribution for label "${queryRunnerParams.groupBy!.label}"`,
+      body: tablePanel,
     });
   }
 
@@ -390,21 +386,16 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       },
     });
 
-    this.setState({
-      drawerTitle: buildtimeSeriesPanelTitle(this),
-      drawerSubtitle: '',
-      drawerContent: timeSeriesPanel as VizPanel,
+    this.state.drawer.open({
+      title: buildtimeSeriesPanelTitle(this),
+      body: timeSeriesPanel,
     });
   }
-
-  closeDrawer = () => {
-    this.setState({ drawerContent: undefined, drawerTitle: undefined, drawerSubtitle: undefined });
-  };
 
   static Component = ({ model }: SceneComponentProps<SceneGroupByLabels>) => {
     const styles = useStyles2(getStyles);
 
-    const { body, drawerContent, drawerTitle, drawerSubtitle } = model.useState();
+    const { body, drawer } = model.useState();
 
     const groupByVariable = findSceneObjectByClass(model, GroupByVariable);
     const { gridControls } = (findSceneObjectByClass(model, SceneProfilesExplorer) as SceneProfilesExplorer).state;
@@ -424,12 +415,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         </div>
 
         {<body.Component model={body} />}
-
-        {drawerContent && (
-          <Drawer size="lg" title={drawerTitle} subtitle={drawerSubtitle} closeOnMaskClick onClose={model.closeDrawer}>
-            <drawerContent.Component model={drawerContent} />
-          </Drawer>
-        )}
+        {<drawer.Component model={drawer} />}
       </div>
     );
   };
