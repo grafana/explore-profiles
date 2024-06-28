@@ -98,8 +98,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   onActivate() {
-    this.renderGridItems();
-
     // here we try to emulate VariableDependencyConfig.onVariableUpdateCompleted
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
 
