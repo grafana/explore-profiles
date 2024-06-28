@@ -73,7 +73,9 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         // also, we could add filters, but we would reload all labels each time they are modified
         dependentVariableNames: [],
         headerActions: (item) => {
-          if (!item.queryRunnerParams.groupBy) {
+          const { queryRunnerParams } = item;
+
+          if (!queryRunnerParams.groupBy || queryRunnerParams.groupBy.values.length === 1) {
             return [
               new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
               new SelectAction({ EventClass: EventAddLabelToFilters, item }),
@@ -82,22 +84,12 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
             ];
           }
 
-          const actions = [];
-          const { groupBy } = item.queryRunnerParams;
-
-          actions.push(new SelectAction({ EventClass: EventSelectLabel, item }));
-
-          if (groupBy.values.length === 1) {
-            actions.push(new SelectAction({ EventClass: EventAddLabelToFilters, item }));
-            actions.push(new CompareAction({ item }));
-          } else {
-            actions.push(new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }));
-            actions.push(new SelectAction({ EventClass: EventExpandPanel, item }));
-          }
-
-          actions.push(new FavAction({ item }));
-
-          return actions;
+          return [
+            new SelectAction({ EventClass: EventSelectLabel, item }),
+            new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
+            new SelectAction({ EventClass: EventExpandPanel, item }),
+            new FavAction({ item }),
+          ];
         },
       }),
       drawerContent: undefined,

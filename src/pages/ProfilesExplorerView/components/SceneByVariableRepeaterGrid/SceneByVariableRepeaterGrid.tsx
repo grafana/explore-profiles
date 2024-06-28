@@ -147,10 +147,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       variable.update();
     };
 
-    // start of hack, for a better UX: once we've received the variable options, we disable its "refresh" option and we
-    // allow the user to reload the list only by clicking on the "Refresh" button
-    // if we don't do this, every time the time range changes (even with auto-refresh on), all the timeseries present on the screen are re-created,
-    // resulting in blinking and a poor UX
+    // start of hack, for a better UX: we disable the variable "refresh" option and we allow the user to reload the list only by clicking on the "Refresh" button
+    // if we don't do this, every time the time range changes (even with auto-refresh on),
+    // all the timeseries present on the screen would be re-created, resulting in blinking and a poor UX
     const refreshButton = document.querySelector(
       '[data-testid="data-testid RefreshPicker run button"]'
     ) as HTMLButtonElement;
@@ -233,11 +232,32 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const groupByOptions = options.filter(({ value }) => value !== 'all');
 
     if (variableValue === 'all') {
-      return groupByOptions.map(({ value }) => ({
-        // remove the count in the parentheses, because it's not updated dynamically when applying filters
-        label: JSON.parse(value as string).value,
-        value,
-      }));
+      return groupByOptions.map(({ value }) => {
+        const parsedValue = JSON.parse(value as string);
+
+        if (parsedValue.groupBy.allValues.length > 1) {
+          return {
+            // remove the count in the parentheses, because it's not updated dynamically when applying filters
+            label: parsedValue.value,
+            value,
+          };
+        }
+
+        // we need to add a filter for the "Flame graph", "Add to filters" and "Compare" actions to work
+        return {
+          label: parsedValue.value,
+          value: JSON.stringify({
+            ...parsedValue,
+            filters: [
+              {
+                key: parsedValue.groupBy.label,
+                operator: '=',
+                value: parsedValue.groupBy.allValues[0],
+              },
+            ],
+          }),
+        };
+      });
     }
 
     const currentOption = groupByOptions.find((o) => variableValue === JSON.parse(o.value as string).value);
@@ -249,7 +269,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return JSON.parse(currentOption.value as string).groupBy.allValues.map((labelValue: string) => {
       const valueObject = {
         value: labelValue,
-        // we need this for the "Flame graph" & "Add to filters" actions to work
+        // we need to add a filter for the "Flame graph", "Add to filters" and "Compare" actions to work
         filters: [
           {
             key: variableValue,
