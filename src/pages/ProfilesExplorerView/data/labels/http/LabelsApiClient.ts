@@ -37,14 +37,6 @@ export class LabelsApiClient extends DataSourceProxyClient {
     }).then((response) => response.json());
   }
 
-  _get(pathname: string, urlSearchParams: Record<string, any>) {
-    const params = new URLSearchParams(urlSearchParams);
-
-    return super.fetch(`${pathname}?${params.toString()}`, {
-      method: 'GET',
-    });
-  }
-
   _post(pathname: string, body: Record<string, any>) {
     return super.fetch(pathname, {
       method: 'POST',

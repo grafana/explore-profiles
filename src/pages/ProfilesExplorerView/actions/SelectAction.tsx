@@ -58,7 +58,6 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   constructor({
     EventClass,
     item,
-    icon,
     tooltip,
     skipVariablesInterpolation,
   }: {
@@ -73,7 +72,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
       throw new TypeError(`Unknown event class "${EventClass}"!`);
     }
 
-    super({ EventClass, item, ...merge({}, lookup, { icon, tooltip, skipVariablesInterpolation }) });
+    super({ EventClass, item, ...merge({}, lookup, { tooltip, skipVariablesInterpolation }) });
   }
 
   public onClick = () => {

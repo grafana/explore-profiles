@@ -12,6 +12,7 @@ import {
   SceneQueryRunner,
   VariableDependencyConfig,
   VariableValueOption,
+  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
@@ -217,6 +218,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       }
     };
 
+    onChangeState(noDataSwitcherScene.state);
+
     return noDataSwitcherScene.subscribeToState(onChangeState);
   }
 
@@ -330,27 +333,23 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
     const gridItems = this.state.items.map((item) => {
       const gridItemKey = SceneByVariableRepeaterGrid.buildGridItemKey(item);
+      const { queryRunnerParams } = item;
 
-      let data: SceneQueryRunner;
+      const shouldRefreshFavoriteData = variableName === 'favorite' && queryRunnerParams.groupBy?.label;
 
-      const shouldRefreshFavoriteData = variableName === 'favorite' && item.queryRunnerParams.groupBy?.label;
-
-      if (shouldRefreshFavoriteData) {
-        // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
-        // see buildTimeSeriesGroupByQueryRunner()
-        data = new SceneQueryRunner({
-          queries: [],
-        });
-      } else {
-        data = buildTimeSeriesQueryRunner(item.queryRunnerParams);
-
-        if (hideNoData) {
-          this.setupHideNoData(data, gridItemKey);
-        }
-      }
+      // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
+      // see buildTimeSeriesGroupByQueryRunner()
+      const data = shouldRefreshFavoriteData
+        ? new SceneQueryRunner({ queries: [] })
+        : buildTimeSeriesQueryRunner(queryRunnerParams);
 
       const timeSeriesPanel = PanelBuilders.timeseries()
         .setTitle(item.label)
+        .setDescription(
+          queryRunnerParams.groupBy?.values?.length === queryRunnerParams.groupBy?.allValues?.length
+            ? undefined
+            : `The number of timeseries on this panel has been reduced from ${queryRunnerParams.groupBy?.allValues?.length} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`
+        )
         .setData(data)
         .setMin(0)
         .setOverrides((overrides) => {
@@ -369,17 +368,17 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         .setHeaderActions(headerActions(item))
         .build();
 
+      if (hideNoData) {
+        this.setupHideNoData(timeSeriesPanel);
+      }
+
       if (shouldRefreshFavoriteData) {
         // don't block the initial render
         setTimeout(async () => {
           const $data = await buildTimeSeriesGroupByQueryRunner({
-            queryRunnerParams: item.queryRunnerParams,
+            queryRunnerParams,
             timeRange: sceneGraph.getTimeRange(this).state.value,
           });
-
-          if (hideNoData) {
-            this.setupHideNoData($data, gridItemKey);
-          }
 
           timeSeriesPanel.setState({
             $data,
@@ -405,11 +404,35 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       });
     });
 
-    const body = this.state.body as SceneCSSGridLayout;
-
-    (body as SceneCSSGridLayout).setState({
+    (this.state.body as SceneCSSGridLayout).setState({
       autoRows: GRID_AUTO_ROWS, // required to have the correct grid items height
       children: gridItems,
+    });
+  }
+
+  setupHideNoData(timeSeriesPanel: VizPanel) {
+    const sub = timeSeriesPanel.state.$data!.subscribeToState((state) => {
+      if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
+        return;
+      }
+
+      const gridItem = sceneGraph.getAncestor(timeSeriesPanel, SceneCSSGridItem);
+      const { key: gridItemKey } = gridItem.state;
+      const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
+
+      const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
+
+      if (!filteredChildren.length) {
+        this.renderEmptyState();
+      } else {
+        grid.setState({ children: filteredChildren });
+      }
+    });
+
+    timeSeriesPanel.addActivationHandler(() => {
+      return () => {
+        sub.unsubscribe();
+      };
     });
   }
 
@@ -421,33 +444,13 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return items;
     }
 
-    const searchRegex = new RegExp(
-      `(${searchText
-        .split(',')
-        .map((t) => t.trim())
-        .filter(Boolean)
-        .join('|')})`
-    );
+    const regexes = searchText
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .map((r) => new RegExp(r));
 
-    return items.filter(({ label }) => searchRegex.test(label));
-  }
-
-  setupHideNoData(data: SceneQueryRunner, gridItemKey: string) {
-    this._subs.add(
-      data.subscribeToState((state) => {
-        if (state.data?.state === LoadingState.Done && !state.data.series.length) {
-          const gridItem = sceneGraph.getAncestor(data, SceneCSSGridItem);
-          const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
-          const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
-
-          if (filteredChildren.length) {
-            grid.setState({ children: filteredChildren });
-          } else {
-            this.renderEmptyState();
-          }
-        }
-      })
-    );
+    return items.filter(({ label }) => regexes.some((r) => r.test(label)));
   }
 
   renderEmptyState() {

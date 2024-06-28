@@ -19,7 +19,7 @@ import {
   SplitLayout,
 } from '@grafana/scenes';
 import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
-import { displaySuccess } from '@shared/domain/displayStatus';
+import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
 
@@ -161,7 +161,16 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       sceneUtils.registerRuntimeDataSource({ dataSource: new SeriesDataSource() });
       sceneUtils.registerRuntimeDataSource({ dataSource: new FavoritesDataSource() });
       sceneUtils.registerRuntimeDataSource({ dataSource: new LabelsDataSource() });
-    } catch {}
+    } catch (error) {
+      const { message } = error as Error;
+
+      if (!/A runtime data source with uid (.+) has already been registered/.test(message)) {
+        displayError(error, [
+          'Fail to register all the runtime data sources!',
+          'The application cannot work as expected, please try reloading the page or if the problem persists, contact your organization admin.',
+        ]);
+      }
+    }
   }
 
   subscribeToEvents() {
@@ -231,7 +240,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       default:
         primary = new SceneExploreAllServices();
 
-        this.updateQuickFilterPlaceholder('Search services  (comma-separated regexes are supported)');
+        this.updateQuickFilterPlaceholder('Search services (comma-separated regexes are supported)');
     }
 
     return new SplitLayout({
@@ -285,14 +294,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   getVariablesAndGridControls(explorationType: ExplorationType) {
     const [dataSourceVariable, serviceNameVariable, profileMetricVariable, filtersVariable] = this.state.$variables!
-      .state.variables as [
-      DataSourceVariable,
-      ServiceNameVariable,
-      ProfileMetricVariable,
-      FiltersVariable
-      // GroupByVariable,
-      // FavoriteVariable
-    ];
+      .state.variables as [DataSourceVariable, ServiceNameVariable, ProfileMetricVariable, FiltersVariable];
 
     switch (explorationType) {
       case ExplorationType.ALL_SERVICES:
@@ -384,15 +386,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                         <h5>Types of exploration</h5>
                         <dl>
                           <dt>All services</dt>
-                          <dd>Overview of all your services, for any given profile metric</dd>
+                          <dd>Overview of all services, for any given profile metric</dd>
                           <dt>Single service</dt>
                           <dd>Overview of all the profile metrics for a single service</dd>
                           <dt>Service labels</dt>
-                          <dd>Single service labels exploration and filtering</dd>
+                          <dd>Single service label exploration and filtering</dd>
                           <dt>Flame graph</dt>
                           <dd>Single service flame graph</dd>
                           <dt>Favorites</dt>
-                          <dd>Overview of your favorite visualizations</dd>
+                          <dd>Overview of favorited visualizations</dd>
                         </dl>
                       </div>
                     }

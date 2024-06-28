@@ -17,6 +17,7 @@ import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
+import { EventViewServiceProfiles } from '../../events/EventViewServiceProfiles';
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { parseVariableValue } from '../../variables/FiltersVariable/filters-ops';
@@ -31,16 +32,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
       const timeSeriesPanel = ((this.state.body as SceneFlexLayout).state.children[0] as SceneFlexItem).state
         .body as VizPanel;
 
-      const headerActionItem = this.buildHeaderActionItem();
-      const headerActions = [
-        new SelectAction({ EventClass: EventViewServiceFlameGraph, item: headerActionItem }),
-        new FavAction({ item: headerActionItem }),
-      ];
-
-      timeSeriesPanel?.setState({
-        title: buildtimeSeriesPanelTitle(this),
-        headerActions,
-      });
+      timeSeriesPanel?.setState({ title: buildtimeSeriesPanelTitle(this) });
     },
   });
 
@@ -86,6 +78,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
       .setHeaderActions([
+        new SelectAction({ EventClass: EventViewServiceProfiles, item: headerActionItem }),
         new SelectAction({ EventClass: EventViewServiceFlameGraph, item: headerActionItem }),
         new FavAction({ item: headerActionItem }),
       ])

@@ -16,6 +16,7 @@ import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
+import { EventViewServiceProfiles } from '../../events/EventViewServiceProfiles';
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { SceneFlameGraph } from './SceneFlameGraph';
@@ -81,6 +82,7 @@ export class SceneServiceFlameGraph extends SceneObjectBase<SceneServiceFlameGra
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
       .setCustomFieldConfig('fillOpacity', 9)
       .setHeaderActions([
+        new SelectAction({ EventClass: EventViewServiceProfiles, item: headerActionItem }),
         new SelectAction({ EventClass: EventViewServiceLabels, item: headerActionItem }),
         new FavAction({ item: headerActionItem }),
       ])

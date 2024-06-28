@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { AdHocVariableFilter, GrafanaTheme2, IconName, LoadingState } from '@grafana/data';
+import { AdHocVariableFilter, GrafanaTheme2, LoadingState } from '@grafana/data';
 import { config } from '@grafana/runtime';
 import {
   PanelBuilders,
@@ -25,7 +25,6 @@ import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRep
 import { SceneNoDataSwitcher } from '../../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../../components/SceneQuickFilter';
 import { interpolateQueryRunnerVariables } from '../../data/helpers/interpolateQueryRunnerVariables';
-import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
 import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
@@ -86,17 +85,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           const actions = [];
           const { groupBy } = item.queryRunnerParams;
 
-          const selectActionParams =
-            groupBy.values?.length === groupBy.allValues?.length
-              ? { EventClass: EventSelectLabel, item }
-              : {
-                  EventClass: EventSelectLabel,
-                  item,
-                  icon: 'exclamation-circle' as IconName,
-                  tooltip: `The number of timeseries on this panel has been reduced from ${groupBy.allValues?.length} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`,
-                };
-
-          actions.push(new SelectAction(selectActionParams));
+          actions.push(new SelectAction({ EventClass: EventSelectLabel, item }));
 
           if (groupBy.values.length === 1) {
             actions.push(new SelectAction({ EventClass: EventAddLabelToFilters, item }));
