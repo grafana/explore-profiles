@@ -371,7 +371,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         .setData(data)
         .setMin(0)
         .setCustomFieldConfig('fillOpacity', 9)
-        .setCustomFieldConfig('gradientMode', GraphGradientMode.Opacity)
         .setOverrides((overrides) => {
           const { queries } = data.state;
           const fillOpacity = queries.length < LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 9 : 0;
