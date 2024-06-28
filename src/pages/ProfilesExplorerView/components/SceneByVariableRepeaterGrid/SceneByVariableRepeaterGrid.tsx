@@ -374,7 +374,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         .setMin(0)
         .setOverrides((overrides) => {
           const { queries } = data.state;
-          const fillOpacity = queries.length <= LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 9 : 0;
+          const fillOpacity = queries.length < LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 9 : 0;
 
           queries.forEach(({ refId, displayNameOverride }, j: number) => {
             overrides
