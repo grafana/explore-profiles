@@ -73,7 +73,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     },
     {
       value: ExplorationType.SINGLE_SERVICE_LABELS,
-      label: 'Service labels',
+      label: 'Labels',
       description: '',
     },
     {
@@ -389,7 +389,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                           <dd>Overview of all services, for any given profile metric</dd>
                           <dt>Single service</dt>
                           <dd>Overview of all the profile metrics for a single service</dd>
-                          <dt>Service labels</dt>
+                          <dt>Labels</dt>
                           <dd>Single service label exploration and filtering</dd>
                           <dt>Flame graph</dt>
                           <dd>Single service flame graph</dd>
