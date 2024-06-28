@@ -68,7 +68,9 @@ export function App() {
                 </p>
               </Alert>
             )}
-            <Routes />
+            <div className="pyroscope-app">
+              <Routes />
+            </div>
           </PluginPage>
         </Onboarding>
       </GitHubContextProvider>

@@ -7,11 +7,9 @@ import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
 import { ComparisonViewPage } from './pages/ComparisonViewPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SingleViewPage } from './pages/SingleViewPage';
-import { TagExplorerPage } from './pages/TagExplorerPage';
 
 type Fixtures = {
   toolbar: Toolbar;
-  tagExplorerPage: TagExplorerPage;
   singleViewPage: SingleViewPage;
   comparisonViewPage: ComparisonViewPage;
   comparisonDiffViewPage: ComparisonDiffViewPage;
@@ -44,12 +42,6 @@ export const test = base.extend<Options & Fixtures>({
   failOnUncaughtExceptions: [false, { option: true }],
   toolbar: async ({ page }, use) => {
     await use(new Toolbar(page));
-  },
-  tagExplorerPage: async ({ page, failOnUncaughtExceptions }, use) => {
-    await withExceptionsAssertion(
-      { page, failOnUncaughtExceptions, use },
-      new TagExplorerPage(page, DEFAULT_URL_PARAMS)
-    );
   },
   singleViewPage: async ({ page, failOnUncaughtExceptions }, use) => {
     await withExceptionsAssertion(

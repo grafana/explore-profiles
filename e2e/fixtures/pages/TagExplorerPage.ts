@@ -1,9 +1,0 @@
-import { type Page } from '@playwright/test';
-
-import { PyroscopePage } from './PyroscopePage';
-
-export class TagExplorerPage extends PyroscopePage {
-  constructor(readonly page: Page, defaultUrlParams: URLSearchParams) {
-    super(page, '/a/grafana-pyroscope-app/tag-explorer', defaultUrlParams.toString());
-  }
-}
