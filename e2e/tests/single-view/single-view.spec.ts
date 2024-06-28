@@ -25,7 +25,7 @@ test.describe('URL search parameters', () => {
 
     await toolbar.assertSelectedService('pyroscope');
     await toolbar.assertSelectedProfileType('cpu (process_cpu)');
-    await toolbar.assertSelectedTimeRange('Last 1 hour');
+    await toolbar.assertSelectedTimeRange('Last 30 minutes');
   });
 
   test('When only the "from" and "to" parameters are provided, it selects the correct service, profile type & time range', async ({
@@ -60,7 +60,7 @@ test.describe('URL search parameters', () => {
 
     await toolbar.assertSelectedService('pyroscope');
     await toolbar.assertSelectedProfileType('cpu (process_cpu)');
-    await toolbar.assertSelectedTimeRange('Last 1 hour');
+    await toolbar.assertSelectedTimeRange('Last 30 minutes');
   });
 
   test('When there is no data during the time range provided, it displays "No data" banners', async ({
