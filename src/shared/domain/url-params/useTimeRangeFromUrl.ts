@@ -13,7 +13,7 @@ const PARAM_NAMES = new Map<TargetTimeline, string[]>([
 ]);
 
 const DEFAULT_TIMERANGE_VALUES = new Map<string, string>([
-  ['from', 'now-1h'],
+  ['from', 'now-30m'],
   ['to', 'now'],
   // we don't specify default values for left/right because we will split/sync them later if they are not already set in the URL
   // (see in src/pages/ComparisonView/domain/useDefaultComparisonParamsFromUrl.ts)
