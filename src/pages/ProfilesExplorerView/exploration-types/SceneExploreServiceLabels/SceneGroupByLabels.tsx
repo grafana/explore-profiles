@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2, LoadingState } from '@grafana/data';
-import { config } from '@grafana/runtime';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -9,12 +8,10 @@ import {
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
-  VariableDependencyConfig,
   VizPanel,
 } from '@grafana/scenes';
 import { Stack, TableCellDisplayMode, useStyles2 } from '@grafana/ui';
-import { buildQuery } from '@shared/domain/url-params/parseQuery';
-import { merge, uniq } from 'lodash';
+import { merge } from 'lodash';
 import React from 'react';
 
 import { CompareAction } from '../../actions/CompareAction';
@@ -23,20 +20,16 @@ import { SelectAction } from '../../actions/SelectAction';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { SceneDrawer } from '../../components/SceneDrawer';
-import { SceneNoDataSwitcher } from '../../components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../../components/SceneQuickFilter';
-import { interpolateQueryRunnerVariables } from '../../data/helpers/interpolateQueryRunnerVariables';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
 import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventAddLabelToFilters } from '../../events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
-import { EventSelectForCompare } from '../../events/EventSelectForCompare';
 import { EventSelectLabel } from '../../events/EventSelectLabel';
 import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
-import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
@@ -48,20 +41,9 @@ import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable
 interface SceneGroupByLabelsState extends SceneObjectState {
   body: SceneByVariableRepeaterGrid;
   drawer: SceneDrawer;
-  itemsForComparison: Array<{ action: CompareAction; item: GridItemData }>;
 }
 
 export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState> {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['filters'],
-    onReferencedVariableValueChanged: () => {
-      const { itemsForComparison } = this.state;
-      const isDiffEnabled = itemsForComparison.length === 2;
-
-      this.updateItemsForComparison(itemsForComparison, isDiffEnabled);
-    },
-  });
-
   constructor() {
     super({
       key: 'group-by-labels',
@@ -92,7 +74,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         },
       }),
       drawer: new SceneDrawer(),
-      itemsForComparison: [],
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -111,12 +92,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToEvents() {
-    const groupByVariable = sceneGraph.lookupVariable('groupBy', this) as GroupByVariable;
-
-    const variableSub = groupByVariable.subscribeToState(() => {
-      this.setState({ itemsForComparison: [] });
-    });
-
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
       this.selectLabel(event.payload.item);
     });
@@ -124,12 +99,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const addToFiltersSub = this.subscribeToEvent(EventAddLabelToFilters, (event) => {
       this.addLabelValueToFilters(event.payload.item);
     });
-
-    const selectForCompareSub = this.subscribeToEvent(EventSelectForCompare, (event) => {
-      this.selectForCompare(event.payload);
-    });
-
-    const hideNoDataSub = this.initHideNoDataChange();
 
     const labelValuesDistSub = this.subscribeToEvent(EventViewLabelValuesDistribution, async (event) => {
       this.openLabelValuesDistributionDrawer(event.payload.item);
@@ -143,11 +112,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       unsubscribe() {
         expandPanelSub.unsubscribe();
         labelValuesDistSub.unsubscribe();
-        hideNoDataSub.unsubscribe();
-        selectForCompareSub.unsubscribe();
         addToFiltersSub.unsubscribe();
         selectLabelSub.unsubscribe();
-        variableSub.unsubscribe();
       },
     };
   }
@@ -187,96 +153,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE);
 
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
-  }
-
-  selectForCompare({ isChecked, action, item }: { isChecked: boolean; action: CompareAction; item: GridItemData }) {
-    const newItemsForComparison = isChecked
-      ? [...this.state.itemsForComparison, { action, item }]
-      : this.state.itemsForComparison.filter((i) => i.item.value !== item.value);
-
-    const isDiffEnabled = newItemsForComparison.length === 2;
-
-    (sceneGraph.findAllObjects(this, (o) => o instanceof CompareAction) as CompareAction[]).forEach((a) =>
-      a.setState({ isDisabled: isDiffEnabled })
-    );
-
-    this.state.itemsForComparison.forEach(({ action }) => {
-      action.setState({
-        isEnabled: isDiffEnabled,
-        isDisabled: false,
-      });
-    });
-
-    this.updateItemsForComparison(newItemsForComparison, isDiffEnabled);
-
-    this.setState({
-      itemsForComparison: newItemsForComparison,
-    });
-  }
-
-  updateItemsForComparison(itemsForComparison: SceneGroupByLabelsState['itemsForComparison'], isDiffEnabled: boolean) {
-    const diffUrl = isDiffEnabled ? this.buildDiffUrl(itemsForComparison) : '';
-
-    itemsForComparison.forEach(({ action }) => {
-      action.setState({
-        isEnabled: isDiffEnabled,
-        isDisabled: false,
-        diffUrl,
-      });
-    });
-  }
-
-  buildDiffUrl(itemsForComparison: SceneGroupByLabelsState['itemsForComparison']) {
-    let { appUrl } = config;
-    if (appUrl.at(-1) !== '/') {
-      // ensures that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
-      appUrl += '/';
-    }
-
-    const diffUrl = new URL('a/grafana-pyroscope-app/comparison-diff', appUrl);
-
-    // time range
-    const { from, to } = computeRoundedTimeRange(sceneGraph.getTimeRange(this).state.value);
-    diffUrl.searchParams.set('from', from.toString());
-    diffUrl.searchParams.set('to', to.toString());
-
-    const { filters: queryFilters } = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).state;
-    const { serviceName: serviceId, profileMetricId } = interpolateQueryRunnerVariables(
-      this,
-      itemsForComparison[0].item
-    );
-
-    // query - just in case
-    const query = buildQuery({
-      serviceId,
-      profileMetricId,
-      labels: queryFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`),
-    });
-    diffUrl.searchParams.set('query', query);
-
-    // left & right queries
-    const [leftQuery, rightQuery] = itemsForComparison
-      .sort((a, b) => a.item.index - b.item.index)
-      .map(({ item }) => {
-        const labels = [...queryFilters, ...(item.queryRunnerParams.filters || [])].map(
-          ({ key, operator, value }) => `${key}${operator}"${value}"`
-        );
-
-        return buildQuery({ serviceId, profileMetricId, labels: uniq(labels) });
-      });
-
-    diffUrl.searchParams.set('leftQuery', leftQuery);
-    diffUrl.searchParams.set('rightQuery', rightQuery);
-
-    return diffUrl.toString();
-  }
-
-  initHideNoDataChange() {
-    const noDataSwitcherScene = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
-
-    return noDataSwitcherScene.subscribeToState(() => {
-      this.setState({ itemsForComparison: [] });
-    });
   }
 
   openLabelValuesDistributionDrawer(item: GridItemData) {
