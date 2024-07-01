@@ -65,7 +65,6 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
     return PanelBuilders.table()
       .setData(this.buildData())
       .setDisplayMode('transparent')
-      .setUnit(getProfileMetricUnit(item.queryRunnerParams.profileMetricId!))
       .setHeaderActions([
         new SelectAction({ EventClass: EventViewServiceLabels, item }),
         new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
@@ -76,8 +75,10 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
   }
 
   buildData() {
-    const { item } = this.state;
-    const { queryRunnerParams } = item;
+    const { queryRunnerParams } = this.state.item;
+    const unit = getProfileMetricUnit(queryRunnerParams.profileMetricId!);
+
+    console.log('*** unit', unit);
 
     const data = new SceneDataTransformer({
       $data: buildTimeSeriesQueryRunner(queryRunnerParams),
@@ -99,6 +100,7 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
                 type: TableCellDisplayMode.ColorText,
               },
             },
+            unit,
             mappings: [
               {
                 type: MappingType.ValueToText,
@@ -116,12 +118,7 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
           overrides: [
             {
               matcher: { id: FieldMatcherID.byName, options: queryRunnerParams.groupBy!.label },
-              properties: [
-                {
-                  id: 'unit',
-                  value: 'string',
-                },
-              ],
+              properties: [{ id: 'unit', value: 'string' }],
             },
           ],
         },
