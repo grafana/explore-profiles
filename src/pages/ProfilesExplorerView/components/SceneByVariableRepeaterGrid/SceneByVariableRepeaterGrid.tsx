@@ -485,7 +485,14 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       .split(',')
       .map((t) => t.trim())
       .filter(Boolean)
-      .map((r) => new RegExp(r));
+      .map((r) => {
+        try {
+          return new RegExp(r);
+        } catch {
+          return null;
+        }
+      })
+      .filter(Boolean) as RegExp[];
 
     return items.filter(({ label }) => regexes.some((r) => r.test(label)));
   }
