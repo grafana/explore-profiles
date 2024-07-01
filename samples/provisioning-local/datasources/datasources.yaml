@@ -11,4 +11,6 @@ datasources:
     secureJsonData:
       basicAuthPassword: 'mypassword'
     isDefault: true
-    keepCookies: [GitSession]
+    jsonData:
+      keepCookies:
+        - GitSession
