@@ -76,9 +76,6 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
 
   buildData() {
     const { queryRunnerParams } = this.state.item;
-    const unit = getProfileMetricUnit(queryRunnerParams.profileMetricId!);
-
-    console.log('*** unit', unit);
 
     const data = new SceneDataTransformer({
       $data: buildTimeSeriesQueryRunner(queryRunnerParams),
@@ -100,7 +97,7 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
                 type: TableCellDisplayMode.ColorText,
               },
             },
-            unit,
+            unit: getProfileMetricUnit(queryRunnerParams.profileMetricId!),
             mappings: [
               {
                 type: MappingType.ValueToText,
