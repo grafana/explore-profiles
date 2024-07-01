@@ -1,5 +1,5 @@
+import { invariant } from '../../../../types/helpers/invariant';
 import { Filter, QueryBuilderContext } from '../types';
-import { invariant } from './invariant';
 
 export function getFilterUnderEdition(context: QueryBuilderContext): Filter {
   const { edition, filters } = context;

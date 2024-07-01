@@ -66,6 +66,7 @@
     "@grafana/faro-web-tracing": "^1.7.0",
     "@grafana/flamegraph": "11.1.0-179306",
     "@grafana/runtime": "10.4.3",
+    "@grafana/scenes": "^4.22.0",
     "@grafana/ui": "10.4.3",
     "@hookform/resolvers": "^2.9.8",
     "@mui/base": "5.0.0-alpha.98",

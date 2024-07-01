@@ -27,7 +27,7 @@ export function useToggleSidePanel(): SidePanel {
 
   return {
     onOpen(handler: OnOpenHandler) {
-      setOnOpenHandler(handler);
+      setOnOpenHandler(() => handler);
     },
     isOpen(panelId: PanelId) {
       return panelId === openPanelId;

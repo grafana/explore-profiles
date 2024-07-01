@@ -1,8 +1,9 @@
-import { AbstractRepository } from '../../../infrastructure/AbstractRepository';
-import { invariant } from '../domain/helpers/invariant';
-import { Suggestions } from '../domain/types';
-import { LabelsApiClient } from './http/LabelsApiClient';
-import { MemoryCacheClient } from './http/MemoryCacheClient';
+import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
+
+import { Suggestions } from '../../components/QueryBuilder/domain/types';
+import { invariant } from '../../types/helpers/invariant';
+import { AbstractRepository } from '../AbstractRepository';
+import { LabelsApiClient } from './LabelsApiClient';
 
 type ListLabelsOptions = {
   query: string;
@@ -14,7 +15,7 @@ type ListLabelValuesOptions = ListLabelsOptions & {
   label: string;
 };
 
-class LabelsRepository extends AbstractRepository<LabelsApiClient> {
+class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheClient> {
   cacheClient: MemoryCacheClient;
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);

@@ -1,4 +1,4 @@
-import { labelsRepository } from '../infrastructure/labelsRepository';
+import { labelsRepository } from '../../../infrastructure/labels/labelsRepository';
 import { operatorsRepository } from '../infrastructure/operatorsRepository';
 import { filtersToQuery } from './helpers/filtersToQuery';
 import { getLastFilter } from './helpers/getLastFilter';
