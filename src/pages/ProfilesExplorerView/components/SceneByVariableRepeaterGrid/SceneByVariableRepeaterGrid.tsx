@@ -1,4 +1,4 @@
-import { DashboardCursorSync, FieldMatcherID, LoadingState, VariableRefresh } from '@grafana/data';
+import { DashboardCursorSync, DataFrame, FieldMatcherID, LoadingState, VariableRefresh } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -7,6 +7,7 @@ import {
   SceneComponentProps,
   SceneCSSGridItem,
   SceneCSSGridLayout,
+  SceneDataTransformer,
   sceneGraph,
   SceneObjectBase,
   SceneQueryRunner,
@@ -16,11 +17,11 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { GraphGradientMode, Spinner } from '@grafana/ui';
-import { debounce } from 'lodash';
+import { debounce, merge } from 'lodash';
 import React from 'react';
+import { map, Observable } from 'rxjs';
 
 import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
-import { buildTimeSeriesGroupByQueryRunner } from '../../data/timeseries/buildTimeSeriesGroupByQueryRunner';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
@@ -52,6 +53,23 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   static buildGridItemKey(item: GridItemData) {
     return `grid-item-${item.index}-${item.value}`;
   }
+
+  static limitNumberOfSeries = () => (source: Observable<DataFrame[]>) =>
+    source.pipe(
+      map((data: DataFrame[]) => {
+        const totalSeriesCount = data.length;
+
+        return data.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES).map((d, i) =>
+          merge(d, {
+            // adding unique "refId" and "totalSeriesCount" for overrides (see setupOverrides() below)
+            refId: `${d.refId}-${i}`,
+            meta: {
+              stats: [{ displayName: 'totalSeriesCount', value: totalSeriesCount }],
+            },
+          })
+        );
+      })
+    );
 
   protected _variableDependency: VariableDependencyConfig<SceneByVariableRepeaterGridState> =
     new VariableDependencyConfig(this, {
@@ -346,19 +364,16 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return;
     }
 
-    const { headerActions, variableName } = this.state;
+    const { headerActions } = this.state;
 
     const gridItems = this.state.items.map((item) => {
       const gridItemKey = SceneByVariableRepeaterGrid.buildGridItemKey(item);
       const { queryRunnerParams } = item;
 
-      const shouldRefreshFavoriteData = variableName === 'favorite' && queryRunnerParams.groupBy?.label;
-
-      // in case of the favorites grid with a groupBy param, we always refetch the label values so that the timeseries are up-to-date
-      // see buildTimeSeriesGroupByQueryRunner()
-      const data = shouldRefreshFavoriteData
-        ? new SceneQueryRunner({ queries: [] })
-        : buildTimeSeriesQueryRunner(queryRunnerParams);
+      const data = new SceneDataTransformer({
+        $data: buildTimeSeriesQueryRunner(queryRunnerParams),
+        transformations: [SceneByVariableRepeaterGrid.limitNumberOfSeries],
+      });
 
       const timeSeriesPanel = PanelBuilders.timeseries()
         .setTitle(item.label)
@@ -367,21 +382,11 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         .setHeaderActions(headerActions(item))
         .build();
 
-      if (shouldRefreshFavoriteData) {
-        // don't block the initial render
-        setTimeout(async () => {
-          timeSeriesPanel.setState({
-            $data: await buildTimeSeriesGroupByQueryRunner({
-              queryRunnerParams,
-              timeRange: sceneGraph.getTimeRange(this).state.value,
-            }),
-          });
-
-          this.subscribeToDataChange(timeSeriesPanel, item);
-        }, 0);
-      } else {
-        this.subscribeToDataChange(timeSeriesPanel, item);
+      if (this.state.hideNoData) {
+        this.setupHideNoData(timeSeriesPanel);
       }
+
+      this.setupOverrides(timeSeriesPanel, item);
 
       return new SceneCSSGridItem({
         key: gridItemKey,
@@ -395,54 +400,39 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
-  subscribeToDataChange(timeSeriesPanel: VizPanel, item: GridItemData) {
-    if (this.state.hideNoData) {
-      this.setupHideNoData(timeSeriesPanel);
-    }
-
-    this.setupOverrides(timeSeriesPanel, item);
-  }
-
   setupOverrides(timeSeriesPanel: VizPanel, item: GridItemData) {
-    const sub = (timeSeriesPanel.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
+    const sub = (timeSeriesPanel.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
         return;
       }
 
-      const nameOverridesLookup = state.queries.reduce((acc, query) => {
-        acc.set(query.refId, query.displayNameOverride);
-        return acc;
-      }, new Map());
+      const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
       const { series } = state.data;
-
-      // defaults to 1 will also work for favorites where allValues is undefined
-      const queriesCount = item.queryRunnerParams.groupBy?.allValues?.length || 1;
-
-      const hasTooManyQueries = queriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
-      const hasMaxSeries = series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+      const totalSeriesCount = series[0].meta!.stats![0].value; // see limitNumberOfSeries() above
+      const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
 
       timeSeriesPanel.setState({
-        description: hasTooManyQueries
-          ? `The number of queries for this panel has been reduced from ${queriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`
+        description: hasTooManySeries
+          ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`
           : undefined,
         fieldConfig: {
           defaults: {
             custom: {
-              fillOpacity: hasMaxSeries ? 0 : 9,
-              gradientMode: hasMaxSeries || series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
+              fillOpacity: series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
+              gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
             },
           },
-          overrides: series.map(({ refId }, j) => ({
-            matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
+          overrides: series.map((serie, i) => ({
+            matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
             properties: [
               {
                 id: 'displayName',
-                value: nameOverridesLookup.get(refId),
+                value: groupByLabel ? serie.fields[1].labels?.[groupByLabel] || '?' : serie.fields[1].name,
               },
               {
                 id: 'color',
-                value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + j) },
+                value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
               },
             ],
           })),

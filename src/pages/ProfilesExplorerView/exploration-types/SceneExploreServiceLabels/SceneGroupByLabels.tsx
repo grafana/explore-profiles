@@ -247,7 +247,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     timeSeriesPanel.setState({
       title: label,
-      $data: buildTimeSeriesQueryRunner(queryRunnerParams, true),
+      description: '',
+      $data: buildTimeSeriesQueryRunner(queryRunnerParams),
       headerActions: [
         new SelectAction({ EventClass: EventSelectLabel, item }),
         new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),

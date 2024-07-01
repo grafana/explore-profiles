@@ -181,7 +181,8 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
     timeSeriesPanel.setState({
       title: '',
-      $data: buildTimeSeriesQueryRunner(queryRunnerParams, true),
+      description: '',
+      $data: buildTimeSeriesQueryRunner(queryRunnerParams),
       headerActions: (timeSeriesPanel.state.headerActions as SelectAction[]).filter(
         (action) => action.state.EventClass !== EventExpandPanel
       ),
