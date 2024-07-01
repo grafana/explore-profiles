@@ -15,7 +15,7 @@ import {
   VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
-import { Spinner } from '@grafana/ui';
+import { GraphGradientMode, Spinner } from '@grafana/ui';
 import { debounce } from 'lodash';
 import React from 'react';
 
@@ -98,8 +98,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   onActivate() {
-    this.renderGridItems();
-
     // here we try to emulate VariableDependencyConfig.onVariableUpdateCompleted
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
 
@@ -333,7 +331,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   // TODO: prevent too many re-renders
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   renderGridItems() {
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
 
@@ -349,7 +346,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return;
     }
 
-    const { headerActions, hideNoData, variableName } = this.state;
+    const { headerActions, variableName } = this.state;
 
     const gridItems = this.state.items.map((item) => {
       const gridItemKey = SceneByVariableRepeaterGrid.buildGridItemKey(item);
@@ -365,57 +362,25 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
       const timeSeriesPanel = PanelBuilders.timeseries()
         .setTitle(item.label)
-        .setDescription(
-          queryRunnerParams.groupBy?.values?.length === queryRunnerParams.groupBy?.allValues?.length
-            ? undefined
-            : `The number of timeseries on this panel has been reduced from ${queryRunnerParams.groupBy?.allValues?.length} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`
-        )
         .setData(data)
         .setMin(0)
-        .setOverrides((overrides) => {
-          const { queries } = data.state;
-          const fillOpacity = queries.length < LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 9 : 0;
-
-          queries.forEach(({ refId, displayNameOverride }, j: number) => {
-            overrides
-              .matchFieldsByQuery(refId)
-              .overrideColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index + j) })
-              .overrideCustomFieldConfig('fillOpacity', fillOpacity)
-              .overrideDisplayName(displayNameOverride);
-          });
-        })
-        .setCustomFieldConfig('fillOpacity', 9)
         .setHeaderActions(headerActions(item))
         .build();
-
-      if (hideNoData) {
-        this.setupHideNoData(timeSeriesPanel);
-      }
 
       if (shouldRefreshFavoriteData) {
         // don't block the initial render
         setTimeout(async () => {
-          const $data = await buildTimeSeriesGroupByQueryRunner({
-            queryRunnerParams,
-            timeRange: sceneGraph.getTimeRange(this).state.value,
+          timeSeriesPanel.setState({
+            $data: await buildTimeSeriesGroupByQueryRunner({
+              queryRunnerParams,
+              timeRange: sceneGraph.getTimeRange(this).state.value,
+            }),
           });
 
-          timeSeriesPanel.setState({
-            $data,
-            fieldConfig: {
-              defaults: {
-                custom: { fillOpacity: 9 },
-              },
-              overrides: $data.state.queries.map(({ refId, displayNameOverride }, j) => ({
-                matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
-                properties: [
-                  { id: 'displayName', value: displayNameOverride },
-                  { id: 'color', value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + j) } },
-                ],
-              })),
-            },
-          });
+          this.subscribeToDataChange(timeSeriesPanel, item);
         }, 0);
+      } else {
+        this.subscribeToDataChange(timeSeriesPanel, item);
       }
 
       return new SceneCSSGridItem({
@@ -430,8 +395,70 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
+  subscribeToDataChange(timeSeriesPanel: VizPanel, item: GridItemData) {
+    if (this.state.hideNoData) {
+      this.setupHideNoData(timeSeriesPanel);
+    }
+
+    this.setupOverrides(timeSeriesPanel, item);
+  }
+
+  setupOverrides(timeSeriesPanel: VizPanel, item: GridItemData) {
+    const sub = (timeSeriesPanel.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
+      if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
+        return;
+      }
+
+      const nameOverridesLookup = state.queries.reduce((acc, query) => {
+        acc.set(query.refId, query.displayNameOverride);
+        return acc;
+      }, new Map());
+
+      const { series } = state.data;
+
+      // defaults to 1 will also work for favorites where allValues is undefined
+      const queriesCount = item.queryRunnerParams.groupBy?.allValues?.length || 1;
+
+      const hasTooManyQueries = queriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+      const hasMaxSeries = series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+
+      timeSeriesPanel.setState({
+        description: hasTooManyQueries
+          ? `The number of queries for this panel has been reduced from ${queriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to prevent long loading times. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`
+          : undefined,
+        fieldConfig: {
+          defaults: {
+            custom: {
+              fillOpacity: hasMaxSeries ? 0 : 9,
+              gradientMode: hasMaxSeries || series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
+            },
+          },
+          overrides: series.map(({ refId }, j) => ({
+            matcher: { id: FieldMatcherID.byFrameRefID, options: refId },
+            properties: [
+              {
+                id: 'displayName',
+                value: nameOverridesLookup.get(refId),
+              },
+              {
+                id: 'color',
+                value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + j) },
+              },
+            ],
+          })),
+        },
+      });
+    });
+
+    timeSeriesPanel.addActivationHandler(() => {
+      return () => {
+        sub.unsubscribe();
+      };
+    });
+  }
+
   setupHideNoData(timeSeriesPanel: VizPanel) {
-    const sub = timeSeriesPanel.state.$data!.subscribeToState((state) => {
+    const sub = (timeSeriesPanel.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
         return;
       }

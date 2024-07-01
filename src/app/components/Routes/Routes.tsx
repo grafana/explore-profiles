@@ -18,6 +18,9 @@ export function Routes() {
       <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
         <ProfilesExplorerView />
       </Route>
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
+        <ProfilesExplorerView />
+      </Route>
       <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SINGLE_VIEW)} exact>
         <SingleView />
       </Route>

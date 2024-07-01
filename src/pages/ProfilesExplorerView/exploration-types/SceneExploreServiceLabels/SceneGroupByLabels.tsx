@@ -200,6 +200,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         new SelectAction({ EventClass: EventSelectLabel, item }),
         new SelectAction({ EventClass: EventExpandPanel, item }),
       ])
+      .setOption('sortBy', [{ displayName: 'Total', desc: true }])
       .build();
 
     transformedData.subscribeToState((newState) => {
