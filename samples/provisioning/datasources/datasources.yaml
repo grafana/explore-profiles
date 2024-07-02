@@ -13,7 +13,7 @@ datasources:
     secureJsonData:
       basicAuthPassword: 'mypassword'
     keepCookies: [GitSession]
-  - uid: grafanacloud-profiles-local
+  - uid: grafanacloud-profiles-local-bis
     type: grafana-pyroscope-datasource
     name: 🔥 Local bis (http://pyroscope:4100)
     url: http://pyroscope:4100
