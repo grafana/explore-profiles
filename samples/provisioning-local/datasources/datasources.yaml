@@ -5,10 +5,11 @@ datasources:
     type: grafana-pyroscope-datasource
     name: 🔥 Local (http://pyroscope:4100)
     url: http://pyroscope:4100
+    isDefault: true
+    basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
     basicAuthUser: '42'
     secureJsonData:
       basicAuthPassword: 'mypassword'
-    isDefault: true
     keepCookies: [GitSession]

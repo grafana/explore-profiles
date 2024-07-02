@@ -5,6 +5,7 @@ const TEST_DATA_SOURCES = {
     type: 'grafana-pyroscope-datasource',
     name: 'Test Data Source',
     uid: 'grafanacloud-profiles-test',
+    jsonData: {},
   },
 };
 
@@ -88,33 +89,117 @@ describe('ApiClient', () => {
     });
 
     describe('if no data source uid is specified in the URL', () => {
-      test('uses the default data source to build the base URL', () => {
-        jest.doMock('@grafana/runtime', () => ({
-          config: {
-            appUrl: 'https://localhost:3000/',
-            datasources: {
-              ...TEST_DATA_SOURCES,
-              'Another Test Data Source': {
-                id: 2,
-                isDefault: false,
-                type: 'grafana-pyroscope-datasource',
-                name: 'Another Test Data Source',
-                uid: 'grafanacloud-profiles-test-bis',
+      describe('when a data source is marked as a default override', () => {
+        test('uses the override data source to build the base URL', () => {
+          jest.doMock('@grafana/runtime', () => ({
+            config: {
+              appUrl: 'https://localhost:3000/',
+              datasources: {
+                ...TEST_DATA_SOURCES,
+                'Test Data Source bis': {
+                  id: 2,
+                  type: 'grafana-pyroscope-datasource',
+                  name: 'Test Data Source bis',
+                  uid: 'grafanacloud-profiles-test-bis',
+                  jsonData: {},
+                },
+                'Test Data Source ter': {
+                  id: 2,
+                  type: 'grafana-pyroscope-datasource',
+                  name: 'Test Data Source ter',
+                  uid: 'grafanacloud-profiles-test-ter',
+                  jsonData: {
+                    overridesDefault: true,
+                  },
+                },
+              },
+              bootData: {
+                user: { orgId: 42 },
               },
             },
-            bootData: {
-              user: { orgId: 42 },
+          }));
+
+          const { ApiClient } = require('../ApiClient');
+
+          window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
+
+          const apiClient = new ApiClient();
+
+          expect(apiClient.baseUrl).toBe(
+            'https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test-ter'
+          );
+        });
+      });
+
+      describe('when there is no override', () => {
+        test('uses the default data source to build the base URL', () => {
+          jest.doMock('@grafana/runtime', () => ({
+            config: {
+              appUrl: 'https://localhost:3000/',
+              datasources: {
+                ...TEST_DATA_SOURCES,
+                'Another Test Data Source': {
+                  id: 2,
+                  isDefault: false,
+                  type: 'grafana-pyroscope-datasource',
+                  name: 'Another Test Data Source',
+                  uid: 'grafanacloud-profiles-test-bis',
+                  jsonData: {},
+                },
+              },
+              bootData: {
+                user: { orgId: 42 },
+              },
             },
-          },
-        }));
+          }));
 
-        const { ApiClient } = require('../ApiClient');
+          const { ApiClient } = require('../ApiClient');
 
-        window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
+          window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
 
-        const apiClient = new ApiClient();
+          const apiClient = new ApiClient();
 
-        expect(apiClient.baseUrl).toBe('https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test');
+          expect(apiClient.baseUrl).toBe('https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test');
+        });
+      });
+
+      describe('otherwise', () => {
+        test('uses the first data source in the list of all data sources', () => {
+          jest.doMock('@grafana/runtime', () => ({
+            config: {
+              appUrl: 'https://localhost:3000/',
+              datasources: {
+                'Test Data Source': {
+                  id: 1,
+                  type: 'grafana-pyroscope-datasource',
+                  name: 'Test Data Source',
+                  uid: 'grafanacloud-profiles-test',
+                  isDefault: false,
+                  jsonData: {},
+                },
+                'Another Test Data Source': {
+                  id: 2,
+                  type: 'grafana-pyroscope-datasource',
+                  name: 'Another Test Data Source',
+                  uid: 'grafanacloud-profiles-test-bis',
+                  isDefault: false,
+                  jsonData: {},
+                },
+              },
+              bootData: {
+                user: { orgId: 42 },
+              },
+            },
+          }));
+
+          const { ApiClient } = require('../ApiClient');
+
+          window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
+
+          const apiClient = new ApiClient();
+
+          expect(apiClient.baseUrl).toBe('https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test');
+        });
       });
     });
 
@@ -166,6 +251,7 @@ describe('ApiClient', () => {
                   type: 'grafana-pyroscope-datasource',
                   name: 'Another Test Data Source',
                   uid: 'grafanacloud-profiles-test-bis',
+                  jsonData: {},
                 },
               },
               bootData: {
