@@ -1,26 +1,19 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
-import {
-  SceneComponentProps,
-  SceneCSSGridItem,
-  sceneGraph,
-  SceneObjectBase,
-  SceneObjectState,
-  VizPanel,
-} from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { CompareAction } from '../../actions/CompareAction';
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
+import { SceneAllLabelValuesTable } from '../../components/SceneAllLabelValuesTable';
+import { SceneAllLabelValuesTimeseries } from '../../components/SceneAllLabelValuesTimeseries';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { SceneQuickFilter } from '../../components/SceneByVariableRepeaterGrid/SceneQuickFilter';
 import { SceneDrawer } from '../../components/SceneDrawer';
-import { SceneLabelValuesDistributionTable } from '../../components/SceneLabelValuesDistributionTable';
-import { SceneQuickFilter } from '../../components/SceneQuickFilter';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
-import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventAddLabelToFilters } from '../../events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
 import { EventSelectLabel } from '../../events/EventSelectLabel';
@@ -28,7 +21,6 @@ import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelVal
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
-import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
 import { SceneProfilesExplorer } from '../../SceneProfilesExplorer';
 import { addFilter } from '../../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
@@ -157,40 +149,28 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     this.state.drawer.open({
       title: `${profileMetricLabel} values distribution for label "${item.queryRunnerParams.groupBy!.label}"`,
-      body: new SceneLabelValuesDistributionTable({ item }),
+      body: new SceneAllLabelValuesTable({
+        item,
+        headerActions: () => [
+          new SelectAction({ EventClass: EventSelectLabel, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new SelectAction({ EventClass: EventExpandPanel, item }),
+        ],
+      }),
     });
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
-    const timeSeriesPanel = (
-      findSceneObjectByKey(this, SceneByVariableRepeaterGrid.buildGridItemKey(item)) as SceneCSSGridItem
-    ).state.body!.clone() as VizPanel;
-
-    const { queryRunnerParams } = item;
-    const { label } = queryRunnerParams.groupBy!;
-
-    timeSeriesPanel.setState({
-      title: label,
-      description: '',
-      $data: buildTimeSeriesQueryRunner(queryRunnerParams),
-      headerActions: [
-        new SelectAction({ EventClass: EventSelectLabel, item }),
-        new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
-        new FavAction({ item }),
-      ],
-      fieldConfig: {
-        defaults: {
-          custom: {
-            fillOpacity: 0,
-          },
-        },
-        overrides: [],
-      },
-    });
-
     this.state.drawer.open({
       title: buildtimeSeriesPanelTitle(this),
-      body: timeSeriesPanel,
+      body: new SceneAllLabelValuesTimeseries({
+        item,
+        headerActions: () => [
+          new SelectAction({ EventClass: EventSelectLabel, item }),
+          new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
+          new FavAction({ item }),
+        ],
+      }),
     });
   }
 

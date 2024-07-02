@@ -10,7 +10,6 @@ export type GridItemData = {
     groupBy?: {
       label: string;
       values: string[];
-      allValues: string[];
     };
     filters?: AdHocVariableFilter[];
   };

@@ -5,7 +5,6 @@ export type TimeSeriesQueryRunnerParams = {
   profileMetricId?: string;
   groupBy?: {
     label: string;
-    values: string[];
   };
   filters?: AdHocVariableFilter[];
 };

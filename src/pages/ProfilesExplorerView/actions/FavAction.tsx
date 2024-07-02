@@ -42,10 +42,9 @@ export class FavAction extends SceneObjectBase<FavActionState> {
       skipVariablesInterpolation ? item.queryRunnerParams : interpolateQueryRunnerVariables(this, item)
     ) as Favorite['queryRunnerParams'];
 
-    // we never store the label values because we will always refresh them when rendering the favorites timeseries
     if (queryRunnerParams.groupBy) {
       queryRunnerParams.groupBy = {
-        label: queryRunnerParams.groupBy.label,
+        label: queryRunnerParams.groupBy.label, // we don't store values, we'll fetch all timeseries by using the `groupBy` parameter
       };
     } else {
       delete queryRunnerParams.groupBy;

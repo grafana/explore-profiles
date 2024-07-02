@@ -38,7 +38,10 @@ const Events = new Map<EventContructor, { label?: string; icon?: IconName; toolt
   [EventSelectLabel, Object.freeze({ label: 'Select' })],
   [
     EventViewLabelValuesDistribution,
-    Object.freeze({ icon: 'list-ul', tooltip: 'View the distribution of all the values for the current filters' }),
+    Object.freeze({
+      icon: 'list-ul',
+      tooltip: "View the distribution of all this label's values for the current filters",
+    }),
   ],
   [EventViewServiceFlameGraph, Object.freeze({ label: 'Flame graph' })],
   [EventViewServiceLabels, Object.freeze({ label: 'Labels' })],
@@ -63,7 +66,6 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   }: {
     EventClass: EventContructor;
     item: SelectActionState['item'];
-    icon?: SelectActionState['icon'];
     tooltip?: SelectActionState['tooltip'];
     skipVariablesInterpolation?: SelectActionState['skipVariablesInterpolation'];
   }) {

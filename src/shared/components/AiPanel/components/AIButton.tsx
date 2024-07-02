@@ -19,11 +19,14 @@ export function AIButton({ children, className, onClick, disabled, interactionNa
   const { isEnabled, error, isFetching } = useFetchLlmPluginStatus();
 
   let icon: IconName = 'ai';
+  let title = '';
 
   if (error) {
     icon = 'shield-exclamation';
+    title = 'Grafana LLM plugin missing or not configured!';
   } else if (isFetching) {
     icon = 'fa fa-spinner';
+    title = 'Checking the status of the Grafana LLM plugin...';
   }
 
   const onClickInternal = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -36,7 +39,7 @@ export function AIButton({ children, className, onClick, disabled, interactionNa
       className={cx(className, styles.aiButton)}
       onClick={onClickInternal}
       disabled={!isEnabled || disabled}
-      title={isEnabled ? 'Ask FlameGrot AI' : 'Grafana LLM plugin missing or not configured!'}
+      title={isEnabled ? 'Ask FlameGrot AI' : title}
       icon={icon}
       fill="text"
     >

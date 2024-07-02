@@ -8,7 +8,7 @@ export function useFetchLlmPluginStatus() {
   });
 
   if (error) {
-    console.error('Error while checking for the Grafana LLM plugin!');
+    console.error('Error while checking the status of the Grafana LLM plugin!');
     console.error(error);
   }
 

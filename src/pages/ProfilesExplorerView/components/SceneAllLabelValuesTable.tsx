@@ -6,25 +6,23 @@ import {
   SceneObjectBase,
   SceneObjectState,
   VizPanel,
+  VizPanelState,
 } from '@grafana/scenes';
 import { TableCellDisplayMode } from '@grafana/ui';
 import React from 'react';
 
-import { SelectAction } from '../actions/SelectAction';
 import { getProfileMetricUnit } from '../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
-import { EventExpandPanel } from '../events/EventExpandPanel';
-import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
 
-interface SceneLabelValuesDistributionTableState extends SceneObjectState {
+interface SceneAllLabelValuesTableState extends SceneObjectState {
   item: GridItemData;
+  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   body?: VizPanel;
 }
 
-export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabelValuesDistributionTableState> {
+export class SceneAllLabelValuesTable extends SceneObjectBase<SceneAllLabelValuesTableState> {
   static DATA_TRANSFORMATIONS = [
     {
       id: 'reduce',
@@ -43,10 +41,17 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
     },
   ];
 
-  constructor({ item }: { item: SceneLabelValuesDistributionTableState['item'] }) {
+  constructor({
+    item,
+    headerActions,
+  }: {
+    item: SceneAllLabelValuesTableState['item'];
+    headerActions: SceneAllLabelValuesTableState['headerActions'];
+  }) {
     super({
       key: 'table-label-values-distribution',
       item,
+      headerActions,
       body: undefined,
     });
 
@@ -54,35 +59,32 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
   }
 
   onActivate() {
-    this.setState({
-      body: this.buildTable(),
-    });
+    const dataSub = this.buildTable();
+
+    return () => {
+      dataSub.unsubscribe();
+    };
   }
 
   buildTable() {
-    const { item } = this.state;
-
-    return PanelBuilders.table()
-      .setData(this.buildData())
-      .setDisplayMode('transparent')
-      .setHeaderActions([
-        new SelectAction({ EventClass: EventViewServiceLabels, item }),
-        new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-        new SelectAction({ EventClass: EventExpandPanel, item }),
-      ])
-      .setOption('sortBy', [{ displayName: 'Total', desc: true }])
-      .build();
-  }
-
-  buildData() {
-    const { queryRunnerParams } = this.state.item;
+    const { item, headerActions } = this.state;
+    const { queryRunnerParams } = item;
 
     const data = new SceneDataTransformer({
       $data: buildTimeSeriesQueryRunner(queryRunnerParams),
-      transformations: SceneLabelValuesDistributionTable.DATA_TRANSFORMATIONS,
+      transformations: SceneAllLabelValuesTable.DATA_TRANSFORMATIONS,
     });
 
-    data.subscribeToState((newState) => {
+    this.setState({
+      body: PanelBuilders.table()
+        .setData(data)
+        .setDisplayMode('transparent')
+        .setHeaderActions(headerActions(item))
+        .setOption('sortBy', [{ displayName: 'Total', desc: true }])
+        .build(),
+    });
+
+    return data.subscribeToState((newState) => {
       if (newState.data?.state !== LoadingState.Done) {
         return;
       }
@@ -121,11 +123,9 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
         },
       });
     });
-
-    return data;
   }
 
-  static Component({ model }: SceneComponentProps<SceneLabelValuesDistributionTable>) {
+  static Component({ model }: SceneComponentProps<SceneAllLabelValuesTable>) {
     const { body } = model.useState();
 
     return body && <body.Component model={body} />;

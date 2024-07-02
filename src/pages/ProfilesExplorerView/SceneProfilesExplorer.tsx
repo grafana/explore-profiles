@@ -24,9 +24,9 @@ import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
 
 import { GridItemData } from './components/SceneByVariableRepeaterGrid/GridItemData';
-import { SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
-import { SceneQuickFilter } from './components/SceneQuickFilter';
+import { SceneLayoutSwitcher } from './components/SceneByVariableRepeaterGrid/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from './components/SceneByVariableRepeaterGrid/SceneNoDataSwitcher';
+import { SceneQuickFilter } from './components/SceneByVariableRepeaterGrid/SceneQuickFilter';
 import { FavoritesDataSource } from './data/favorites/FavoritesDataSource';
 import { LabelsDataSource } from './data/labels/LabelsDataSource';
 import { SeriesDataSource } from './data/series/SeriesDataSource';
