@@ -1,17 +1,14 @@
 import { css } from '@emotion/css';
-import { AdHocVariableFilter, GrafanaTheme2, LoadingState } from '@grafana/data';
+import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
 import {
-  PanelBuilders,
   SceneComponentProps,
   SceneCSSGridItem,
-  SceneDataTransformer,
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
   VizPanel,
 } from '@grafana/scenes';
-import { Stack, TableCellDisplayMode, useStyles2 } from '@grafana/ui';
-import { merge } from 'lodash';
+import { Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { CompareAction } from '../../actions/CompareAction';
@@ -20,9 +17,9 @@ import { SelectAction } from '../../actions/SelectAction';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { SceneDrawer } from '../../components/SceneDrawer';
+import { SceneLabelValuesDistributionTable } from '../../components/SceneLabelValuesDistributionTable';
 import { SceneQuickFilter } from '../../components/SceneQuickFilter';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
-import { getProfileMetricUnit } from '../../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventAddLabelToFilters } from '../../events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
@@ -32,7 +29,6 @@ import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGr
 import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
-import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { SceneProfilesExplorer } from '../../SceneProfilesExplorer';
 import { addFilter } from '../../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
@@ -156,84 +152,12 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   openLabelValuesDistributionDrawer(item: GridItemData) {
-    const { queryRunnerParams } = item;
-    const { label, allValues } = queryRunnerParams.groupBy!;
-
-    const transformedData = new SceneDataTransformer({
-      $data: buildTimeSeriesQueryRunner(queryRunnerParams, true),
-      transformations: [
-        {
-          id: 'reduce',
-          options: {
-            labelsToFields: true,
-            reducers: ['mean', 'stdDev', 'sum'],
-          },
-        },
-        {
-          id: 'filterFieldsByName',
-          options: {
-            byVariable: false,
-            include: {
-              names: [label, 'Mean', 'StdDev', 'Total'],
-            },
-          },
-        },
-      ],
-    });
-
     const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-    const profileMetricUnit = getProfileMetricUnit(profileMetricId);
     const profileMetricLabel = getProfileMetricLabel(profileMetricId);
 
-    const tablePanel = PanelBuilders.table()
-      .setData(transformedData)
-      .setTitle(`${label} (${allValues!.length})`)
-      .setDisplayMode('transparent')
-      .setCustomFieldConfig('filterable', true)
-      .setCustomFieldConfig('cellOptions', { type: TableCellDisplayMode.ColorText })
-      .setColor({ mode: 'fixed', fixedColor: '#CCCCDC' })
-      .setUnit(profileMetricUnit)
-      .setOverrides((overrides) => {
-        overrides.matchFieldsWithName(queryRunnerParams.groupBy!.label).overrideUnit('string');
-      })
-      .setHeaderActions([
-        new SelectAction({ EventClass: EventSelectLabel, item }),
-        new SelectAction({ EventClass: EventExpandPanel, item }),
-      ])
-      .setOption('sortBy', [{ displayName: 'Total', desc: true }])
-      .build();
-
-    transformedData.subscribeToState((newState) => {
-      if (newState.data?.state !== LoadingState.Done) {
-        return;
-      }
-
-      const { fields } = newState.data.series[0];
-
-      const newFieldConfig = merge({}, tablePanel.state.fieldConfig, {
-        defaults: {
-          mappings: [
-            {
-              type: 'value',
-              options: fields[0].values.reduce((acc, value, j) => {
-                acc[value] = {
-                  text: value,
-                  color: getColorByIndex(j),
-                  index: j,
-                };
-                return acc;
-              }, {}),
-            },
-          ],
-        },
-      });
-
-      tablePanel.setState({ fieldConfig: newFieldConfig });
-    });
-
     this.state.drawer.open({
-      title: `${profileMetricLabel} values distribution for label "${queryRunnerParams.groupBy!.label}"`,
-      body: tablePanel,
+      title: `${profileMetricLabel} values distribution for label "${item.queryRunnerParams.groupBy!.label}"`,
+      body: new SceneLabelValuesDistributionTable({ item }),
     });
   }
 
@@ -247,7 +171,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     timeSeriesPanel.setState({
       title: label,
-      $data: buildTimeSeriesQueryRunner(queryRunnerParams, true),
+      description: '',
+      $data: buildTimeSeriesQueryRunner(queryRunnerParams),
       headerActions: [
         new SelectAction({ EventClass: EventSelectLabel, item }),
         new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
