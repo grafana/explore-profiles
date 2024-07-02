@@ -98,16 +98,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
     useEffect(() => {
-      sidePanel.onOpen(() => {
-        // crazy hack to have both panels occupy properly 50% of their parent
-        // if not, the flame graph panel includes the table and a bit of the flame graph (?!) and the
-        // side panel goes out of the boundaries of the viewport
-        // TODO: fix with useResizeObserver?
-        (document.querySelector('label[title="Only show flame graph"]') as HTMLElement)?.click();
-      });
-    }, [sidePanel]);
-
-    useEffect(() => {
       if (data.isLoading) {
         sidePanel.close();
       }
@@ -167,16 +157,15 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 const getStyles = (theme: GrafanaTheme2) => ({
   flex: css`
     display: flex;
-    gap: ${theme.spacing(1)};
-    width: 100%;
   `,
   flamegraphPanel: css`
-    min-width: 50%;
+    min-width: 0;
     flex-grow: 1;
   `,
   sidePanel: css`
     flex: 1 0 50%;
-    max-width: 50%;
+    margin-left: 8px;
+    max-width: calc(50% - 4px);
   `,
   spinner: css`
     margin-left: ${theme.spacing(1)};
