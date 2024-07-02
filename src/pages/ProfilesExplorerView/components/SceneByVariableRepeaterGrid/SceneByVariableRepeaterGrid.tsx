@@ -30,10 +30,10 @@ import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { ErrorStateScene } from '../ErrorState/ErrorStateScene';
-import { LayoutType, SceneLayoutSwitcher } from '../SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from '../SceneNoDataSwitcher';
-import { SceneQuickFilter } from '../SceneQuickFilter';
 import { GridItemData } from './GridItemData';
+import { LayoutType, SceneLayoutSwitcher } from './SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
+import { SceneQuickFilter } from './SceneQuickFilter';
 
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
   variableName: string;
