@@ -251,7 +251,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return groupByOptions.map(({ value }) => {
         const parsedValue = JSON.parse(value as string);
 
-        if (parsedValue.groupBy.allValues.length > 1) {
+        if (parsedValue.groupBy.values.length > 1) {
           return {
             // remove the count in the parentheses, because it's not updated dynamically when applying filters
             label: parsedValue.value,
@@ -261,6 +261,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
         // we need to add a filter for the "Flame graph", "Add to filters" and "Compare" actions to work
         return {
+          // remove the count in the parentheses, because it's not updated dynamically when applying filters
           label: parsedValue.value,
           value: JSON.stringify({
             ...parsedValue,
@@ -268,7 +269,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
               {
                 key: parsedValue.groupBy.label,
                 operator: '=',
-                value: parsedValue.groupBy.allValues[0],
+                value: parsedValue.groupBy.values[0],
               },
             ],
           }),
@@ -282,7 +283,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return [];
     }
 
-    return JSON.parse(currentOption.value as string).groupBy.allValues.map((labelValue: string) => {
+    return JSON.parse(currentOption.value as string).groupBy.values.map((labelValue: string) => {
       const valueObject = {
         value: labelValue,
         // we need to add a filter for the "Flame graph", "Add to filters" and "Compare" actions to work

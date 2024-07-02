@@ -96,10 +96,10 @@ export class LabelsDataSource extends RuntimeDataSource {
           .filter(({ value }) => !isPrivateLabel(value))
           .sort((a, b) => a.label.localeCompare(b.label))
           .map(async ({ value }) => {
-            const allLabelValues = (await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, value)).map(
+            const values = (await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, value)).map(
               ({ value }) => value
             );
-            const count = allLabelValues.length;
+            const count = values.length;
 
             return {
               // TODO: check if there's a better way
@@ -107,8 +107,7 @@ export class LabelsDataSource extends RuntimeDataSource {
                 value,
                 groupBy: {
                   label: value,
-                  values: allLabelValues.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES),
-                  allValues: allLabelValues,
+                  values,
                 },
               }),
               text: `${value} (${count})`,
