@@ -31,15 +31,21 @@ export class TimelineAndProfileApiClient extends ApiClient {
     }
 
     const response = await this.fetch(`/pyroscope/render?${searchParams.toString()}`);
-
     const json = await response.json();
 
-    this.lastTimeRange = [from, to];
-
+    this.setLastTimeRange(from, to);
     return json;
   }
 
+  setLastTimeRange(start: number, end: number): void {
+    this.lastTimeRange = [start, end];
+  }
+
   getLastTimeRange(): number[] {
+    if (this.lastTimeRange.length === 0) {
+      throw new Error('Last time range is not set');
+    }
+
     return this.lastTimeRange;
   }
 }
