@@ -39,11 +39,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   }
 
   onActivate() {
-    const timeSeriesPanel = findSceneObjectByKey(this, 'service-details-timeseries') as VizPanel;
+    const mainServiceTimeseries = findSceneObjectByKey(this, 'main-service-timeseries') as VizPanel;
 
-    this.setState({ title: timeSeriesPanel.state.title });
+    this.setState({ title: mainServiceTimeseries.state.title });
 
-    timeSeriesPanel.subscribeToState((newState) => {
+    mainServiceTimeseries.subscribeToState((newState) => {
       if (this.state.title !== newState.title) {
         this.setState({ title: newState.title });
       }
