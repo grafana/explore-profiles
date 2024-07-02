@@ -6,21 +6,19 @@ import {
   SceneObjectBase,
   SceneObjectState,
   VizPanel,
+  VizPanelState,
 } from '@grafana/scenes';
 import { TableCellDisplayMode } from '@grafana/ui';
 import React from 'react';
 
-import { SelectAction } from '../actions/SelectAction';
 import { getProfileMetricUnit } from '../data/series/helpers/getProfileMetricUnit';
 import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
-import { EventExpandPanel } from '../events/EventExpandPanel';
-import { EventViewServiceFlameGraph } from '../events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from '../events/EventViewServiceLabels';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
 
 interface SceneLabelValuesDistributionTableState extends SceneObjectState {
   item: GridItemData;
+  headerActions: VizPanelState['headerActions'];
   body?: VizPanel;
 }
 
@@ -43,10 +41,17 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
     },
   ];
 
-  constructor({ item }: { item: SceneLabelValuesDistributionTableState['item'] }) {
+  constructor({
+    item,
+    headerActions,
+  }: {
+    item: SceneLabelValuesDistributionTableState['item'];
+    headerActions: SceneLabelValuesDistributionTableState['headerActions'];
+  }) {
     super({
       key: 'table-label-values-distribution',
       item,
+      headerActions,
       body: undefined,
     });
 
@@ -63,7 +68,7 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
   }
 
   buildTable() {
-    const { item } = this.state;
+    const { item, headerActions } = this.state;
     const { queryRunnerParams } = item;
 
     const data = new SceneDataTransformer({
@@ -75,11 +80,7 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
       body: PanelBuilders.table()
         .setData(data)
         .setDisplayMode('transparent')
-        .setHeaderActions([
-          new SelectAction({ EventClass: EventViewServiceLabels, item }),
-          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-          new SelectAction({ EventClass: EventExpandPanel, item }),
-        ])
+        .setHeaderActions(headerActions)
         .setOption('sortBy', [{ displayName: 'Total', desc: true }])
         .build(),
     });

@@ -157,7 +157,14 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     this.state.drawer.open({
       title: `${profileMetricLabel} values distribution for label "${item.queryRunnerParams.groupBy!.label}"`,
-      body: new SceneLabelValuesDistributionTable({ item }),
+      body: new SceneLabelValuesDistributionTable({
+        item,
+        headerActions: [
+          new SelectAction({ EventClass: EventSelectLabel, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new SelectAction({ EventClass: EventExpandPanel, item }),
+        ],
+      }),
     });
   }
 

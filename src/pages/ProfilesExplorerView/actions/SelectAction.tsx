@@ -63,7 +63,6 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   }: {
     EventClass: EventContructor;
     item: SelectActionState['item'];
-    icon?: SelectActionState['icon'];
     tooltip?: SelectActionState['tooltip'];
     skipVariablesInterpolation?: SelectActionState['skipVariablesInterpolation'];
   }) {

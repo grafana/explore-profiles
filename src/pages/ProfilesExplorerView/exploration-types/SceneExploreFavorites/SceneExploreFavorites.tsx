@@ -87,7 +87,14 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   openLabelValuesDistributionDrawer(item: GridItemData) {
     this.state.drawer.open({
       title: item.label,
-      body: new SceneLabelValuesDistributionTable({ item }),
+      body: new SceneLabelValuesDistributionTable({
+        item,
+        headerActions: [
+          new SelectAction({ EventClass: EventViewServiceLabels, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new SelectAction({ EventClass: EventExpandPanel, item }),
+        ],
+      }),
     });
   }
 
