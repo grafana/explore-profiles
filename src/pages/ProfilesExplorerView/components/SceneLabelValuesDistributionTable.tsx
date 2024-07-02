@@ -54,35 +54,37 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
   }
 
   onActivate() {
-    this.setState({
-      body: this.buildTable(),
-    });
+    const dataSub = this.buildTable();
+
+    return () => {
+      console.log('*** unsubscribe', this);
+      dataSub.unsubscribe();
+    };
   }
 
   buildTable() {
     const { item } = this.state;
-
-    return PanelBuilders.table()
-      .setData(this.buildData())
-      .setDisplayMode('transparent')
-      .setHeaderActions([
-        new SelectAction({ EventClass: EventViewServiceLabels, item }),
-        new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-        new SelectAction({ EventClass: EventExpandPanel, item }),
-      ])
-      .setOption('sortBy', [{ displayName: 'Total', desc: true }])
-      .build();
-  }
-
-  buildData() {
-    const { queryRunnerParams } = this.state.item;
+    const { queryRunnerParams } = item;
 
     const data = new SceneDataTransformer({
       $data: buildTimeSeriesQueryRunner(queryRunnerParams),
       transformations: SceneLabelValuesDistributionTable.DATA_TRANSFORMATIONS,
     });
 
-    data.subscribeToState((newState) => {
+    this.setState({
+      body: PanelBuilders.table()
+        .setData(data)
+        .setDisplayMode('transparent')
+        .setHeaderActions([
+          new SelectAction({ EventClass: EventViewServiceLabels, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new SelectAction({ EventClass: EventExpandPanel, item }),
+        ])
+        .setOption('sortBy', [{ displayName: 'Total', desc: true }])
+        .build(),
+    });
+
+    return data.subscribeToState((newState) => {
       if (newState.data?.state !== LoadingState.Done) {
         return;
       }
@@ -121,8 +123,6 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
         },
       });
     });
-
-    return data;
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesDistributionTable>) {
