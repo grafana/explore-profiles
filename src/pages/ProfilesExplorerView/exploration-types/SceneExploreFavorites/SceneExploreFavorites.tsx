@@ -1,25 +1,17 @@
-import {
-  EmbeddedSceneState,
-  SceneComponentProps,
-  SceneCSSGridItem,
-  SceneObjectBase,
-  SceneVariableSet,
-  VizPanel,
-} from '@grafana/scenes';
+import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase, SceneVariableSet } from '@grafana/scenes';
 import React from 'react';
 
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
+import { SceneAllLabelValuesTable } from '../../components/SceneAllLabelValuesTable';
+import { SceneAllLabelValuesTimeseries } from '../../components/SceneAllLabelValuesTimeseries';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { SceneDrawer } from '../../components/SceneDrawer';
-import { SceneLabelValuesDistributionTable } from '../../components/SceneLabelValuesDistributionTable';
-import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
 import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
-import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
 import { FavoriteVariable } from '../../variables/FavoriteVariable';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
@@ -87,9 +79,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   openLabelValuesDistributionDrawer(item: GridItemData) {
     this.state.drawer.open({
       title: item.label,
-      body: new SceneLabelValuesDistributionTable({
+      body: new SceneAllLabelValuesTable({
         item,
-        headerActions: [
+        headerActions: () => [
           new SelectAction({ EventClass: EventViewServiceLabels, item }),
           new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
           new SelectAction({ EventClass: EventExpandPanel, item }),
@@ -99,32 +91,16 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
-    const timeSeriesPanel = (
-      findSceneObjectByKey(this, SceneByVariableRepeaterGrid.buildGridItemKey(item)) as SceneCSSGridItem
-    ).state.body!.clone() as VizPanel;
-
-    const { label, queryRunnerParams } = item;
-
-    timeSeriesPanel.setState({
-      title: '',
-      description: '',
-      $data: buildTimeSeriesQueryRunner(queryRunnerParams),
-      headerActions: (timeSeriesPanel.state.headerActions as SelectAction[]).filter(
-        (action) => action.state.EventClass !== EventExpandPanel
-      ),
-      fieldConfig: {
-        defaults: {
-          custom: {
-            fillOpacity: 0,
-          },
-        },
-        overrides: [],
-      },
-    });
-
     this.state.drawer.open({
-      title: label,
-      body: timeSeriesPanel,
+      title: item.label,
+      body: new SceneAllLabelValuesTimeseries({
+        item,
+        headerActions: () => [
+          new SelectAction({ EventClass: EventViewServiceLabels, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
+        ],
+      }),
     });
   }
 

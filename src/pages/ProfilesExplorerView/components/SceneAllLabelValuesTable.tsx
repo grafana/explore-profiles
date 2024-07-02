@@ -16,13 +16,13 @@ import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQu
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
 
-interface SceneLabelValuesDistributionTableState extends SceneObjectState {
+interface SceneAllLabelValuesTableState extends SceneObjectState {
   item: GridItemData;
-  headerActions: VizPanelState['headerActions'];
+  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   body?: VizPanel;
 }
 
-export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabelValuesDistributionTableState> {
+export class SceneAllLabelValuesTable extends SceneObjectBase<SceneAllLabelValuesTableState> {
   static DATA_TRANSFORMATIONS = [
     {
       id: 'reduce',
@@ -45,8 +45,8 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
     item,
     headerActions,
   }: {
-    item: SceneLabelValuesDistributionTableState['item'];
-    headerActions: SceneLabelValuesDistributionTableState['headerActions'];
+    item: SceneAllLabelValuesTableState['item'];
+    headerActions: SceneAllLabelValuesTableState['headerActions'];
   }) {
     super({
       key: 'table-label-values-distribution',
@@ -62,7 +62,6 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
     const dataSub = this.buildTable();
 
     return () => {
-      console.log('*** unsubscribe', this);
       dataSub.unsubscribe();
     };
   }
@@ -73,14 +72,14 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
 
     const data = new SceneDataTransformer({
       $data: buildTimeSeriesQueryRunner(queryRunnerParams),
-      transformations: SceneLabelValuesDistributionTable.DATA_TRANSFORMATIONS,
+      transformations: SceneAllLabelValuesTable.DATA_TRANSFORMATIONS,
     });
 
     this.setState({
       body: PanelBuilders.table()
         .setData(data)
         .setDisplayMode('transparent')
-        .setHeaderActions(headerActions)
+        .setHeaderActions(headerActions(item))
         .setOption('sortBy', [{ displayName: 'Total', desc: true }])
         .build(),
     });
@@ -126,7 +125,7 @@ export class SceneLabelValuesDistributionTable extends SceneObjectBase<SceneLabe
     });
   }
 
-  static Component({ model }: SceneComponentProps<SceneLabelValuesDistributionTable>) {
+  static Component({ model }: SceneComponentProps<SceneAllLabelValuesTable>) {
     const { body } = model.useState();
 
     return body && <body.Component model={body} />;
