@@ -3,7 +3,7 @@ import {
   PLACEHOLDER_COMMIT_DATA,
   privateVcsClient,
 } from '@shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
-import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -37,8 +37,7 @@ export function useFetchFunctionsDetails({
 }: FetchParams): FetchResponse {
   // we get the timerange that was used for fetching the main timeline and flamegraph data to ensure data consistency
   // (see https://github.com/grafana/pyroscope-squad/issues/131)
-  const [timeRange] = useTimeRangeFromUrl();
-  const [start, end] = [timeRange.from.unix() * 1000, timeRange.to.unix() * 1000];
+  const [start, end] = timelineAndProfileApiClient.getLastTimeRange();
 
   const { isFetching, error, data } = useQuery({
     enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0),
