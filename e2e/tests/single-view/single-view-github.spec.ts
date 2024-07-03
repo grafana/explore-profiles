@@ -48,11 +48,7 @@ test.describe('GitHub integration', () => {
     );
   });
 
-  // TODO(bryan): After changing how the function details component gets time
-  // ranges, this test is not as specific as it should be. Since we're deprecating
-  // the single view page, we can ignore this for now. We should update this
-  // test once we migrate the github integration over to Scenes.
-  test.skip('When a relative timerange is selected, it uses the same fixed timerange for querying the flame graph & function details', async ({
+  test('When a relative timerange is selected, it uses the same fixed timerange for querying the flame graph & function details', async ({
     singleViewPage,
   }) => {
     let renderParams = '';
