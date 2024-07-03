@@ -31,14 +31,6 @@
   "includes": [
     {
       "type": "page",
-      "name": "Tag explorer",
-      "path": "/a/%PLUGIN_ID%/tag-explorer",
-      "role": "Viewer",
-      "addToNav": true,
-      "defaultNav": false
-    },
-    {
-      "type": "page",
       "name": "Explore profiles",
       "path": "/a/%PLUGIN_ID%/profiles-explorer",
       "role": "Viewer",

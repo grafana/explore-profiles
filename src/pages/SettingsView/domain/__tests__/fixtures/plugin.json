@@ -22,18 +22,6 @@
     },
     "includes": [
       {
-        "name": "Tag Explorer",
-        "path": "/a/grafana-pyroscope-app/tag-explorer",
-        "type": "page",
-        "component": "",
-        "role": "Viewer",
-        "addToNav": true,
-        "defaultNav": false,
-        "slug": "tag-explorer",
-        "icon": "",
-        "uid": ""
-      },
-      {
         "name": "Single View",
         "path": "/a/grafana-pyroscope-app/single",
         "type": "page",

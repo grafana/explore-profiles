@@ -8,7 +8,6 @@ import { ComparisonView } from '../../../pages/ComparisonView/ComparisonView';
 import { ProfilesExplorerView } from '../../../pages/ProfilesExplorerView/ProfilesExplorerView';
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
 import { SingleView } from '../../../pages/SingleView/SingleView';
-import { TagExplorerView } from '../../../pages/TagExplorer/TagExplorer';
 import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
 
 export function Routes() {
@@ -16,8 +15,8 @@ export function Routes() {
 
   return (
     <Switch>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.EXPLORE_VIEW)} exact>
-        <TagExplorerView />
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
+        <ProfilesExplorerView />
       </Route>
       <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
         <ProfilesExplorerView />
@@ -39,7 +38,7 @@ export function Routes() {
       </Route>
       {/* Default Route */}
       <Route>
-        <Redirect to={prefixRouteWithPluginBaseUrl(ROUTES.EXPLORE_VIEW)} />
+        <Redirect to={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} />
       </Route>
     </Switch>
   );
