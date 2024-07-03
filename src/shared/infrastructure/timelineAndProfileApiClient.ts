@@ -15,8 +15,7 @@ export class TimelineAndProfileApiClient extends ApiClient {
 
   async get(query: string, timeRange: TimeRange, maxNodes: number | null): Promise<TimelineAndProfileResponse> {
     // /pyroscope/render requests: timerange can be YYYYDDMM, Unix time, Unix time in ms (unix * 1000)
-    const from = Number(dateTimeParse(timeRange.raw.from).unix()) * 1000;
-    const to = Number(dateTimeParse(timeRange.raw.to).unix()) * 1000;
+    const [from, to] = this._toUnixMs(timeRange);
 
     const searchParams = new URLSearchParams({
       query,
@@ -31,16 +30,30 @@ export class TimelineAndProfileApiClient extends ApiClient {
     }
 
     const response = await this.fetch(`/pyroscope/render?${searchParams.toString()}`);
-
     const json = await response.json();
 
-    this.lastTimeRange = [from, to];
-
+    this._setLastTimeRange(from, to);
     return json;
   }
 
+  setLastTimeRange(range: TimeRange): void {
+    this.lastTimeRange = this._toUnixMs(range);
+  }
+
   getLastTimeRange(): number[] {
+    if (this.lastTimeRange.length === 0) {
+      throw new Error('Last time range is not set');
+    }
+
     return this.lastTimeRange;
+  }
+
+  private _setLastTimeRange(from: number, to: number): void {
+    this.lastTimeRange = [from, to];
+  }
+
+  private _toUnixMs(range: TimeRange): number[] {
+    return [Number(dateTimeParse(range.raw.from).unix()) * 1000, Number(dateTimeParse(range.raw.to).unix()) * 1000];
   }
 }
 
