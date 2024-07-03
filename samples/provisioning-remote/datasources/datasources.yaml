@@ -5,11 +5,11 @@ datasources:
     type: grafana-pyroscope-datasource
     name: 🔥 Dev (profiles-dev-001)
     url: $REMOTE_BACKEND_URL
+    isDefault: true
     basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
     basicAuthUser: $REMOTE_BASIC_AUTH_USER
     secureJsonData:
       basicAuthPassword: $REMOTE_BASIC_AUTH_PASSWORD
-    isDefault: true
     keepCookies: [GitSession]
