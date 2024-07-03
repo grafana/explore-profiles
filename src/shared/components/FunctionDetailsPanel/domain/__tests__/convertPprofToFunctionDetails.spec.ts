@@ -15,6 +15,7 @@ jest.mock('@grafana/runtime', () => ({
         isDefault: true,
         type: 'grafana-pyroscope-datasource',
         name: 'Test Data Source',
+        jsonData: {},
       },
     },
   },

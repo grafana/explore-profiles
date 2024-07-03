@@ -1,10 +1,5 @@
 # Contributing to Grafana Pyroscope App Plugin
 
-> [!NOTE]
-> The plugin code base still depends on the [Pyroscope OSS](https://github.com/grafana/pyroscope) code base.
-
-Please check the [related documentation](./CONTRIBUTING-PYROSCOPE-DEPENDENCY.md) to understand what it implies.
-
 ## Requirements
 
 - [Git](https://git-scm.com/downloads)

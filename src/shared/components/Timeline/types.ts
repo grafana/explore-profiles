@@ -1,11 +1,48 @@
 import { TimeRange } from '@grafana/data';
-import { ContextMenuProps } from '@pyroscope/components/TimelineChart/ContextMenu.plugin';
-import type { TooltipCallbackProps } from '@pyroscope/components/TimelineChart/Tooltip.plugin';
-import type { Group } from '@pyroscope/legacy/models';
-import { Annotation } from '@pyroscope/models/annotation';
-import type { Timeline } from '@pyroscope/models/timeline';
 import Color from 'color';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+
+interface Timeline {
+  startTime: number;
+  samples: number[];
+  durationDelta: number;
+}
+
+interface Annotation {
+  content: string;
+  timestamp: number;
+}
+
+interface Group {
+  watermark?: Record<string, any>;
+  // timeline data
+  startTime: number;
+  samples: number[];
+  durationDelta: number;
+}
+
+interface TooltipCallbackProps {
+  timeLabel: string;
+  values: Array<{
+    closest: number[];
+    color: number[];
+    // TODO: remove this
+    tagName: string;
+  }>;
+  coordsToCanvasPos?: any;
+  canvasX?: number;
+}
+
+interface ContextMenuProps {
+  click: {
+    /** The X position in the window where the click originated */
+    pageX: number;
+    /** The Y position in the window where the click originated */
+    pageY: number;
+  };
+  timestamp: number;
+  containerEl: HTMLElement;
+}
 
 interface TimelineGroupData {
   data: Group;
