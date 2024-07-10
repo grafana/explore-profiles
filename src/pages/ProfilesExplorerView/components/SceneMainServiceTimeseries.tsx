@@ -7,14 +7,11 @@ import {
   VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
-import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
 import React from 'react';
 
 import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { buildtimeSeriesPanelTitle } from '../helpers/buildtimeSeriesPanelTitle';
-import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
@@ -63,21 +60,6 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     });
 
     this.setState({ body });
-
-    const globalTimeRangeState = findSceneObjectByClass(this, SceneProfilesExplorer).state.$timeRange;
-    if (globalTimeRangeState) {
-      timelineAndProfileApiClient.setLastTimeRange(globalTimeRangeState.state.value);
-    }
-
-    const timeRangeSubscription = globalTimeRangeState?.subscribeToState((newState) => {
-      if (newState.value) {
-        timelineAndProfileApiClient.setLastTimeRange(newState.value);
-      }
-    });
-
-    return () => {
-      timeRangeSubscription?.unsubscribe();
-    };
   }
 
   static Component({ model }: SceneComponentProps<SceneMainServiceTimeseries>) {

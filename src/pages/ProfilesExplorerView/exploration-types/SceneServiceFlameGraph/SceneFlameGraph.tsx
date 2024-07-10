@@ -11,6 +11,7 @@ import { displayWarning } from '@shared/domain/displayStatus';
 import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useEffect, useMemo } from 'react';
 
@@ -74,6 +75,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
     const profileData = $dataState?.data?.series[0];
     const hasProfileData = Number(profileData?.length) > 1;
+
+    if ($dataState.data?.timeRange) {
+      timelineAndProfileApiClient.setLastTimeRange($dataState.data?.timeRange);
+    }
 
     return {
       data: {
