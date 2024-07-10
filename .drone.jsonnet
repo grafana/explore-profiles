@@ -1,9 +1,7 @@
 // this file is based on the one from grafana/phlare
 
 local dockerGoImage = 'golang:1.20.4';
-local dockerGrafanaImage = 'grafana/grafana:9.4.2';
 local dockerNodeImage = 'node:20-bullseye';
-local dockerE2EImage = 'mcr.microsoft.com/playwright:v1.29.2-focal';
 local dockerGrafanaPluginCIImage = 'grafana/grafana-plugin-ci-e2e:latest';
 
 local step(name, commands, image=dockerGoImage) = {
@@ -167,16 +165,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       'yarn install --immutable',
     ], image=dockerNodeImage),
 
-    step('build backend packages', [
-      'mage -v build:linux',
-      'mage -v build:darwin',
-      'mage -v build:darwinARM64',
-      'mage -v build:linuxARM',
-      'mage -v build:linuxARM64',
-      'mage -v build:windows',
-      'mage -v build:generateManifestFile',
-    ], image=dockerGrafanaPluginCIImage),
-
     step('build frontend packages', [
       'export NODE_ENV=production',
       'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
@@ -185,7 +173,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     ], image=dockerNodeImage) + {
       depends_on: [
         'install dependencies',
-        'build backend packages',
       ],
     },
 
