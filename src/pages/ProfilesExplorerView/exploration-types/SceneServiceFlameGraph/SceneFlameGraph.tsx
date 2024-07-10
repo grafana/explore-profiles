@@ -77,7 +77,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const hasProfileData = Number(profileData?.length) > 1;
 
     if ($dataState.data?.timeRange) {
-      timelineAndProfileApiClient.setLastTimeRange($dataState.data?.timeRange);
+      timelineAndProfileApiClient.setLastTimeRange($dataState.data.timeRange);
     }
 
     return {
