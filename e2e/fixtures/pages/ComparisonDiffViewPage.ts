@@ -52,4 +52,21 @@ export class ComparisonDiffViewPage extends PyroscopePage {
   getDiffPanel() {
     return this.page.getByTestId('diff-panel');
   }
+
+  getFlamegraph() {
+    return this.page.getByTestId('flameGraph');
+  }
+
+  getExportDataButton() {
+    return this.page.getByLabel('Export data');
+  }
+
+  // default position = node "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.(*Handler).ServeHTTP"
+  clickOnFlameGraphNode(position = { x: 180, y: 160 }) {
+    return this.getFlamegraph().click({ position });
+  }
+
+  getFunctionDetailsMenuItem() {
+    return this.getByRole('menuitem', { name: 'Function details' });
+  }
 }

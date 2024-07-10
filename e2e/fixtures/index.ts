@@ -6,11 +6,9 @@ import { AdHocViewPage } from './pages/AdHocViewPage';
 import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
 import { ComparisonViewPage } from './pages/ComparisonViewPage';
 import { SettingsPage } from './pages/SettingsPage';
-import { SingleViewPage } from './pages/SingleViewPage';
 
 type Fixtures = {
   toolbar: Toolbar;
-  singleViewPage: SingleViewPage;
   comparisonViewPage: ComparisonViewPage;
   comparisonDiffViewPage: ComparisonDiffViewPage;
   adHocViewPage: AdHocViewPage;
@@ -42,12 +40,6 @@ export const test = base.extend<Options & Fixtures>({
   failOnUncaughtExceptions: [false, { option: true }],
   toolbar: async ({ page }, use) => {
     await use(new Toolbar(page));
-  },
-  singleViewPage: async ({ page, failOnUncaughtExceptions }, use) => {
-    await withExceptionsAssertion(
-      { page, failOnUncaughtExceptions, use },
-      new SingleViewPage(page, DEFAULT_URL_PARAMS)
-    );
   },
   comparisonViewPage: async ({ page, failOnUncaughtExceptions }, use) => {
     await withExceptionsAssertion(

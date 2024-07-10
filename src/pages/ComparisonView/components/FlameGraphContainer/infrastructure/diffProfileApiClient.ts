@@ -9,6 +9,7 @@ type GetParams = {
   leftTimeRange: TimeRange;
   rightQuery: string;
   rightTimeRange: TimeRange;
+  maxNodes: number | null;
 };
 
 class DiffProfileApiClient extends ApiClient {
@@ -27,6 +28,10 @@ class DiffProfileApiClient extends ApiClient {
       rightFrom: String(rightFrom),
       rightUntil: String(rightUntil),
     });
+
+    if (params.maxNodes) {
+      searchParams.set('max-nodes', String(params.maxNodes));
+    }
 
     const response = await this.fetch(`/pyroscope/render-diff?${searchParams.toString()}`);
 

@@ -7,6 +7,7 @@ import { useUrlSearchParams } from '@shared/domain/url-params/useUrlSearchParams
 import { queryClient } from '@shared/infrastructure/react-query/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { Onboarding } from './components/Onboarding/Onboarding';
 import { Routes } from './components/Routes/Routes';
@@ -37,6 +38,19 @@ function reloadWithNewUrl() {
 export function App() {
   const { searchParams } = useUrlSearchParams();
   const showUrlDeprecationBanner = searchParams.has('until');
+
+  const history = useHistory();
+  const shouldRedirectSingleView = history.location.pathname.includes('/single');
+
+  if (shouldRedirectSingleView) {
+    const searchParams = new URLSearchParams(history.location.search);
+    searchParams.set('explorationType', 'flame-graph');
+
+    history.replace({
+      pathname: history.location.pathname.replace('/single', '/profiles-explorer'),
+      search: searchParams.toString(),
+    });
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
