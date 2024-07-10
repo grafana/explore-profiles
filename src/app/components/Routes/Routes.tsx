@@ -7,7 +7,6 @@ import { AdHocView } from '../../../pages/AdHocView/AdHocView';
 import { ComparisonView } from '../../../pages/ComparisonView/ComparisonView';
 import { ProfilesExplorerView } from '../../../pages/ProfilesExplorerView/ProfilesExplorerView';
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
-import { SingleView } from '../../../pages/SingleView/SingleView';
 import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
 
 export function Routes() {
@@ -20,9 +19,6 @@ export function Routes() {
       </Route>
       <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
         <ProfilesExplorerView />
-      </Route>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SINGLE_VIEW)} exact>
-        <SingleView />
       </Route>
       <Route path={prefixRouteWithPluginBaseUrl(ROUTES.COMPARISON_VIEW)} exact>
         <ComparisonView diff={false} />
