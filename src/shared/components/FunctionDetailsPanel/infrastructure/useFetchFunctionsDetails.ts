@@ -3,7 +3,7 @@ import {
   PLACEHOLDER_COMMIT_DATA,
   privateVcsClient,
 } from '@shared/components/GitHubContextProvider/infrastructure/PrivateVcsClient';
-import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-profile/timelineAndProfileApiClient';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 

@@ -1,7 +1,7 @@
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useRightQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useRightTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
-import { useFetchTimelineAndProfile } from '@shared/infrastructure/useFetchTimelineAndProfile';
+import { useFetchTimelineAndProfile } from '@shared/infrastructure/timeline-profile/useFetchTimelineAndProfile';
 
 export function useFetchRightProfile() {
   const [query] = useRightQueryFromUrl();

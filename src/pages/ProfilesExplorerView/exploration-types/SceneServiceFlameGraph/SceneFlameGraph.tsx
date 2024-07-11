@@ -6,12 +6,12 @@ import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
-import { Panel } from '@shared/components/Panel';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+import { Panel } from '@shared/ui/Panel/Panel';
 import React, { useEffect, useMemo } from 'react';
 
 import { buildFlameGraphQueryRunner } from '../../data/flame-graph/buildFlameGraphQueryRunner';
