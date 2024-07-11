@@ -8,6 +8,7 @@ import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
+import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
@@ -54,21 +55,24 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
+    const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
     const { $data, title } = this.useState();
 
+    if (isFetchingSettingsError) {
+      displayWarning([
+        'Error while retrieving the plugin settings!',
+        'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
+      ]);
+    }
+
     useEffect(() => {
-      if (isFetchingSettingsError) {
-        displayWarning([
-          'Error while retrieving the plugin settings!',
-          'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
-        ]);
-      } else if (settings) {
+      if (maxNodes) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes: settings?.maxNodes }),
+          $data: buildFlameGraphQueryRunner({ maxNodes }),
         });
       }
-    }, [isFetchingSettingsError, settings]);
+    }, [maxNodes]);
 
     const $dataState = $data!.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
