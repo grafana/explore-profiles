@@ -247,19 +247,21 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       },
     } + mainOnly,
 
-    step('publish zip to GCS with latest', [], image='plugins/gcs') + {
-      depends_on: [
-        'package and sign',
-      ],
-      settings: {
-        acl: 'allUsers:READER',
-        source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
-        target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-latest.zip',
-        token: {
-          from_secret: 'gcs_service_account_key',
-        },
-      },
-    } + releaseOnly,
+    // TODO(@petethepig): Uncomment when we know this works
+
+    // step('publish zip to GCS with latest', [], image='plugins/gcs') + {
+    //   depends_on: [
+    //     'package and sign',
+    //   ],
+    //   settings: {
+    //     acl: 'allUsers:READER',
+    //     source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
+    //     target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-latest.zip',
+    //     token: {
+    //       from_secret: 'gcs_service_account_key',
+    //     },
+    //   },
+    // } + releaseOnly,
 
     step('publish zip to GCS with tag', [], image='plugins/gcs') + {
       depends_on: [
@@ -275,12 +277,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         },
       },
     } + releaseOnly,
-    uploadStep('darwin_amd64'),
-    uploadStep('darwin_arm64'),
-    uploadStep('linux_amd64'),
-    uploadStep('linux_arm'),
-    uploadStep('linux_arm64'),
-    uploadStep('windows_amd64'),
     step('publish release to Github', [], image='plugins/github-release') + {
       settings: {
         api_key: {
