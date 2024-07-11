@@ -48,7 +48,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
     this.setState(stateUpdate);
   }
 
-  onChange = (e: any) => {
+  onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ searchText: e.target.value });
   };
 
@@ -69,7 +69,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
           prefix={<Icon name="search" />}
           suffix={<IconButton name="times" aria-label="Clear search" onClick={model.clear} />}
           onChange={model.onChange}
-          onKeyDown={(e: any) => {
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === 'Escape') {
               model.clear();
             }

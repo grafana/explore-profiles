@@ -1,10 +1,10 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Alert, Button, IconButton, Spinner, useStyles2 } from '@grafana/ui';
-import { Panel } from '@shared/components/Panel';
+import { Panel } from '@shared/ui/Panel/Panel';
 import React from 'react';
 
-import { InlineBanner } from '../InlineBanner';
+import { InlineBanner } from '../../ui/InlineBanner';
 import { AiReply } from './components/AiReply';
 import { FollowUpForm } from './components/FollowUpForm';
 import { useAiPanel } from './domain/useAiPanel';

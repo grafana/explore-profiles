@@ -56,8 +56,6 @@ function init(): Faro | undefined {
     app: {
       name: env.appName,
       version: GIT_COMMIT,
-      // TODO: capture version from git tags when building
-      //      version: '1.0.0',
     },
   });
 }
