@@ -52,7 +52,7 @@ jobs:
           cache: 'yarn'
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       # lint
       - name: Check TS types
@@ -101,12 +101,13 @@ jobs:
       - name: Make backend build executable
         run: chmod +x dist/gpx_pyroscope_app_*
 
-      # e2e tests
+      # E2E tests
+      # switch to "npm run" in order to prevent "Usage Error: Couldn't find the node_modules state file - running an install might help (findPackageLocation)" when using yarn
       - name: Start Grafana server
-        run: yarn e2e:ci:server:up
+        run: npm run e2e:ci:server:up
 
       - name: Prepare e2e tests
-        run: yarn e2e:ci:prepare
+        run: npm run e2e:ci:prepare
 
       # commented to save time during the build (building this action takes ~30s)
       # the next step "Prepare e2e test" takes ~20s, which gives us the time needed
@@ -119,10 +120,10 @@ jobs:
       #     interval: 500
 
       - name: Launch e2e tests
-        run: yarn e2e:ci
+        run: npm run e2e:ci
 
       - name: Stop Grafana server
-        run: yarn e2e:ci:server:down
+        run: npm run e2e:ci:server:down
 
       - uses: actions/upload-artifact@v4
         if: always()

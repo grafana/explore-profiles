@@ -4,6 +4,7 @@
 
 - [Git](https://git-scm.com/downloads)
 - [Node.js](https://nodejs.org/en) v20
+- [Yarn](https://yarnpkg.com/) v4
 - [Go](https://go.dev/learn/)
 - [Docker](https://www.docker.com/get-started/) or [OrbStack](https://orbstack.dev/download) (lighter alternative)
 
