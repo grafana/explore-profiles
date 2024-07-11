@@ -7,7 +7,7 @@ import {
   VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
-import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-profile/timelineAndProfileApiClient';
 import React from 'react';
 
 import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';

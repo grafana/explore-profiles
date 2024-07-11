@@ -55,7 +55,7 @@ export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherStat
         showLabel
         label="Hide panels without data"
         value={hideNoData === 'on'}
-        onChange={(event: any) => model.onChange(event.target.checked ? 'on' : 'off')}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => model.onChange(event.target.checked ? 'on' : 'off')}
       />
     );
   };

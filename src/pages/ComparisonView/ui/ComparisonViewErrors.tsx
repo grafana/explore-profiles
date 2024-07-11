@@ -1,4 +1,4 @@
-import { InlineBanner } from '@shared/components/InlineBanner';
+import { InlineBanner } from '@shared/ui/InlineBanner';
 import React from 'react';
 
 type ComparisonViewErrorsProps = {

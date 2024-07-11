@@ -50,7 +50,6 @@ export function SingleTimeline({ timeRange, onSelectTimeRange, color, timeline, 
       timezone={timezone}
       selectionType="single"
       selection={wrapperSelection}
-      // TODO: FIXME
       onSelect={noOp}
       onSelectTimeRange={onSelectTimeRange}
     />
