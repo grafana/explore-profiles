@@ -16,7 +16,7 @@
     "e2e:local:codegen": "playwright codegen",
     "e2e:local:prepare": "npx playwright install --with-deps chromium",
     "e2e:local:server": "docker-compose down --remove-orphans && docker-compose -f docker-compose.e2e.yaml up --build --abort-on-container-exit",
-    "e2e:local:watch": "yarn e2e:local -- --ui",
+    "e2e:local:watch": "yarn e2e:local --ui",
     "format:fix": "prettier --write .",
     "postinstall": "husky install",
     "lint": "eslint --cache --ignore-path ./.gitignore --ext .js,.jsx,.ts,.tsx .",
