@@ -60,6 +60,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.16.7",
+    "@commitlint/cli": "^18.6.1",
+    "@commitlint/config-conventional": "^18.6.2",
     "@grafana/eslint-config": "^6.0.1",
     "@grafana/tsconfig": "^1.2.0-rc1",
     "@playwright/test": "^1.45.0",
