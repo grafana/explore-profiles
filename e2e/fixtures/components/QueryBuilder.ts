@@ -13,7 +13,7 @@ export class QueryBuilder {
     return this.page.locator(this.selector);
   }
 
-  async addFilter(parts: any[]) {
+  async addFilter(parts: string[]) {
     await this.get().getByRole('combobox').click();
 
     const selectMenu = this.page.getByLabel('Select options menu');

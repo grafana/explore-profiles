@@ -2,7 +2,9 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 
 import { ServiceToProfileMetricsMap } from './SeriesApiClient';
 
-function findServiceNameAndProfileMetricId(labels: Array<{ name: string; value: string }>) {
+type Labels = Array<{ name: string; value: string }>;
+
+function findServiceNameAndProfileMetricId(labels: Labels) {
   let serviceName;
   let profileMetricId;
 
@@ -23,7 +25,7 @@ function findServiceNameAndProfileMetricId(labels: Array<{ name: string; value: 
   return [];
 }
 
-export function formatSeriesResponse(data: any): ServiceToProfileMetricsMap {
+export function formatSeriesResponse(data: { labelsSet: Array<{ labels: Labels }> }): ServiceToProfileMetricsMap {
   const services: ServiceToProfileMetricsMap = new Map();
 
   if (!data.labelsSet) {
