@@ -8,6 +8,7 @@ import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
+import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
@@ -54,6 +55,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
+    const maxNodes = useMaxNodesFromUrl()[0] as number;
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
     const { $data, title } = this.useState();
 
@@ -65,10 +67,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         ]);
       } else if (settings) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes: settings?.maxNodes }),
+          $data: buildFlameGraphQueryRunner({ maxNodes }),
         });
       }
-    }, [isFetchingSettingsError, settings]);
+    }, [isFetchingSettingsError, settings, maxNodes]);
 
     const $dataState = $data!.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
