@@ -55,22 +55,24 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
-    const maxNodes = useMaxNodesFromUrl()[0] as number;
+    const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
     const { $data, title } = this.useState();
 
+    if (isFetchingSettingsError) {
+      displayWarning([
+        'Error while retrieving the plugin settings!',
+        'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
+      ]);
+    }
+
     useEffect(() => {
-      if (isFetchingSettingsError) {
-        displayWarning([
-          'Error while retrieving the plugin settings!',
-          'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
-        ]);
-      } else if (settings) {
+      if (maxNodes) {
         this.setState({
           $data: buildFlameGraphQueryRunner({ maxNodes }),
         });
       }
-    }, [isFetchingSettingsError, settings, maxNodes]);
+    }, [maxNodes]);
 
     const $dataState = $data!.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
