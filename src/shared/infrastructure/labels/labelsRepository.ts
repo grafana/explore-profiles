@@ -20,7 +20,7 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheCl
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
 
-  static parseLabelsResponse(json: any): Suggestions {
+  static parseLabelsResponse(json: Record<string, any>): Suggestions {
     if (!Array.isArray(json.names)) {
       return [];
     }
@@ -30,7 +30,7 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheCl
     return uniqueLabels.map((label) => ({ value: label, label }));
   }
 
-  static parseLabelValuesResponse(json: any): Suggestions {
+  static parseLabelValuesResponse(json: Record<string, any>): Suggestions {
     if (!Array.isArray(json.names)) {
       return [];
     }

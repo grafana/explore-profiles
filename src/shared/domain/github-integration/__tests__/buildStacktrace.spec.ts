@@ -2,7 +2,7 @@ import { DataFrame, FieldType } from '@grafana/data';
 
 import { buildStacktrace } from '../buildStacktrace';
 
-const buildLevelItem = (level: number, itemIndexes: number[], parents: any[]): any => ({
+const buildLevelItem = (level: number, itemIndexes: number[], parents: any[]): Record<string, any> => ({
   level,
   itemIndexes,
   parents,

@@ -28,7 +28,7 @@ test.describe('Plugin Settings', () => {
   });
 
   test.describe('Flame graph settings', () => {
-    test('Can be modified', async ({ settingsPage, singleViewPage }) => {
+    test('Can be modified', async ({ settingsPage, comparisonDiffViewPage }) => {
       await settingsPage.resetTestSettings();
 
       await settingsPage.getCollapsedFlamegraphsCheckbox().click();
@@ -36,36 +36,22 @@ test.describe('Plugin Settings', () => {
       await settingsPage.getSaveSettingsButton().click();
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
-      await singleViewPage.goto();
-      await expect(singleViewPage.getFlamegraph()).toHaveScreenshot();
+      await comparisonDiffViewPage.goto();
+      await expect(comparisonDiffViewPage.getFlamegraph()).toHaveScreenshot();
     });
   });
 
   test.describe('Export settings', () => {
-    test('Can be modified', async ({ settingsPage, singleViewPage }) => {
+    test('Can be modified', async ({ settingsPage, comparisonDiffViewPage }) => {
       await settingsPage.resetTestSettings();
 
       await settingsPage.getEnableFlamegraphDotComCheckbox().click();
       await settingsPage.getSaveSettingsButton().click();
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
-      await singleViewPage.goto();
-      await singleViewPage.getExportDataButton().click();
-      await expect(singleViewPage.getByText('flamegraph.com')).not.toBeVisible();
-    });
-  });
-
-  test.describe('Enable Function Details', () => {
-    test('Can be modified', async ({ settingsPage, singleViewPage }) => {
-      await settingsPage.resetTestSettings();
-
-      await settingsPage.getEnableFunctionDetailsCheckbox().click();
-      await settingsPage.getSaveSettingsButton().click();
-      await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
-
-      await singleViewPage.goto();
-      await singleViewPage.clickOnFlameGraphNode();
-      expect(singleViewPage.getFunctionDetailsMenuItem()).not.toBeVisible();
+      await comparisonDiffViewPage.goto();
+      await comparisonDiffViewPage.getExportDataButton().click();
+      await expect(comparisonDiffViewPage.getByText('flamegraph.com')).not.toBeVisible();
     });
   });
 });

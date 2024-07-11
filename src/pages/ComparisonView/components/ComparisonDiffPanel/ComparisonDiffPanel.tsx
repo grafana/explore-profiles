@@ -3,8 +3,8 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
-import { Panel } from '@shared/components/Panel';
 import { SidePanel } from '@shared/domain/useToggleSidePanel';
+import { Panel } from '@shared/ui/Panel/Panel';
 import React, { ReactNode } from 'react';
 
 export const getStyles = (theme: GrafanaTheme2) => ({

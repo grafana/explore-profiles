@@ -379,7 +379,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       const timeSeriesPanel = PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(data)
-        .setMin(0)
         .setHeaderActions(headerActions(item))
         .build();
 
@@ -419,6 +418,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           : undefined,
         fieldConfig: {
           defaults: {
+            min: 0,
             custom: {
               fillOpacity: series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
               gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,

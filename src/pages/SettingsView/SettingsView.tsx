@@ -84,8 +84,11 @@ export function SettingsView() {
                         GitHub integration is configured, then the source code will be downloaded from GitHub.
                       </div>
                       <div>
-                        {/* TODO(bryan): Update this with the live GitHub integration docs when they go live. */}
-                        <a href="https://grafana.com/docs/" target="_blank" rel="noreferrer noopener">
+                        <a
+                          href="https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/"
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
                           Learn more
                         </a>
                       </div>

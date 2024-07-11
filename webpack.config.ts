@@ -19,8 +19,7 @@ const config = async (env): Promise<Configuration> => {
   // required
   swcLoaderJsc.baseUrl = path.join(process.cwd(), 'src');
 
-  // TODO: remove me when Pyroscope OSS migration is finished
-  // Decorators are only used in pyroscope/public/app/components/ExportData.tsx
+  // Decorators are only used in src/shared/components/FlameGraph/components/infrastructure/PprofRequest.ts
   swcLoaderJsc.parser.decorators = true;
 
   // Don't minified React component names in devtools

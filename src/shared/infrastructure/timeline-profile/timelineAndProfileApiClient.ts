@@ -2,7 +2,7 @@ import { dateTimeParse, TimeRange } from '@grafana/data';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { Timeline } from '@shared/types/Timeline';
 
-import { ApiClient } from './http/ApiClient';
+import { ApiClient } from '../http/ApiClient';
 
 type TimelineAndProfileResponse = FlamebearerProfile & {
   timeline: Timeline;
@@ -42,7 +42,7 @@ export class TimelineAndProfileApiClient extends ApiClient {
 
   getLastTimeRange(): number[] {
     if (this.lastTimeRange.length === 0) {
-      throw new Error('Last time range is not set');
+      throw new Error('Internal error: last time range is not set!');
     }
 
     return this.lastTimeRange;

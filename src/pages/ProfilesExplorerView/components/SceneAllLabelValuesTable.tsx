@@ -92,7 +92,6 @@ export class SceneAllLabelValuesTable extends SceneObjectBase<SceneAllLabelValue
       this.state.body!.setState({
         fieldConfig: {
           defaults: {
-            color: { mode: 'fixed', fixedColor: '#CCCCDC' },
             custom: {
               filterable: true,
               cellOptions: {

@@ -1,4 +1,5 @@
 import { useLeftRightParamsFromUrl } from '@shared/domain/url-params/useLeftRightParamsFromUrl';
+import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useQuery } from '@tanstack/react-query';
 
 import { diffProfileApiClient } from './diffProfileApiClient';
@@ -8,6 +9,7 @@ type FetchParams = {
 };
 
 export function useFetchDiffProfile({ disabled }: FetchParams) {
+  const [maxNodes] = useMaxNodesFromUrl();
   const { left, right } = useLeftRightParamsFromUrl();
 
   const { isFetching, error, data, refetch } = useQuery({
@@ -37,6 +39,7 @@ export function useFetchDiffProfile({ disabled }: FetchParams) {
       right.query,
       right.timeRange.raw.from.toString(),
       right.timeRange.raw.to.toString(),
+      maxNodes,
     ],
     queryFn: () => {
       diffProfileApiClient.abort();
@@ -46,6 +49,7 @@ export function useFetchDiffProfile({ disabled }: FetchParams) {
         leftTimeRange: left.timeRange,
         rightQuery: right.query,
         rightTimeRange: right.timeRange,
+        maxNodes,
       };
 
       return diffProfileApiClient.get(params).then((json) => ({

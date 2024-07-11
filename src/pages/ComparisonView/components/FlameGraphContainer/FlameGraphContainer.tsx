@@ -1,5 +1,5 @@
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
-import { InlineBanner } from '@shared/components/InlineBanner';
+import { InlineBanner } from '@shared/ui/InlineBanner';
 import React, { useEffect } from 'react';
 
 import { useFlameGraphContainer } from './domain/useFlameGraphContainer';

@@ -39,14 +39,6 @@
     },
     {
       "type": "page",
-      "name": "Single view",
-      "path": "/a/%PLUGIN_ID%/single",
-      "role": "Viewer",
-      "addToNav": true,
-      "defaultNav": false
-    },
-    {
-      "type": "page",
       "name": "Comparison view",
       "path": "/a/%PLUGIN_ID%/comparison",
       "role": "Viewer",
