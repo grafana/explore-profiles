@@ -5,11 +5,11 @@ set -o nounset
 set -o pipefail
 
 mkdir -p ./gpx_files
-mv ./dist/gpx_* ./gpx_files
+# mv ./dist/gpx_* ./gpx_files
 
 DRONE_BUILD_NUMBER=$1
 
-# if we ever need to build for multiple platforms, we can use this array (plus don't forget to adjust the mv command below):
+# if we ever need to build for multiple platforms, we can use this array (plus don't forget to adjust the mv command below and above):
 # platforms=("darwin_amd64" "darwin_arm64" "linux_amd64" "linux_arm" "linux_arm64" "windows_amd64.exe")
 
 platforms=("linux_amd64")
