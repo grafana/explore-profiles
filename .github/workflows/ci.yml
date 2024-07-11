@@ -102,8 +102,8 @@ jobs:
         run: chmod +x dist/gpx_pyroscope_app_*
 
       # E2E tests
-      # required to prevent "Usage Error: Couldn't find the node_modules state file - running an install might help (findPackageLocation)"
       - name: Install dependencies
+        # required to prevent "Usage Error: Couldn't find the node_modules state file - running an install might help (findPackageLocation)"
         run: yarn install --immutable
 
       - name: Start Grafana server
