@@ -76,7 +76,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const $dataState = $data!.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
-    const profileData = $dataState?.data?.series[0];
+    const profileData = $dataState?.data?.series?.[0];
     const hasProfileData = Number(profileData?.length) > 1;
 
     return {
