@@ -16,7 +16,7 @@ response=$(curl \
     \"any\": {
       \"url\": \"https://storage.googleapis.com/$BUCKET/releases/$PLUGIN_ID-$VERSION-linux_amd64.zip\",
       \"md5\": \"$(md5sum "$PLUGIN_ID-$BUILD_ID-linux_amd64.zip" | awk '{ print $1 }')\"
-    },
+    }
   }
 }")
 
