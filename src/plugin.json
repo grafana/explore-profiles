@@ -3,8 +3,7 @@
   "type": "app",
   "name": "Profiles",
   "id": "grafana-pyroscope-app",
-  "backend": true,
-  "executable": "gpx_pyroscope_app",
+  "backend": false,
   "dependencies": {
     "grafanaDependency": ">=10.4.3",
     "plugins": []
