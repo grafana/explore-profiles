@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, IconName, useStyles2 } from '@grafana/ui';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { merge } from 'lodash';
 import React from 'react';
 
@@ -16,6 +17,7 @@ import {
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
+import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 
 type EventContructor =
   | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
@@ -26,13 +28,38 @@ type EventContructor =
   | (new (payload: EventViewServiceLabelsPayload) => EventViewServiceLabels)
   | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
 
-const Events = new Map<EventContructor, { label?: string; icon?: IconName; tooltip?: string }>([
-  [EventAddLabelToFilters, Object.freeze({ label: 'Add to filters' })],
+type EventLookup = {
+  label?: string;
+  icon?: IconName;
+  tooltip?: (item: GridItemData, model: SceneObject) => string;
+};
+
+const Events = new Map<EventContructor, EventLookup>([
+  [
+    EventAddLabelToFilters,
+    Object.freeze({
+      label: 'Add to filters',
+      tooltip: (item, model) => {
+        const groupByValue = getSceneVariableValue(model, 'groupBy');
+
+        if (groupByValue === 'all' && item.queryRunnerParams.groupBy) {
+          if (item.queryRunnerParams.groupBy) {
+            const { label, values } = item.queryRunnerParams.groupBy;
+            return `Add "${label}=${values[0]}" to the filters`;
+          }
+
+          return 'Add this label value to the filters'; // just in case, should not happen
+        }
+
+        return `Add "${groupByValue}=${item.label}" to the filters`;
+      },
+    }),
+  ],
   [
     EventExpandPanel,
     Object.freeze({
       icon: 'expand-arrows',
-      tooltip: 'Expand this panel to view all the timeseries for the current filters',
+      tooltip: () => 'Expand this panel to view all the timeseries for the current filters',
     }),
   ],
   [EventSelectLabel, Object.freeze({ label: 'Select' })],
@@ -40,12 +67,40 @@ const Events = new Map<EventContructor, { label?: string; icon?: IconName; toolt
     EventViewLabelValuesDistribution,
     Object.freeze({
       icon: 'list-ul',
-      tooltip: "View the distribution of all this label's values for the current filters",
+      tooltip: (item) => `View the distribution of all the "${item.label}" values for the current filters`,
     }),
   ],
-  [EventViewServiceFlameGraph, Object.freeze({ label: 'Flame graph' })],
-  [EventViewServiceLabels, Object.freeze({ label: 'Labels' })],
-  [EventViewServiceProfiles, Object.freeze({ label: 'Profiles' })],
+  [
+    EventViewServiceFlameGraph,
+    Object.freeze({
+      label: 'Flame graph',
+      tooltip: ({ queryRunnerParams }, model) => {
+        const serviceName = queryRunnerParams.serviceName || getSceneVariableValue(model, 'serviceName');
+        const profileMetricId = queryRunnerParams.profileMetricId || getSceneVariableValue(model, 'profileMetricId');
+        return `View the "${getProfileMetric(profileMetricId as ProfileMetricId).type}" flame graph of ${serviceName}`;
+      },
+    }),
+  ],
+  [
+    EventViewServiceLabels,
+    Object.freeze({
+      label: 'Labels',
+      tooltip: ({ queryRunnerParams }, model) => {
+        const serviceName = queryRunnerParams.serviceName || getSceneVariableValue(model, 'serviceName');
+        return `Explore the labels of ${serviceName}`;
+      },
+    }),
+  ],
+  [
+    EventViewServiceProfiles,
+    Object.freeze({
+      label: 'Profile types',
+      tooltip: ({ queryRunnerParams }, model) => {
+        const serviceName = queryRunnerParams.serviceName || getSceneVariableValue(model, 'serviceName');
+        return `View the profile types of ${serviceName}`;
+      },
+    }),
+  ],
 ]);
 
 interface SelectActionState extends SceneObjectState {
@@ -53,7 +108,7 @@ interface SelectActionState extends SceneObjectState {
   item: GridItemData;
   label?: string;
   icon?: IconName;
-  tooltip?: string;
+  tooltip?: EventLookup['tooltip'];
   skipVariablesInterpolation?: boolean;
 }
 
@@ -98,7 +153,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
 
   public static Component = ({ model }: SceneComponentProps<SelectAction>) => {
     const styles = useStyles2(getStyles);
-    const { label, icon, tooltip } = model.useState();
+    const { label, icon, tooltip, item } = model.useState();
 
     return (
       <Button
@@ -108,7 +163,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
         fill="text"
         onClick={model.onClick}
         icon={icon}
-        tooltip={tooltip}
+        tooltip={tooltip?.(item, model)}
         tooltipPlacement="top"
       >
         {label}
