@@ -21,13 +21,13 @@ import { debounce, merge } from 'lodash';
 import React from 'react';
 import { map, Observable } from 'rxjs';
 
+import { FavAction } from '../../actions/FavAction';
+import { FavoritesDataSource } from '../../data/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
-import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { ErrorStateScene } from '../ErrorState/ErrorStateScene';
 import { GridItemData } from './GridItemData';
@@ -40,12 +40,33 @@ interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
   dependentVariableNames: string[];
   items: GridItemData[];
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+  sortItemsFn: (a: GridItemData, b: GridItemData) => number;
   hideNoData: boolean;
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
+
 const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
+
+const DEFAULT_SORT_ITEMS_FN: SceneByVariableRepeaterGridState['sortItemsFn'] = function (a, b) {
+  const aIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(a));
+  const bIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(b));
+
+  if (aIsFav && bIsFav) {
+    return a.label.localeCompare(b.label);
+  }
+
+  if (bIsFav) {
+    return +1;
+  }
+
+  if (aIsFav) {
+    return -1;
+  }
+
+  return 0;
+};
 
 export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
   static DEFAULT_LAYOUT = LayoutType.GRID;
@@ -84,11 +105,13 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     variableName,
     dependentVariableNames,
     headerActions,
+    sortItemsFn,
   }: {
     key: string;
     variableName: SceneByVariableRepeaterGridState['variableName'];
     dependentVariableNames: SceneByVariableRepeaterGridState['dependentVariableNames'];
     headerActions: SceneByVariableRepeaterGridState['headerActions'];
+    sortItemsFn?: SceneByVariableRepeaterGridState['sortItemsFn'];
   }) {
     super({
       key,
@@ -96,10 +119,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       dependentVariableNames,
       items: [],
       headerActions,
+      sortItemsFn: sortItemsFn || DEFAULT_SORT_ITEMS_FN,
       hideNoData: false,
       body: new SceneCSSGridLayout({
-        templateColumns:
-          SceneByVariableRepeaterGrid.DEFAULT_LAYOUT === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+        templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(SceneByVariableRepeaterGrid.DEFAULT_LAYOUT),
         autoRows: GRID_AUTO_ROWS,
         isLazy: true,
         $behaviors: [
@@ -151,6 +174,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       refreshSub.unsubscribe();
       variableSub.unsubscribe();
     };
+  }
+
+  static getGridColumnsTemplate(layout: LayoutType) {
+    return layout === LayoutType.ROWS ? GRID_TEMPLATE_ROWS : GRID_TEMPLATE_COLUMNS;
   }
 
   subscribeToRefreshClick() {
@@ -210,7 +237,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     ) => {
       if (newState.layout !== prevState?.layout) {
         body.setState({
-          templateColumns: newState.layout === LayoutType.GRID ? GRID_TEMPLATE_COLUMNS : GRID_TEMPLATE_ROWS,
+          templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(newState.layout),
         });
       }
     };
@@ -305,8 +332,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
   buildItemsData(variable: QueryVariable) {
     const { name: variableName } = variable.state;
-    const serviceName = getSceneVariableValue(this, ServiceNameVariable);
-    const profileMetricId = getSceneVariableValue(this, ProfileMetricVariable);
+    const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
 
     const items = this.getCurrentOptions(variable).map((option, i) => {
       try {
@@ -346,7 +373,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       }
     });
 
-    return this.filterItems(items);
+    return this.filterItems(items).sort(this.state.sortItemsFn);
   }
 
   // TODO: prevent too many re-renders

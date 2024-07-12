@@ -32,4 +32,13 @@ export const DEFAULT_URL_PARAMS = ENV_VARS.E2E_BASE_URL.startsWith('http://local
     })
   : new URLSearchParams();
 
+export const DEFAULT_EXPLORE_PROFILES_URL_PARAMS = ENV_VARS.E2E_BASE_URL.startsWith('http://localhost')
+  ? new URLSearchParams({
+      // We use static data in local and PR build (where the host is http://localhost):
+      from: '2024-03-13T18:00:00.000Z',
+      to: '2024-03-13T18:50:00.000Z', //
+      maxNodes: '16384',
+    })
+  : new URLSearchParams();
+
 export const AUTH_FILE = path.join(process.cwd(), 'e2e', 'auth', 'user.json');

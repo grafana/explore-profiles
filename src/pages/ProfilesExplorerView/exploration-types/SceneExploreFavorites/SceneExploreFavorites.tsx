@@ -27,6 +27,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
         key: 'favorites-grid',
         variableName: 'favorite',
         dependentVariableNames: [],
+        sortItemsFn: (a, b) => a.label.localeCompare(b.label),
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [
             new SelectAction({ EventClass: EventViewServiceLabels, item, skipVariablesInterpolation: true }),
@@ -38,13 +39,13 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
               new SelectAction({
                 EventClass: EventViewLabelValuesDistribution,
                 item,
-                tooltip: 'View the distribution of all the values',
+                tooltip: (item) => `View the distribution of all the "${item.queryRunnerParams.groupBy!.label}" values`,
                 skipVariablesInterpolation: true,
               }),
               new SelectAction({
                 EventClass: EventExpandPanel,
                 item,
-                tooltip: 'Expand this panel to view all the timeseries',
+                tooltip: () => 'Expand this panel to view all the timeseries',
                 skipVariablesInterpolation: true,
               })
             );

@@ -35,30 +35,40 @@ export class FavAction extends SceneObjectBase<FavActionState> {
     return FavoritesDataSource.exists(this.buildFavorite());
   }
 
-  buildFavorite(): Favorite {
-    const { item, skipVariablesInterpolation } = this.state;
+  static buildFavorite(item: GridItemData): Favorite {
+    const { index, queryRunnerParams } = item;
 
-    const queryRunnerParams = (
-      skipVariablesInterpolation ? item.queryRunnerParams : interpolateQueryRunnerVariables(this, item)
-    ) as Favorite['queryRunnerParams'];
+    const favorite: Favorite = {
+      index,
+      queryRunnerParams: {
+        serviceName: queryRunnerParams.serviceName as string,
+        profileMetricId: queryRunnerParams.profileMetricId as string,
+      },
+    };
 
     if (queryRunnerParams.groupBy) {
-      queryRunnerParams.groupBy = {
+      favorite.queryRunnerParams.groupBy = {
         label: queryRunnerParams.groupBy.label, // we don't store values, we'll fetch all timeseries by using the `groupBy` parameter
       };
-    } else {
-      delete queryRunnerParams.groupBy;
     }
 
     // we don't store filters if empty
-    if (!queryRunnerParams.filters?.length) {
-      delete queryRunnerParams.filters;
+    if (queryRunnerParams.filters?.length) {
+      favorite.queryRunnerParams.filters = queryRunnerParams.filters;
     }
 
-    return {
+    return favorite;
+  }
+
+  buildFavorite(): Favorite {
+    const { item, skipVariablesInterpolation } = this.state;
+
+    return FavAction.buildFavorite({
       index: item.index,
-      queryRunnerParams,
-    };
+      queryRunnerParams: skipVariablesInterpolation
+        ? item.queryRunnerParams
+        : interpolateQueryRunnerVariables(this, item),
+    } as GridItemData);
   }
 
   public onClick = () => {

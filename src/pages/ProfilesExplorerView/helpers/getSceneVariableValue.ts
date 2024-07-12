@@ -1,7 +1,5 @@
-import { MultiValueVariable, SceneObject } from '@grafana/scenes';
+import { sceneGraph, SceneObject } from '@grafana/scenes';
 
-import { findSceneObjectByClass } from './findSceneObjectByClass';
-
-export function getSceneVariableValue(sceneObject: SceneObject, VariableClass: Function): string {
-  return (findSceneObjectByClass(sceneObject, VariableClass) as MultiValueVariable).state.value as string;
+export function getSceneVariableValue(sceneObject: SceneObject, variableName: string): string {
+  return sceneGraph.lookupVariable(variableName, sceneObject)?.getValue() as string;
 }

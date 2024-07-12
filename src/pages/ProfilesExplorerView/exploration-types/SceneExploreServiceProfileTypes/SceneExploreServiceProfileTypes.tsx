@@ -7,12 +7,12 @@ import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRep
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
 
-interface SceneExploreSingleServiceState extends EmbeddedSceneState {}
+interface SceneExploreServiceProfileTypesState extends EmbeddedSceneState {}
 
-export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingleServiceState> {
+export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExploreServiceProfileTypesState> {
   constructor() {
     super({
-      key: 'explore-single-service',
+      key: 'explore-service-profile-types',
       body: new SceneByVariableRepeaterGrid({
         key: 'profile-metrics-grid',
         variableName: 'profileMetricId',
@@ -26,7 +26,7 @@ export class SceneExploreSingleService extends SceneObjectBase<SceneExploreSingl
     });
   }
 
-  static Component({ model }: SceneComponentProps<SceneExploreSingleService>) {
+  static Component({ model }: SceneComponentProps<SceneExploreServiceProfileTypes>) {
     const { body } = model.useState();
 
     return <body.Component model={body} />;

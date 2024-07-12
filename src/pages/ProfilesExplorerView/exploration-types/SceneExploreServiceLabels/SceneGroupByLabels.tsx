@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
 import { CompareAction } from '../../actions/CompareAction';
@@ -19,8 +20,8 @@ import { EventExpandPanel } from '../../events/EventExpandPanel';
 import { EventSelectLabel } from '../../events/EventSelectLabel';
 import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
-import { buildtimeSeriesPanelTitle } from '../../helpers/buildtimeSeriesPanelTitle';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
+import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { SceneProfilesExplorer } from '../../SceneProfilesExplorer';
 import { addFilter } from '../../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
@@ -144,8 +145,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   openLabelValuesDistributionDrawer(item: GridItemData) {
-    const profileMetricId = sceneGraph.lookupVariable('profileMetricId', this)?.getValue() as string;
-    const profileMetricLabel = getProfileMetricLabel(profileMetricId);
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    const profileMetricLabel = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
     this.state.drawer.open({
       title: `${profileMetricLabel} values distribution for label "${item.queryRunnerParams.groupBy!.label}"`,
@@ -162,7 +163,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   openExpandedPanelDrawer(item: GridItemData) {
     this.state.drawer.open({
-      title: buildtimeSeriesPanelTitle(this),
+      title: this.buildtimeSeriesPanelTitle(item),
       body: new SceneAllLabelValuesTimeseries({
         item,
         headerActions: () => [
@@ -172,6 +173,12 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         ],
       }),
     });
+  }
+
+  buildtimeSeriesPanelTitle(item: GridItemData) {
+    const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    return `${serviceName} · ${getProfileMetricLabel(profileMetricId)} · ${item.label}`;
   }
 
   static Component = ({ model }: SceneComponentProps<SceneGroupByLabels>) => {
