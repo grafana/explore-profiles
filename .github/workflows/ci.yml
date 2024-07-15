@@ -9,37 +9,6 @@ on:
       - main
 
 jobs:
-  backend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Go environment
-        if: steps.check-for-backend.outputs.has-backend == 'true'
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.19'
-
-      - name: Install Mage
-        uses: magefile/mage-action@v3
-        with:
-          version: latest
-          install-only: true
-
-      - name: Test backend
-        if: steps.check-for-backend.outputs.has-backend == 'true'
-        run: mage coverage
-
-      - name: Build backend (linux only)
-        run: mage build:linux
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: build-backend
-          path: dist
-          retention-days: 1
-
   frontend:
     runs-on: ubuntu-latest
     steps:
@@ -81,7 +50,7 @@ jobs:
   end-to-end:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [backend, frontend]
+    needs: [frontend]
     steps:
       - uses: actions/checkout@v4
 
@@ -97,9 +66,6 @@ jobs:
           pattern: build-*
           merge-multiple: true
           path: dist
-
-      - name: Make backend build executable
-        run: chmod +x dist/gpx_pyroscope_app_*
 
       # E2E tests
       # switch to "npm run" in order to prevent "Usage Error: Couldn't find the node_modules state file - running an install might help (findPackageLocation)" when using yarn
