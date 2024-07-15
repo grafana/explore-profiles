@@ -7,11 +7,13 @@ import {
   VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
+import { getProfileMetricLabel } from '../data/series/helpers/getProfileMetricLabel';
 import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
-import { buildtimeSeriesPanelTitle } from '../helpers/buildtimeSeriesPanelTitle';
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
@@ -26,7 +28,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     variableNames: ['dataSource', 'serviceName', 'profileMetricId'],
     onVariableUpdateCompleted: () => {
       this.state.body?.setState({
-        title: buildtimeSeriesPanelTitle(this),
+        title: this.buildTitle(),
       });
     },
   });
@@ -47,7 +49,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     };
 
     const body = PanelBuilders.timeseries()
-      .setTitle(buildtimeSeriesPanelTitle(this))
+      .setTitle(this.buildTitle())
       .setData(buildTimeSeriesQueryRunner({}))
       .setMin(0)
       .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
@@ -60,6 +62,12 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     });
 
     this.setState({ body });
+  }
+
+  buildTitle() {
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    const { description } = getProfileMetric(profileMetricId as ProfileMetricId);
+    return description || getProfileMetricLabel(profileMetricId);
   }
 
   static Component({ model }: SceneComponentProps<SceneMainServiceTimeseries>) {

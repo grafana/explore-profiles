@@ -1,27 +1,27 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState } from '@grafana/data';
 import { FlameGraph } from '@grafana/flamegraph';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner, VizPanel } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
-import { Panel } from '@shared/components/Panel';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
+import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { timelineAndProfileApiClient } from '@shared/infrastructure/timelineAndProfileApiClient';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-profile/timelineAndProfileApiClient';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+import { Panel } from '@shared/ui/Panel/Panel';
 import React, { useEffect, useMemo } from 'react';
 
 import { buildFlameGraphQueryRunner } from '../../data/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../data/pyroscope-data-sources';
-import { findSceneObjectByKey } from '../../helpers/findSceneObjectByKey';
+import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 
-interface SceneFlameGraphState extends SceneObjectState {
-  title?: string;
-}
+interface SceneFlameGraphState extends SceneObjectState {}
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
 // without success: the flame graph dimensions are set in runtime and do not change when the user resizes the layout
@@ -29,25 +29,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   constructor() {
     super({
       key: 'flame-graph',
-      title: undefined,
       $data: new SceneQueryRunner({
         datasource: PYROSCOPE_DATA_SOURCE,
         queries: [],
       }),
-    });
-
-    this.addActivationHandler(this.onActivate.bind(this));
-  }
-
-  onActivate() {
-    const mainServiceTimeseries = findSceneObjectByKey(this, 'main-service-timeseries') as VizPanel;
-
-    this.setState({ title: mainServiceTimeseries.state.title });
-
-    mainServiceTimeseries.subscribeToState((newState) => {
-      if (this.state.title !== newState.title) {
-        this.setState({ title: newState.title });
-      }
     });
   }
 
@@ -55,26 +40,33 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
+    const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, title } = this.useState();
+    const { $data } = this.useState();
+
+    if (isFetchingSettingsError) {
+      displayWarning([
+        'Error while retrieving the plugin settings!',
+        'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
+      ]);
+    }
 
     useEffect(() => {
-      if (isFetchingSettingsError) {
-        displayWarning([
-          'Error while retrieving the plugin settings!',
-          'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
-        ]);
-      } else if (settings) {
+      if (maxNodes) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes: settings?.maxNodes }),
+          $data: buildFlameGraphQueryRunner({ maxNodes }),
         });
       }
-    }, [isFetchingSettingsError, settings]);
+    }, [maxNodes]);
 
     const $dataState = $data!.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
-    const profileData = $dataState?.data?.series[0];
+    const profileData = $dataState?.data?.series?.[0];
     const hasProfileData = Number(profileData?.length) > 1;
+
+    const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
     if ($dataState.data?.timeRange) {
       timelineAndProfileApiClient.setLastTimeRange($dataState.data.timeRange);
@@ -82,7 +74,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     return {
       data: {
-        timeSeriesTitle: title,
+        title: `${serviceName} flame graph (${profileMetricType})`,
         isLoading: isFetchingProfileData,
         isFetchingProfileData,
         hasProfileData,
@@ -111,11 +103,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const panelTitle = useMemo(
       () => (
         <>
-          {data.timeSeriesTitle}
+          {data.title}
           {data.isLoading && <Spinner inline className={styles.spinner} />}
         </>
       ),
-      [data.isLoading, data.timeSeriesTitle, styles.spinner]
+      [data.isLoading, data.title, styles.spinner]
     );
 
     return (

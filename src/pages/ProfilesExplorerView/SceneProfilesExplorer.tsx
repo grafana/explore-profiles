@@ -36,7 +36,7 @@ import { EventViewServiceProfiles } from './events/EventViewServiceProfiles';
 import { SceneExploreAllServices } from './exploration-types/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from './exploration-types/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from './exploration-types/SceneExploreServiceLabels/SceneExploreServiceLabels';
-import { SceneExploreSingleService } from './exploration-types/SceneExploreSingleService/SceneExploreSingleService';
+import { SceneExploreServiceProfileTypes } from './exploration-types/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
 import { SceneServiceFlameGraph } from './exploration-types/SceneServiceFlameGraph/SceneServiceFlameGraph';
 import { findSceneObjectByClass } from './helpers/findSceneObjectByClass';
 import { FiltersVariable } from './variables/FiltersVariable/FiltersVariable';
@@ -53,9 +53,9 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
 
 export enum ExplorationType {
   ALL_SERVICES = 'all',
-  SINGLE_SERVICE = 'single',
-  SINGLE_SERVICE_LABELS = 'labels',
-  SINGLE_SERVICE_FLAME_GRAPH = 'flame-graph',
+  PROFILE_TYPES = 'profiles',
+  LABELS = 'labels',
+  FLAME_GRAPH = 'flame-graph',
   FAVORITES = 'favorites',
 }
 
@@ -64,27 +64,27 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     {
       value: ExplorationType.ALL_SERVICES,
       label: 'All services',
-      description: '', // no tooltip (see src/pages/ProfilesExplorerView/SceneProfilesExplorer/ExplorationTypeSelector.tsx)
+      description: 'Overview of all services, for any given profile type',
     },
     {
-      value: ExplorationType.SINGLE_SERVICE,
-      label: 'Single service',
-      description: '',
+      value: ExplorationType.PROFILE_TYPES,
+      label: 'Profile types',
+      description: 'Overview of all the profile types for a single service',
     },
     {
-      value: ExplorationType.SINGLE_SERVICE_LABELS,
+      value: ExplorationType.LABELS,
       label: 'Labels',
-      description: '',
+      description: 'Single service label exploration and filtering',
     },
     {
-      value: ExplorationType.SINGLE_SERVICE_FLAME_GRAPH,
+      value: ExplorationType.FLAME_GRAPH,
       label: 'Flame graph',
-      description: '',
+      description: 'Single service flame graph',
     },
     {
       value: ExplorationType.FAVORITES,
       label: 'Favorites',
-      description: '',
+      description: 'Overview of favorited visualizations',
     },
   ];
 
@@ -177,19 +177,19 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const profilesSub = this.subscribeToEvent(EventViewServiceProfiles, (event) => {
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE, event.payload.item);
+      this.setExplorationType(ExplorationType.PROFILE_TYPES, event.payload.item);
     });
 
     const labelsSub = this.subscribeToEvent(EventViewServiceLabels, (event) => {
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE_LABELS, event.payload.item);
+      this.setExplorationType(ExplorationType.LABELS, event.payload.item);
     });
 
     const flameGraphSub = this.subscribeToEvent(EventViewServiceFlameGraph, (event) => {
       (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
-      this.setExplorationType(ExplorationType.SINGLE_SERVICE_FLAME_GRAPH, event.payload.item);
+      this.setExplorationType(ExplorationType.FLAME_GRAPH, event.payload.item);
     });
 
     return {
@@ -216,17 +216,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     let primary;
 
     switch (explorationType) {
-      case ExplorationType.SINGLE_SERVICE:
-        primary = new SceneExploreSingleService();
+      case ExplorationType.PROFILE_TYPES:
+        primary = new SceneExploreServiceProfileTypes();
 
-        this.updateQuickFilterPlaceholder('Search profile metrics (comma-separated regexes are supported)');
+        this.updateQuickFilterPlaceholder('Search profile types (comma-separated regexes are supported)');
         break;
 
-      case ExplorationType.SINGLE_SERVICE_LABELS:
+      case ExplorationType.LABELS:
         primary = new SceneExploreServiceLabels();
         break;
 
-      case ExplorationType.SINGLE_SERVICE_FLAME_GRAPH:
+      case ExplorationType.FLAME_GRAPH:
         primary = new SceneServiceFlameGraph();
         break;
 
@@ -303,14 +303,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           gridControls: this.state.gridControls,
         };
 
-      case ExplorationType.SINGLE_SERVICE:
+      case ExplorationType.PROFILE_TYPES:
         return {
           variables: [dataSourceVariable, serviceNameVariable],
           gridControls: this.state.gridControls,
         };
 
-      case ExplorationType.SINGLE_SERVICE_LABELS:
-      case ExplorationType.SINGLE_SERVICE_FLAME_GRAPH:
+      case ExplorationType.LABELS:
+      case ExplorationType.FLAME_GRAPH:
         return {
           // note that SceneGroupByLabels will directly get groupByVariable and gridControls as the layout is a bit different
           variables: [dataSourceVariable, serviceNameVariable, profileMetricVariable, filtersVariable],
@@ -334,9 +334,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       GroupByVariable.DEFAULT_VALUE
     );
 
-    if (
-      ![ExplorationType.SINGLE_SERVICE_LABELS, ExplorationType.SINGLE_SERVICE_FLAME_GRAPH].includes(explorationType)
-    ) {
+    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType)) {
       (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
         filters: FiltersVariable.DEFAULT_VALUE,
       });
@@ -371,37 +369,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       <>
         <div className={styles.header}>
           <div className={styles.controls}>
-            <Stack justifyContent="space-between" wrap="wrap">
+            <Stack justifyContent="space-between">
               <Stack>
                 <div className={styles.dataSourceVariable}>
                   <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
                   <dataSourceVariable.Component model={dataSourceVariable} />
                 </div>
 
-                <div className={styles.explorationType}>
-                  <InlineLabel
-                    width="auto"
-                    tooltip={
-                      <div className={styles.tooltipContent}>
-                        <h5>Types of exploration</h5>
-                        <dl>
-                          <dt>All services</dt>
-                          <dd>Overview of all services, for any given profile metric</dd>
-                          <dt>Single service</dt>
-                          <dd>Overview of all the profile metrics for a single service</dd>
-                          <dt>Labels</dt>
-                          <dd>Single service label exploration and filtering</dd>
-                          <dt>Flame graph</dt>
-                          <dd>Single service flame graph</dd>
-                          <dt>Favorites</dt>
-                          <dd>Overview of favorited visualizations</dd>
-                        </dl>
-                      </div>
-                    }
-                  >
-                    Exploration type
-                  </InlineLabel>
-
+                <div className={styles.explorationType} data-testid="exploration-types">
+                  <InlineLabel width="auto">Exploration type</InlineLabel>
                   <RadioButtonGroup
                     options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
                     value={explorationType}

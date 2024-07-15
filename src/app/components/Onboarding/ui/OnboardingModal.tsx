@@ -123,7 +123,7 @@ export function OnboardingModal() {
         <h3>What You Can Do</h3>
         <div className={styles.onboardingRow}>
           <div className={styles.onboardingPanel}>
-            <img className={styles.onboardingPanelImage} src={ReduceCosts as any as string}></img>
+            <img className={styles.onboardingPanelImage} src={ReduceCosts}></img>
             <h3 className={styles.onboardingPanelHeader}>Reduce Costs</h3>
             <p className={styles.onboardingPanelDescription}>
               Spot CPU spikes, memory leaks, and other inefficiencies with code-level visibility into resource usage.
@@ -131,7 +131,7 @@ export function OnboardingModal() {
             </p>
           </div>
           <div className={styles.onboardingPanel}>
-            <img className={styles.onboardingPanelImage} src={DecreaseLatency as any as string}></img>
+            <img className={styles.onboardingPanelImage} src={DecreaseLatency}></img>
             <h3 className={styles.onboardingPanelHeader}>Decrease Latency</h3>
             <p className={styles.onboardingPanelDescription}>
               Maintain high speed and efficiency and improve application performance. In a competitive digital world,
@@ -139,7 +139,7 @@ export function OnboardingModal() {
             </p>
           </div>
           <div className={styles.onboardingPanel}>
-            <img className={styles.onboardingPanelImage} src={ResolveIncidents as any as string}></img>
+            <img className={styles.onboardingPanelImage} src={ResolveIncidents}></img>
             <h3 className={styles.onboardingPanelHeader}>Resolve Incidents Faster</h3>
             <p className={styles.onboardingPanelDescription}>
               Cut down the mean time to resolution (MTTR) by correlating continuous profiling data with metrics, logs,

@@ -2,9 +2,9 @@ import { css } from '@emotion/css';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
+import { InlineBanner } from '../../ui/InlineBanner';
 import { AiReply } from '../AiPanel/components/AiReply';
 import { FollowUpForm } from '../AiPanel/components/FollowUpForm';
-import { InlineBanner } from '../InlineBanner';
 import { SuggestionPromptInputs } from './domain/buildLlmSuggestionPrompts';
 import { useAiSuggestionsPanel } from './domain/useAiSuggestionsPanel';
 

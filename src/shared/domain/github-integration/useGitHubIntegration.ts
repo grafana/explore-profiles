@@ -17,7 +17,7 @@ export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
   const [stacktrace, setStacktrace] = useState<string[]>([]);
 
   const getExtraFlameGraphMenuItems: FlameGraphProps['getExtraContextMenuButtons'] = useCallback(
-    ({ item }: any, data: any) => {
+    ({ item }: any, data: Record<string, any>) => {
       // clicking on the top-level "total" node doesn't add "Function details" as an extra contextual menu item
       if (!isFunctionDetailsEnabled || item.level === 0) {
         return [];

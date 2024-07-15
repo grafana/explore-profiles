@@ -3,6 +3,7 @@ import { sceneGraph, SceneObject } from '@grafana/scenes';
 import { clone, defaults, uniqBy } from 'lodash';
 
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
+import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
 
 type InterpolatedQueryRunnerParams = GridItemData['queryRunnerParams'] & {
@@ -18,8 +19,8 @@ export function interpolateQueryRunnerVariables(
   const { queryRunnerParams } = item;
 
   const interpolatedParams = defaults(clone(queryRunnerParams), {
-    serviceName: sceneGraph.lookupVariable('serviceName', sceneObject)?.getValue() as string,
-    profileMetricId: sceneGraph.lookupVariable('profileMetricId', sceneObject)?.getValue() as string,
+    serviceName: getSceneVariableValue(sceneObject, 'serviceName'),
+    profileMetricId: getSceneVariableValue(sceneObject, 'profileMetricId'),
   });
 
   // state.filters has the AdHocFilterWithLabels[] type so we get rid of keyLabel and valueLabel

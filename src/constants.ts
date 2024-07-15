@@ -6,7 +6,6 @@ export const PLUGIN_BASE_URL = `/a/${PYROSCOPE_APP_ID}`;
 
 export enum ROUTES {
   PROFILES_EXPLORER_VIEW = '/profiles-explorer',
-  SINGLE_VIEW = '/single',
   COMPARISON_VIEW = '/comparison',
   COMPARISON_DIFF_VIEW = '/comparison-diff',
   ADHOC_VIEW = '/ad-hoc',

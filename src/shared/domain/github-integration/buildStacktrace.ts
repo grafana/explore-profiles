@@ -2,7 +2,7 @@ import { createTheme, getDisplayProcessor } from '@grafana/data';
 
 import { StackTrace } from '../../components/FunctionDetailsPanel/types/StackTrace';
 
-export function buildStacktrace(levelItem: any, data: any): StackTrace {
+export function buildStacktrace(levelItem: any, data: Record<string, any>): StackTrace {
   let stacktrace: string[] = [];
 
   const labels = data.fields.find(({ name }: { name: string }) => name === 'label');

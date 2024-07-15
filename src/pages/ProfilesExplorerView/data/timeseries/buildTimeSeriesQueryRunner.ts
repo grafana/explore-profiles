@@ -10,36 +10,30 @@ export function buildTimeSeriesQueryRunner({
   groupBy,
   filters,
 }: TimeSeriesQueryRunnerParams) {
-  let queries;
-
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: serviceName || '$serviceName' });
 
   const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
 
-  if (!groupBy?.label) {
-    queries = [
-      {
-        refId: `${profileMetricId || '$profileMetricId'}-${selector}`,
-        queryType: 'metrics',
-        profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: `{${selector},$filters}`,
-      },
-    ];
-  } else {
-    queries = [
-      {
-        refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy.label}`,
-        queryType: 'metrics',
-        profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-        labelSelector: `{${selector},$filters}`,
-        groupBy: [groupBy.label],
-      },
-    ];
-  }
-
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
-    queries,
+    queries: groupBy?.label
+      ? [
+          {
+            refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy.label}`,
+            queryType: 'metrics',
+            profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
+            labelSelector: `{${selector},$filters}`,
+            groupBy: [groupBy.label],
+          },
+        ]
+      : [
+          {
+            refId: `${profileMetricId || '$profileMetricId'}-${selector}`,
+            queryType: 'metrics',
+            profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
+            labelSelector: `{${selector},$filters}`,
+          },
+        ],
   });
 }

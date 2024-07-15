@@ -59,7 +59,6 @@ function setDefaultTimeRange(
   return defaultTimeRange;
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 function buildHook(targetTimeline: TargetTimeline) {
   const paramNames = PARAM_NAMES.get(targetTimeline);
   if (paramNames === undefined) {
