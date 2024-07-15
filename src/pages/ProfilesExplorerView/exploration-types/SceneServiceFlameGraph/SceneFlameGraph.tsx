@@ -16,6 +16,7 @@ import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-pro
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { Panel } from '@shared/ui/Panel/Panel';
 import React, { useEffect, useMemo } from 'react';
+import { Unsubscribable } from 'rxjs';
 
 import { buildFlameGraphQueryRunner } from '../../data/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../data/pyroscope-data-sources';
@@ -34,6 +35,27 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         queries: [],
       }),
     });
+
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  onActivate() {
+    let timeRangeSubscription: Unsubscribable | null = null;
+
+    const stateSubscription = this.subscribeToState((newState) => {
+      if (newState.$data) {
+        timeRangeSubscription = newState.$data.subscribeToState((newDataState, oldDataState) => {
+          if (newDataState.data?.timeRange && newDataState.data.timeRange !== oldDataState?.data?.timeRange) {
+            timelineAndProfileApiClient.setLastTimeRange(newDataState.data.timeRange);
+          }
+        });
+      }
+    });
+
+    return () => {
+      stateSubscription.unsubscribe();
+      timeRangeSubscription?.unsubscribe();
+    };
   }
 
   useSceneFlameGraph = (): DomainHookReturnValue => {
@@ -67,10 +89,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const serviceName = getSceneVariableValue(this, 'serviceName');
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
     const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
-
-    if ($dataState.data?.timeRange) {
-      timelineAndProfileApiClient.setLastTimeRange($dataState.data.timeRange);
-    }
 
     return {
       data: {
