@@ -34,7 +34,7 @@ function PageTitleComponent({ title, queryAnalysis }: PageTitleProps) {
           </div>
           <div className={styles.infoArea}>
             <VersionInfoTooltip />
-            {queryAnalysis ? <QueryAnalysisTooltip data={queryAnalysis} /> : null}
+            {queryAnalysis ? <QueryAnalysisTooltip data={queryAnalysis} /> : <div>&nbsp;</div>}
           </div>
         </Stack>
       </div>
