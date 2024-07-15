@@ -103,7 +103,7 @@ To learn more, refer to the [Flame graph documentation](https://grafana.com/docs
 
 ## Before you begin
 
-To use Explore Traces, you need:
+To use Explore Profiles, you need:
 
 * A Grafana Cloud account
 * A Grafana stack in Grafana Cloud with a configured Hosted profiles or Pyroscope data source
