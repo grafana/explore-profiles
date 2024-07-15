@@ -2,7 +2,7 @@
   "name": "pyroscope-app-plugin",
   "version": "0.0.3",
   "description": "Grafana Pyroscope app plugin (profiles)",
-  "license": "Apache-2.0",
+  "license": "AGPL-3.0-only",
   "author": "Grafana",
   "scripts": {
     "build": "webpack -c webpack.config.ts --env production",
