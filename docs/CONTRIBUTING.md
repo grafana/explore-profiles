@@ -56,7 +56,9 @@ We use [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) to lin
 
 ### Commit messages & PR titles
 
-We use [conventional commits](https://www.conventionalcommits.org/) to format our commit messages. This allows us to automatically generate changelogs and version bumps. There is a check that runs as a pre-commit hook.
+We use [conventional commits](https://www.conventionalcommits.org/) to format our commit messages. This allows us to automatically generate changelogs and version bumps.
+
+When opening a Pull Request (PR), please make sure that the title is properly prefixed with one of the following type: `feat`, `fix`, `docs`, `test`, `ci`, `refactor`, `perf`, `chore` or `revert`.
 
 ### Testing
 
