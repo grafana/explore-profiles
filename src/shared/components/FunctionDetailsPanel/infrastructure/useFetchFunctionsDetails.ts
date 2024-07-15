@@ -44,9 +44,7 @@ export function useFetchFunctionsDetails({
     // flame graph data to ensure data consistency.
     //
     // see https://github.com/grafana/pyroscope-squad/issues/131
-    const [s, e] = timelineAndProfileApiClient.getLastTimeRange();
-    start = s;
-    end = e;
+    [start, end] = timelineAndProfileApiClient.getLastTimeRange();
   } catch (e) {
     timeRangeError = e as Error;
   }
@@ -60,6 +58,10 @@ export function useFetchFunctionsDetails({
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['function-details', profileMetricId, labelsSelector, start, end, stacktrace, isGitHubLogged],
     queryFn: async () => {
+      if (timeRangeError) {
+        return [];
+      }
+
       const pprof = await pprofApiClient.selectMergeProfileJson({
         profileMetricId,
         labelsSelector,
@@ -95,10 +97,9 @@ export function useFetchFunctionsDetails({
     },
   });
 
-  const error = timeRangeError || (privateVcsClient.isAbortError(queryError) ? null : queryError);
   return {
     isFetching,
-    error: error,
+    error: timeRangeError || (privateVcsClient.isAbortError(queryError) ? null : queryError),
     functionsDetails: useMemo(
       () =>
         data && data.length > 0
