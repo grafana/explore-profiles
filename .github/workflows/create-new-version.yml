@@ -1,4 +1,4 @@
-name: Build CHANGELOG
+name: Create new version (package.json & CHANGELOG)
 
 on:
   workflow_dispatch:
@@ -14,7 +14,7 @@ on:
           - major
 
 jobs:
-  build-new-version:
+  create-new-version:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
