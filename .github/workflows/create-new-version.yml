@@ -33,7 +33,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Create version
-        run: yarn version --${{ inputs.version }}
+        run: yarn version ${{ inputs.version }}
 
       - name: Push
         run: git push origin main --tags
