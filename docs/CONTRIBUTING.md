@@ -5,7 +5,6 @@
 - [Git](https://git-scm.com/downloads)
 - [Node.js](https://nodejs.org/en) v20
 - [Yarn](https://yarnpkg.com/) v4
-- [Go](https://go.dev/learn/)
 - [Docker](https://www.docker.com/get-started/) or [OrbStack](https://orbstack.dev/download) (lighter alternative)
 
 ## Getting started
@@ -31,16 +30,14 @@ When clicking on a node of the Flame Graph, the plugin can offer to display info
 To enable this feature:
 
 1. If not already done, copy the content of the `.env.local` file to a new `.env` file in the root directory
-2. Open the 1Password app and search for the note named "DB FE - GitHub integration credentials"
-3. Fill in the missing values in the `.env` file
-4. Start the Grafana server
+2. Fill in the missing `GITHUB_` values in the `.env` file
+3. Start the Grafana server
 
 ### Using live remote profile data
 
 1. If not already done, copy the content of the `.env.local` file to a new `.env` file in the root directory
-2. Open the 1Password app and search for the note named "DB FE - Remote profile data credentials"
-3. Fill in the missing values in the `.env` file
-4. Start the Grafana server: `yarn server:remote`
+2. Fill in the missing `REMOTE_` values in the `.env` file
+3. Start the Grafana server: `yarn server:remote`
 
 ### Using a local version of Pyroscope
 
@@ -51,7 +48,7 @@ To enable this feature:
 
 For developing in this repo, requirements are generally managed by lint rules and pre-commit hooks. However, for other things, like code organization, please follow the pattern established by the rest of the repo.
 
-In case of doubt, have a look at ["Pyroscope App Plugin Frontend Architecture"](https://docs.google.com/document/d/17lRLcD24JTckh4OonzDagC1aSEEsLZrNHUA6eiiReTQ)
+In case of doubt, have a look at ["Pyroscope App Plugin Frontend Architecture"](./CODE-ARCHITECTURE.md)
 
 ### Linting & Formatting
 
@@ -65,14 +62,8 @@ We use [conventional commits](https://www.conventionalcommits.org/) to format ou
 
 We encourage you to write tests, whether they are unit tests or end-to-end tests. They will give us the confidence that the plugin behaves as intended and help us capture any regression early.
 
-#### Unit testing
-
-_TODO_
-
-#### End-to-End testing (E2E)
-
-Please have a look at our [E2E testing documentation](../e2e/README.md).
+For End-to-End testing (E2E), please have a look at our [E2E testing documentation](../e2e/README.md).
 
 ## Common problems & solutions
 
-_TODO_
+...
