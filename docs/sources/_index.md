@@ -1,8 +1,5 @@
 ---
 cascade:
-  _build:
-    list: false
-  noindex: true
   FULL_PRODUCT_NAME: Grafana Explore Profiles
   PRODUCT_NAME: Explore Profiles
 description: Learn how to use Explore Profiles to understand and troubleshoot
@@ -19,7 +16,6 @@ weight: 100
 
 # Explore Profiles
 
-{{< docs/private-preview product="Explore Profiles" >}}
 
 Profiling is a technique used in software development to measure and analyze the runtime behavior of a program.
 By profiling a program, developers can identify which parts of the program consume the most resources, such as CPU time, memory, or I/O operations.
