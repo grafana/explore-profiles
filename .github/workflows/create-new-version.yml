@@ -32,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Create version
-        run: yarn version ${{ inputs.version }}
+      - name: Create version & CHANGELOG
+        run: npm version ${{ inputs.version }}
 
       - name: Push
         run: git push origin main --tags
