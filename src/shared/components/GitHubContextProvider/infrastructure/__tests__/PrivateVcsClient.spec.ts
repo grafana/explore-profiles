@@ -8,7 +8,20 @@ const mockSessionManager: GitSessionCookieManager = {
 };
 
 beforeEach(() => {
-  jest.doMock('@grafana/runtime', () => ({ config: { appUrl: 'https://localhost:3000/' } }));
+  jest.doMock('@grafana/runtime', () => ({
+    config: {
+      appUrl: 'https://localhost:3000/',
+      datasources: {
+        'Test Data Source': {
+          id: 1,
+          isDefault: true,
+          type: 'grafana-pyroscope-datasource',
+          name: 'Test Data Source',
+          jsonData: {},
+        },
+      },
+    },
+  }));
 });
 
 describe('PrivateVcsClient queue', () => {

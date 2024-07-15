@@ -1,10 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
-  "name": "Profiles",
+  "name": "Explore Profiles",
   "id": "grafana-pyroscope-app",
-  "backend": true,
-  "executable": "gpx_pyroscope_app",
+  "backend": false,
   "dependencies": {
     "grafanaDependency": ">=10.4.3",
     "plugins": []
@@ -31,16 +30,8 @@
   "includes": [
     {
       "type": "page",
-      "name": "Tag explorer",
-      "path": "/a/%PLUGIN_ID%/tag-explorer",
-      "role": "Viewer",
-      "addToNav": true,
-      "defaultNav": false
-    },
-    {
-      "type": "page",
-      "name": "Single view",
-      "path": "/a/%PLUGIN_ID%/single",
+      "name": "Explore profiles",
+      "path": "/a/%PLUGIN_ID%/profiles-explorer",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false

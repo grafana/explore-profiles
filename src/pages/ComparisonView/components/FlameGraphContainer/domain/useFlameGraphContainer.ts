@@ -4,7 +4,7 @@ import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetch
 import {
   FetchTimelineAndProfileTarget,
   useFetchTimelineAndProfile,
-} from '@shared/infrastructure/useFetchTimelineAndProfile';
+} from '@shared/infrastructure/timeline-profile/useFetchTimelineAndProfile';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
 import { useFetchDiffProfile } from '../infrastructure/useFetchDiffProfile';

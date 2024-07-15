@@ -5,8 +5,7 @@ export const PYROSCOPE_APP_ID = plugin.id;
 export const PLUGIN_BASE_URL = `/a/${PYROSCOPE_APP_ID}`;
 
 export enum ROUTES {
-  EXPLORE_VIEW = '/tag-explorer',
-  SINGLE_VIEW = '/single',
+  PROFILES_EXPLORER_VIEW = '/profiles-explorer',
   COMPARISON_VIEW = '/comparison',
   COMPARISON_DIFF_VIEW = '/comparison-diff',
   ADHOC_VIEW = '/ad-hoc',

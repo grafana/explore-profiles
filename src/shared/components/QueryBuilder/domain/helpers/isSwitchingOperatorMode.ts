@@ -1,5 +1,5 @@
+import { invariant } from '../../../../types/helpers/invariant';
 import { Filter, OperatorKind } from '../types';
-import { invariant } from './invariant';
 
 /**
  * Determines if we switch from strict operators (=, !=) to loose ones (=~)

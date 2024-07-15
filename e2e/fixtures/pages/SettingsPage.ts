@@ -13,14 +13,17 @@ export class SettingsPage extends PyroscopePage {
   }
 
   async resetTestSettings() {
-    // see src/components/AppConfig/hooks/settingsApiClient.tsx
+    // see src/shared/infrastructure/http/ApiClient.ts
     let appUrl = await this.page.evaluate(() => (window as any).grafanaBootData.settings.appUrl);
-
     if (appUrl.at(-1) !== '/') {
       appUrl += '/';
     }
 
-    const apiUrl = new URL('api/plugins/grafana-pyroscope-app/resources/settings.v1.SettingsService/Set', appUrl);
+    // IMPORTANT: the path must match the default data source in samples/provisioning/datasources/datasources.yaml
+    const apiUrl = new URL(
+      'api/datasources/proxy/uid/grafanacloud-profiles-local-bis/settings.v1.SettingsService/Set',
+      appUrl
+    );
 
     await this.page.request.post(apiUrl.toString(), {
       data: {

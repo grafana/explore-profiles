@@ -1,6 +1,7 @@
 import { displayError } from '@shared/domain/displayStatus';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
+import 'compression-streams-polyfill';
 import saveAs from 'file-saver';
 
 import { ExportDataProps } from '../ExportData';

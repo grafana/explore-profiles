@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { IconButton, InlineLabel, TextLink, Tooltip, useStyles2 } from '@grafana/ui';
-import { InlineBanner } from '@shared/components/InlineBanner';
-import { Panel } from '@shared/components/Panel';
+import { InlineBanner } from '@shared/ui/InlineBanner';
+import { Panel } from '@shared/ui/Panel/Panel';
 import React from 'react';
 
 import { CodeContainer } from './components/CodeContainer/CodeContainer';

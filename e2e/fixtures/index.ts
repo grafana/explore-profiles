@@ -1,18 +1,16 @@
 import { test as base, expect } from '@playwright/test';
 
-import { DEFAULT_URL_PARAMS } from '../config/constants';
+import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS, DEFAULT_URL_PARAMS } from '../config/constants';
 import { Toolbar } from './components/Toolbar';
 import { AdHocViewPage } from './pages/AdHocViewPage';
 import { ComparisonDiffViewPage } from './pages/ComparisonDiffViewPage';
 import { ComparisonViewPage } from './pages/ComparisonViewPage';
+import { ExploreProfilesPage } from './pages/ExploreProfilesPage';
 import { SettingsPage } from './pages/SettingsPage';
-import { SingleViewPage } from './pages/SingleViewPage';
-import { TagExplorerPage } from './pages/TagExplorerPage';
 
 type Fixtures = {
   toolbar: Toolbar;
-  tagExplorerPage: TagExplorerPage;
-  singleViewPage: SingleViewPage;
+  exploreProfilesPage: ExploreProfilesPage;
   comparisonViewPage: ComparisonViewPage;
   comparisonDiffViewPage: ComparisonDiffViewPage;
   adHocViewPage: AdHocViewPage;
@@ -45,16 +43,10 @@ export const test = base.extend<Options & Fixtures>({
   toolbar: async ({ page }, use) => {
     await use(new Toolbar(page));
   },
-  tagExplorerPage: async ({ page, failOnUncaughtExceptions }, use) => {
+  exploreProfilesPage: async ({ page, failOnUncaughtExceptions }, use) => {
     await withExceptionsAssertion(
       { page, failOnUncaughtExceptions, use },
-      new TagExplorerPage(page, DEFAULT_URL_PARAMS)
-    );
-  },
-  singleViewPage: async ({ page, failOnUncaughtExceptions }, use) => {
-    await withExceptionsAssertion(
-      { page, failOnUncaughtExceptions, use },
-      new SingleViewPage(page, DEFAULT_URL_PARAMS)
+      new ExploreProfilesPage(page, DEFAULT_EXPLORE_PROFILES_URL_PARAMS)
     );
   },
   comparisonViewPage: async ({ page, failOnUncaughtExceptions }, use) => {

@@ -61,7 +61,7 @@ export enum SuggestionKind {
 export type InputParams = {
   query: string;
   from: number;
-  until: number;
+  to: number;
 };
 
 export type Edition = {

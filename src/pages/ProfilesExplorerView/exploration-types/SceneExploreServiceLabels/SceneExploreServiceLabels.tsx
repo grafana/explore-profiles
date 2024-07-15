@@ -1,0 +1,57 @@
+import { DashboardCursorSync } from '@grafana/data';
+import {
+  behaviors,
+  EmbeddedSceneState,
+  SceneComponentProps,
+  SceneFlexItem,
+  SceneFlexLayout,
+  SceneObjectBase,
+} from '@grafana/scenes';
+import React from 'react';
+
+import { FavAction } from '../../actions/FavAction';
+import { SelectAction } from '../../actions/SelectAction';
+import { SceneMainServiceTimeseries } from '../../components/SceneMainServiceTimeseries';
+import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
+import { EventViewServiceProfiles } from '../../events/EventViewServiceProfiles';
+import { SceneGroupByLabels } from './SceneGroupByLabels';
+
+interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
+
+export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServiceLabelsState> {
+  constructor() {
+    super({
+      key: 'explore-service-labels',
+      body: new SceneFlexLayout({
+        direction: 'column',
+        $behaviors: [
+          new behaviors.CursorSync({
+            key: 'metricCrosshairSync',
+            sync: DashboardCursorSync.Crosshair,
+          }),
+        ],
+        children: [
+          new SceneFlexItem({
+            minHeight: SceneMainServiceTimeseries.MIN_HEIGHT,
+            body: new SceneMainServiceTimeseries({
+              headerActions: (item) => [
+                new SelectAction({ EventClass: EventViewServiceProfiles, item }),
+                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+                new FavAction({ item }),
+              ],
+            }),
+          }),
+          new SceneFlexItem({
+            body: new SceneGroupByLabels(),
+          }),
+        ],
+      }),
+    });
+  }
+
+  static Component({ model }: SceneComponentProps<SceneExploreServiceLabels>) {
+    const { body } = model.useState();
+
+    return <body.Component model={body} />;
+  }
+}

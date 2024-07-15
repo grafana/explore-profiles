@@ -1,9 +1,7 @@
 // this file is based on the one from grafana/phlare
 
 local dockerGoImage = 'golang:1.20.4';
-local dockerGrafanaImage = 'grafana/grafana:9.4.2';
 local dockerNodeImage = 'node:20-bullseye';
-local dockerE2EImage = 'mcr.microsoft.com/playwright:v1.29.2-focal';
 local dockerGrafanaPluginCIImage = 'grafana/grafana-plugin-ci-e2e:latest';
 
 local step(name, commands, image=dockerGoImage) = {
@@ -167,16 +165,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       'yarn install --immutable',
     ], image=dockerNodeImage),
 
-    step('build backend packages', [
-      'mage -v build:linux',
-      'mage -v build:darwin',
-      'mage -v build:darwinARM64',
-      'mage -v build:linuxARM',
-      'mage -v build:linuxARM64',
-      'mage -v build:windows',
-      'mage -v build:generateManifestFile',
-    ], image=dockerGrafanaPluginCIImage),
-
     step('build frontend packages', [
       'export NODE_ENV=production',
       'echo "export const GIT_COMMIT = \'${DRONE_COMMIT}\';" > src/version.ts',
@@ -185,7 +173,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     ], image=dockerNodeImage) + {
       depends_on: [
         'install dependencies',
-        'build backend packages',
       ],
     },
 
@@ -195,8 +182,8 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       './scripts/package-and-sign ${DRONE_BUILD_NUMBER}',
     ], image=dockerNodeImage) + {
       environment: {
-        GRAFANA_API_KEY: {
-          from_secret: 'GRAFANA_API_KEY',
+        GRAFANA_ACCESS_POLICY_TOKEN: {
+          from_secret: 'GRAFANA_ACCESS_POLICY_TOKEN',
         },
       },
       depends_on: [
@@ -260,19 +247,21 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       },
     } + mainOnly,
 
-    step('publish zip to GCS with latest', [], image='plugins/gcs') + {
-      depends_on: [
-        'package and sign',
-      ],
-      settings: {
-        acl: 'allUsers:READER',
-        source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
-        target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-latest.zip',
-        token: {
-          from_secret: 'gcs_service_account_key',
-        },
-      },
-    } + releaseOnly,
+    // TODO(@petethepig): Uncomment when we know this works
+
+    // step('publish zip to GCS with latest', [], image='plugins/gcs') + {
+    //   depends_on: [
+    //     'package and sign',
+    //   ],
+    //   settings: {
+    //     acl: 'allUsers:READER',
+    //     source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
+    //     target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-latest.zip',
+    //     token: {
+    //       from_secret: 'gcs_service_account_key',
+    //     },
+    //   },
+    // } + releaseOnly,
 
     step('publish zip to GCS with tag', [], image='plugins/gcs') + {
       depends_on: [
@@ -288,12 +277,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         },
       },
     } + releaseOnly,
-    uploadStep('darwin_amd64'),
-    uploadStep('darwin_arm64'),
-    uploadStep('linux_amd64'),
-    uploadStep('linux_arm'),
-    uploadStep('linux_arm64'),
-    uploadStep('windows_amd64'),
     step('publish release to Github', [], image='plugins/github-release') + {
       settings: {
         api_key: {
@@ -311,7 +294,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
     step('publish to grafana.com', [
       'apt update',
       'apt install -y curl',
-      './scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}'
+      './scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}',
     ], image=dockerGrafanaPluginCIImage) + {
       environment: {
         GCOM_TOKEN: {

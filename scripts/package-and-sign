@@ -1,14 +1,14 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-mkdir -p ./gpx_files
-mv ./dist/gpx_* ./gpx_files
+set -o errexit
+set -o nounset
+set -o pipefail
 
 DRONE_BUILD_NUMBER=$1
 
-platforms=("darwin_amd64" "darwin_arm64" "linux_amd64" "linux_arm" "linux_arm64" "windows_amd64.exe")
+platforms=("linux_amd64")
 
 for platform in "${platforms[@]}"; do
-  mv "gpx_files/gpx_pyroscope_app_${platform}" ./dist
   yarn sign
   ls -1 ./dist
 
@@ -22,8 +22,6 @@ for platform in "${platforms[@]}"; do
     zip -r "grafana-pyroscope-app-$DRONE_BUILD_NUMBER-${platform}.zip" ./grafana-pyroscope-app
   fi
   mv grafana-pyroscope-app dist
-
-  rm "dist/gpx_pyroscope_app_${platform}"
 done
 
 # for compatibility with the old naming scheme

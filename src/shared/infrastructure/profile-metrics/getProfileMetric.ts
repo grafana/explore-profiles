@@ -25,7 +25,7 @@ export function getProfileMetric(profileMetricId: ProfileMetricId): ProfileMetri
     return PROFILE_METRICS[profileMetricId] as ProfileMetric;
   }
 
-  const [group = 'unknown', type = 'unknown type'] = profileMetricId.split(':');
+  const [group = '?', type = '?'] = profileMetricId ? profileMetricId.split(':') : [];
 
   // TODO: add missing metrics (e.g. godeltaprof are not yet defined)
   // console.warn(`No profile metric found for id "${profileMetricId}"`);

@@ -73,7 +73,6 @@ export function DoubleTimeline({
       timezone={timezone}
       selectionType="double"
       selection={selection}
-      // TODO: FIXME
       onSelect={noOp}
       onSelectTimeRange={onSelectTimeRange}
     />

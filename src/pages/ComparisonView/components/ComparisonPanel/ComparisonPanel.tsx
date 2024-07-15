@@ -1,11 +1,11 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Icon, Tooltip, useStyles2 } from '@grafana/ui';
-import { InlineBanner } from '@shared/components/InlineBanner';
-import { Panel } from '@shared/components/Panel';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { SingleTimeline } from '@shared/components/Timeline/SingleTimeline';
 import { displayWarning } from '@shared/domain/displayStatus';
+import { InlineBanner } from '@shared/ui/InlineBanner';
+import { Panel } from '@shared/ui/Panel/Panel';
 import React, { ReactNode } from 'react';
 
 import { BASELINE_COLORS, COMPARISON_COLORS } from '../../ui/colors';
@@ -88,7 +88,7 @@ export function ComparisonPanel({ isLoading, type, children }: ComparisonPanelPr
         query={data.query}
         // FIXME
         from={data.mainTimeRange.from.unix() * 1000}
-        until={data.mainTimeRange.to.unix() * 1000}
+        to={data.mainTimeRange.to.unix() * 1000}
         onChangeQuery={actions.setQuery}
       />
 

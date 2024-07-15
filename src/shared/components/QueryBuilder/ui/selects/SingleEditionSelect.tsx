@@ -1,14 +1,12 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { SelectableValue } from '@grafana/data';
 import { Select, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { Suggestion } from '../../domain/types';
 import { MESSAGES } from '../constants';
 
-// TODO: use the Grafana theme
-// eslint-disable-next-line no-unused-vars
-export const getStyles = (theme: GrafanaTheme2) => ({
+export const getStyles = () => ({
   editionSelect: css`
     position: absolute;
     z-index: 1;

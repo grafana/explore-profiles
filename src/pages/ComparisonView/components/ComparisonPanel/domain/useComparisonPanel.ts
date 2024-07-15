@@ -2,7 +2,7 @@ import { TimeRange } from '@grafana/data';
 import { useLeftRightParamsFromUrl } from '@shared/domain/url-params/useLeftRightParamsFromUrl';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
-import { useFetchTimelineAndProfile } from '@shared/infrastructure/useFetchTimelineAndProfile';
+import { useFetchTimelineAndProfile } from '@shared/infrastructure/timeline-profile/useFetchTimelineAndProfile';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
 import { convertAbsoluteToRelativeTimeRange } from '../../../domain/convertAbsoluteToRelativeTimeRange';

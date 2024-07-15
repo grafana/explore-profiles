@@ -2,8 +2,13 @@ import { expect, test } from '../fixtures';
 
 test.describe('Onboarding', () => {
   test('displays an onboarding modal that can be closed', async ({ page }) => {
-    await page.route('*/**/querier.v1.QuerierService/Series', async (route) => {
-      const json = { labelsSet: [] };
+    await page.route('*/**/querier.v1.QuerierService/GetProfileStats', async (route) => {
+      const json = {
+        dataIngested: false,
+        oldestProfileTime: 0,
+        newestProfileTime: 0,
+      };
+
       await route.fulfill({ json });
     });
 

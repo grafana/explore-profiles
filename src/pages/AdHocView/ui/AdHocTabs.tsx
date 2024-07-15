@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Tab, TabContent, TabsBar, useStyles2 } from '@grafana/ui';
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 
 import { AdHocComparison } from './tabs/AdHocComparison';
 import { AdHocSingle } from './tabs/AdHocSingle';
@@ -19,15 +19,11 @@ export function AdHocTabs() {
   const styles = useStyles2(getStyles);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
-  const onChangeTab = (index: number) =>
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useCallback(() => setActiveTabIndex(index), [index]);
-
   return (
     <div>
       <TabsBar>
-        <Tab label=" Single view" active={activeTabIndex === 0} onChangeTab={onChangeTab(0)} />
-        <Tab label=" Comparison view" active={activeTabIndex === 1} onChangeTab={onChangeTab(1)} />
+        <Tab label=" Single view" active={activeTabIndex === 0} onChangeTab={() => setActiveTabIndex(0)} />
+        <Tab label=" Comparison view" active={activeTabIndex === 1} onChangeTab={() => setActiveTabIndex(1)} />
         {/* <Tab
           label=" Diff view"
           active={activeTabIndex === 2}

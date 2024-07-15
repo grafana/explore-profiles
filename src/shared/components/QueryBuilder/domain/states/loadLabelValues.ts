@@ -1,9 +1,9 @@
 import { assign, State, StateNodeConfig } from 'xstate';
 
+import { invariant } from '../../../../types/helpers/invariant';
 import { MESSAGES } from '../../ui/constants';
 import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
 import { getLastFilter } from '../helpers/getLastFilter';
-import { invariant } from '../helpers/invariant';
 import { isPrivateLabel } from '../helpers/isPrivateLabel';
 import { defaultContext } from '../stateMachine';
 import { OperatorKind, QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
