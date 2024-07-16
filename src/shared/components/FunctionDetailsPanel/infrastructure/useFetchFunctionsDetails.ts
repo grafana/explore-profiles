@@ -54,14 +54,10 @@ export function useFetchFunctionsDetails({
     error: queryError,
     data,
   } = useQuery({
-    enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0),
+    enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0 && !timeRangeError),
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['function-details', profileMetricId, labelsSelector, start, end, stacktrace, isGitHubLogged],
     queryFn: async () => {
-      if (timeRangeError) {
-        return [];
-      }
-
       const pprof = await pprofApiClient.selectMergeProfileJson({
         profileMetricId,
         labelsSelector,
