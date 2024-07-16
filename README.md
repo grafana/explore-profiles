@@ -44,10 +44,10 @@ GF_INSTALL_PLUGINS=grafana-pyroscope-app
 8. Select the service you would like to explore. This takes you to the Service page.
 9. Filter profiles based on labels.
 
-For more information, refer to the Explore Profiles documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/).
+For more information, refer to the Explore Profiles documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/). 
 
-To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/explore-profiles/blob/main/docs/README.md).
-The Explore Profiles documentation source files are in docs/sources.
+To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/explore-profiles/blob/main/docs/README.md). 
+The Explore Profiles documentation source files are in docs/sources. 
 
 ### Development / Contributing
 
