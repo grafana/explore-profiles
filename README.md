@@ -39,13 +39,13 @@ GF_INSTALL_PLUGINS=grafana-pyroscope-app
 2. You’ll land in the service overview page that shows time series and cpu utilization visualizations for all the services in your selected Pyroscope instance.
 3. Change your data source with the drop-down on the top left.
 4. Modify your time range in two ways:
-  * With the standard time range picker on the top right.
-  * By clicking and dragging the time range you want to see on any time series visualization.
+
+- With the standard time range picker on the top right.
+- By clicking and dragging the time range you want to see on any time series visualization.
+
 8. Select the service you would like to explore. This takes you to the Service page.
 9. Filter profiles based on labels.
-
 
 ### Development / Contributing
 
 Check out our [Contributing Guidelines](./docs/CONTRIBUTING.md) for more information on how to contribute to this project.
-
