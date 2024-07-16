@@ -40,21 +40,27 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   }
 
   onActivate() {
-    let timeRangeSubscription: Unsubscribable | null = null;
+    let dataSubscription: Unsubscribable | undefined;
 
-    const stateSubscription = this.subscribeToState((newState) => {
-      if (newState.$data) {
-        timeRangeSubscription = newState.$data.subscribeToState((newDataState, oldDataState) => {
-          if (newDataState.data?.timeRange && newDataState.data.timeRange !== oldDataState?.data?.timeRange) {
-            timelineAndProfileApiClient.setLastTimeRange(newDataState.data.timeRange);
-          }
-        });
+    const stateSubscription = this.subscribeToState((newState, prevState) => {
+      if (newState.$data === prevState.$data) {
+        return;
       }
+
+      if (dataSubscription) {
+        dataSubscription.unsubscribe();
+      }
+
+      dataSubscription = newState.$data?.subscribeToState((newDataState) => {
+        if (newDataState.data?.state === LoadingState.Done) {
+          timelineAndProfileApiClient.setLastTimeRange(newDataState.data.timeRange);
+        }
+      });
     });
 
     return () => {
       stateSubscription.unsubscribe();
-      timeRangeSubscription?.unsubscribe();
+      dataSubscription?.unsubscribe();
     };
   }
 
