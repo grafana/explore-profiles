@@ -2,15 +2,15 @@
 
 Explore Profiles is a native Grafana application designed to integrate seamlessly with [Pyroscope](https://github.com/grafana/pyroscope), the open-source continuous profiling platform, providing a smooth, query-less experience for browsing and analyzing profiling data.
 
-## Installation
+## Install Explore Profiles
 
 Explore Profiles is distributed as a Grafana Plugin. You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-pyroscope-app/).
 
-### Installation in [Grafana Cloud](https://grafana.com/products/cloud/)
+### Install in [Grafana Cloud](https://grafana.com/products/cloud/)
 
 All Grafana Cloud instances come with Explore Profiles plugin preinstalled.
 
-### Installation in your Own Grafana Instance
+### Installation in your Grafana instance
 
 You can install Explore Profiles in your own Grafana instance using `grafana-cli`:
 
@@ -25,7 +25,7 @@ Alternatively, you can do it via Grafana UI by following these steps:
 3. Click on "Explore Profiles".
 4. Click on "Install" button.
 
-### Installation via environment variables
+### Install using environment variables
 
 If you want to install the app in a docker container, you need to configure the following environment variable:
 
