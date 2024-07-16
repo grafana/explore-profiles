@@ -1,5 +1,6 @@
 import { DataSourceVariable } from '@grafana/scenes';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { userStorage } from '@shared/infrastructure/userStorage';
 
 export class ProfilesDataSourceVariable extends DataSourceVariable {
   constructor() {
@@ -17,5 +18,13 @@ export class ProfilesDataSourceVariable extends DataSourceVariable {
 
   onActivate() {
     this.setState({ skipUrlSync: false });
+
+    this.subscribeToState((newState, prevState) => {
+      if (newState.value && newState.value !== prevState.value) {
+        const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+        storage.dataSource = newState.value;
+        userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
+      }
+    });
   }
 }
