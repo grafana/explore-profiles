@@ -48,7 +48,7 @@ To enable this feature:
 
 For developing in this repo, requirements are generally managed by lint rules and pre-commit hooks. However, for other things, like code organization, please follow the pattern established by the rest of the repo.
 
-In case of doubt, have a look at ["Pyroscope App Plugin Frontend Architecture"](./CODE-ARCHITECTURE.md)
+In case of doubt, have a look at ["Explore Profiles frontend architecture"](./CODE-ARCHITECTURE.md)
 
 ### Linting  and formatting
 

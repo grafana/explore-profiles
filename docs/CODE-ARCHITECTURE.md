@@ -3,7 +3,7 @@
 > [!NOTE]
 > Everything is a tradeoff in Software Engineering.
 
-This document aims to help guide our decisions when developing the Pyroscope App Plugin. They are not rules to apply blindly, just a set of guidelines that we believe is useful today, for maintaining and growing the plugin code base. Whenever we feel they are not useful, incorrect or incomplete, we should adapt them accordingly.
+This document aims to help guide our decisions when developing Explore Profiles. They are not rules to apply blindly, just a set of guidelines that we believe is useful today, for maintaining and growing the plugin code base. Whenever we feel they are not useful, incorrect or incomplete, we should adapt them accordingly.
 
 ## Motivation
 
