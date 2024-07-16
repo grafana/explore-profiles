@@ -1,4 +1,4 @@
-# Pyroscope App Plugin Frontend Architecture
+# Explore Profiles frontend architecture
 
 > [!NOTE]
 > Everything is a tradeoff in Software Engineering.
