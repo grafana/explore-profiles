@@ -50,7 +50,7 @@ For developing in this repo, requirements are generally managed by lint rules an
 
 In case of doubt, have a look at ["Pyroscope App Plugin Frontend Architecture"](./CODE-ARCHITECTURE.md)
 
-### Linting & Formatting
+### Linting  and formatting
 
 We use [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/) to lint and format our code. These will be run in a pre-commit hook, but you can also setup your IDE to run them on save.
 
