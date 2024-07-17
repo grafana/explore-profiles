@@ -8,15 +8,12 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-profile/timelineAndProfileApiClient';
 import React from 'react';
 
 import { getProfileMetricLabel } from '../data/series/helpers/getProfileMetricLabel';
 import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
-import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
-import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
@@ -65,21 +62,6 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     });
 
     this.setState({ body });
-
-    const globalTimeRangeState = findSceneObjectByClass(this, SceneProfilesExplorer).state.$timeRange;
-    if (globalTimeRangeState) {
-      timelineAndProfileApiClient.setLastTimeRange(globalTimeRangeState.state.value);
-    }
-
-    const timeRangeSubscription = globalTimeRangeState?.subscribeToState((newState) => {
-      if (newState.value) {
-        timelineAndProfileApiClient.setLastTimeRange(newState.value);
-      }
-    });
-
-    return () => {
-      timeRangeSubscription?.unsubscribe();
-    };
   }
 
   buildTitle() {
