@@ -21,7 +21,7 @@ cards:
   items:
     - title: Concepts
       href: ./concepts/
-      description: Learn the concepts you need to understand to use profiling.
+      description: Learn the concepts you need to use profiling.
       height: 24
     - title: Get started
       href: ./get-started/
@@ -29,7 +29,7 @@ cards:
       height: 24
     - title: Determine your use case
       href: ./troubleshooting/
-      description: Chones one of the wwo most common use cases to guide your exploration.
+      description: Choose one of the two most common use cases to guide your exploration.
       height: 24
     - title: Choose a view
       href: ./choose-a-view/

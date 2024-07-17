@@ -10,7 +10,7 @@ weight: 500
 
 # Choose a view
 
-The available views in Explore Profiles correspond to how you move through your data: from wide to more specific.
+The available views in Explore Profiles correspond to how you move through your data: from broader to more specific.
 For example, you can start with **All services** and then move to **Profile types** or **Labels** for more specific views into your data.
 
 This matches the hierarchy of the [profiling data](../concepts/).

@@ -33,7 +33,7 @@ Explore Profiles is distributed as a Grafana Plugin. You can find it in the offi
 
 ### Install in [Grafana Cloud](https://grafana.com/products/cloud/)
 
-All Grafana Cloud instances come with Explore Profiles plugin preinstalled.
+All Grafana Cloud instances come with the Explore Profiles plugin preinstalled.
 
 ### Installation in your Grafana instance
 
@@ -43,11 +43,11 @@ You can install Explore Profiles in your own Grafana instance using `grafana-cli
 grafana-cli plugins install grafana-pyroscope-app
 ```
 
-Alternatively, you can install Explore Profiles within Grafana by following these steps:
+Alternatively, follow these steps to install Explore Profiles in Grafana:
 
-1. Within Grafana, go to Administration > Plugins and data > Plugins.
+1. In Grafana, go to **Administration** > **Plugins and data** > **Plugins**.
 2. Search for "Explore Profiles".
-3. Click on Explore Profiles.
+3. Select Explore Profiles.
 4. Click **Install**
 
 ### Install using environment variables

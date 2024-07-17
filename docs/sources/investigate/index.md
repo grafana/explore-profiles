@@ -25,9 +25,9 @@ When you use Explore Profiles, your investigations follow these general steps.
 1. Look for spikes or trends in the services to help identify issues. Use the **Profiles** drop-down to change profile types.
   ![Select a profile type](explore-profiles-select-profile.png "Select a profile type")
 1. After you identify the service to explore, you can change views:
-   * Select **Profiles** to review the profiles for a service
+   * Select **Profiles** to review the profiles for a service.
    * Select **Labels** to view the labels for a service. The Labels view helps you gain an understanding at an aggregated service level.
-   * Select **Flame graph** to view the flame graph for a service
+   * Select **Flame graph** to view the flame graph for a service.
 1. Optional: Select filters to hone in on the problem areas. Each filter you select is added to the Filters statement at the top of the page. You can select filters in the following ways:
    * Use the filter drop-downs in the Filters bar to add services and operators. Use **Execute** to run the filter.
    * From the Labels view: Select **Add to filters** from one of the areas of interest.

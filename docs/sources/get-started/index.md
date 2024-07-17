@@ -36,8 +36,8 @@ Most investigations follow four general steps:
 ![Steps for exploring your profiling data](../images/Explore-Profiles-steps.svg)
 
 1. [Determine your use case](../determine-use-case/).
-1. [Choose a view](../choose-a-view/)
-1. [Investigate trends and spikes](../investigate/)
+1. [Choose a view](../choose-a-view/).
+1. [Investigate trends and spikes](../investigate/).
 1. Identify issues, as the result of your investigation.
 
 {{< docs/play title="the Grafana Play site" url="https://play.grafana.org/a/grafana-pyroscope-app/profiles-explorer" >}}

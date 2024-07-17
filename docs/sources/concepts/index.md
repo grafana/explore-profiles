@@ -21,11 +21,11 @@ To use profiling, you should understand these concepts:
 
 Each profile has data for services. A service can be one of the processes running on your system or application.
 
-Each service has multiple profile types, such as CPU, memory, exceptions, and locks. These profiles provide details about processes within a service.
+Each service has multiple profile types, such as CPU, memory, exceptions, and locks. These profiles provide details about the processes in a service.
 
-* Service:  This is the main application or system you are monitoring. For example, it could be an online shopping platform, a social media application, or a cloud storage service
-  * Profile type: Each service can be monitored through different profile types, each focusing on a specific performance aspect. Example profile types:
-    * Cpu
+* Service:  This is the main application or system you are monitoring. For example, it could be an online shopping platform, a social media application, or a cloud storage service.
+  * Profile type: You can monitor each service through different profile types, each focusing on a specific performance aspect. Example profile types:
+    * CPU
     * allocated memory
     * in-use memory
     * goroutines
@@ -54,7 +54,7 @@ For more information, refer to [Understand profiling types](https://grafana.com/
 
 ## Labels
 
-Labels help identify parts of profiling data. For example, labels identify Kubernetes Pod names, namespaces, repositories, references, and more.
+Labels help identify parts of profiling data. For example, labels identify Kubernetes Pod names, namespaces, repositories, and references. You can also create custom labels.
 
 This feature is crucial for identifying performance anomalies and understanding the behavior of different application segments under various conditions.
 
@@ -62,7 +62,7 @@ This feature is crucial for identifying performance anomalies and understanding 
 
 ## Flame graphs
 
-A fundamental aspect of continuous profiling is the flame graph, a convenient way to visualize performance data. These graphs provide a clear, intuitive understanding of resource allocation and bottlenecks within the application.
+A fundamental aspect of continuous profiling is the flame graph, a convenient way to visualize performance data. These graphs provide a clear, intuitive understanding of resource allocation and bottlenecks in the application.
 
 You can use a flame graph visualization if you need to:
 
