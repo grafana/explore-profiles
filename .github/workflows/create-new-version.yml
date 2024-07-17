@@ -39,4 +39,4 @@ jobs:
           npm version ${{ inputs.version }}
 
       - name: Push
-        run: git push origin main --tags
+        run: git push origin --tags
