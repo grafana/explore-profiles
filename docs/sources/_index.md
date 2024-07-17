@@ -42,6 +42,7 @@ cards:
     - title: Changelog
       href: https://github.com/grafana/explore-profiles/blob/main/CHANGELOG.md
       description:  Learn about the updates, new features, and bugfixes in this version.
+      height: 24
 ---
 
 <!-- Use this for the product name {{< param "PRODUCT_NAME" >}} -->
