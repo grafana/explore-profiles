@@ -10,14 +10,7 @@
     "plugins": []
   },
   "info": {
-    "keywords": [
-      "app",
-      "pyroscope",
-      "profiling",
-      "explore",
-      "profiles",
-      "performance"
-    ],
+    "keywords": ["app", "pyroscope", "profiling", "explore", "profiles", "performance"],
     "description": "Continuous profiling service powered by Grafana Pyroscope",
     "author": {
       "name": "Grafana"

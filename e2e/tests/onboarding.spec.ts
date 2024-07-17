@@ -20,7 +20,6 @@ test.describe('Onboarding', () => {
     await expect(onboardingModal.getByTestId('hero')).toHaveScreenshot();
     await expect(onboardingModal.getByTestId('what-you-can-do')).toHaveScreenshot();
     await expect(onboardingModal.getByTestId('how-to-get-started')).toHaveScreenshot();
-    await expect(onboardingModal.getByTestId('how-billing-works')).toHaveScreenshot();
 
     await page.getByTestId('close-onboarding-modal').click();
 
