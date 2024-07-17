@@ -47,8 +47,8 @@ Alternatively, you can install Explore Profiles within Grafana by following thes
 
 1. Within Grafana, go to Administration > Plugins and data > Plugins.
 2. Search for "Explore Profiles".
-3. Click on "Explore Profiles".
-4. Click on "Install" button.
+3. Click on Explore Profiles.
+4. Click **Install**
 
 ### Install using environment variables
 
