@@ -5,8 +5,8 @@ import clsx from 'clsx';
 import React from 'react';
 
 import DecreaseLatency from '../../../../img/decrease-latency.png';
-import HeroImage from '../../../../img/hero-image.png';
 import HeroImageExploreProfiles from '../../../../img/hero-image-explore-profiles.png';
+import HeroImage from '../../../../img/hero-image.png';
 import ReduceCosts from '../../../../img/reduce-costs.png';
 import ResolveIncidents from '../../../../img/resolve-incidents.png';
 import { useOnboardingModal } from '../domain/useOnboardingModal';
@@ -111,7 +111,7 @@ export function OnboardingModal() {
     <div data-testid="onboarding-modal">
       <div className={styles.hero} data-testid="hero">
         <div className={styles.heroTitles}>
-          <h1 className={styles.title}>Welcome to {data.isCloud ? "Grafana Cloud Profiles" : "Explore Profiles"}</h1>
+          <h1 className={styles.title}>Welcome to {data.isCloud ? 'Grafana Cloud Profiles' : 'Explore Profiles'}</h1>
           <h2 className={styles.subtitle}>
             Optimize infrastructure spend, simplify debugging, and enhance application performance
           </h2>
@@ -153,79 +153,88 @@ export function OnboardingModal() {
       <div data-testid="how-to-get-started">
         <h3>How to Get Started</h3>
         <div className={styles.onboardingRow}>
-          {data.isCloud ? (<>
-            <div className={styles.onboardingPanel}>
-              <div className={styles.onboardingPanelNumber}>
-                <span className={styles.onboardingPanelNumberSpan}>1</span>
+          {data.isCloud ? (
+            <>
+              <div className={styles.onboardingPanel}>
+                <div className={styles.onboardingPanelNumber}>
+                  <span className={styles.onboardingPanelNumberSpan}>1</span>
+                </div>
+                <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
+                <p className={styles.onboardingPanelDescription}>
+                  Use{' '}
+                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
+                    Grafana Agent
+                  </StyledLink>{' '}
+                  or{' '}
+                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
+                    Pyroscope SDKs
+                  </StyledLink>{' '}
+                  to push profiles from your applications to Grafana Cloud.
+                </p>
               </div>
-              <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
-              <p className={styles.onboardingPanelDescription}>
-                Use{' '}
-                <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
-                  Grafana Agent
-                </StyledLink>{' '}
-                or{' '}
-                <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
-                  Pyroscope SDKs
-                </StyledLink>{' '}
-                to push profiles from your applications to Grafana Cloud.
-              </p>
-            </div>
-            <div className={styles.onboardingPanel}>
-              <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
-                <span className={styles.onboardingPanelNumberSpan}>2</span>
+              <div className={styles.onboardingPanel}>
+                <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
+                  <span className={styles.onboardingPanelNumberSpan}>2</span>
+                </div>
+                <h3 className={styles.onboardingPanelHeader}>Configure Your Applications</h3>
+                <p className={styles.onboardingPanelDescription}>
+                  Go to <StyledLink href={data.settingsUrl}>Grafana Cloud Stack settings</StyledLink> to find your
+                  Grafana Cloud Credentials.
+                </p>
               </div>
-              <h3 className={styles.onboardingPanelHeader}>Configure Your Applications</h3>
-              <p className={styles.onboardingPanelDescription}>
-                Go to <StyledLink href={data.settingsUrl}>Grafana Cloud Stack settings</StyledLink> to find your Grafana Cloud Credentials.
-              </p>
-            </div>
-            <div className={styles.onboardingPanel}>
-              <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
-                <span className={styles.onboardingPanelNumberSpan}>3</span>
+              <div className={styles.onboardingPanel}>
+                <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
+                  <span className={styles.onboardingPanelNumberSpan}>3</span>
+                </div>
+                <h3 className={styles.onboardingPanelHeader}>Start Getting Performance Insights</h3>
+                <p className={styles.onboardingPanelDescription}>
+                  Once you&apos;re done with initial setup, refresh this page to see your profiling data.
+                </p>
               </div>
-              <h3 className={styles.onboardingPanelHeader}>Start Getting Performance Insights</h3>
-              <p className={styles.onboardingPanelDescription}>
-                Once you&apos;re done with initial setup, refresh this page to see your profiling data.
-              </p>
-            </div>
-        </>) : (<>
-          <div className={styles.onboardingPanel}>
-            <div className={clsx(styles.onboardingPanelNumber, styles.color1)}>
-              <span className={styles.onboardingPanelNumberSpan}>1</span>
-            </div>
-              <h3 className={styles.onboardingPanelHeader}>Set Up Your Pyroscope Server</h3>
-              <p className={styles.onboardingPanelDescription}>
-                Install <StyledLink href="https://grafana.com/docs/pyroscope/latest/">Pyroscope Server</StyledLink> on your infrastructure. Or if you want to use a hosted service, go to <StyledLink href={data.settingsUrl}>Grafana Cloud Stack settings</StyledLink> to find your Grafana Cloud Credentials.
-              </p>
-          </div>
-          <div className={styles.onboardingPanel}>
-            <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
-              <span className={styles.onboardingPanelNumberSpan}>2</span>
-            </div>
-              <h3 className={styles.onboardingPanelHeader}>Configure Grafana</h3>
-              <p className={styles.onboardingPanelDescription}>
-                Add a new <StyledLink href="/connections/datasources/new">Pyroscope datasource</StyledLink>. Use your Pyroscope server URL and appropriate security credentials if you use Grafana Cloud Profiles.
-              </p>
-          </div>
-          <div className={styles.onboardingPanel}>
-            <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
-              <span className={styles.onboardingPanelNumberSpan}>3</span>
-            </div>
-            <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
-            <p className={styles.onboardingPanelDescription}>
-              Use{' '}
-              <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
-                Grafana Agent
-              </StyledLink>{' '}
-              or{' '}
-              <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
-                Pyroscope SDKs
-              </StyledLink>{' '}
-              to push profiles from your applications to Grafana Cloud.
-            </p>
-          </div>
-        </>)}
+            </>
+          ) : (
+            <>
+              <div className={styles.onboardingPanel}>
+                <div className={styles.onboardingPanelNumber}>
+                  <span className={styles.onboardingPanelNumberSpan}>1</span>
+                </div>
+                <h3 className={styles.onboardingPanelHeader}>Set Up Your Pyroscope Server</h3>
+                <p className={styles.onboardingPanelDescription}>
+                  Install <StyledLink href="https://grafana.com/docs/pyroscope/latest/">Pyroscope Server</StyledLink> on
+                  your infrastructure. Or if you want to use a hosted service, go to{' '}
+                  <StyledLink href={data.settingsUrl}>Grafana Cloud Stack settings</StyledLink> to find your Grafana
+                  Cloud Credentials.
+                </p>
+              </div>
+              <div className={styles.onboardingPanel}>
+                <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
+                  <span className={styles.onboardingPanelNumberSpan}>2</span>
+                </div>
+                <h3 className={styles.onboardingPanelHeader}>Configure Grafana</h3>
+                <p className={styles.onboardingPanelDescription}>
+                  Add a new <StyledLink href="/connections/datasources/new">Pyroscope datasource</StyledLink>. Use your
+                  Pyroscope server URL and appropriate security credentials if you use Grafana Cloud Profiles.
+                </p>
+              </div>
+              <div className={styles.onboardingPanel}>
+                <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
+                  <span className={styles.onboardingPanelNumberSpan}>3</span>
+                </div>
+                <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
+                <p className={styles.onboardingPanelDescription}>
+                  Use{' '}
+                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
+                    Grafana Agent
+                  </StyledLink>{' '}
+                  or{' '}
+                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
+                    Pyroscope SDKs
+                  </StyledLink>{' '}
+                  to push profiles from your applications to Grafana Cloud.
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

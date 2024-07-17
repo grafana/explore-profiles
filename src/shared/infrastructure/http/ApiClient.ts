@@ -11,13 +11,13 @@ type CustomDataSourceJsonData = { overridesDefault: boolean };
 type CustomDataSourceInstanceSettings = DataSourceInstanceSettings<DataSourceJsonData & CustomDataSourceJsonData>;
 
 function generateDefaultDataSource() {
-  console.warn("No Pyroscope data source found. Please add a pyroscope datasource to Grafana.");
+  console.warn('No Pyroscope data source found. Please add a pyroscope datasource to Grafana.');
   return {
-    id: "placeholder",
-    uid: "placeholder",
-    type: "placeholder",
-    name: "placeholder",
-  }
+    id: 'placeholder',
+    uid: 'placeholder',
+    type: 'placeholder',
+    name: 'placeholder',
+  };
 }
 
 /**
@@ -25,9 +25,7 @@ function generateDefaultDataSource() {
  */
 export class ApiClient extends HttpClient {
   static datasourcesCount() {
-    return Object.values(config.datasources).filter(
-      (ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE
-    ).length
+    return Object.values(config.datasources).filter((ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE).length;
   }
 
   static selectDefaultDataSource() {
