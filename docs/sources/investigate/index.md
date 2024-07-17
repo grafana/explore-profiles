@@ -19,7 +19,7 @@ Using these steps, you can use the profile data to investigate issues.
 
 ## Explore your profile data
 
-When you use Explore Profiles, your investigations follow these general steps.
+When you use Explore Profiles, your investigations follow these steps.
 
 1. Verify your data source in the **Data source** drop-down.
 1. Choose an **Exploration** type. **All services** is selected by default. Learn about the [available views](../choose-a-view/).
