@@ -1,5 +1,6 @@
 ---
 description: Learn how to get started with Explore Profiles
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/get-started/
 keywords:
   - Explore Profiles
   - Concepts

@@ -1,5 +1,6 @@
 ---
-description: Investigate trends and spikes to identify issues
+description: Investigate trends and spikes to identify issues.
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/investigate/
 keywords:
   - Explore Profiles
   - Concepts

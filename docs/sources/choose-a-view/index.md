@@ -1,5 +1,6 @@
 ---
 description: Choose a view that best suits what you need to investigate.
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/choose-a-view/
 keywords:
   - Explore Profiles
   - Concepts

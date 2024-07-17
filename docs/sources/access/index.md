@@ -1,5 +1,6 @@
 ---
 description: Access or install Explore Profiles.
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/access/
 keywords:
   - Install
   - Configure

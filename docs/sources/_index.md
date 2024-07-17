@@ -2,6 +2,7 @@
 cascade:
   FULL_PRODUCT_NAME: Grafana Explore Profiles
   PRODUCT_NAME: Explore Profiles
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/
 description: Learn how to use Explore Profiles to understand and troubleshoot
   your applications and services.
 keywords:

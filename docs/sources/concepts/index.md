@@ -1,5 +1,6 @@
 ---
 description: Learn about concepts basic to profiling.
+canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/concepts/
 keywords:
   - Explore Profiles
   - Concepts
