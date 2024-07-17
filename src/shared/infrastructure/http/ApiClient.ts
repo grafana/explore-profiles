@@ -10,10 +10,26 @@ const PYROSCOPE_URL_SEARCH_PARAM_NAME = 'var-dataSource'; // matches with the Sc
 type CustomDataSourceJsonData = { overridesDefault: boolean };
 type CustomDataSourceInstanceSettings = DataSourceInstanceSettings<DataSourceJsonData & CustomDataSourceJsonData>;
 
+function generateDefaultDataSource() {
+  console.warn("No Pyroscope data source found. Please add a pyroscope datasource to Grafana.");
+  return {
+    id: "placeholder",
+    uid: "placeholder",
+    type: "placeholder",
+    name: "placeholder",
+  }
+}
+
 /**
  * An HTTP client ready to fetch data from the plugin's backend
  */
 export class ApiClient extends HttpClient {
+  static datasourcesCount() {
+    return Object.values(config.datasources).filter(
+      (ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE
+    ).length
+  }
+
   static selectDefaultDataSource() {
     const pyroscopeDataSources = Object.values(config.datasources).filter(
       (ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE
@@ -27,7 +43,8 @@ export class ApiClient extends HttpClient {
       pyroscopeDataSources.find((ds) => ds.uid === uidFromLocalStorage) ||
       pyroscopeDataSources.find((ds) => ds.jsonData.overridesDefault) ||
       pyroscopeDataSources.find((ds) => ds.isDefault) ||
-      pyroscopeDataSources[0]
+      pyroscopeDataSources[0] ||
+      generateDefaultDataSource()
     );
   }
 
