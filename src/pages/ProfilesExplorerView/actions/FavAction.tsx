@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, VariableDependencyConfig } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
@@ -72,6 +73,8 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   public onClick = () => {
+    reportInteraction('g_pyroscope_app_fav_action_clicked');
+
     if (!this.state.isFav) {
       FavoritesDataSource.addFavorite(this.buildFavorite());
     } else {

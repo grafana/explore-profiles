@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, IconName, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { merge } from 'lodash';
 import React from 'react';
@@ -133,6 +134,8 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   }
 
   public onClick = () => {
+    reportInteraction('g_pyroscope_app_select_action_clicked', { type: this.state.EventClass.name });
+
     this.publishEvent(this.buildEvent(), true);
   };
 

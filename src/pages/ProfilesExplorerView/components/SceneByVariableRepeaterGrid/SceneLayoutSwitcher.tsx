@@ -6,6 +6,7 @@ import {
   SceneObjectUrlValues,
 } from '@grafana/scenes';
 import { RadioButtonGroup } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 export enum LayoutType {
@@ -54,6 +55,8 @@ export class SceneLayoutSwitcher extends SceneObjectBase<SceneLayoutSwitcherStat
   }
 
   onChange = (layout: LayoutType) => {
+    reportInteraction('g_pyroscope_app_layout_changed', { layout });
+
     this.setState({ layout });
   };
 

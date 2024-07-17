@@ -3,6 +3,7 @@ import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Field, Icon, RefreshPicker, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -55,7 +56,13 @@ export class GroupByVariable extends QueryVariable {
     }
   };
 
-  static Component = ({ model }: SceneComponentProps<MultiValueVariable & { update?: any }>) => {
+  onChange = (newValue: string) => {
+    reportInteraction('g_pyroscope_app_group_by_label_clicked', { label: newValue });
+
+    this.changeValueTo(newValue);
+  };
+
+  static Component = ({ model }: SceneComponentProps<MultiValueVariable & { update?: any; onChange?: any }>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
 
@@ -112,7 +119,7 @@ export class GroupByVariable extends QueryVariable {
         options={groupByOptions}
         value={value as string}
         mainLabels={getMainLabels(groupByOptions)}
-        onChange={model.changeValueTo}
+        onChange={model.onChange}
         onRefresh={model.update}
       />
     );
