@@ -8,11 +8,17 @@ keywords:
 title: Access or install Explore Profiles
 menuTitle: Access or install
 weight: 150
+refs:
+  pyroscope-data-source:
+    - pattern: /docs/grafana/
+      destination: /docs/grafana/<GRAFANA_VERSION>/datasources/pyroscope/
+    - pattern: /docs/grafana-cloud/
+      destination: /docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/
 ---
 
 # Access or install Explore Profiles
 
-Explore Profiles is a native Grafana application designed to integrate seamlessly with [Pyroscope](https://github.com/grafana/pyroscope), the open-source continuous profiling platform, providing a smooth, query-less experience for browsing and analyzing profiling data.
+Explore Profiles is a native Grafana application designed to integrate seamlessly with [Pyroscope](https://github.com/grafana/pyroscope), the open source continuous profiling platform, providing a smooth, query-less experience for browsing and analyzing profiling data.
 
 You can use Explore Profiles in Grafana Cloud or with Grafana open source stand-alone.
 
@@ -21,14 +27,15 @@ You can use Explore Profiles in Grafana Cloud or with Grafana open source stand-
 To use Explore Profiles with Grafana Cloud, you need:
 
 * A Grafana Cloud account
-* A Grafana stack in Grafana Cloud with a configured Hosted profiles or Pyroscope data source
+* A Grafana stack in Grafana Cloud with a configured Hosted profiles or [Pyroscope data source](ref:pyroscope-data-source)
 
 To use Explore Profiles with Grafana open source, you need:
 
 * Your own Grafana instance
+* A configured [Pyroscope data source](ref:pyroscope-data-source)
 * The [Explore Profiles plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
 
-## Install Explore Profiles
+## Install the Explore Profiles plugin
 
 Explore Profiles is distributed as a Grafana Plugin. You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-pyroscope-app/).
 
@@ -36,7 +43,7 @@ Explore Profiles is distributed as a Grafana Plugin. You can find it in the offi
 
 All Grafana Cloud instances come with the Explore Profiles plugin preinstalled.
 
-### Installation in your Grafana instance
+### Install in your Grafana instance
 
 You can install Explore Profiles in your own Grafana instance using `grafana-cli`:
 

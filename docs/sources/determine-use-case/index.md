@@ -21,7 +21,7 @@ Your use case determines what’s most important. If a service is misbehaving, t
 
 For either use case, the first step is to identify areas of interest by reviewing profiles or a single service.
 Selecting different profile types lets you focus on memory allocation, CPU processes, allocation sizes, blocks, or blocks.
-The profile types available depend on how your app is instrumented to generate your profiling data.
+The profile types available depend on how you've instrumented you app to generate your profiling data.
 For more information, refer to [Understand profile types](https://grafana.com/docs/pyroscope/latest/view-and-analyze-profile-data/profiling-types/).
 
 After you’ve identified the problem process or service, you can filter and explore using labels and flame graphs to view lower levels.
