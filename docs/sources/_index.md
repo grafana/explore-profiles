@@ -39,6 +39,9 @@ cards:
       href: ./investigate/
       description: Use your profiling data to identify issues and determine the root cause.
       height: 24
+    - title: Changelog
+      href: https://github.com/grafana/explore-profiles/blob/main/CHANGELOG.md
+      description:  Learn about the updates, new features, and bugfixes in this version.
 ---
 
 <!-- Use this for the product name {{< param "PRODUCT_NAME" >}} -->

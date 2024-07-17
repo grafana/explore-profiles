@@ -15,6 +15,8 @@ For example, you can start with **All services** and then move to **Profile type
 
 This matches the hierarchy of the [profiling data](../concepts/).
 
+After you choose a view, you can [Investigate trends and spikes](../investigate/).
+
 ## Select a view
 
 Select a view by choosing an Exploration type: **All services**, **Profile types**, **Labels**, or **Flame graph**.
@@ -28,7 +30,7 @@ Click and drag on an area of interest to see more detail.
 
 ## Available views
 
-Determining which view to use is one of the first steps in an investigation.
+Determining which view to use frames the rest of your investigation.
 
 <!-- Uses HTML table because of bulleted lists in table cells. -->
 <table>
@@ -136,5 +138,3 @@ The Profile types shows one chart for each profile available for the selected se
 ### Flame graphs
 
 ![Flame graphs](../images/explore-profiles-flamegraph-2.png)
-
-**Next**: [Investigate trends and spikes](../investigate/)
