@@ -1,0 +1,17 @@
+name: Build docs
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docs/sources/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build docs
+        run: yarn docs:lint

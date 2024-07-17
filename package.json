@@ -9,7 +9,7 @@
     "predev": "rm -rf node_modules/.cache",
     "dev": "yarn predev && webpack -w -c webpack.config.ts --env development",
     "docs:dev": "make -C docs docs",
-    "docs:lint": "make -C docs vale",
+    "docs:lint": "make -C docs vale doc-validator",
     "e2e:ci": " docker run --network host -v $(pwd)/e2e:/app/e2e -v $(pwd)/src:/app/src pyroscope-app-plugin-e2e:latest",
     "e2e:ci:prepare": "docker build --progress=auto -t pyroscope-app-plugin-e2e:latest -f Dockerfile.plugin.e2e .",
     "e2e:ci:server:down": "docker-compose down",
