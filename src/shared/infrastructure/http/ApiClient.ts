@@ -1,6 +1,7 @@
 import { DataSourceInstanceSettings, DataSourceJsonData } from '@grafana/data';
 import { config } from '@grafana/runtime';
 
+import { userStorage } from '../userStorage';
 import { HttpClient } from './HttpClient';
 
 const PYROSCOPE_DATA_SOURCES_TYPE = 'grafana-pyroscope-datasource';
@@ -18,10 +19,12 @@ export class ApiClient extends HttpClient {
       (ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE
     ) as CustomDataSourceInstanceSettings[];
 
-    const initDataSourceUid = new URL(window.location.href).searchParams.get(PYROSCOPE_URL_SEARCH_PARAM_NAME);
+    const uidFromUrl = new URL(window.location.href).searchParams.get(PYROSCOPE_URL_SEARCH_PARAM_NAME);
+    const uidFromLocalStorage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.dataSource;
 
     return (
-      pyroscopeDataSources.find((ds) => ds.uid === initDataSourceUid) ||
+      pyroscopeDataSources.find((ds) => ds.uid === uidFromUrl) ||
+      pyroscopeDataSources.find((ds) => ds.uid === uidFromLocalStorage) ||
       pyroscopeDataSources.find((ds) => ds.jsonData.overridesDefault) ||
       pyroscopeDataSources.find((ds) => ds.isDefault) ||
       pyroscopeDataSources[0]

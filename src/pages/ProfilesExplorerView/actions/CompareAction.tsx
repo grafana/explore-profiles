@@ -17,6 +17,7 @@ import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItem
 import { interpolateQueryRunnerVariables } from '../data/helpers/interpolateQueryRunnerVariables';
 import { computeRoundedTimeRange } from '../helpers/computeRoundedTimeRange';
 import { findSceneObjectByClass } from '../helpers/findSceneObjectByClass';
+import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
 
 interface CompareActionState extends SceneObjectState {
@@ -109,6 +110,9 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
     }
 
     const diffUrl = new URL('a/grafana-pyroscope-app/comparison-diff', appUrl);
+
+    // data source
+    diffUrl.searchParams.set('var-dataSource', getSceneVariableValue(this, 'dataSource'));
 
     // time range
     const { from, to } = computeRoundedTimeRange(sceneGraph.getTimeRange(this).state.value);
