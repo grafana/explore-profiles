@@ -12,7 +12,7 @@ weight: 600
 
 Explore Profiles provides powerful tools that help you identify and analyze problems in your applications and services.
 
-Using these steps, you can use the profile data to identify and investigate issues.
+Using these steps, you can use the profile data to investigate issues.
 
 {{< docs/play title="the Grafana Play site" url="https://play.grafana.org/a/grafana-pyroscope-app/profiles-explorer" >}}
 
