@@ -29,7 +29,7 @@ cards:
       height: 24
     - title: Determine your use case
       href: ./troubleshooting/
-      description: Find solutions to common issues you might encounter when using Explore Logs.
+      description: Chones one of the wwo most common use cases to guide your exploration.
       height: 24
     - title: Choose a view
       href: ./choose-a-view/
