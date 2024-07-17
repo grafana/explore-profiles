@@ -12,9 +12,11 @@ import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
+import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-profile/timelineAndProfileApiClient';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { Panel } from '@shared/ui/Panel/Panel';
 import React, { useEffect, useMemo } from 'react';
+import { Unsubscribable } from 'rxjs';
 
 import { buildFlameGraphQueryRunner } from '../../data/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../data/pyroscope-data-sources';
@@ -33,6 +35,33 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         queries: [],
       }),
     });
+
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  onActivate() {
+    let dataSubscription: Unsubscribable | undefined;
+
+    const stateSubscription = this.subscribeToState((newState, prevState) => {
+      if (newState.$data === prevState.$data) {
+        return;
+      }
+
+      if (dataSubscription) {
+        dataSubscription.unsubscribe();
+      }
+
+      dataSubscription = newState.$data?.subscribeToState((newDataState) => {
+        if (newDataState.data?.state === LoadingState.Done) {
+          timelineAndProfileApiClient.setLastTimeRange(newDataState.data.timeRange);
+        }
+      });
+    });
+
+    return () => {
+      stateSubscription.unsubscribe();
+      dataSubscription?.unsubscribe();
+    };
   }
 
   useSceneFlameGraph = (): DomainHookReturnValue => {

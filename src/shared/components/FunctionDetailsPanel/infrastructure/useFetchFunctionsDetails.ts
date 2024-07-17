@@ -35,12 +35,26 @@ export function useFetchFunctionsDetails({
   stacktrace,
   isGitHubLogged,
 }: FetchParams): FetchResponse {
-  // we get the timerange that was used for fetching the main timeline and flamegraph data to ensure data consistency
-  // (see https://github.com/grafana/pyroscope-squad/issues/131)
-  const [start, end] = timelineAndProfileApiClient.getLastTimeRange();
+  let start = 0;
+  let end = 0;
+  let timeRangeError: Error | null = null;
 
-  const { isFetching, error, data } = useQuery({
-    enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0),
+  try {
+    // We get the time range that was used for fetching the main timeline and
+    // flame graph data to ensure data consistency.
+    //
+    // see https://github.com/grafana/pyroscope-squad/issues/131
+    [start, end] = timelineAndProfileApiClient.getLastTimeRange();
+  } catch (e) {
+    timeRangeError = e as Error;
+  }
+
+  const {
+    isFetching,
+    error: queryError,
+    data,
+  } = useQuery({
+    enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0 && start > 0 && end > 0 && !timeRangeError),
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['function-details', profileMetricId, labelsSelector, start, end, stacktrace, isGitHubLogged],
     queryFn: async () => {
@@ -81,7 +95,7 @@ export function useFetchFunctionsDetails({
 
   return {
     isFetching,
-    error: privateVcsClient.isAbortError(error) ? null : error,
+    error: timeRangeError || (privateVcsClient.isAbortError(queryError) ? null : queryError),
     functionsDetails: useMemo(
       () =>
         data && data.length > 0
