@@ -18,32 +18,34 @@ import {
   SceneVariableSet,
   SplitLayout,
 } from '@grafana/scenes';
-import { IconButton, InlineLabel, RadioButtonGroup, Stack, useStyles2 } from '@grafana/ui';
+import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
+import { useResizeObserver } from '@react-aria/utils';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
-import { GridItemData } from './components/SceneByVariableRepeaterGrid/GridItemData';
-import { SceneLayoutSwitcher } from './components/SceneByVariableRepeaterGrid/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from './components/SceneByVariableRepeaterGrid/SceneNoDataSwitcher';
-import { SceneQuickFilter } from './components/SceneByVariableRepeaterGrid/SceneQuickFilter';
-import { FavoritesDataSource } from './data/favorites/FavoritesDataSource';
-import { LabelsDataSource } from './data/labels/LabelsDataSource';
-import { SeriesDataSource } from './data/series/SeriesDataSource';
-import { EventViewServiceFlameGraph } from './events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from './events/EventViewServiceLabels';
-import { EventViewServiceProfiles } from './events/EventViewServiceProfiles';
-import { SceneExploreAllServices } from './exploration-types/SceneExploreAllServices/SceneExploreAllServices';
-import { SceneExploreFavorites } from './exploration-types/SceneExploreFavorites/SceneExploreFavorites';
-import { SceneExploreServiceLabels } from './exploration-types/SceneExploreServiceLabels/SceneExploreServiceLabels';
-import { SceneExploreServiceProfileTypes } from './exploration-types/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
-import { SceneServiceFlameGraph } from './exploration-types/SceneServiceFlameGraph/SceneServiceFlameGraph';
-import { findSceneObjectByClass } from './helpers/findSceneObjectByClass';
-import { FiltersVariable } from './variables/FiltersVariable/FiltersVariable';
-import { GroupByVariable } from './variables/GroupByVariable/GroupByVariable';
-import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
-import { ProfilesDataSourceVariable } from './variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from './variables/ServiceNameVariable';
+import { FavoritesDataSource } from '../../data/favorites/FavoritesDataSource';
+import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
+import { SeriesDataSource } from '../../data/series/SeriesDataSource';
+import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
+import { EventViewServiceProfiles } from '../../events/EventViewServiceProfiles';
+import { SceneExploreAllServices } from '../../exploration-types/SceneExploreAllServices/SceneExploreAllServices';
+import { SceneExploreFavorites } from '../../exploration-types/SceneExploreFavorites/SceneExploreFavorites';
+import { SceneExploreServiceLabels } from '../../exploration-types/SceneExploreServiceLabels/SceneExploreServiceLabels';
+import { SceneExploreServiceProfileTypes } from '../../exploration-types/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { SceneServiceFlameGraph } from '../../exploration-types/SceneServiceFlameGraph/SceneServiceFlameGraph';
+import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
+import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
+import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable';
+import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
+import { ProfilesDataSourceVariable } from '../../variables/ProfilesDataSourceVariable';
+import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
+import { GridItemData } from '../SceneByVariableRepeaterGrid/GridItemData';
+import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/SceneNoDataSwitcher';
+import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/SceneQuickFilter';
+import { ExplorationTypeSelector, ExplorationTypeSelectorProps } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
@@ -326,7 +328,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
   }
 
-  onChangeExplorationType = (explorationType: ExplorationType) => {
+  onChangeExplorationType = (explorationType: string) => {
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
     // findSceneObjectByClass() throws if not found
@@ -334,13 +336,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       GroupByVariable.DEFAULT_VALUE
     );
 
-    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType)) {
+    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
       (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
         filters: FiltersVariable.DEFAULT_VALUE,
       });
     }
 
-    this.setExplorationType(explorationType);
+    this.setExplorationType(explorationType as ExplorationType);
   };
 
   onClickShareLink = async () => {
@@ -356,48 +358,111 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     } catch {}
   };
 
-  static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { explorationType, controls, body } = model.useState();
+  useExplorationTypeSelectorLayout = () => {
+    const headerRef = useRef<HTMLDivElement>(null);
+    const headerLeftRef = useRef<HTMLDivElement>(null);
+    const headerRightRef = useRef<HTMLDivElement>(null);
+
+    const [layout, setLayout] = useState<ExplorationTypeSelectorProps['layout']>('radio');
+
+    const onResize = () => {
+      const currentRight = headerRightRef.current?.getBoundingClientRect();
+      setLayout(Math.ceil(currentRight?.left || 970) >= 970 ? 'radio' : 'select');
+    };
+
+    useResizeObserver({ ref: headerRef, onResize });
+    useResizeObserver({ ref: headerRightRef, onResize });
+
+    return {
+      headerRef,
+      headerLeftRef,
+      headerRightRef,
+      layout,
+    };
+  };
+
+  useProfilesExplorer = () => {
+    const { explorationType, controls, body } = this.useState();
 
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
 
-    const { variables, gridControls } = model.getVariablesAndGridControls(explorationType as ExplorationType);
+    const { variables, gridControls } = this.getVariablesAndGridControls(explorationType as ExplorationType);
     const [dataSourceVariable, ...sceneVariables] = variables as SceneVariable[];
+
+    const {
+      headerRef,
+      headerLeftRef,
+      headerRightRef,
+      layout: explorationTypeSelectorLayout,
+    } = this.useExplorationTypeSelectorLayout();
+
+    return {
+      data: {
+        explorationType,
+        dataSourceVariable,
+        timePickerControl,
+        refreshPickerControl,
+        headerRefs: {
+          full: headerRef,
+          left: headerLeftRef,
+          right: headerRightRef,
+        },
+        explorationTypeSelectorLayout,
+        sceneVariables,
+        gridControls,
+        body,
+      },
+      actions: {
+        onChangeExplorationType: this.onChangeExplorationType,
+        onClickShareLink: this.onClickShareLink,
+      },
+    };
+  };
+
+  static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
+    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const { data, actions } = model.useProfilesExplorer();
+
+    const {
+      explorationType,
+      dataSourceVariable,
+      timePickerControl,
+      refreshPickerControl,
+      headerRefs,
+      explorationTypeSelectorLayout,
+      sceneVariables,
+      gridControls,
+      body,
+    } = data;
 
     return (
       <>
-        <div className={styles.header}>
+        <div ref={headerRefs.full} className={styles.header}>
           <div className={styles.controls}>
-            <Stack justifyContent="space-between">
-              <Stack>
-                <div className={styles.dataSourceVariable}>
-                  <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
-                  <dataSourceVariable.Component model={dataSourceVariable} />
-                </div>
+            <div ref={headerRefs.left} className={styles.headerLeft}>
+              <div className={styles.dataSourceVariable}>
+                <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
+                <dataSourceVariable.Component model={dataSourceVariable} />
+              </div>
 
-                <div className={styles.explorationType} data-testid="exploration-types">
-                  <InlineLabel width="auto">Exploration type</InlineLabel>
-                  <RadioButtonGroup
-                    options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
-                    value={explorationType}
-                    fullWidth={false}
-                    onChange={model.onChangeExplorationType}
-                  />
-                </div>
-              </Stack>
+              <ExplorationTypeSelector
+                layout={explorationTypeSelectorLayout}
+                options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
+                value={explorationType as string}
+                onChange={actions.onChangeExplorationType}
+              />
+            </div>
 
-              <Stack>
-                <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
-                <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
-                <IconButton
-                  name="share-alt"
-                  tooltip="Copy shareable link to the clipboard"
-                  onClick={model.onClickShareLink}
-                />
-                <VersionInfoTooltip />
-              </Stack>
-            </Stack>
+            <div ref={headerRefs.right} className={styles.headerRight}>
+              <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
+              <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
+              <IconButton
+                name="share-alt"
+                tooltip="Copy shareable link to the clipboard"
+                onClick={actions.onClickShareLink}
+              />
+              <VersionInfoTooltip />
+            </div>
           </div>
 
           <div id={`scene-controls-${explorationType}`} className={styles.sceneControls}>
@@ -428,34 +493,32 @@ const getStyles = (theme: GrafanaTheme2) => ({
     z-index: 1;
   `,
   controls: css`
+    display: flex;
     padding: ${theme.spacing(1)} 0;
+    justify-content: space-between;
+    gap: ${theme.spacing(4)};
+  `,
+  headerLeft: css`
+    display: flex;
+    gap: ${theme.spacing(1)};
   `,
   dataSourceVariable: css`
     display: flex;
-
-    & > div {
-      max-width: 180px;
-    }
+    min-width: 160px;
   `,
-  explorationType: css`
+  explorationTypeContainer: css`
     display: flex;
   `,
-  tooltipContent: css`
-    padding: ${theme.spacing(1)};
-
-    & dl {
-      margin-top: ${theme.spacing(2)};
-      display: grid;
-      grid-gap: ${theme.spacing(1)} ${theme.spacing(2)};
-      grid-template-columns: max-content;
-    }
-    & dt {
-      font-weight: bold;
-    }
-    & dd {
-      margin: 0;
-      grid-column-start: 2;
-    }
+  explorationTypeRadio: css`
+    display: flex;
+  `,
+  explorationTypeSelect: css`
+    display: flex;
+    min-width: 180px;
+  `,
+  headerRight: css`
+    display: flex;
+    gap: ${theme.spacing(1)};
   `,
   variable: css`
     display: flex;
