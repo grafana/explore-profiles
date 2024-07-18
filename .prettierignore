@@ -1,8 +1,9 @@
 .config
 
-dist
-docs
+# automatically generated
+CHANGELOG.md
 
+dist
 samples/static/grafana-pyroscope-sample-blocks-public*
 
 e2e/test-reports
