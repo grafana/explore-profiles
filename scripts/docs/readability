@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+set -euf -o pipefail
+
+
+function usage {
+  cat <<EOF
+Run readability on a file
+
+Usage:
+  $0 <PATH> [BEFORE REVISION] [AFTER REVISION]
+
+Examples:
+  $0 docs/sources/_index.md
+  $0 docs/sources/_index.md HEAD~ HEAD
+EOF
+}
+
+function vale_config {
+cat <<EOF
+StylesPath = $(git rev-parse --show-toplevel)/vale
+MinAlertLevel = suggestion
+[*.md]
+BasedOnStyles = Grafana
+Grafana.ReadabilityAutomatedReadability = YES
+Grafana.ReadabilityColemanLiau = YES
+Grafana.ReadabilityFleschKincaid = YES
+Grafana.ReadabilityFleschReadingEase = YES
+Grafana.ReadabilityGunningFog = YES
+Grafana.ReadabilityLIX = YES
+Grafana.ReadabilitySMOG = YES
+
+TokenIgnores = (<http[^\n]+>+?), \*\*[^\n]+\*\*, ({{[%<] .* [%>]}}.*?{{[%<] ?/.* [%>]}}), \
+(\[.+\]\({{< .+ >}}\)), \
+({{[%<] .+ [%>]}})
+BlockIgnores = (?sm)^({{[%<] [^{]*? [%>]}})\n$, \
+(?s) *({{< highlight [^>]* ?>}}.*?{{< ?/ ?highlight >}}), \
+({{[%<] .+ [%>]}})
+EOF
+}
+
+# Run readability on a file
+function readability {
+  file="$1"
+  revision="$2"
+
+  tempfile="$(mktemp).md"
+  git show "${revision}:${file}" > "${tempfile}"
+
+  # docs/sources/_index.md:1:1:Grafana.ReadabilityGunningFog:11.07 (aim for below 10).
+  while IFS=' :' read -r _file _line _col rule score rest; do
+    printf '%s\t%s\t%s\t%s\n' "${file}" "${rule}" "${score}" "${rest}"
+  done < <(vale --config=<(vale_config) --output=line "${tempfile}")
+}
+
+case "${#}" in
+  0)
+    usage
+    exit 1
+    ;;
+  1)
+    readability "$1" HEAD | grep Readability | sort
+    ;;
+  2)
+    readability "$1" "$2" | grep Readability | sort
+    ;;
+  3)
+    # Can only compare if the file exists in both revisions.
+    if git show "$2:$1" &>/dev/null; then
+      readarray -t before < <(readability "$1" "$2" | grep Readability | sort)
+      readarray -t after < <(readability "$1" "$3" | grep Readability | sort)
+
+      if [[ "${#after[@]}" -ne "${#before[@]}" ]]; then
+        echo 'Unexpected mismatch in before and after metrics' >&2 && exit 1
+      fi
+
+      for ((i = 0; i < "${#before[@]}"; i++)); do
+        read -r _file rule before_score guide <<<"${before[$i]}"
+        read -r _file _rule after_score _guide <<<"${after[$i]}"
+        score="$(bc -l <<<"${after_score} - ${before_score}")"
+        printf '%s\t%s\t%.2f\t(Δ%+.2f)\t%s\n' "$1" "${rule}" "${after_score}" "${score}" "${guide}"
+      done
+    else
+      while read -r _file rule score guide; do
+        printf '%s\t%s\t%.2f\t(Δ%+.2f)\t%s\n' "$1" "${rule}" "${score}" 0 "${guide}"
+      done < <(readability "$1" "$3" | grep Readability | sort)
+    fi
+    ;;
+  *)
+    usage
+    exit 1
+esac
