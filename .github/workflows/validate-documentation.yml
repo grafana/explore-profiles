@@ -1,0 +1,203 @@
+name: Validate documentation
+on:
+  pull_request:
+    paths: ['docs/sources/**']
+  workflow_dispatch:
+jobs:
+  doc-validator:
+    runs-on: ubuntu-latest
+    container:
+      image: grafana/doc-validator:v4.0.0
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run doc-validator tool
+        run: >
+          doc-validator
+          '--skip-checks=^image.+$'
+          docs/sources
+          /docs/writers-toolkit
+          | grep -v sources/shared
+          | reviewdog
+          -f=rdjsonl
+          --fail-on-error
+          --filter-mode=nofilter
+          --name=doc-validator
+          --reporter=github-pr-review
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: >
+          curl
+          --location
+          --output reviewdog.tar.gz
+          https://github.com/jdbaldry/reviewdog/releases/download/v0.18.0-rc.1/reviewdog_0.18.0-rc.1_Linux_x86_64.tar.gz
+      - run: |
+          tar zxf reviewdog.tar.gz reviewdog
+          sudo cp reviewdog /usr/local/bin/
+          rm -f reviewdog.tar.gz
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install prettier
+      - run: >
+          reviewdog
+          --filter-mode=nofilter
+          --runners prettier
+          --tee
+      - run: >
+          git diff
+          | reviewdog
+          --f diff
+          --fail-on-error
+          --filter-mode nofilter
+          --reporter=github-pr-review
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build website
+        run: |
+          docker run -v ${PWD}/docs/sources:/hugo/content/docs/writers-toolkit -e HUGO_REFLINKSERRORLEVEL=ERROR --rm grafana/docs-base:latest /bin/bash -c 'make hugo'
+  vale:
+    runs-on: ubuntu-latest
+    container:
+      image: grafana/vale:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run linter
+        run: >
+          /bin/reviewdog
+          --conf=/etc/vale/.reviewdog.yml
+          --fail-on-error
+          --reporter=github-pr-review
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  report-readability:
+    name: Report readability
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Vale
+        run: |
+          mkdir src
+          cd src
+          wget https://github.com/errata-ai/vale/releases/download/v2.28.0/vale_2.28.0_Linux_64-bit.tar.gz
+          tar zxf vale_2.28.0_Linux_64-bit.tar.gz vale
+          sudo cp vale /usr/local/bin/
+          cd ..
+          rm -rf src
+
+      - name: Check out repository with history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run tool
+        run: |
+          touch .output.txt
+          for file in $(git --no-pager diff --name-only --diff-filter=ACMRT origin/main -- docs/sources); do
+            ./scripts/readability "${file}" origin/main ${{ github.event.pull_request.head.sha }} >> .output.txt
+          done
+
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+
+            const measures = [
+              "AutomatedReadability",
+              "ColemanLiau",
+              "FleschKincaid",
+              "FleschReadingEase",
+              "GunningFog ",
+              "LIX",
+              "SMOG",
+            ];
+
+            let body = "### Readability report\n";
+            body += `| File | ${measures.join(" | ")} |\n`;
+            body += `| - |${" - |".repeat(measures.length)}\n`;
+
+            let i = 0;
+            const output = fs.readFileSync(".output.txt", "utf-8")
+            if (output !== "") {
+              output.split("\n").forEach((line) => {
+                // docs/sources/_index.md	Grafana.ReadabilityAutomatedReadability	8.99	(Δ+0.84)	aim for below 8.
+                const re = new RegExp(
+                  "^(?<file>[^\t]+?)\t(?<rule>[^\t]+?)\t(?<score>[^\t]+?)\t(?<delta>[^\t]+?)\t(?<guide>[^\t]+?)$",
+                );
+                const result = re.exec(line);
+
+                if (result !== null) {
+                  const { file, rule, score, delta, guide } = result.groups;
+
+                  if (i === 0) {
+                    body += `| ${file} |`;
+                  }
+
+                  let color = "green";
+                  const fl = parseFloat(delta.replace(new RegExp("\\(Δ(.+)\\)"), "$1"));
+                  if (
+                    (rule !== "Grafana.ReadabilityFleschReadingEase" && fl > 0) ||
+                    (rule === "Grafana.ReadabilityFleschReadingEase" && fl < 0)
+                  ) {
+                    color = "red";
+                  }
+                  if (fl === 0) {
+                    color = "black";
+                  }
+
+                  body += " $${" + score + "\\space\\color{" + color + "}" + delta + "}$$ |";
+
+                  if (i === measures.length - 1) {
+                    body += "\n";
+                  }
+
+                  i = (i + 1) % measures.length;
+                }
+              });
+
+              body += `<details>
+              <summary>View metric targets</summary>
+
+              | Metric | Range | Ideal score |
+              | --- | --- | --- |
+              | [AutomatedReadability](https://en.wikipedia.org/wiki/Automated_readability_index) | 6 (very easy read) to 14 (extremely difficult read) | 8 or less |
+              | [ColemanLiau](https://en.wikipedia.org/wiki/Coleman%E2%80%93Liau_index) | 6 (very easy read) to 17 (extremely difficult read) |  9 or less |
+              | [FleschKincaid](https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests) | 6 (very easy read) to 17 (extremely difficult read) | 8 or less |
+              | [FleschReadingEase](https://en.wikipedia.org/wiki/Flesch%E2%80%93Kincaid_readability_tests) | 100 (very easy read) to 0 (extremely difficult read) |  70 or more |
+              | [GunningFog](https://en.wikipedia.org/wiki/Gunning_fog_index) | 6 (very easy read) to 17 (extremely difficult read) | 10 or less |
+              | [LIX](https://en.wikipedia.org/wiki/Lix_(readability_test)) | 20 (very easy read) to 60+ (extremely difficult read) |  35 or less |
+              | [SMOG](https://en.wikipedia.org/wiki/SMOG) | 6 (very easy read) to 17 (extremely difficult read) |  10 or less |
+
+              </details>`;
+
+              const {data: comments} = await github.rest.issues.listComments({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+
+              const existing = comments.filter((comment) => comment.body.match(new RegExp("^### Readability report")))
+              if (existing.length > 0) {
+                github.rest.issues.updateComment({
+                  comment_id: existing[0].id,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body,
+                })
+              } else {
+                github.rest.issues.createComment({
+                  issue_number: context.issue.number,
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  body,
+                })
+              }
+            }
