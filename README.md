@@ -40,8 +40,8 @@ GF_INSTALL_PLUGINS=grafana-pyroscope-app
 3. Change your data source with the drop-down on the top left.
 4. Modify your time range in two ways:
 
-   - With the standard time range picker on the top right.
-   - By clicking and dragging the time range you want to see on any time series visualization.
+   - Use the standard time range picker on the top right.
+   - Click and drag the time range you want to see on any time series visualization.
 
 5. Select the service you would like to explore. This takes you to the Service page.
 6. Filter profiles based on labels.
