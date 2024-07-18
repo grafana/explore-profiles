@@ -103,7 +103,7 @@ jobs:
         run: |
           touch .output.txt
           for file in $(git --no-pager diff --name-only --diff-filter=ACMRT origin/main -- docs/sources); do
-            ./scripts/readability "${file}" origin/main ${{ github.event.pull_request.head.sha }} >> .output.txt
+            ./scripts/docs/readability "${file}" origin/main ${{ github.event.pull_request.head.sha }} >> .output.txt
           done
 
       - uses: actions/github-script@v7
