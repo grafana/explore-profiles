@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-app-plugin",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Grafana Pyroscope app plugin (profiles)",
   "license": "AGPL-3.0-only",
   "author": "Grafana",
@@ -30,7 +30,7 @@
     "test": "jest --coverage",
     "test:ci": "jest --passWithNoTests --runInBand --coverage",
     "typecheck": "tsc --noEmit",
-    "version": "standard-changelog"
+    "version": "standard-changelog && git add CHANGELOG.md"
   },
   "dependencies": {
     "@emotion/css": "^11.1.3",

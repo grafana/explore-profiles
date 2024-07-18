@@ -21,6 +21,7 @@ import {
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { useResizeObserver } from '@react-aria/utils';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React, { useRef, useState } from 'react';
 
@@ -329,6 +330,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   onChangeExplorationType = (explorationType: string) => {
+    reportInteraction('g_pyroscope_app_exploration_type_clicked', { explorationType });
+
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
 
     // findSceneObjectByClass() throws if not found

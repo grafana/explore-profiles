@@ -54,7 +54,9 @@ export function useFetchFunctionsDetails({
     error: queryError,
     data,
   } = useQuery({
-    enabled: Boolean(profileMetricId && labelsSelector && stacktrace.length > 0 && start > 0 && end > 0 && !timeRangeError),
+    enabled: Boolean(
+      profileMetricId && labelsSelector && stacktrace.length > 0 && start > 0 && end > 0 && !timeRangeError
+    ),
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['function-details', profileMetricId, labelsSelector, start, end, stacktrace, isGitHubLogged],
     queryFn: async () => {
