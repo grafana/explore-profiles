@@ -7,6 +7,7 @@ import {
   SceneObjectUrlValues,
 } from '@grafana/scenes';
 import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 interface SceneQuickFilterState extends SceneObjectState {
@@ -56,6 +57,10 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
     this.setState({ searchText: '' });
   };
 
+  onFocus = () => {
+    reportInteraction('g_pyroscope_app_quick_filter_focused');
+  };
+
   static Component = ({ model }: SceneComponentProps<SceneQuickFilter>) => {
     const styles = useStyles2(getStyles);
     const { placeholder, searchText } = model.useState();
@@ -74,6 +79,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
               model.clear();
             }
           }}
+          onFocus={model.onFocus}
         />
       </div>
     );

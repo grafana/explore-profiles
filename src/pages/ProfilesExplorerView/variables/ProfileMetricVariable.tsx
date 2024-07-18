@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
@@ -21,7 +22,7 @@ export class ProfileMetricVariable extends QueryVariable {
   constructor() {
     super({
       name: 'profileMetricId',
-      label: '🔥 Profile',
+      label: '🔥 Profile type',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       // "hack": we want to subscribe to changes of dataSource
       query: '$dataSource and profileMetricId please',
@@ -93,7 +94,13 @@ export class ProfileMetricVariable extends QueryVariable {
     return Array.from(optionsMap.values()).sort((a, b) => b.label.localeCompare(a.label));
   }
 
-  static Component = ({ model }: SceneComponentProps<MultiValueVariable>) => {
+  onSelect = (newValue: string) => {
+    reportInteraction('g_pyroscope_app_profile_metric_selected');
+
+    this.changeValueTo(newValue);
+  };
+
+  static Component = ({ model }: SceneComponentProps<MultiValueVariable & { onSelect?: any }>) => {
     const styles = useStyles2(getStyles);
     const { loading, value, options, error } = model.useState();
 
@@ -117,14 +124,14 @@ export class ProfileMetricVariable extends QueryVariable {
         // we do this to ensure that the Cascader selects the initial value properly
         key={String(loading)}
         aria-label="Profile metrics list"
-        width={32}
+        width={24}
         separator="/"
         displayAllSelectedLevels
-        placeholder={loading ? 'Loading profile metrics...' : `Select a profile metric (${options.length})`}
+        placeholder={loading ? 'Loading...' : `Select a profile metric (${options.length})`}
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}
-        onSelect={model.changeValueTo}
+        onSelect={model.onSelect}
       />
     );
   };

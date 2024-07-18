@@ -1,3 +1,27 @@
+## [0.1.2](https://github.com/grafana/explore-profiles/compare/v0.0.46-explore-profiles-beta-35...v0.1.2) (2024-07-17)
+
+
+### Bug Fixes
+
+* **CompareAction:** Add missing data source query parameter to compare URL ([#58](https://github.com/grafana/explore-profiles/issues/58)) ([b1213e1](https://github.com/grafana/explore-profiles/commit/b1213e13aad71f11bbd8473571b4d9ae37924b8f))
+* **FunctionDetails:** Get timeline state from Flame Graph component ([#25](https://github.com/grafana/explore-profiles/issues/25)) ([64ed0e6](https://github.com/grafana/explore-profiles/commit/64ed0e68a22445111b1d1ec02dff9b2fd8daecaa))
+* **GitHub Integration:** Correctly extract the start/end timestamps from time picker ([#15](https://github.com/grafana/explore-profiles/issues/15)) ([fe8d807](https://github.com/grafana/explore-profiles/commit/fe8d807a83fce1b3b3b1eeb39d980af0312548bb))
+* **SceneAllLabelValuesTableState:** Fix color contrast in light mode ([#26](https://github.com/grafana/explore-profiles/issues/26)) ([1bd268f](https://github.com/grafana/explore-profiles/commit/1bd268fd2bf2236ed9b6853e6d48a17933107bf5))
+* **SceneByVariableRepeaterGrid:** Set timeseries min to 0 ([#31](https://github.com/grafana/explore-profiles/issues/31)) ([0e3a17d](https://github.com/grafana/explore-profiles/commit/0e3a17df3363cb2b61bab85039522e44eb766c61))
+* **SceneFlameGraph:** Fix runtime error ([#45](https://github.com/grafana/explore-profiles/issues/45)) ([6227f2d](https://github.com/grafana/explore-profiles/commit/6227f2dcb1d705259fb1ad8ae9f144eb17cd80b1))
+* **SceneFlameGraph:** Respect maxNodes when set in the URL ([#29](https://github.com/grafana/explore-profiles/issues/29)) ([85dd5b7](https://github.com/grafana/explore-profiles/commit/85dd5b79833f1737c0cf5505b743e50e256a20dc))
+
+
+### Features
+
+* **Analytics:** Track Explore Profiles actions ([#64](https://github.com/grafana/explore-profiles/issues/64)) ([ec58f57](https://github.com/grafana/explore-profiles/commit/ec58f5771c6ff59fcbd444ac62c2e55dd1bda202))
+* **DataSource:** Store selected data source in local storage ([#60](https://github.com/grafana/explore-profiles/issues/60)) ([9f7ede1](https://github.com/grafana/explore-profiles/commit/9f7ede188279010502f2bcef02b2caba94b5064f))
+* **SingleView:** Remove page ([#20](https://github.com/grafana/explore-profiles/issues/20)) ([16da70d](https://github.com/grafana/explore-profiles/commit/16da70d7f424c17982a8ca1ceab24a2589121007))
+* Update plugin metadata to auto enable ([#65](https://github.com/grafana/explore-profiles/issues/65)) ([3afd1cd](https://github.com/grafana/explore-profiles/commit/3afd1cd6cbdaf93583978ecab80af8a620e313ef))
+* Various minor improvements ([#46](https://github.com/grafana/explore-profiles/issues/46)) ([877b009](https://github.com/grafana/explore-profiles/commit/877b0094ffd21794b5742db6fbfb32ebd5868a4c))
+
+
+
 # [0.1.0](https://github.com/grafana/explore-profiles/compare/v0.0.46-explore-profiles-beta-35...v0.1.0) (2024-07-15)
 
 Explore Profiles is now available in its initial public release. It is designed to offer a seamless, query-less experience for browsing and analyzing profiling data.

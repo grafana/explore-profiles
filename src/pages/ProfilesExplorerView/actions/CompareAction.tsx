@@ -9,6 +9,7 @@ import {
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { Checkbox, LinkButton, Tooltip, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { buildQuery } from '@shared/domain/url-params/parseQuery';
 import { uniq } from 'lodash';
 import React, { useMemo } from 'react';
@@ -147,6 +148,10 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
     return diffUrl.toString();
   }
 
+  onClickCompareLink = () => {
+    reportInteraction('g_pyroscope_app_compare_link_clicked');
+  };
+
   public static Component = ({ model }: SceneComponentProps<CompareAction>) => {
     const styles = useStyles2(getStyles);
     const { isChecked, isDisabled, isEnabled, diffUrl } = model.useState();
@@ -167,7 +172,14 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
           <Checkbox value={isChecked} disabled={isDisabled} onChange={model.onChange} />
 
           {isEnabled && (
-            <LinkButton variant="primary" size="sm" fill="text" href={diffUrl} target="_blank">
+            <LinkButton
+              variant="primary"
+              size="sm"
+              fill="text"
+              href={diffUrl}
+              target="_blank"
+              onClick={model.onClickCompareLink}
+            >
               Compare
             </LinkButton>
           )}
