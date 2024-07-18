@@ -83,6 +83,6 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
 const getStyles = () => ({
   filter: css`
     flex: 1;
-    min-width: 0;
+    min-width: 112px;
   `,
 });
