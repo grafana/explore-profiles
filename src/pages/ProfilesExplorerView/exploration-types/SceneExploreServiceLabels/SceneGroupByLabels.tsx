@@ -14,6 +14,7 @@ import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridI
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { SceneQuickFilter } from '../../components/SceneByVariableRepeaterGrid/SceneQuickFilter';
 import { SceneDrawer } from '../../components/SceneDrawer';
+import { SceneProfilesExplorer } from '../../components/SceneProfilesExplorer/SceneProfilesExplorer';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
 import { EventAddLabelToFilters } from '../../events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
@@ -22,7 +23,6 @@ import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelVal
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { SceneProfilesExplorer } from '../../SceneProfilesExplorer';
 import { addFilter } from '../../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable';
