@@ -482,7 +482,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   buildTimeseriesPanel(item: GridItemData) {
-    const vizPanel = PanelBuilders.timeseries()
+    const timeSeriesPanel = PanelBuilders.timeseries()
       .setTitle(item.label)
       .setData(
         new SceneDataTransformer({
@@ -498,21 +498,21 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       .setHeaderActions(this.state.headerActions(item))
       .build();
 
-    this.setupTimeseriesOverrides(vizPanel, item);
+    this.setupTimeseriesOverrides(timeSeriesPanel, item);
 
-    return vizPanel;
+    return timeSeriesPanel;
   }
 
-  setupTimeseriesOverrides(vizPanel: VizPanel, item: GridItemData) {
-    const sub = (vizPanel.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
+  setupTimeseriesOverrides(timeSeriesPanel: VizPanel, item: GridItemData) {
+    const sub = (timeSeriesPanel.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
         return;
       }
 
-      vizPanel.setState(this.getTimeseriesPanelConfig(item, state.data.series));
+      timeSeriesPanel.setState(this.getTimeseriesPanelConfig(item, state.data.series));
     });
 
-    vizPanel.addActivationHandler(() => {
+    timeSeriesPanel.addActivationHandler(() => {
       return () => {
         sub.unsubscribe();
       };
