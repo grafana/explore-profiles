@@ -94,7 +94,7 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
         valueMode: BarGaugeValueMode.Text,
         showUnfilled: true,
         sizing: BarGaugeSizing.Manual,
-        text: { titleSize: 14, valueSize: 14 },
+        text: { titleSize: 13, valueSize: 13 },
         namePlacement: BarGaugeNamePlacement.Top,
         minVizHeight: 36,
         maxVizHeight: 36,
