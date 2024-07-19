@@ -76,9 +76,9 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
       }
     }
 
-    const description = item.queryRunnerParams.groupBy?.label
-      ? 'This panel displays aggregate values over the current time period'
-      : undefined;
+    const groupByLabel = item.queryRunnerParams.groupBy?.label;
+
+    const description = groupByLabel ? 'This panel displays aggregate values over the current time period' : undefined;
 
     return {
       description,
@@ -99,6 +99,8 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
       },
       fieldConfig: {
         defaults: {
+          // we force the label value because the overrides don't seem to work when we receive a single serie
+          displayName: series.length === 1 ? groupByLabel : undefined,
           min: 0,
           max,
           thresholds: {
