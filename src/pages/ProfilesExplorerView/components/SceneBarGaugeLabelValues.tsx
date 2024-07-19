@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, LoadingState, VizOrientation } from '@grafana/data';
+import { DataFrame, FieldMatcherID, LoadingState, ThresholdsMode, VizOrientation } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -43,11 +43,6 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
           })
         )
         .setHeaderActions(headerActions(item))
-        // options needed in case there's no data - if there's data, these options are overriden in getBarGaugePanelConfig()
-        .setOption('valueMode', BarGaugeValueMode.Text)
-        .setOption('orientation', VizOrientation.Horizontal)
-        .setOption('showUnfilled', false)
-        .setColor({ mode: 'fixed' })
         .build(),
     });
 
@@ -58,7 +53,7 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
     const { body } = this.state;
 
     const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
+      if (state.data?.state !== LoadingState.Done) {
         return;
       }
 
@@ -106,6 +101,10 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
         defaults: {
           min: 0,
           max,
+          thresholds: {
+            mode: ThresholdsMode.Percentage,
+            steps: [],
+          },
         },
         overrides: this.getOverrides(item, series),
       },
