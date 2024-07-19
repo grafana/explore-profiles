@@ -9,6 +9,7 @@ import {
   SceneCSSGridLayout,
   SceneDataTransformer,
   sceneGraph,
+  SceneObject,
   SceneObjectBase,
   SceneQueryRunner,
   VariableDependencyConfig,
@@ -30,9 +31,11 @@ import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { ErrorStateScene } from '../ErrorState/ErrorStateScene';
+import { SceneBarGaugeLabelValues } from '../SceneBarGaugeLabelValues';
 import { GridItemData } from './GridItemData';
 import { LayoutType, SceneLayoutSwitcher } from './SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
+import { PanelType, ScenePanelTypeSwitcher } from './ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from './SceneQuickFilter';
 
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
@@ -48,6 +51,7 @@ const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 
 const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
+const GRID_AUTO_ROWS_SMALL = '76px';
 
 const DEFAULT_SORT_ITEMS_FN: SceneByVariableRepeaterGridState['sortItemsFn'] = function (a, b) {
   const aIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(a));
@@ -68,29 +72,58 @@ const DEFAULT_SORT_ITEMS_FN: SceneByVariableRepeaterGridState['sortItemsFn'] = f
   return 0;
 };
 
-export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
-  static DEFAULT_LAYOUT = LayoutType.GRID;
-
-  static buildGridItemKey(item: GridItemData) {
-    return `grid-item-${item.index}-${item.value}`;
-  }
-
-  static limitNumberOfSeries = () => (source: Observable<DataFrame[]>) =>
+export const DATA_TRANSFORMATIONS = {
+  addRefId: () => (source: Observable<DataFrame[]>) =>
+    source.pipe(map((data: DataFrame[]) => data.map((d, i) => merge(d, { refId: `${d.refId}-${i}` })))),
+  addStats: () => (source: Observable<DataFrame[]>) =>
     source.pipe(
       map((data: DataFrame[]) => {
         const totalSeriesCount = data.length;
 
-        return data.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES).map((d, i) =>
-          merge(d, {
-            // adding unique "refId" and "totalSeriesCount" for overrides (see setupOverrides() below)
-            refId: `${d.refId}-${i}`,
+        return data.map((d) => {
+          const allValuesSum = d.fields
+            ?.find((field) => field.type === 'number')
+            ?.values.reduce((acc: number, value: number) => acc + value, 0);
+
+          return merge(d, {
             meta: {
-              stats: [{ displayName: 'totalSeriesCount', value: totalSeriesCount }],
+              stats: [
+                {
+                  displayName: 'totalSeriesCount',
+                  value: totalSeriesCount,
+                },
+                {
+                  displayName: 'allValuesSum',
+                  value: allValuesSum,
+                },
+              ],
             },
-          })
-        );
+          });
+        });
       })
-    );
+    ),
+  sortSeries: () => (source: Observable<DataFrame[]>) =>
+    source.pipe(
+      map((data: DataFrame[]) =>
+        data.sort((d1, d2) => {
+          const d1Sum = d1.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
+          const d2Sum = d2.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
+          return d2Sum - d1Sum;
+        })
+      )
+    ),
+  limitNumberOfSeries: () => (source: Observable<DataFrame[]>) =>
+    source.pipe(map((data: DataFrame[]) => data.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES))),
+};
+
+export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
+  static buildGridItemKey(item: GridItemData) {
+    return `grid-item-${item.index}-${item.value}`;
+  }
+
+  static getGridColumnsTemplate(layout: LayoutType) {
+    return layout === LayoutType.ROWS ? GRID_TEMPLATE_ROWS : GRID_TEMPLATE_COLUMNS;
+  }
 
   protected _variableDependency: VariableDependencyConfig<SceneByVariableRepeaterGridState> =
     new VariableDependencyConfig(this, {
@@ -122,7 +155,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       sortItemsFn: sortItemsFn || DEFAULT_SORT_ITEMS_FN,
       hideNoData: false,
       body: new SceneCSSGridLayout({
-        templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(SceneByVariableRepeaterGrid.DEFAULT_LAYOUT),
+        templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(SceneLayoutSwitcher.DEFAULT_LAYOUT),
         autoRows: GRID_AUTO_ROWS,
         isLazy: true,
         $behaviors: [
@@ -165,19 +198,17 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
+    const panelTypeChangeSub = this.subscribeToPanelTypeChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
 
     return () => {
       hideNoDataSub.unsubscribe();
+      panelTypeChangeSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
       refreshSub.unsubscribe();
       variableSub.unsubscribe();
     };
-  }
-
-  static getGridColumnsTemplate(layout: LayoutType) {
-    return layout === LayoutType.ROWS ? GRID_TEMPLATE_ROWS : GRID_TEMPLATE_COLUMNS;
   }
 
   subscribeToRefreshClick() {
@@ -215,26 +246,23 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToQuickFilterChange() {
-    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
 
-    const onChangeState = (newState: typeof quickFilterScene.state, prevState?: typeof quickFilterScene.state) => {
+    const onChangeState = (newState: typeof quickFilter.state, prevState?: typeof quickFilter.state) => {
       if (newState.searchText !== prevState?.searchText) {
         this.renderGridItems();
       }
     };
 
-    return quickFilterScene.subscribeToState(debounce(onChangeState, 250));
+    return quickFilter.subscribeToState(debounce(onChangeState, 250));
   }
 
   subscribeToLayoutChange() {
-    const layoutSwitcherScene = findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher;
+    const layoutSwitcher = findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher;
 
     const body = this.state.body as SceneCSSGridLayout;
 
-    const onChangeState = (
-      newState: typeof layoutSwitcherScene.state,
-      prevState?: typeof layoutSwitcherScene.state
-    ) => {
+    const onChangeState = (newState: typeof layoutSwitcher.state, prevState?: typeof layoutSwitcher.state) => {
       if (newState.layout !== prevState?.layout) {
         body.setState({
           templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(newState.layout),
@@ -242,33 +270,42 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       }
     };
 
-    onChangeState(layoutSwitcherScene.state);
+    onChangeState(layoutSwitcher.state);
 
-    return layoutSwitcherScene.subscribeToState(onChangeState);
+    return layoutSwitcher.subscribeToState(onChangeState);
+  }
+
+  subscribeToPanelTypeChange() {
+    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+
+    const onChangeState = (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
+      if (newState.type !== prevState?.type) {
+        this.renderGridItems();
+      }
+    };
+
+    return panelTypeSwitcher.subscribeToState(onChangeState);
   }
 
   subscribeToHideNoDataChange() {
-    const noDataSwitcherScene = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
 
-    const onChangeState = (
-      newState: typeof noDataSwitcherScene.state,
-      prevState?: typeof noDataSwitcherScene.state
-    ) => {
+    const onChangeState = (newState: typeof noDataSwitcher.state, prevState?: typeof noDataSwitcher.state) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
         this.setState({ hideNoData: newState.hideNoData === 'on' });
         this.renderGridItems();
       }
     };
 
-    onChangeState(noDataSwitcherScene.state);
+    onChangeState(noDataSwitcher.state);
 
-    return noDataSwitcherScene.subscribeToState(onChangeState);
+    return noDataSwitcher.subscribeToState(onChangeState);
   }
 
   getCurrentOptions(variable: QueryVariable): VariableValueOption[] {
-    const { options, value: variableValue } = variable.state;
+    const { name: variableName, options, value: variableValue } = variable.state;
 
-    if (this.state.variableName !== 'groupBy') {
+    if (variableName !== 'groupBy') {
       return options;
     }
 
@@ -335,6 +372,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const serviceName = getSceneVariableValue(this, 'serviceName');
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
 
+    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+    const panelTypeFromSwitcher = panelTypeSwitcher.state.type;
+
     const items = this.getCurrentOptions(variable).map((option, i) => {
       try {
         const parsedValue = JSON.parse(option.value as string);
@@ -346,6 +386,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           // see src/pages/ProfilesExplorerView/data/favorites/FavoritesDataSource.ts
           index,
           queryRunnerParams,
+          panelType,
         } = parsedValue;
 
         return {
@@ -358,6 +399,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
             groupBy,
             filters: filters || [],
           },
+          panelType: panelType || panelTypeFromSwitcher,
         };
       } catch {
         return {
@@ -369,6 +411,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
             profileMetricId,
             [variableName as keyof GridItemData['queryRunnerParams']]: option.value,
           },
+          panelType: panelTypeFromSwitcher,
         };
       }
     });
@@ -392,96 +435,137 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return;
     }
 
-    const { headerActions } = this.state;
-
     const gridItems = this.state.items.map((item) => {
-      const gridItemKey = SceneByVariableRepeaterGrid.buildGridItemKey(item);
-      const { queryRunnerParams } = item;
-
-      const data = new SceneDataTransformer({
-        $data: buildTimeSeriesQueryRunner(queryRunnerParams),
-        transformations: [SceneByVariableRepeaterGrid.limitNumberOfSeries],
-      });
-
-      const timeSeriesPanel = PanelBuilders.timeseries()
-        .setTitle(item.label)
-        .setData(data)
-        .setHeaderActions(headerActions(item))
-        .build();
+      const vizPanel: SceneObject = this.buildVizPanel(item);
 
       if (this.state.hideNoData) {
-        this.setupHideNoData(timeSeriesPanel);
+        this.setupHideNoData(vizPanel);
       }
 
-      this.setupOverrides(timeSeriesPanel, item);
-
       return new SceneCSSGridItem({
-        key: gridItemKey,
-        body: timeSeriesPanel,
+        key: SceneByVariableRepeaterGrid.buildGridItemKey(item),
+        body: vizPanel,
       });
     });
 
     (this.state.body as SceneCSSGridLayout).setState({
-      autoRows: GRID_AUTO_ROWS, // required to have the correct grid items height
+      autoRows: this.getAutoRows(), // required to have the correct grid items height
       children: gridItems,
     });
   }
 
-  setupOverrides(timeSeriesPanel: VizPanel, item: GridItemData) {
-    const sub = (timeSeriesPanel.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
+  getAutoRows() {
+    const { variableName } = this.state;
+
+    if (variableName === 'groupBy' && getSceneVariableValue(this, variableName) !== 'all') {
+      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+
+      return panelTypeSwitcher.state.type === PanelType.BARGAUGE ? GRID_AUTO_ROWS_SMALL : GRID_AUTO_ROWS;
+    }
+
+    return GRID_AUTO_ROWS;
+  }
+
+  buildVizPanel(item: GridItemData) {
+    switch (item.panelType) {
+      case PanelType.BARGAUGE:
+        return this.buildBarGaugePanel(item);
+
+      case PanelType.TIMESERIES:
+      default:
+        return this.buildTimeseriesPanel(item);
+    }
+  }
+
+  buildBarGaugePanel(item: GridItemData) {
+    return new SceneBarGaugeLabelValues({ item, headerActions: this.state.headerActions });
+  }
+
+  buildTimeseriesPanel(item: GridItemData) {
+    const vizPanel = PanelBuilders.timeseries()
+      .setTitle(item.label)
+      .setData(
+        new SceneDataTransformer({
+          $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
+          transformations: [
+            DATA_TRANSFORMATIONS.addRefId,
+            DATA_TRANSFORMATIONS.addStats,
+            DATA_TRANSFORMATIONS.sortSeries,
+            DATA_TRANSFORMATIONS.limitNumberOfSeries,
+          ],
+        })
+      )
+      .setHeaderActions(this.state.headerActions(item))
+      .build();
+
+    this.setupTimeseriesOverrides(vizPanel, item);
+
+    return vizPanel;
+  }
+
+  setupTimeseriesOverrides(vizPanel: VizPanel, item: GridItemData) {
+    const sub = (vizPanel.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
         return;
       }
 
-      const groupByLabel = item.queryRunnerParams.groupBy?.label;
-
-      const { series } = state.data;
-      const totalSeriesCount = series[0].meta!.stats![0].value; // see limitNumberOfSeries() above
-      const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
-
-      timeSeriesPanel.setState({
-        description: hasTooManySeries
-          ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. Click on the "Expand panel" or the "Values distributions" icon to see all the values.`
-          : undefined,
-        fieldConfig: {
-          defaults: {
-            min: 0,
-            custom: {
-              fillOpacity: series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
-              gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
-            },
-          },
-          overrides: series.map((serie, i) => ({
-            matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
-            properties: [
-              {
-                id: 'displayName',
-                value: groupByLabel ? serie.fields[1].labels?.[groupByLabel] || '?' : serie.fields[1].name,
-              },
-              {
-                id: 'color',
-                value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
-              },
-            ],
-          })),
-        },
-      });
+      vizPanel.setState(this.getTimeseriesPanelConfig(item, state.data.series));
     });
 
-    timeSeriesPanel.addActivationHandler(() => {
+    vizPanel.addActivationHandler(() => {
       return () => {
         sub.unsubscribe();
       };
     });
   }
 
-  setupHideNoData(timeSeriesPanel: VizPanel) {
-    const sub = (timeSeriesPanel.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
+  getTimeseriesPanelConfig(item: GridItemData, series: DataFrame[]) {
+    // see DATA_TRANSFORMATIONS above
+    const totalSeriesCount =
+      series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
+
+    const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+
+    const description = hasTooManySeries
+      ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
+      : undefined;
+
+    const groupByLabel = item.queryRunnerParams.groupBy?.label;
+
+    return {
+      description,
+      fieldConfig: {
+        defaults: {
+          min: 0,
+          custom: {
+            fillOpacity: series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
+            gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
+          },
+        },
+        overrides: series.map((serie, i) => ({
+          matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
+          properties: [
+            {
+              id: 'displayName',
+              value: groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name,
+            },
+            {
+              id: 'color',
+              value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
+            },
+          ],
+        })),
+      },
+    };
+  }
+
+  setupHideNoData(vizPanel: SceneObject) {
+    const sub = (vizPanel.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
         return;
       }
 
-      const gridItem = sceneGraph.getAncestor(timeSeriesPanel, SceneCSSGridItem);
+      const gridItem = sceneGraph.getAncestor(vizPanel, SceneCSSGridItem);
       const { key: gridItemKey } = gridItem.state;
       const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
 
@@ -494,7 +578,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       }
     });
 
-    timeSeriesPanel.addActivationHandler(() => {
+    vizPanel.addActivationHandler(() => {
       return () => {
         sub.unsubscribe();
       };

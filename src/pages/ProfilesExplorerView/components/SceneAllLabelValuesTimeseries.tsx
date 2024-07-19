@@ -12,8 +12,6 @@ import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQu
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
 
 interface SceneAllLabelValuesTimeseriesState extends SceneObjectState {
-  item: GridItemData;
-  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   body: VizPanel;
 }
 
@@ -22,19 +20,17 @@ export class SceneAllLabelValuesTimeseries extends SceneObjectBase<SceneAllLabel
     item,
     headerActions,
   }: {
-    item: SceneAllLabelValuesTimeseriesState['item'];
-    headerActions: SceneAllLabelValuesTimeseriesState['headerActions'];
+    item: GridItemData;
+    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   }) {
     super({
       key: 'timeseries-all-label-values',
-      item,
-      headerActions,
       body: PanelBuilders.timeseries()
         .setTitle(item.queryRunnerParams.groupBy?.label || '')
         .setData(buildTimeSeriesQueryRunner(item.queryRunnerParams))
+        .setHeaderActions(headerActions(item))
         .setMin(0)
         .setCustomFieldConfig('fillOpacity', 0)
-        .setHeaderActions(headerActions(item))
         .build(),
     });
   }

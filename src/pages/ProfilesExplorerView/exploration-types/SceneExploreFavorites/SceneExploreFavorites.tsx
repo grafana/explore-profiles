@@ -3,13 +3,13 @@ import React from 'react';
 
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
-import { SceneAllLabelValuesTable } from '../../components/SceneAllLabelValuesTable';
 import { SceneAllLabelValuesTimeseries } from '../../components/SceneAllLabelValuesTimeseries';
+import { SceneBarGaugeLabelValues } from '../../components/SceneBarGaugeLabelValues';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { PanelType } from '../../components/SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
 import { SceneDrawer } from '../../components/SceneDrawer';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
-import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
 import { FavoriteVariable } from '../../variables/FavoriteVariable';
@@ -37,15 +37,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
           if (item.queryRunnerParams.groupBy) {
             actions.push(
               new SelectAction({
-                EventClass: EventViewLabelValuesDistribution,
-                item,
-                tooltip: (item) => `View the distribution of all the "${item.queryRunnerParams.groupBy!.label}" values`,
-                skipVariablesInterpolation: true,
-              }),
-              new SelectAction({
                 EventClass: EventExpandPanel,
                 item,
-                tooltip: () => 'Expand this panel to view all the timeseries',
+                tooltip: () => 'Expand this panel to view all the data',
                 skipVariablesInterpolation: true,
               })
             );
@@ -63,45 +57,34 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   onActivate() {
-    const labelValuesDistSub = this.subscribeToEvent(EventViewLabelValuesDistribution, async (event) => {
-      this.openLabelValuesDistributionDrawer(event.payload.item);
-    });
-
     const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
       this.openExpandedPanelDrawer(event.payload.item);
     });
 
     return () => {
       expandPanelSub.unsubscribe();
-      labelValuesDistSub.unsubscribe();
     };
-  }
-
-  openLabelValuesDistributionDrawer(item: GridItemData) {
-    this.state.drawer.open({
-      title: item.label,
-      body: new SceneAllLabelValuesTable({
-        item,
-        headerActions: () => [
-          new SelectAction({ EventClass: EventViewServiceLabels, item }),
-          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-          new SelectAction({ EventClass: EventExpandPanel, item }),
-        ],
-      }),
-    });
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
     this.state.drawer.open({
       title: item.label,
-      body: new SceneAllLabelValuesTimeseries({
-        item,
-        headerActions: () => [
-          new SelectAction({ EventClass: EventViewServiceLabels, item }),
-          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-          new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
-        ],
-      }),
+      body:
+        item.panelType === PanelType.BARGAUGE
+          ? new SceneBarGaugeLabelValues({
+              item,
+              headerActions: () => [
+                new SelectAction({ EventClass: EventViewServiceLabels, item }),
+                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+              ],
+            })
+          : new SceneAllLabelValuesTimeseries({
+              item,
+              headerActions: () => [
+                new SelectAction({ EventClass: EventViewServiceLabels, item }),
+                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+              ],
+            }),
     });
   }
 
