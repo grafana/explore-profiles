@@ -77,7 +77,7 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
     const description = groupByLabel ? 'This panel displays aggregate values over the current time period' : undefined;
 
     return {
-      title: `${item.label} (${series.length})`,
+      title: series.length > 1 ? `${item.label} (${series.length})` : item.label,
       description,
       options: {
         reduceOptions: { values: false, calcs: ['sum'] },
