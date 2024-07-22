@@ -11,10 +11,6 @@ import { interpolateQueryRunnerVariables } from '../data/helpers/interpolateQuer
 import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
-import {
-  EventViewLabelValuesDistribution,
-  EventViewLabelValuesDistributionPayload,
-} from '../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
@@ -24,7 +20,6 @@ type EventContructor =
   | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
   | (new (payload: EventExpandPanelPayload) => EventExpandPanel)
   | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
-  | (new (payload: EventViewLabelValuesDistributionPayload) => EventViewLabelValuesDistribution)
   | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
   | (new (payload: EventViewServiceLabelsPayload) => EventViewServiceLabels)
   | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
@@ -60,17 +55,10 @@ const Events = new Map<EventContructor, EventLookup>([
     EventExpandPanel,
     Object.freeze({
       icon: 'expand-arrows',
-      tooltip: () => 'Expand this panel to view all the timeseries for the current filters',
+      tooltip: () => 'Expand this panel to view all the data for the current filters',
     }),
   ],
   [EventSelectLabel, Object.freeze({ label: 'Select' })],
-  [
-    EventViewLabelValuesDistribution,
-    Object.freeze({
-      icon: 'list-ul',
-      tooltip: (item) => `View the distribution of all the "${item.label}" values for the current filters`,
-    }),
-  ],
   [
     EventViewServiceFlameGraph,
     Object.freeze({

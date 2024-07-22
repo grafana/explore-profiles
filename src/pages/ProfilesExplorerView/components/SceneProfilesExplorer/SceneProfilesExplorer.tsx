@@ -45,6 +45,7 @@ import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/GridItemData';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/SceneNoDataSwitcher';
+import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/SceneQuickFilter';
 import { ExplorationTypeSelector, ExplorationTypeSelectorProps } from './ui/ExplorationTypeSelector';
 
@@ -118,7 +119,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
-      gridControls: [new SceneQuickFilter({ placeholder: '' }), new SceneLayoutSwitcher(), new SceneNoDataSwitcher()],
+      gridControls: [
+        new SceneQuickFilter({ placeholder: '' }),
+        new ScenePanelTypeSwitcher(),
+        new SceneLayoutSwitcher(),
+        new SceneNoDataSwitcher(),
+      ],
     });
 
     getUrlSyncManager().initSync(this);
@@ -211,7 +217,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     if (gridItemData) {
-      this.updateVariables(gridItemData.queryRunnerParams);
+      this.updateVariablesAndControls(gridItemData);
     }
   }
 
@@ -256,7 +262,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(newPlaceholder);
   }
 
-  updateVariables(queryRunnerParams: GridItemData['queryRunnerParams']) {
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  updateVariablesAndControls(item: GridItemData) {
     const [, serviceNameVariable, profileMetricVariable, filtersVariable, groupByVariable] = this.state.$variables!
       .state.variables as [
       DataSourceVariable,
@@ -266,6 +273,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       GroupByVariable
     ];
 
+    const { queryRunnerParams, panelType } = item;
     const { serviceName, profileMetricId, filters, groupBy } = queryRunnerParams;
 
     if (serviceName) {
@@ -293,6 +301,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         }
       });
     }
+
+    if (panelType) {
+      (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).setState({ panelType });
+    }
   }
 
   getVariablesAndGridControls(explorationType: ExplorationType) {
@@ -303,13 +315,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.ALL_SERVICES:
         return {
           variables: [dataSourceVariable, profileMetricVariable],
-          gridControls: this.state.gridControls,
+          gridControls: this.state.gridControls.filter((control) => !(control instanceof ScenePanelTypeSwitcher)),
         };
 
       case ExplorationType.PROFILE_TYPES:
         return {
           variables: [dataSourceVariable, serviceNameVariable],
-          gridControls: this.state.gridControls,
+          gridControls: this.state.gridControls.filter((control) => !(control instanceof ScenePanelTypeSwitcher)),
         };
 
       case ExplorationType.LABELS:
@@ -324,7 +336,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       default:
         return {
           variables: [dataSourceVariable],
-          gridControls: this.state.gridControls,
+          gridControls: this.state.gridControls.filter((control) => !(control instanceof ScenePanelTypeSwitcher)),
         };
     }
   }
@@ -344,6 +356,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         filters: FiltersVariable.DEFAULT_VALUE,
       });
     }
+
+    (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher)?.setState({
+      panelType: ScenePanelTypeSwitcher.DEFAULT_PANEL_TYPE,
+    });
 
     this.setExplorationType(explorationType as ExplorationType);
   };
