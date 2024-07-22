@@ -9,8 +9,9 @@ type FetchResponse = {
   refetch: () => void;
 };
 
-export function useFetchTenantStats(): FetchResponse {
+export function useFetchTenantStats({ enabled }: { enabled: boolean }): FetchResponse {
   const { isFetching, error, data, refetch } = useQuery({
+    enabled,
     placeholderData: () => ({ hasIngestedData: true, oldestProfileTime: 0, newestProfileTime: 0 }),
     queryKey: ['tenant-stats'],
     queryFn: () => {

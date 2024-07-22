@@ -10,50 +10,42 @@ const PYROSCOPE_URL_SEARCH_PARAM_NAME = 'var-dataSource'; // matches with the Sc
 type CustomDataSourceJsonData = { overridesDefault: boolean };
 type CustomDataSourceInstanceSettings = DataSourceInstanceSettings<DataSourceJsonData & CustomDataSourceJsonData>;
 
-function generateDefaultDataSource() {
-  console.warn('No Pyroscope data source found. Please add a pyroscope datasource to Grafana.');
-  return {
-    id: 'placeholder',
-    uid: 'placeholder',
-    type: 'placeholder',
-    name: 'placeholder',
-  };
-}
-
 /**
  * An HTTP client ready to fetch data from the plugin's backend
  */
 export class ApiClient extends HttpClient {
-  static datasourcesCount() {
-    return Object.values(config.datasources).filter((ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE).length;
+  static getPyroscopeDataSources() {
+    return Object.values(config.datasources).filter((ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE);
   }
 
   static selectDefaultDataSource() {
-    const pyroscopeDataSources = Object.values(config.datasources).filter(
-      (ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE
-    ) as CustomDataSourceInstanceSettings[];
+    const pyroscopeDataSources = ApiClient.getPyroscopeDataSources() as CustomDataSourceInstanceSettings[];
 
     const uidFromUrl = new URL(window.location.href).searchParams.get(PYROSCOPE_URL_SEARCH_PARAM_NAME);
     const uidFromLocalStorage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.dataSource;
 
-    return (
+    const defaultDataSource =
       pyroscopeDataSources.find((ds) => ds.uid === uidFromUrl) ||
       pyroscopeDataSources.find((ds) => ds.uid === uidFromLocalStorage) ||
       pyroscopeDataSources.find((ds) => ds.jsonData.overridesDefault) ||
       pyroscopeDataSources.find((ds) => ds.isDefault) ||
-      pyroscopeDataSources[0] ||
-      generateDefaultDataSource()
-    );
+      pyroscopeDataSources[0];
+
+    if (!defaultDataSource) {
+      console.warn(
+        'Cannot find any Pyroscope data source! Please add and configure a Pyroscope data source to your Grafana instance.'
+      );
+
+      // because we instantiate most of our API clients before exporting them,
+      // we have to return a dummy data source to prevent the whole app to fail
+      return { uid: 'no-data-source-configured' };
+    }
+
+    return defaultDataSource;
   }
 
   static getBaseUrl() {
     const pyroscopeDataSource = ApiClient.selectDefaultDataSource();
-
-    if (!pyroscopeDataSource) {
-      throw new Error(
-        'Cannot find any Pyroscope data source! Please configure add at least one Pyroscope data source.'
-      );
-    }
 
     let appUrl = config.appUrl;
     if (appUrl.at(-1) !== '/') {
