@@ -2,17 +2,20 @@ import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { useState } from 'react';
 
-import { useDataPresentCheck } from '../infrastructure/useDataPresentCheck';
+import { useFetchTenantStats } from '../infrastructure/useFetchTenantStats';
 
 export function useOnboarding(): DomainHookReturnValue {
-  const { isFetching, error, hasNoUserData } = useDataPresentCheck();
   const [isModalClosed, setIsModalClosed] = useState(false);
-  const noDatasource = ApiClient.datasourcesCount() === 0;
+
+  const pyroscopeDataSourcesCount = ApiClient.getPyroscopeDataSources().length;
+  const { isFetching, error, stats } = useFetchTenantStats({ enabled: pyroscopeDataSourcesCount > 0 });
+  const hasNoUserData = !isFetching && !stats?.hasIngestedData;
 
   return {
     data: {
       shouldShowLoadingPage: !error && isFetching,
-      shouldShowOnboardingPage: (noDatasource || !error) && !isModalClosed && hasNoUserData,
+      shouldShowOnboardingPage: (error || !pyroscopeDataSourcesCount || hasNoUserData) && !isModalClosed,
+      shouldShowNoDataSourceBanner: !pyroscopeDataSourcesCount,
     },
     actions: {
       closeModal() {

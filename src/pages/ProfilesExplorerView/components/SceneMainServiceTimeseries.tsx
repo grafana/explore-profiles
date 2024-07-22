@@ -15,6 +15,7 @@ import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQu
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
+import { PanelType } from './SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
@@ -44,6 +45,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       index: 0,
       value: '',
       label: '',
+      panelType: PanelType.TIMESERIES,
       // let actions interpolate
       queryRunnerParams: {},
     };
