@@ -86,7 +86,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       : undefined;
 
     return {
-      title: `${item.label} (${series.length})`,
+      title: series.length > 1 ? `${item.label} (${series.length})` : item.label,
       description,
       fieldConfig: {
         defaults: {
