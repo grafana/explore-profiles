@@ -279,7 +279,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
 
     const onChangeState = (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
-      if (newState.type !== prevState?.type) {
+      if (newState.panelType !== prevState?.panelType) {
         this.renderGridItems();
       }
     };
@@ -373,7 +373,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
 
     const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
-    const panelTypeFromSwitcher = panelTypeSwitcher.state.type;
+    const panelTypeFromSwitcher = panelTypeSwitcher.state.panelType;
 
     const items = this.getCurrentOptions(variable).map((option, i) => {
       try {
@@ -460,7 +460,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     if (variableName === 'groupBy' && getSceneVariableValue(this, variableName) !== 'all') {
       const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
 
-      return panelTypeSwitcher.state.type === PanelType.BARGAUGE ? GRID_AUTO_ROWS_SMALL : GRID_AUTO_ROWS;
+      return panelTypeSwitcher.state.panelType === PanelType.BARGAUGE ? GRID_AUTO_ROWS_SMALL : GRID_AUTO_ROWS;
     }
 
     return GRID_AUTO_ROWS;

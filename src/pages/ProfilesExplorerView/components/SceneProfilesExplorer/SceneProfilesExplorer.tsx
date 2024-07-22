@@ -303,7 +303,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
 
     if (panelType) {
-      (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).setState({ type: panelType });
+      (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).setState({ panelType });
     }
   }
 
@@ -358,7 +358,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
 
     (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher)?.setState({
-      type: ScenePanelTypeSwitcher.DEFAULT_TYPE,
+      panelType: ScenePanelTypeSwitcher.DEFAULT_PANEL_TYPE,
     });
 
     this.setExplorationType(explorationType as ExplorationType);
