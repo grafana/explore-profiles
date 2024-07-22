@@ -1,4 +1,4 @@
-# Explore Profiles documentation - TEST
+# Explore Profiles documentation
 
 This directory contains the source code for the Explore Profiles documentation.
 
