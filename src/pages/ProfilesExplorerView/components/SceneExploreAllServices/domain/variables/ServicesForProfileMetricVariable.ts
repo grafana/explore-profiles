@@ -3,7 +3,7 @@ import { ServiceNameVariable } from 'src/pages/ProfilesExplorerView/domain/varia
 export class ServicesForProfileMetricVariable extends ServiceNameVariable {
   constructor() {
     super({
-      name: 'serviceNamesForProfileMetric',
+      name: 'servicesForProfileMetric',
       // "hack": we want to subscribe to changes of dataSource and profileMetricId
       query: '$dataSource, $profileMetricId and serviceName please',
       skipUrlSync: true,

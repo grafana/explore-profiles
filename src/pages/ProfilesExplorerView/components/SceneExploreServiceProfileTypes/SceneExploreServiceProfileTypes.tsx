@@ -19,7 +19,7 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
       }),
       body: new SceneByVariableRepeaterGrid({
         key: 'profile-metrics-grid',
-        variableName: 'profileMetricIdsForService',
+        variableName: 'profileMetricsForService',
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceLabels, item }),
           new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),

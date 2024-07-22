@@ -339,7 +339,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         };
       } catch {
         // TODO: this is super fragile, find a better way (like passing options.buildItemsData?)
-        const targetKey: string = ['serviceName', 'serviceNamesForProfileMetric'].includes(variableName)
+        const targetKey: string = ['serviceName', 'servicesForProfileMetric'].includes(variableName)
           ? 'serviceName'
           : 'profileMetricId';
 
