@@ -14,8 +14,8 @@ weight: 400
 When you start investigating an issue, you may either know what's wrong (for example, you know the affected service or that there’s too much CPU usage), or you may want to explore data.
 This can lead you to two different starting points:
 
-* Use case 1 - You know which service has issues and you need to investigate why.
-* Use case 2 - You know there's a problem, but you need to locate where it is and the cause
+- Use case 1 - You know which service has issues and you need to investigate why.
+- Use case 2 - You know there's a problem, but you need to locate where it is and the cause
 
 Your use case determines what’s most important. If a service is misbehaving, then you might want to see the profile types so you can see the CPU and memory profiles alongside each other.
 

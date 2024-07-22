@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/grafana/explore-profiles/compare/v0.1.2...v0.1.3) (2024-07-19)
+
+
+### Bug Fixes
+
+* **Header:** Switch the exploration type radio button group to a select on narrow screens ([#70](https://github.com/grafana/explore-profiles/issues/70)) ([55f420a](https://github.com/grafana/explore-profiles/commit/55f420a532ee8f2d6d955112d2dd4665df18cf67))
+
+
+
 ## [0.1.2](https://github.com/grafana/explore-profiles/compare/v0.0.46-explore-profiles-beta-35...v0.1.2) (2024-07-17)
 
 

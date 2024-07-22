@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-app-plugin",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Grafana Pyroscope app plugin (profiles)",
   "license": "AGPL-3.0-only",
   "author": "Grafana",
@@ -8,6 +8,7 @@
     "build": "webpack -c webpack.config.ts --env production",
     "predev": "rm -rf node_modules/.cache",
     "dev": "yarn predev && webpack -w -c webpack.config.ts --env development",
+    "docs:dev": "make -C docs docs",
     "e2e:ci": " docker run --network host -v $(pwd)/e2e:/app/e2e -v $(pwd)/src:/app/src pyroscope-app-plugin-e2e:latest",
     "e2e:ci:prepare": "docker build --progress=auto -t pyroscope-app-plugin-e2e:latest -f Dockerfile.plugin.e2e .",
     "e2e:ci:server:down": "docker-compose down",

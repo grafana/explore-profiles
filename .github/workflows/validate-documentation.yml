@@ -1,0 +1,15 @@
+name: Validate documentation
+
+on:
+  pull_request:
+    paths: ['docs/sources/**']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build website
+        run: |
+          docker run -v ${PWD}/docs/sources:/hugo/content/docs/writers-toolkit -e HUGO_REFLINKSERRORLEVEL=ERROR --rm grafana/docs-base:latest /bin/bash -c 'make hugo'

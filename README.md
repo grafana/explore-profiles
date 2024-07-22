@@ -39,17 +39,18 @@ GF_INSTALL_PLUGINS=grafana-pyroscope-app
 2. You’ll land in the service overview page that shows time series and CPU utilization visualizations for all the services in your selected Pyroscope instance.
 3. Change your data source with the drop-down on the top left.
 4. Modify your time range in two ways:
-  * Use the standard time range picker on the top right.
-  * Click and drag the time range you want to see on any time series visualization.
-8. Select the service you would like to explore. This takes you to the Service page.
-9. Filter profiles based on labels.
 
-For more information, refer to the Explore Profiles documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/). 
+   - Use the standard time range picker on the top right.
+   - Click and drag the time range you want to see on any time series visualization.
 
-To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/explore-profiles/blob/main/docs/README.md). 
-The Explore Profiles documentation source files are in docs/sources. 
+5. Select the service you would like to explore. This takes you to the Service page.
+6. Filter profiles based on labels.
+
+For more information, refer to the Explore Profiles documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/).
+
+To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/explore-profiles/blob/main/docs/README.md).
+The Explore Profiles documentation source files are in docs/sources.
 
 ### Development / Contributing
 
 Check out our [Contributing Guidelines](./docs/CONTRIBUTING.md) for more information on how to contribute to this project.
-

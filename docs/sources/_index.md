@@ -42,7 +42,7 @@ cards:
       height: 24
     - title: Changelog
       href: https://github.com/grafana/explore-profiles/blob/main/CHANGELOG.md
-      description:  Learn about the updates, new features, and bugfixes in this version.
+      description: Learn about the updates, new features, and bugfixes in this version.
       height: 24
 ---
 
@@ -61,9 +61,9 @@ You don’t know what’s wrong, but you should be able to find it by drilling d
 
 Using Explore Profiles, you can:
 
-* View high-level service performance: Get a high-level view of all of your services and how they're functioning
-* Optimize processes: Identify processes or services that you can optimize for better performance
-* Diagnose issues: Determine the root cause of an issue
+- View high-level service performance: Get a high-level view of all of your services and how they're functioning
+- Optimize processes: Identify processes or services that you can optimize for better performance
+- Diagnose issues: Determine the root cause of an issue
 
 ## Explore
 
