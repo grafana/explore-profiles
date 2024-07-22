@@ -25,28 +25,28 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React, { useRef, useState } from 'react';
 
-import { FavoritesDataSource } from '../../data/favorites/FavoritesDataSource';
-import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
-import { SeriesDataSource } from '../../data/series/SeriesDataSource';
-import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
-import { EventViewServiceProfiles } from '../../events/EventViewServiceProfiles';
-import { SceneExploreAllServices } from '../../exploration-types/SceneExploreAllServices/SceneExploreAllServices';
-import { SceneExploreFavorites } from '../../exploration-types/SceneExploreFavorites/SceneExploreFavorites';
-import { SceneExploreServiceLabels } from '../../exploration-types/SceneExploreServiceLabels/SceneExploreServiceLabels';
-import { SceneExploreServiceProfileTypes } from '../../exploration-types/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
-import { SceneServiceFlameGraph } from '../../exploration-types/SceneServiceFlameGraph/SceneServiceFlameGraph';
+import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
+import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
+import { SceneExploreFlameGraph } from '../../components/SceneExploreFlameGraph/SceneExploreFlameGraph';
+import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
+import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
+import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
+import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
+import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
+import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
-import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
-import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable';
-import { ProfileMetricVariable } from '../../variables/ProfileMetricVariable';
-import { ProfilesDataSourceVariable } from '../../variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from '../../variables/ServiceNameVariable';
-import { GridItemData } from '../SceneByVariableRepeaterGrid/GridItemData';
-import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/SceneNoDataSwitcher';
-import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
-import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/SceneQuickFilter';
+import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
+import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
+import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
+import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
+import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
+import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { ExplorationTypeSelector, ExplorationTypeSelectorProps } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
@@ -236,7 +236,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.FLAME_GRAPH:
-        primary = new SceneServiceFlameGraph();
+        primary = new SceneExploreFlameGraph();
         break;
 
       case ExplorationType.FAVORITES:

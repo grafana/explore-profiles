@@ -1,6 +1,6 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
 
-import { formatSeriesResponse } from '../../../pages/ProfilesExplorerView/data/series/http/formatSeriesResponse';
+import { formatSeriesResponse } from '../../../pages/ProfilesExplorerView/infrastructure/series/http/formatSeriesResponse';
 import { ApiClient } from '../http/ApiClient';
 import { ProfileMetric } from '../profile-metrics/getProfileMetric';
 

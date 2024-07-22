@@ -11,16 +11,16 @@ import {
 import { GraphGradientMode } from '@grafana/schema';
 import React from 'react';
 
-import { LabelsDataSource } from '../data/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
+import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
+import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
   addStats,
   limitNumberOfSeries,
   sortSeries,
 } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   body: VizPanel;

@@ -10,12 +10,12 @@ import {
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
-import { getProfileMetricLabel } from '../data/series/helpers/getProfileMetricLabel';
-import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
-import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
-import { PanelType } from './SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
+import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
+import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { PanelType } from './SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];

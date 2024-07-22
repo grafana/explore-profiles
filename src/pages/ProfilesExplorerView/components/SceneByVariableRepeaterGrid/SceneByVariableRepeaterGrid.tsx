@@ -17,19 +17,19 @@ import { Spinner } from '@grafana/ui';
 import { debounce } from 'lodash';
 import React from 'react';
 
-import { FavAction } from '../../actions/FavAction';
-import { FavoritesDataSource } from '../../data/favorites/FavoritesDataSource';
+import { FavAction } from '../../domain/actions/FavAction';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
-import { ErrorStateScene } from '../ErrorState/ErrorStateScene';
+import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
-import { GridItemData } from './GridItemData';
-import { LayoutType, SceneLayoutSwitcher } from './SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
-import { PanelType, ScenePanelTypeSwitcher } from './ScenePanelTypeSwitcher';
-import { SceneQuickFilter } from './SceneQuickFilter';
+import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
+import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
+import { LayoutType, SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
+import { PanelType, ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
+import { SceneQuickFilter } from './components/SceneQuickFilter';
+import { GridItemData } from './types/GridItemData';
 
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
   variableName: string;
@@ -483,7 +483,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({
-          body: new EmptyStateScene({
+          body: new SceneEmptyState({
             message: 'No results',
           }),
         }),
@@ -498,7 +498,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({
-          body: new ErrorStateScene({
+          body: new SceneErrorState({
             message: error.toString(),
           }),
         }),
