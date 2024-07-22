@@ -7,13 +7,13 @@ import React from 'react';
 import { CompareAction } from '../../actions/CompareAction';
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
-import { SceneAllLabelValuesTimeseries } from '../../components/SceneAllLabelValuesTimeseries';
-import { SceneBarGaugeLabelValues } from '../../components/SceneBarGaugeLabelValues';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { PanelType } from '../../components/SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../../components/SceneByVariableRepeaterGrid/SceneQuickFilter';
 import { SceneDrawer } from '../../components/SceneDrawer';
+import { SceneLabelValuesBarGauge } from '../../components/SceneLabelValuesBarGauge';
+import { SceneLabelValuesTimeseries } from '../../components/SceneLabelValuesTimeseries';
 import { SceneProfilesExplorer } from '../../components/SceneProfilesExplorer/SceneProfilesExplorer';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
 import { EventAddLabelToFilters } from '../../events/EventAddLabelToFilters';
@@ -142,11 +142,12 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       title: this.buildtimeSeriesPanelTitle(item),
       body:
         item.panelType === PanelType.BARGAUGE
-          ? new SceneBarGaugeLabelValues({
+          ? new SceneLabelValuesBarGauge({
               item,
               headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
             })
-          : new SceneAllLabelValuesTimeseries({
+          : new SceneLabelValuesTimeseries({
+              displayAllValues: true,
               item,
               headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
             }),

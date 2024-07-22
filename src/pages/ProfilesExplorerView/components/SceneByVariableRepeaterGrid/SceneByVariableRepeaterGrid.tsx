@@ -1,37 +1,30 @@
-import { DashboardCursorSync, DataFrame, FieldMatcherID, LoadingState, VariableRefresh } from '@grafana/data';
+import { DashboardCursorSync, LoadingState, VariableRefresh } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
-  PanelBuilders,
   QueryVariable,
   SceneComponentProps,
   SceneCSSGridItem,
   SceneCSSGridLayout,
-  SceneDataTransformer,
   sceneGraph,
-  SceneObject,
   SceneObjectBase,
   SceneQueryRunner,
   VariableDependencyConfig,
   VariableValueOption,
-  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
-import { GraphGradientMode, Spinner } from '@grafana/ui';
-import { debounce, merge } from 'lodash';
+import { Spinner } from '@grafana/ui';
+import { debounce } from 'lodash';
 import React from 'react';
-import { map, Observable } from 'rxjs';
 
 import { FavAction } from '../../actions/FavAction';
 import { FavoritesDataSource } from '../../data/favorites/FavoritesDataSource';
-import { LabelsDataSource } from '../../data/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner } from '../../data/timeseries/buildTimeSeriesQueryRunner';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
-import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { EmptyStateScene } from '../EmptyState/EmptyStateScene';
 import { ErrorStateScene } from '../ErrorState/ErrorStateScene';
-import { SceneBarGaugeLabelValues } from '../SceneBarGaugeLabelValues';
+import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
+import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 import { GridItemData } from './GridItemData';
 import { LayoutType, SceneLayoutSwitcher } from './SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from './SceneNoDataSwitcher';
@@ -70,50 +63,6 @@ const DEFAULT_SORT_ITEMS_FN: SceneByVariableRepeaterGridState['sortItemsFn'] = f
   }
 
   return 0;
-};
-
-export const DATA_TRANSFORMATIONS = {
-  addRefId: () => (source: Observable<DataFrame[]>) =>
-    source.pipe(map((data: DataFrame[]) => data.map((d, i) => merge(d, { refId: `${d.refId}-${i}` })))),
-  addStats: () => (source: Observable<DataFrame[]>) =>
-    source.pipe(
-      map((data: DataFrame[]) => {
-        const totalSeriesCount = data.length;
-
-        return data.map((d) => {
-          const allValuesSum = d.fields
-            ?.find((field) => field.type === 'number')
-            ?.values.reduce((acc: number, value: number) => acc + value, 0);
-
-          return merge(d, {
-            meta: {
-              stats: [
-                {
-                  displayName: 'totalSeriesCount',
-                  value: totalSeriesCount,
-                },
-                {
-                  displayName: 'allValuesSum',
-                  value: allValuesSum,
-                },
-              ],
-            },
-          });
-        });
-      })
-    ),
-  sortSeries: () => (source: Observable<DataFrame[]>) =>
-    source.pipe(
-      map((data: DataFrame[]) =>
-        data.sort((d1, d2) => {
-          const d1Sum = d1.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
-          const d2Sum = d2.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
-          return d2Sum - d1Sum;
-        })
-      )
-    ),
-  limitNumberOfSeries: () => (source: Observable<DataFrame[]>) =>
-    source.pipe(map((data: DataFrame[]) => data.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES))),
 };
 
 export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
@@ -436,7 +385,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     }
 
     const gridItems = this.state.items.map((item) => {
-      const vizPanel: SceneObject = this.buildVizPanel(item);
+      const vizPanel = this.buildVizPanel(item);
 
       if (this.state.hideNoData) {
         this.setupHideNoData(vizPanel);
@@ -454,114 +403,19 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
-  getAutoRows() {
-    const { variableName } = this.state;
-
-    if (variableName === 'groupBy' && getSceneVariableValue(this, variableName) !== 'all') {
-      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
-
-      return panelTypeSwitcher.state.panelType === PanelType.BARGAUGE ? GRID_AUTO_ROWS_SMALL : GRID_AUTO_ROWS;
-    }
-
-    return GRID_AUTO_ROWS;
-  }
-
   buildVizPanel(item: GridItemData) {
     switch (item.panelType) {
       case PanelType.BARGAUGE:
-        return this.buildBarGaugePanel(item);
+        return new SceneLabelValuesBarGauge({ item, headerActions: this.state.headerActions });
 
       case PanelType.TIMESERIES:
       default:
-        return this.buildTimeseriesPanel(item);
+        return new SceneLabelValuesTimeseries({ item, headerActions: this.state.headerActions });
     }
   }
 
-  buildBarGaugePanel(item: GridItemData) {
-    return new SceneBarGaugeLabelValues({ item, headerActions: this.state.headerActions });
-  }
-
-  buildTimeseriesPanel(item: GridItemData) {
-    const timeSeriesPanel = PanelBuilders.timeseries()
-      .setTitle(item.label)
-      .setData(
-        new SceneDataTransformer({
-          $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-          transformations: [
-            DATA_TRANSFORMATIONS.addRefId,
-            DATA_TRANSFORMATIONS.addStats,
-            DATA_TRANSFORMATIONS.sortSeries,
-            DATA_TRANSFORMATIONS.limitNumberOfSeries,
-          ],
-        })
-      )
-      .setHeaderActions(this.state.headerActions(item))
-      .build();
-
-    this.setupTimeseriesOverrides(timeSeriesPanel, item);
-
-    return timeSeriesPanel;
-  }
-
-  setupTimeseriesOverrides(timeSeriesPanel: VizPanel, item: GridItemData) {
-    const sub = (timeSeriesPanel.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
-        return;
-      }
-
-      timeSeriesPanel.setState(this.getTimeseriesPanelConfig(item, state.data.series));
-    });
-
-    timeSeriesPanel.addActivationHandler(() => {
-      return () => {
-        sub.unsubscribe();
-      };
-    });
-  }
-
-  getTimeseriesPanelConfig(item: GridItemData, series: DataFrame[]) {
-    // see DATA_TRANSFORMATIONS above
-    const totalSeriesCount =
-      series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
-
-    const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
-
-    const description = hasTooManySeries
-      ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
-      : undefined;
-
-    const groupByLabel = item.queryRunnerParams.groupBy?.label;
-
-    return {
-      title: `${item.label} (${series.length})`,
-      description,
-      fieldConfig: {
-        defaults: {
-          min: 0,
-          custom: {
-            fillOpacity: series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
-            gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
-          },
-        },
-        overrides: series.map((serie, i) => ({
-          matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
-          properties: [
-            {
-              id: 'displayName',
-              value: groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name,
-            },
-            {
-              id: 'color',
-              value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
-            },
-          ],
-        })),
-      },
-    };
-  }
-
-  setupHideNoData(vizPanel: SceneObject) {
-    const sub = (vizPanel.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
+  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
+    const sub = (vizPanel.state.body.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
         return;
       }
@@ -584,6 +438,18 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         sub.unsubscribe();
       };
     });
+  }
+
+  getAutoRows() {
+    const { variableName } = this.state;
+
+    if (variableName === 'groupBy' && getSceneVariableValue(this, variableName) !== 'all') {
+      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+
+      return panelTypeSwitcher.state.panelType === PanelType.BARGAUGE ? GRID_AUTO_ROWS_SMALL : GRID_AUTO_ROWS;
+    }
+
+    return GRID_AUTO_ROWS;
   }
 
   filterItems(items: SceneByVariableRepeaterGridState['items']) {

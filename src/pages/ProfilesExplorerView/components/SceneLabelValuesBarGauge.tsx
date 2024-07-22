@@ -14,13 +14,13 @@ import React from 'react';
 import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
-import { DATA_TRANSFORMATIONS } from './SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { addRefId, addStats, sortSeries } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 
-interface SceneBarGaugeLabelValuesState extends SceneObjectState {
+interface SceneLabelValuesBarGaugeState extends SceneObjectState {
   body: VizPanel;
 }
 
-export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabelValuesState> {
+export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBarGaugeState> {
   constructor({
     item,
     headerActions,
@@ -35,11 +35,7 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
         .setData(
           new SceneDataTransformer({
             $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-            transformations: [
-              DATA_TRANSFORMATIONS.addRefId,
-              DATA_TRANSFORMATIONS.addStats,
-              DATA_TRANSFORMATIONS.sortSeries,
-            ],
+            transformations: [addRefId, addStats, sortSeries],
           })
         )
         .setHeaderActions(headerActions(item))
@@ -132,7 +128,7 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
     }));
   }
 
-  static Component({ model }: SceneComponentProps<SceneBarGaugeLabelValues>) {
+  static Component({ model }: SceneComponentProps<SceneLabelValuesBarGauge>) {
     const { body } = model.useState();
 
     return <body.Component model={body} />;

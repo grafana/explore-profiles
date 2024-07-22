@@ -3,12 +3,12 @@ import React from 'react';
 
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
-import { SceneAllLabelValuesTimeseries } from '../../components/SceneAllLabelValuesTimeseries';
-import { SceneBarGaugeLabelValues } from '../../components/SceneBarGaugeLabelValues';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { PanelType } from '../../components/SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
 import { SceneDrawer } from '../../components/SceneDrawer';
+import { SceneLabelValuesBarGauge } from '../../components/SceneLabelValuesBarGauge';
+import { SceneLabelValuesTimeseries } from '../../components/SceneLabelValuesTimeseries';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../events/EventViewServiceLabels';
@@ -71,14 +71,15 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       title: item.label,
       body:
         item.panelType === PanelType.BARGAUGE
-          ? new SceneBarGaugeLabelValues({
+          ? new SceneLabelValuesBarGauge({
               item,
               headerActions: () => [
                 new SelectAction({ EventClass: EventViewServiceLabels, item }),
                 new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
               ],
             })
-          : new SceneAllLabelValuesTimeseries({
+          : new SceneLabelValuesTimeseries({
+              displayAllValues: true,
               item,
               headerActions: () => [
                 new SelectAction({ EventClass: EventViewServiceLabels, item }),
