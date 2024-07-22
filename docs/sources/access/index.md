@@ -26,14 +26,14 @@ You can use Explore Profiles in Grafana Cloud or with Grafana open source stand-
 
 To use Explore Profiles with Grafana Cloud, you need:
 
-* A Grafana Cloud account
-* A Grafana stack in Grafana Cloud with a configured Hosted profiles or [Pyroscope data source](ref:pyroscope-data-source)
+- A Grafana Cloud account
+- A Grafana stack in Grafana Cloud with a configured Hosted profiles or [Pyroscope data source](ref:pyroscope-data-source)
 
 To use Explore Profiles with Grafana open source, you need:
 
-* Your own Grafana instance
-* A configured [Pyroscope data source](ref:pyroscope-data-source)
-* The [Explore Profiles plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
+- Your own Grafana instance
+- A configured [Pyroscope data source](ref:pyroscope-data-source)
+- The [Explore Profiles plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
 
 ## Install the Explore Profiles plugin
 
@@ -58,7 +58,8 @@ Alternatively, follow these steps to install Explore Profiles in Grafana:
 3. Select Explore Profiles.
 4. Click **Install**
 
-The plugin is automatically activated after installation. 
+The plugin is automatically activated after installation.
+
 ### Install using environment variables
 
 If you want to install the app in a Docker container, you need to configure the following environment variable:

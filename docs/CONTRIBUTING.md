@@ -47,7 +47,7 @@ To enable this feature:
 2. Fill in the missing `GITHUB_` values in the `.env` file.
 3. Start the Grafana server.
 
-For more information, refer to the [Pyroscope GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/) documentation. 
+For more information, refer to the [Pyroscope GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/) documentation.
 
 ### Enable with live remote profile data
 

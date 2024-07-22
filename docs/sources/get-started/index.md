@@ -22,13 +22,13 @@ Your investigation begins with the big picture and then drills down using profil
 
 To use Explore Profiles with Grafana Cloud, you need:
 
-* A Grafana Cloud account
-* A Grafana stack in Grafana Cloud with a configured Hosted profiles or Pyroscope data source
+- A Grafana Cloud account
+- A Grafana stack in Grafana Cloud with a configured Hosted profiles or Pyroscope data source
 
 To use Explore Profiles with Grafana open source, you need:
 
-* Your own Grafana instance
-* Install [Explore Profiles plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
+- Your own Grafana instance
+- Install [Explore Profiles plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
 
 ## Explore your profile data
 

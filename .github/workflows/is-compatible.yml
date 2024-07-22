@@ -1,5 +1,10 @@
 name: Latest Grafana API compatibility check
-on: [pull_request]
+
+on:
+  pull_request:
+    paths: ['!docs/**']
+    branches:
+      - main
 
 jobs:
   compatibilitycheck:
