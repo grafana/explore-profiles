@@ -6,7 +6,8 @@ on:
       - main
   pull_request:
     paths-ignore:
-      - docs/**
+      - docs/*
+      - docs/sources/**
     branches:
       - main
 
