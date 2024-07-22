@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, VariableDependencyConfig } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 import { GridItemData } from '../components/SceneByVariableRepeaterGrid/GridItemData';
@@ -36,7 +37,7 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   static buildFavorite(item: GridItemData): Favorite {
-    const { index, queryRunnerParams } = item;
+    const { index, queryRunnerParams, panelType } = item;
 
     const favorite: Favorite = {
       index,
@@ -44,11 +45,13 @@ export class FavAction extends SceneObjectBase<FavActionState> {
         serviceName: queryRunnerParams.serviceName as string,
         profileMetricId: queryRunnerParams.profileMetricId as string,
       },
+      panelType,
     };
 
+    // we don't store values, we'll fetch all timeseries by using the `groupBy` parameter
     if (queryRunnerParams.groupBy) {
       favorite.queryRunnerParams.groupBy = {
-        label: queryRunnerParams.groupBy.label, // we don't store values, we'll fetch all timeseries by using the `groupBy` parameter
+        label: queryRunnerParams.groupBy.label,
       };
     }
 
@@ -68,10 +71,13 @@ export class FavAction extends SceneObjectBase<FavActionState> {
       queryRunnerParams: skipVariablesInterpolation
         ? item.queryRunnerParams
         : interpolateQueryRunnerVariables(this, item),
+      panelType: item.panelType,
     } as GridItemData);
   }
 
   public onClick = () => {
+    reportInteraction('g_pyroscope_app_fav_action_clicked');
+
     if (!this.state.isFav) {
       FavoritesDataSource.addFavorite(this.buildFavorite());
     } else {

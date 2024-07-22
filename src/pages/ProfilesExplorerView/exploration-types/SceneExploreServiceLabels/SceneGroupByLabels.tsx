@@ -2,27 +2,26 @@ import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
-import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
 import { CompareAction } from '../../actions/CompareAction';
 import { FavAction } from '../../actions/FavAction';
 import { SelectAction } from '../../actions/SelectAction';
-import { SceneAllLabelValuesTable } from '../../components/SceneAllLabelValuesTable';
-import { SceneAllLabelValuesTimeseries } from '../../components/SceneAllLabelValuesTimeseries';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/GridItemData';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { PanelType } from '../../components/SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../../components/SceneByVariableRepeaterGrid/SceneQuickFilter';
 import { SceneDrawer } from '../../components/SceneDrawer';
+import { SceneLabelValuesBarGauge } from '../../components/SceneLabelValuesBarGauge';
+import { SceneLabelValuesTimeseries } from '../../components/SceneLabelValuesTimeseries';
+import { SceneProfilesExplorer } from '../../components/SceneProfilesExplorer/SceneProfilesExplorer';
 import { getProfileMetricLabel } from '../../data/series/helpers/getProfileMetricLabel';
 import { EventAddLabelToFilters } from '../../events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../../events/EventExpandPanel';
 import { EventSelectLabel } from '../../events/EventSelectLabel';
-import { EventViewLabelValuesDistribution } from '../../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph } from '../../events/EventViewServiceFlameGraph';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { SceneProfilesExplorer } from '../../SceneProfilesExplorer';
 import { addFilter } from '../../variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../variables/GroupByVariable/GroupByVariable';
@@ -56,7 +55,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
           return [
             new SelectAction({ EventClass: EventSelectLabel, item }),
-            new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
             new SelectAction({ EventClass: EventExpandPanel, item }),
             new FavAction({ item }),
           ];
@@ -89,10 +87,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       this.addLabelValueToFilters(event.payload.item);
     });
 
-    const labelValuesDistSub = this.subscribeToEvent(EventViewLabelValuesDistribution, async (event) => {
-      this.openLabelValuesDistributionDrawer(event.payload.item);
-    });
-
     const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
       this.openExpandedPanelDrawer(event.payload.item);
     });
@@ -100,7 +94,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     return {
       unsubscribe() {
         expandPanelSub.unsubscribe();
-        labelValuesDistSub.unsubscribe();
         addToFiltersSub.unsubscribe();
         selectLabelSub.unsubscribe();
       },
@@ -144,34 +137,20 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
   }
 
-  openLabelValuesDistributionDrawer(item: GridItemData) {
-    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
-    const profileMetricLabel = getProfileMetric(profileMetricId as ProfileMetricId).type;
-
-    this.state.drawer.open({
-      title: `${profileMetricLabel} values distribution for label "${item.queryRunnerParams.groupBy!.label}"`,
-      body: new SceneAllLabelValuesTable({
-        item,
-        headerActions: () => [
-          new SelectAction({ EventClass: EventSelectLabel, item }),
-          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-          new SelectAction({ EventClass: EventExpandPanel, item }),
-        ],
-      }),
-    });
-  }
-
   openExpandedPanelDrawer(item: GridItemData) {
     this.state.drawer.open({
       title: this.buildtimeSeriesPanelTitle(item),
-      body: new SceneAllLabelValuesTimeseries({
-        item,
-        headerActions: () => [
-          new SelectAction({ EventClass: EventSelectLabel, item }),
-          new SelectAction({ EventClass: EventViewLabelValuesDistribution, item }),
-          new FavAction({ item }),
-        ],
-      }),
+      body:
+        item.panelType === PanelType.BARGAUGE
+          ? new SceneLabelValuesBarGauge({
+              item,
+              headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
+            })
+          : new SceneLabelValuesTimeseries({
+              displayAllValues: true,
+              item,
+              headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
+            }),
     });
   }
 

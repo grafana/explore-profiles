@@ -3,6 +3,7 @@ import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -57,6 +58,8 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   selectNewValue = (newValue: string) => {
+    reportInteraction('g_pyroscope_app_service_name_selected');
+
     this.changeValueTo(newValue);
 
     // manually reset filters - the "Scenes way" would be to listen to the variable changes but it leads to errors

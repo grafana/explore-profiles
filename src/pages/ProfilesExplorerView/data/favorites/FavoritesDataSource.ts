@@ -10,6 +10,7 @@ import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { isEqual } from 'lodash';
 
+import { PanelType } from '../../components/SceneByVariableRepeaterGrid/ScenePanelTypeSwitcher';
 import { PYROSCOPE_FAVORITES_DATA_SOURCE } from '../pyroscope-data-sources';
 import { getProfileMetricLabel } from '../series/helpers/getProfileMetricLabel';
 
@@ -23,37 +24,49 @@ export type Favorite = {
     };
     filters?: AdHocVariableFilter[];
   };
+  panelType?: PanelType;
 };
 
 export class FavoritesDataSource extends RuntimeDataSource {
+  static getAllFavorites() {
+    return userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
+  }
+
+  static areFavoritesEqual(f1: Favorite, f2: Favorite) {
+    return f1.panelType === f2.panelType && isEqual(f1.queryRunnerParams, f2.queryRunnerParams);
+  }
+
   static exists(favorite: Favorite) {
-    return userStorage
-      .get(userStorage.KEYS.PROFILES_EXPLORER)
-      ?.favorites?.some((f: Favorite) => isEqual(f.queryRunnerParams, favorite.queryRunnerParams));
+    return FavoritesDataSource.getAllFavorites().some((f: Favorite) =>
+      FavoritesDataSource.areFavoritesEqual(f, favorite)
+    );
   }
 
   static addFavorite(favorite: Favorite) {
-    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-    storage.favorites ||= [];
-
+    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER);
     storage.favorites.push(favorite);
-
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
   }
 
   static removeFavorite(favorite: Favorite) {
-    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-    storage.favorites ||= [];
-
-    const { queryRunnerParams } = favorite;
-
-    storage.favorites = storage.favorites.filter((f: Favorite) => !isEqual(f.queryRunnerParams, queryRunnerParams));
-
+    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER);
+    storage.favorites = storage.favorites.filter((f: Favorite) => !FavoritesDataSource.areFavoritesEqual(f, favorite));
     userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
   }
 
   constructor() {
     super(PYROSCOPE_FAVORITES_DATA_SOURCE.type, PYROSCOPE_FAVORITES_DATA_SOURCE.uid);
+
+    const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+    storage.favorites ||= [];
+
+    // ensures backward compatibility for older favorites without panel type
+    storage.favorites = storage.favorites.map((f: Favorite) => ({
+      panelType: PanelType.TIMESERIES,
+      ...f,
+    }));
+
+    userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
   }
 
   async query(): Promise<DataQueryResponse> {
@@ -77,9 +90,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(): Promise<MetricFindValue[]> {
-    const favorites = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.favorites || [];
-
-    return favorites.map((f: Favorite) => {
+    return FavoritesDataSource.getAllFavorites().map((f: Favorite) => {
       const { serviceName, profileMetricId, groupBy, filters } = f.queryRunnerParams || {};
       const textParts = [serviceName, getProfileMetricLabel(profileMetricId)];
 

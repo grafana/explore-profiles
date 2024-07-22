@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "docs/sources/**"
+      - 'docs/sources/**'
   workflow_dispatch:
 jobs:
   sync:
@@ -35,4 +35,3 @@ jobs:
           github_pat: grafanabot:${{ secrets.PUBLISH_TO_WEBSITE_TOKEN }}
           source_folder: docs/sources
           target_folder: content/docs/explore-profiles/next
-

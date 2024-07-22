@@ -247,21 +247,19 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       },
     } + mainOnly,
 
-    // TODO(@petethepig): Uncomment when we know this works
-
-    // step('publish zip to GCS with latest', [], image='plugins/gcs') + {
-    //   depends_on: [
-    //     'package and sign',
-    //   ],
-    //   settings: {
-    //     acl: 'allUsers:READER',
-    //     source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
-    //     target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-latest.zip',
-    //     token: {
-    //       from_secret: 'gcs_service_account_key',
-    //     },
-    //   },
-    // } + releaseOnly,
+    step('publish zip to GCS with latest', [], image='plugins/gcs') + {
+      depends_on: [
+        'package and sign',
+      ],
+      settings: {
+        acl: 'allUsers:READER',
+        source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
+        target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-latest.zip',
+        token: {
+          from_secret: 'gcs_service_account_key',
+        },
+      },
+    } + releaseOnly,
 
     step('publish zip to GCS with tag', [], image='plugins/gcs') + {
       depends_on: [

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { useOnboarding } from './domain/useOnboarding';
 import { EmptyLoadingPage } from './ui/EmptyLoadingPage';
+import { NoDataSourcePage } from './ui/NoDataSourcePage';
 import { OnboardingPage } from './ui/OnboardingPage';
 
 type OnboardingProps = {
@@ -20,6 +21,10 @@ export function Onboarding({ children }: OnboardingProps) {
 
   if (data.shouldShowOnboardingPage) {
     return <OnboardingPage onCloseModal={actions.closeModal} />;
+  }
+
+  if (data.shouldShowNoDataSourceBanner) {
+    return <NoDataSourcePage />;
   }
 
   return <>{children}</>;

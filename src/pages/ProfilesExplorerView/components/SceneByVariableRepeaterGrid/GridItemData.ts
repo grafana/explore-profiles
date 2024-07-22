@@ -1,5 +1,7 @@
 import { AdHocVariableFilter } from '@grafana/data';
 
+import { PanelType } from './ScenePanelTypeSwitcher';
+
 export type GridItemData = {
   index: number; // for coloring purposes only
   value: string;
@@ -13,4 +15,5 @@ export type GridItemData = {
     };
     filters?: AdHocVariableFilter[];
   };
+  panelType?: PanelType;
 };

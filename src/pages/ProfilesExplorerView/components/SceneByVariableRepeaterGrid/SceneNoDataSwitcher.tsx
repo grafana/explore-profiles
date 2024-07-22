@@ -6,6 +6,7 @@ import {
   SceneObjectUrlValues,
 } from '@grafana/scenes';
 import { InlineSwitch } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 export interface SceneNoDataSwitcherState extends SceneObjectState {
@@ -44,6 +45,8 @@ export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherStat
   }
 
   onChange = (hideNoData: string) => {
+    reportInteraction('g_pyroscope_app_hide_no_data_changed', { hideNoData });
+
     this.setState({ hideNoData });
   };
 

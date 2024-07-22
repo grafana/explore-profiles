@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, IconName, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { merge } from 'lodash';
 import React from 'react';
@@ -10,10 +11,6 @@ import { interpolateQueryRunnerVariables } from '../data/helpers/interpolateQuer
 import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
-import {
-  EventViewLabelValuesDistribution,
-  EventViewLabelValuesDistributionPayload,
-} from '../events/EventViewLabelValuesDistribution';
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
@@ -23,7 +20,6 @@ type EventContructor =
   | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
   | (new (payload: EventExpandPanelPayload) => EventExpandPanel)
   | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
-  | (new (payload: EventViewLabelValuesDistributionPayload) => EventViewLabelValuesDistribution)
   | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
   | (new (payload: EventViewServiceLabelsPayload) => EventViewServiceLabels)
   | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
@@ -59,17 +55,10 @@ const Events = new Map<EventContructor, EventLookup>([
     EventExpandPanel,
     Object.freeze({
       icon: 'expand-arrows',
-      tooltip: () => 'Expand this panel to view all the timeseries for the current filters',
+      tooltip: () => 'Expand this panel to view all the data for the current filters',
     }),
   ],
   [EventSelectLabel, Object.freeze({ label: 'Select' })],
-  [
-    EventViewLabelValuesDistribution,
-    Object.freeze({
-      icon: 'list-ul',
-      tooltip: (item) => `View the distribution of all the "${item.label}" values for the current filters`,
-    }),
-  ],
   [
     EventViewServiceFlameGraph,
     Object.freeze({
@@ -133,6 +122,8 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   }
 
   public onClick = () => {
+    reportInteraction('g_pyroscope_app_select_action_clicked', { type: this.state.EventClass.name });
+
     this.publishEvent(this.buildEvent(), true);
   };
 
