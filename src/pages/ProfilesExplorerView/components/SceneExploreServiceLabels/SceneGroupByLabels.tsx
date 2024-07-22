@@ -38,9 +38,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       body: new SceneByVariableRepeaterGrid({
         key: 'service-labels-grid',
         variableName: 'groupBy',
-        // no explicit dependency because they are already expressed in GroupByVariable
-        // also, we could add filters, but we would reload all labels each time they are modified
-        dependentVariableNames: [],
         headerActions: (item) => {
           const { queryRunnerParams } = item;
 

@@ -23,9 +23,7 @@ export class SeriesDataSource extends RuntimeDataSource {
 
   async fetchSeries(dataSourceUid: string, timeRange: TimeRange) {
     const seriesApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, SeriesApiClient) as SeriesApiClient;
-
     seriesRepository.setApiClient(seriesApiClient);
-
     return seriesRepository.list({ timeRange });
   }
 
@@ -34,10 +32,10 @@ export class SeriesDataSource extends RuntimeDataSource {
       state: LoadingState.Done,
       data: [
         {
-          name: 'Services',
+          name: 'PyroscopeSeries',
           fields: [
             {
-              name: 'Service',
+              name: 'PyroscopeSerie',
               type: FieldType.other,
               values: [],
               config: {},
@@ -51,16 +49,27 @@ export class SeriesDataSource extends RuntimeDataSource {
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
     const sceneObject = options.scopedVars?.__sceneObject?.value;
-    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
 
-    const serviceToProfileMetricsMap = await this.fetchSeries(dataSourceUid, options.range as TimeRange);
+    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
+    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
+    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+
+    const pyroscopeSeries = await this.fetchSeries(dataSourceUid, options.range as TimeRange);
 
     switch (query) {
+      // UI selectors queries
       case '$dataSource and serviceName please':
-        return formatSeriesToServices(serviceToProfileMetricsMap);
+        return formatSeriesToServices(pyroscopeSeries);
 
       case '$dataSource and profileMetricId please':
-        return formatSeriesToProfileMetrics(serviceToProfileMetricsMap);
+        return formatSeriesToProfileMetrics(pyroscopeSeries);
+
+      // SceneByVariableRepeaterGrid queries
+      case '$dataSource, $profileMetricId and serviceName please':
+        return formatSeriesToServices(pyroscopeSeries, profileMetricId);
+
+      case '$dataSource, $serviceName and profileMetricId please':
+        return formatSeriesToProfileMetrics(pyroscopeSeries, serviceName);
 
       default:
         throw new TypeError(`Unsupported query "${query}"!`);

@@ -16,10 +16,16 @@ type ProfileMetricOptions = Array<{
   group: string;
 }>;
 
+type ProfileMetricVariableState = {
+  name: string;
+  query: string;
+  skipUrlSync: boolean;
+};
+
 export class ProfileMetricVariable extends QueryVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
-  constructor() {
+  constructor(state?: ProfileMetricVariableState) {
     super({
       name: 'profileMetricId',
       label: '🔥 Profile type',
@@ -28,6 +34,7 @@ export class ProfileMetricVariable extends QueryVariable {
       query: '$dataSource and profileMetricId please',
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
+      ...state,
     });
 
     this.changeValueTo = this.changeValueTo.bind(this);

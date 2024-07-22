@@ -1,4 +1,4 @@
-import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase } from '@grafana/scenes';
+import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase, SceneVariableSet } from '@grafana/scenes';
 import React from 'react';
 
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
@@ -7,6 +7,7 @@ import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { ServicesForProfileMetricVariable } from './domain/variables/ServicesForProfileMetricVariable';
 
 interface SceneExploreAllServicesState extends EmbeddedSceneState {}
 
@@ -14,10 +15,12 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
   constructor() {
     super({
       key: 'explore-all-services',
+      $variables: new SceneVariableSet({
+        variables: [new ServicesForProfileMetricVariable()],
+      }),
       body: new SceneByVariableRepeaterGrid({
         key: 'all-services-grid',
-        variableName: 'serviceName',
-        dependentVariableNames: ['profileMetricId'],
+        variableName: 'serviceNamesForProfileMetric',
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceProfiles, item }),
           new SelectAction({ EventClass: EventViewServiceLabels, item }),

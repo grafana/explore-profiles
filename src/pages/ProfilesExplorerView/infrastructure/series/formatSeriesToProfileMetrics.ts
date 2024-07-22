@@ -1,19 +1,25 @@
 import { MetricFindValue } from '@grafana/data';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 
-import { ProfileMetricsMap, ServiceToProfileMetricsMap } from './http/SeriesApiClient';
+import { PyroscopeSeries } from './http/SeriesApiClient';
 
 export function formatSeriesToProfileMetrics(
-  serviceToProfileMetricsMap: ServiceToProfileMetricsMap
+  pyroscopeSeries: PyroscopeSeries,
+  serviceName?: string
 ): MetricFindValue[] {
-  const allProfileMetricsMap: ProfileMetricsMap = new Map();
+  if (serviceName) {
+    const profileMetricsMap = pyroscopeSeries.services.get(serviceName) || new Map();
 
-  for (const profileMetrics of serviceToProfileMetricsMap.values()) {
-    for (const [id, metric] of profileMetrics) {
-      allProfileMetricsMap.set(id, metric);
-    }
+    return Array.from(profileMetricsMap.values())
+      .sort((a, b) => b.group.localeCompare(a.group))
+      .map(({ id, type, group }) => ({
+        value: id,
+        text: `${type} (${group})`,
+      }));
   }
 
-  return Array.from(allProfileMetricsMap.values())
+  return Array.from(pyroscopeSeries.profileMetrics.keys())
+    .map((id) => getProfileMetric(id as ProfileMetricId))
     .sort((a, b) => b.group.localeCompare(a.group))
     .map(({ id, type, group }) => ({
       value: id,

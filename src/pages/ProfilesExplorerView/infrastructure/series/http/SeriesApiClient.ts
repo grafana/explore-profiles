@@ -3,15 +3,20 @@ import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfile
 import { DataSourceProxyClient } from './DataSourceProxyClient';
 import { formatSeriesResponse } from './formatSeriesResponse';
 
-export type ProfileMetricsMap = Map<ProfileMetric['id'], ProfileMetric>;
-export type ServiceToProfileMetricsMap = Map<string, ProfileMetricsMap>;
+type ProfileMetricsMap = Map<ProfileMetric['id'], ProfileMetric>;
+type ServiceToProfileMetricsMap = Map<string, ProfileMetricsMap>;
+
+type ServicesSet = Set<string>;
+type ProfileMetricToServicesSet = Map<string, ServicesSet>;
+
+export type PyroscopeSeries = { services: ServiceToProfileMetricsMap; profileMetrics: ProfileMetricToServicesSet };
 
 export class SeriesApiClient extends DataSourceProxyClient {
   constructor(options: { dataSourceUid: string }) {
     super(options);
   }
 
-  async list(options: { from: number; to: number }): Promise<ServiceToProfileMetricsMap> {
+  async list(options: { from: number; to: number }): Promise<PyroscopeSeries> {
     const { from, to } = options;
 
     return this.fetch('/querier.v1.QuerierService/Series', {

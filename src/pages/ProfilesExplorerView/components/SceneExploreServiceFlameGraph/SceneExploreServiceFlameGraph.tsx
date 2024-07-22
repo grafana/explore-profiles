@@ -11,15 +11,15 @@ import { EventViewServiceProfiles } from '../../domain/events/EventViewServicePr
 import { SceneMainServiceTimeseries } from '../SceneMainServiceTimeseries';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
-interface SceneExploreFlameGraphState extends SceneObjectState {
+interface SceneExploreServiceFlameGraphState extends SceneObjectState {
   mainTimeseries: SceneMainServiceTimeseries;
   body: SceneFlameGraph;
 }
 
-export class SceneExploreFlameGraph extends SceneObjectBase<SceneExploreFlameGraphState> {
+export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreServiceFlameGraphState> {
   constructor() {
     super({
-      key: 'explore-flame-graph',
+      key: 'explore-service-flame-graph',
       mainTimeseries: new SceneMainServiceTimeseries({
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceProfiles, item }),
@@ -31,7 +31,7 @@ export class SceneExploreFlameGraph extends SceneObjectBase<SceneExploreFlameGra
     });
   }
 
-  static Component({ model }: SceneComponentProps<SceneExploreFlameGraph>) {
+  static Component({ model }: SceneComponentProps<SceneExploreServiceFlameGraph>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
     const { mainTimeseries, body } = model.useState();
 

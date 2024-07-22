@@ -11,8 +11,14 @@ import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
 
+type ServiceNameVariableState = {
+  name: string;
+  query: string;
+  skipUrlSync: boolean;
+};
+
 export class ServiceNameVariable extends QueryVariable {
-  constructor() {
+  constructor(state?: ServiceNameVariableState) {
     super({
       name: 'serviceName',
       label: '🚀 Service',
@@ -21,6 +27,7 @@ export class ServiceNameVariable extends QueryVariable {
       query: '$dataSource and serviceName please',
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
+      ...state,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -52,7 +59,7 @@ export class ServiceNameVariable extends QueryVariable {
       this.setState({ loading: false, options, error });
 
       if (selectDefaultValue) {
-        this.selectNewValue(options[0].value as string);
+        this.changeValueTo(options[0].value);
       }
     }
   }

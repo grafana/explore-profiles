@@ -27,7 +27,6 @@ import React, { useRef, useState } from 'react';
 
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
-import { SceneExploreFlameGraph } from '../../components/SceneExploreFlameGraph/SceneExploreFlameGraph';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
@@ -47,6 +46,7 @@ import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/S
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector, ExplorationTypeSelectorProps } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
@@ -236,7 +236,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.FLAME_GRAPH:
-        primary = new SceneExploreFlameGraph();
+        primary = new SceneExploreServiceFlameGraph();
         break;
 
       case ExplorationType.FAVORITES:
@@ -315,13 +315,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       case ExplorationType.ALL_SERVICES:
         return {
           variables: [dataSourceVariable, profileMetricVariable],
-          gridControls: this.state.gridControls.filter((control) => !(control instanceof ScenePanelTypeSwitcher)),
+          gridControls: this.state.gridControls.filter(
+            (control) => !(control instanceof SceneNoDataSwitcher) && !(control instanceof ScenePanelTypeSwitcher)
+          ),
         };
 
       case ExplorationType.PROFILE_TYPES:
         return {
           variables: [dataSourceVariable, serviceNameVariable],
-          gridControls: this.state.gridControls.filter((control) => !(control instanceof ScenePanelTypeSwitcher)),
+          gridControls: this.state.gridControls.filter(
+            (control) => !(control instanceof SceneNoDataSwitcher) && !(control instanceof ScenePanelTypeSwitcher)
+          ),
         };
 
       case ExplorationType.LABELS:
