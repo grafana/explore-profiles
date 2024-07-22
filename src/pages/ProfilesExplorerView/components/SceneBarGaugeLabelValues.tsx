@@ -81,6 +81,7 @@ export class SceneBarGaugeLabelValues extends SceneObjectBase<SceneBarGaugeLabel
     const description = groupByLabel ? 'This panel displays aggregate values over the current time period' : undefined;
 
     return {
+      title: `${item.label} (${series.length})`,
       description,
       options: {
         reduceOptions: { values: false, calcs: ['sum'] },

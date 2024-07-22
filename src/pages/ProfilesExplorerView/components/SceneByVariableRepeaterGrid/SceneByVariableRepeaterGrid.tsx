@@ -533,6 +533,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
     return {
+      title: `${item.label} (${series.length})`,
       description,
       fieldConfig: {
         defaults: {
