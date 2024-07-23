@@ -25,10 +25,10 @@ export class ProfileMetricVariable extends QueryVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
   // hack: subscribe to changes of dataSource only
-  static QUERY_DEFAULT = '$dataSource and profileMetricId please';
+  static QUERY_DEFAULT = '$dataSource and all profile metrics';
 
   // hack: subscribe to changes of dataSource and serviceName to avoid showing options that don't have any data associated
-  static QUERY_SERVICE_NAME_DEPENDENT = '$dataSource, $serviceName and profileMetricId please';
+  static QUERY_SERVICE_NAME_DEPENDENT = '$dataSource and only $serviceName profile metrics';
 
   constructor(state?: ProfileMetricVariableState) {
     super({

@@ -57,17 +57,18 @@ export class SeriesDataSource extends RuntimeDataSource {
     const pyroscopeSeries = await this.fetchSeries(dataSourceUid, options.range as TimeRange);
 
     switch (query) {
-      case '$dataSource and serviceName please':
+      // queries that depend only on the selected data source
+      case '$dataSource and all services':
         return formatSeriesToServices(pyroscopeSeries);
 
-      case '$dataSource and profileMetricId please':
+      case '$dataSource and all profile metrics':
         return formatSeriesToProfileMetrics(pyroscopeSeries);
 
       // queries that depend on the selected profile metric or the selected service
-      case '$dataSource, $profileMetricId and serviceName please':
+      case '$dataSource and only $profileMetricId services':
         return formatSeriesToServices(pyroscopeSeries, profileMetricId);
 
-      case '$dataSource, $serviceName and profileMetricId please':
+      case '$dataSource and only $serviceName profile metrics':
         return formatSeriesToProfileMetrics(pyroscopeSeries, serviceName);
 
       default:
