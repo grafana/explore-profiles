@@ -338,11 +338,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           panelType: panelType || panelTypeFromSwitcher,
         };
       } catch {
-        // TODO: this is super fragile, find a better way (like passing options.buildItemsData?)
-        const targetKey: string = ['serviceName', 'servicesForProfileMetric'].includes(variableName)
-          ? 'serviceName'
-          : 'profileMetricId';
-
         return {
           index: i,
           value: option.value as string,
@@ -350,7 +345,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           queryRunnerParams: {
             serviceName,
             profileMetricId,
-            [targetKey as keyof GridItemData['queryRunnerParams']]: option.value,
+            // TODO: this is super fragile, find a better way (like passing options.buildItemsData?)
+            [variableName as keyof GridItemData['queryRunnerParams']]: option.value,
           },
           panelType: panelTypeFromSwitcher,
         };
