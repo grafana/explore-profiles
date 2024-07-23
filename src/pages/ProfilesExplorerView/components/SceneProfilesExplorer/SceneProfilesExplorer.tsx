@@ -1,11 +1,9 @@
 import { css } from '@emotion/css';
 import { dateTimeParse, GrafanaTheme2 } from '@grafana/data';
 import {
-  DataSourceVariable,
   EmbeddedSceneState,
   getUrlSyncManager,
   SceneComponentProps,
-  sceneGraph,
   SceneObject,
   SceneObjectBase,
   SceneObjectUrlSyncConfig,
@@ -137,11 +135,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const eventsSub = this.subscribeToEvents();
 
-    const explorationType = Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
-      ? (this.state.explorationType as ExplorationType)
-      : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE;
-
-    this.setExplorationType(explorationType);
+    this.setExplorationType({
+      type: Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
+        ? (this.state.explorationType as ExplorationType)
+        : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+    });
 
     return () => {
       eventsSub.unsubscribe();
@@ -184,21 +182,27 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   subscribeToEvents() {
     const profilesSub = this.subscribeToEvent(EventViewServiceProfiles, (event) => {
-      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
-
-      this.setExplorationType(ExplorationType.PROFILE_TYPES, event.payload.item);
+      this.setExplorationType({
+        type: ExplorationType.PROFILE_TYPES,
+        comesFromUserAction: true,
+        item: event.payload.item,
+      });
     });
 
     const labelsSub = this.subscribeToEvent(EventViewServiceLabels, (event) => {
-      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
-
-      this.setExplorationType(ExplorationType.LABELS, event.payload.item);
+      this.setExplorationType({
+        type: ExplorationType.LABELS,
+        comesFromUserAction: true,
+        item: event.payload.item,
+      });
     });
 
     const flameGraphSub = this.subscribeToEvent(EventViewServiceFlameGraph, (event) => {
-      (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
-
-      this.setExplorationType(ExplorationType.FLAME_GRAPH, event.payload.item);
+      this.setExplorationType({
+        type: ExplorationType.FLAME_GRAPH,
+        comesFromUserAction: true,
+        item: event.payload.item,
+      });
     });
 
     return {
@@ -210,57 +214,48 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     };
   }
 
-  setExplorationType(explorationType: ExplorationType, gridItemData?: GridItemData) {
+  setExplorationType({
+    type,
+    comesFromUserAction,
+    item,
+  }: {
+    type: ExplorationType;
+    comesFromUserAction?: boolean;
+    item?: GridItemData;
+  }) {
+    if (comesFromUserAction) {
+      this.resetVariables(type);
+    }
+
     this.setState({
-      explorationType,
-      body: this.buildBodyScene(explorationType),
+      explorationType: type,
+      body: this.buildBodyScene(type, item),
     });
-
-    if (gridItemData) {
-      this.updateVariablesAndControls(gridItemData);
-    }
-
-    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
-
-    if ([ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType)) {
-      profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
-      profileMetricVariable.update(true);
-    } else {
-      // revert
-      profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
-      profileMetricVariable.update(true);
-    }
   }
 
-  buildBodyScene(explorationType: ExplorationType) {
+  buildBodyScene(explorationType: ExplorationType, item?: GridItemData) {
     let primary;
 
     switch (explorationType) {
       case ExplorationType.PROFILE_TYPES:
-        primary = new SceneExploreServiceProfileTypes();
-
-        this.updateQuickFilterPlaceholder('Search profile types (comma-separated regexes are supported)');
+        primary = new SceneExploreServiceProfileTypes({ item });
         break;
 
       case ExplorationType.LABELS:
-        primary = new SceneExploreServiceLabels();
+        primary = new SceneExploreServiceLabels({ item });
         break;
 
       case ExplorationType.FLAME_GRAPH:
-        primary = new SceneExploreServiceFlameGraph();
+        primary = new SceneExploreServiceFlameGraph({ item });
         break;
 
       case ExplorationType.FAVORITES:
         primary = new SceneExploreFavorites();
-
-        this.updateQuickFilterPlaceholder('Search favorites (comma-separated regexes are supported)');
         break;
 
       case ExplorationType.ALL_SERVICES:
       default:
         primary = new SceneExploreAllServices();
-
-        this.updateQuickFilterPlaceholder('Search services (comma-separated regexes are supported)');
     }
 
     return new SplitLayout({
@@ -269,102 +264,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
-  updateQuickFilterPlaceholder(newPlaceholder: string) {
-    (this.state.gridControls[0] as SceneQuickFilter).setPlaceholder(newPlaceholder);
-  }
-
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-  updateVariablesAndControls(item: GridItemData) {
-    const [, serviceNameVariable, profileMetricVariable, filtersVariable, groupByVariable] = this.state.$variables!
-      .state.variables as [
-      DataSourceVariable,
-      ServiceNameVariable,
-      ProfileMetricVariable,
-      FiltersVariable,
-      GroupByVariable
-    ];
-
-    const { queryRunnerParams, panelType } = item;
-    const { serviceName, profileMetricId, filters, groupBy } = queryRunnerParams;
-
-    if (serviceName) {
-      serviceNameVariable.changeValueTo(serviceName);
-    }
-
-    if (profileMetricId) {
-      profileMetricVariable.changeValueTo(profileMetricId);
-    }
-
-    if (filters) {
-      filtersVariable.setState({ filters });
-    }
-
-    if (groupBy?.label) {
-      // because (to the contrary of the "Series" data) we don't load labels if the groupBy variable is not active
-      // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
-      // we have to wait until the new groupBy options have been loaded
-      // if not, its value will default to "all" regardless of our call to "changeValueTo"
-      // this happens, e.g., when landing on Favorites then jumping to "Service label" by clicking on a favorite that contains a "groupBy" label value
-      const groupBySub = groupByVariable.subscribeToState((newState, prevState) => {
-        if (!newState.loading && prevState.loading) {
-          groupByVariable.changeValueTo(groupBy.label);
-          groupBySub.unsubscribe();
-        }
-      });
-    }
-
-    if (panelType) {
-      (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).setState({ panelType });
-    }
-  }
-
-  getVariablesAndGridControls(explorationType: ExplorationType) {
-    const [dataSourceVariable, serviceNameVariable, profileMetricVariable, filtersVariable] = this.state.$variables!
-      .state.variables as [DataSourceVariable, ServiceNameVariable, ProfileMetricVariable, FiltersVariable];
-
-    switch (explorationType) {
-      case ExplorationType.ALL_SERVICES:
-        return {
-          variables: [dataSourceVariable, profileMetricVariable],
-          gridControls: this.state.gridControls.filter(
-            (control) => !(control instanceof SceneNoDataSwitcher) && !(control instanceof ScenePanelTypeSwitcher)
-          ),
-        };
-
-      case ExplorationType.PROFILE_TYPES:
-        return {
-          variables: [dataSourceVariable, serviceNameVariable],
-          gridControls: this.state.gridControls.filter(
-            (control) => !(control instanceof SceneNoDataSwitcher) && !(control instanceof ScenePanelTypeSwitcher)
-          ),
-        };
-
-      case ExplorationType.LABELS:
-      case ExplorationType.FLAME_GRAPH:
-        return {
-          // note that SceneGroupByLabels will directly get groupByVariable and gridControls as the layout is a bit different
-          variables: [dataSourceVariable, serviceNameVariable, profileMetricVariable, filtersVariable],
-          gridControls: [],
-        };
-
-      case ExplorationType.FAVORITES:
-      default:
-        return {
-          variables: [dataSourceVariable],
-          gridControls: this.state.gridControls.filter((control) => !(control instanceof ScenePanelTypeSwitcher)),
-        };
-    }
-  }
-
   onChangeExplorationType = (explorationType: string) => {
     reportInteraction('g_pyroscope_app_exploration_type_clicked', { explorationType });
 
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
+    this.setExplorationType({
+      type: explorationType as ExplorationType,
+      comesFromUserAction: true,
+    });
+  };
 
-    // findSceneObjectByClass() throws if not found
-    (sceneGraph.findObject(this, (o) => o instanceof GroupByVariable) as GroupByVariable)?.changeValueTo(
-      GroupByVariable.DEFAULT_VALUE
-    );
+  resetVariables(explorationType: string) {
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).clear();
 
     if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
       (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
@@ -372,12 +282,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       });
     }
 
-    (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher)?.setState({
-      panelType: ScenePanelTypeSwitcher.DEFAULT_PANEL_TYPE,
-    });
+    (findSceneObjectByClass(this, GroupByVariable) as GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
 
-    this.setExplorationType(explorationType as ExplorationType);
-  };
+    (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher)?.reset();
+  }
 
   onClickShareLink = async () => {
     try {
@@ -419,9 +327,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { explorationType, controls, body } = this.useState();
 
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
+    const dataSourceVariable = this.state.$variables!.state!.variables[0] as ProfilesDataSourceVariable;
 
-    const { variables, gridControls } = this.getVariablesAndGridControls(explorationType as ExplorationType);
-    const [dataSourceVariable, ...sceneVariables] = variables as SceneVariable[];
+    const { variables: sceneVariables, gridControls } = (body?.state.primary as any).getVariablesAndGridControls() as {
+      variables: SceneVariable[];
+      gridControls: Array<SceneObject & { key?: string }>;
+    };
 
     const {
       headerRef,

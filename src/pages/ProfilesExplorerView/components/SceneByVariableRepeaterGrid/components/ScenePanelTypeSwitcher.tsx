@@ -54,6 +54,10 @@ export class ScenePanelTypeSwitcher extends SceneObjectBase<ScenePanelTypeSwitch
     this.setState(stateUpdate);
   }
 
+  reset() {
+    this.setState({ panelType: ScenePanelTypeSwitcher.DEFAULT_PANEL_TYPE });
+  }
+
   onChange = (panelType: PanelType) => {
     reportInteraction('g_pyroscope_app_panel_type_changed', { panelType });
 
