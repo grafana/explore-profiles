@@ -44,7 +44,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         headerActions: (item) => {
           const { queryRunnerParams } = item;
 
-          if (!queryRunnerParams.groupBy || queryRunnerParams.groupBy.values.length === 1) {
+          if (!queryRunnerParams.groupBy) {
             return [
               new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
               new SelectAction({ EventClass: EventAddLabelToFilters, item }),
