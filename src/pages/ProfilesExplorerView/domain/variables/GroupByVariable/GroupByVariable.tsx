@@ -18,7 +18,7 @@ export class GroupByVariable extends QueryVariable {
   constructor() {
     super({
       name: 'groupBy',
-      label: 'Group by',
+      label: 'Group by labels',
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,
       // "hack": we want to subscribe to changes of dataSource, serviceName and profileMetricId
       // we could also add filters, but the Service labels exploration type would reload all labels each time they are modified
@@ -82,7 +82,7 @@ export class GroupByVariable extends QueryVariable {
 
     if (loading) {
       return (
-        <Field label="Group by">
+        <Field label="Group by labels">
           <Spinner className={styles.spinner} />
         </Field>
       );
@@ -94,7 +94,7 @@ export class GroupByVariable extends QueryVariable {
 
       return (
         <>
-          <Field label="Group by">
+          <Field label="Group by labels">
             <div className={styles.groupByErrorContainer}>
               <Tooltip theme="error" content={error.toString()}>
                 <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
@@ -110,11 +110,7 @@ export class GroupByVariable extends QueryVariable {
       return groupByOptions.slice(0, GroupByVariable.MAX_MAIN_LABELS).map(({ value }) => value as string);
     };
 
-    return loading ? (
-      <Field label="Group by">
-        <Spinner />
-      </Field>
-    ) : (
+    return (
       <GroupBySelector
         options={groupByOptions}
         value={value as string}
