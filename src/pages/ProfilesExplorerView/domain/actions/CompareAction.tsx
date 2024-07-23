@@ -152,13 +152,18 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
     reportInteraction('g_pyroscope_app_compare_link_clicked');
   };
 
+  onClickSelectForComparison = (event: React.MouseEvent) => {
+    event.preventDefault();
+    this.onChange();
+  };
+
   public static Component = ({ model }: SceneComponentProps<CompareAction>) => {
     const styles = useStyles2(getStyles);
     const { isChecked, isDisabled, isEnabled, diffUrl } = model.useState();
 
     const tooltipContent = useMemo(() => {
       if (isDisabled) {
-        return 'Two grid items have already been selected for flame graphs comparison';
+        return 'Two grid items have already been selected for flame graphs comparison, unselect any of them to be able to compare again';
       }
       if (isEnabled) {
         return 'Click to view the flame graphs comparison of the selected grid items';
@@ -169,20 +174,18 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
     return (
       <Tooltip content={tooltipContent} placement="top">
         <div className={styles.checkBoxWrapper}>
+          <LinkButton
+            disabled={isDisabled}
+            variant={isEnabled ? 'primary' : 'secondary'}
+            size="sm"
+            fill="text"
+            href={diffUrl}
+            target="_blank"
+            onClick={isEnabled ? model.onClickCompareLink : model.onClickSelectForComparison}
+          >
+            Compare
+          </LinkButton>
           <Checkbox value={isChecked} disabled={isDisabled} onChange={model.onChange} />
-
-          {isEnabled && (
-            <LinkButton
-              variant="primary"
-              size="sm"
-              fill="text"
-              href={diffUrl}
-              target="_blank"
-              onClick={model.onClickCompareLink}
-            >
-              Compare
-            </LinkButton>
-          )}
         </div>
       </Tooltip>
     );
@@ -193,5 +196,10 @@ const getStyles = () => ({
   checkBoxWrapper: css`
     display: flex;
     align-items: center;
+
+    & > a {
+      margin: 0 4px 0 0;
+      padding: 0;
+    }
   `,
 });
