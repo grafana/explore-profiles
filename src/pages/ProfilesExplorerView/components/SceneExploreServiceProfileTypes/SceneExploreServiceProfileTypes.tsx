@@ -16,7 +16,7 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
       key: 'explore-service-profile-types',
       $variables: new SceneVariableSet({
         variables: [
-          // use a custom instance of ProfileMetricVariable to display only the profile metrics associtaed to the selected service
+          // we use a custom instance of ProfileMetricVariable to display only the profile metrics associated to the selected service
           new ProfileMetricVariable({
             query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT,
             skipUrlSync: true,
