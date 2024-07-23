@@ -55,9 +55,6 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
   }
 
   initVariables(item: GridItemData) {
-    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
-    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
-
     const { serviceName, profileMetricId, filters } = item.queryRunnerParams;
 
     if (serviceName) {
@@ -66,10 +63,12 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     }
 
     if (profileMetricId) {
+      const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
       profileMetricVariable.changeValueTo(profileMetricId);
     }
 
     if (filters) {
+      const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
       filtersVariable.setState({ filters });
     }
   }

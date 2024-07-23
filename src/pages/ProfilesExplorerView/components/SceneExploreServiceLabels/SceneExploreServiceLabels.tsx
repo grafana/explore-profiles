@@ -76,11 +76,6 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   initVariablesAndControls(item: GridItemData) {
-    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
-    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
-    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
-    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
-
     const { queryRunnerParams, panelType } = item;
     const { serviceName, profileMetricId, filters, groupBy } = queryRunnerParams;
 
@@ -90,14 +85,18 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     }
 
     if (profileMetricId) {
+      const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
       profileMetricVariable.changeValueTo(profileMetricId);
     }
 
     if (filters) {
+      const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
       filtersVariable.setState({ filters });
     }
 
     if (groupBy?.label) {
+      const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+
       // because (to the contrary of the "Series" data) we don't load labels if the groupBy variable is not active
       // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
       // we have to wait until the new groupBy options have been loaded
@@ -112,6 +111,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     }
 
     if (panelType) {
+      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
       panelTypeSwitcher.setState({ panelType });
     }
   }
