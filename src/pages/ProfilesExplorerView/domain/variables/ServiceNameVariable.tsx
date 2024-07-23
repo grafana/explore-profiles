@@ -17,13 +17,18 @@ type ServiceNameVariableState = {
 };
 
 export class ServiceNameVariable extends QueryVariable {
+  // hack: subscribe to changes of dataSource only
+  static QUERY_DEFAULT = '$dataSource and serviceName please';
+
+  // hack: subscribe to changes of dataSource and profileMetricId
+  static QUERY_PROFILE_METRIC_DEPENDENT = '$dataSource, $profileMetricId and serviceName please';
+
   constructor(state?: ServiceNameVariableState) {
     super({
       name: 'serviceName',
       label: '🚀 Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
-      // "hack": we want to subscribe to changes of dataSource
-      query: '$dataSource and serviceName please',
+      query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
       ...state,

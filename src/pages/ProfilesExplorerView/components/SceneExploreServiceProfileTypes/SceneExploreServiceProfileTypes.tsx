@@ -18,8 +18,7 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
         variables: [
           // use a custom instance of ProfileMetricVariable to display only the profile metrics associtaed to the selected service
           new ProfileMetricVariable({
-            // "hack": we want to subscribe to changes of dataSource and serviceName
-            query: '$dataSource, $serviceName and profileMetricId please',
+            query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT,
             skipUrlSync: true,
           }),
         ],

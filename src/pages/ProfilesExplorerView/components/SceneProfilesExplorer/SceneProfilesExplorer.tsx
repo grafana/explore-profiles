@@ -219,6 +219,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     if (gridItemData) {
       this.updateVariablesAndControls(gridItemData);
     }
+
+    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+
+    if ([ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType)) {
+      profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
+      profileMetricVariable.update(true);
+    } else {
+      // revert
+      profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
+      profileMetricVariable.update(true);
+    }
   }
 
   buildBodyScene(explorationType: ExplorationType) {

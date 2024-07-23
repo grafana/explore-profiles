@@ -24,13 +24,18 @@ type ProfileMetricVariableState = {
 export class ProfileMetricVariable extends QueryVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
+  // hack: subscribe to changes of dataSource only
+  static QUERY_DEFAULT = '$dataSource and profileMetricId please';
+
+  // hack: subscribe to changes of dataSource and serviceName to avoid showing options that don't have any data associated
+  static QUERY_SERVICE_NAME_DEPENDENT = '$dataSource, $serviceName and profileMetricId please';
+
   constructor(state?: ProfileMetricVariableState) {
     super({
       name: 'profileMetricId',
       label: '🔥 Profile type',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
-      // "hack": we want to subscribe to changes of dataSource
-      query: '$dataSource and profileMetricId please',
+      query: ProfileMetricVariable.QUERY_DEFAULT,
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
       ...state,
@@ -47,8 +52,8 @@ export class ProfileMetricVariable extends QueryVariable {
     }
   }
 
-  async update() {
-    if (this.state.loading) {
+  async update(force = false) {
+    if (!force && this.state.loading) {
       return;
     }
 
