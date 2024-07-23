@@ -12,7 +12,6 @@ import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../infrastructure/pyroscope-dat
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
 
 type ServiceNameVariableState = {
-  name: string;
   query: string;
   skipUrlSync: boolean;
 };
@@ -39,15 +38,13 @@ export class ServiceNameVariable extends QueryVariable {
     }
   }
 
-  async update(selectDefaultValue = false) {
+  async update() {
     if (this.state.loading) {
       return;
     }
 
     let options: VariableValueOption[] = [];
     let error = null;
-
-    this.changeValueTo('');
 
     this.setState({ loading: true, options: [], error: null });
 
@@ -57,10 +54,6 @@ export class ServiceNameVariable extends QueryVariable {
       error = e;
     } finally {
       this.setState({ loading: false, options, error });
-
-      if (selectDefaultValue) {
-        this.changeValueTo(options[0].value);
-      }
     }
   }
 

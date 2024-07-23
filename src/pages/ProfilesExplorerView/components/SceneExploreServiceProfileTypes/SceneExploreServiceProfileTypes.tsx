@@ -6,7 +6,7 @@ import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
-import { ProfileMetricsForServiceVariable } from './domain/variables/ProfileMetricsForServiceVariable';
+import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 
 interface SceneExploreServiceProfileTypesState extends EmbeddedSceneState {}
 
@@ -15,11 +15,18 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
     super({
       key: 'explore-service-profile-types',
       $variables: new SceneVariableSet({
-        variables: [new ProfileMetricsForServiceVariable()],
+        variables: [
+          // use a custom instance of ProfileMetricVariable to display only the profile metrics associtaed to the selected service
+          new ProfileMetricVariable({
+            // "hack": we want to subscribe to changes of dataSource and serviceName
+            query: '$dataSource, $serviceName and profileMetricId please',
+            skipUrlSync: true,
+          }),
+        ],
       }),
       body: new SceneByVariableRepeaterGrid({
         key: 'profile-metrics-grid',
-        variableName: 'profileMetricsForService',
+        variableName: 'profileMetricId',
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceLabels, item }),
           new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),

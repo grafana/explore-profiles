@@ -17,7 +17,6 @@ type ProfileMetricOptions = Array<{
 }>;
 
 type ProfileMetricVariableState = {
-  name: string;
   query: string;
   skipUrlSync: boolean;
 };
@@ -48,15 +47,13 @@ export class ProfileMetricVariable extends QueryVariable {
     }
   }
 
-  async update(selectDefaultValue = false) {
+  async update() {
     if (this.state.loading) {
       return;
     }
 
     let options: VariableValueOption[] = [];
     let error = null;
-
-    this.changeValueTo('');
 
     this.setState({ loading: true, options: [], error: null });
 
@@ -66,10 +63,6 @@ export class ProfileMetricVariable extends QueryVariable {
       error = e;
     } finally {
       this.setState({ loading: false, options, error });
-
-      if (selectDefaultValue) {
-        this.changeValueTo(ProfileMetricVariable.DEFAULT_VALUE);
-      }
     }
   }
 
