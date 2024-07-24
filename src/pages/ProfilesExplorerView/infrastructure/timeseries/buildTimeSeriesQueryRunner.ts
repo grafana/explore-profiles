@@ -3,7 +3,6 @@ import { SceneQueryRunner } from '@grafana/scenes';
 import { PYROSCOPE_DATA_SOURCE } from '../pyroscope-data-sources';
 import { TimeSeriesQueryRunnerParams } from './TimeSeriesQueryRunnerParams';
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function buildTimeSeriesQueryRunner({
   serviceName,
   profileMetricId,
@@ -17,23 +16,14 @@ export function buildTimeSeriesQueryRunner({
 
   return new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
-    queries: groupBy?.label
-      ? [
-          {
-            refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy.label}`,
-            queryType: 'metrics',
-            profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-            labelSelector: `{${selector},$filters}`,
-            groupBy: [groupBy.label],
-          },
-        ]
-      : [
-          {
-            refId: `${profileMetricId || '$profileMetricId'}-${selector}`,
-            queryType: 'metrics',
-            profileTypeId: profileMetricId ? profileMetricId : '$profileMetricId',
-            labelSelector: `{${selector},$filters}`,
-          },
-        ],
+    queries: [
+      {
+        refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy?.label || 'no-group-by'}`,
+        queryType: 'metrics',
+        profileTypeId: profileMetricId || '$profileMetricId',
+        labelSelector: `{${selector},$filters}`,
+        groupBy: groupBy?.label ? [groupBy.label] : [],
+      },
+    ],
   });
 }

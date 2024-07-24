@@ -8,6 +8,11 @@ import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
+import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
+import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
+import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneMainServiceTimeseries } from '../SceneMainServiceTimeseries';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
@@ -17,7 +22,7 @@ interface SceneExploreServiceFlameGraphState extends SceneObjectState {
 }
 
 export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreServiceFlameGraphState> {
-  constructor() {
+  constructor({ item }: { item?: GridItemData }) {
     super({
       key: 'explore-service-flame-graph',
       mainTimeseries: new SceneMainServiceTimeseries({
@@ -29,6 +34,55 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       }),
       body: new SceneFlameGraph(),
     });
+
+    this.addActivationHandler(this.onActivate.bind(this, item));
+  }
+
+  onActivate(item?: GridItemData) {
+    if (item) {
+      this.initVariables(item);
+    }
+
+    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+
+    profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
+    profileMetricVariable.update(true);
+
+    return () => {
+      profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
+      profileMetricVariable.update(true);
+    };
+  }
+
+  initVariables(item: GridItemData) {
+    const { serviceName, profileMetricId, filters } = item.queryRunnerParams;
+
+    if (serviceName) {
+      const serviceNameVariable = findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable;
+      serviceNameVariable.changeValueTo(serviceName);
+    }
+
+    if (profileMetricId) {
+      const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+      profileMetricVariable.changeValueTo(profileMetricId);
+    }
+
+    if (filters) {
+      const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+      filtersVariable.setState({ filters });
+    }
+  }
+
+  // see SceneProfilesExplorer
+  getVariablesAndGridControls() {
+    return {
+      variables: [
+        findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable,
+        findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable,
+        findSceneObjectByClass(this, FiltersVariable) as FiltersVariable,
+      ],
+      gridControls: [],
+    };
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreServiceFlameGraph>) {
