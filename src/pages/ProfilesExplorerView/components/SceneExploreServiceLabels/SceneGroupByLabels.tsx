@@ -64,9 +64,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   onActivate() {
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
-      'Search labels (comma-separated regexes are supported)'
-    );
+    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    quickFilter.setPlaceholder('Search labels (comma-separated regexes are supported)');
 
     const eventsSub = this.subscribeToEvents();
 
@@ -133,7 +132,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const goupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
     goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE);
 
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).clear();
   }
 
   openExpandedPanelDrawer(item: GridItemData) {

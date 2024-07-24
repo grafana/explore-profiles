@@ -13,6 +13,10 @@ import { EventExpandPanel } from '../../domain/events/EventExpandPanel';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { FavoriteVariable } from '../../domain/variables/FavoriteVariable';
+import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
+import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
+import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawer: SceneDrawer;
@@ -56,12 +60,27 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   onActivate() {
+    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    quickFilter.setPlaceholder('Search favorites (comma-separated regexes are supported)');
+
     const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
       this.openExpandedPanelDrawer(event.payload.item);
     });
 
     return () => {
       expandPanelSub.unsubscribe();
+    };
+  }
+
+  // see SceneProfilesExplorer
+  getVariablesAndGridControls() {
+    return {
+      variables: [],
+      gridControls: [
+        findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter,
+        findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher,
+        findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher,
+      ],
     };
   }
 

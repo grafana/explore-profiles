@@ -7,7 +7,11 @@ import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
+import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
+import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 
 interface SceneExploreAllServicesState extends EmbeddedSceneState {}
 
@@ -35,6 +39,24 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
         ],
       }),
     });
+
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  onActivate() {
+    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    quickFilter.setPlaceholder('Search services (comma-separated regexes are supported)');
+  }
+
+  // see SceneProfilesExplorer
+  getVariablesAndGridControls() {
+    return {
+      variables: [findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable],
+      gridControls: [
+        findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter,
+        findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher,
+      ],
+    };
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreAllServices>) {

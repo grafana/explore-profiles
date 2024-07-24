@@ -126,8 +126,9 @@ export class ProfileMetricVariable extends QueryVariable {
 
     return (
       <Cascader
-        // we do this to ensure that the Cascader selects the initial value properly
-        key={String(loading)}
+        // we add a key to ensure that the Cascader selects the initial value properly when landing on the page
+        // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
+        key={String(loading) + String(value)}
         aria-label="Profile metrics list"
         width={24}
         separator="/"
