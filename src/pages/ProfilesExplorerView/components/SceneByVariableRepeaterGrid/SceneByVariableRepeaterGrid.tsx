@@ -13,10 +13,11 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
-import { debounce } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
+import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
@@ -107,6 +108,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   onActivate() {
     // here we try to emulate VariableDependencyConfig.onVariableUpdateCompleted
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
@@ -134,15 +136,21 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
-    const panelTypeChangeSub = this.subscribeToPanelTypeChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
 
+    // TODO: refactor to pull out everything specific to groupBy out of this Scene object
+    const panelTypeChangeSub = this.state.variableName === 'groupBy' ? this.subscribeToPanelTypeChange() : undefined;
+    const filtersSub = this.state.variableName === 'groupBy' ? this.subscribeToFiltersChange() : undefined;
+
     return () => {
+      filtersSub?.unsubscribe();
+      panelTypeChangeSub?.unsubscribe();
+
       hideNoDataSub.unsubscribe();
-      panelTypeChangeSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
       refreshSub.unsubscribe();
+
       variableSub.unsubscribe();
     };
   }
@@ -229,13 +237,33 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const onChangeState = (newState: typeof noDataSwitcher.state, prevState?: typeof noDataSwitcher.state) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
         this.setState({ hideNoData: newState.hideNoData === 'on' });
-        this.renderGridItems();
+
+        // we force render because this.state.items certainly have not changed but we want to update the UI panels anyway
+        this.renderGridItems(true);
       }
     };
 
     onChangeState(noDataSwitcher.state);
 
     return noDataSwitcher.subscribeToState(onChangeState);
+  }
+
+  subscribeToFiltersChange() {
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+    // the handler will be called each time a filter is added/removed/modified
+    const filtersSub = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
+      if (noDataSwitcher.state.hideNoData === 'on') {
+        // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
+        this.renderGridItems(true);
+      }
+    });
+
+    return {
+      unsubscribe() {
+        filtersSub.unsubscribe();
+      },
+    };
   }
 
   getCurrentOptions(variable: QueryVariable): VariableValueOption[] {
@@ -356,16 +384,35 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return this.filterItems(items).sort(this.state.sortItemsFn);
   }
 
-  // TODO: prevent too many re-renders
-  renderGridItems() {
+  shouldRenderItems(newItems: SceneByVariableRepeaterGridState['items']) {
+    const { items } = this.state;
+
+    if (items.length !== newItems.length) {
+      return true;
+    }
+
+    return !isEqual(items, newItems);
+  }
+
+  renderGridItems(forceRender = false) {
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
+
+    if (variable.state.loading) {
+      return;
+    }
 
     if (variable.state.error) {
       this.renderErrorState(variable.state.error);
       return;
     }
 
-    this.setState({ items: this.buildItemsData(variable) });
+    const newItems = this.buildItemsData(variable);
+
+    if (!forceRender && !this.shouldRenderItems(newItems)) {
+      return;
+    }
+
+    this.setState({ items: newItems });
 
     if (!this.state.items.length) {
       this.renderEmptyState();
