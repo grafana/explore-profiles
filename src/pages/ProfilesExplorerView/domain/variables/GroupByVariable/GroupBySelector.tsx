@@ -48,7 +48,7 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
   }, [mainOptions, theme]);
 
   return (
-    <Field label="Group by">
+    <Field label="Group by labels">
       <div ref={controlsContainer} className={styles.container}>
         {useHorizontalLabelSelector ? (
           <>

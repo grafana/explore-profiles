@@ -72,6 +72,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
     return (
       <QueryBuilder
         id="query-builder-explore"
+        autoExecute
         className={styles.queryBuilder}
         query={filterExpression as string}
         from={from.unix() * 1000}
