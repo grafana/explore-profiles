@@ -101,9 +101,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const labelValue = queryRunnerParams!.groupBy!.label;
     const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
 
-    groupByVariable.changeValueTo(labelValue);
+    // we clear the filter before changing the groupBy value because changing it will _directly_ cause the grid items to be updated
+    // by doing so, we prevent a flash of "No results"
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).clear();
 
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter)?.clear();
+    groupByVariable.changeValueTo(labelValue);
 
     // the event may be published from an expanded panel in the drawer
     this.state.drawer.close();

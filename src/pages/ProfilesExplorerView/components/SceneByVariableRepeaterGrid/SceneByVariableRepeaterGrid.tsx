@@ -356,16 +356,41 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return this.filterItems(items).sort(this.state.sortItemsFn);
   }
 
-  // TODO: prevent too many re-renders
+  shouldUpdateItems(newItems: SceneByVariableRepeaterGridState['items']) {
+    const { items } = this.state;
+
+    if (items.length !== newItems.length) {
+      return true;
+    }
+
+    for (let i = 0; i < items.length; i += 1) {
+      if (JSON.stringify(items[i]) !== JSON.stringify(newItems[i])) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   renderGridItems() {
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
+
+    if (variable.state.loading) {
+      return;
+    }
 
     if (variable.state.error) {
       this.renderErrorState(variable.state.error);
       return;
     }
 
-    this.setState({ items: this.buildItemsData(variable) });
+    const newItems = this.buildItemsData(variable);
+
+    if (!this.shouldUpdateItems(newItems)) {
+      return;
+    }
+
+    this.setState({ items: newItems });
 
     if (!this.state.items.length) {
       this.renderEmptyState();
