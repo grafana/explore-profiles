@@ -35,6 +35,7 @@ export const addStats = () => (source: Observable<DataFrame[]>) =>
     })
   );
 
+// depends on the "addStats" transformation to work properly
 export const sortSeries = () => (source: Observable<DataFrame[]>) =>
   source.pipe(
     map((data: DataFrame[]) =>
