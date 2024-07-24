@@ -1,6 +1,6 @@
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 
-import { ServiceToProfileMetricsMap } from './SeriesApiClient';
+import { PyroscopeSeries } from './SeriesApiClient';
 
 type Labels = Array<{ name: string; value: string }>;
 
@@ -25,12 +25,13 @@ function findServiceNameAndProfileMetricId(labels: Labels) {
   return [];
 }
 
-export function formatSeriesResponse(data: { labelsSet: Array<{ labels: Labels }> }): ServiceToProfileMetricsMap {
-  const services: ServiceToProfileMetricsMap = new Map();
+export function formatSeriesResponse(data: { labelsSet: Array<{ labels: Labels }> }): PyroscopeSeries {
+  const services: PyroscopeSeries['services'] = new Map();
+  const profileMetrics: PyroscopeSeries['profileMetrics'] = new Map();
 
   if (!data.labelsSet) {
-    console.warn('Pyroscope ServicesApiClient: no data received!');
-    return services;
+    console.warn('Pyroscope SeriesApiClient: no data received!');
+    return { services, profileMetrics };
   }
 
   for (const { labels } of data.labelsSet) {
@@ -45,11 +46,13 @@ export function formatSeriesResponse(data: { labelsSet: Array<{ labels: Labels }
     }
 
     const serviceProfileMetrics = services.get(serviceName) || new Map();
-
     serviceProfileMetrics.set(profileMetricId, getProfileMetric(profileMetricId as ProfileMetricId));
-
     services.set(serviceName, serviceProfileMetrics);
+
+    const profileMetricServices = profileMetrics.get(profileMetricId) || new Set();
+    profileMetricServices.add(serviceName);
+    profileMetrics.set(profileMetricId, profileMetricServices);
   }
 
-  return services;
+  return { services, profileMetrics };
 }

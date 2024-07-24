@@ -9,7 +9,6 @@ import {
   sceneGraph,
   SceneObjectBase,
   SceneQueryRunner,
-  VariableDependencyConfig,
   VariableValueOption,
   VizPanelState,
 } from '@grafana/scenes';
@@ -33,7 +32,6 @@ import { GridItemData } from './types/GridItemData';
 
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
   variableName: string;
-  dependentVariableNames: string[];
   items: GridItemData[];
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   sortItemsFn: (a: GridItemData, b: GridItemData) => number;
@@ -74,31 +72,20 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return layout === LayoutType.ROWS ? GRID_TEMPLATE_ROWS : GRID_TEMPLATE_COLUMNS;
   }
 
-  protected _variableDependency: VariableDependencyConfig<SceneByVariableRepeaterGridState> =
-    new VariableDependencyConfig(this, {
-      variableNames: this.state.dependentVariableNames,
-      onReferencedVariableValueChanged: () => {
-        this.renderGridItems();
-      },
-    });
-
   constructor({
     key,
     variableName,
-    dependentVariableNames,
     headerActions,
     sortItemsFn,
   }: {
     key: string;
     variableName: SceneByVariableRepeaterGridState['variableName'];
-    dependentVariableNames: SceneByVariableRepeaterGridState['dependentVariableNames'];
     headerActions: SceneByVariableRepeaterGridState['headerActions'];
     sortItemsFn?: SceneByVariableRepeaterGridState['sortItemsFn'];
   }) {
     super({
       key,
       variableName,
-      dependentVariableNames,
       items: [],
       headerActions,
       sortItemsFn: sortItemsFn || DEFAULT_SORT_ITEMS_FN,
@@ -358,6 +345,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
           queryRunnerParams: {
             serviceName,
             profileMetricId,
+            // TODO: this is super fragile, find a better way (like passing options.buildItemsData?)
             [variableName as keyof GridItemData['queryRunnerParams']]: option.value,
           },
           panelType: panelTypeFromSwitcher,

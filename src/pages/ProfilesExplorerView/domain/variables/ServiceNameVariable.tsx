@@ -11,16 +11,27 @@ import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
 
+type ServiceNameVariableState = {
+  query: string;
+  skipUrlSync: boolean;
+};
+
 export class ServiceNameVariable extends QueryVariable {
-  constructor() {
+  // hack: subscribe to changes of dataSource only
+  static QUERY_DEFAULT = '$dataSource and all services';
+
+  // hack: subscribe to changes of dataSource and profileMetricId
+  static QUERY_PROFILE_METRIC_DEPENDENT = '$dataSource and only $profileMetricId services';
+
+  constructor(state?: ServiceNameVariableState) {
     super({
       name: 'serviceName',
       label: '🚀 Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
-      // "hack": we want to subscribe to changes of dataSource
-      query: '$dataSource and serviceName please',
+      query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
+      ...state,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -32,15 +43,13 @@ export class ServiceNameVariable extends QueryVariable {
     }
   }
 
-  async update(selectDefaultValue = false) {
+  async update() {
     if (this.state.loading) {
       return;
     }
 
     let options: VariableValueOption[] = [];
     let error = null;
-
-    this.changeValueTo('');
 
     this.setState({ loading: true, options: [], error: null });
 
@@ -50,10 +59,6 @@ export class ServiceNameVariable extends QueryVariable {
       error = e;
     } finally {
       this.setState({ loading: false, options, error });
-
-      if (selectDefaultValue) {
-        this.selectNewValue(options[0].value as string);
-      }
     }
   }
 

@@ -24,7 +24,8 @@ export class ServicesApiClient extends ApiClient {
       }),
     })
       .then((response) => response.json())
-      .then(formatSeriesResponse);
+      .then(formatSeriesResponse)
+      .then((series) => series.services);
   }
 }
 

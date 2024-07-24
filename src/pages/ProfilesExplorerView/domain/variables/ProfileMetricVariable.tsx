@@ -16,18 +16,29 @@ type ProfileMetricOptions = Array<{
   group: string;
 }>;
 
+type ProfileMetricVariableState = {
+  query: string;
+  skipUrlSync: boolean;
+};
+
 export class ProfileMetricVariable extends QueryVariable {
   static DEFAULT_VALUE = 'process_cpu:cpu:nanoseconds:cpu:nanoseconds';
 
-  constructor() {
+  // hack: subscribe to changes of dataSource only
+  static QUERY_DEFAULT = '$dataSource and all profile metrics';
+
+  // hack: subscribe to changes of dataSource and serviceName to avoid showing options that don't have any data associated
+  static QUERY_SERVICE_NAME_DEPENDENT = '$dataSource and only $serviceName profile metrics';
+
+  constructor(state?: ProfileMetricVariableState) {
     super({
       name: 'profileMetricId',
       label: '🔥 Profile type',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
-      // "hack": we want to subscribe to changes of dataSource
-      query: '$dataSource and profileMetricId please',
+      query: ProfileMetricVariable.QUERY_DEFAULT,
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
+      ...state,
     });
 
     this.changeValueTo = this.changeValueTo.bind(this);
@@ -41,15 +52,13 @@ export class ProfileMetricVariable extends QueryVariable {
     }
   }
 
-  async update(selectDefaultValue = false) {
-    if (this.state.loading) {
+  async update(force = false) {
+    if (!force && this.state.loading) {
       return;
     }
 
     let options: VariableValueOption[] = [];
     let error = null;
-
-    this.changeValueTo('');
 
     this.setState({ loading: true, options: [], error: null });
 
@@ -59,10 +68,6 @@ export class ProfileMetricVariable extends QueryVariable {
       error = e;
     } finally {
       this.setState({ loading: false, options, error });
-
-      if (selectDefaultValue) {
-        this.changeValueTo(ProfileMetricVariable.DEFAULT_VALUE);
-      }
     }
   }
 

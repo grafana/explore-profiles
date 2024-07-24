@@ -26,7 +26,6 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       body: new SceneByVariableRepeaterGrid({
         key: 'favorites-grid',
         variableName: 'favorite',
-        dependentVariableNames: [],
         sortItemsFn: (a, b) => a.label.localeCompare(b.label),
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [

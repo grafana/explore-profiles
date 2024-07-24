@@ -3,35 +3,35 @@ import { AbstractRepository } from '@shared/infrastructure/AbstractRepository';
 import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
 
 import { computeRoundedTimeRange } from '../../../helpers/computeRoundedTimeRange';
-import { SeriesApiClient, ServiceToProfileMetricsMap } from './SeriesApiClient';
+import { PyroscopeSeries, SeriesApiClient } from './SeriesApiClient';
 
 class SeriesRepository extends AbstractRepository<SeriesApiClient, MemoryCacheClient> {
   constructor(options: { cacheClient: MemoryCacheClient }) {
     super(options);
   }
 
-  async list(options: { timeRange: TimeRange }): Promise<ServiceToProfileMetricsMap> {
+  async list(options: { timeRange: TimeRange }): Promise<PyroscopeSeries> {
     const { from, to } = computeRoundedTimeRange(options.timeRange);
 
     const cacheParams = [this.apiClient!.baseUrl, from, to];
 
-    const servicesFromCacheP = this.cacheClient!.get(cacheParams);
-    if (servicesFromCacheP) {
-      const services = await servicesFromCacheP;
+    const responseFromCacheP = this.cacheClient!.get(cacheParams);
+    if (responseFromCacheP) {
+      const { services, profileMetrics } = await responseFromCacheP;
 
-      if (!services.size) {
+      if (!services.size && !profileMetrics.size) {
         this.cacheClient!.delete(cacheParams);
       }
 
-      return services;
+      return { services, profileMetrics };
     }
 
     const fetchP = this.apiClient!.list({ from, to });
     this.cacheClient!.set(cacheParams, fetchP);
 
     try {
-      const services = await fetchP;
-      return services;
+      const { services, profileMetrics } = await fetchP;
+      return { services, profileMetrics };
     } catch (error) {
       this.cacheClient!.delete(cacheParams);
       throw error;
