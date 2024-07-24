@@ -249,10 +249,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToFiltersChange() {
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
     // the handler will be called each time a filter is added/removed/modified
     const filtersSub = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
-      const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
-
       if (noDataSwitcher.state.hideNoData === 'on') {
         // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
         this.renderGridItems(true);
@@ -411,8 +411,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     if (!forceRender && !this.shouldRenderItems(newItems)) {
       return;
     }
-
-    console.log('*** render');
 
     this.setState({ items: newItems });
 
