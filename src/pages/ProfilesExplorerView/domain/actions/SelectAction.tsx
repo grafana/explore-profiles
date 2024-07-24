@@ -58,7 +58,13 @@ const Events = new Map<EventContructor, EventLookup>([
       tooltip: () => 'Expand this panel to view all the data for the current filters',
     }),
   ],
-  [EventSelectLabel, Object.freeze({ label: 'Select' })],
+  [
+    EventSelectLabel,
+    Object.freeze({
+      label: 'Select',
+      tooltip: ({ queryRunnerParams }) => `View "${queryRunnerParams.groupBy?.label}" values breakdown`,
+    }),
+  ],
   [
     EventViewServiceFlameGraph,
     Object.freeze({
