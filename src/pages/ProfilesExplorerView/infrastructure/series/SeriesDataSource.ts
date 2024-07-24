@@ -35,7 +35,7 @@ export class SeriesDataSource extends RuntimeDataSource {
           name: 'PyroscopeSeries',
           fields: [
             {
-              name: 'PyroscopeSerie',
+              name: 'PyroscopeSeries',
               type: FieldType.other,
               values: [],
               config: {},
