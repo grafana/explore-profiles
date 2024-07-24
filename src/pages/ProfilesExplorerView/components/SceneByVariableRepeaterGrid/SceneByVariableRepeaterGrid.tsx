@@ -116,14 +116,12 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const variableSub = variable.subscribeToState((newState, prevState) => {
       if (!newState.loading) {
         if (prevState.loading) {
-          console.log('*** done loading');
           this.renderGridItems();
           return;
         }
 
         // TODO: create a dedicated variable instead of looking at the groupBy value?
         if (variable.state.name === 'groupBy' && newState.value !== prevState.value) {
-          console.log('*** groupBy %s to %s', prevState.value, newState.value);
           this.renderGridItems();
           return;
         }
