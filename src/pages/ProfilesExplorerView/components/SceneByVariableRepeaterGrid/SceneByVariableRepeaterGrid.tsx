@@ -13,10 +13,11 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
-import { debounce } from 'lodash';
+import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
+import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
@@ -107,6 +108,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   onActivate() {
     // here we try to emulate VariableDependencyConfig.onVariableUpdateCompleted
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
@@ -114,12 +116,14 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const variableSub = variable.subscribeToState((newState, prevState) => {
       if (!newState.loading) {
         if (prevState.loading) {
+          console.log('*** done loading');
           this.renderGridItems();
           return;
         }
 
         // TODO: create a dedicated variable instead of looking at the groupBy value?
         if (variable.state.name === 'groupBy' && newState.value !== prevState.value) {
+          console.log('*** groupBy %s to %s', prevState.value, newState.value);
           this.renderGridItems();
           return;
         }
@@ -134,15 +138,21 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
-    const panelTypeChangeSub = this.subscribeToPanelTypeChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
 
+    // TODO: refactor to pull out everything specific to groupBy out of this Scene object
+    const panelTypeChangeSub = this.state.variableName === 'groupBy' ? this.subscribeToPanelTypeChange() : undefined;
+    const filtersSub = this.state.variableName === 'groupBy' ? this.subscribeToFiltersChange() : undefined;
+
     return () => {
+      filtersSub?.unsubscribe();
+      panelTypeChangeSub?.unsubscribe();
+
       hideNoDataSub.unsubscribe();
-      panelTypeChangeSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
       refreshSub.unsubscribe();
+
       variableSub.unsubscribe();
     };
   }
@@ -232,14 +242,30 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
         // we force render because this.state.items certainly have not changed but we want to update the UI panels anyway
         this.renderGridItems(true);
-
-        // TODO: also listen to filters change and force re-renders if hideNoData === 'on'
       }
     };
 
     onChangeState(noDataSwitcher.state);
 
     return noDataSwitcher.subscribeToState(onChangeState);
+  }
+
+  subscribeToFiltersChange() {
+    // the handler will be called each time a filter is added/removed/modified
+    const filtersSub = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
+      const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+      if (noDataSwitcher.state.hideNoData === 'on') {
+        // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
+        this.renderGridItems(true);
+      }
+    });
+
+    return {
+      unsubscribe() {
+        filtersSub.unsubscribe();
+      },
+    };
   }
 
   getCurrentOptions(variable: QueryVariable): VariableValueOption[] {
@@ -368,7 +394,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     }
 
     for (let i = 0; i < items.length; i += 1) {
-      if (JSON.stringify(items[i]) !== JSON.stringify(newItems[i])) {
+      if (!isEqual(items[i], newItems[i])) {
         return true;
       }
     }

@@ -64,6 +64,7 @@ export class LabelsDataSource extends RuntimeDataSource {
     const { scopedVars, range } = options;
     const sceneObject = scopedVars?.__sceneObject?.value as GroupByVariable;
 
+    // save bandwidth
     if (!sceneObject.isActive) {
       return [];
     }
