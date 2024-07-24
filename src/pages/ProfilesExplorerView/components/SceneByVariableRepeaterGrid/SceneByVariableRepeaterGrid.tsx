@@ -391,13 +391,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return true;
     }
 
-    for (let i = 0; i < items.length; i += 1) {
-      if (!isEqual(items[i], newItems[i])) {
-        return true;
-      }
-    }
-
-    return false;
+    return !isEqual(items, newItems);
   }
 
   renderGridItems(forceRender = false) {
@@ -417,6 +411,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     if (!forceRender && !this.shouldRenderItems(newItems)) {
       return;
     }
+
+    console.log('*** render');
 
     this.setState({ items: newItems });
 
