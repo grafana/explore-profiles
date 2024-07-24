@@ -229,7 +229,11 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const onChangeState = (newState: typeof noDataSwitcher.state, prevState?: typeof noDataSwitcher.state) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
         this.setState({ hideNoData: newState.hideNoData === 'on' });
-        this.renderGridItems();
+
+        // we force render because this.state.items certainly have not changed but we want to update the UI panels anyway
+        this.renderGridItems(true);
+
+        // TODO: also listen to filters change and force re-renders if hideNoData === 'on'
       }
     };
 
@@ -356,7 +360,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return this.filterItems(items).sort(this.state.sortItemsFn);
   }
 
-  shouldUpdateItems(newItems: SceneByVariableRepeaterGridState['items']) {
+  shouldRenderItems(newItems: SceneByVariableRepeaterGridState['items']) {
     const { items } = this.state;
 
     if (items.length !== newItems.length) {
@@ -372,7 +376,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return false;
   }
 
-  renderGridItems() {
+  renderGridItems(forceRender = false) {
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
 
     if (variable.state.loading) {
@@ -386,7 +390,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
     const newItems = this.buildItemsData(variable);
 
-    if (!this.shouldUpdateItems(newItems)) {
+    if (!forceRender && !this.shouldRenderItems(newItems)) {
       return;
     }
 
