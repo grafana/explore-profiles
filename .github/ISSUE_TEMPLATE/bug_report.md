@@ -1,15 +1,18 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: '[bug] '
+title: "[bug] "
 labels: bug
 assignees: ''
+
 ---
 
 ### Bug description
 
+**Plugin version:**
+
 <!-- A clear and concise description of what the bug is and where you see it. -->
-<!-- Please specify in which environment(s) you see it (dev/ops/prod). -->
+<!-- Please specify in which environment(s) you see it (cloud or open-source). -->
 
 ### Steps to reproduce
 
