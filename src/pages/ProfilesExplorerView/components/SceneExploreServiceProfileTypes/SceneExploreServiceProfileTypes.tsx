@@ -43,8 +43,11 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
   }
 
   onActivate(item?: GridItemData) {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-    quickFilter.setPlaceholder('Search profile types (comma-separated regexes are supported)');
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
+      'Search profile types (comma-separated regexes are supported)'
+    );
+
+    (findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher).toggleOptions('default');
 
     if (item) {
       this.initVariables(item);

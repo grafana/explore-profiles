@@ -44,8 +44,11 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
   }
 
   onActivate() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-    quickFilter.setPlaceholder('Search services (comma-separated regexes are supported)');
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
+      'Search services (comma-separated regexes are supported)'
+    );
+
+    (findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher).toggleOptions('default');
   }
 
   // see SceneProfilesExplorer

@@ -17,7 +17,6 @@ import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
-import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
@@ -138,14 +137,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const layoutChangeSub = this.subscribeToLayoutChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
 
-    // TODO: refactor to pull out everything specific to groupBy out of this Scene object
-    const panelTypeChangeSub = this.state.variableName === 'groupBy' ? this.subscribeToPanelTypeChange() : undefined;
-    const filtersSub = this.state.variableName === 'groupBy' ? this.subscribeToFiltersChange() : undefined;
-
     return () => {
-      filtersSub?.unsubscribe();
-      panelTypeChangeSub?.unsubscribe();
-
       hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
@@ -207,7 +199,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const body = this.state.body as SceneCSSGridLayout;
 
     const onChangeState = (newState: typeof layoutSwitcher.state, prevState?: typeof layoutSwitcher.state) => {
-      if (newState.layout !== prevState?.layout) {
+      // TODO: pull out groupBy logic out of this class
+      if (newState.layout !== prevState?.layout && newState.layout !== LayoutType.SINGLE) {
         body.setState({
           templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(newState.layout),
         });
@@ -217,18 +210,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     onChangeState(layoutSwitcher.state);
 
     return layoutSwitcher.subscribeToState(onChangeState);
-  }
-
-  subscribeToPanelTypeChange() {
-    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
-
-    const onChangeState = (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
-      if (newState.panelType !== prevState?.panelType) {
-        this.renderGridItems();
-      }
-    };
-
-    return panelTypeSwitcher.subscribeToState(onChangeState);
   }
 
   subscribeToHideNoDataChange() {
@@ -246,24 +227,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     onChangeState(noDataSwitcher.state);
 
     return noDataSwitcher.subscribeToState(onChangeState);
-  }
-
-  subscribeToFiltersChange() {
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
-
-    // the handler will be called each time a filter is added/removed/modified
-    const filtersSub = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
-      if (noDataSwitcher.state.hideNoData === 'on') {
-        // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
-        this.renderGridItems(true);
-      }
-    });
-
-    return {
-      unsubscribe() {
-        filtersSub.unsubscribe();
-      },
-    };
   }
 
   getCurrentOptions(variable: QueryVariable): VariableValueOption[] {

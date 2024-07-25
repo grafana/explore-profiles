@@ -46,7 +46,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       value: '',
       label: '',
       panelType: PanelType.TIMESERIES,
-      // let actions interpolate
+      // let actions interpolate the missing values
       queryRunnerParams: {},
     };
 

@@ -1,10 +1,21 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import {
+  SceneComponentProps,
+  SceneFlexItem,
+  SceneFlexLayout,
+  SceneObject,
+  SceneObjectBase,
+  SceneObjectState,
+  VariableDependencyConfig,
+} from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { PanelType } from '../../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import {
+  PanelType,
+  ScenePanelTypeSwitcher,
+} from '../../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../../components/SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
@@ -25,16 +36,122 @@ import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByV
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../../infrastructure/series/helpers/getProfileMetricLabel';
+import { LayoutType, SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 
 interface SceneGroupByLabelsState extends SceneObjectState {
-  body: SceneByVariableRepeaterGrid;
+  body?: SceneObject;
   drawer: SceneDrawer;
 }
 
+const MIN_HEIGHT_SINGLE_PANEL = '240px';
+
 export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState> {
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['groupBy'],
+    onReferencedVariableValueChanged: this.onGroupByValueChanged.bind(this),
+  });
+
   constructor() {
     super({
       key: 'group-by-labels',
+      body: undefined,
+      drawer: new SceneDrawer(),
+    });
+
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  onActivate() {
+    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
+      'Search labels (comma-separated regexes are supported)'
+    );
+
+    this.toggleLayoutSwitcherOptions(getSceneVariableValue(this, 'groupBy'));
+
+    const panelTypeChangeSub = this.subscribeToPanelTypeChange();
+    const layoutChangeSub = this.subscribeToLayoutChange();
+    const filtersSub = this.subscribeToFiltersChange();
+    const panelEventsSub = this.subscribeToPanelEvents();
+
+    this.buildBody();
+
+    return () => {
+      panelEventsSub.unsubscribe();
+      filtersSub.unsubscribe();
+      layoutChangeSub.unsubscribe();
+      panelTypeChangeSub.unsubscribe();
+    };
+  }
+
+  onGroupByValueChanged(variable: any) {
+    const { value } = variable.state;
+
+    this.toggleLayoutSwitcherOptions(value);
+
+    if (value !== 'all') {
+      const { layout } = (findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher).state;
+
+      if (layout === LayoutType.SINGLE) {
+        this.buildSinglePanel(); // TODO: only update item, not the whole build -> subscribeToState in SceneLabelValuesBarGauge and SceneLabelValuesTimeseries
+      }
+    }
+  }
+
+  toggleLayoutSwitcherOptions(groupByValue: string) {
+    (findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher).toggleOptions(
+      groupByValue === 'all' ? 'default' : 'groupBy'
+    );
+  }
+
+  buildBody() {
+    (findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher).state.layout === LayoutType.SINGLE
+      ? this.buildSinglePanel()
+      : this.buildGrid();
+  }
+
+  subscribeToPanelTypeChange() {
+    return (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).subscribeToState(
+      (newState, prevState) => {
+        if (newState.panelType === prevState.panelType) {
+          return;
+        }
+
+        if (this.state.body instanceof SceneByVariableRepeaterGrid) {
+          this.state.body.renderGridItems();
+        } else {
+          this.buildBody();
+        }
+      }
+    );
+  }
+
+  subscribeToLayoutChange() {
+    return (findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher).subscribeToState(
+      (newState, prevState) => {
+        if (newState.layout === prevState.layout) {
+          return;
+        }
+
+        return newState.layout === LayoutType.SINGLE ? this.buildSinglePanel() : this.buildGrid();
+      }
+    );
+  }
+
+  subscribeToFiltersChange() {
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+    return (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
+      // the handler will be called each time a filter is added/removed/modified
+      if (noDataSwitcher.state.hideNoData === 'on' && this.state.body instanceof SceneByVariableRepeaterGrid) {
+        // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
+        this.state.body.renderGridItems(true);
+      }
+    });
+  }
+
+  buildGrid() {
+    this.setState({
       body: new SceneByVariableRepeaterGrid({
         key: 'service-labels-grid',
         variableName: 'groupBy',
@@ -57,24 +174,49 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           ];
         },
       }),
-      drawer: new SceneDrawer(),
     });
-
-    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onActivate() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-    quickFilter.setPlaceholder('Search labels (comma-separated regexes are supported)');
+  buildSinglePanel() {
+    const { panelType } = (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).state;
+    const label = getSceneVariableValue(this, 'groupBy');
 
-    const eventsSub = this.subscribeToEvents();
-
-    return () => {
-      eventsSub.unsubscribe();
+    const item = {
+      index: 0,
+      value: '',
+      label,
+      panelType,
+      // let actions interpolate the missing values
+      queryRunnerParams: {
+        groupBy: {
+          label,
+          values: [],
+        },
+      },
     };
+
+    const headerActions = (item: GridItemData) => [
+      new SelectAction({ EventClass: EventExpandPanel, item }),
+      new FavAction({ item }),
+    ];
+
+    this.setState({
+      body: new SceneFlexLayout({
+        direction: 'row',
+        children: [
+          new SceneFlexItem({
+            minHeight: MIN_HEIGHT_SINGLE_PANEL,
+            body:
+              panelType === PanelType.BARGAUGE
+                ? new SceneLabelValuesBarGauge({ item, headerActions })
+                : new SceneLabelValuesTimeseries({ item, headerActions }),
+          }),
+        ],
+      }),
+    });
   }
 
-  subscribeToEvents() {
+  subscribeToPanelEvents() {
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
       this.selectLabel(event.payload.item);
     });
@@ -136,19 +278,19 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
+    const { layout } = (findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher).state;
+
+    const headerActions =
+      layout === LayoutType.SINGLE
+        ? () => [new FavAction({ item })]
+        : () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })];
+
     this.state.drawer.open({
       title: this.buildtimeSeriesPanelTitle(item),
       body:
         item.panelType === PanelType.BARGAUGE
-          ? new SceneLabelValuesBarGauge({
-              item,
-              headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
-            })
-          : new SceneLabelValuesTimeseries({
-              displayAllValues: true,
-              item,
-              headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
-            }),
+          ? new SceneLabelValuesBarGauge({ item, headerActions })
+          : new SceneLabelValuesTimeseries({ displayAllValues: true, item, headerActions }),
     });
   }
 
@@ -180,7 +322,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           ) : null}
         </div>
 
-        {<body.Component model={body} />}
+        {body && <body.Component model={body} />}
         {<drawer.Component model={drawer} />}
       </div>
     );
