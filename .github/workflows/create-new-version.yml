@@ -33,13 +33,10 @@ jobs:
         run: yarn install --immutable
 
       - name: Create version & update CHANGELOG
-        run: npm version ${{ inputs.version }}
-
-      # - name: Create version & CHANGELOG
-      #   run: |
-      #     git config --global user.email "dmitry+bot@pyroscope.io"
-      #     git config --global user.name "Pyroscope Bot <dmitry+bot@pyroscope.io>"
-      #     npm version ${{ inputs.version }}
+        run: |
+          git config --global user.email "dmitry+bot@pyroscope.io"
+          git config --global user.name "Pyroscope Bot <dmitry+bot@pyroscope.io>"
+          npm version ${{ inputs.version }}
 
       - name: Push
         run: git push origin main --tags
