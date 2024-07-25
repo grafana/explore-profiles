@@ -2,7 +2,9 @@ name: Latest Grafana API compatibility check
 
 on:
   pull_request:
-    paths: ['!docs/**']
+    paths-ignore:
+      - docs/*
+      - docs/sources/**
     branches:
       - main
 
@@ -10,15 +12,19 @@ jobs:
   compatibilitycheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'yarn'
+
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Build plugin
+        run: yarn install --immutable
+
+      - name: Build frontend
         run: yarn build
+
       - name: Compatibility check
         run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
