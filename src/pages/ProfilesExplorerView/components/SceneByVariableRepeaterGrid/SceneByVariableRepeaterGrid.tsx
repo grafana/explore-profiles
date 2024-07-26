@@ -22,6 +22,7 @@ import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
+import { SceneLabelValueStat } from '../SceneLabelValueStat';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
@@ -266,7 +267,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     };
   }
 
-  getCurrentOptions(variable: QueryVariable): VariableValueOption[] {
+  getCurrentOptions(variable: QueryVariable, panelTypeFromSwitcher: PanelType): VariableValueOption[] {
     const { name: variableName, options, value: variableValue } = variable.state;
 
     if (variableName !== 'groupBy') {
@@ -322,6 +323,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
             value: labelValue,
           },
         ],
+        panelType: panelTypeFromSwitcher === PanelType.BARGAUGE ? PanelType.STATS : panelTypeFromSwitcher,
       };
 
       return {
@@ -339,7 +341,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
     const panelTypeFromSwitcher = panelTypeSwitcher.state.panelType;
 
-    const items = this.getCurrentOptions(variable).map((option, i) => {
+    const items = this.getCurrentOptions(variable, panelTypeFromSwitcher).map((option, i) => {
       try {
         const parsedValue = JSON.parse(option.value as string);
         const {
@@ -443,13 +445,16 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       case PanelType.BARGAUGE:
         return new SceneLabelValuesBarGauge({ item, headerActions: this.state.headerActions });
 
+      case PanelType.STATS:
+        return new SceneLabelValueStat({ item, headerActions: this.state.headerActions });
+
       case PanelType.TIMESERIES:
       default:
         return new SceneLabelValuesTimeseries({ item, headerActions: this.state.headerActions });
     }
   }
 
-  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
+  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge | SceneLabelValueStat) {
     const sub = (vizPanel.state.body.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
         return;
