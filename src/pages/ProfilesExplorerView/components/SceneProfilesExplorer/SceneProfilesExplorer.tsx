@@ -408,23 +408,12 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     gap: ${theme.spacing(1)};
   `,
-  dataSourceVariable: css`
-    display: flex;
-    min-width: 160px;
-  `,
-  explorationTypeContainer: css`
-    display: flex;
-  `,
-  explorationTypeRadio: css`
-    display: flex;
-  `,
-  explorationTypeSelect: css`
-    display: flex;
-    min-width: 180px;
-  `,
   headerRight: css`
     display: flex;
     gap: ${theme.spacing(1)};
+  `,
+  dataSourceVariable: css`
+    display: flex;
   `,
   variable: css`
     display: flex;

@@ -60,8 +60,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
     }
   `,
   button: css`
-    height: 28px;
-    line-height: 28px;
+    height: 30px;
+    line-height: 30px;
   `,
   active: css`
     &:hover {
