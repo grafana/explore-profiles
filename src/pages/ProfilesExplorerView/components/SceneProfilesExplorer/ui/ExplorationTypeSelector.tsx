@@ -16,15 +16,33 @@ export function ExplorationTypeSelector({ value, onChange }: ExplorationTypeSele
       <InlineLabel width="auto">Exploration</InlineLabel>
 
       <div className={styles.breadcrumb}>
-        <Button size="sm" variant={value === 'all' ? 'primary' : 'secondary'} onClick={() => onChange('all')}>
+        <Button
+          size="sm"
+          variant={value === 'all' ? 'primary' : 'secondary'}
+          onClick={() => onChange('all')}
+          tooltip="Overview of all services, for any given profile type"
+          tooltipPlacement="top"
+        >
           All services
         </Button>
         <Icon name="arrow-right" />
-        <Button size="sm" variant={value === 'profiles' ? 'primary' : 'secondary'} onClick={() => onChange('profiles')}>
+        <Button
+          size="sm"
+          variant={value === 'profiles' ? 'primary' : 'secondary'}
+          onClick={() => onChange('profiles')}
+          tooltip="Overview of all the profile types for a single service"
+          tooltipPlacement="top"
+        >
           Profile types
         </Button>
         <Icon name="arrow-right" />
-        <Button size="sm" variant={value === 'labels' ? 'primary' : 'secondary'} onClick={() => onChange('labels')}>
+        <Button
+          size="sm"
+          variant={value === 'labels' ? 'primary' : 'secondary'}
+          onClick={() => onChange('labels')}
+          tooltip="Single service label exploration and filtering"
+          tooltipPlacement="top"
+        >
           Labels
         </Button>
         <Icon name="arrow-right" />
@@ -32,14 +50,18 @@ export function ExplorationTypeSelector({ value, onChange }: ExplorationTypeSele
           size="sm"
           variant={value === 'flame-graph' ? 'primary' : 'secondary'}
           onClick={() => onChange('flame-graph')}
+          tooltip="Single service flame graph"
+          tooltipPlacement="top"
         >
           Flame graph
         </Button>
         <Button
           size="sm"
+          icon="favorite"
           variant={value === 'favorites' ? 'primary' : 'secondary'}
           onClick={() => onChange('favorites')}
-          icon="favorite"
+          tooltip="Overview of favorited visualizations"
+          tooltipPlacement="top"
         >
           Favorites
         </Button>
