@@ -33,9 +33,11 @@ jobs:
         run: yarn install --immutable
 
       - name: Create version & update CHANGELOG
+        env:
+          DB_FE_CI_BOT_EMAIL: ${{ secrets.DB_FE_CI_BOT_EMAIL }}
         run: |
-          git config --global user.email "dmitry+bot@pyroscope.io"
-          git config --global user.name "Pyroscope Bot <dmitry+bot@pyroscope.io>"
+          git config --global user.email "$DB_FE_CI_BOT_EMAIL"
+          git config --global user.name "Databases Frontend CI Bot"
           npm version ${{ inputs.version }}
 
       - name: Push
