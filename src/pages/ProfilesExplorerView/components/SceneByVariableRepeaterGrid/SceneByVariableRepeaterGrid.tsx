@@ -13,6 +13,7 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
+import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
@@ -234,6 +235,14 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
   subscribeToHideNoDataChange() {
     const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+    if (!noDataSwitcher.isActive) {
+      this.setState({ hideNoData: false });
+
+      return {
+        unsubscribe: noOp,
+      };
+    }
 
     const onChangeState = (newState: typeof noDataSwitcher.state, prevState?: typeof noDataSwitcher.state) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
