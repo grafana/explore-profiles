@@ -50,11 +50,15 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
             ];
           }
 
-          return [
-            new SelectAction({ EventClass: EventSelectLabel, item }),
-            new SelectAction({ EventClass: EventExpandPanel, item }),
-            new FavAction({ item }),
-          ];
+          if (queryRunnerParams.groupBy.values.length > 1) {
+            return [
+              new SelectAction({ EventClass: EventSelectLabel, item }),
+              new SelectAction({ EventClass: EventExpandPanel, item }),
+              new FavAction({ item }),
+            ];
+          }
+
+          return [new FavAction({ item })];
         },
       }),
       drawer: new SceneDrawer(),
