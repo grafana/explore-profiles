@@ -4,6 +4,8 @@ import React from 'react';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
+import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
+import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
@@ -30,12 +32,9 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
         key: 'all-services-grid',
         variableName: 'serviceName',
         headerActions: (item) => [
-          new SelectAction({
-            EventClass: EventViewServiceProfiles,
-            item,
-            label: 'Select',
-            tooltip: ({ queryRunnerParams }) => `View the profile types of ${queryRunnerParams.serviceName}`,
-          }),
+          new SelectAction({ EventClass: EventViewServiceProfiles, item }),
+          new SelectAction({ EventClass: EventViewServiceLabels, item }),
+          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
           new FavAction({ item }),
         ],
       }),
