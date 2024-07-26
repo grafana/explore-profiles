@@ -12,6 +12,7 @@ import React from 'react';
 export enum PanelType {
   TIMESERIES = 'time-series',
   BARGAUGE = 'bar-gauge',
+  STATS = 'stats',
 }
 
 interface ScenePanelTypeSwitcherState extends SceneObjectState {
@@ -24,7 +25,7 @@ export class ScenePanelTypeSwitcher extends SceneObjectBase<ScenePanelTypeSwitch
 
   static OPTIONS = [
     { label: 'Time series', value: PanelType.TIMESERIES, icon: 'heart-rate' },
-    { label: 'Bar gauge', value: PanelType.BARGAUGE, icon: 'graph-bar' },
+    { label: 'Totals', value: PanelType.BARGAUGE, icon: 'graph-bar' },
   ];
 
   static DEFAULT_PANEL_TYPE = PanelType.TIMESERIES;
