@@ -39,6 +39,7 @@ export function ExplorationTypeSelector({ value, onChange }: ExplorationTypeSele
           size="sm"
           variant={value === 'favorites' ? 'primary' : 'secondary'}
           onClick={() => onChange('favorites')}
+          icon="favorite"
         >
           Favorites
         </Button>

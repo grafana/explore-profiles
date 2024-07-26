@@ -17,11 +17,10 @@ import {
   SplitLayout,
 } from '@grafana/scenes';
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
-import { useResizeObserver } from '@react-aria/utils';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
-import React, { useRef, useState } from 'react';
+import React from 'react';
 
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
@@ -45,7 +44,7 @@ import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/component
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
-import { ExplorationTypeSelector, ExplorationTypeSelectorProps } from './ui/ExplorationTypeSelector';
+import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
