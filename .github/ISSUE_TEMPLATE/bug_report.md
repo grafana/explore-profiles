@@ -8,8 +8,8 @@ assignees: ''
 
 ### Bug description
 
-- **Grafana version:** 
-- **Plugin version:** 
+- **Grafana version:**
+- **Plugin version:**
 
 <!-- A clear and concise description of what the bug is and where you see it -->
 <!-- Please specify in which environment(s) you see it (cloud or open-source) -->
