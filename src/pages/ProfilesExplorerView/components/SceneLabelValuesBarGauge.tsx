@@ -21,13 +21,7 @@ interface SceneLabelValuesBarGaugeState extends SceneObjectState {
 }
 
 export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBarGaugeState> {
-  constructor({
-    item,
-    headerActions,
-  }: {
-    item: GridItemData;
-    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-  }) {
+  constructor({ item, headerActions }: { item: GridItemData; headerActions: () => VizPanelState['headerActions'] }) {
     super({
       key: 'bar-gauge-label-values',
       body: PanelBuilders.bargauge()
@@ -38,7 +32,7 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
             transformations: [addRefId, addStats, sortSeries],
           })
         )
-        .setHeaderActions(headerActions(item))
+        .setHeaderActions(headerActions())
         .build(),
     });
 

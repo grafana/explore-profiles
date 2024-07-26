@@ -35,7 +35,7 @@ import { GridItemData } from './types/GridItemData';
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
   variableName: string;
   items: GridItemData[];
-  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+  headerActions: (item: GridItemData, items: GridItemData[]) => VizPanelState['headerActions'];
   sortItemsFn: (a: GridItemData, b: GridItemData) => number;
   hideNoData: boolean;
 }
@@ -443,14 +443,23 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   buildVizPanel(item: GridItemData) {
     switch (item.panelType) {
       case PanelType.BARGAUGE:
-        return new SceneLabelValuesBarGauge({ item, headerActions: this.state.headerActions });
+        return new SceneLabelValuesBarGauge({
+          item,
+          headerActions: this.state.headerActions.bind(null, item, this.state.items),
+        });
 
       case PanelType.STATS:
-        return new SceneLabelValueStat({ item, headerActions: this.state.headerActions });
+        return new SceneLabelValueStat({
+          item,
+          headerActions: this.state.headerActions.bind(null, item, this.state.items),
+        });
 
       case PanelType.TIMESERIES:
       default:
-        return new SceneLabelValuesTimeseries({ item, headerActions: this.state.headerActions });
+        return new SceneLabelValuesTimeseries({
+          item,
+          headerActions: this.state.headerActions.bind(null, item, this.state.items),
+        });
     }
   }
 

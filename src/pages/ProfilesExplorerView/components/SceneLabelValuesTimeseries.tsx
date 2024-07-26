@@ -33,7 +33,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     displayAllValues,
   }: {
     item: GridItemData;
-    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+    headerActions: () => VizPanelState['headerActions'];
     displayAllValues?: boolean;
   }) {
     super({
@@ -48,7 +48,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               : [addRefId, addStats, sortSeries, limitNumberOfSeries],
           })
         )
-        .setHeaderActions(headerActions(item))
+        .setHeaderActions(headerActions())
         .build(),
     });
 
