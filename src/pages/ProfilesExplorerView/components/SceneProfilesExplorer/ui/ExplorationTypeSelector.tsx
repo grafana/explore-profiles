@@ -30,6 +30,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 onClick={isActive ? noOp : () => onChange(option.value as string)}
                 tooltip={option.description}
                 tooltipPlacement="top"
+                data-testid={isActive ? 'is-active' : undefined}
               >
                 {option.label}
               </Button>
