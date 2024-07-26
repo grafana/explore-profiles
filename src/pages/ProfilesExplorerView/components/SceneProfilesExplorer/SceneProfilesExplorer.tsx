@@ -300,29 +300,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     } catch {}
   };
 
-  useExplorationTypeSelectorLayout = () => {
-    const headerRef = useRef<HTMLDivElement>(null);
-    const headerLeftRef = useRef<HTMLDivElement>(null);
-    const headerRightRef = useRef<HTMLDivElement>(null);
-
-    const [layout, setLayout] = useState<ExplorationTypeSelectorProps['layout']>('radio');
-
-    const onResize = () => {
-      const currentRight = headerRightRef.current?.getBoundingClientRect();
-      setLayout(Math.ceil(currentRight?.left || 970) >= 970 ? 'radio' : 'select');
-    };
-
-    useResizeObserver({ ref: headerRef, onResize });
-    useResizeObserver({ ref: headerRightRef, onResize });
-
-    return {
-      headerRef,
-      headerLeftRef,
-      headerRightRef,
-      layout,
-    };
-  };
-
   useProfilesExplorer = () => {
     const { explorationType, controls, body } = this.useState();
 
@@ -334,25 +311,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       gridControls: Array<SceneObject & { key?: string }>;
     };
 
-    const {
-      headerRef,
-      headerLeftRef,
-      headerRightRef,
-      layout: explorationTypeSelectorLayout,
-    } = this.useExplorationTypeSelectorLayout();
-
     return {
       data: {
         explorationType,
         dataSourceVariable,
         timePickerControl,
         refreshPickerControl,
-        headerRefs: {
-          full: headerRef,
-          left: headerLeftRef,
-          right: headerRightRef,
-        },
-        explorationTypeSelectorLayout,
         sceneVariables,
         gridControls,
         body,
@@ -373,8 +337,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       dataSourceVariable,
       timePickerControl,
       refreshPickerControl,
-      headerRefs,
-      explorationTypeSelectorLayout,
       sceneVariables,
       gridControls,
       body,
@@ -382,23 +344,18 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     return (
       <>
-        <div ref={headerRefs.full} className={styles.header}>
+        <div className={styles.header}>
           <div className={styles.controls}>
-            <div ref={headerRefs.left} className={styles.headerLeft}>
+            <div className={styles.headerLeft}>
               <div className={styles.dataSourceVariable}>
                 <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
                 <dataSourceVariable.Component model={dataSourceVariable} />
               </div>
 
-              <ExplorationTypeSelector
-                layout={explorationTypeSelectorLayout}
-                options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
-                value={explorationType as string}
-                onChange={actions.onChangeExplorationType}
-              />
+              <ExplorationTypeSelector value={explorationType as string} onChange={actions.onChangeExplorationType} />
             </div>
 
-            <div ref={headerRefs.right} className={styles.headerRight}>
+            <div className={styles.headerRight}>
               <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
               <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
               <IconButton

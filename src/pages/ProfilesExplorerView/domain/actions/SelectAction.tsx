@@ -111,11 +111,13 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
   constructor({
     EventClass,
     item,
+    label,
     tooltip,
     skipVariablesInterpolation,
   }: {
     EventClass: EventContructor;
     item: SelectActionState['item'];
+    label?: SelectActionState['label'];
     tooltip?: SelectActionState['tooltip'];
     skipVariablesInterpolation?: SelectActionState['skipVariablesInterpolation'];
   }) {
@@ -124,7 +126,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
       throw new TypeError(`Unknown event class "${EventClass}"!`);
     }
 
-    super({ EventClass, item, ...merge({}, lookup, { tooltip, skipVariablesInterpolation }) });
+    super({ EventClass, item, ...merge({}, lookup, { label, tooltip, skipVariablesInterpolation }) });
   }
 
   public onClick = () => {

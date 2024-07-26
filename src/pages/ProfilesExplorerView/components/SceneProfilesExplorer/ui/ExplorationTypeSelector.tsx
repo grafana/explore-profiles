@@ -1,46 +1,64 @@
 import { css } from '@emotion/css';
-import { SelectableValue } from '@grafana/data';
-import { InlineLabel, RadioButtonGroup, Select, useStyles2 } from '@grafana/ui';
+import { GrafanaTheme2 } from '@grafana/data';
+import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 export type ExplorationTypeSelectorProps = {
-  layout: 'radio' | 'select';
-  options: Array<SelectableValue<string>>;
   value: string;
   onChange: (newValue: string) => void;
 };
 
-export function ExplorationTypeSelector({ layout, options, value, onChange }: ExplorationTypeSelectorProps) {
+export function ExplorationTypeSelector({ value, onChange }: ExplorationTypeSelectorProps) {
   const styles = useStyles2(getStyles);
 
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
-      <InlineLabel width="auto">Exploration type</InlineLabel>
+      <InlineLabel width="auto">Exploration</InlineLabel>
 
-      {layout === 'radio' ? (
-        <RadioButtonGroup
-          className={styles.explorationTypeRadio}
-          options={options}
-          value={value}
-          fullWidth={false}
-          onChange={onChange}
-        />
-      ) : (
-        <Select
-          className={styles.explorationTypeSelect}
-          placeholder="Select a type"
-          value={value}
-          options={options}
-          onChange={(option) => onChange(option.value!)}
-        />
-      )}
+      <div className={styles.breadcrumb}>
+        <Button size="sm" variant={value === 'all' ? 'primary' : 'secondary'} onClick={() => onChange('all')}>
+          All services
+        </Button>
+        <Icon name="arrow-right" />
+        <Button size="sm" variant={value === 'profiles' ? 'primary' : 'secondary'} onClick={() => onChange('profiles')}>
+          Profile types
+        </Button>
+        <Icon name="arrow-right" />
+        <Button size="sm" variant={value === 'labels' ? 'primary' : 'secondary'} onClick={() => onChange('labels')}>
+          Labels
+        </Button>
+        <Icon name="arrow-right" />
+        <Button
+          size="sm"
+          variant={value === 'flame-graph' ? 'primary' : 'secondary'}
+          onClick={() => onChange('flame-graph')}
+        >
+          Flame graph
+        </Button>
+        <Button
+          size="sm"
+          variant={value === 'favorites' ? 'primary' : 'secondary'}
+          onClick={() => onChange('favorites')}
+        >
+          Favorites
+        </Button>
+      </div>
     </div>
   );
 }
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
+  `,
+  breadcrumb: css`
+    height: 32px;
+    display: flex;
+    align-items: center;
+
+    & > button:last-child {
+      margin-left: ${theme.spacing(2)};
+    }
   `,
   explorationTypeRadio: css`
     display: flex;
