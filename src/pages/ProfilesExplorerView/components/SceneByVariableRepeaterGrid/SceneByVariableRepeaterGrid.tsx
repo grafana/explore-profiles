@@ -13,6 +13,7 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
+import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
@@ -22,6 +23,7 @@ import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
+import { SceneLabelValueStat } from '../SceneLabelValueStat';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
@@ -34,7 +36,7 @@ import { GridItemData } from './types/GridItemData';
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
   variableName: string;
   items: GridItemData[];
-  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+  headerActions: (item: GridItemData, items: GridItemData[]) => VizPanelState['headerActions'];
   sortItemsFn: (a: GridItemData, b: GridItemData) => number;
   hideNoData: boolean;
 }
@@ -234,6 +236,14 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   subscribeToHideNoDataChange() {
     const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
 
+    if (!noDataSwitcher.isActive) {
+      this.setState({ hideNoData: false });
+
+      return {
+        unsubscribe: noOp,
+      };
+    }
+
     const onChangeState = (newState: typeof noDataSwitcher.state, prevState?: typeof noDataSwitcher.state) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
         this.setState({ hideNoData: newState.hideNoData === 'on' });
@@ -266,7 +276,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     };
   }
 
-  getCurrentOptions(variable: QueryVariable): VariableValueOption[] {
+  getCurrentOptions(variable: QueryVariable, panelTypeFromSwitcher: PanelType): VariableValueOption[] {
     const { name: variableName, options, value: variableValue } = variable.state;
 
     if (variableName !== 'groupBy') {
@@ -322,6 +332,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
             value: labelValue,
           },
         ],
+        panelType: panelTypeFromSwitcher === PanelType.BARGAUGE ? PanelType.STATS : panelTypeFromSwitcher,
       };
 
       return {
@@ -339,7 +350,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
     const panelTypeFromSwitcher = panelTypeSwitcher.state.panelType;
 
-    const items = this.getCurrentOptions(variable).map((option, i) => {
+    const items = this.getCurrentOptions(variable, panelTypeFromSwitcher).map((option, i) => {
       try {
         const parsedValue = JSON.parse(option.value as string);
         const {
@@ -441,15 +452,27 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   buildVizPanel(item: GridItemData) {
     switch (item.panelType) {
       case PanelType.BARGAUGE:
-        return new SceneLabelValuesBarGauge({ item, headerActions: this.state.headerActions });
+        return new SceneLabelValuesBarGauge({
+          item,
+          headerActions: this.state.headerActions.bind(null, item, this.state.items),
+        });
+
+      case PanelType.STATS:
+        return new SceneLabelValueStat({
+          item,
+          headerActions: this.state.headerActions.bind(null, item, this.state.items),
+        });
 
       case PanelType.TIMESERIES:
       default:
-        return new SceneLabelValuesTimeseries({ item, headerActions: this.state.headerActions });
+        return new SceneLabelValuesTimeseries({
+          item,
+          headerActions: this.state.headerActions.bind(null, item, this.state.items),
+        });
     }
   }
 
-  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
+  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge | SceneLabelValueStat) {
     const sub = (vizPanel.state.body.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
       if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
         return;

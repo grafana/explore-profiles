@@ -38,23 +38,35 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       body: new SceneByVariableRepeaterGrid({
         key: 'service-labels-grid',
         variableName: 'groupBy',
-        headerActions: (item) => {
+        headerActions: (item, items) => {
           const { queryRunnerParams } = item;
 
           if (!queryRunnerParams.groupBy) {
+            if (items.length > 1) {
+              return [
+                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+                new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+                new CompareAction({ item }),
+                new FavAction({ item }),
+              ];
+            }
+
             return [
               new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
               new SelectAction({ EventClass: EventAddLabelToFilters, item }),
-              new CompareAction({ item }),
               new FavAction({ item }),
             ];
           }
 
-          return [
-            new SelectAction({ EventClass: EventSelectLabel, item }),
-            new SelectAction({ EventClass: EventExpandPanel, item }),
-            new FavAction({ item }),
-          ];
+          if (queryRunnerParams.groupBy.values.length > 1) {
+            return [
+              new SelectAction({ EventClass: EventSelectLabel, item }),
+              new SelectAction({ EventClass: EventExpandPanel, item }),
+              new FavAction({ item }),
+            ];
+          }
+
+          return [new FavAction({ item })];
         },
       }),
       drawer: new SceneDrawer(),
