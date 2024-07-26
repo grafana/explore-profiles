@@ -1,14 +1,16 @@
-import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
+import { css, cx } from '@emotion/css';
+import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
+import { noOp } from '@shared/domain/noOp';
 import React from 'react';
 
 export type ExplorationTypeSelectorProps = {
+  options: Array<SelectableValue<string>>;
   value: string;
   onChange: (newValue: string) => void;
 };
 
-export function ExplorationTypeSelector({ value, onChange }: ExplorationTypeSelectorProps) {
+export function ExplorationTypeSelector({ options, value, onChange }: ExplorationTypeSelectorProps) {
   const styles = useStyles2(getStyles);
 
   return (
@@ -16,55 +18,26 @@ export function ExplorationTypeSelector({ value, onChange }: ExplorationTypeSele
       <InlineLabel width="auto">Exploration</InlineLabel>
 
       <div className={styles.breadcrumb}>
-        <Button
-          size="sm"
-          variant={value === 'all' ? 'primary' : 'secondary'}
-          onClick={() => onChange('all')}
-          tooltip="Overview of all services, for any given profile type"
-          tooltipPlacement="top"
-        >
-          All services
-        </Button>
-        <Icon name="arrow-right" />
-        <Button
-          size="sm"
-          variant={value === 'profiles' ? 'primary' : 'secondary'}
-          onClick={() => onChange('profiles')}
-          tooltip="Overview of all the profile types for a single service"
-          tooltipPlacement="top"
-        >
-          Profile types
-        </Button>
-        <Icon name="arrow-right" />
-        <Button
-          size="sm"
-          variant={value === 'labels' ? 'primary' : 'secondary'}
-          onClick={() => onChange('labels')}
-          tooltip="Single service label exploration and filtering"
-          tooltipPlacement="top"
-        >
-          Labels
-        </Button>
-        <Icon name="arrow-right" />
-        <Button
-          size="sm"
-          variant={value === 'flame-graph' ? 'primary' : 'secondary'}
-          onClick={() => onChange('flame-graph')}
-          tooltip="Single service flame graph"
-          tooltipPlacement="top"
-        >
-          Flame graph
-        </Button>
-        <Button
-          size="sm"
-          icon="favorite"
-          variant={value === 'favorites' ? 'primary' : 'secondary'}
-          onClick={() => onChange('favorites')}
-          tooltip="Overview of favorited visualizations"
-          tooltipPlacement="top"
-        >
-          Favorites
-        </Button>
+        {options.map((option, i) => {
+          const isActive = value === option.value;
+          return (
+            <>
+              <Button
+                className={isActive ? cx(styles.button, styles.active) : styles.button}
+                size="sm"
+                icon={option.icon as any}
+                variant={isActive ? 'primary' : 'secondary'}
+                onClick={isActive ? noOp : () => onChange(option.value as string)}
+                tooltip={option.description}
+                tooltipPlacement="top"
+              >
+                {option.label}
+              </Button>
+
+              {i < options.length - 2 && <Icon name="arrow-right" />}
+            </>
+          );
+        })}
       </div>
     </div>
   );
@@ -73,9 +46,11 @@ export function ExplorationTypeSelector({ value, onChange }: ExplorationTypeSele
 const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
+    align-items: center;
   `,
   breadcrumb: css`
     height: 32px;
+    line-height: 32px;
     display: flex;
     align-items: center;
 
@@ -83,11 +58,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
       margin-left: ${theme.spacing(2)};
     }
   `,
-  explorationTypeRadio: css`
-    display: flex;
+  button: css`
+    height: 28px;
+    line-height: 28px;
   `,
-  explorationTypeSelect: css`
-    display: flex;
-    min-width: 180px;
+  active: css`
+    &:hover {
+      cursor: default;
+    }
   `,
 });

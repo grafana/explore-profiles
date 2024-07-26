@@ -86,6 +86,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       value: ExplorationType.FAVORITES,
       label: 'Favorites',
       description: 'Overview of favorited visualizations',
+      icon: 'favorite',
     },
   ];
 
@@ -351,7 +352,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 <dataSourceVariable.Component model={dataSourceVariable} />
               </div>
 
-              <ExplorationTypeSelector value={explorationType as string} onChange={actions.onChangeExplorationType} />
+              <ExplorationTypeSelector
+                options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
+                value={explorationType as string}
+                onChange={actions.onChangeExplorationType}
+              />
             </div>
 
             <div className={styles.headerRight}>
