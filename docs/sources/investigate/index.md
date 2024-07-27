@@ -24,7 +24,7 @@ When you use Explore Profiles, your investigations follow these steps.
 1. Verify your data source in the **Data source** drop-down.
 1. Choose an **Exploration** type. **All services** is selected by default. Learn about the [available views](../choose-a-view/).
 1. Look for spikes or trends in the services to help identify issues. Use the **Profiles** drop-down to change profile types.
-   ![Select a profile type](../images/explore-profiles-flamegraph-2.png 'Select a profile type')
+   ![Select a profile type](../images/explore-profiles-select-profile.png 'Select a profile type')
 1. After you identify the service to explore, you can change views:
    - Select **Profiles** to review the profiles for a service.
    - Select **Labels** to view the labels for a service. The Labels view helps you gain an understanding at an aggregated service level.
