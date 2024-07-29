@@ -4,7 +4,10 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana
 import { Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { PanelType } from '../../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import {
+  PanelType,
+  ScenePanelTypeSwitcher,
+} from '../../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../../components/SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
@@ -25,6 +28,7 @@ import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByV
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../../infrastructure/series/helpers/getProfileMetricLabel';
+import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 
 interface SceneGroupByLabelsState extends SceneObjectState {
   body: SceneByVariableRepeaterGrid;
@@ -79,14 +83,48 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
     quickFilter.setPlaceholder('Search labels (comma-separated regexes are supported)');
 
-    const eventsSub = this.subscribeToEvents();
+    const panelTypeChangeSub = this.subscribeToPanelTypeChange();
+    const filtersSub = this.subscribeToFiltersChange();
+    const panelEventsSub = this.subscribeToPanelEvents();
 
     return () => {
-      eventsSub.unsubscribe();
+      panelTypeChangeSub.unsubscribe();
+      filtersSub.unsubscribe();
+      panelEventsSub.unsubscribe();
     };
   }
 
-  subscribeToEvents() {
+  subscribeToPanelTypeChange() {
+    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+
+    const onChangeState = (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
+      if (newState.panelType !== prevState?.panelType) {
+        this.state.body.renderGridItems();
+      }
+    };
+
+    return panelTypeSwitcher.subscribeToState(onChangeState);
+  }
+
+  subscribeToFiltersChange() {
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+    // the handler will be called each time a filter is added/removed/modified
+    const filtersSub = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
+      if (noDataSwitcher.state.hideNoData === 'on') {
+        // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
+        this.state.body.renderGridItems(true);
+      }
+    });
+
+    return {
+      unsubscribe() {
+        filtersSub.unsubscribe();
+      },
+    };
+  }
+
+  subscribeToPanelEvents() {
     const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
       this.selectLabel(event.payload.item);
     });
