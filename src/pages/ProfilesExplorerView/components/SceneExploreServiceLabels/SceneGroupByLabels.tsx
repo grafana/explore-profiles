@@ -97,31 +97,26 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   subscribeToPanelTypeChange() {
     const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
 
-    const onChangeState = (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
-      if (newState.panelType !== prevState?.panelType) {
-        this.state.body.renderGridItems();
+    return panelTypeSwitcher.subscribeToState(
+      (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
+        if (newState.panelType !== prevState?.panelType) {
+          this.state.body.renderGridItems();
+        }
       }
-    };
-
-    return panelTypeSwitcher.subscribeToState(onChangeState);
+    );
   }
 
   subscribeToFiltersChange() {
+    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
     const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
 
     // the handler will be called each time a filter is added/removed/modified
-    const filtersSub = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
+    return filtersVariable.subscribeToState(() => {
       if (noDataSwitcher.state.hideNoData === 'on') {
         // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
         this.state.body.renderGridItems(true);
       }
     });
-
-    return {
-      unsubscribe() {
-        filtersSub.unsubscribe();
-      },
-    };
   }
 
   subscribeToPanelEvents() {
