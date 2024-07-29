@@ -361,7 +361,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   shouldRenderItems(newItems: SceneByVariableRepeaterGridState['items']) {
     const { items } = this.state;
 
-    if (items.length !== newItems.length) {
+    if (!newItems.length || items.length !== newItems.length) {
       return true;
     }
 
