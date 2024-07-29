@@ -16,7 +16,9 @@ Using this information, you can optimize and streamline your apps.
 
 Your investigation begins with the big picture and then drills down using profile types, labels, and flame graphs to explore your data. To learn more, refer to [Concepts](../concepts/).
 
-![The Explore Profiles app default view](../images/explore-profiles-homescreen.png)
+To learn more about Explore Profiles, read [The new, queryless UI for Grafana Pyroscope: Introducing Explore Profiles](https://grafana.com/blog/2024/07/18/the-new-queryless-ui-for-grafana-pyroscope-introducing-explore-profiles/).
+
+{{< youtube id="_8SbNN5DRmQ" >}}
 
 ## Before you begin
 
