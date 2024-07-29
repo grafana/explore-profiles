@@ -1,3 +1,13 @@
+## [0.1.5](https://github.com/grafana/explore-profiles/compare/v0.1.4...v0.1.5) (2024-07-29)
+
+
+### Features
+
+* **Labels:** Various UI/UX improvements ([#93](https://github.com/grafana/explore-profiles/issues/93)) ([bddad3c](https://github.com/grafana/explore-profiles/commit/bddad3cf21e6e1459eed03167c8c6f6d24e802d4))
+* Revamp exploration type selector ([#94](https://github.com/grafana/explore-profiles/issues/94)) ([60dab67](https://github.com/grafana/explore-profiles/commit/60dab67af27f7ec72a3e9de11885f901937c23ed))
+
+
+
 ## [0.1.4](https://github.com/grafana/explore-profiles/compare/v0.1.3...v0.1.4) (2024-07-25)
 
 
