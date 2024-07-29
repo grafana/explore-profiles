@@ -14,7 +14,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   async getSelectedExplorationType() {
-    const label = await this.getExplorationTypeSelector().locator('input[checked] + label').textContent();
+    const label = await this.getExplorationTypeSelector().locator('button[data-testid="is-active"]').textContent();
     return label?.trim();
   }
 }

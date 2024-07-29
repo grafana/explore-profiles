@@ -1,52 +1,71 @@
-import { css } from '@emotion/css';
-import { SelectableValue } from '@grafana/data';
-import { InlineLabel, RadioButtonGroup, Select, useStyles2 } from '@grafana/ui';
+import { css, cx } from '@emotion/css';
+import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
+import { noOp } from '@shared/domain/noOp';
 import React from 'react';
 
 export type ExplorationTypeSelectorProps = {
-  layout: 'radio' | 'select';
   options: Array<SelectableValue<string>>;
   value: string;
   onChange: (newValue: string) => void;
 };
 
-export function ExplorationTypeSelector({ layout, options, value, onChange }: ExplorationTypeSelectorProps) {
+export function ExplorationTypeSelector({ options, value, onChange }: ExplorationTypeSelectorProps) {
   const styles = useStyles2(getStyles);
 
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
-      <InlineLabel width="auto">Exploration type</InlineLabel>
+      <InlineLabel width="auto">Exploration</InlineLabel>
 
-      {layout === 'radio' ? (
-        <RadioButtonGroup
-          className={styles.explorationTypeRadio}
-          options={options}
-          value={value}
-          fullWidth={false}
-          onChange={onChange}
-        />
-      ) : (
-        <Select
-          className={styles.explorationTypeSelect}
-          placeholder="Select a type"
-          value={value}
-          options={options}
-          onChange={(option) => onChange(option.value!)}
-        />
-      )}
+      <div className={styles.breadcrumb}>
+        {options.map((option, i) => {
+          const isActive = value === option.value;
+          return (
+            <>
+              <Button
+                className={isActive ? cx(styles.button, styles.active) : styles.button}
+                size="sm"
+                icon={option.icon as any}
+                variant={isActive ? 'primary' : 'secondary'}
+                onClick={isActive ? noOp : () => onChange(option.value as string)}
+                tooltip={option.description}
+                tooltipPlacement="top"
+                data-testid={isActive ? 'is-active' : undefined}
+              >
+                {option.label}
+              </Button>
+
+              {i < options.length - 2 && <Icon name="arrow-right" />}
+            </>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
+    align-items: center;
   `,
-  explorationTypeRadio: css`
+  breadcrumb: css`
+    height: 32px;
+    line-height: 32px;
     display: flex;
+    align-items: center;
+
+    & > button:last-child {
+      margin-left: ${theme.spacing(2)};
+    }
   `,
-  explorationTypeSelect: css`
-    display: flex;
-    min-width: 180px;
+  button: css`
+    height: 30px;
+    line-height: 30px;
+  `,
+  active: css`
+    &:hover {
+      cursor: default;
+    }
   `,
 });

@@ -17,11 +17,10 @@ import {
   SplitLayout,
 } from '@grafana/scenes';
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
-import { useResizeObserver } from '@react-aria/utils';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
-import React, { useRef, useState } from 'react';
+import React from 'react';
 
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
@@ -45,7 +44,7 @@ import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/component
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
-import { ExplorationTypeSelector, ExplorationTypeSelectorProps } from './ui/ExplorationTypeSelector';
+import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   explorationType?: ExplorationType;
@@ -87,6 +86,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       value: ExplorationType.FAVORITES,
       label: 'Favorites',
       description: 'Overview of favorited visualizations',
+      icon: 'favorite',
     },
   ];
 
@@ -300,29 +300,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     } catch {}
   };
 
-  useExplorationTypeSelectorLayout = () => {
-    const headerRef = useRef<HTMLDivElement>(null);
-    const headerLeftRef = useRef<HTMLDivElement>(null);
-    const headerRightRef = useRef<HTMLDivElement>(null);
-
-    const [layout, setLayout] = useState<ExplorationTypeSelectorProps['layout']>('radio');
-
-    const onResize = () => {
-      const currentRight = headerRightRef.current?.getBoundingClientRect();
-      setLayout(Math.ceil(currentRight?.left || 970) >= 970 ? 'radio' : 'select');
-    };
-
-    useResizeObserver({ ref: headerRef, onResize });
-    useResizeObserver({ ref: headerRightRef, onResize });
-
-    return {
-      headerRef,
-      headerLeftRef,
-      headerRightRef,
-      layout,
-    };
-  };
-
   useProfilesExplorer = () => {
     const { explorationType, controls, body } = this.useState();
 
@@ -334,25 +311,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       gridControls: Array<SceneObject & { key?: string }>;
     };
 
-    const {
-      headerRef,
-      headerLeftRef,
-      headerRightRef,
-      layout: explorationTypeSelectorLayout,
-    } = this.useExplorationTypeSelectorLayout();
-
     return {
       data: {
         explorationType,
         dataSourceVariable,
         timePickerControl,
         refreshPickerControl,
-        headerRefs: {
-          full: headerRef,
-          left: headerLeftRef,
-          right: headerRightRef,
-        },
-        explorationTypeSelectorLayout,
         sceneVariables,
         gridControls,
         body,
@@ -373,8 +337,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       dataSourceVariable,
       timePickerControl,
       refreshPickerControl,
-      headerRefs,
-      explorationTypeSelectorLayout,
       sceneVariables,
       gridControls,
       body,
@@ -382,23 +344,22 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     return (
       <>
-        <div ref={headerRefs.full} className={styles.header}>
+        <div className={styles.header}>
           <div className={styles.controls}>
-            <div ref={headerRefs.left} className={styles.headerLeft}>
+            <div className={styles.headerLeft}>
               <div className={styles.dataSourceVariable}>
                 <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
                 <dataSourceVariable.Component model={dataSourceVariable} />
               </div>
 
               <ExplorationTypeSelector
-                layout={explorationTypeSelectorLayout}
                 options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
                 value={explorationType as string}
                 onChange={actions.onChangeExplorationType}
               />
             </div>
 
-            <div ref={headerRefs.right} className={styles.headerRight}>
+            <div className={styles.headerRight}>
               <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
               <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
               <IconButton
@@ -447,23 +408,12 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     gap: ${theme.spacing(1)};
   `,
-  dataSourceVariable: css`
-    display: flex;
-    min-width: 160px;
-  `,
-  explorationTypeContainer: css`
-    display: flex;
-  `,
-  explorationTypeRadio: css`
-    display: flex;
-  `,
-  explorationTypeSelect: css`
-    display: flex;
-    min-width: 180px;
-  `,
   headerRight: css`
     display: flex;
     gap: ${theme.spacing(1)};
+  `,
+  dataSourceVariable: css`
+    display: flex;
   `,
   variable: css`
     display: flex;
