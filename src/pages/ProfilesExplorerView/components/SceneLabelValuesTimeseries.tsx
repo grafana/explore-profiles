@@ -37,7 +37,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     displayAllValues?: boolean;
   }) {
     super({
-      key: 'bar-timeseries-label-values',
+      key: 'timeseries-label-values',
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
