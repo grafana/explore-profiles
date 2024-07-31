@@ -2,7 +2,7 @@ import { DataFrame } from '@grafana/data';
 import { merge } from 'lodash';
 import { map, Observable } from 'rxjs';
 
-import { LabelsDataSource } from '../../../data/labels/LabelsDataSource';
+import { LabelsDataSource } from '../../../infrastructure/labels/LabelsDataSource';
 
 export const addRefId = () => (source: Observable<DataFrame[]>) =>
   source.pipe(map((data: DataFrame[]) => data.map((d, i) => merge(d, { refId: `${d.refId}-${i}` }))));
@@ -35,6 +35,7 @@ export const addStats = () => (source: Observable<DataFrame[]>) =>
     })
   );
 
+// depends on the "addStats" transformation to work properly
 export const sortSeries = () => (source: Observable<DataFrame[]>) =>
   source.pipe(
     map((data: DataFrame[]) =>

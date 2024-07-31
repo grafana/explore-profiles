@@ -1,7 +1,8 @@
 import { css, cx } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
-import React, { memo, useCallback, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useRef } from 'react';
+import { StateListener } from 'xstate/lib/interpreter';
 
 import { Actor } from './domain/stateMachine';
 import {
@@ -10,6 +11,7 @@ import {
   Filter,
   FilterPartKind,
   QueryBuilderContext,
+  QueryBuilderEvent,
   Suggestions,
 } from './domain/types';
 import { useStateMachine } from './domain/useStateMachine';
@@ -44,6 +46,7 @@ export type QueryBuilderProps = {
   to: number;
   onChangeQuery: (newQuery: string, filters: CompleteFilters) => void;
   className?: string;
+  autoExecute?: boolean;
 };
 
 function QueryBuilderComponent(props: QueryBuilderProps) {
@@ -66,6 +69,24 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
   const onClickExecute = useCallback(() => {
     actor.send({ type: 'EXECUTE_QUERY' });
   }, [actor]);
+
+  useEffect(() => {
+    if (!props.autoExecute) {
+      return;
+    }
+
+    const onTransition: StateListener<QueryBuilderContext, QueryBuilderEvent> = ({ context }, event) => {
+      if (['SELECT_SUGGESTION', 'REMOVE_FILTER'].includes(event.type) && !context.isQueryUpToDate) {
+        actor.send({ type: 'EXECUTE_QUERY' });
+      }
+    };
+
+    actor.onTransition(onTransition);
+
+    return () => {
+      actor.off(onTransition);
+    };
+  }, [actor, props.autoExecute]);
 
   return (
     <div id={props.id} className={cx(styles.queryBuilder, props.className)}>
@@ -102,14 +123,16 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
           />
         )}
 
-        <Button
-          onClick={onClickExecute}
-          tooltip={!isQueryUpToDate ? 'Execute new query' : 'Nothing to execute, all filters applied'}
-          className={styles.executeButton}
-          disabled={isQueryUpToDate}
-        >
-          Execute
-        </Button>
+        {!props.autoExecute && (
+          <Button
+            onClick={onClickExecute}
+            tooltip={!isQueryUpToDate ? 'Execute new query' : 'Nothing to execute, all filters applied'}
+            className={styles.executeButton}
+            disabled={isQueryUpToDate}
+          >
+            Execute
+          </Button>
+        )}
       </div>
     </div>
   );

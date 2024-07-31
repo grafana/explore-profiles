@@ -11,16 +11,16 @@ import {
 import { GraphGradientMode } from '@grafana/schema';
 import React from 'react';
 
-import { LabelsDataSource } from '../data/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
+import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
+import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
   addStats,
   limitNumberOfSeries,
   sortSeries,
 } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   body: VizPanel;
@@ -33,33 +33,29 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     displayAllValues,
   }: {
     item: GridItemData;
-    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+    headerActions: () => VizPanelState['headerActions'];
     displayAllValues?: boolean;
   }) {
-    const data = displayAllValues
-      ? buildTimeSeriesQueryRunner(item.queryRunnerParams)
-      : new SceneDataTransformer({
-          $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-          transformations: [addRefId, addStats, sortSeries, limitNumberOfSeries],
-        });
-
     super({
-      key: 'bar-timeseries-label-values',
+      key: 'timeseries-label-values',
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
-        .setData(data)
-        .setHeaderActions(headerActions(item))
-        .setMin(0)
-        .setCustomFieldConfig('fillOpacity', 0)
+        .setData(
+          new SceneDataTransformer({
+            $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
+            transformations: displayAllValues
+              ? [addRefId, addStats, sortSeries]
+              : [addRefId, addStats, sortSeries, limitNumberOfSeries],
+          })
+        )
+        .setHeaderActions(headerActions())
         .build(),
     });
 
-    if (!displayAllValues) {
-      this.addActivationHandler(this.onActivate.bind(this, item));
-    }
+    this.addActivationHandler(this.onActivate.bind(this, item, Boolean(displayAllValues)));
   }
 
-  onActivate(item: GridItemData) {
+  onActivate(item: GridItemData, displayAllValues: boolean) {
     const { body } = this.state;
 
     const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
@@ -67,7 +63,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         return;
       }
 
-      body.setState(this.getConfig(item, state.data.series));
+      const config = displayAllValues
+        ? this.getAllValuesConfig(item, state.data.series)
+        : this.getConfig(item, state.data.series);
+
+      body.setState(config);
     });
 
     return () => {
@@ -86,13 +86,13 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       : undefined;
 
     return {
-      title: `${item.label} (${series.length})`,
+      title: series.length > 1 ? `${item.label} (${series.length})` : item.label,
       description,
       fieldConfig: {
         defaults: {
           min: 0,
           custom: {
-            fillOpacity: series.length === LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
+            fillOpacity: series.length >= LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
             gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
           },
         },
@@ -100,6 +100,21 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       },
     };
   }
+
+  getAllValuesConfig(item: GridItemData, series: DataFrame[]) {
+    return {
+      fieldConfig: {
+        defaults: {
+          min: 0,
+          custom: {
+            fillOpacity: 0,
+          },
+        },
+        overrides: this.getOverrides(item, series),
+      },
+    };
+  }
+
   getOverrides(item: GridItemData, series: DataFrame[]) {
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 

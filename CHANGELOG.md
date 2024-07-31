@@ -1,3 +1,32 @@
+## [0.1.5](https://github.com/grafana/explore-profiles/compare/v0.1.4...v0.1.5) (2024-07-29)
+
+
+### Features
+
+* **Labels:** Various UI/UX improvements ([#93](https://github.com/grafana/explore-profiles/issues/93)) ([bddad3c](https://github.com/grafana/explore-profiles/commit/bddad3cf21e6e1459eed03167c8c6f6d24e802d4))
+* Revamp exploration type selector ([#94](https://github.com/grafana/explore-profiles/issues/94)) ([60dab67](https://github.com/grafana/explore-profiles/commit/60dab67af27f7ec72a3e9de11885f901937c23ed))
+
+
+
+## [0.1.4](https://github.com/grafana/explore-profiles/compare/v0.1.3...v0.1.4) (2024-07-25)
+
+
+### Bug Fixes
+
+* **Onboarding:** Handle gracefully when there's no data source configured ([#76](https://github.com/grafana/explore-profiles/issues/76)) ([4c18444](https://github.com/grafana/explore-profiles/commit/4c1844498d8b3bde4bb5b30ac889419b7462fb8b))
+* **PanelTitle:** Remove series count when only 1 serie ([#78](https://github.com/grafana/explore-profiles/issues/78)) ([8422e6d](https://github.com/grafana/explore-profiles/commit/8422e6d2b2d8e21d0178ed20599ce13e16194da5))
+* **SceneByVariableRepeaterGrid:** Prevent extra renders ([#86](https://github.com/grafana/explore-profiles/issues/86)) ([bf14755](https://github.com/grafana/explore-profiles/commit/bf1475580f68beec434287283d079d0fed250cad))
+
+
+### Features
+
+* Avoid no data panels ([#80](https://github.com/grafana/explore-profiles/issues/80)) ([72120b7](https://github.com/grafana/explore-profiles/commit/72120b7c4020017ed0479131ef0ddb7b5620d517))
+* **LabelsExploration:** Introduce bar gauge visualisations ([#72](https://github.com/grafana/explore-profiles/issues/72)) ([7b1b19a](https://github.com/grafana/explore-profiles/commit/7b1b19a81e0ca6825bae9f2b06795199f4c9d209))
+* **SceneLabelValuesTimeseries:** Colors and legends are preserved on expanded timeseries ([#85](https://github.com/grafana/explore-profiles/issues/85)) ([6980299](https://github.com/grafana/explore-profiles/commit/69802997b1a5fc72938bb0eaaf27e99076980f7a))
+* Various enhancements after first UX interview ([#81](https://github.com/grafana/explore-profiles/issues/81)) ([2cdfcbe](https://github.com/grafana/explore-profiles/commit/2cdfcbecae5b1bd74310a3cbd8a115bc1e166525))
+
+
+
 ## [0.1.3](https://github.com/grafana/explore-profiles/compare/v0.1.2...v0.1.3) (2024-07-19)
 
 

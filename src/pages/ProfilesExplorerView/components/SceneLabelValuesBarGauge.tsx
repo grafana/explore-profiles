@@ -11,23 +11,17 @@ import {
 import { BarGaugeDisplayMode, BarGaugeNamePlacement, BarGaugeSizing, BarGaugeValueMode } from '@grafana/schema';
 import React from 'react';
 
-import { buildTimeSeriesQueryRunner } from '../data/timeseries/buildTimeSeriesQueryRunner';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { GridItemData } from './SceneByVariableRepeaterGrid/GridItemData';
+import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats, sortSeries } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesBarGaugeState extends SceneObjectState {
   body: VizPanel;
 }
 
 export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBarGaugeState> {
-  constructor({
-    item,
-    headerActions,
-  }: {
-    item: GridItemData;
-    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-  }) {
+  constructor({ item, headerActions }: { item: GridItemData; headerActions: () => VizPanelState['headerActions'] }) {
     super({
       key: 'bar-gauge-label-values',
       body: PanelBuilders.bargauge()
@@ -38,7 +32,7 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
             transformations: [addRefId, addStats, sortSeries],
           })
         )
-        .setHeaderActions(headerActions(item))
+        .setHeaderActions(headerActions())
         .build(),
     });
 
@@ -77,7 +71,7 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
     const description = groupByLabel ? 'This panel displays aggregate values over the current time period' : undefined;
 
     return {
-      title: `${item.label} (${series.length})`,
+      title: series.length > 1 ? `${item.label} (${series.length})` : item.label,
       description,
       options: {
         reduceOptions: { values: false, calcs: ['sum'] },
