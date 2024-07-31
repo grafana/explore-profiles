@@ -1,13 +1,15 @@
-FROM docker.io/grafana/pyroscope:latest
-
-USER root
-
-COPY samples/static/pyroscope/* /etc/pyroscope
+FROM alpine:latest AS blocks
 
 COPY samples/static/grafana-pyroscope-sample-blocks-public.zip /
-RUN unzip grafana-pyroscope-sample-blocks-public.zip 
-RUN mv grafana-pyroscope-sample-blocks-public data-shared
-RUN rm grafana-pyroscope-sample-blocks-public.zip
+
+RUN unzip grafana-pyroscope-sample-blocks-public.zip \
+ && mv grafana-pyroscope-sample-blocks-public data-shared \
+ && rm grafana-pyroscope-sample-blocks-public.zip
+
+FROM docker.io/grafana/pyroscope:latest
+
+COPY samples/static/pyroscope/config.yaml /etc/pyroscope/config.yaml
+COPY --from=blocks --chown=pyroscope:pyroscope data-shared /data-shared
 
 ENTRYPOINT ["/usr/bin/pyroscope"]
 CMD ["-config.file=/etc/pyroscope/config.yaml"]
