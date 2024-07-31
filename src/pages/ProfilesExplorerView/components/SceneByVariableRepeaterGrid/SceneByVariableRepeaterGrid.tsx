@@ -18,7 +18,6 @@ import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
-import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
@@ -140,14 +139,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const layoutChangeSub = this.subscribeToLayoutChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
 
-    // TODO: refactor to pull out everything specific to groupBy out of this Scene object
-    const panelTypeChangeSub = this.state.variableName === 'groupBy' ? this.subscribeToPanelTypeChange() : undefined;
-    const filtersSub = this.state.variableName === 'groupBy' ? this.subscribeToFiltersChange() : undefined;
-
     return () => {
-      filtersSub?.unsubscribe();
-      panelTypeChangeSub?.unsubscribe();
-
       hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
@@ -221,18 +213,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return layoutSwitcher.subscribeToState(onChangeState);
   }
 
-  subscribeToPanelTypeChange() {
-    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
-
-    const onChangeState = (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
-      if (newState.panelType !== prevState?.panelType) {
-        this.renderGridItems();
-      }
-    };
-
-    return panelTypeSwitcher.subscribeToState(onChangeState);
-  }
-
   subscribeToHideNoDataChange() {
     const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
 
@@ -258,24 +238,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return noDataSwitcher.subscribeToState(onChangeState);
   }
 
-  subscribeToFiltersChange() {
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
-
-    // the handler will be called each time a filter is added/removed/modified
-    const filtersSub = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).subscribeToState(() => {
-      if (noDataSwitcher.state.hideNoData === 'on') {
-        // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
-        this.renderGridItems(true);
-      }
-    });
-
-    return {
-      unsubscribe() {
-        filtersSub.unsubscribe();
-      },
-    };
-  }
-
   getCurrentOptions(variable: QueryVariable, panelTypeFromSwitcher: PanelType): VariableValueOption[] {
     const { name: variableName, options, value: variableValue } = variable.state;
 
@@ -291,7 +253,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
         if (parsedValue.groupBy.values.length > 1) {
           return {
-            // remove the count in the parentheses, because it's not updated dynamically when applying filters
+            // remove the count in the parentheses, because it'll be updated dynamically when applying overrides
             label: parsedValue.value,
             value,
           };
@@ -299,7 +261,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
         // we need to add a filter for the "Flame graph", "Add to filters" and "Compare" actions to work
         return {
-          // remove the count in the parentheses, because it's not updated dynamically when applying filters
+          // remove the count in the parentheses, because it'll be updated dynamically when applying overrides
           label: parsedValue.value,
           value: JSON.stringify({
             ...parsedValue,

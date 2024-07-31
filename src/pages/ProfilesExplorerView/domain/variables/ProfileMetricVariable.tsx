@@ -114,7 +114,7 @@ export class ProfileMetricVariable extends QueryVariable {
     }, [options]);
 
     if (error) {
-      console.error('Error while loading "serviceName" variable values!');
+      console.error('Error while loading "profileMetricId" variable values!');
       console.error(error);
 
       return (
