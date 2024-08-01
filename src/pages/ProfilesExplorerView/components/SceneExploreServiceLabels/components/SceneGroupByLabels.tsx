@@ -69,11 +69,15 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         if (newState.value === 'all') {
           quickFilter.setPlaceholder('Search labels (comma-separated regexes are supported)');
 
-          this.buildSceneByVariableRepeaterGrid();
+          this.setState({
+            body: this.buildSceneByVariableRepeaterGrid(),
+          });
         } else {
           quickFilter.setPlaceholder('Search label values (comma-separated regexes are supported)');
 
-          this.buildSceneLabelValuesGrid();
+          this.setState({
+            body: this.buildSceneLabelValuesGrid(),
+          });
         }
       }
     };
@@ -84,103 +88,99 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   buildSceneByVariableRepeaterGrid() {
-    this.setState({
-      body: new SceneByVariableRepeaterGrid({
-        key: 'service-labels-grid',
-        variableName: 'groupBy',
-        mapOptionToItem: (option, index, { serviceName, profileMetricId, panelType }) => {
-          if (option.value === 'all') {
-            return null;
-          }
+    return new SceneByVariableRepeaterGrid({
+      key: 'service-labels-grid',
+      variableName: 'groupBy',
+      mapOptionToItem: (option, index, { serviceName, profileMetricId, panelType }) => {
+        if (option.value === 'all') {
+          return null;
+        }
 
-          // see LabelsDataSource.ts
-          const { value, groupBy } = JSON.parse(option.value as string);
+        // see LabelsDataSource.ts
+        const { value, groupBy } = JSON.parse(option.value as string);
 
-          return {
-            index,
-            value,
-            // remove the count in parenthesis that exists in option.label
-            // it'll be set by SceneLabelValuesTimeseries or SceneLabelValuesBarGauge
-            label: value,
-            queryRunnerParams: {
-              serviceName,
-              profileMetricId,
-              groupBy,
-              filters: [],
-            },
-            panelType: panelType as PanelType,
-          };
-        },
-        headerActions: (item, items) => {
-          const { queryRunnerParams } = item;
+        return {
+          index,
+          value,
+          // remove the count in parenthesis that exists in option.label
+          // it'll be set by SceneLabelValuesTimeseries or SceneLabelValuesBarGauge
+          label: value,
+          queryRunnerParams: {
+            serviceName,
+            profileMetricId,
+            groupBy,
+            filters: [],
+          },
+          panelType: panelType as PanelType,
+        };
+      },
+      headerActions: (item, items) => {
+        const { queryRunnerParams } = item;
 
-          if (!queryRunnerParams.groupBy) {
-            if (items.length > 1) {
-              return [
-                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-                new SelectAction({ EventClass: EventAddLabelToFilters, item }),
-                new CompareAction({ item }),
-                new FavAction({ item }),
-              ];
-            }
-
+        if (!queryRunnerParams.groupBy) {
+          if (items.length > 1) {
             return [
               new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
               new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+              new CompareAction({ item }),
               new FavAction({ item }),
             ];
           }
 
-          // FIXME: should be based on how many series are displayed -> re-render header actions after each data load
-          if (queryRunnerParams.groupBy.values.length > 1) {
-            return [
-              new SelectAction({ EventClass: EventSelectLabel, item }),
-              new SelectAction({ EventClass: EventExpandPanel, item }),
-              new FavAction({ item }),
-            ];
-          }
+          return [
+            new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+            new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+            new FavAction({ item }),
+          ];
+        }
 
-          return [new FavAction({ item })];
-        },
-      }),
+        // FIXME: should be based on how many series are displayed -> re-render header actions after each data load
+        if (queryRunnerParams.groupBy.values.length > 1) {
+          return [
+            new SelectAction({ EventClass: EventSelectLabel, item }),
+            new SelectAction({ EventClass: EventExpandPanel, item }),
+            new FavAction({ item }),
+          ];
+        }
+
+        return [new FavAction({ item })];
+      },
     });
   }
 
   buildSceneLabelValuesGrid() {
-    this.setState({
-      body: new SceneLabelValuesGrid({
-        key: 'service-label-values-grid',
-        headerActions: (item, items) => {
-          const { queryRunnerParams } = item;
+    return new SceneLabelValuesGrid({
+      key: 'service-label-values-grid',
+      headerActions: (item, items) => {
+        const { queryRunnerParams } = item;
 
-          if (!queryRunnerParams.groupBy) {
-            if (items.length > 1) {
-              return [
-                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-                new SelectAction({ EventClass: EventAddLabelToFilters, item }),
-                new CompareAction({ item }),
-                new FavAction({ item }),
-              ];
-            }
-
+        if (!queryRunnerParams.groupBy) {
+          if (items.length > 1) {
             return [
               new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
               new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+              new CompareAction({ item }),
               new FavAction({ item }),
             ];
           }
 
-          if (queryRunnerParams.groupBy.values.length > 1) {
-            return [
-              new SelectAction({ EventClass: EventSelectLabel, item }),
-              new SelectAction({ EventClass: EventExpandPanel, item }),
-              new FavAction({ item }),
-            ];
-          }
+          return [
+            new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+            new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+            new FavAction({ item }),
+          ];
+        }
 
-          return [new FavAction({ item })];
-        },
-      }),
+        if (queryRunnerParams.groupBy.values.length > 1) {
+          return [
+            new SelectAction({ EventClass: EventSelectLabel, item }),
+            new SelectAction({ EventClass: EventExpandPanel, item }),
+            new FavAction({ item }),
+          ];
+        }
+
+        return [new FavAction({ item })];
+      },
     });
   }
 
