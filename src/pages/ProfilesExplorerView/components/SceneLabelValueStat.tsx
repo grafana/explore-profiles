@@ -18,14 +18,20 @@ interface SceneLabelValueStatState extends SceneObjectState {
 }
 
 export class SceneLabelValueStat extends SceneObjectBase<SceneLabelValueStatState> {
-  constructor({ item, headerActions }: { item: GridItemData; headerActions: () => VizPanelState['headerActions'] }) {
+  constructor({
+    item,
+    headerActions,
+  }: {
+    item: GridItemData;
+    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+  }) {
     super({
       key: 'stat-label-value',
       body: PanelBuilders.stat()
         .setTitle(item.label)
         .setDescription('This panel displays aggregate values over the current time period')
         .setData(buildTimeSeriesQueryRunner(item.queryRunnerParams))
-        .setHeaderActions(headerActions())
+        .setHeaderActions(headerActions(item))
         .setOption('reduceOptions', { values: false, calcs: ['sum'] })
         .setColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index) })
         .setOption('graphMode', BigValueGraphMode.None)

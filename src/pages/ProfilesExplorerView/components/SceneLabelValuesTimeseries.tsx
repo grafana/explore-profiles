@@ -33,7 +33,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     displayAllValues,
   }: {
     item: GridItemData;
-    headerActions: () => VizPanelState['headerActions'];
+    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
     displayAllValues?: boolean;
   }) {
     super({
@@ -48,7 +48,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               : [addRefId, addStats, sortSeries, limitNumberOfSeries],
           })
         )
-        .setHeaderActions(headerActions())
+        .setHeaderActions(headerActions(item))
         .build(),
     });
 
@@ -76,17 +76,23 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   getConfig(item: GridItemData, series: DataFrame[]) {
-    const totalSeriesCount =
-      series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
+    let { title } = this.state.body.state;
+    let description;
 
-    const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+    if (item.queryRunnerParams.groupBy?.label) {
+      title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
 
-    const description = hasTooManySeries
-      ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
-      : undefined;
+      const totalSeriesCount =
+        series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
+      const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+
+      description = hasTooManySeries
+        ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
+        : undefined;
+    }
 
     return {
-      title: series.length > 1 ? `${item.label} (${series.length})` : item.label,
+      title,
       description,
       fieldConfig: {
         defaults: {
@@ -143,6 +149,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         ],
       };
     });
+  }
+
+  updateTitle(newTitle: string) {
+    this.state.body.setState({ title: newTitle });
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
