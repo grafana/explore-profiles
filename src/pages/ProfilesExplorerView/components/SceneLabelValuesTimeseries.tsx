@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -118,19 +118,31 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   getOverrides(item: GridItemData, series: DataFrame[]) {
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    return series.map((serie, i) => ({
-      matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
-      properties: [
-        {
-          id: 'displayName',
-          value: groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name,
-        },
-        {
-          id: 'color',
-          value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
-        },
-      ],
-    }));
+    return series.map((serie, i) => {
+      let displayName = groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name;
+
+      if (series.length === 1) {
+        const allValuesSum = serie.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
+        const { unit } = serie.fields[1].config;
+        const formattedValue = getValueFormat(unit)(allValuesSum);
+
+        displayName = `${displayName} · total = ${formattedValue.text}${formattedValue.suffix}`;
+      }
+
+      return {
+        matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
+        properties: [
+          {
+            id: 'displayName',
+            value: displayName,
+          },
+          {
+            id: 'color',
+            value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
+          },
+        ],
+      };
+    });
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
