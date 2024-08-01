@@ -1,37 +1,35 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import {
-  PanelType,
-  ScenePanelTypeSwitcher,
-} from '../../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
-import { SceneQuickFilter } from '../../components/SceneByVariableRepeaterGrid/components/SceneQuickFilter';
-import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
-import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneDrawer } from '../../components/SceneDrawer';
-import { SceneLabelValuesBarGauge } from '../../components/SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../../components/SceneLabelValuesTimeseries';
-import { SceneProfilesExplorer } from '../../components/SceneProfilesExplorer/SceneProfilesExplorer';
-import { CompareAction } from '../../domain/actions/CompareAction';
-import { FavAction } from '../../domain/actions/FavAction';
-import { SelectAction } from '../../domain/actions/SelectAction';
-import { EventAddLabelToFilters } from '../../domain/events/EventAddLabelToFilters';
-import { EventExpandPanel } from '../../domain/events/EventExpandPanel';
-import { EventSelectLabel } from '../../domain/events/EventSelectLabel';
-import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
-import { addFilter } from '../../domain/variables/FiltersVariable/filters-ops';
-import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
-import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
-import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { getProfileMetricLabel } from '../../infrastructure/series/helpers/getProfileMetricLabel';
-import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
+import { CompareAction } from '../../../domain/actions/CompareAction';
+import { FavAction } from '../../../domain/actions/FavAction';
+import { SelectAction } from '../../../domain/actions/SelectAction';
+import { EventAddLabelToFilters } from '../../../domain/events/EventAddLabelToFilters';
+import { EventExpandPanel } from '../../../domain/events/EventExpandPanel';
+import { EventSelectLabel } from '../../../domain/events/EventSelectLabel';
+import { EventViewServiceFlameGraph } from '../../../domain/events/EventViewServiceFlameGraph';
+import { addFilter } from '../../../domain/variables/FiltersVariable/filters-ops';
+import { FiltersVariable } from '../../../domain/variables/FiltersVariable/FiltersVariable';
+import { GroupByVariable } from '../../../domain/variables/GroupByVariable/GroupByVariable';
+import { findSceneObjectByClass } from '../../../helpers/findSceneObjectByClass';
+import { getSceneVariableValue } from '../../../helpers/getSceneVariableValue';
+import { getProfileMetricLabel } from '../../../infrastructure/series/helpers/getProfileMetricLabel';
+import { SceneNoDataSwitcher } from '../../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
+import { PanelType, ScenePanelTypeSwitcher } from '../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import { SceneQuickFilter } from '../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
+import { SceneByVariableRepeaterGrid } from '../../SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
+import { GridItemData } from '../../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneDrawer } from '../../SceneDrawer';
+import { SceneLabelValuesBarGauge } from '../../SceneLabelValuesBarGauge';
+import { SceneLabelValuesTimeseries } from '../../SceneLabelValuesTimeseries';
+import { SceneProfilesExplorer } from '../../SceneProfilesExplorer/SceneProfilesExplorer';
+import { SceneLabelValuesGrid } from './SceneLabelValuesGrid';
 
 interface SceneGroupByLabelsState extends SceneObjectState {
-  body: SceneByVariableRepeaterGrid;
+  body?: SceneObject;
   drawer: SceneDrawer;
 }
 
@@ -39,9 +37,119 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   constructor() {
     super({
       key: 'group-by-labels',
+      body: undefined,
+      drawer: new SceneDrawer(),
+    });
+
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  onActivate() {
+    const groupBySub = this.subscribeToGroupByChange();
+    const panelTypeChangeSub = this.subscribeToPanelTypeChange();
+    const filtersSub = this.subscribeToFiltersChange();
+    const panelEventsSub = this.subscribeToPanelEvents();
+
+    return () => {
+      panelTypeChangeSub.unsubscribe();
+      filtersSub.unsubscribe();
+      panelEventsSub.unsubscribe();
+      groupBySub.unsubscribe();
+    };
+  }
+
+  subscribeToGroupByChange() {
+    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+
+    const onChangeState = (newState: typeof groupByVariable.state, prevState?: typeof groupByVariable.state) => {
+      if (newState.value !== prevState?.value) {
+        const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+        quickFilter.clear();
+
+        if (newState.value === 'all') {
+          quickFilter.setPlaceholder('Search labels (comma-separated regexes are supported)');
+
+          this.buildSceneByVariableRepeaterGrid();
+        } else {
+          quickFilter.setPlaceholder('Search label values (comma-separated regexes are supported)');
+
+          this.buildSceneLabelValuesGrid();
+        }
+      }
+    };
+
+    onChangeState(groupByVariable.state);
+
+    return groupByVariable.subscribeToState(onChangeState);
+  }
+
+  buildSceneByVariableRepeaterGrid() {
+    this.setState({
       body: new SceneByVariableRepeaterGrid({
         key: 'service-labels-grid',
         variableName: 'groupBy',
+        mapOptionToItem: (option, index, { serviceName, profileMetricId, panelType }) => {
+          if (option.value === 'all') {
+            return null;
+          }
+
+          // see LabelsDataSource.ts
+          const { value, groupBy } = JSON.parse(option.value as string);
+
+          return {
+            index,
+            value,
+            // remove the count in parenthesis that exists in option.label
+            // it'll be set by SceneLabelValuesTimeseries or SceneLabelValuesBarGauge
+            label: value,
+            queryRunnerParams: {
+              serviceName,
+              profileMetricId,
+              groupBy,
+              filters: [],
+            },
+            panelType: panelType as PanelType,
+          };
+        },
+        headerActions: (item, items) => {
+          const { queryRunnerParams } = item;
+
+          if (!queryRunnerParams.groupBy) {
+            if (items.length > 1) {
+              return [
+                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+                new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+                new CompareAction({ item }),
+                new FavAction({ item }),
+              ];
+            }
+
+            return [
+              new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+              new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+              new FavAction({ item }),
+            ];
+          }
+
+          // FIXME: should be based on how many series are displayed -> re-render header actions after each data load
+          if (queryRunnerParams.groupBy.values.length > 1) {
+            return [
+              new SelectAction({ EventClass: EventSelectLabel, item }),
+              new SelectAction({ EventClass: EventExpandPanel, item }),
+              new FavAction({ item }),
+            ];
+          }
+
+          return [new FavAction({ item })];
+        },
+      }),
+    });
+  }
+
+  buildSceneLabelValuesGrid() {
+    this.setState({
+      body: new SceneLabelValuesGrid({
+        key: 'service-label-values-grid',
         headerActions: (item, items) => {
           const { queryRunnerParams } = item;
 
@@ -73,25 +181,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           return [new FavAction({ item })];
         },
       }),
-      drawer: new SceneDrawer(),
     });
-
-    this.addActivationHandler(this.onActivate.bind(this));
-  }
-
-  onActivate() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-    quickFilter.setPlaceholder('Search labels (comma-separated regexes are supported)');
-
-    const panelTypeChangeSub = this.subscribeToPanelTypeChange();
-    const filtersSub = this.subscribeToFiltersChange();
-    const panelEventsSub = this.subscribeToPanelEvents();
-
-    return () => {
-      panelTypeChangeSub.unsubscribe();
-      filtersSub.unsubscribe();
-      panelEventsSub.unsubscribe();
-    };
   }
 
   subscribeToPanelTypeChange() {
@@ -100,7 +190,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     return panelTypeSwitcher.subscribeToState(
       (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
         if (newState.panelType !== prevState?.panelType) {
-          this.state.body.renderGridItems();
+          (this.state.body as SceneByVariableRepeaterGrid | SceneLabelValuesGrid)?.renderGridItems();
         }
       }
     );
@@ -114,7 +204,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     return filtersVariable.subscribeToState(() => {
       if (noDataSwitcher.state.hideNoData === 'on') {
         // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
-        this.state.body.renderGridItems(true);
+        (this.state.body as SceneByVariableRepeaterGrid | SceneLabelValuesGrid)?.renderGridItems(true);
       }
     });
   }
@@ -145,10 +235,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const labelValue = queryRunnerParams!.groupBy!.label;
     const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
 
-    // we clear the filter before changing the groupBy value because changing it will _directly_ cause the grid items to be updated
-    // by doing so, we prevent a flash of "No results"
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).clear();
-
     groupByVariable.changeValueTo(labelValue);
 
     // the event may be published from an expanded panel in the drawer
@@ -176,8 +262,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     const goupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
     goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE);
-
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).clear();
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
@@ -225,7 +309,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           ) : null}
         </div>
 
-        {<body.Component model={body} />}
+        {body && <body.Component model={body} />}
         {<drawer.Component model={drawer} />}
       </div>
     );

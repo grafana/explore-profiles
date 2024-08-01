@@ -11,6 +11,7 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 
 interface SceneExploreAllServicesState extends EmbeddedSceneState {}
@@ -31,6 +32,16 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
       body: new SceneByVariableRepeaterGrid({
         key: 'all-services-grid',
         variableName: 'serviceName',
+        mapOptionToItem: (option, index, { profileMetricId }) => ({
+          index,
+          value: option.value as string,
+          label: option.label,
+          queryRunnerParams: {
+            serviceName: option.value as string,
+            profileMetricId,
+          },
+          panelType: PanelType.TIMESERIES,
+        }),
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceProfiles, item }),
           new SelectAction({ EventClass: EventViewServiceLabels, item }),
