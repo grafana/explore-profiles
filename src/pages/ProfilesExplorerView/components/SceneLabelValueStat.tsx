@@ -6,6 +6,7 @@ import {
   VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
+import { BigValueGraphMode, BigValueTextMode } from '@grafana/ui';
 import React from 'react';
 
 import { getColorByIndex } from '../helpers/getColorByIndex';
@@ -25,8 +26,10 @@ export class SceneLabelValueStat extends SceneObjectBase<SceneLabelValueStatStat
         .setDescription('This panel displays aggregate values over the current time period')
         .setData(buildTimeSeriesQueryRunner(item.queryRunnerParams))
         .setHeaderActions(headerActions())
-        .setColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index) })
         .setOption('reduceOptions', { values: false, calcs: ['sum'] })
+        .setColor({ mode: 'fixed', fixedColor: getColorByIndex(item.index) })
+        .setOption('graphMode', BigValueGraphMode.None)
+        .setOption('textMode', BigValueTextMode.Value)
         .build(),
     });
   }
