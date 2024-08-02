@@ -1,69 +1,55 @@
 import {
-  PanelBuilders,
   SceneComponentProps,
   SceneObjectBase,
   SceneObjectState,
   VariableDependencyConfig,
-  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
-import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
-import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { PanelType } from './SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
-  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-  body?: VizPanel;
+  body?: SceneLabelValuesTimeseries;
 }
 
 export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainServiceTimeseriesState> {
   static MIN_HEIGHT = 200;
 
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['dataSource', 'serviceName', 'profileMetricId'],
+    variableNames: ['profileMetricId'],
     onVariableUpdateCompleted: () => {
-      this.state.body?.setState({
-        title: this.buildTitle(),
-      });
+      this.state.body?.updateTitle(this.buildTitle());
     },
   });
 
-  constructor({ headerActions }: { headerActions: SceneMainServiceTimeseriesState['headerActions'] }) {
-    super({ headerActions });
-
-    this.addActivationHandler(this.onActivate.bind(this));
-  }
-
-  onActivate() {
-    const item = {
-      index: 0,
-      value: '',
-      label: '',
-      panelType: PanelType.TIMESERIES,
-      // let actions interpolate
-      queryRunnerParams: {},
-    };
-
-    const body = PanelBuilders.timeseries()
-      .setTitle(this.buildTitle())
-      .setData(buildTimeSeriesQueryRunner({}))
-      .setMin(0)
-      .setColor({ mode: 'fixed', fixedColor: getColorByIndex(0) })
-      .setCustomFieldConfig('fillOpacity', 9)
-      .setHeaderActions(this.state.headerActions(item))
-      .build();
-
-    body.setState({
-      key: 'main-service-timeseries',
+  constructor({ headerActions }: { headerActions: (item: GridItemData) => VizPanelState['headerActions'] }) {
+    super({
+      body: undefined,
     });
 
-    this.setState({ body });
+    this.addActivationHandler(this.onActivate.bind(this, headerActions));
+  }
+
+  onActivate(headerActions: (item: GridItemData) => VizPanelState['headerActions']) {
+    this.setState({
+      body: new SceneLabelValuesTimeseries({
+        item: {
+          index: 0,
+          value: '',
+          label: this.buildTitle(),
+          panelType: PanelType.TIMESERIES,
+          // let actions interpolate the missing values
+          queryRunnerParams: {},
+        },
+        headerActions,
+      }),
+    });
   }
 
   buildTitle() {
