@@ -10,6 +10,7 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 
@@ -31,6 +32,16 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
       body: new SceneByVariableRepeaterGrid({
         key: 'profile-metrics-grid',
         variableName: 'profileMetricId',
+        mapOptionToItem: (option, index, { serviceName }) => ({
+          index,
+          value: option.value as string,
+          label: option.label,
+          queryRunnerParams: {
+            serviceName,
+            profileMetricId: option.value as string,
+          },
+          panelType: PanelType.TIMESERIES,
+        }),
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceLabels, item }),
           new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),

@@ -30,6 +30,18 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
       body: new SceneByVariableRepeaterGrid({
         key: 'favorites-grid',
         variableName: 'favorite',
+        mapOptionToItem: (option) => {
+          // see FavoritesDataSource.ts
+          const { index, value, panelType, queryRunnerParams } = JSON.parse(option.value as string);
+
+          return {
+            index,
+            value,
+            label: option.label,
+            queryRunnerParams,
+            panelType,
+          };
+        },
         sortItemsFn: (a, b) => a.label.localeCompare(b.label),
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [
