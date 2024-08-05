@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 import { assign } from 'xstate';
 
+import { LabelsApiClient } from '../../../../pages/ProfilesExplorerView/infrastructure/labels/http/LabelsApiClient';
 import { labelsRepository } from '../../../infrastructure/labels/labelsRepository';
 import { areFiltersEqual } from './helpers/areFiltersEqual';
 import { filtersToQuery } from './helpers/filtersToQuery';
@@ -239,12 +240,20 @@ export const actions: any = {
   }),
   // MISC
   setEdition: assign({ edition: (context, event: EditEvent) => event.data }),
-  changeInputParams: assign({
-    inputParams: (context: QueryBuilderContext, event: ChangeInputParamsEvent) => event.data,
-    query: (context: QueryBuilderContext, event: ChangeInputParamsEvent) => event.data.query,
-    // See also buildStateMachine() in domain/stateMachine.ts
-    filters: (context: QueryBuilderContext, event: ChangeInputParamsEvent) => queryToFilters(event.data.query),
-    isQueryUpToDate: true,
+  changeInputParams: assign((context: QueryBuilderContext, event: ChangeInputParamsEvent) => {
+    // TODO: remove this condition after migrating the legacy comparison pages to Scenes
+    // because dataSourceUid will always be provided
+    if (event.data.dataSourceUid) {
+      labelsRepository.setApiClient(new LabelsApiClient({ dataSourceUid: event.data.dataSourceUid }));
+    }
+
+    return {
+      inputParams: event.data,
+      query: event.data.query,
+      // See also buildStateMachine() in domain/stateMachine.ts
+      filters: queryToFilters(event.data.query),
+      isQueryUpToDate: true,
+    };
   }),
   activateFilters: assign((context: QueryBuilderContext) => ({
     ...context,

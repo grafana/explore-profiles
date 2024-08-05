@@ -41,6 +41,8 @@ export const getStyles = () => ({
 
 export type QueryBuilderProps = {
   id: string;
+  // TODO: after migrate the legacy comparison pages to Scenes, dataSourceUid will be mandatory
+  dataSourceUid?: string;
   query: string;
   from: number;
   to: number;
