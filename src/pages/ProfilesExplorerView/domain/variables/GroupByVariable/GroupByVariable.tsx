@@ -93,16 +93,14 @@ export class GroupByVariable extends QueryVariable {
       console.error(error);
 
       return (
-        <>
-          <Field label="Group by labels">
-            <div className={styles.groupByErrorContainer}>
-              <Tooltip theme="error" content={error.toString()}>
-                <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
-              </Tooltip>
-              <RefreshPicker noIntervalPicker onRefresh={model.update} isOnCanvas={false} onIntervalChanged={noOp} />
-            </div>
-          </Field>
-        </>
+        <Field label="Group by labels">
+          <div className={styles.groupByErrorContainer}>
+            <Tooltip theme="error" content={error.toString()}>
+              <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
+            </Tooltip>
+            <RefreshPicker noIntervalPicker onRefresh={model.update} isOnCanvas={false} onIntervalChanged={noOp} />
+          </div>
+        </Field>
       );
     }
 
