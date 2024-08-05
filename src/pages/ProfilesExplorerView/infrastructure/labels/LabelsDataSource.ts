@@ -9,22 +9,12 @@ import {
 } from '@grafana/data';
 import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
-import { LabelsRepository } from '@shared/infrastructure/labels/labelsRepository';
-import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
+import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
-import { DataSourceProxyClientBuilder } from '../series/http/DataSourceProxyClientBuilder';
 import { LabelsApiClient } from './http/LabelsApiClient';
-
-// we instantiate a new repository here to prevent unwanted interaction with the QueryBuilder
-// indeed, when entering the "idle" state, the QueryBuilder state machine will call cancelAllLoad()
-// that will abort any ApiClient in-flight request
-const labelsRepository = new LabelsRepository({
-  apiClient: new LabelsApiClient({ dataSourceUid: '' }),
-  cacheClient: new MemoryCacheClient(),
-});
 
 export class LabelsDataSource extends RuntimeDataSource {
   static MAX_TIMESERIES_LABEL_VALUES = 10;
@@ -97,9 +87,7 @@ export class LabelsDataSource extends RuntimeDataSource {
       return [];
     }
 
-    labelsRepository.setApiClient(
-      DataSourceProxyClientBuilder.build(dataSourceUid, LabelsApiClient) as LabelsApiClient
-    );
+    labelsRepository.setApiClient(new LabelsApiClient({ dataSourceUid }));
 
     const labels = await labelsRepository.listLabels({ query, from, to });
 

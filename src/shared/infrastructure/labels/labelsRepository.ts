@@ -15,7 +15,7 @@ type ListLabelValuesOptions = ListLabelsOptions & {
   label: string;
 };
 
-export class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheClient> {
+class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheClient> {
   cacheClient: MemoryCacheClient;
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
