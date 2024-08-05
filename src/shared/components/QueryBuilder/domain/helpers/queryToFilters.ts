@@ -48,6 +48,7 @@ export function queryToFilters(query: string): Filters {
         };
       }
 
+      // TODO: uncomment when we'll support the "in" operator
       // const shouldChangeToInOperator = operator === OperatorKind['=~'] && value.includes('|');
       // if (shouldChangeToInOperator) {
       //   return {

@@ -6,6 +6,7 @@ export function filtersToQuery(query: string, filters: Filters) {
     .map((filter) => {
       const { attribute, operator, value } = filter as CompleteFilter;
 
+      // TODO: uncomment when we'll support the "in" operator
       // if (operator.value === OperatorKind.in) {
       //   return `${attribute.value}=~"${value.value}"`;
       // }

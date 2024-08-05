@@ -79,6 +79,7 @@ const cases: TestCase[] = [
       },
     ],
   ],
+  // TODO: uncomment when we'll support the "in" operator
   // [
   //   'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
   //   [

@@ -60,6 +60,7 @@ const spanNameFilter = {
   },
 };
 
+// TODO: uncomment when we'll support the "in" operator
 // const podIdFilter = {
 //   id: 'CnxcVO7uQE',
 //   type: FilterKind['attribute-operator-value'],
