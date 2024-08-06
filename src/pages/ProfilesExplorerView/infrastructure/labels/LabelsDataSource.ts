@@ -72,6 +72,8 @@ export class LabelsDataSource extends RuntimeDataSource {
     const sceneObject = options.scopedVars?.__sceneObject?.value as GroupByVariable;
 
     // save bandwidth
+    // remove this when we can declare the GroupByVariable in the Scene it's used
+    // without messing up the variable URL sync
     if (!sceneObject.isActive) {
       return [];
     }

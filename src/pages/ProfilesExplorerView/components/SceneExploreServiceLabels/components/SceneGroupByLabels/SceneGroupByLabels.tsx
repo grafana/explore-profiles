@@ -58,7 +58,7 @@ export interface SceneGroupByLabelsState extends SceneObjectState {
 }
 
 export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState> {
-  constructor() {
+  constructor({ item }: { item?: GridItemData }) {
     super({
       key: 'group-by-labels',
       body: undefined,
@@ -67,10 +67,14 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       panelTypeChangeSub: undefined,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this));
+    this.addActivationHandler(this.onActivate.bind(this, item));
   }
 
-  onActivate() {
+  onActivate(item?: GridItemData) {
+    if (item) {
+      this.initVariablesAndControls(item);
+    }
+
     const groupBySub = this.subscribeToGroupByChange();
     const filtersSub = this.subscribeToFiltersChange();
     const panelEventsSub = this.subscribeToPanelEvents();
@@ -82,6 +86,32 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
       this.state.panelTypeChangeSub?.unsubscribe();
     };
+  }
+
+  initVariablesAndControls(item: GridItemData) {
+    const { queryRunnerParams, panelType } = item;
+    const { groupBy } = queryRunnerParams;
+
+    if (groupBy?.label) {
+      const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+
+      // because (to the contrary of the "Series" data) we don't load labels if the groupBy variable is not active
+      // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
+      // we have to wait until the new groupBy options have been loaded
+      // if not, its value will default to "all" regardless of our call to "changeValueTo"
+      // this happens, e.g., when landing on "Favorites" then jumping to "Labels" by clicking on a favorite that contains a "groupBy" label value
+      const groupBySub = groupByVariable.subscribeToState((newState, prevState) => {
+        if (!newState.loading && prevState.loading) {
+          groupByVariable.changeValueTo(groupBy.label);
+          groupBySub.unsubscribe();
+        }
+      });
+    }
+
+    if (panelType) {
+      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+      panelTypeSwitcher.setState({ panelType });
+    }
   }
 
   subscribeToGroupByChange() {

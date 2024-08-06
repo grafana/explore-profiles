@@ -14,11 +14,9 @@ import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
-import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
-import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneGroupByLabels } from './components/SceneGroupByLabels/SceneGroupByLabels';
 
@@ -47,7 +45,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
             }),
           }),
           new SceneFlexItem({
-            body: new SceneGroupByLabels(),
+            body: new SceneGroupByLabels({ item }),
           }),
         ],
       }),
@@ -58,7 +56,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
 
   onActivate(item?: GridItemData) {
     if (item) {
-      this.initVariablesAndControls(item);
+      this.initVariables(item);
     }
 
     const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
@@ -72,10 +70,9 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     };
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-  initVariablesAndControls(item: GridItemData) {
-    const { queryRunnerParams, panelType } = item;
-    const { serviceName, profileMetricId, filters, groupBy } = queryRunnerParams;
+  initVariables(item: GridItemData) {
+    const { queryRunnerParams } = item;
+    const { serviceName, profileMetricId, filters } = queryRunnerParams;
 
     if (serviceName) {
       const serviceNameVariable = findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable;
@@ -90,27 +87,6 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     if (filters) {
       const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
       filtersVariable.setState({ filters });
-    }
-
-    if (groupBy?.label) {
-      const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
-
-      // because (to the contrary of the "Series" data) we don't load labels if the groupBy variable is not active
-      // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
-      // we have to wait until the new groupBy options have been loaded
-      // if not, its value will default to "all" regardless of our call to "changeValueTo"
-      // this happens, e.g., when landing on "Favorites" then jumping to "Labels" by clicking on a favorite that contains a "groupBy" label value
-      const groupBySub = groupByVariable.subscribeToState((newState, prevState) => {
-        if (!newState.loading && prevState.loading) {
-          groupByVariable.changeValueTo(groupBy.label);
-          groupBySub.unsubscribe();
-        }
-      });
-    }
-
-    if (panelType) {
-      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
-      panelTypeSwitcher.setState({ panelType });
     }
   }
 
