@@ -11,6 +11,10 @@ weight: 300
 
 # Get started with Explore Profiles
 
+{{% admonition type="note" %}}
+Expand your observability journey and learn about [Explore Traces](htthttps://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/explore-profiles/).
+{{% /admonition %}}
+
 Profiles can help you identify errors in your apps and services.
 Using this information, you can optimize and streamline your apps.
 
