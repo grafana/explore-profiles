@@ -48,23 +48,24 @@ export function queryToFilters(query: string): Filters {
         };
       }
 
-      const shouldChangeToInOperator = operator === OperatorKind['=~'] && value.includes('|');
-      if (shouldChangeToInOperator) {
-        return {
-          id: nanoid(10),
-          type: FilterKind['attribute-operator-value'],
-          active: true,
-          attribute: { value: attribute, label: attribute },
-          operator: { value: OperatorKind.in, label: OperatorKind.in },
-          value: {
-            value: value,
-            label: value
-              .split('|')
-              .map((v) => v.trim())
-              .join(', '),
-          },
-        };
-      }
+      // TODO: uncomment when we'll support the "in" operator
+      // const shouldChangeToInOperator = operator === OperatorKind['=~'] && value.includes('|');
+      // if (shouldChangeToInOperator) {
+      //   return {
+      //     id: nanoid(10),
+      //     type: FilterKind['attribute-operator-value'],
+      //     active: true,
+      //     attribute: { value: attribute, label: attribute },
+      //     operator: { value: OperatorKind.in, label: OperatorKind.in },
+      //     value: {
+      //       value: value,
+      //       label: value
+      //         .split('|')
+      //         .map((v) => v.trim())
+      //         .join(', '),
+      //     },
+      //   };
+      // }
 
       return {
         id: nanoid(10),

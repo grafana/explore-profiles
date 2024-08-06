@@ -21,7 +21,7 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable'
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneGroupByLabels } from './SceneGroupByLabels';
+import { SceneGroupByLabels } from './components/SceneGroupByLabels';
 
 interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
 

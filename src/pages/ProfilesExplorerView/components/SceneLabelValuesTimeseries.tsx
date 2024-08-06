@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -33,7 +33,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     displayAllValues,
   }: {
     item: GridItemData;
-    headerActions: () => VizPanelState['headerActions'];
+    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
     displayAllValues?: boolean;
   }) {
     super({
@@ -48,7 +48,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               : [addRefId, addStats, sortSeries, limitNumberOfSeries],
           })
         )
-        .setHeaderActions(headerActions())
+        .setHeaderActions(headerActions(item))
         .build(),
     });
 
@@ -76,17 +76,23 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   getConfig(item: GridItemData, series: DataFrame[]) {
-    const totalSeriesCount =
-      series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
+    let { title } = this.state.body.state;
+    let description;
 
-    const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+    if (item.queryRunnerParams.groupBy?.label) {
+      title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
 
-    const description = hasTooManySeries
-      ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
-      : undefined;
+      const totalSeriesCount =
+        series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
+      const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+
+      description = hasTooManySeries
+        ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
+        : undefined;
+    }
 
     return {
-      title: series.length > 1 ? `${item.label} (${series.length})` : item.label,
+      title,
       description,
       fieldConfig: {
         defaults: {
@@ -118,19 +124,35 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   getOverrides(item: GridItemData, series: DataFrame[]) {
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    return series.map((serie, i) => ({
-      matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
-      properties: [
-        {
-          id: 'displayName',
-          value: groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name,
-        },
-        {
-          id: 'color',
-          value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
-        },
-      ],
-    }));
+    return series.map((serie, i) => {
+      let displayName = groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name;
+
+      if (series.length === 1) {
+        const allValuesSum = serie.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
+        const { unit } = serie.fields[1].config;
+        const formattedValue = getValueFormat(unit)(allValuesSum);
+
+        displayName = `${displayName} · total = ${formattedValue.text}${formattedValue.suffix}`;
+      }
+
+      return {
+        matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
+        properties: [
+          {
+            id: 'displayName',
+            value: displayName,
+          },
+          {
+            id: 'color',
+            value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
+          },
+        ],
+      };
+    });
+  }
+
+  updateTitle(newTitle: string) {
+    this.state.body.setState({ title: newTitle });
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {

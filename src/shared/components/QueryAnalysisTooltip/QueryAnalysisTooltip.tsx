@@ -163,9 +163,7 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
             <IconButton name="database" aria-label="Query info" />
           </div>
         </Toggletip>
-      ) : (
-        <div>&nbsp;</div>
-      )}
+      ) : null}
     </>
   );
 }

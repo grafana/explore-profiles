@@ -60,23 +60,24 @@ const spanNameFilter = {
   },
 };
 
-const podIdFilter = {
-  id: 'CnxcVO7uQE',
-  type: FilterKind['attribute-operator-value'],
-  active: true,
-  attribute: {
-    value: 'pod_id',
-    label: 'pod_id',
-  },
-  operator: {
-    value: 'in',
-    label: 'in',
-  },
-  value: {
-    value: '83|84',
-    label: '83, 84',
-  },
-};
+// TODO: uncomment when we'll support the "in" operator
+// const podIdFilter = {
+//   id: 'CnxcVO7uQE',
+//   type: FilterKind['attribute-operator-value'],
+//   active: true,
+//   attribute: {
+//     value: 'pod_id',
+//     label: 'pod_id',
+//   },
+//   operator: {
+//     value: 'in',
+//     label: 'in',
+//   },
+//   value: {
+//     value: '83|84',
+//     label: '83, 84',
+//   },
+// };
 
 type TestCase = [string, Filters, string];
 
@@ -117,11 +118,11 @@ const cases: TestCase[] = [
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",span_name=""}',
   ],
   // with complete filters: in operator
-  [
-    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests"}',
-    [actionFilter, podIdFilter],
-    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
-  ],
+  // [
+  //   'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests"}',
+  //   [actionFilter, podIdFilter],
+  //   'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
+  // ],
 ];
 
 describe('filtersToQuery(query: string, filters: Filters)', () => {

@@ -5,7 +5,7 @@ import { QueryBuilderProps } from '../QueryBuilder';
 import { buildStateMachine } from './stateMachine';
 import { CompleteFilters, QueryBuilderContext } from './types';
 
-export function useStateMachine({ query, from, to, onChangeQuery }: QueryBuilderProps) {
+export function useStateMachine({ dataSourceUid, query, from, to, onChangeQuery }: QueryBuilderProps) {
   const { actor, initialContext } = useMemo(
     () => buildStateMachine({ query, from, to }),
     // We don't want to build a new state machine when the props change, props change is handheld via the CHANGE_INPUT_PARAMS action below
@@ -14,8 +14,8 @@ export function useStateMachine({ query, from, to, onChangeQuery }: QueryBuilder
   );
 
   useEffect(() => {
-    actor.send({ type: 'CHANGE_INPUT_PARAMS', data: { query, from, to } });
-  }, [actor, query, from, to]);
+    actor.send({ type: 'CHANGE_INPUT_PARAMS', data: { dataSourceUid, query, from, to } });
+  }, [actor, dataSourceUid, query, from, to]);
 
   const [internalProps, setInternalProps] = useState<QueryBuilderContext>(initialContext);
 

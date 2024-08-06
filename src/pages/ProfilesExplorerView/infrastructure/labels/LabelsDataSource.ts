@@ -14,7 +14,6 @@ import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
-import { DataSourceProxyClientBuilder } from '../series/http/DataSourceProxyClientBuilder';
 import { LabelsApiClient } from './http/LabelsApiClient';
 
 export class LabelsDataSource extends RuntimeDataSource {
@@ -22,22 +21,6 @@ export class LabelsDataSource extends RuntimeDataSource {
 
   constructor() {
     super(PYROSCOPE_LABELS_DATA_SOURCE.type, PYROSCOPE_LABELS_DATA_SOURCE.uid);
-  }
-
-  async fetchLabels(dataSourceUid: string, query: string, from: number, to: number) {
-    const labelsApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, LabelsApiClient) as LabelsApiClient;
-
-    labelsRepository.setApiClient(labelsApiClient);
-
-    return labelsRepository.listLabels({ query, from, to });
-  }
-
-  async fetchLabelValues(dataSourceUid: string, query: string, from: number, to: number, label: string) {
-    const labelsApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, LabelsApiClient) as LabelsApiClient;
-
-    labelsRepository.setApiClient(labelsApiClient);
-
-    return labelsRepository.listLabelValues({ query, from, to, label });
   }
 
   async query(): Promise<DataQueryResponse> {
@@ -60,18 +43,40 @@ export class LabelsDataSource extends RuntimeDataSource {
     };
   }
 
-  async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
+  getParams(options: LegacyMetricFindQueryOptions) {
     const { scopedVars, range } = options;
     const sceneObject = scopedVars?.__sceneObject?.value as GroupByVariable;
+
+    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
+    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
+    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+
+    // we could interpolate ad hoc filters, but the Labels exploration type would reload all labels each time they are modified
+    // const filters = sceneGraph.interpolate(sceneObject, '$filters');
+    // const pyroscopeQuery = `${profileMetricId}{service_name="${serviceName}",${filters}}`;
+    const query = `${profileMetricId}{service_name="${serviceName}"}`;
+
+    const { from, to } = computeRoundedTimeRange(range as TimeRange);
+
+    return {
+      dataSourceUid,
+      serviceName,
+      profileMetricId,
+      query,
+      from,
+      to,
+    };
+  }
+
+  async metricFindQuery(_: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
+    const sceneObject = options.scopedVars?.__sceneObject?.value as GroupByVariable;
 
     // save bandwidth
     if (!sceneObject.isActive) {
       return [];
     }
 
-    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
-    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
-    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+    const { dataSourceUid, serviceName, profileMetricId, query, from, to } = this.getParams(options);
 
     if (!serviceName || !profileMetricId) {
       console.warn(
@@ -82,14 +87,9 @@ export class LabelsDataSource extends RuntimeDataSource {
       return [];
     }
 
-    // we could interpolate ad hoc filters, but the Service labels exploration type would reload all labels each time they are modified
-    // const filters = sceneGraph.interpolate(sceneObject, '$filters');
-    // const pyroscopeQuery = `${profileMetricId}{service_name="${serviceName}",${filters}}`;
-    const pyroscopeQuery = `${profileMetricId}{service_name="${serviceName}"}`;
+    labelsRepository.setApiClient(new LabelsApiClient({ dataSourceUid }));
 
-    const { from, to } = computeRoundedTimeRange(range as TimeRange);
-
-    const labels = await this.fetchLabels(dataSourceUid, pyroscopeQuery, from, to);
+    const labels = await labelsRepository.listLabels({ query, from, to });
 
     const sortedLabelsWithCounts = (
       await Promise.all(
@@ -97,7 +97,7 @@ export class LabelsDataSource extends RuntimeDataSource {
           .filter(({ value }) => !isPrivateLabel(value))
           .sort((a, b) => a.label.localeCompare(b.label))
           .map(async ({ value }) => {
-            const values = (await this.fetchLabelValues(dataSourceUid, pyroscopeQuery, from, to, value)).map(
+            const values = (await labelsRepository.listLabelValues({ query, from, to, label: value })).map(
               ({ value }) => value
             );
             const count = values.length;

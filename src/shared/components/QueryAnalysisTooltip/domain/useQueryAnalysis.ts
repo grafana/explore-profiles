@@ -9,6 +9,7 @@ export function useQueryAnalysis() {
   const [timeRange] = useTimeRangeFromUrl();
 
   const { isFetching, error, data } = useQuery({
+    enabled: Boolean(query),
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: ['query-analysis', query, Math.floor(timeRange.from.unix() / 60), Math.floor(timeRange.to.unix() / 60)],
     queryFn: () => queryAnalysisApiClient.get(timeRange, query),
