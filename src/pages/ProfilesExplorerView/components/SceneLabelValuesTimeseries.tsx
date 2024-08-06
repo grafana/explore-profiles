@@ -23,6 +23,9 @@ import {
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
+  item: GridItemData;
+  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+  displayAllValues: boolean;
   body: VizPanel;
 }
 
@@ -32,12 +35,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     headerActions,
     displayAllValues,
   }: {
-    item: GridItemData;
-    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-    displayAllValues?: boolean;
+    item: SceneLabelValuesTimeseriesState['item'];
+    headerActions: SceneLabelValuesTimeseriesState['headerActions'];
+    displayAllValues?: SceneLabelValuesTimeseriesState['displayAllValues'];
   }) {
     super({
       key: 'timeseries-label-values',
+      item,
+      headerActions,
+      displayAllValues: Boolean(displayAllValues),
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
@@ -52,10 +58,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         .build(),
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, item, Boolean(displayAllValues)));
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onActivate(item: GridItemData, displayAllValues: boolean) {
+  onActivate() {
     const { body } = this.state;
 
     const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
@@ -63,9 +69,9 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         return;
       }
 
-      const config = displayAllValues
-        ? this.getAllValuesConfig(item, state.data.series)
-        : this.getConfig(item, state.data.series);
+      const config = this.state.displayAllValues
+        ? this.getAllValuesConfig(state.data.series)
+        : this.getConfig(state.data.series);
 
       body.setState(config);
     });
@@ -75,7 +81,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
-  getConfig(item: GridItemData, series: DataFrame[]) {
+  getConfig(series: DataFrame[]) {
+    const { item } = this.state;
     let { title } = this.state.body.state;
     let description;
 
@@ -102,12 +109,12 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
           },
         },
-        overrides: this.getOverrides(item, series),
+        overrides: this.getOverrides(series),
       },
     };
   }
 
-  getAllValuesConfig(item: GridItemData, series: DataFrame[]) {
+  getAllValuesConfig(series: DataFrame[]) {
     return {
       fieldConfig: {
         defaults: {
@@ -116,23 +123,24 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             fillOpacity: 0,
           },
         },
-        overrides: this.getOverrides(item, series),
+        overrides: this.getOverrides(series),
       },
     };
   }
 
-  getOverrides(item: GridItemData, series: DataFrame[]) {
+  getOverrides(series: DataFrame[]) {
+    const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
     return series.map((serie, i) => {
-      let displayName = groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name;
+      let displayName = serie.fields[1].labels?.[groupByLabel as string] || serie.fields[1].name;
 
       if (series.length === 1) {
         const allValuesSum = serie.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
         const { unit } = serie.fields[1].config;
         const formattedValue = getValueFormat(unit)(allValuesSum);
 
-        displayName = `${displayName} · total = ${formattedValue.text}${formattedValue.suffix}`;
+        displayName = `${displayName} / total = ${formattedValue.text}${formattedValue.suffix}`;
       }
 
       return {
@@ -149,6 +157,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         ],
       };
     });
+  }
+
+  getGroupByValues(series: DataFrame[]) {
+    const groupByLabel = this.state.item.queryRunnerParams.groupBy?.label;
+    return series.map((serie) => serie.fields[1].labels?.[groupByLabel as string] || serie.fields[1].name);
   }
 
   updateTitle(newTitle: string) {

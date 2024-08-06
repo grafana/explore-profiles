@@ -380,7 +380,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             ))}
 
             {gridControls.map((control) => (
-              <control.Component key={control.key} model={control} />
+              <control.Component key={control.state.key} model={control} />
             ))}
           </div>
         </div>

@@ -12,7 +12,6 @@ import React from 'react';
 import { SceneMainServiceTimeseries } from '../../components/SceneMainServiceTimeseries';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
-import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
@@ -21,7 +20,7 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable'
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneGroupByLabels } from './components/SceneGroupByLabels';
+import { SceneGroupByLabels } from './components/SceneGroupByLabels/SceneGroupByLabels';
 
 interface SceneExploreServiceLabelsState extends EmbeddedSceneState {}
 
@@ -43,7 +42,6 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
             body: new SceneMainServiceTimeseries({
               headerActions: (item) => [
                 new SelectAction({ EventClass: EventViewServiceProfiles, item }),
-                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
                 new FavAction({ item }),
               ],
             }),
