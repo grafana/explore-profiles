@@ -17,29 +17,34 @@ export enum CompareTarget {
   COMPARISON = 'comparison',
 }
 
-const OPTIONS = [
-  {
-    label: 'Baseline',
-    value: CompareTarget.BASELINE,
-    description: 'Click to select this timeseries as baseline for comparison',
-  },
-  {
-    label: 'Comparison',
-    value: CompareTarget.COMPARISON,
-    description: 'Click to select this timeseries as target for comparison',
-  },
-];
-
 export function ComparePanel({ item, onChangeCompareTarget, compareTargetValue }: ComparePanelProps) {
   const styles = useStyles2(getStyles);
-  const { allValuesSum, unit } = item.stats;
+  const { index, value, stats } = item;
+
+  const color = getColorByIndex(index);
+
+  const { allValuesSum, unit } = stats;
 
   const total = useMemo(() => {
     const formattedValue = getValueFormat(unit)(allValuesSum);
     return `${formattedValue.text}${formattedValue.suffix}`;
   }, [allValuesSum, unit]);
 
-  const color = getColorByIndex(item.index);
+  const options = useMemo(
+    () => [
+      {
+        label: 'Baseline',
+        value: CompareTarget.BASELINE,
+        description: `Click to select "${value}" as baseline for comparison`,
+      },
+      {
+        label: 'Comparison',
+        value: CompareTarget.COMPARISON,
+        description: `Click to select "${value}" as target for comparison`,
+      },
+    ],
+    [value]
+  );
 
   return (
     <div className={styles.container}>
@@ -51,7 +56,7 @@ export function ComparePanel({ item, onChangeCompareTarget, compareTargetValue }
         <RadioButtonGroup
           className={styles.radioButtonsGroup}
           size="sm"
-          options={OPTIONS}
+          options={options}
           onChange={(newValue) => {
             onChangeCompareTarget(newValue as CompareTarget, item);
           }}
