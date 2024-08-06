@@ -35,15 +35,17 @@ export function ComparePanel({ item, onChangeCompareTarget, compareTargetValue }
       {
         label: 'Baseline',
         value: CompareTarget.BASELINE,
-        description: `Click to select "${value}" as baseline for comparison`,
+        description:
+          compareTargetValue !== CompareTarget.BASELINE ? `Click to select "${value}" as baseline for comparison` : '',
       },
       {
         label: 'Comparison',
         value: CompareTarget.COMPARISON,
-        description: `Click to select "${value}" as target for comparison`,
+        description:
+          compareTargetValue !== CompareTarget.COMPARISON ? `Click to select "${value}" as target for comparison` : '',
       },
     ],
-    [value]
+    [compareTargetValue, value]
   );
 
   return (
