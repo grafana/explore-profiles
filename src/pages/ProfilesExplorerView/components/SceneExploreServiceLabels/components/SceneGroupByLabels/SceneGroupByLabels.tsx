@@ -267,9 +267,9 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     // the handler will be called each time a filter is added/removed/modified
     return filtersVariable.subscribeToState(() => {
-      if (noDataSwitcher.state.hideNoData === 'on') {
+      if (this.state.body instanceof SceneByVariableRepeaterGrid && noDataSwitcher.state.hideNoData === 'on') {
         // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
-        (this.state.body as SceneByVariableRepeaterGrid | SceneLabelValuesGrid)?.renderGridItems(true);
+        this.state.body.renderGridItems(true);
       }
     });
   }
