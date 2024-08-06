@@ -11,7 +11,7 @@ weight: 300
 
 # Get started with Explore Profiles
 
-{{% admonition type="note"}}
+{{% admonition type="note" %}}
 Expand your observability journey and learn about [Explore Traces](htthttps://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/explore-profiles/).
 {{% /admonition %}}
 
