@@ -10,7 +10,7 @@ export class SceneErrorState extends SceneObjectBase<SceneErrorStateState> {
   public static Component = ({ model }: SceneComponentProps<SceneErrorState>) => {
     const { message } = model.useState();
     return (
-      <Alert title="Query error" severity="error">
+      <Alert title="Query error!" severity="error">
         {message}
       </Alert>
     );

@@ -47,6 +47,10 @@ export class FiltersVariable extends AdHocFiltersVariable {
     const { filters } = model.useState();
     const [, setQuery] = useQueryFromUrl();
 
+    const { value: dataSourceUid } = (
+      findSceneObjectByClass(model, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
+    ).useState();
+
     const { value: serviceName } = (
       findSceneObjectByClass(model, ServiceNameVariable) as ServiceNameVariable
     ).useState();
@@ -74,6 +78,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
         id="query-builder-explore"
         autoExecute
         className={styles.queryBuilder}
+        dataSourceUid={dataSourceUid as string}
         query={filterExpression as string}
         from={from.unix() * 1000}
         to={to.unix() * 1000}

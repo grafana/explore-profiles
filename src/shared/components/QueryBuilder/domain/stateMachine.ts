@@ -69,7 +69,7 @@ export function buildStateMachine(inputParams: InputParams) {
     ...defaultContext,
     inputParams,
     query,
-    // See changeInputParams() in src/overrides/components/TagsBar/QueryBuilder/domain/actions.ts
+    // See changeInputParams() in domain/actions.ts
     filters: queryToFilters(query),
   };
 
