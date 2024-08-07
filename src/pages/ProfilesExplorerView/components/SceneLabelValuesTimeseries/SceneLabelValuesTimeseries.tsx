@@ -74,7 +74,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       const { series } = state.data;
 
-      this.publishEvent(new EventDataReceived({ series }));
+      this.publishEvent(new EventDataReceived({ series }), true);
 
       if (!series.length) {
         return;

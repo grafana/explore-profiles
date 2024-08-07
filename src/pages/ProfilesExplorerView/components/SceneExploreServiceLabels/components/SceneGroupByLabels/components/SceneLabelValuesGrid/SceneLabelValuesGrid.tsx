@@ -7,6 +7,7 @@ import {
   SceneCSSGridLayout,
   SceneDataProvider,
   SceneDataTransformer,
+  sceneGraph,
   SceneObjectBase,
   VizPanelState,
 } from '@grafana/scenes';
@@ -25,6 +26,10 @@ import {
   SceneLayoutSwitcher,
   SceneLayoutSwitcherState,
 } from '../../../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import {
+  SceneNoDataSwitcher,
+  SceneNoDataSwitcherState,
+} from '../../../../../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { PanelType } from '../../../../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import {
   SceneQuickFilter,
@@ -33,6 +38,7 @@ import {
 import { sortFavGridItems } from '../../../../../SceneByVariableRepeaterGrid/domain/sortFavGridItems';
 import { addRefId, addStats } from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
+import { EventDataReceived } from '../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 import { SceneGroupByLabels } from '../../SceneGroupByLabels';
 import { CompareTarget } from './components/SceneComparePanel/ui/ComparePanel';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
@@ -52,6 +58,7 @@ export interface SceneLabelValuesGridState extends EmbeddedSceneState {
   startColorIndex: number;
   headerActions: (item: GridItemData, items: GridItemData[]) => VizPanelState['headerActions'];
   sortItemsFn: (a: GridItemDataWithStats, b: GridItemDataWithStats) => number;
+  hideNoData: boolean;
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(800px, 1fr))';
@@ -59,6 +66,10 @@ const GRID_TEMPLATE_ROWS = '1fr';
 export const GRID_AUTO_ROWS = '160px';
 
 export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridState> {
+  static buildGridItemKey(item: GridItemData) {
+    return `grid-item-${item.index}-${item.value}`;
+  }
+
   constructor({
     key,
     label,
@@ -80,6 +91,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
         $data: buildTimeSeriesQueryRunner({ groupBy: { label } }),
         transformations: [addRefId, addStats],
       }),
+      hideNoData: false,
       headerActions,
       sortItemsFn: sortFavGridItems,
       body: new SceneCSSGridLayout({
@@ -105,8 +117,10 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
+    const hideNoDataSub = this.subscribeToHideNoDataChange();
 
     return () => {
+      hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
       refreshSub.unsubscribe();
@@ -182,6 +196,30 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     onChangeState(layoutSwitcher.state);
 
     return layoutSwitcher.subscribeToState(onChangeState);
+  }
+
+  subscribeToHideNoDataChange() {
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+    this.setState({
+      hideNoData: noDataSwitcher.state.hideNoData === 'on',
+    });
+
+    const onChangeState = (newState: SceneNoDataSwitcherState, prevState: SceneNoDataSwitcherState) => {
+      if (newState.hideNoData !== prevState.hideNoData) {
+        this.setState({
+          hideNoData: newState.hideNoData === 'on',
+          $data: new SceneDataTransformer({
+            $data: buildTimeSeriesQueryRunner({ groupBy: { label: this.state.label } }),
+            transformations: [addRefId, addStats],
+          }),
+        });
+
+        this.fetchData();
+      }
+    };
+
+    return noDataSwitcher.subscribeToState(onChangeState);
   }
 
   shouldRenderItems(newItems: SceneLabelValuesGridState['items']) {
@@ -263,7 +301,12 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
         compareTargetValue: this.getItemCompareTargetValue(item, compare),
       });
 
+      if (this.state.hideNoData) {
+        this.setupHideNoData(vizPanel);
+      }
+
       return new SceneCSSGridItem({
+        key: SceneLabelValuesGrid.buildGridItemKey(item),
         body: vizPanel,
       });
     });
@@ -271,6 +314,32 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     (this.state.body as SceneCSSGridLayout).setState({
       autoRows: GRID_AUTO_ROWS, // required to have the correct grid items height
       children: gridItems,
+    });
+  }
+
+  setupHideNoData(vizPanel: SceneLabelValuePanel) {
+    const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
+      if (event.payload.series.length > 0) {
+        return;
+      }
+
+      const gridItem = sceneGraph.getAncestor(vizPanel, SceneCSSGridItem);
+      const { key: gridItemKey } = gridItem.state;
+      const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
+
+      const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
+
+      if (!filteredChildren.length) {
+        this.renderEmptyState();
+      } else {
+        grid.setState({ children: filteredChildren });
+      }
+    });
+
+    vizPanel.addActivationHandler(() => {
+      return () => {
+        sub.unsubscribe();
+      };
     });
   }
 
