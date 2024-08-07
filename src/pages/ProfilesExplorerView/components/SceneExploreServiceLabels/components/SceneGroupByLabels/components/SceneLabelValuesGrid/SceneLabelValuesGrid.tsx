@@ -14,57 +14,49 @@ import { Spinner } from '@grafana/ui';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { FavAction } from '../../../domain/actions/FavAction';
-import { findSceneObjectByClass } from '../../../helpers/findSceneObjectByClass';
-import { FavoritesDataSource } from '../../../infrastructure/favorites/FavoritesDataSource';
-import { buildTimeSeriesQueryRunner } from '../../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import { SceneEmptyState } from '../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
-import { SceneErrorState } from '../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
+import { findSceneObjectByClass } from '../../../../../../helpers/findSceneObjectByClass';
+import { getSceneVariableValue } from '../../../../../../helpers/getSceneVariableValue';
+import { getSeriesStatsValue } from '../../../../../../helpers/getSeriesStatsValue';
+import { buildTimeSeriesQueryRunner } from '../../../../../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { SceneEmptyState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
+import { SceneErrorState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
 import {
   LayoutType,
   SceneLayoutSwitcher,
   SceneLayoutSwitcherState,
-} from '../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
-import { SceneQuickFilter, SceneQuickFilterState } from '../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
-import { addRefId, addStats, sortSeries } from '../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
-import { GridItemData } from '../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneGroupByLabels } from './SceneGroupByLabels/SceneGroupByLabels';
-import { SceneLabelValuesStatAndTimeseries } from './SceneLabelValuesStatAndTimeseries/SceneLabelValuesStatAndTimeseries';
-import { CompareTarget } from './SceneLabelValuesStatAndTimeseries/ui/ComparePanel';
+} from '../../../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import { PanelType } from '../../../../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import {
+  SceneQuickFilter,
+  SceneQuickFilterState,
+} from '../../../../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
+import { sortFavGridItems } from '../../../../../SceneByVariableRepeaterGrid/domain/sortFavGridItems';
+import { addRefId, addStats } from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneGroupByLabels } from '../../SceneGroupByLabels';
+import { CompareTarget } from './components/SceneComparePanel/ui/ComparePanel';
+import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
 
-export type GridItemDataWithStats = GridItemData & { stats: Record<string, any> };
+export type GridItemDataWithStats = GridItemData & {
+  stats: {
+    allValuesSum: number;
+    unit: string;
+  };
+};
 
-interface SceneLabelValuesGridState extends EmbeddedSceneState {
+export interface SceneLabelValuesGridState extends EmbeddedSceneState {
   $data: SceneDataProvider;
+  isLoading: boolean;
   items: GridItemDataWithStats[];
   label: string;
   startColorIndex: number;
   headerActions: (item: GridItemData, items: GridItemData[]) => VizPanelState['headerActions'];
-  sortItemsFn: (a: GridItemData, b: GridItemData) => number;
+  sortItemsFn: (a: GridItemDataWithStats, b: GridItemDataWithStats) => number;
 }
 
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(800px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 export const GRID_AUTO_ROWS = '160px';
-
-const DEFAULT_SORT_ITEMS_FN: SceneLabelValuesGridState['sortItemsFn'] = function (a, b) {
-  const aIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(a));
-  const bIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(b));
-
-  if (aIsFav && bIsFav) {
-    return a.label.localeCompare(b.label);
-  }
-
-  if (bIsFav) {
-    return +1;
-  }
-
-  if (aIsFav) {
-    return -1;
-  }
-
-  return 0;
-};
 
 export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridState> {
   constructor({
@@ -83,12 +75,13 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       label,
       startColorIndex,
       items: [],
+      isLoading: true,
       $data: new SceneDataTransformer({
         $data: buildTimeSeriesQueryRunner({ groupBy: { label } }),
-        transformations: [addRefId, addStats, sortSeries],
+        transformations: [addRefId, addStats],
       }),
       headerActions,
-      sortItemsFn: DEFAULT_SORT_ITEMS_FN,
+      sortItemsFn: sortFavGridItems,
       body: new SceneCSSGridLayout({
         templateColumns: GRID_TEMPLATE_ROWS,
         autoRows: GRID_AUTO_ROWS,
@@ -107,23 +100,59 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   onActivate() {
-    const dataSub = this.subscribeToDataChange();
+    this.fetchData();
+
+    const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
 
     return () => {
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
-      dataSub.unsubscribe();
+      refreshSub.unsubscribe();
     };
   }
 
-  subscribeToDataChange() {
-    return this.state.$data.subscribeToState((newState) => {
+  fetchData() {
+    this.setState({ isLoading: true });
+
+    const dataSub = this.state.$data.subscribeToState((newState) => {
       if (newState.data?.state !== LoadingState.Loading) {
+        dataSub.unsubscribe();
+
         this.renderGridItems();
+
+        this.setState({ isLoading: false });
       }
     });
+  }
+
+  subscribeToRefreshClick() {
+    const onClickRefresh = () => {
+      this.fetchData();
+    };
+
+    // start of hack, for a better UX: we disable the variable "refresh" option and we allow the user to reload the list only by clicking on the "Refresh" button
+    // if we don't do this, every time the time range changes (even with auto-refresh on),
+    // all the timeseries present on the screen would be re-created, resulting in blinking and a poor UX
+    const refreshButton = document.querySelector(
+      '[data-testid="data-testid RefreshPicker run button"]'
+    ) as HTMLButtonElement;
+
+    if (!refreshButton) {
+      console.error('SceneByVariableRepeaterGrid: Refresh button not found! The list of items will never be updated.');
+    }
+
+    refreshButton?.addEventListener('click', onClickRefresh);
+    refreshButton?.setAttribute('title', 'Click to completely refresh all the panels present on the screen');
+    // end of hack
+
+    return {
+      unsubscribe() {
+        refreshButton?.removeAttribute('title');
+        refreshButton?.removeEventListener('click', onClickRefresh);
+      },
+    };
   }
 
   subscribeToQuickFilterChange() {
@@ -166,31 +195,37 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   buildItemsData(series: DataFrame[]) {
-    const { label, startColorIndex } = this.state;
+    const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
 
-    const items = series.map(({ fields, meta }, index) => {
-      const labelFromSerieLabels = fields[1].labels?.[label];
-      const labelFromSerieName = fields[1].name;
-      const labelValue = labelFromSerieLabels || labelFromSerieName;
+    const { label, startColorIndex, sortItemsFn } = this.state;
 
-      const allValuesSum = meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
-      const { unit } = fields[1].config;
+    const items = series
+      .sort((s1, s2) => (getSeriesStatsValue(s2, 'allValuesSum') || 0) - (getSeriesStatsValue(s1, 'allValuesSum') || 0))
+      .map((s, index) => {
+        const metricField = s.fields[1];
+        const labelFromSerieLabels = metricField.labels?.[label];
+        const labelFromSerieName = metricField.name;
+        const labelValue = labelFromSerieLabels || labelFromSerieName;
 
-      return {
-        index: startColorIndex + index,
-        value: labelValue,
-        label: labelValue,
-        queryRunnerParams: {
-          filters: [{ key: label, operator: '=', value: labelFromSerieLabels || '' }],
-        },
-        stats: {
-          allValuesSum,
-          unit,
-        },
-      };
-    });
+        return {
+          index: startColorIndex + index,
+          value: labelValue,
+          label: labelValue,
+          queryRunnerParams: {
+            serviceName,
+            profileMetricId,
+            filters: [{ key: label, operator: '=', value: labelFromSerieLabels || '' }],
+          },
+          panelType: PanelType.TIMESERIES,
+          stats: {
+            allValuesSum: getSeriesStatsValue(s, 'allValuesSum') || 0,
+            unit: metricField.config.unit as string,
+          },
+        };
+      });
 
-    return this.filterItems(items).sort(this.state.sortItemsFn);
+    return this.filterItems(items).sort(sortItemsFn);
   }
 
   renderGridItems(forceRender = false) {
@@ -222,7 +257,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     const compare = (findSceneObjectByClass(this, SceneGroupByLabels) as SceneGroupByLabels).getCompare();
 
     const gridItems = newItems.map((item) => {
-      const vizPanel = new SceneLabelValuesStatAndTimeseries({
+      const vizPanel = new SceneLabelValuePanel({
         item,
         headerActions: this.state.headerActions.bind(null, item, this.state.items),
         compareTargetValue: this.getItemCompareTargetValue(item, compare),
@@ -306,9 +341,8 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesGrid>) {
-    const { body, $data } = model.useState();
-    const $dataState = $data?.useState();
+    const { body, isLoading } = model.useState();
 
-    return $dataState.data?.state === LoadingState.Loading ? <Spinner /> : <body.Component model={body} />;
+    return isLoading ? <Spinner /> : <body.Component model={body} />;
   }
 }

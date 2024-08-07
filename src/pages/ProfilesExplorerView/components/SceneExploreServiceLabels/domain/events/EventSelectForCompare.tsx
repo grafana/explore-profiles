@@ -1,7 +1,7 @@
 import { BusEventWithPayload } from '@grafana/data';
 
-import { GridItemDataWithStats } from '../../components/SceneExploreServiceLabels/components/SceneLabelValuesGrid';
-import { CompareTarget } from '../../components/SceneExploreServiceLabels/components/SceneLabelValuesStatAndTimeseries/ui/ComparePanel';
+import { CompareTarget } from '../../components/SceneGroupByLabels/components/SceneLabelValuesGrid/components/SceneComparePanel/ui/ComparePanel';
+import { GridItemDataWithStats } from '../../components/SceneGroupByLabels/components/SceneLabelValuesGrid/SceneLabelValuesGrid';
 
 export interface EventSelectForComparePayload {
   compareTarget: CompareTarget;

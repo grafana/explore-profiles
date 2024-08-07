@@ -8,7 +8,6 @@ import {
   SceneObject,
   SceneObjectBase,
   SceneObjectState,
-  SceneReactObject,
 } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -16,20 +15,19 @@ import { buildQuery } from '@shared/domain/url-params/parseQuery';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
-import { computeRoundedTimeRange } from '../../../..//helpers/computeRoundedTimeRange';
-import { interpolateQueryRunnerVariables } from '../../../..//infrastructure/helpers/interpolateQueryRunnerVariables';
 import { FavAction } from '../../../../domain/actions/FavAction';
 import { SelectAction } from '../../../../domain/actions/SelectAction';
 import { EventAddLabelToFilters } from '../../../../domain/events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../../../../domain/events/EventExpandPanel';
-import { EventSelectForCompare } from '../../../../domain/events/EventSelectForCompare';
 import { EventSelectLabel } from '../../../../domain/events/EventSelectLabel';
 import { EventViewServiceFlameGraph } from '../../../../domain/events/EventViewServiceFlameGraph';
 import { addFilter } from '../../../../domain/variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
+import { computeRoundedTimeRange } from '../../../../helpers/computeRoundedTimeRange';
 import { findSceneObjectByClass } from '../../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
+import { interpolateQueryRunnerVariables } from '../../../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { SceneLayoutSwitcher } from '../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../../../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
@@ -43,12 +41,13 @@ import { SceneByVariableRepeaterGrid } from '../../../SceneByVariableRepeaterGri
 import { GridItemData } from '../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneDrawer } from '../../../SceneDrawer';
 import { SceneLabelValuesBarGauge } from '../../../SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
-import { GridItemDataWithStats, SceneLabelValuesGrid } from '../SceneLabelValuesGrid';
-import { SceneLabelValuesStatAndTimeseries } from '../SceneLabelValuesStatAndTimeseries/SceneLabelValuesStatAndTimeseries';
-import { CompareTarget } from '../SceneLabelValuesStatAndTimeseries/ui/ComparePanel';
-import { CompareActions } from './ui/CompareActions';
+import { EventSelectForCompare } from '../../domain/events/EventSelectForCompare';
+import { SceneComparePanel } from './components/SceneLabelValuesGrid/components/SceneComparePanel/SceneComparePanel';
+import { CompareTarget } from './components/SceneLabelValuesGrid/components/SceneComparePanel/ui/ComparePanel';
+import { GridItemDataWithStats, SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
+import { CompareActions } from './components/SceneLabelValuesGrid/ui/CompareActions';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
@@ -269,7 +268,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     return filtersVariable.subscribeToState(() => {
       if (this.state.body instanceof SceneByVariableRepeaterGrid && noDataSwitcher.state.hideNoData === 'on') {
         // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
-        this.state.body.renderGridItems(true);
+        (this.state.body as SceneByVariableRepeaterGrid | SceneLabelValuesGrid).renderGridItems(true);
       }
     });
   }
@@ -373,32 +372,27 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const baselineItem = compare.get(CompareTarget.BASELINE);
     const comparisonItem = compare.get(CompareTarget.COMPARISON);
 
-    const comparePanels = sceneGraph.findAllObjects(this, (o) => o instanceof SceneReactObject) as SceneReactObject[];
+    const comparePanels = sceneGraph.findAllObjects(this, (o) => o instanceof SceneComparePanel) as SceneComparePanel[];
 
-    let baselineItemFound = false;
-    let comparisonItemFound = false;
+    let baselineDone = false;
+    let comparisonDone = false;
 
     for (const panel of comparePanels) {
-      let compareTargetValue = undefined;
-      const { key, props } = panel.state;
+      const { key } = panel.state;
 
-      if (
-        !baselineItemFound &&
-        baselineItem &&
-        key === SceneLabelValuesStatAndTimeseries.buildComparePanelKey(baselineItem)
-      ) {
-        compareTargetValue = CompareTarget.BASELINE;
-        baselineItemFound = true;
-      } else if (
-        !comparisonItemFound &&
-        comparisonItem &&
-        key === SceneLabelValuesStatAndTimeseries.buildComparePanelKey(comparisonItem)
-      ) {
-        compareTargetValue = CompareTarget.COMPARISON;
-        comparisonItemFound = true;
+      if (!baselineDone && baselineItem && key === SceneComparePanel.buildPanelKey(baselineItem)) {
+        panel.updateCompareTargetValue(CompareTarget.BASELINE);
+        baselineDone = true;
+        continue;
       }
 
-      panel.setState({ props: { ...props, compareTargetValue } });
+      if (!comparisonDone && comparisonItem && key === SceneComparePanel.buildPanelKey(comparisonItem)) {
+        panel.updateCompareTargetValue(CompareTarget.COMPARISON);
+        comparisonDone = true;
+        continue;
+      }
+
+      panel.updateCompareTargetValue(undefined);
     }
   }
 

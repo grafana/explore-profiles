@@ -1,4 +1,4 @@
-import { DashboardCursorSync, LoadingState, VariableRefresh } from '@grafana/data';
+import { DashboardCursorSync, VariableRefresh } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -8,7 +8,6 @@ import {
   SceneCSSGridLayout,
   sceneGraph,
   SceneObjectBase,
-  SceneQueryRunner,
   VariableValueOption,
   VizPanelState,
 } from '@grafana/scenes';
@@ -17,18 +16,18 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { FavAction } from '../../domain/actions/FavAction';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
+import { EventDataReceived } from '../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
+import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
 import { LayoutType, SceneLayoutSwitcher, SceneLayoutSwitcherState } from './components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher, SceneNoDataSwitcherState } from './components/SceneNoDataSwitcher';
 import { PanelType, ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter, SceneQuickFilterState } from './components/SceneQuickFilter';
+import { sortFavGridItems } from './domain/sortFavGridItems';
 import { GridItemData } from './types/GridItemData';
 
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
@@ -47,25 +46,6 @@ interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
-
-const DEFAULT_SORT_ITEMS_FN: SceneByVariableRepeaterGridState['sortItemsFn'] = function (a, b) {
-  const aIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(a));
-  const bIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(b));
-
-  if (aIsFav && bIsFav) {
-    return a.label.localeCompare(b.label);
-  }
-
-  if (bIsFav) {
-    return +1;
-  }
-
-  if (aIsFav) {
-    return -1;
-  }
-
-  return 0;
-};
 
 export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
   static buildGridItemKey(item: GridItemData) {
@@ -95,7 +75,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       items: [],
       headerActions,
       mapOptionToItem,
-      sortItemsFn: sortItemsFn || DEFAULT_SORT_ITEMS_FN,
+      sortItemsFn: sortItemsFn || sortFavGridItems,
       hideNoData: false,
       body: new SceneCSSGridLayout({
         templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(SceneLayoutSwitcher.DEFAULT_LAYOUT),
@@ -320,8 +300,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
-    const sub = (vizPanel.state.body.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
+    const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
+      if (event.payload.series.length > 0) {
         return;
       }
 

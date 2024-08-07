@@ -12,9 +12,12 @@ import { BarGaugeDisplayMode, BarGaugeNamePlacement, BarGaugeSizing, BarGaugeVal
 import React from 'react';
 
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { getLabelFieldName } from '../helpers/getLabelFieldName';
+import { getSeriesStatsValue } from '../helpers/getSeriesStatsValue';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats, sortSeries } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+import { EventDataReceived } from './SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 
 interface SceneLabelValuesBarGaugeState extends SceneObjectState {
   body: VizPanel;
@@ -53,7 +56,11 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
         return;
       }
 
-      body.setState(this.getConfig(item, state.data.series));
+      const { series } = state.data;
+
+      this.publishEvent(new EventDataReceived({ series }));
+
+      body.setState(this.getConfig(item, series));
     });
 
     return () => {
@@ -64,8 +71,8 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
   getConfig(item: GridItemData, series: DataFrame[]) {
     let max = Number.NEGATIVE_INFINITY;
 
-    for (const serie of series) {
-      const allValuesSum = serie.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
+    for (const s of series) {
+      const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
 
       if (allValuesSum > max) {
         max = allValuesSum;
@@ -111,18 +118,19 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
   }
 
   getOverrides(item: GridItemData, series: DataFrame[]) {
-    const groupByLabel = item.queryRunnerParams.groupBy?.label;
+    const { index: startColorIndex, queryRunnerParams } = item;
+    const groupByLabel = queryRunnerParams.groupBy?.label;
 
-    return series.map((serie, i) => ({
-      matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
+    return series.map((s, i) => ({
+      matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
       properties: [
         {
           id: 'displayName',
-          value: groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name,
+          value: getLabelFieldName(s.fields[1], groupByLabel),
         },
         {
           id: 'color',
-          value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
+          value: { mode: 'fixed', fixedColor: getColorByIndex(startColorIndex + i) },
         },
       ],
     }));

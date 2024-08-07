@@ -11,16 +11,19 @@ import {
 import { GraphGradientMode } from '@grafana/schema';
 import React from 'react';
 
-import { getColorByIndex } from '../helpers/getColorByIndex';
-import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { getLabelFieldName } from '../../helpers/getLabelFieldName';
+import { getSeriesStatsValue } from '../../helpers/getSeriesStatsValue';
+import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
+import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
   addStats,
   limitNumberOfSeries,
   sortSeries,
-} from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
-import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { EventDataReceived } from './domain/events/EventDataReceived';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
@@ -65,13 +68,19 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { body } = this.state;
 
     const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
+      if (state.data?.state !== LoadingState.Done) {
         return;
       }
 
-      const config = this.state.displayAllValues
-        ? this.getAllValuesConfig(state.data.series)
-        : this.getConfig(state.data.series);
+      const { series } = state.data;
+
+      this.publishEvent(new EventDataReceived({ series }));
+
+      if (!series.length) {
+        return;
+      }
+
+      const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
 
       body.setState(config);
     });
@@ -89,8 +98,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     if (item.queryRunnerParams.groupBy?.label) {
       title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
 
-      const totalSeriesCount =
-        series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
+      const totalSeriesCount = getSeriesStatsValue(series[0], 'totalSeriesCount') || 0;
       const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
 
       description = hasTooManySeries
@@ -132,19 +140,19 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    return series.map((serie, i) => {
-      let displayName = serie.fields[1].labels?.[groupByLabel as string] || serie.fields[1].name;
+    return series.map((s, i) => {
+      const metricField = s.fields[1];
+      let displayName = getLabelFieldName(metricField, groupByLabel);
 
       if (series.length === 1) {
-        const allValuesSum = serie.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
-        const { unit } = serie.fields[1].config;
-        const formattedValue = getValueFormat(unit)(allValuesSum);
+        const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
+        const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
 
         displayName = `${displayName} / total = ${formattedValue.text}${formattedValue.suffix}`;
       }
 
       return {
-        matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
+        matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
         properties: [
           {
             id: 'displayName',
@@ -161,7 +169,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   getGroupByValues(series: DataFrame[]) {
     const groupByLabel = this.state.item.queryRunnerParams.groupBy?.label;
-    return series.map((serie) => serie.fields[1].labels?.[groupByLabel as string] || serie.fields[1].name);
+    return series.map((s) => getLabelFieldName(s.fields[1], groupByLabel));
   }
 
   updateTitle(newTitle: string) {
@@ -171,6 +179,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
     const { body } = model.useState();
 
-    return <body.Component model={body} />;
+    return <body.Component model={body} data-testid="hey" />;
   }
 }
