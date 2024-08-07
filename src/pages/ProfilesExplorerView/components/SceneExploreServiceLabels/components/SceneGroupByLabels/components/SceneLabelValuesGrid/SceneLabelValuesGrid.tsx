@@ -295,19 +295,9 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     const compare = (findSceneObjectByClass(this, SceneGroupByLabels) as SceneGroupByLabels).getCompare();
 
     const gridItems = newItems.map((item) => {
-      const vizPanel = new SceneLabelValuePanel({
-        item,
-        headerActions: this.state.headerActions.bind(null, item, this.state.items),
-        compareTargetValue: this.getItemCompareTargetValue(item, compare),
-      });
-
-      if (this.state.hideNoData) {
-        this.setupHideNoData(vizPanel);
-      }
-
       return new SceneCSSGridItem({
         key: SceneLabelValuesGrid.buildGridItemKey(item),
-        body: vizPanel,
+        body: this.buildVizPanel(item, compare),
       });
     });
 
@@ -317,22 +307,28 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     });
   }
 
-  setupHideNoData(vizPanel: SceneLabelValuePanel) {
+  buildVizPanel(item: GridItemDataWithStats, compare: Map<CompareTarget, GridItemDataWithStats>) {
+    const vizPanel = new SceneLabelValuePanel({
+      item,
+      headerActions: this.state.headerActions.bind(null, item, this.state.items),
+      compareTargetValue: this.getItemCompareTargetValue(item, compare),
+    });
+
     const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
-      if (event.payload.series.length > 0) {
-        return;
-      }
+      // we might have to consider if we update the item.stats here (will impact sorting if we don't do it)
 
-      const gridItem = sceneGraph.getAncestor(vizPanel, SceneCSSGridItem);
-      const { key: gridItemKey } = gridItem.state;
-      const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
+      if (this.state.hideNoData && !event.payload.series.length) {
+        const gridItem = sceneGraph.getAncestor(vizPanel, SceneCSSGridItem);
+        const { key: gridItemKey } = gridItem.state;
+        const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
 
-      const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
+        const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
 
-      if (!filteredChildren.length) {
-        this.renderEmptyState();
-      } else {
-        grid.setState({ children: filteredChildren });
+        if (!filteredChildren.length) {
+          this.renderEmptyState();
+        } else {
+          grid.setState({ children: filteredChildren });
+        }
       }
     });
 
@@ -341,6 +337,8 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
         sub.unsubscribe();
       };
     });
+
+    return vizPanel;
   }
 
   getItemCompareTargetValue(item: GridItemDataWithStats, compare: Map<CompareTarget, GridItemDataWithStats>) {
