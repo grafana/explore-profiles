@@ -201,23 +201,16 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   subscribeToHideNoDataChange() {
     const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
 
-    this.setState({
-      hideNoData: noDataSwitcher.state.hideNoData === 'on',
-    });
+    const onChangeState = (newState: SceneNoDataSwitcherState, prevState?: SceneNoDataSwitcherState) => {
+      if (newState.hideNoData !== prevState?.hideNoData) {
+        this.setState({ hideNoData: newState.hideNoData === 'on' });
 
-    const onChangeState = (newState: SceneNoDataSwitcherState, prevState: SceneNoDataSwitcherState) => {
-      if (newState.hideNoData !== prevState.hideNoData) {
-        this.setState({
-          hideNoData: newState.hideNoData === 'on',
-          $data: new SceneDataTransformer({
-            $data: buildTimeSeriesQueryRunner({ groupBy: { label: this.state.label } }),
-            transformations: [addRefId, addStats],
-          }),
-        });
-
-        this.fetchData();
+        // we force render because this.state.items certainly have not changed but we want to update the UI panels anyway
+        this.renderGridItems(true);
       }
     };
+
+    onChangeState(noDataSwitcher.state);
 
     return noDataSwitcher.subscribeToState(onChangeState);
   }
@@ -267,7 +260,11 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   renderGridItems(forceRender = false) {
-    const { state: loadingState, series, errors } = this.state.$data.state.data!;
+    if (!this.state.$data.state.data) {
+      return;
+    }
+
+    const { state: loadingState, series, errors } = this.state.$data.state.data;
 
     if (loadingState === LoadingState.Loading) {
       return;
