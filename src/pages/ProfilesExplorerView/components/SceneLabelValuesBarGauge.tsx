@@ -13,10 +13,10 @@ import React from 'react';
 
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getLabelFieldName } from '../helpers/getLabelFieldName';
-import { getSeriesStatsValue } from '../helpers/getSeriesStatsValue';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats, sortSeries } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+import { getSeriesStatsValue } from './SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/getSeriesStatsValue';
 import { EventDataReceived } from './SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 
 interface SceneLabelValuesBarGaugeState extends SceneObjectState {

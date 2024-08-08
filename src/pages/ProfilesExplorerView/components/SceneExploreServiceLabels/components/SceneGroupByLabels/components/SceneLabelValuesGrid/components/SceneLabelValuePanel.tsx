@@ -4,11 +4,11 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanelState }
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { getSeriesStatsValue } from '../../../../../../../helpers/getSeriesStatsValue';
 import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { EventDataReceived } from '../../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
-import { GRID_AUTO_ROWS, GridItemDataWithStats } from '../SceneLabelValuesGrid';
+import { getSeriesStatsValue } from '../domain/getSeriesStatsValue';
+import { GRID_AUTO_ROWS } from '../SceneLabelValuesGrid';
 import { SceneComparePanel } from './SceneComparePanel/SceneComparePanel';
 import { CompareTarget } from './SceneComparePanel/ui/ComparePanel';
 
@@ -18,7 +18,7 @@ interface SceneLabelValuesStatAndTimeseriesState extends SceneObjectState {
 }
 
 export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAndTimeseriesState> {
-  static buildPanelKey(item: GridItemDataWithStats) {
+  static buildPanelKey(item: GridItemData) {
     return `compare-panel-${item.value}`;
   }
 
@@ -27,7 +27,7 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
     headerActions,
     compareTargetValue,
   }: {
-    item: GridItemDataWithStats;
+    item: GridItemData;
     headerActions: (item: GridItemData) => VizPanelState['headerActions'];
     compareTargetValue?: CompareTarget;
   }) {
@@ -47,7 +47,7 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
       const [s] = event.payload.series;
       const allValuesSum = s ? getSeriesStatsValue(s, 'allValuesSum') || 0 : 0;
 
-      if (comparePanel.getStats().allValuesSum !== allValuesSum) {
+      if (comparePanel.getItemStats()?.allValuesSum !== allValuesSum) {
         comparePanel.updateStats({
           allValuesSum,
           unit: s ? (s.fields[1].config.unit as string) : 'short',

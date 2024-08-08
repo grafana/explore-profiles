@@ -13,7 +13,6 @@ import React from 'react';
 
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getLabelFieldName } from '../../helpers/getLabelFieldName';
-import { getSeriesStatsValue } from '../../helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
@@ -23,6 +22,7 @@ import {
   sortSeries,
 } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { getSeriesStatsValue } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/getSeriesStatsValue';
 import { EventDataReceived } from './domain/events/EventDataReceived';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
@@ -179,6 +179,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
     const { body } = model.useState();
 
-    return <body.Component model={body} data-testid="hey" />;
+    return <body.Component model={body} />;
   }
 }

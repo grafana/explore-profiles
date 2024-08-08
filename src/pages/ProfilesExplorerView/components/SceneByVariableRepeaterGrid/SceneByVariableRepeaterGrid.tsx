@@ -16,6 +16,7 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
+import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
@@ -112,8 +113,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
+    const filtersSub = this.subscribeToFiltersChange();
 
     return () => {
+      filtersSub.unsubscribe();
       hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
@@ -210,6 +213,19 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     onChangeState(noDataSwitcher.state);
 
     return noDataSwitcher.subscribeToState(onChangeState);
+  }
+
+  subscribeToFiltersChange() {
+    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+    // the handler will be called each time a filter is added/removed/modified
+    return filtersVariable.subscribeToState(() => {
+      if (noDataSwitcher.state.hideNoData === 'on') {
+        // to be sure the list is updated we force render because the filters only influence the query made in each panel
+        this.renderGridItems(true);
+      }
+    });
   }
 
   buildItemsData(variable: QueryVariable) {
@@ -350,9 +366,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   renderEmptyState() {
-    const body = this.state.body as SceneCSSGridLayout;
-
-    body.setState({
+    (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({
@@ -365,9 +379,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   renderErrorState(error: Error) {
-    const body = this.state.body as SceneCSSGridLayout;
-
-    body.setState({
+    (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({

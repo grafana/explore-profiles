@@ -2,8 +2,8 @@ import { DataFrame } from '@grafana/data';
 import { merge } from 'lodash';
 import { map, Observable } from 'rxjs';
 
-import { getSeriesStatsValue } from '../../../helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../../../infrastructure/labels/LabelsDataSource';
+import { getSeriesStatsValue } from '../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/getSeriesStatsValue';
 
 // General note: because (e.g.) SceneLabelValuesTimeseries sets the data provider in its constructor, data can come as undefined, hence all the optional chaining operators
 // in the transformers below

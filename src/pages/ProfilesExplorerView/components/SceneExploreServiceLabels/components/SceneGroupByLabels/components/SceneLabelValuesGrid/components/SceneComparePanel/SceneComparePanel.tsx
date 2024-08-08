@@ -1,26 +1,28 @@
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import React from 'react';
 
+import { GridItemData } from '../../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { EventSelectForCompare } from '../../../../../../domain/events/EventSelectForCompare';
-import { GridItemDataWithStats } from '../../SceneLabelValuesGrid';
 import { ComparePanel, CompareTarget } from './ui/ComparePanel';
 
+export type ItemStats = {
+  allValuesSum: number;
+  unit: string;
+};
+
 interface SceneComparePanelState extends SceneObjectState {
-  item: GridItemDataWithStats;
+  item: GridItemData;
+  itemStats?: ItemStats;
   compareTargetValue?: CompareTarget;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   static WIDTH_IN_PIXELS = 180;
 
-  static buildPanelKey(item: GridItemDataWithStats) {
-    return `compare-panel-${item.value}`;
-  }
-
-  constructor({ item, compareTargetValue }: { item: GridItemDataWithStats; compareTargetValue?: CompareTarget }) {
+  constructor({ item, compareTargetValue }: { item: GridItemData; compareTargetValue?: CompareTarget }) {
     super({
-      key: SceneComparePanel.buildPanelKey(item),
       item,
+      itemStats: undefined,
       compareTargetValue,
     });
   }
@@ -29,13 +31,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     this.setState({ compareTargetValue });
   }
 
-  getStats() {
-    return this.state.item.stats;
+  getItemStats() {
+    return this.state.itemStats;
   }
 
-  updateStats(stats: GridItemDataWithStats['stats']) {
-    const { item } = this.state;
-    this.setState({ item: { ...item, stats } });
+  updateStats(itemStats: ItemStats) {
+    this.setState({ itemStats });
   }
 
   onChangeCompareTarget = (compareTarget: CompareTarget) => {
@@ -44,11 +45,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   };
 
   static Component({ model }: SceneComponentProps<SceneComparePanel>) {
-    const { item, compareTargetValue } = model.useState();
+    const { item, itemStats, compareTargetValue } = model.useState();
 
     return (
       <ComparePanel
         item={item}
+        itemStats={itemStats}
         compareTargetValue={compareTargetValue}
         onChangeCompareTarget={model.onChangeCompareTarget}
       />

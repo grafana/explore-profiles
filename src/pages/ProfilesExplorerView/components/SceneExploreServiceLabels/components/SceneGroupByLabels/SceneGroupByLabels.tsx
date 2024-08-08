@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
+import { GrafanaTheme2 } from '@grafana/data';
 import { config } from '@grafana/runtime';
 import {
   MultiValueVariableState,
@@ -46,13 +46,13 @@ import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfi
 import { EventSelectForCompare } from '../../domain/events/EventSelectForCompare';
 import { SceneComparePanel } from './components/SceneLabelValuesGrid/components/SceneComparePanel/SceneComparePanel';
 import { CompareTarget } from './components/SceneLabelValuesGrid/components/SceneComparePanel/ui/ComparePanel';
-import { GridItemDataWithStats, SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
+import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
 import { CompareActions } from './components/SceneLabelValuesGrid/ui/CompareActions';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
   drawer: SceneDrawer;
-  compare: Map<CompareTarget, GridItemDataWithStats>;
+  compare: Map<CompareTarget, GridItemData>;
   panelTypeChangeSub?: Unsubscribable;
 }
 
@@ -66,20 +66,26 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       panelTypeChangeSub: undefined,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, item));
+    this.addActivationHandler(() => {
+      this.onActivate(item);
+    });
   }
 
-  onActivate(item?: GridItemData) {
+  async onActivate(item?: GridItemData) {
+    // initial load
+    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+    await groupByVariable.update();
+
     if (item) {
       this.initVariablesAndControls(item);
     }
 
+    this.renderBody(groupByVariable.state);
+
     const groupBySub = this.subscribeToGroupByChange();
-    const filtersSub = this.subscribeToFiltersChange();
     const panelEventsSub = this.subscribeToPanelEvents();
 
     return () => {
-      filtersSub.unsubscribe();
       panelEventsSub.unsubscribe();
       groupBySub.unsubscribe();
 
@@ -93,18 +99,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     if (groupBy?.label) {
       const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
-
-      // because (to the contrary of the "Series" data) we don't load labels if the groupBy variable is not active
-      // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
-      // we have to wait until the new groupBy options have been loaded
-      // if not, its value will default to "all" regardless of our call to "changeValueTo"
-      // this happens, e.g., when landing on "Favorites" then jumping to "Labels" by clicking on a favorite that contains a "groupBy" label value
-      const groupBySub = groupByVariable.subscribeToState((newState, prevState) => {
-        if (!newState.loading && prevState.loading) {
-          groupByVariable.changeValueTo(groupBy.label);
-          groupBySub.unsubscribe();
-        }
-      });
+      groupByVariable.changeValueTo(groupBy.label);
     }
 
     if (panelType) {
@@ -115,35 +110,68 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   subscribeToGroupByChange() {
     const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
-    let clearQuickFilter = false; // do not clear the filter when the user lands on the page
+    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
 
-    const onChangeState = (newState: MultiValueVariableState, prevState?: MultiValueVariableState) => {
-      if (newState.value === prevState?.value) {
-        return;
-      }
-
-      const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
-
-      if (clearQuickFilter) {
+    return groupByVariable.subscribeToState((newState, prevState) => {
+      if (newState.value !== prevState?.value) {
         quickFilter.clear();
+
+        this.renderBody(newState);
       }
+    });
+  }
 
-      this.state.panelTypeChangeSub?.unsubscribe();
+  subscribeToPanelEvents() {
+    const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
+      this.selectLabel(event.payload.item);
+    });
 
-      if (newState.value === 'all') {
-        // we have to resubscribe every time because the subscription is removed every time the ScenePanelTypeSwitcher UI component is unmounted
-        this.setState({ panelTypeChangeSub: this.subscribeToPanelTypeChange() });
+    const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
+      this.openExpandedPanelDrawer(event.payload.item);
+    });
 
-        this.switchToLabelNamesGrid();
-      } else {
-        this.switchToLabelValuesGrid(newState);
-      }
+    const selectForCompareSub = this.subscribeToEvent(EventSelectForCompare, (event) => {
+      const { compareTarget, item } = event.payload;
+      this.selectForCompare(compareTarget, item);
+    });
+
+    const addToFiltersSub = this.subscribeToEvent(EventAddLabelToFilters, (event) => {
+      this.addLabelValueToFilters(event.payload.item);
+    });
+
+    return {
+      unsubscribe() {
+        addToFiltersSub.unsubscribe();
+        selectForCompareSub.unsubscribe();
+        expandPanelSub.unsubscribe();
+        selectLabelSub.unsubscribe();
+      },
     };
+  }
 
-    onChangeState(groupByVariable.state);
-    clearQuickFilter = true;
+  subscribeToPanelTypeChange() {
+    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
 
-    return groupByVariable.subscribeToState(onChangeState);
+    return panelTypeSwitcher.subscribeToState(
+      (newState: ScenePanelTypeSwitcherState, prevState?: ScenePanelTypeSwitcherState) => {
+        if (newState.panelType !== prevState?.panelType) {
+          (this.state.body as SceneByVariableRepeaterGrid)?.renderGridItems();
+        }
+      }
+    );
+  }
+
+  renderBody(groupByVariableState: MultiValueVariableState) {
+    this.state.panelTypeChangeSub?.unsubscribe();
+
+    if (groupByVariableState.value === 'all') {
+      // we have to resubscribe every time because the subscription is removed every time the ScenePanelTypeSwitcher UI component is unmounted
+      this.setState({ panelTypeChangeSub: this.subscribeToPanelTypeChange() });
+
+      this.switchToLabelNamesGrid();
+    } else {
+      this.switchToLabelValuesGrid(groupByVariableState);
+    }
   }
 
   switchToLabelNamesGrid() {
@@ -183,44 +211,20 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
           panelType: panelType as PanelType,
         };
       },
-      headerActions: (item) => {
-        const { queryRunnerParams } = item;
-
-        if (!queryRunnerParams.groupBy) {
-          return [
-            new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-            new SelectAction({ EventClass: EventAddLabelToFilters, item }),
-            new FavAction({ item }),
-          ];
-        }
-
-        return [
-          new SelectAction({ EventClass: EventSelectLabel, item }),
-          new SelectAction({ EventClass: EventExpandPanel, item }),
-          new FavAction({ item }),
-        ];
-      },
+      headerActions: (item) => [
+        new SelectAction({ EventClass: EventSelectLabel, item }),
+        new SelectAction({ EventClass: EventExpandPanel, item }),
+        new FavAction({ item }),
+      ],
     });
   }
 
-  subscribeToPanelTypeChange() {
-    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
-
-    return panelTypeSwitcher.subscribeToState(
-      (newState: ScenePanelTypeSwitcherState, prevState?: ScenePanelTypeSwitcherState) => {
-        if (newState.panelType !== prevState?.panelType) {
-          (this.state.body as SceneByVariableRepeaterGrid)?.renderGridItems();
-        }
-      }
-    );
-  }
-
-  switchToLabelValuesGrid(newState: MultiValueVariableState) {
+  switchToLabelValuesGrid(groupByVariableState: MultiValueVariableState) {
     (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
       'Search label values (comma-separated regexes are supported)'
     );
 
-    const { value, options } = newState;
+    const { value, options } = groupByVariableState;
 
     const index = options
       .filter((o) => o.value !== 'all')
@@ -229,7 +233,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const startColorIndex = index > -1 ? index : 0;
 
     this.setState({
-      body: this.buildSceneLabelValuesGrid(newState.value as string, startColorIndex),
+      body: this.buildSceneLabelValuesGrid(value as string, startColorIndex),
     });
 
     this.clearCompare();
@@ -240,65 +244,12 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       key: 'service-label-values-grid',
       startColorIndex,
       label,
-      headerActions: (item) => {
-        const { queryRunnerParams } = item;
-
-        if (!queryRunnerParams.groupBy) {
-          return [
-            new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-            new SelectAction({ EventClass: EventAddLabelToFilters, item }),
-            new FavAction({ item }),
-          ];
-        }
-
-        return [
-          new SelectAction({ EventClass: EventSelectLabel, item }),
-          new SelectAction({ EventClass: EventExpandPanel, item }),
-          new FavAction({ item }),
-        ];
-      },
+      headerActions: (item) => [
+        new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+        new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+        new FavAction({ item }),
+      ],
     });
-  }
-
-  subscribeToFiltersChange() {
-    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
-
-    // the handler will be called each time a filter is added/removed/modified
-    return filtersVariable.subscribeToState(() => {
-      if (noDataSwitcher.state.hideNoData === 'on') {
-        // we force render because the filters only influence the query made in each panel, not the list of items to render (which come from the groupBy options)
-        (this.state.body as SceneByVariableRepeaterGrid | SceneLabelValuesGrid).renderGridItems(true);
-      }
-    });
-  }
-
-  subscribeToPanelEvents() {
-    const selectLabelSub = this.subscribeToEvent(EventSelectLabel, (event) => {
-      this.selectLabel(event.payload.item);
-    });
-
-    const addToFiltersSub = this.subscribeToEvent(EventAddLabelToFilters, (event) => {
-      this.addLabelValueToFilters(event.payload.item);
-    });
-
-    const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
-      this.openExpandedPanelDrawer(event.payload.item);
-    });
-
-    const selectForCompareSub = this.subscribeToEvent(EventSelectForCompare, (event) => {
-      const { compareTarget, item } = event.payload;
-      this.selectForCompare(compareTarget, item);
-    });
-
-    return {
-      unsubscribe() {
-        selectForCompareSub.unsubscribe();
-        expandPanelSub.unsubscribe();
-        addToFiltersSub.unsubscribe();
-        selectLabelSub.unsubscribe();
-      },
-    };
   }
 
   selectLabel({ queryRunnerParams }: GridItemData) {
@@ -312,23 +263,15 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   addLabelValueToFilters(item: GridItemData) {
-    const filterByVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
-
-    let filterToAdd: AdHocVariableFilter;
-    const { filters, groupBy } = item.queryRunnerParams;
+    const { filters } = item.queryRunnerParams;
 
     if (filters?.[0]) {
-      filterToAdd = filters?.[0];
-    } else if (groupBy?.values.length === 1) {
-      filterToAdd = { key: groupBy.label, operator: '=', value: groupBy.values[0] };
-    } else {
-      const error = new Error('Cannot build filter! Missing "filters" and "groupBy" value.');
-      console.error(error);
-      console.info(item);
-      throw error;
+      const filterToAdd = filters?.[0];
+      addFilter(findSceneObjectByClass(this, FiltersVariable) as FiltersVariable, filterToAdd);
+      return;
     }
 
-    addFilter(filterByVariable, filterToAdd);
+    console.error('Cannot build filter! Missing "filters" and "groupBy" value.', item);
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
@@ -351,7 +294,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     });
   }
 
-  selectForCompare(compareTarget: CompareTarget, item: GridItemDataWithStats) {
+  selectForCompare(compareTarget: CompareTarget, item: GridItemData) {
     const compare = new Map(this.state.compare);
 
     const otherTarget = compareTarget === CompareTarget.BASELINE ? CompareTarget.COMPARISON : CompareTarget.BASELINE;
@@ -374,21 +317,18 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     const comparePanels = sceneGraph.findAllObjects(this, (o) => o instanceof SceneComparePanel) as SceneComparePanel[];
 
-    let baselineDone = false;
-    let comparisonDone = false;
-
+    // TODO: optimize if needed
+    // we can remove the loop if we clear the current selection in the UI before updating the compare map (see selectForCompare() and onClickClearCompareButton())
     for (const panel of comparePanels) {
-      const { key } = panel.state;
+      const { item } = panel.state;
 
-      if (!baselineDone && baselineItem && key === SceneComparePanel.buildPanelKey(baselineItem)) {
+      if (baselineItem?.value === item.value) {
         panel.updateCompareTargetValue(CompareTarget.BASELINE);
-        baselineDone = true;
         continue;
       }
 
-      if (!comparisonDone && comparisonItem && key === SceneComparePanel.buildPanelKey(comparisonItem)) {
+      if (comparisonItem?.value === item.value) {
         panel.updateCompareTargetValue(CompareTarget.COMPARISON);
-        comparisonDone = true;
         continue;
       }
 

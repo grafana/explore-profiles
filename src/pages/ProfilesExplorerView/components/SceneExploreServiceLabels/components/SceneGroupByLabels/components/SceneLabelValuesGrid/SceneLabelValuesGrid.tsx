@@ -15,9 +15,10 @@ import { Spinner } from '@grafana/ui';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
+import { FiltersVariable } from '../../../../../../domain/variables/FiltersVariable/FiltersVariable';
+import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { findSceneObjectByClass } from '../../../../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../../../../helpers/getSceneVariableValue';
-import { getSeriesStatsValue } from '../../../../../../helpers/getSeriesStatsValue';
 import { buildTimeSeriesQueryRunner } from '../../../../../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneEmptyState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
@@ -36,28 +37,25 @@ import {
   SceneQuickFilterState,
 } from '../../../../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { sortFavGridItems } from '../../../../../SceneByVariableRepeaterGrid/domain/sortFavGridItems';
-import { addRefId, addStats } from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import {
+  addRefId,
+  addStats,
+  sortSeries,
+} from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { EventDataReceived } from '../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 import { SceneGroupByLabels } from '../../SceneGroupByLabels';
 import { CompareTarget } from './components/SceneComparePanel/ui/ComparePanel';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
 
-export type GridItemDataWithStats = GridItemData & {
-  stats: {
-    allValuesSum: number;
-    unit: string;
-  };
-};
-
 export interface SceneLabelValuesGridState extends EmbeddedSceneState {
   $data: SceneDataProvider;
   isLoading: boolean;
-  items: GridItemDataWithStats[];
+  items: GridItemData[];
   label: string;
   startColorIndex: number;
   headerActions: (item: GridItemData, items: GridItemData[]) => VizPanelState['headerActions'];
-  sortItemsFn: (a: GridItemDataWithStats, b: GridItemDataWithStats) => number;
+  sortItemsFn: (a: GridItemData, b: GridItemData) => number;
   hideNoData: boolean;
 }
 
@@ -89,7 +87,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       isLoading: true,
       $data: new SceneDataTransformer({
         $data: buildTimeSeriesQueryRunner({ groupBy: { label } }),
-        transformations: [addRefId, addStats],
+        transformations: [addRefId, addStats, sortSeries],
       }),
       hideNoData: false,
       headerActions,
@@ -112,38 +110,53 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   onActivate() {
-    this.fetchData();
+    this.subscribeOnceToDataChange();
+
+    const groupBySub = this.subscribeToGroupByChange();
 
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
+    const filtersSub = this.subscribeToFiltersChange();
 
     return () => {
+      filtersSub.unsubscribe();
       hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
       refreshSub.unsubscribe();
+      groupBySub.unsubscribe();
     };
   }
 
-  fetchData() {
-    this.setState({ isLoading: true });
-
+  subscribeOnceToDataChange(forceRender = false) {
     const dataSub = this.state.$data.subscribeToState((newState) => {
-      if (newState.data?.state !== LoadingState.Loading) {
-        dataSub.unsubscribe();
+      if (newState.data?.state === LoadingState.Loading) {
+        return;
+      }
 
-        this.renderGridItems();
+      dataSub.unsubscribe();
 
-        this.setState({ isLoading: false });
+      this.renderGridItems(forceRender);
+
+      this.setState({ isLoading: false });
+    });
+  }
+
+  subscribeToGroupByChange() {
+    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+
+    return groupByVariable.subscribeToState((newState, prevState) => {
+      if (!newState.loading && prevState.loading) {
+        this.refetchData();
       }
     });
   }
 
   subscribeToRefreshClick() {
     const onClickRefresh = () => {
-      this.fetchData();
+      this.refetchData();
     };
 
     // start of hack, for a better UX: we disable the variable "refresh" option and we allow the user to reload the list only by clicking on the "Refresh" button
@@ -201,18 +214,41 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   subscribeToHideNoDataChange() {
     const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
 
+    this.setState({ hideNoData: noDataSwitcher.state.hideNoData === 'on' });
+
     const onChangeState = (newState: SceneNoDataSwitcherState, prevState?: SceneNoDataSwitcherState) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
         this.setState({ hideNoData: newState.hideNoData === 'on' });
 
-        // we force render because this.state.items certainly have not changed but we want to update the UI panels anyway
-        this.renderGridItems(true);
+        this.refetchData(true);
       }
     };
 
-    onChangeState(noDataSwitcher.state);
-
     return noDataSwitcher.subscribeToState(onChangeState);
+  }
+
+  subscribeToFiltersChange() {
+    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+
+    // the handler will be called each time a filter is added/removed/modified
+    return filtersVariable.subscribeToState(() => {
+      if (noDataSwitcher.state.hideNoData === 'on') {
+        // to be sure the list is updated we refetch because the filters only influence the query made in each panel
+        this.refetchData();
+      }
+    });
+  }
+
+  refetchData(forceRender = false) {
+    this.setState({
+      $data: new SceneDataTransformer({
+        $data: buildTimeSeriesQueryRunner({ groupBy: { label: this.state.label } }),
+        transformations: [addRefId, addStats, sortSeries],
+      }),
+    });
+
+    this.subscribeOnceToDataChange(forceRender);
   }
 
   shouldRenderItems(newItems: SceneLabelValuesGridState['items']) {
@@ -231,30 +267,26 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
 
     const { label, startColorIndex, sortItemsFn } = this.state;
 
-    const items = series
-      .sort((s1, s2) => (getSeriesStatsValue(s2, 'allValuesSum') || 0) - (getSeriesStatsValue(s1, 'allValuesSum') || 0))
-      .map((s, index) => {
-        const metricField = s.fields[1];
-        const labelFromSerieLabels = metricField.labels?.[label];
-        const labelFromSerieName = metricField.name;
-        const labelValue = labelFromSerieLabels || labelFromSerieName;
+    // the series are already sorted by the data transformation
+    const items = series.map((s, index) => {
+      const metricField = s.fields[1];
+      const labelValueFromFieldLabels = metricField.labels?.[label]; // can be empty when the ingested profiles do not have a label value set
+      const labelValue = labelValueFromFieldLabels || metricField.name; // ensures a non-empy value for the UI
+      const labelName = labelValue;
 
-        return {
-          index: startColorIndex + index,
-          value: labelValue,
-          label: labelValue,
-          queryRunnerParams: {
-            serviceName,
-            profileMetricId,
-            filters: [{ key: label, operator: '=', value: labelFromSerieLabels || '' }],
-          },
-          panelType: PanelType.TIMESERIES,
-          stats: {
-            allValuesSum: getSeriesStatsValue(s, 'allValuesSum') || 0,
-            unit: metricField.config.unit as string,
-          },
-        };
-      });
+      return {
+        index: startColorIndex + index,
+        value: labelValue,
+        label: labelName,
+        queryRunnerParams: {
+          serviceName,
+          profileMetricId,
+          // defaults to an "is empty" operator in the UI when the label value is not set
+          filters: [{ key: label, operator: '=', value: labelValueFromFieldLabels || '' }],
+        },
+        panelType: PanelType.TIMESERIES,
+      };
+    });
 
     return this.filterItems(items).sort(sortItemsFn);
   }
@@ -304,7 +336,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     });
   }
 
-  buildVizPanel(item: GridItemDataWithStats, compare: Map<CompareTarget, GridItemDataWithStats>) {
+  buildVizPanel(item: GridItemData, compare: Map<CompareTarget, GridItemData>) {
     const vizPanel = new SceneLabelValuePanel({
       item,
       headerActions: this.state.headerActions.bind(null, item, this.state.items),
@@ -312,20 +344,20 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     });
 
     const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
-      // we might have to consider if we update the item.stats here (will impact sorting if we don't do it)
+      if (!this.state.hideNoData || event.payload.series.length) {
+        return;
+      }
 
-      if (this.state.hideNoData && !event.payload.series.length) {
-        const gridItem = sceneGraph.getAncestor(vizPanel, SceneCSSGridItem);
-        const { key: gridItemKey } = gridItem.state;
-        const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
+      const gridItem = sceneGraph.getAncestor(vizPanel, SceneCSSGridItem);
+      const { key: gridItemKey } = gridItem.state;
+      const grid = sceneGraph.getAncestor(gridItem, SceneCSSGridLayout);
 
-        const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
+      const filteredChildren = grid.state.children.filter((c) => c.state.key !== gridItemKey);
 
-        if (!filteredChildren.length) {
-          this.renderEmptyState();
-        } else {
-          grid.setState({ children: filteredChildren });
-        }
+      if (!filteredChildren.length) {
+        this.renderEmptyState();
+      } else {
+        grid.setState({ children: filteredChildren });
       }
     });
 
@@ -338,7 +370,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     return vizPanel;
   }
 
-  getItemCompareTargetValue(item: GridItemDataWithStats, compare: Map<CompareTarget, GridItemDataWithStats>) {
+  getItemCompareTargetValue(item: GridItemData, compare: Map<CompareTarget, GridItemData>) {
     if (compare.get(CompareTarget.BASELINE)?.value === item.value) {
       return CompareTarget.BASELINE;
     }
@@ -375,9 +407,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   renderEmptyState() {
-    const body = this.state.body as SceneCSSGridLayout;
-
-    body.setState({
+    (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({
@@ -390,9 +420,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   renderErrorState(error: Error) {
-    const body = this.state.body as SceneCSSGridLayout;
-
-    body.setState({
+    (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({

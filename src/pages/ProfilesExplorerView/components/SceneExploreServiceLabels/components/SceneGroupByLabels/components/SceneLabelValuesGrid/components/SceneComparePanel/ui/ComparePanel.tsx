@@ -1,15 +1,17 @@
 import { css } from '@emotion/css';
 import { getValueFormat, GrafanaTheme2 } from '@grafana/data';
-import { RadioButtonGroup, useStyles2 } from '@grafana/ui';
+import { RadioButtonGroup, Spinner, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
+import { GridItemData } from 'src/pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/types/GridItemData';
 
 import { getColorByIndex } from '../../../../../../../../../helpers/getColorByIndex';
-import { GridItemDataWithStats } from '../../../SceneLabelValuesGrid';
+import { ItemStats } from '../SceneComparePanel';
 
 export type ComparePanelProps = {
-  item: GridItemDataWithStats;
+  item: GridItemData;
+  itemStats?: ItemStats;
   compareTargetValue?: CompareTarget;
-  onChangeCompareTarget: (compareTarget: CompareTarget, item: GridItemDataWithStats) => void;
+  onChangeCompareTarget: (compareTarget: CompareTarget, item: GridItemData) => void;
 };
 
 export enum CompareTarget {
@@ -17,18 +19,23 @@ export enum CompareTarget {
   COMPARISON = 'comparison',
 }
 
-export function ComparePanel({ item, compareTargetValue, onChangeCompareTarget }: ComparePanelProps) {
+export function ComparePanel({ item, itemStats, compareTargetValue, onChangeCompareTarget }: ComparePanelProps) {
   const styles = useStyles2(getStyles);
 
-  const { index, value, stats } = item;
-  const { allValuesSum, unit } = stats;
+  const { index, value } = item;
 
   const color = getColorByIndex(index);
 
   const total = useMemo(() => {
-    const formattedValue = getValueFormat(unit)(allValuesSum);
-    return `${formattedValue.text}${formattedValue.suffix}`;
-  }, [allValuesSum, unit]);
+    if (!itemStats) {
+      return <Spinner inline />;
+    }
+
+    const { allValuesSum, unit } = itemStats;
+    const { text, suffix } = getValueFormat(unit)(allValuesSum);
+
+    return `${text}${suffix}`;
+  }, [itemStats]);
 
   const options = useMemo(
     () => [
