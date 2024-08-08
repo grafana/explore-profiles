@@ -242,6 +242,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
 
   refetchData(forceRender = false) {
     this.setState({
+      isLoading: true,
       $data: new SceneDataTransformer({
         $data: buildTimeSeriesQueryRunner({ groupBy: { label: this.state.label } }),
         transformations: [addRefId, addStats, sortSeries],
