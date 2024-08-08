@@ -47,12 +47,15 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
   }
 
   onActivate() {
-    const { item, headerActions } = this.state;
+    const { headerActions } = this.state;
 
     this.setState({
       body: new SceneLabelValuesTimeseries({
         item: {
-          index: item ? item.index : 0,
+          // we should test with users first but...
+          // ...uncomment to preserve the color of the item that was clicked (coming from "All services", "Favorites", etc.)
+          // index: item ? item.index : 0,
+          index: 0,
           value: '',
           label: this.buildTitle(),
           panelType: PanelType.TIMESERIES,
