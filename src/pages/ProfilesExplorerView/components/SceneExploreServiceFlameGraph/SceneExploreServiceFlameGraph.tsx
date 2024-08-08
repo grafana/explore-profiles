@@ -25,6 +25,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     super({
       key: 'explore-service-flame-graph',
       mainTimeseries: new SceneMainServiceTimeseries({
+        item,
         headerActions: (item) => [
           new SelectAction({ EventClass: EventViewServiceLabels, item }),
           new FavAction({ item }),

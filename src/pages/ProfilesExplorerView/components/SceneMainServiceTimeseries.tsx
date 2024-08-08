@@ -15,6 +15,8 @@ import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
+  item?: GridItemData;
+  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   body?: SceneLabelValuesTimeseries;
 }
 
@@ -28,19 +30,29 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     },
   });
 
-  constructor({ headerActions }: { headerActions: (item: GridItemData) => VizPanelState['headerActions'] }) {
+  constructor({
+    item,
+    headerActions,
+  }: {
+    item: SceneMainServiceTimeseriesState['item'];
+    headerActions: SceneMainServiceTimeseriesState['headerActions'];
+  }) {
     super({
+      item,
+      headerActions,
       body: undefined,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, headerActions));
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onActivate(headerActions: (item: GridItemData) => VizPanelState['headerActions']) {
+  onActivate() {
+    const { item, headerActions } = this.state;
+
     this.setState({
       body: new SceneLabelValuesTimeseries({
         item: {
-          index: 0,
+          index: item ? item.index : 0,
           value: '',
           label: this.buildTitle(),
           panelType: PanelType.TIMESERIES,
