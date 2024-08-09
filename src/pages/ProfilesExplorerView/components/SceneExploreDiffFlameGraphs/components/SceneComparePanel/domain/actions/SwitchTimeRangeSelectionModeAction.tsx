@@ -4,45 +4,43 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana
 import { Icon, RadioButtonGroup, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { EventSwitchTimerangeSelectionType } from '../events/EventSwitchTimerangeSelectionType';
+import { EventSwitchTimerangeSelectionMode } from '../events/EventSwitchTimerangeSelectionMode';
 
-export enum TimerangeSelectionType {
+export enum TimerangeSelectionMode {
   TIMEPICKER = 'timepicker',
   FLAMEGRAPH = 'flame-graph',
 }
 
 export interface SwitchTimeRangeSelectionTypeActionState extends SceneObjectState {
-  type: TimerangeSelectionType;
+  mode: TimerangeSelectionMode;
 }
 
-export class SwitchTimeRangeSelectionTypeAction extends SceneObjectBase<SwitchTimeRangeSelectionTypeActionState> {
+export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTimeRangeSelectionTypeActionState> {
   static OPTIONS = [
-    { label: 'Timepicker', value: TimerangeSelectionType.TIMEPICKER },
-    { label: 'Flame graph', value: TimerangeSelectionType.FLAMEGRAPH },
+    { label: 'Timepicker', value: TimerangeSelectionMode.TIMEPICKER },
+    { label: 'Flame graph', value: TimerangeSelectionMode.FLAMEGRAPH },
   ];
 
   constructor() {
     super({
-      type: TimerangeSelectionType.FLAMEGRAPH,
+      mode: TimerangeSelectionMode.FLAMEGRAPH,
     });
   }
 
-  public onChange = (newType: TimerangeSelectionType) => {
-    this.setState({ type: newType });
+  public onChange = (newMode: TimerangeSelectionMode) => {
+    this.setState({ mode: newMode });
 
-    const { type } = this.state;
-
-    this.publishEvent(new EventSwitchTimerangeSelectionType({ type }), true);
+    this.publishEvent(new EventSwitchTimerangeSelectionMode({ mode: newMode }), true);
   };
 
-  public static Component = ({ model }: SceneComponentProps<SwitchTimeRangeSelectionTypeAction>) => {
+  public static Component = ({ model }: SceneComponentProps<SwitchTimeRangeSelectionModeAction>) => {
     const styles = useStyles2(getStyles);
-    const { type } = model.useState();
+    const { mode } = model.useState();
 
     return (
       <div className={styles.container}>
         <label className={styles.label}>
-          <span>Range selection type&nbsp;</span>
+          <span>Range selection mode&nbsp;</span>
           <Tooltip
             content={
               <div className={styles.tooltip}>
@@ -62,8 +60,8 @@ export class SwitchTimeRangeSelectionTypeAction extends SceneObjectBase<SwitchTi
         </label>
         <RadioButtonGroup
           size="sm"
-          options={SwitchTimeRangeSelectionTypeAction.OPTIONS}
-          value={type}
+          options={SwitchTimeRangeSelectionModeAction.OPTIONS}
+          value={mode}
           onChange={model.onChange}
         />
       </div>

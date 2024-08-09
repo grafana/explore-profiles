@@ -24,8 +24,11 @@ import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
-import { SwitchTimeRangeSelectionTypeAction } from './domain/actions/SwitchTimeRangeSelectionTypeAction';
-import { EventSwitchTimerangeSelectionType } from './domain/events/EventSwitchTimerangeSelectionType';
+import {
+  SwitchTimeRangeSelectionModeAction,
+  TimerangeSelectionMode,
+} from './domain/actions/SwitchTimeRangeSelectionModeAction';
+import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 
@@ -83,9 +86,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   onActivate() {
     const { title, annotationColor } = this.state;
 
-    this.subscribeToEvent(EventSwitchTimerangeSelectionType, (event) => {
-      const { type } = event.payload;
-      console.log('*** EventSwitchTimerangeSelectionType', event, type);
+    this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
+      this.switchSelectionMode(event.payload);
     });
 
     const timeseries = this.buildTimeSeries();
@@ -155,7 +157,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
             },
           ],
         })),
-      headerActions: () => [new SwitchTimeRangeSelectionTypeAction()],
+      headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
     });
   }
 
@@ -163,6 +165,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
     const { description } = getProfileMetric(profileMetricId as ProfileMetricId);
     return description || getProfileMetricLabel(profileMetricId);
+  }
+
+  switchSelectionMode({ mode }: { mode: TimerangeSelectionMode }) {
+    console.log('*** switchSelectionMode', mode);
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
