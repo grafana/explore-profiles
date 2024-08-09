@@ -31,7 +31,7 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   displayAllValues: boolean;
   body: VizPanel;
-  overrides: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
+  overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
@@ -53,7 +53,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       item,
       headerActions,
       displayAllValues: Boolean(displayAllValues),
-      overrides: overrides || (() => []),
+      overrides,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
@@ -145,10 +145,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   getOverrides(series: DataFrame[]) {
+    if (this.state.overrides) {
+      return this.state.overrides(series);
+    }
+
     const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    const defaultOverrides = series.map((s, i) => {
+    return series.map((s, i) => {
       const metricField = s.fields[1];
       let displayName = getLabelFieldName(metricField, groupByLabel);
 
@@ -173,8 +177,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         ],
       };
     });
-
-    return [...defaultOverrides, ...this.state.overrides(series)];
   }
 
   updateTitle(newTitle: string) {

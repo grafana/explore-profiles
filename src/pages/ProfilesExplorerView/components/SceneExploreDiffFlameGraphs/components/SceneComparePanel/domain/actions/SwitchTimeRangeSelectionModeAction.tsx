@@ -17,7 +17,7 @@ export interface SwitchTimeRangeSelectionTypeActionState extends SceneObjectStat
 
 export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTimeRangeSelectionTypeActionState> {
   static OPTIONS = [
-    { label: 'Timepicker', value: TimerangeSelectionMode.TIMEPICKER },
+    { label: 'Time picker', value: TimerangeSelectionMode.TIMEPICKER },
     { label: 'Flame graph', value: TimerangeSelectionMode.FLAMEGRAPH },
   ];
 
@@ -46,10 +46,13 @@ export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTi
               <div className={styles.tooltip}>
                 <div>Change the behaviour when selecting a time range on the panel:</div>
                 <dl>
-                  <dt>Timepicker</dt>
+                  <dt>Time picker</dt>
                   <dd>Time range zoom in (default behaviour)</dd>
                   <dt>Flame graph</dt>
-                  <dd>Time range for building the flame graph</dd>
+                  <dd>
+                    Time range for building the flame graph (the stack traces will be retrieved only for the selected
+                    area)
+                  </dd>
                 </dl>
               </div>
             }
