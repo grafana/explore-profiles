@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
+import { dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2, PanelData, TimeRange } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -18,7 +18,6 @@ import React from 'react';
 
 import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../../pages/ComparisonView/ui/colors';
 import { FiltersVariable } from '../../../..//domain/variables/FiltersVariable/FiltersVariable';
-import { findSceneObjectByClass } from '../../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
@@ -32,6 +31,7 @@ import {
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
+import { SceneTimeRangeWithAnnotations } from './SceneTimeRangeWithAnnotations';
 
 export interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
@@ -42,6 +42,7 @@ export interface SceneComparePanelState extends SceneObjectState {
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
   timeseries?: SceneLabelValuesTimeseries;
+  $timeRange: SceneTimeRange;
 }
 
 const getDefaultTimeRange = (): SceneTimeRangeState => {
@@ -93,38 +94,51 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
     const timeseries = this.buildTimeSeries();
 
+    function updateAnnotation(timeRange: TimeRange, data?: PanelData) {
+      if (!data) {
+        return;
+      }
+
+      const annotation = new RangeAnnotation();
+
+      annotation.addRange({
+        text: `${title} time range`,
+        color: annotationColor,
+        time: timeRange.from.unix() * 1000,
+        timeEnd: timeRange.to.unix() * 1000,
+      });
+
+      $data?.setState({
+        data: {
+          ...data,
+          annotations: [annotation],
+        },
+      });
+    }
+
+    timeseries.setState({
+      $timeRange: new SceneTimeRangeWithAnnotations({
+        onTimeRangeChange(timeRange) {
+          updateAnnotation(timeRange, timeseries.state.body.state.$data?.state.data);
+        },
+      }),
+    });
+
     this.setState({ timeseries });
 
     const { $data } = timeseries.state.body.state;
 
     $data?.subscribeToState((newState, prevState) => {
-      console.log('*** newState', newState);
       if (!newState.data) {
         return;
       }
 
       if (!newState.data?.annotations?.length && !prevState.data?.annotations?.length) {
-        const data = $data?.state.data;
-        if (!data) {
-          return;
-        }
+        // updateAnnotation(this.state.$timeRange.state.value, newState.data);
+        return;
+      }
 
-        // Make new annotations, for the first time
-        const annotation = new RangeAnnotation();
-        const timeRange = (findSceneObjectByClass(this, SceneTimeRange) as SceneTimeRange).state.value;
-
-        annotation.addRange({
-          text: `${title} time range for the flame graph`,
-          color: annotationColor,
-          time: timeRange.from.unix() * 1000 + Math.random() * 480 * 1000,
-          timeEnd: timeRange.to.unix() * 1000 - Math.random() * 360 * 1000,
-        });
-
-        $data?.setState({
-          data: { ...data, annotations: [annotation] },
-        });
-      } else if (!newState.data?.annotations?.length && prevState.data?.annotations?.length) {
-        // We can just ensure we retain the old annotations if they exist
+      if (!newState.data?.annotations?.length && prevState.data?.annotations?.length) {
         newState.data.annotations = prevState.data.annotations;
       }
     });
