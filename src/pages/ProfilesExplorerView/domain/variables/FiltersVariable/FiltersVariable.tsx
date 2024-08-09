@@ -15,9 +15,10 @@ import { convertPyroscopeToVariableFilter, expressionBuilder } from './filters-o
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
 
-  constructor() {
+  constructor({ key }: { key: string }) {
     super({
-      name: 'filters',
+      key,
+      name: key,
       label: 'Filters',
       filters: FiltersVariable.DEFAULT_VALUE,
     });

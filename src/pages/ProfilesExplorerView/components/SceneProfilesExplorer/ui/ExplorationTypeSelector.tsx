@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { SelectableValue } from '@grafana/data';
 import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React from 'react';
@@ -18,7 +18,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
       <InlineLabel width="auto">Exploration</InlineLabel>
 
       <div className={styles.breadcrumb}>
-        {options.map((option, i) => {
+        {options.slice(0, options.length - 2).map((option, i) => {
           const isActive = value === option.value;
           return (
             <>
@@ -35,7 +35,29 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 {option.label}
               </Button>
 
-              {i < options.length - 2 && <Icon name="arrow-right" />}
+              {i < options.length - 3 && <Icon name="arrow-right" />}
+            </>
+          );
+        })}
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;</div>
+        {/* eslint-disable-next-line sonarjs/cognitive-complexity */}
+        {options.slice(-2).map((option) => {
+          const isActive = value === option.value;
+          return (
+            <>
+              <Button
+                className={isActive ? cx(styles.button, styles.active) : styles.button}
+                size="sm"
+                icon={option.icon as any}
+                variant={isActive ? 'primary' : 'secondary'}
+                onClick={isActive ? noOp : () => onChange(option.value as string)}
+                tooltip={option.description}
+                tooltipPlacement="top"
+                data-testid={isActive ? 'is-active' : undefined}
+              >
+                {option.label}
+              </Button>
+              <div>&nbsp;&nbsp;</div>
             </>
           );
         })}
@@ -44,7 +66,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
   );
 }
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = () => ({
   explorationTypeContainer: css`
     display: flex;
     align-items: center;
@@ -54,10 +76,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     line-height: 32px;
     display: flex;
     align-items: center;
-
-    & > button:last-child {
-      margin-left: ${theme.spacing(2)};
-    }
   `,
   button: css`
     height: 30px;

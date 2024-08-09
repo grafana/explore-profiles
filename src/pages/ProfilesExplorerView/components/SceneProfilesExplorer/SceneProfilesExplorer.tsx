@@ -43,6 +43,7 @@ import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/S
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneExploreDiffFlameGraphs } from '../SceneExploreDiffFlameGraphs/SceneExploreDiffFlameGraphs';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
@@ -57,6 +58,7 @@ export enum ExplorationType {
   PROFILE_TYPES = 'profiles',
   LABELS = 'labels',
   FLAME_GRAPH = 'flame-graph',
+  DIFF_FLAME_GRAPH = 'diff-flame-graph',
   FAVORITES = 'favorites',
 }
 
@@ -81,6 +83,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       value: ExplorationType.FLAME_GRAPH,
       label: 'Flame graph',
       description: 'Single service flame graph',
+    },
+    {
+      value: ExplorationType.DIFF_FLAME_GRAPH,
+      label: 'Diff flame graph',
+      description: 'Compare the differences between two flame graphs',
     },
     {
       value: ExplorationType.FAVORITES,
@@ -110,7 +117,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new ProfilesDataSourceVariable(),
           new ServiceNameVariable(),
           new ProfileMetricVariable(),
-          new FiltersVariable(),
+          new FiltersVariable({ key: 'filters' }),
+          // TODO: replace all calls to findSceneObjectByClass(..., FiltersVariable)!
+          new FiltersVariable({ key: 'filtersBaseline' }),
+          new FiltersVariable({ key: 'filtersComparison' }),
           new GroupByVariable(),
         ],
       }),
@@ -249,6 +259,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         primary = new SceneExploreServiceFlameGraph({ item });
         break;
 
+      case ExplorationType.DIFF_FLAME_GRAPH:
+        primary = new SceneExploreDiffFlameGraphs();
+        break;
+
       case ExplorationType.FAVORITES:
         primary = new SceneExploreFavorites();
         break;
@@ -306,7 +320,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
     const dataSourceVariable = this.state.$variables!.state!.variables[0] as ProfilesDataSourceVariable;
 
-    const { variables: sceneVariables, gridControls } = (body?.state.primary as any).getVariablesAndGridControls() as {
+    const bodySceneObject = body?.state.primary as any;
+
+    if (typeof bodySceneObject.getVariablesAndGridControls !== 'function') {
+      throw new Error(
+        `Error while rendering "${bodySceneObject.constructor.name}": the "getVariablesAndGridControls" method is missing! Please implement it.`
+      );
+    }
+
+    const { variables: sceneVariables, gridControls } = bodySceneObject.getVariablesAndGridControls() as {
       variables: SceneVariable[];
       gridControls: Array<SceneObject & { key?: string }>;
     };
@@ -360,8 +382,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             </div>
 
             <div className={styles.headerRight}>
-              <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
-              <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
+              {timePickerControl && (
+                <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
+              )}
+              {refreshPickerControl && (
+                <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
+              )}
+
               <IconButton
                 name="share-alt"
                 tooltip="Copy shareable link to the clipboard"
