@@ -12,6 +12,16 @@ export function useFetchDiffProfile({ disabled }: FetchParams) {
   const [maxNodes] = useMaxNodesFromUrl();
   const { left, right } = useLeftRightParamsFromUrl();
 
+  // console.log(
+  //   '*** useFetchDiffProfile',
+  //   left.query,
+  //   right.query,
+  //   left.timeRange.raw.from.valueOf(),
+  //   left.timeRange.raw.to.valueOf(),
+  //   right.timeRange.raw.from.valueOf(),
+  //   right.timeRange.raw.to.valueOf()
+  // );
+
   const { isFetching, error, data, refetch } = useQuery({
     // for UX: keep previous data while fetching -> profile does not re-render with empty panels when refreshing
     placeholderData: (previousData) => previousData,
