@@ -31,7 +31,7 @@ import {
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
-import { SceneTimeRangeWithAnnotations } from './SceneTimeRangeWithAnnotations';
+import { SceneTimeRangeWithAnnotations, TimeRangeWithAnnotationsMode } from './SceneTimeRangeWithAnnotations';
 
 export interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
@@ -190,7 +190,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   switchSelectionMode({ mode }: { mode: TimerangeSelectionMode }) {
-    console.log('*** switchSelectionMode', mode);
+    const newMode =
+      mode === TimerangeSelectionMode.FLAMEGRAPH
+        ? TimeRangeWithAnnotationsMode.ANNOTATIONS
+        : TimeRangeWithAnnotationsMode.DEFAULT;
+
+    (this.state.timeseries?.state.$timeRange as SceneTimeRangeWithAnnotations).changeMode(newMode);
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {

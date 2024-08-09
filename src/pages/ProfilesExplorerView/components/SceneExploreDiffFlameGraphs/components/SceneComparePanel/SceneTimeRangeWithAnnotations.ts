@@ -1,9 +1,15 @@
 import { getDefaultTimeRange, TimeRange } from '@grafana/data';
 import { sceneGraph, SceneObjectBase, SceneTimeRangeLike, SceneTimeRangeState } from '@grafana/scenes';
 
+export enum TimeRangeWithAnnotationsMode {
+  ANNOTATIONS = 'annotations',
+  DEFAULT = 'default',
+}
+
 interface SceneTimeRangeWithAnnotationsState extends SceneTimeRangeState {
   alternateTimeRange: TimeRange;
   onTimeRangeChange?: (timeRange: TimeRange) => void;
+  mode: TimeRangeWithAnnotationsMode;
 }
 
 export class SceneTimeRangeWithAnnotations
@@ -11,7 +17,10 @@ export class SceneTimeRangeWithAnnotations
   implements SceneTimeRangeLike
 {
   constructor(
-    state: Omit<SceneTimeRangeWithAnnotationsState, 'from' | 'to' | 'value' | 'timeZone' | 'alternateTimeRange'> = {}
+    state: Omit<
+      SceneTimeRangeWithAnnotationsState,
+      'mode' | 'from' | 'to' | 'value' | 'timeZone' | 'alternateTimeRange'
+    > = {}
   ) {
     super({
       ...state,
@@ -20,6 +29,7 @@ export class SceneTimeRangeWithAnnotations
       to: 'now',
       value: getDefaultTimeRange(),
       alternateTimeRange: getDefaultTimeRange(),
+      mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
     });
 
     this.addActivationHandler(() => {
@@ -34,6 +44,10 @@ export class SceneTimeRangeWithAnnotations
     });
   }
 
+  changeMode(newMode: TimeRangeWithAnnotationsMode) {
+    this.setState({ mode: newMode });
+  }
+
   private get realTimeRange() {
     const parentsceneObject = this.parent;
     if (!parentsceneObject?.parent) {
@@ -43,6 +57,11 @@ export class SceneTimeRangeWithAnnotations
   }
 
   onTimeRangeChange(timeRange: TimeRange): void {
+    if (this.state.mode === TimeRangeWithAnnotationsMode.DEFAULT) {
+      this.realTimeRange.onTimeRangeChange(timeRange);
+      return;
+    }
+
     this.setState({ alternateTimeRange: timeRange });
     this.state.onTimeRangeChange?.(timeRange);
   }
