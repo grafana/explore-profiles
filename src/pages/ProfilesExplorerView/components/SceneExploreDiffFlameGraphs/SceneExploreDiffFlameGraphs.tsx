@@ -16,7 +16,7 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
-import { SceneComparePanel } from './components/SceneComparePanel';
+import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 
 interface SceneExploreDiffFlameGraphsState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
@@ -44,7 +44,17 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onActivate() {}
+  onActivate() {
+    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+
+    profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
+    profileMetricVariable.update(true);
+
+    return () => {
+      profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
+      profileMetricVariable.update(true);
+    };
+  }
 
   // see SceneProfilesExplorer
   getVariablesAndGridControls() {

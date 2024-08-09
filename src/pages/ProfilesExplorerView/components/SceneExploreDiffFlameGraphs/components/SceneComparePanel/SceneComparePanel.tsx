@@ -1,31 +1,33 @@
 import { css } from '@emotion/css';
-import { dateTime, FieldType, GrafanaTheme2, MutableDataFrame } from '@grafana/data';
+import { dateTime, FieldMatcherID, GrafanaTheme2 } from '@grafana/data';
 import {
-  PanelBuilders,
   SceneComponentProps,
+  SceneDataTransformer,
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
-  SceneQueryRunner,
+  SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
   SceneTimeRangeState,
   VariableDependencyConfig,
-  VizPanel,
 } from '@grafana/scenes';
-import { GraphGradientMode, InlineLabel, useStyles2 } from '@grafana/ui';
+import { InlineLabel, useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
-import { BASELINE_COLORS, COMPARISON_COLORS } from 'src/pages/ComparisonView/ui/colors';
-import { FiltersVariable } from 'src/pages/ProfilesExplorerView/domain/variables/FiltersVariable/FiltersVariable';
-import { findSceneObjectByClass } from 'src/pages/ProfilesExplorerView/helpers/findSceneObjectByClass';
-import { getSceneVariableValue } from 'src/pages/ProfilesExplorerView/helpers/getSceneVariableValue';
-import { PYROSCOPE_DATA_SOURCE } from 'src/pages/ProfilesExplorerView/infrastructure/pyroscope-data-sources';
-import { getProfileMetricLabel } from 'src/pages/ProfilesExplorerView/infrastructure/series/helpers/getProfileMetricLabel';
 
-import { CompareTarget } from '../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
-import { EventSwitchTimerangeSelectionType } from '../domain/events/EventSwitchTimerangeSelectionType';
-import { SceneTimerangeSelectionTypeSwitcher } from './SceneTimerangeSelectionTypeSwitcher';
+import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../../pages/ComparisonView/ui/colors';
+import { FiltersVariable } from '../../../..//domain/variables/FiltersVariable/FiltersVariable';
+import { findSceneObjectByClass } from '../../../../helpers/findSceneObjectByClass';
+import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
+import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
+import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
+import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
+import { SwitchTimeRangeSelectionTypeAction } from './domain/actions/SwitchTimeRangeSelectionTypeAction';
+import { EventSwitchTimerangeSelectionType } from './domain/events/EventSwitchTimerangeSelectionType';
+import { RangeAnnotation } from './domain/RangeAnnotation';
+import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 
 export interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
@@ -34,21 +36,8 @@ export interface SceneComparePanelState extends SceneObjectState {
   color: string;
   annotationColor: string;
   timePicker: SceneTimePicker;
-  timeseries?: VizPanel;
-}
-
-function buildCompareTimeSeriesQueryRunner({ filterKey }: { filterKey: 'filtersBaseline' | 'filtersComparison' }) {
-  return new SceneQueryRunner({
-    datasource: PYROSCOPE_DATA_SOURCE,
-    queries: [
-      {
-        refId: `$profileMetricId-$serviceName-${filterKey}}`,
-        queryType: 'metrics',
-        profileTypeId: '$profileMetricId',
-        labelSelector: `{service_name="$serviceName",$${filterKey}}`,
-      },
-    ],
-  });
+  refreshPicker: SceneRefreshPicker;
+  timeseries?: SceneLabelValuesTimeseries;
 }
 
 const getDefaultTimeRange = (): SceneTimeRangeState => {
@@ -65,45 +54,11 @@ const getDefaultTimeRange = (): SceneTimeRangeState => {
   };
 };
 
-class RangeAnnotation extends MutableDataFrame {
-  constructor() {
-    super();
-    [
-      {
-        name: 'time',
-        type: FieldType.time,
-      },
-      {
-        name: 'timeEnd',
-        type: FieldType.time,
-      },
-      {
-        name: 'isRegion',
-        type: FieldType.boolean,
-      },
-      {
-        name: 'color',
-        type: FieldType.other,
-      },
-      {
-        name: 'text',
-        type: FieldType.string,
-      },
-    ].forEach((field) => this.addField(field));
-  }
-
-  addRange(entry: { time: number; timeEnd: number; color?: string; text: string }) {
-    this.add({ ...entry, isRegion: true });
-  }
-}
-
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
     onVariableUpdateCompleted: () => {
-      this.state.timeseries?.setState({
-        title: this.buildTimeseriesTitle(),
-      });
+      this.state.timeseries?.updateTitle(this.buildTimeseriesTitle());
     },
   });
 
@@ -118,6 +73,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),
       $timeRange: new SceneTimeRange(getDefaultTimeRange()),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
+      refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseries: undefined,
     });
 
@@ -125,40 +81,27 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onActivate() {
-    const { filterKey, color, title, annotationColor } = this.state;
+    const { title, annotationColor } = this.state;
 
     this.subscribeToEvent(EventSwitchTimerangeSelectionType, (event) => {
       const { type } = event.payload;
       console.log('*** EventSwitchTimerangeSelectionType', event, type);
     });
 
-    const timeseries = PanelBuilders.timeseries()
-      .setTitle(this.buildTimeseriesTitle())
-      .setData(buildCompareTimeSeriesQueryRunner({ filterKey }))
-      .setHeaderActions([new SceneTimerangeSelectionTypeSwitcher()])
-      .setColor({ mode: 'fixed', fixedColor: color })
-      .setCustomFieldConfig('fillOpacity', 9)
-      .setCustomFieldConfig('gradientMode', GraphGradientMode.Opacity)
-      .setBehaviors([
-        (vizPanel: VizPanel) => {
-          const timeRange = findSceneObjectByClass(vizPanel, SceneTimeRange) as SceneTimeRange;
-          console.log('*** behaviors', timeRange.state);
-        },
-      ])
-      .build();
+    const timeseries = this.buildTimeSeries();
 
-    this.setState({
-      timeseries,
-    });
+    this.setState({ timeseries });
 
-    timeseries.state.$data?.subscribeToState((newState, prevState) => {
+    const { $data } = timeseries.state.body.state;
+
+    $data?.subscribeToState((newState, prevState) => {
       console.log('*** newState', newState);
       if (!newState.data) {
         return;
       }
 
       if (!newState.data?.annotations?.length && !prevState.data?.annotations?.length) {
-        const data = timeseries.state.$data?.state.data;
+        const data = $data?.state.data;
         if (!data) {
           return;
         }
@@ -167,25 +110,52 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         const annotation = new RangeAnnotation();
         const timeRange = (findSceneObjectByClass(this, SceneTimeRange) as SceneTimeRange).state.value;
 
-        console.log('*** timeRange.from.unix()', timeRange.from.unix() * 1000);
-
         annotation.addRange({
-          text: `${title} flame graph time range`,
+          text: `${title} time range for the flame graph`,
           color: annotationColor,
-          time: timeRange.from.unix() * 1000 + 30 * 1000,
-          timeEnd: timeRange.to.unix() * 1000 - 30 * 1000,
+          time: timeRange.from.unix() * 1000 + Math.random() * 480 * 1000,
+          timeEnd: timeRange.to.unix() * 1000 - Math.random() * 360 * 1000,
         });
 
-        timeseries.state.$data?.setState({
-          data: {
-            ...data,
-            annotations: [annotation],
-          },
+        $data?.setState({
+          data: { ...data, annotations: [annotation] },
         });
       } else if (!newState.data?.annotations?.length && prevState.data?.annotations?.length) {
         // We can just ensure we retain the old annotations if they exist
         newState.data.annotations = prevState.data.annotations;
       }
+    });
+  }
+
+  buildTimeSeries() {
+    const { target, filterKey, title, color } = this.state;
+
+    return new SceneLabelValuesTimeseries({
+      item: {
+        index: 0,
+        value: target,
+        label: this.buildTimeseriesTitle(),
+        queryRunnerParams: {},
+      },
+      data: new SceneDataTransformer({
+        $data: buildCompareTimeSeriesQueryRunner({ filterKey }),
+        transformations: [addRefId, addStats],
+      }),
+      overrides: (series) =>
+        series.map((s) => ({
+          matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
+          properties: [
+            {
+              id: 'displayName',
+              value: `${title} getLabelFieldName(s.fields[1], '')`,
+            },
+            {
+              id: 'color',
+              value: { mode: 'fixed', fixedColor: color },
+            },
+          ],
+        })),
+      headerActions: () => [new SwitchTimeRangeSelectionTypeAction()],
     });
   }
 
@@ -197,7 +167,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
     const styles = useStyles2(getStyles);
-    const { title, timeseries, timePicker, filterKey } = model.useState();
+    const { title, timeseries, timePicker, refreshPicker, filterKey } = model.useState();
 
     const filtersVariable = sceneGraph.findByKey(model, filterKey) as FiltersVariable;
 
@@ -208,6 +178,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
           <div className={styles.timePicker}>
             <timePicker.Component model={timePicker} />
+            <refreshPicker.Component model={refreshPicker} />
           </div>
         </div>
 
@@ -242,6 +213,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   timePicker: css`
     display: flex;
     justify-content: flex-end;
+    gap: ${theme.spacing(1)};
   `,
   filter: css`
     display: flex;

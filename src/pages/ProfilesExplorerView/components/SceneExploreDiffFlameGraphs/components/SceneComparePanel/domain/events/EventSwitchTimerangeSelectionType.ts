@@ -1,6 +1,6 @@
 import { BusEventWithPayload } from '@grafana/data';
 
-import { TimerangeSelectionType } from '../../components/SceneTimerangeSelectionTypeSwitcher';
+import { TimerangeSelectionType } from '../actions/SwitchTimeRangeSelectionTypeAction';
 
 export interface EventSwitchTimerangeSelectionTypePayload {
   type: TimerangeSelectionType;

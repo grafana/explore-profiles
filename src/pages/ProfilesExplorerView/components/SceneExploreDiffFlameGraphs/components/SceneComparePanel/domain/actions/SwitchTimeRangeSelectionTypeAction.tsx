@@ -4,18 +4,18 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana
 import { Icon, RadioButtonGroup, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { EventSwitchTimerangeSelectionType } from '../domain/events/EventSwitchTimerangeSelectionType';
+import { EventSwitchTimerangeSelectionType } from '../events/EventSwitchTimerangeSelectionType';
 
 export enum TimerangeSelectionType {
   TIMEPICKER = 'timepicker',
   FLAMEGRAPH = 'flame-graph',
 }
 
-export interface SceneTimerangeSelectionTypeSwitcherState extends SceneObjectState {
+export interface SwitchTimeRangeSelectionTypeActionState extends SceneObjectState {
   type: TimerangeSelectionType;
 }
 
-export class SceneTimerangeSelectionTypeSwitcher extends SceneObjectBase<SceneTimerangeSelectionTypeSwitcherState> {
+export class SwitchTimeRangeSelectionTypeAction extends SceneObjectBase<SwitchTimeRangeSelectionTypeActionState> {
   static OPTIONS = [
     { label: 'Timepicker', value: TimerangeSelectionType.TIMEPICKER },
     { label: 'Flame graph', value: TimerangeSelectionType.FLAMEGRAPH },
@@ -35,7 +35,7 @@ export class SceneTimerangeSelectionTypeSwitcher extends SceneObjectBase<SceneTi
     this.publishEvent(new EventSwitchTimerangeSelectionType({ type }), true);
   };
 
-  public static Component = ({ model }: SceneComponentProps<SceneTimerangeSelectionTypeSwitcher>) => {
+  public static Component = ({ model }: SceneComponentProps<SwitchTimeRangeSelectionTypeAction>) => {
     const styles = useStyles2(getStyles);
     const { type } = model.useState();
 
@@ -62,7 +62,7 @@ export class SceneTimerangeSelectionTypeSwitcher extends SceneObjectBase<SceneTi
         </label>
         <RadioButtonGroup
           size="sm"
-          options={SceneTimerangeSelectionTypeSwitcher.OPTIONS}
+          options={SwitchTimeRangeSelectionTypeAction.OPTIONS}
           value={type}
           onChange={model.onChange}
         />

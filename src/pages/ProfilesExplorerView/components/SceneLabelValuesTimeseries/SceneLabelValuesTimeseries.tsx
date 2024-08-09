@@ -2,6 +2,7 @@ import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafan
 import {
   PanelBuilders,
   SceneComponentProps,
+  SceneDataProvider,
   SceneDataTransformer,
   SceneObjectBase,
   SceneObjectState,
@@ -30,6 +31,7 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   displayAllValues: boolean;
   body: VizPanel;
+  overrides: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
@@ -37,25 +39,31 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     item,
     headerActions,
     displayAllValues,
+    data,
+    overrides,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
     displayAllValues?: SceneLabelValuesTimeseriesState['displayAllValues'];
+    data?: SceneDataProvider;
+    overrides?: SceneLabelValuesTimeseriesState['overrides'];
   }) {
     super({
       key: 'timeseries-label-values',
       item,
       headerActions,
       displayAllValues: Boolean(displayAllValues),
+      overrides: overrides || (() => []),
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
-          new SceneDataTransformer({
-            $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-            transformations: displayAllValues
-              ? [addRefId, addStats, sortSeries]
-              : [addRefId, addStats, sortSeries, limitNumberOfSeries],
-          })
+          data ||
+            new SceneDataTransformer({
+              $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
+              transformations: displayAllValues
+                ? [addRefId, addStats, sortSeries]
+                : [addRefId, addStats, sortSeries, limitNumberOfSeries],
+            })
         )
         .setHeaderActions(headerActions(item))
         .build(),
@@ -140,7 +148,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    return series.map((s, i) => {
+    const defaultOverrides = series.map((s, i) => {
       const metricField = s.fields[1];
       let displayName = getLabelFieldName(metricField, groupByLabel);
 
@@ -165,11 +173,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         ],
       };
     });
-  }
 
-  getGroupByValues(series: DataFrame[]) {
-    const groupByLabel = this.state.item.queryRunnerParams.groupBy?.label;
-    return series.map((s) => getLabelFieldName(s.fields[1], groupByLabel));
+    return [...defaultOverrides, ...this.state.overrides(series)];
   }
 
   updateTitle(newTitle: string) {
