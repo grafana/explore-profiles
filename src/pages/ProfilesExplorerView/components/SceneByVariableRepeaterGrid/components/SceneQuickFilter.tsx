@@ -10,7 +10,7 @@ import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
-interface SceneQuickFilterState extends SceneObjectState {
+export interface SceneQuickFilterState extends SceneObjectState {
   placeholder: string;
   searchText: string;
   onChange?: (searchText: string) => void;

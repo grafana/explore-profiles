@@ -14,7 +14,7 @@ export enum LayoutType {
   ROWS = 'rows',
 }
 
-interface SceneLayoutSwitcherState extends SceneObjectState {
+export interface SceneLayoutSwitcherState extends SceneObjectState {
   layout: LayoutType;
   onChange?: (layout: LayoutType) => void;
 }

@@ -72,7 +72,13 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
             isClearable
           />
         )}
-        <RefreshPicker noIntervalPicker onRefresh={onRefresh} isOnCanvas={false} onIntervalChanged={noOp} />
+        <RefreshPicker
+          noIntervalPicker
+          onRefresh={onRefresh}
+          isOnCanvas={false}
+          onIntervalChanged={noOp}
+          tooltip="Click to refresh all labels"
+        />
       </div>
     </Field>
   );
