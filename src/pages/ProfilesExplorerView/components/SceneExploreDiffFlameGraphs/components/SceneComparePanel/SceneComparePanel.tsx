@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { dateTime, FieldMatcherID, GrafanaTheme2 } from '@grafana/data';
+import { dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -22,6 +22,7 @@ import { findSceneObjectByClass } from '../../../../helpers/findSceneObjectByCla
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { getSeriesStatsValue } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/getSeriesStatsValue';
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import {
@@ -144,19 +145,26 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         transformations: [addRefId, addStats],
       }),
       overrides: (series) =>
-        series.map((s) => ({
-          matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
-          properties: [
-            {
-              id: 'displayName',
-              value: `${title} getLabelFieldName(s.fields[1], '')`,
-            },
-            {
-              id: 'color',
-              value: { mode: 'fixed', fixedColor: color },
-            },
-          ],
-        })),
+        series.map((s) => {
+          const metricField = s.fields[1];
+          const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
+          const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
+          const displayName = `${title} total = ${formattedValue.text}${formattedValue.suffix}`;
+
+          return {
+            matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
+            properties: [
+              {
+                id: 'displayName',
+                value: displayName,
+              },
+              {
+                id: 'color',
+                value: { mode: 'fixed', fixedColor: color },
+              },
+            ],
+          };
+        }),
       headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
     });
   }
