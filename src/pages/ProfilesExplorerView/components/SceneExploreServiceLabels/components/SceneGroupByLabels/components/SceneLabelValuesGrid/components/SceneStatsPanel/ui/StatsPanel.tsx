@@ -2,8 +2,8 @@ import { css } from '@emotion/css';
 import { getValueFormat, GrafanaTheme2 } from '@grafana/data';
 import { RadioButtonGroup, Spinner, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
-import { GridItemData } from 'src/pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/types/GridItemData';
 
+import { GridItemData } from '../../../../../../../../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { getColorByIndex } from '../../../../../../../../../helpers/getColorByIndex';
 import { CompareTarget } from '../../../domain/types';
 import { ItemStats } from '../SceneStatsPanel';

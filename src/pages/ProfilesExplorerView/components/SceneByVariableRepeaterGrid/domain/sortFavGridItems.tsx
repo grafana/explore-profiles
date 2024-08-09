@@ -1,6 +1,5 @@
-import { FavAction } from 'src/pages/ProfilesExplorerView/domain/actions/FavAction';
-import { FavoritesDataSource } from 'src/pages/ProfilesExplorerView/infrastructure/favorites/FavoritesDataSource';
-
+import { FavAction } from '../../..//domain/actions/FavAction';
+import { FavoritesDataSource } from '../../../infrastructure/favorites/FavoritesDataSource';
 import { GridItemData } from '../types/GridItemData';
 
 export const sortFavGridItems: (a: GridItemData, b: GridItemData) => number = function (a, b) {
