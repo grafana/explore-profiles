@@ -45,8 +45,8 @@ import {
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { EventDataReceived } from '../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 import { SceneGroupByLabels } from '../../SceneGroupByLabels';
-import { CompareTarget } from './components/SceneComparePanel/ui/ComparePanel';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
+import { CompareTarget } from './domain/types';
 
 export interface SceneLabelValuesGridState extends EmbeddedSceneState {
   $data: SceneDataProvider;

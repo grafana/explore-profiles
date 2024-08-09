@@ -5,21 +5,17 @@ import React, { useMemo } from 'react';
 import { GridItemData } from 'src/pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/types/GridItemData';
 
 import { getColorByIndex } from '../../../../../../../../../helpers/getColorByIndex';
-import { ItemStats } from '../SceneComparePanel';
+import { CompareTarget } from '../../../domain/types';
+import { ItemStats } from '../SceneStatsPanel';
 
-export type ComparePanelProps = {
+export type StatsPanelProps = {
   item: GridItemData;
   itemStats?: ItemStats;
   compareTargetValue?: CompareTarget;
   onChangeCompareTarget: (compareTarget: CompareTarget, item: GridItemData) => void;
 };
 
-export enum CompareTarget {
-  BASELINE = 'baseline',
-  COMPARISON = 'comparison',
-}
-
-export function ComparePanel({ item, itemStats, compareTargetValue, onChangeCompareTarget }: ComparePanelProps) {
+export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompareTarget }: StatsPanelProps) {
   const styles = useStyles2(getStyles);
 
   const { index, value } = item;

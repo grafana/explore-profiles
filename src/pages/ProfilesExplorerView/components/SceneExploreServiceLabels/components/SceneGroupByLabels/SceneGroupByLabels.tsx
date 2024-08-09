@@ -43,11 +43,11 @@ import { SceneDrawer } from '../../../SceneDrawer';
 import { SceneLabelValuesBarGauge } from '../../../SceneLabelValuesBarGauge';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
-import { EventSelectForCompare } from '../../domain/events/EventSelectForCompare';
-import { SceneComparePanel } from './components/SceneLabelValuesGrid/components/SceneComparePanel/SceneComparePanel';
-import { CompareTarget } from './components/SceneLabelValuesGrid/components/SceneComparePanel/ui/ComparePanel';
+import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
+import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
 import { CompareActions } from './components/SceneLabelValuesGrid/ui/CompareActions';
+import { EventSelectForCompare } from './domain/events/EventSelectForCompare';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
@@ -307,19 +307,19 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     this.setState({ compare });
 
-    this.updateComparePanels();
+    this.updateStatsPanels();
   }
 
-  updateComparePanels() {
+  updateStatsPanels() {
     const { compare } = this.state;
     const baselineItem = compare.get(CompareTarget.BASELINE);
     const comparisonItem = compare.get(CompareTarget.COMPARISON);
 
-    const comparePanels = sceneGraph.findAllObjects(this, (o) => o instanceof SceneComparePanel) as SceneComparePanel[];
+    const statsPanels = sceneGraph.findAllObjects(this, (o) => o instanceof SceneStatsPanel) as SceneStatsPanel[];
 
     // TODO: optimize if needed
     // we can remove the loop if we clear the current selection in the UI before updating the compare map (see selectForCompare() and onClickClearCompareButton())
-    for (const panel of comparePanels) {
+    for (const panel of statsPanels) {
       const { item } = panel.state;
 
       if (baselineItem?.value === item.value) {
@@ -400,7 +400,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   onClickClearCompareButton = () => {
     this.clearCompare();
-    this.updateComparePanels();
+    this.updateStatsPanels();
   };
 
   static Component = ({ model }: SceneComponentProps<SceneGroupByLabels>) => {

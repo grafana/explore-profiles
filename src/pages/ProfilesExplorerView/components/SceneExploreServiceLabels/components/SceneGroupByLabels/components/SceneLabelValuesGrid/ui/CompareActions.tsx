@@ -5,8 +5,8 @@ import { noOp } from '@shared/domain/noOp';
 import React from 'react';
 
 import { SceneGroupByLabelsState } from '../../../SceneGroupByLabels';
-import { SceneComparePanel } from '../components/SceneComparePanel/SceneComparePanel';
-import { CompareTarget } from '../components/SceneComparePanel/ui/ComparePanel';
+import { SceneStatsPanel } from '../components/SceneStatsPanel/SceneStatsPanel';
+import { CompareTarget } from '../domain/types';
 
 type CompareButtonProps = {
   compare: SceneGroupByLabelsState['compare'];
@@ -53,10 +53,10 @@ const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
     display: flex;
     align-items: center;
-    width: ${SceneComparePanel.WIDTH_IN_PIXELS}px;
+    width: ${SceneStatsPanel.WIDTH_IN_PIXELS}px;
   `,
   compareButton: css`
-    width: ${SceneComparePanel.WIDTH_IN_PIXELS - 32}px;
+    width: ${SceneStatsPanel.WIDTH_IN_PIXELS - 32}px;
     border-right: none;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;

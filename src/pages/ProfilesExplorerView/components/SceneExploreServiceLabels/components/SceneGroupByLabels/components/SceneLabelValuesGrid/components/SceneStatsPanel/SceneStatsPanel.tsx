@@ -2,21 +2,22 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana
 import React from 'react';
 
 import { GridItemData } from '../../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { EventSelectForCompare } from '../../../../../../domain/events/EventSelectForCompare';
-import { ComparePanel, CompareTarget } from './ui/ComparePanel';
+import { EventSelectForCompare } from '../../../../domain/events/EventSelectForCompare';
+import { CompareTarget } from '../../domain/types';
+import { StatsPanel } from './ui/StatsPanel';
 
 export type ItemStats = {
   allValuesSum: number;
   unit: string;
 };
 
-interface SceneComparePanelState extends SceneObjectState {
+interface SceneStatsPanelState extends SceneObjectState {
   item: GridItemData;
   itemStats?: ItemStats;
   compareTargetValue?: CompareTarget;
 }
 
-export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
+export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   static WIDTH_IN_PIXELS = 180;
 
   constructor({ item, compareTargetValue }: { item: GridItemData; compareTargetValue?: CompareTarget }) {
@@ -31,7 +32,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     this.setState({ compareTargetValue });
   }
 
-  getItemStats() {
+  getStats() {
     return this.state.itemStats;
   }
 
@@ -44,11 +45,11 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     this.publishEvent(new EventSelectForCompare({ compareTarget, item }), true);
   };
 
-  static Component({ model }: SceneComponentProps<SceneComparePanel>) {
+  static Component({ model }: SceneComponentProps<SceneStatsPanel>) {
     const { item, itemStats, compareTargetValue } = model.useState();
 
     return (
-      <ComparePanel
+      <StatsPanel
         item={item}
         itemStats={itemStats}
         compareTargetValue={compareTargetValue}

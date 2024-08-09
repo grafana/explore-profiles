@@ -8,12 +8,12 @@ import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/type
 import { EventDataReceived } from '../../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { getSeriesStatsValue } from '../domain/getSeriesStatsValue';
+import { CompareTarget } from '../domain/types';
 import { GRID_AUTO_ROWS } from '../SceneLabelValuesGrid';
-import { SceneComparePanel } from './SceneComparePanel/SceneComparePanel';
-import { CompareTarget } from './SceneComparePanel/ui/ComparePanel';
+import { SceneStatsPanel } from './SceneStatsPanel/SceneStatsPanel';
 
 interface SceneLabelValuesStatAndTimeseriesState extends SceneObjectState {
-  comparePanel: SceneComparePanel;
+  statsPanel: SceneStatsPanel;
   timeseriesPanel: SceneLabelValuesTimeseries;
 }
 
@@ -33,7 +33,7 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   }) {
     super({
       key: 'label-value-panel',
-      comparePanel: new SceneComparePanel({ item, compareTargetValue }),
+      statsPanel: new SceneStatsPanel({ item, compareTargetValue }),
       timeseriesPanel: new SceneLabelValuesTimeseries({ item, headerActions }),
     });
 
@@ -41,14 +41,14 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   }
 
   onActivate() {
-    const { comparePanel, timeseriesPanel } = this.state;
+    const { statsPanel, timeseriesPanel } = this.state;
 
     const timeseriesSub = timeseriesPanel.subscribeToEvent(EventDataReceived, (event) => {
       const [s] = event.payload.series;
       const allValuesSum = s ? getSeriesStatsValue(s, 'allValuesSum') || 0 : 0;
 
-      if (comparePanel.getItemStats()?.allValuesSum !== allValuesSum) {
-        comparePanel.updateStats({
+      if (statsPanel.getStats()?.allValuesSum !== allValuesSum) {
+        statsPanel.updateStats({
           allValuesSum,
           unit: s ? (s.fields[1].config.unit as string) : 'short',
         });
@@ -62,13 +62,13 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
 
   static Component({ model }: SceneComponentProps<SceneLabelValuePanel>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { comparePanel, timeseriesPanel } = model.useState();
-    const { compareTargetValue } = comparePanel.useState();
+    const { statsPanel, timeseriesPanel } = model.useState();
+    const { compareTargetValue } = statsPanel.useState();
 
     return (
       <div className={styles.container}>
-        <div className={cx(styles.comparePanel, compareTargetValue && 'selected')}>
-          <comparePanel.Component model={comparePanel} />
+        <div className={cx(styles.statsPanel, compareTargetValue && 'selected')}>
+          <statsPanel.Component model={statsPanel} />
         </div>
         <div className={cx(styles.timeseriesPanel, compareTargetValue && 'selected')}>
           <timeseriesPanel.Component model={timeseriesPanel} />
@@ -93,8 +93,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
       min-height: ${GRID_AUTO_ROWS};
     }
   `,
-  comparePanel: css`
-    width: ${SceneComparePanel.WIDTH_IN_PIXELS}px;
+  statsPanel: css`
+    width: ${SceneStatsPanel.WIDTH_IN_PIXELS}px;
 
     &.selected > div {
       border-top: 1px solid ${theme.colors.primary.main};
