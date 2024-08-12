@@ -16,12 +16,12 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
+import { EventDataReceived } from '../../domain/events/EventDataReceived';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
-import { EventDataReceived } from '../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
-import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
 import { LayoutType, SceneLayoutSwitcher, SceneLayoutSwitcherState } from './components/SceneLayoutSwitcher';

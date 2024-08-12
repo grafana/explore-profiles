@@ -12,7 +12,7 @@ export type StatsPanelProps = {
   item: GridItemData;
   itemStats?: ItemStats;
   compareTargetValue?: CompareTarget;
-  onChangeCompareTarget: (compareTarget: CompareTarget, item: GridItemData) => void;
+  onChangeCompareTarget: (compareTarget: CompareTarget) => void;
 };
 
 export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompareTarget }: StatsPanelProps) {
@@ -62,9 +62,7 @@ export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompar
           className={styles.radioButtonsGroup}
           size="sm"
           options={options}
-          onChange={(newValue) => {
-            onChangeCompareTarget(newValue as CompareTarget, item);
-          }}
+          onChange={onChangeCompareTarget}
           value={compareTargetValue}
         />
       </div>

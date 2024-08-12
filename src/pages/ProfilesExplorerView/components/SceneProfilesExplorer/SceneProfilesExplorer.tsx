@@ -330,7 +330,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     const { variables: sceneVariables, gridControls } = bodySceneObject.getVariablesAndGridControls() as {
       variables: SceneVariable[];
-      gridControls: Array<SceneObject & { key?: string }>;
+      gridControls: SceneObject[];
     };
 
     return {

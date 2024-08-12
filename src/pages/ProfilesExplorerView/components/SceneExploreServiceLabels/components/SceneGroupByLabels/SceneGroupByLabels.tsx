@@ -41,13 +41,13 @@ import { SceneByVariableRepeaterGrid } from '../../../SceneByVariableRepeaterGri
 import { GridItemData } from '../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneDrawer } from '../../../SceneDrawer';
 import { SceneLabelValuesBarGauge } from '../../../SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
 import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
-import { CompareActions } from './components/SceneLabelValuesGrid/ui/CompareActions';
 import { EventSelectForCompare } from './domain/events/EventSelectForCompare';
+import { CompareActions } from './ui/CompareActions';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
@@ -224,6 +224,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       'Search label values (comma-separated regexes are supported)'
     );
 
+    this.clearCompare();
+
     const { value, options } = groupByVariableState;
 
     const index = options
@@ -235,8 +237,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     this.setState({
       body: this.buildSceneLabelValuesGrid(value as string, startColorIndex),
     });
-
-    this.clearCompare();
   }
 
   buildSceneLabelValuesGrid(label: string, startColorIndex: number) {
@@ -320,19 +320,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     // TODO: optimize if needed
     // we can remove the loop if we clear the current selection in the UI before updating the compare map (see selectForCompare() and onClickClearCompareButton())
     for (const panel of statsPanels) {
-      const { item } = panel.state;
-
-      if (baselineItem?.value === item.value) {
-        panel.updateCompareTargetValue(CompareTarget.BASELINE);
-        continue;
-      }
-
-      if (comparisonItem?.value === item.value) {
-        panel.updateCompareTargetValue(CompareTarget.COMPARISON);
-        continue;
-      }
-
-      panel.updateCompareTargetValue(undefined);
+      panel.setCompareTargetValue(baselineItem, comparisonItem);
     }
   }
 

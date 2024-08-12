@@ -15,6 +15,7 @@ import { Spinner } from '@grafana/ui';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
+import { EventDataReceived } from '../../../../../../domain/events/EventDataReceived';
 import { FiltersVariable } from '../../../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { findSceneObjectByClass } from '../../../../../../helpers/findSceneObjectByClass';
@@ -43,10 +44,7 @@ import {
   sortSeries,
 } from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { EventDataReceived } from '../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
-import { SceneGroupByLabels } from '../../SceneGroupByLabels';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
-import { CompareTarget } from './domain/types';
 
 export interface SceneLabelValuesGridState extends EmbeddedSceneState {
   $data: SceneDataProvider;
@@ -322,12 +320,10 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       return;
     }
 
-    const compare = (findSceneObjectByClass(this, SceneGroupByLabels) as SceneGroupByLabels).getCompare();
-
     const gridItems = newItems.map((item) => {
       return new SceneCSSGridItem({
         key: SceneLabelValuesGrid.buildGridItemKey(item),
-        body: this.buildVizPanel(item, compare),
+        body: this.buildVizPanel(item),
       });
     });
 
@@ -337,11 +333,10 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     });
   }
 
-  buildVizPanel(item: GridItemData, compare: Map<CompareTarget, GridItemData>) {
+  buildVizPanel(item: GridItemData) {
     const vizPanel = new SceneLabelValuePanel({
       item,
       headerActions: this.state.headerActions.bind(null, item, this.state.items),
-      compareTargetValue: this.getItemCompareTargetValue(item, compare),
     });
 
     const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
@@ -369,18 +364,6 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     });
 
     return vizPanel;
-  }
-
-  getItemCompareTargetValue(item: GridItemData, compare: Map<CompareTarget, GridItemData>) {
-    if (compare.get(CompareTarget.BASELINE)?.value === item.value) {
-      return CompareTarget.BASELINE;
-    }
-
-    if (compare.get(CompareTarget.COMPARISON)?.value === item.value) {
-      return CompareTarget.COMPARISON;
-    }
-
-    return undefined;
   }
 
   filterItems(items: SceneLabelValuesGridState['items']) {

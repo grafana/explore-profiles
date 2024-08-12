@@ -12,19 +12,19 @@ import {
 import { GraphGradientMode } from '@grafana/schema';
 import React from 'react';
 
-import { getColorByIndex } from '../../helpers/getColorByIndex';
-import { getLabelFieldName } from '../../helpers/getLabelFieldName';
-import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { EventDataReceived } from '../domain/events/EventDataReceived';
+import { getColorByIndex } from '../helpers/getColorByIndex';
+import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
+import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
+import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
+import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
   addStats,
   limitNumberOfSeries,
   sortSeries,
-} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
-import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
-import { getSeriesStatsValue } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/getSeriesStatsValue';
-import { EventDataReceived } from './domain/events/EventDataReceived';
+} from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
@@ -154,7 +154,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     return series.map((s, i) => {
       const metricField = s.fields[1];
-      let displayName = getLabelFieldName(metricField, groupByLabel);
+      let displayName = getSeriesLabelFieldName(metricField, groupByLabel);
 
       if (series.length === 1) {
         const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;

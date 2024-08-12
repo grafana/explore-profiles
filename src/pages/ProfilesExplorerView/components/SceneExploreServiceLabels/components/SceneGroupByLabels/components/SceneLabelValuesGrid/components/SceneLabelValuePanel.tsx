@@ -4,11 +4,10 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanelState }
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
+import { EventDataReceived } from '../../../../../../../domain/events/EventDataReceived';
+import { getSeriesStatsValue } from '../../../../../../../infrastructure/helpers/getSeriesStatsValue';
 import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { EventDataReceived } from '../../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
-import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
-import { getSeriesStatsValue } from '../domain/getSeriesStatsValue';
-import { CompareTarget } from '../domain/types';
+import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries';
 import { GRID_AUTO_ROWS } from '../SceneLabelValuesGrid';
 import { SceneStatsPanel } from './SceneStatsPanel/SceneStatsPanel';
 
@@ -25,15 +24,13 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   constructor({
     item,
     headerActions,
-    compareTargetValue,
   }: {
     item: GridItemData;
     headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-    compareTargetValue?: CompareTarget;
   }) {
     super({
       key: 'label-value-panel',
-      statsPanel: new SceneStatsPanel({ item, compareTargetValue }),
+      statsPanel: new SceneStatsPanel({ item }),
       timeseriesPanel: new SceneLabelValuesTimeseries({ item, headerActions }),
     });
 

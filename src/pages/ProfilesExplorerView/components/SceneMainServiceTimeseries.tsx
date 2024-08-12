@@ -12,7 +12,7 @@ import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { PanelType } from './SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 
 interface SceneMainServiceTimeseriesState extends SceneObjectState {
   item?: GridItemData;
