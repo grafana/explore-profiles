@@ -167,11 +167,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     });
   }
 
-  getGroupByValues(series: DataFrame[]) {
-    const groupByLabel = this.state.item.queryRunnerParams.groupBy?.label;
-    return series.map((s) => getSeriesLabelFieldName(s.fields[1], groupByLabel));
-  }
-
   updateTitle(newTitle: string) {
     this.state.body.setState({ title: newTitle });
   }
