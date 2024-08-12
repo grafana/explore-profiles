@@ -16,16 +16,15 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { FavAction } from '../../../domain/actions/FavAction';
 import { findSceneObjectByClass } from '../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../helpers/getSceneVariableValue';
-import { FavoritesDataSource } from '../../../infrastructure/favorites/FavoritesDataSource';
 import { SceneEmptyState } from '../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from '../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
 import { LayoutType, SceneLayoutSwitcher } from '../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { PanelType, ScenePanelTypeSwitcher } from '../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
+import { sortFavGridItems } from '../../SceneByVariableRepeaterGrid/domain/sortFavGridItems';
 import { GridItemData } from '../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuesBarGauge } from '../../SceneLabelValuesBarGauge';
 import { SceneLabelValueStat } from '../../SceneLabelValueStat';
@@ -43,25 +42,6 @@ const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
 const GRID_AUTO_ROWS_SMALL = '76px';
-
-const DEFAULT_SORT_ITEMS_FN: SceneLabelValuesGridState['sortItemsFn'] = function (a, b) {
-  const aIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(a));
-  const bIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(b));
-
-  if (aIsFav && bIsFav) {
-    return a.label.localeCompare(b.label);
-  }
-
-  if (bIsFav) {
-    return +1;
-  }
-
-  if (aIsFav) {
-    return -1;
-  }
-
-  return 0;
-};
 
 export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridState> {
   static buildGridItemKey(item: GridItemData) {
@@ -85,7 +65,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       key,
       items: [],
       headerActions,
-      sortItemsFn: sortItemsFn || DEFAULT_SORT_ITEMS_FN,
+      sortItemsFn: sortItemsFn || sortFavGridItems,
       hideNoData: false,
       body: new SceneCSSGridLayout({
         templateColumns: SceneLabelValuesGrid.getGridColumnsTemplate(SceneLayoutSwitcher.DEFAULT_LAYOUT),

@@ -5,8 +5,6 @@ import { PanelType } from '../../components/SceneByVariableRepeaterGrid/componen
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneDrawer } from '../../components/SceneDrawer';
-import { SceneLabelValuesBarGauge } from '../../components/SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../../components/SceneLabelValuesTimeseries';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventExpandPanel } from '../../domain/events/EventExpandPanel';
@@ -17,6 +15,8 @@ import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
+import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
+import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawer: SceneDrawer;

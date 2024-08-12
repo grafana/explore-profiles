@@ -48,8 +48,7 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheCl
 
   static assertParams(query: string, from: number, to: number) {
     invariant(Boolean(query), 'Missing "query" parameter!');
-    invariant(from > 0, 'Invalid "from" parameter!');
-    invariant(to > 0 && to > from, 'Invalid "to" parameter!');
+    invariant(from > 0 && to > 0 && to > from, 'Invalid timerange!');
   }
 
   async listLabels({ query, from, to }: ListLabelsOptions): Promise<Suggestions> {

@@ -41,6 +41,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
           new SceneFlexItem({
             minHeight: SceneMainServiceTimeseries.MIN_HEIGHT,
             body: new SceneMainServiceTimeseries({
+              item,
               headerActions: (item) => [
                 new SelectAction({ EventClass: EventViewServiceProfiles, item }),
                 new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),

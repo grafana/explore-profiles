@@ -15,7 +15,7 @@ export enum PanelType {
   STATS = 'stats',
 }
 
-interface ScenePanelTypeSwitcherState extends SceneObjectState {
+export interface ScenePanelTypeSwitcherState extends SceneObjectState {
   panelType: PanelType;
   onChange?: (panelType: PanelType) => void;
 }

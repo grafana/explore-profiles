@@ -308,7 +308,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     const { variables: sceneVariables, gridControls } = (body?.state.primary as any).getVariablesAndGridControls() as {
       variables: SceneVariable[];
-      gridControls: Array<SceneObject & { key?: string }>;
+      gridControls: SceneObject[];
     };
 
     return {
@@ -380,7 +380,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             ))}
 
             {gridControls.map((control) => (
-              <control.Component key={control.key} model={control} />
+              <control.Component key={control.state.key} model={control} />
             ))}
           </div>
         </div>

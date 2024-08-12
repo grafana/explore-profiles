@@ -11,7 +11,10 @@ import {
 import { GraphGradientMode } from '@grafana/schema';
 import React from 'react';
 
+import { EventDataReceived } from '../domain/events/EventDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
+import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
@@ -23,6 +26,9 @@ import {
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
+  item: GridItemData;
+  headerActions: (item: GridItemData) => VizPanelState['headerActions'];
+  displayAllValues: boolean;
   body: VizPanel;
 }
 
@@ -32,12 +38,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     headerActions,
     displayAllValues,
   }: {
-    item: GridItemData;
-    headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-    displayAllValues?: boolean;
+    item: SceneLabelValuesTimeseriesState['item'];
+    headerActions: SceneLabelValuesTimeseriesState['headerActions'];
+    displayAllValues?: SceneLabelValuesTimeseriesState['displayAllValues'];
   }) {
     super({
       key: 'timeseries-label-values',
+      item,
+      headerActions,
+      displayAllValues: Boolean(displayAllValues),
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
@@ -52,20 +61,26 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         .build(),
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, item, Boolean(displayAllValues)));
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onActivate(item: GridItemData, displayAllValues: boolean) {
+  onActivate() {
     const { body } = this.state;
 
     const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done || !state.data.series.length) {
+      if (state.data?.state !== LoadingState.Done) {
         return;
       }
 
-      const config = displayAllValues
-        ? this.getAllValuesConfig(item, state.data.series)
-        : this.getConfig(item, state.data.series);
+      const { series } = state.data;
+
+      this.publishEvent(new EventDataReceived({ series }), true);
+
+      if (!series.length) {
+        return;
+      }
+
+      const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
 
       body.setState(config);
     });
@@ -75,15 +90,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
-  getConfig(item: GridItemData, series: DataFrame[]) {
+  getConfig(series: DataFrame[]) {
+    const { item } = this.state;
     let { title } = this.state.body.state;
     let description;
 
     if (item.queryRunnerParams.groupBy?.label) {
       title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
 
-      const totalSeriesCount =
-        series[0].meta?.stats?.find(({ displayName }) => displayName === 'totalSeriesCount')?.value || 0;
+      const totalSeriesCount = getSeriesStatsValue(series[0], 'totalSeriesCount') || 0;
       const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
 
       description = hasTooManySeries
@@ -102,12 +117,12 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
           },
         },
-        overrides: this.getOverrides(item, series),
+        overrides: this.getOverrides(series),
       },
     };
   }
 
-  getAllValuesConfig(item: GridItemData, series: DataFrame[]) {
+  getAllValuesConfig(series: DataFrame[]) {
     return {
       fieldConfig: {
         defaults: {
@@ -116,27 +131,28 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             fillOpacity: 0,
           },
         },
-        overrides: this.getOverrides(item, series),
+        overrides: this.getOverrides(series),
       },
     };
   }
 
-  getOverrides(item: GridItemData, series: DataFrame[]) {
+  getOverrides(series: DataFrame[]) {
+    const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    return series.map((serie, i) => {
-      let displayName = groupByLabel ? serie.fields[1].labels?.[groupByLabel] : serie.fields[1].name;
+    return series.map((s, i) => {
+      const metricField = s.fields[1];
+      let displayName = getSeriesLabelFieldName(metricField, groupByLabel);
 
       if (series.length === 1) {
-        const allValuesSum = serie.meta?.stats?.find(({ displayName }) => displayName === 'allValuesSum')?.value || 0;
-        const { unit } = serie.fields[1].config;
-        const formattedValue = getValueFormat(unit)(allValuesSum);
+        const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
+        const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
 
-        displayName = `${displayName} · total = ${formattedValue.text}${formattedValue.suffix}`;
+        displayName = `${displayName} / total = ${formattedValue.text}${formattedValue.suffix}`;
       }
 
       return {
-        matcher: { id: FieldMatcherID.byFrameRefID, options: serie.refId },
+        matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
         properties: [
           {
             id: 'displayName',
@@ -149,6 +165,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         ],
       };
     });
+  }
+
+  getGroupByValues(series: DataFrame[]) {
+    const groupByLabel = this.state.item.queryRunnerParams.groupBy?.label;
+    return series.map((s) => getSeriesLabelFieldName(s.fields[1], groupByLabel));
   }
 
   updateTitle(newTitle: string) {
