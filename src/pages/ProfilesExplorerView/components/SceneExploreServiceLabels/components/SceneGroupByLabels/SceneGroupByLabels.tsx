@@ -46,8 +46,8 @@ import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfi
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
-import { CompareActions } from './components/SceneLabelValuesGrid/ui/CompareActions';
 import { EventSelectForCompare } from './domain/events/EventSelectForCompare';
+import { CompareActions } from './ui/CompareActions';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
@@ -224,6 +224,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       'Search label values (comma-separated regexes are supported)'
     );
 
+    this.clearCompare();
+
     const { value, options } = groupByVariableState;
 
     const index = options
@@ -235,8 +237,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     this.setState({
       body: this.buildSceneLabelValuesGrid(value as string, startColorIndex),
     });
-
-    this.clearCompare();
   }
 
   buildSceneLabelValuesGrid(label: string, startColorIndex: number) {
