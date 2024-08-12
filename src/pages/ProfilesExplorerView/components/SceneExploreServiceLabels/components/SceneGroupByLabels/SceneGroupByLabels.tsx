@@ -320,19 +320,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     // TODO: optimize if needed
     // we can remove the loop if we clear the current selection in the UI before updating the compare map (see selectForCompare() and onClickClearCompareButton())
     for (const panel of statsPanels) {
-      const { item } = panel.state;
-
-      if (baselineItem?.value === item.value) {
-        panel.updateCompareTargetValue(CompareTarget.BASELINE);
-        continue;
-      }
-
-      if (comparisonItem?.value === item.value) {
-        panel.updateCompareTargetValue(CompareTarget.COMPARISON);
-        continue;
-      }
-
-      panel.updateCompareTargetValue(undefined);
+      panel.setCompareTargetValue(baselineItem, comparisonItem);
     }
   }
 

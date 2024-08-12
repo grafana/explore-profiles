@@ -8,7 +8,6 @@ import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/type
 import { EventDataReceived } from '../../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { getSeriesStatsValue } from '../domain/getSeriesStatsValue';
-import { CompareTarget } from '../domain/types';
 import { GRID_AUTO_ROWS } from '../SceneLabelValuesGrid';
 import { SceneStatsPanel } from './SceneStatsPanel/SceneStatsPanel';
 
@@ -25,15 +24,13 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   constructor({
     item,
     headerActions,
-    compareTargetValue,
   }: {
     item: GridItemData;
     headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-    compareTargetValue?: CompareTarget;
   }) {
     super({
       key: 'label-value-panel',
-      statsPanel: new SceneStatsPanel({ item, compareTargetValue }),
+      statsPanel: new SceneStatsPanel({ item }),
       timeseriesPanel: new SceneLabelValuesTimeseries({ item, headerActions }),
     });
 

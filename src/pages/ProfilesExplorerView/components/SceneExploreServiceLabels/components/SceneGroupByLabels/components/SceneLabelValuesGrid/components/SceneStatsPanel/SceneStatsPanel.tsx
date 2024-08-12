@@ -1,8 +1,10 @@
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import React from 'react';
+import { findSceneObjectByClass } from 'src/pages/ProfilesExplorerView/helpers/findSceneObjectByClass';
 
 import { GridItemData } from '../../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { EventSelectForCompare } from '../../../../domain/events/EventSelectForCompare';
+import { SceneGroupByLabels } from '../../../../SceneGroupByLabels';
 import { CompareTarget } from '../../domain/types';
 import { StatsPanel } from './ui/StatsPanel';
 
@@ -20,17 +22,44 @@ interface SceneStatsPanelState extends SceneObjectState {
 export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   static WIDTH_IN_PIXELS = 180;
 
-  constructor({ item, compareTargetValue }: { item: GridItemData; compareTargetValue?: CompareTarget }) {
+  constructor({ item }: { item: GridItemData }) {
     super({
       item,
       itemStats: undefined,
-      compareTargetValue,
+      compareTargetValue: undefined,
     });
+
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  updateCompareTargetValue(compareTargetValue?: CompareTarget) {
+  onActivate() {
+    const compare = (findSceneObjectByClass(this, SceneGroupByLabels) as SceneGroupByLabels).getCompare();
+
+    this.setCompareTargetValue(compare.get(CompareTarget.BASELINE), compare.get(CompareTarget.COMPARISON));
+  }
+
+  setCompareTargetValue(baselineItem?: GridItemData, comparisonItem?: GridItemData) {
+    const { item } = this.state;
+    let compareTargetValue;
+
+    if (baselineItem?.value === item.value) {
+      compareTargetValue = CompareTarget.BASELINE;
+    } else if (comparisonItem?.value === item.value) {
+      compareTargetValue = CompareTarget.COMPARISON;
+    }
+
     this.setState({ compareTargetValue });
   }
+
+  onChangeCompareTarget = (compareTarget: CompareTarget) => {
+    this.publishEvent(
+      new EventSelectForCompare({
+        compareTarget,
+        item: this.state.item,
+      }),
+      true
+    );
+  };
 
   getStats() {
     return this.state.itemStats;
@@ -39,11 +68,6 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   updateStats(itemStats: ItemStats) {
     this.setState({ itemStats });
   }
-
-  onChangeCompareTarget = (compareTarget: CompareTarget) => {
-    const { item } = this.state;
-    this.publishEvent(new EventSelectForCompare({ compareTarget, item }), true);
-  };
 
   static Component({ model }: SceneComponentProps<SceneStatsPanel>) {
     const { item, itemStats, compareTargetValue } = model.useState();
