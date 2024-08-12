@@ -17,13 +17,13 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import React from 'react';
 
 import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../../pages/ComparisonView/ui/colors';
-import { FiltersVariable } from '../../../..//domain/variables/FiltersVariable/FiltersVariable';
+import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
+import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
-import { getSeriesStatsValue } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/getSeriesStatsValue';
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
-import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
 import {
   SwitchTimeRangeSelectionModeAction,
   TimerangeSelectionMode,
