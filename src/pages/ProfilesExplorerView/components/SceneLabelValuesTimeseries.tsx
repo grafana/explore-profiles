@@ -13,7 +13,6 @@ import React from 'react';
 
 import { EventDataReceived } from '../domain/events/EventDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { getLabelFieldName } from '../helpers/getLabelFieldName';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
@@ -166,11 +165,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         ],
       };
     });
-  }
-
-  getGroupByValues(series: DataFrame[]) {
-    const groupByLabel = this.state.item.queryRunnerParams.groupBy?.label;
-    return series.map((s) => getLabelFieldName(s.fields[1], groupByLabel));
   }
 
   updateTitle(newTitle: string) {
