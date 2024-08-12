@@ -16,7 +16,7 @@ import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/S
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawer: SceneDrawer;

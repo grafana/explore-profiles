@@ -15,6 +15,7 @@ import { Spinner } from '@grafana/ui';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
+import { EventDataReceived } from '../../../../../../domain/events/EventDataReceived';
 import { FiltersVariable } from '../../../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { findSceneObjectByClass } from '../../../../../../helpers/findSceneObjectByClass';
@@ -43,7 +44,6 @@ import {
   sortSeries,
 } from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { EventDataReceived } from '../../../../../SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
 
 export interface SceneLabelValuesGridState extends EmbeddedSceneState {

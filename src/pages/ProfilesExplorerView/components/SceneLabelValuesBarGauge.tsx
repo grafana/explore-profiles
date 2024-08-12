@@ -11,13 +11,13 @@ import {
 import { BarGaugeDisplayMode, BarGaugeNamePlacement, BarGaugeSizing, BarGaugeValueMode } from '@grafana/schema';
 import React from 'react';
 
+import { EventDataReceived } from '../domain/events/EventDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
-import { getLabelFieldName } from '../helpers/getLabelFieldName';
+import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
+import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats, sortSeries } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
-import { getSeriesStatsValue } from './SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/getSeriesStatsValue';
-import { EventDataReceived } from './SceneLabelValuesTimeseries/domain/events/EventDataReceived';
 
 interface SceneLabelValuesBarGaugeState extends SceneObjectState {
   body: VizPanel;
@@ -126,7 +126,7 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
       properties: [
         {
           id: 'displayName',
-          value: getLabelFieldName(s.fields[1], groupByLabel),
+          value: getSeriesLabelFieldName(s.fields[1], groupByLabel),
         },
         {
           id: 'color',
