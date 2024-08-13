@@ -47,9 +47,10 @@ import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+  $variables: SceneVariableSet;
+  gridControls: Array<SceneObject & { key?: string }>;
   explorationType?: ExplorationType;
   body?: SplitLayout;
-  gridControls: Array<SceneObject & { key?: string }>;
 }
 
 export enum ExplorationType {
@@ -301,10 +302,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   useProfilesExplorer = () => {
-    const { explorationType, controls, body } = this.useState();
+    const { explorationType, controls, body, $variables } = this.useState();
 
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
-    const dataSourceVariable = this.state.$variables!.state!.variables[0] as ProfilesDataSourceVariable;
+    const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
 
     const { variables: sceneVariables, gridControls } = (body?.state.primary as any).getVariablesAndGridControls() as {
       variables: SceneVariable[];
