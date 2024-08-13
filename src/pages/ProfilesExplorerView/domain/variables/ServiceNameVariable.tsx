@@ -1,13 +1,18 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
-import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
+import {
+  MultiValueVariable,
+  QueryVariable,
+  SceneComponentProps,
+  sceneGraph,
+  VariableValueOption,
+} from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { FiltersVariable } from './FiltersVariable/FiltersVariable';
 
@@ -25,6 +30,7 @@ export class ServiceNameVariable extends QueryVariable {
 
   constructor(state?: ServiceNameVariableState) {
     super({
+      key: 'serviceName',
       name: 'serviceName',
       label: '🚀 Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
@@ -69,7 +75,7 @@ export class ServiceNameVariable extends QueryVariable {
 
     // manually reset filters - the "Scenes way" would be to listen to the variable changes but it leads to errors
     // see comments in src/pages/ProfilesExplorerView/variables/FiltersVariable/FiltersVariable.tsx
-    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
     filtersVariable.setState({ filters: [] });
   };
 

@@ -4,6 +4,7 @@ import {
   EmbeddedSceneState,
   getUrlSyncManager,
   SceneComponentProps,
+  sceneGraph,
   SceneObject,
   SceneObjectBase,
   SceneObjectUrlSyncConfig,
@@ -34,7 +35,6 @@ import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByV
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
@@ -288,17 +288,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   resetVariables(explorationType: string) {
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).clear();
+    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
 
     if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
-      (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable)?.setState({
         filters: FiltersVariable.DEFAULT_VALUE,
       });
     }
 
-    (findSceneObjectByClass(this, GroupByVariable) as GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
+    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
 
-    (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher)?.reset();
+    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher)?.reset();
   }
 
   onClickShareLink = async () => {

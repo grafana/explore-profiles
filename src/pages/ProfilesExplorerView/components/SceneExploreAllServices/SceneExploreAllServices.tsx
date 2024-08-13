@@ -1,4 +1,10 @@
-import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase, SceneVariableSet } from '@grafana/scenes';
+import {
+  EmbeddedSceneState,
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneVariableSet,
+} from '@grafana/scenes';
 import React from 'react';
 
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
@@ -9,7 +15,6 @@ import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabe
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
@@ -55,17 +60,17 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
   }
 
   onActivate() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     quickFilter.setPlaceholder('Search services (comma-separated regexes are supported)');
   }
 
   // see SceneProfilesExplorer
   getVariablesAndGridControls() {
     return {
-      variables: [findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable],
+      variables: [sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable)],
       gridControls: [
-        findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter,
-        findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher,
+        sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter),
+        sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher),
       ],
     };
   }

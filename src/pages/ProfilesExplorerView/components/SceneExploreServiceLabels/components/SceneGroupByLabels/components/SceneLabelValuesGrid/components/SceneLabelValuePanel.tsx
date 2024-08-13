@@ -42,12 +42,18 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
 
     const timeseriesSub = timeseriesPanel.subscribeToEvent(EventDataReceived, (event) => {
       const [s] = event.payload.series;
-      const allValuesSum = s ? getSeriesStatsValue(s, 'allValuesSum') || 0 : 0;
+
+      if (!s) {
+        statsPanel.updateStats({ allValuesSum: 0, unit: 'short' });
+        return;
+      }
+
+      const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
 
       if (statsPanel.getStats()?.allValuesSum !== allValuesSum) {
         statsPanel.updateStats({
           allValuesSum,
-          unit: s ? (s.fields[1].config.unit as string) : 'short',
+          unit: s.fields[1].config.unit || 'short',
         });
       }
     });

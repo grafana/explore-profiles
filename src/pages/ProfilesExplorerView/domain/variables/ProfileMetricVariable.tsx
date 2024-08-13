@@ -32,6 +32,7 @@ export class ProfileMetricVariable extends QueryVariable {
 
   constructor(state?: ProfileMetricVariableState) {
     super({
+      key: 'profileMetricId',
       name: 'profileMetricId',
       label: '🔥 Profile type',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,

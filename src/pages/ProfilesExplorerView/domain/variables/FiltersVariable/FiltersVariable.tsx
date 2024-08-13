@@ -6,7 +6,6 @@ import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import React, { useEffect, useMemo } from 'react';
 
-import { findSceneObjectByClass } from '../../../helpers/findSceneObjectByClass';
 import { ProfileMetricVariable } from '../ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../ServiceNameVariable';
@@ -25,11 +24,11 @@ export class FiltersVariable extends AdHocFiltersVariable {
 
     this.addActivationHandler(() => {
       // VariableDependencyConfig does not work :man_shrug: (never called)
-      const dataSourceSub = (
-        findSceneObjectByClass(this, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
-      ).subscribeToState(() => {
-        this.setState({ filters: [] });
-      });
+      const dataSourceSub = sceneGraph
+        .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
+        .subscribeToState(() => {
+          this.setState({ filters: [] });
+        });
 
       return () => {
         dataSourceSub.unsubscribe();
@@ -48,17 +47,15 @@ export class FiltersVariable extends AdHocFiltersVariable {
     const { filters } = model.useState();
     const [, setQuery] = useQueryFromUrl();
 
-    const { value: dataSourceUid } = (
-      findSceneObjectByClass(model, ProfilesDataSourceVariable) as ProfilesDataSourceVariable
-    ).useState();
+    const { value: dataSourceUid } = sceneGraph
+      .findByKeyAndType(model, 'dataSource', ProfilesDataSourceVariable)
+      .useState();
 
-    const { value: serviceName } = (
-      findSceneObjectByClass(model, ServiceNameVariable) as ServiceNameVariable
-    ).useState();
+    const { value: serviceName } = sceneGraph.findByKeyAndType(model, 'serviceName', ServiceNameVariable).useState();
 
-    const { value: profileMetricId } = (
-      findSceneObjectByClass(model, ProfileMetricVariable) as ProfileMetricVariable
-    ).useState();
+    const { value: profileMetricId } = sceneGraph
+      .findByKeyAndType(model, 'profileMetricId', ProfileMetricVariable)
+      .useState();
 
     const filterExpression = useMemo(
       () => expressionBuilder(serviceName as string, profileMetricId as string, filters),

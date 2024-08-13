@@ -17,6 +17,7 @@ export class GroupByVariable extends QueryVariable {
 
   constructor() {
     super({
+      key: 'groupBy',
       name: 'groupBy',
       label: 'Group by labels',
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,

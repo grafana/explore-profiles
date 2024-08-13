@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { DashboardCursorSync, GrafanaTheme2 } from '@grafana/data';
-import { behaviors, SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
@@ -14,7 +14,6 @@ import { useFetchDiffProfile } from '../../../../pages/ComparisonView/components
 import { useDefaultComparisonParamsFromUrl } from '../../../../pages/ComparisonView/domain/useDefaultComparisonParamsFromUrl';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 
@@ -45,7 +44,7 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
   }
 
   onActivate() {
-    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
 
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
@@ -60,8 +59,8 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
   getVariablesAndGridControls() {
     return {
       variables: [
-        findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable,
-        findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable,
+        sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
+        sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
       ],
       gridControls: [],
     };
