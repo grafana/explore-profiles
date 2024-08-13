@@ -18,7 +18,6 @@ import React from 'react';
 import { EventDataReceived } from '../../../../../../domain/events/EventDataReceived';
 import { FiltersVariable } from '../../../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
-import { findSceneObjectByClass } from '../../../../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../../../../helpers/getSceneVariableValue';
 import { buildTimeSeriesQueryRunner } from '../../../../../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneEmptyState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
@@ -143,7 +142,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToGroupByChange() {
-    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
 
     return groupByVariable.subscribeToState((newState, prevState) => {
       if (!newState.loading && prevState.loading) {
@@ -181,7 +180,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToQuickFilterChange() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
 
     const onChangeState = (newState: SceneQuickFilterState, prevState?: SceneQuickFilterState) => {
       if (newState.searchText !== prevState?.searchText) {
@@ -193,7 +192,11 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToLayoutChange() {
-    const layoutSwitcher = findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher;
+    const layoutSwitcher = sceneGraph.findByKeyAndType(
+      this,
+      'layout-switcher',
+      SceneLayoutSwitcher
+    ) as SceneLayoutSwitcher;
     const body = this.state.body as SceneCSSGridLayout;
 
     const onChangeState = (newState: SceneLayoutSwitcherState, prevState?: SceneLayoutSwitcherState) => {
@@ -210,7 +213,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToHideNoDataChange() {
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     this.setState({ hideNoData: noDataSwitcher.state.hideNoData === 'on' });
 
@@ -226,8 +229,8 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToFiltersChange() {
-    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     // the handler will be called each time a filter is added/removed/modified
     return filtersVariable.subscribeToState(() => {
@@ -367,7 +370,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   filterItems(items: SceneLabelValuesGridState['items']) {
-    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilterScene = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     const { searchText } = quickFilterScene.state;
 
     if (!searchText) {

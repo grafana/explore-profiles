@@ -25,7 +25,6 @@ import { addFilter } from '../../../../domain/variables/FiltersVariable/filters-
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { computeRoundedTimeRange } from '../../../../helpers/computeRoundedTimeRange';
-import { findSceneObjectByClass } from '../../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { interpolateQueryRunnerVariables } from '../../../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
@@ -73,7 +72,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   async onActivate(item?: GridItemData) {
     // initial load
-    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
     await groupByVariable.update();
 
     if (item) {
@@ -98,19 +97,19 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const { groupBy } = queryRunnerParams;
 
     if (groupBy?.label) {
-      const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+      const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
       groupByVariable.changeValueTo(groupBy.label);
     }
 
     if (panelType) {
-      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+      const panelTypeSwitcher = sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher);
       panelTypeSwitcher.setState({ panelType });
     }
   }
 
   subscribeToGroupByChange() {
-    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
 
     return groupByVariable.subscribeToState((newState, prevState) => {
       if (newState.value !== prevState?.value) {
@@ -150,7 +149,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToPanelTypeChange() {
-    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+    const panelTypeSwitcher = sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher);
 
     return panelTypeSwitcher.subscribeToState(
       (newState: ScenePanelTypeSwitcherState, prevState?: ScenePanelTypeSwitcherState) => {
@@ -175,9 +174,9 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   switchToLabelNamesGrid() {
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
-      'Search labels (comma-separated regexes are supported)'
-    );
+    sceneGraph
+      .findByKeyAndType(this, 'quick-filter', SceneQuickFilter)
+      .setPlaceholder('Search labels (comma-separated regexes are supported)');
 
     this.setState({
       body: this.buildSceneLabelNamesGrid(),
@@ -220,9 +219,9 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   switchToLabelValuesGrid(groupByVariableState: MultiValueVariableState) {
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).setPlaceholder(
-      'Search label values (comma-separated regexes are supported)'
-    );
+    sceneGraph
+      .findByKeyAndType(this, 'quick-filter', SceneQuickFilter)
+      .setPlaceholder('Search label values (comma-separated regexes are supported)');
 
     this.clearCompare();
 
@@ -254,7 +253,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   selectLabel({ queryRunnerParams }: GridItemData) {
     const labelValue = queryRunnerParams!.groupBy!.label;
-    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
 
     groupByVariable.changeValueTo(labelValue);
 
@@ -267,7 +266,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     if (filters?.[0]) {
       const filterToAdd = filters?.[0];
-      addFilter(findSceneObjectByClass(this, FiltersVariable) as FiltersVariable, filterToAdd);
+      addFilter(sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable), filterToAdd);
       return;
     }
 
@@ -396,17 +395,17 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     const { body, drawer, compare } = model.useState();
 
-    const groupByVariable = findSceneObjectByClass(model, GroupByVariable) as GroupByVariable;
+    const groupByVariable = sceneGraph.findByKeyAndType(model, 'groupBy', GroupByVariable);
     const { value: groupByVariableValue } = groupByVariable.useState();
 
     const gridControls = useMemo(
       () =>
         groupByVariableValue === 'all'
-          ? (findSceneObjectByClass(model, SceneProfilesExplorer) as SceneProfilesExplorer).state.gridControls
+          ? sceneGraph.findByKeyAndType(model, 'profiles-explorer', SceneProfilesExplorer).state.gridControls
           : ([
-              findSceneObjectByClass(model, SceneQuickFilter),
-              findSceneObjectByClass(model, SceneLayoutSwitcher),
-              findSceneObjectByClass(model, SceneNoDataSwitcher),
+              sceneGraph.findByKeyAndType(model, 'quick-filter', SceneQuickFilter),
+              sceneGraph.findByKeyAndType(model, 'layout-switcher', SceneLayoutSwitcher),
+              sceneGraph.findByKeyAndType(model, 'no-data-switcher', SceneNoDataSwitcher),
             ] as SceneObject[]),
       [groupByVariableValue, model]
     );

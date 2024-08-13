@@ -1,6 +1,5 @@
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import React from 'react';
-import { findSceneObjectByClass } from 'src/pages/ProfilesExplorerView/helpers/findSceneObjectByClass';
 
 import { GridItemData } from '../../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { EventSelectForCompare } from '../../../../domain/events/EventSelectForCompare';
@@ -33,7 +32,7 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   }
 
   onActivate() {
-    const compare = (findSceneObjectByClass(this, SceneGroupByLabels) as SceneGroupByLabels).getCompare();
+    const compare = sceneGraph.findByKeyAndType(this, 'group-by-labels', SceneGroupByLabels).getCompare();
 
     this.setCompareTargetValue(compare.get(CompareTarget.BASELINE), compare.get(CompareTarget.COMPARISON));
   }

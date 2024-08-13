@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -10,7 +10,6 @@ import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabe
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneMainServiceTimeseries } from '../SceneMainServiceTimeseries';
 import { SceneFlameGraph } from './SceneFlameGraph';
@@ -42,7 +41,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       this.initVariables(item);
     }
 
-    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
 
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
@@ -57,17 +56,17 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     const { serviceName, profileMetricId, filters } = item.queryRunnerParams;
 
     if (serviceName) {
-      const serviceNameVariable = findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable;
+      const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
       serviceNameVariable.changeValueTo(serviceName);
     }
 
     if (profileMetricId) {
-      const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+      const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
       profileMetricVariable.changeValueTo(profileMetricId);
     }
 
     if (filters) {
-      const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+      const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
       filtersVariable.setState({ filters });
     }
   }
@@ -76,9 +75,9 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
   getVariablesAndGridControls() {
     return {
       variables: [
-        findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable,
-        findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable,
-        findSceneObjectByClass(this, FiltersVariable) as FiltersVariable,
+        sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
+        sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
+        sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable),
       ],
       gridControls: [],
     };

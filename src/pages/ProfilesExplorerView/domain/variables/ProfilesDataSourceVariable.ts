@@ -6,6 +6,7 @@ export class ProfilesDataSourceVariable extends DataSourceVariable {
   constructor() {
     super({
       pluginId: 'grafana-pyroscope-datasource',
+      key: 'dataSource',
       name: 'dataSource',
       label: 'Data source',
       skipUrlSync: true,
