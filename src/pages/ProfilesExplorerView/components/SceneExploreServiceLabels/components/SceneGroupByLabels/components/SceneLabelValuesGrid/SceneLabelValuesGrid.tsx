@@ -192,11 +192,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToLayoutChange() {
-    const layoutSwitcher = sceneGraph.findByKeyAndType(
-      this,
-      'layout-switcher',
-      SceneLayoutSwitcher
-    ) as SceneLayoutSwitcher;
+    const layoutSwitcher = sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher);
     const body = this.state.body as SceneCSSGridLayout;
 
     const onChangeState = (newState: SceneLayoutSwitcherState, prevState?: SceneLayoutSwitcherState) => {
