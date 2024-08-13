@@ -22,7 +22,9 @@ import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 
-interface SceneFlameGraphState extends SceneObjectState {}
+interface SceneFlameGraphState extends SceneObjectState {
+  $data: SceneQueryRunner;
+}
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
 // without success: the flame graph dimensions are set in runtime and do not change when the user resizes the layout
@@ -87,7 +89,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       }
     }, [maxNodes]);
 
-    const $dataState = $data!.useState();
+    const $dataState = $data.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
     const profileData = $dataState?.data?.series?.[0];
     const hasProfileData = Number(profileData?.length) > 1;
