@@ -16,7 +16,6 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { findSceneObjectByClass } from '../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../helpers/getSceneVariableValue';
 import { SceneEmptyState } from '../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from '../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
@@ -150,7 +149,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToQuickFilterChange() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
 
     const onChangeState = (newState: typeof quickFilter.state, prevState?: typeof quickFilter.state) => {
       if (newState.searchText !== prevState?.searchText) {
@@ -162,7 +161,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToLayoutChange() {
-    const layoutSwitcher = findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher;
+    const layoutSwitcher = sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher);
 
     const body = this.state.body as SceneCSSGridLayout;
 
@@ -180,7 +179,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   subscribeToHideNoDataChange() {
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     if (!noDataSwitcher.isActive) {
       this.setState({ hideNoData: false });
@@ -218,7 +217,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
 
     const serviceName = getSceneVariableValue(this, 'serviceName');
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
-    const panelTypeFromSwitcher = (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).state
+    const panelTypeFromSwitcher = sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).state
       .panelType;
 
     const panelType = panelTypeFromSwitcher === PanelType.BARGAUGE ? PanelType.STATS : panelTypeFromSwitcher;
@@ -344,12 +343,12 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   }
 
   getAutoRows() {
-    const { panelType } = (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).state;
+    const { panelType } = sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).state;
     return panelType === PanelType.BARGAUGE ? GRID_AUTO_ROWS_SMALL : GRID_AUTO_ROWS;
   }
 
   filterItems(items: SceneLabelValuesGridState['items']) {
-    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilterScene = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     const { searchText } = quickFilterScene.state;
 
     if (!searchText) {

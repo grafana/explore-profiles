@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
-import { SceneComponentProps, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -14,7 +14,6 @@ import { EventViewServiceFlameGraph } from '../../../domain/events/EventViewServ
 import { addFilter } from '../../../domain/variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../domain/variables/GroupByVariable/GroupByVariable';
-import { findSceneObjectByClass } from '../../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { SceneNoDataSwitcher } from '../../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
@@ -59,11 +58,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToGroupByChange() {
-    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
 
     const onChangeState = (newState: typeof groupByVariable.state, prevState?: typeof groupByVariable.state) => {
       if (newState.value !== prevState?.value) {
-        const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+        const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
         quickFilter.clear();
 
         if (newState.value === 'all') {
@@ -185,7 +184,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToPanelTypeChange() {
-    const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+    const panelTypeSwitcher = sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher);
 
     return panelTypeSwitcher.subscribeToState(
       (newState: typeof panelTypeSwitcher.state, prevState?: typeof panelTypeSwitcher.state) => {
@@ -197,8 +196,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   subscribeToFiltersChange() {
-    const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     // the handler will be called each time a filter is added/removed/modified
     return filtersVariable.subscribeToState(() => {
@@ -233,7 +232,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   selectLabel({ queryRunnerParams }: GridItemData) {
     const labelValue = queryRunnerParams!.groupBy!.label;
-    const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
 
     groupByVariable.changeValueTo(labelValue);
 
@@ -242,7 +241,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   addLabelValueToFilters(item: GridItemData) {
-    const filterByVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+    const filterByVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
 
     let filterToAdd: AdHocVariableFilter;
     const { filters, groupBy } = item.queryRunnerParams;
@@ -260,7 +259,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     addFilter(filterByVariable, filterToAdd);
 
-    const goupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+    const goupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
     goupByVariable.changeValueTo(GroupByVariable.DEFAULT_VALUE);
   }
 
@@ -292,8 +291,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     const { body, drawer } = model.useState();
 
-    const groupByVariable = findSceneObjectByClass(model, GroupByVariable);
-    const { gridControls } = (findSceneObjectByClass(model, SceneProfilesExplorer) as SceneProfilesExplorer).state;
+    const groupByVariable = sceneGraph.findByKeyAndType(model, 'groupBy', GroupByVariable);
+    const { gridControls } = sceneGraph.findByKeyAndType(model, 'profiles-explorer', SceneProfilesExplorer).state;
 
     return (
       <div className={styles.container}>

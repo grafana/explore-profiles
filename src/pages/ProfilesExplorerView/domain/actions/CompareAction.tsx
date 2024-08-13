@@ -16,7 +16,6 @@ import React, { useMemo } from 'react';
 
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { interpolateQueryRunnerVariables } from '../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { FiltersVariable } from '../variables/FiltersVariable/FiltersVariable';
@@ -120,7 +119,7 @@ export class CompareAction extends SceneObjectBase<CompareActionState> {
     diffUrl.searchParams.set('from', from.toString());
     diffUrl.searchParams.set('to', to.toString());
 
-    const { filters: queryFilters } = (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable).state;
+    const { filters: queryFilters } = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).state;
     const { serviceName: serviceId, profileMetricId } = interpolateQueryRunnerVariables(this, this.state.item);
 
     // query - just in case

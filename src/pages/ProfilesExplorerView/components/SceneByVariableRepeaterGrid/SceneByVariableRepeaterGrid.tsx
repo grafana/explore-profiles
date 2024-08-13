@@ -17,7 +17,6 @@ import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
 import { EventDataReceived } from '../../domain/events/EventDataReceived';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
 import { SceneLabelValueStat } from '../SceneLabelValueStat';
@@ -159,7 +158,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToQuickFilterChange() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
 
     const onChangeState = (newState: SceneQuickFilterState, prevState?: SceneQuickFilterState) => {
       if (newState.searchText !== prevState?.searchText) {
@@ -171,7 +170,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToLayoutChange() {
-    const layoutSwitcher = findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher;
+    const layoutSwitcher = sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher);
 
     const body = this.state.body as SceneCSSGridLayout;
 
@@ -189,7 +188,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToHideNoDataChange() {
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     if (!noDataSwitcher.isActive) {
       this.setState({ hideNoData: false });
@@ -219,7 +218,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const variableValues = {
       serviceName: getSceneVariableValue(this, 'serviceName'),
       profileMetricId: getSceneVariableValue(this, 'profileMetricId'),
-      panelType: (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).state.panelType,
+      panelType: sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).state.panelType,
     };
 
     const items = variable.state.options
@@ -333,7 +332,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   filterItems(items: SceneByVariableRepeaterGridState['items']) {
-    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilterScene = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     const { searchText } = quickFilterScene.state;
 
     if (!searchText) {
