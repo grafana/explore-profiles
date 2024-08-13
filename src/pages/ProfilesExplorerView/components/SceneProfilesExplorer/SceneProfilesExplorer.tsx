@@ -118,7 +118,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new ServiceNameVariable(),
           new ProfileMetricVariable(),
           new FiltersVariable({ key: 'filters' }),
-          // TODO: replace all calls to findSceneObjectByClass(..., FiltersVariable)!
           new FiltersVariable({ key: 'filtersBaseline' }),
           new FiltersVariable({ key: 'filtersComparison' }),
           new GroupByVariable(),
