@@ -12,7 +12,6 @@ import React from 'react';
 export enum PanelType {
   TIMESERIES = 'time-series',
   BARGAUGE = 'bar-gauge',
-  STATS = 'stats',
 }
 
 export interface ScenePanelTypeSwitcherState extends SceneObjectState {

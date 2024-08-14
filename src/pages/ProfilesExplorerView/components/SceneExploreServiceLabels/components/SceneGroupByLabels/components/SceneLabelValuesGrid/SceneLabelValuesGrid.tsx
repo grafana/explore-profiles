@@ -1,84 +1,97 @@
-import { DashboardCursorSync, VariableRefresh } from '@grafana/data';
+import { DashboardCursorSync, DataFrame, LoadingState } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
-  QueryVariable,
   SceneComponentProps,
   SceneCSSGridItem,
   SceneCSSGridLayout,
+  SceneDataProvider,
+  SceneDataTransformer,
   sceneGraph,
   SceneObjectBase,
-  VariableValueOption,
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
-import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { EventDataReceived } from '../../domain/events/EventDataReceived';
-import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
-import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
-import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
-import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
-import { LayoutType, SceneLayoutSwitcher, SceneLayoutSwitcherState } from './components/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher, SceneNoDataSwitcherState } from './components/SceneNoDataSwitcher';
-import { PanelType, ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
-import { SceneQuickFilter, SceneQuickFilterState } from './components/SceneQuickFilter';
-import { sortFavGridItems } from './domain/sortFavGridItems';
-import { GridItemData } from './types/GridItemData';
+import { EventDataReceived } from '../../../../../../domain/events/EventDataReceived';
+import { FiltersVariable } from '../../../../../../domain/variables/FiltersVariable/FiltersVariable';
+import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
+import { getSceneVariableValue } from '../../../../../../helpers/getSceneVariableValue';
+import { getSeriesLabelFieldName } from '../../../../../../infrastructure/helpers/getSeriesLabelFieldName';
+import { buildTimeSeriesQueryRunner } from '../../../../../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { SceneEmptyState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
+import { SceneErrorState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
+import {
+  LayoutType,
+  SceneLayoutSwitcher,
+  SceneLayoutSwitcherState,
+} from '../../../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
+import {
+  SceneNoDataSwitcher,
+  SceneNoDataSwitcherState,
+} from '../../../../../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
+import { PanelType } from '../../../../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import {
+  SceneQuickFilter,
+  SceneQuickFilterState,
+} from '../../../../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
+import { sortFavGridItems } from '../../../../../SceneByVariableRepeaterGrid/domain/sortFavGridItems';
+import {
+  addRefId,
+  addStats,
+  sortSeries,
+} from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
 
-interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
-  variableName: string;
+export interface SceneLabelValuesGridState extends EmbeddedSceneState {
+  $data: SceneDataProvider;
+  isLoading: boolean;
   items: GridItemData[];
+  label: string;
+  startColorIndex: number;
   headerActions: (item: GridItemData, items: GridItemData[]) => VizPanelState['headerActions'];
-  mapOptionToItem: (
-    option: VariableValueOption,
-    index: number,
-    variablesValues: Record<string, string>
-  ) => GridItemData | null;
   sortItemsFn: (a: GridItemData, b: GridItemData) => number;
   hideNoData: boolean;
 }
 
-const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
+const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(800px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
-const GRID_AUTO_ROWS = '240px';
+export const GRID_AUTO_ROWS = '160px';
 
-export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
+export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridState> {
   static buildGridItemKey(item: GridItemData) {
     return `grid-item-${item.index}-${item.value}`;
   }
 
-  static getGridColumnsTemplate(layout: LayoutType) {
-    return layout === LayoutType.ROWS ? GRID_TEMPLATE_ROWS : GRID_TEMPLATE_COLUMNS;
-  }
-
   constructor({
     key,
-    variableName,
+    label,
+    startColorIndex,
     headerActions,
-    mapOptionToItem,
-    sortItemsFn,
   }: {
     key: string;
-    variableName: SceneByVariableRepeaterGridState['variableName'];
-    headerActions: SceneByVariableRepeaterGridState['headerActions'];
-    mapOptionToItem: SceneByVariableRepeaterGridState['mapOptionToItem'];
-    sortItemsFn?: SceneByVariableRepeaterGridState['sortItemsFn'];
+    label: SceneLabelValuesGridState['label'];
+    startColorIndex: SceneLabelValuesGridState['startColorIndex'];
+    headerActions: SceneLabelValuesGridState['headerActions'];
   }) {
     super({
       key,
-      variableName,
+      label,
+      startColorIndex,
       items: [],
-      headerActions,
-      mapOptionToItem,
-      sortItemsFn: sortItemsFn || sortFavGridItems,
+      isLoading: true,
+      $data: new SceneDataTransformer({
+        $data: buildTimeSeriesQueryRunner({ groupBy: { label } }),
+        transformations: [addRefId, addStats, sortSeries],
+      }),
       hideNoData: false,
+      headerActions,
+      sortItemsFn: sortFavGridItems,
       body: new SceneCSSGridLayout({
-        templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(SceneLayoutSwitcher.DEFAULT_LAYOUT),
+        templateColumns: GRID_TEMPLATE_ROWS,
         autoRows: GRID_AUTO_ROWS,
         isLazy: true,
         $behaviors: [
@@ -95,18 +108,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   onActivate() {
-    // here we try to emulate VariableDependencyConfig.onVariableUpdateCompleted
-    const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
+    this.subscribeOnceToDataChange();
 
-    const variableSub = variable.subscribeToState((newState, prevState) => {
-      if (!newState.loading && prevState.loading) {
-        this.renderGridItems();
-      }
-    });
-
-    // if the variable is inactive, the data source will not fetch the options
-    // so we force an update here to be sure we have the latest values
-    variable.update();
+    const groupBySub = this.subscribeToGroupByChange();
 
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
@@ -120,19 +124,37 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
       refreshSub.unsubscribe();
-
-      variableSub.unsubscribe();
+      groupBySub.unsubscribe();
     };
   }
 
+  subscribeOnceToDataChange(forceRender = false) {
+    const dataSub = this.state.$data.subscribeToState((newState) => {
+      if (newState.data?.state === LoadingState.Loading) {
+        return;
+      }
+
+      dataSub.unsubscribe();
+
+      this.renderGridItems(forceRender);
+
+      this.setState({ isLoading: false });
+    });
+  }
+
+  subscribeToGroupByChange() {
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
+
+    return groupByVariable.subscribeToState((newState, prevState) => {
+      if (!newState.loading && prevState.loading) {
+        this.refetchData();
+      }
+    });
+  }
+
   subscribeToRefreshClick() {
-    const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
-    const originalRefresh = variable.state.refresh;
-
-    variable.setState({ refresh: VariableRefresh.never });
-
     const onClickRefresh = () => {
-      variable.update();
+      this.refetchData();
     };
 
     // start of hack, for a better UX: we disable the variable "refresh" option and we allow the user to reload the list only by clicking on the "Refresh" button
@@ -154,7 +176,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       unsubscribe() {
         refreshButton?.removeAttribute('title');
         refreshButton?.removeEventListener('click', onClickRefresh);
-        variable.setState({ refresh: originalRefresh });
       },
     };
   }
@@ -173,13 +194,12 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
   subscribeToLayoutChange() {
     const layoutSwitcher = sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher);
-
     const body = this.state.body as SceneCSSGridLayout;
 
     const onChangeState = (newState: SceneLayoutSwitcherState, prevState?: SceneLayoutSwitcherState) => {
       if (newState.layout !== prevState?.layout) {
         body.setState({
-          templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(newState.layout),
+          templateColumns: newState.layout === LayoutType.ROWS ? GRID_TEMPLATE_ROWS : GRID_TEMPLATE_COLUMNS,
         });
       }
     };
@@ -192,24 +212,15 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   subscribeToHideNoDataChange() {
     const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
-    if (!noDataSwitcher.isActive) {
-      this.setState({ hideNoData: false });
-
-      return {
-        unsubscribe: noOp,
-      };
-    }
+    this.setState({ hideNoData: noDataSwitcher.state.hideNoData === 'on' });
 
     const onChangeState = (newState: SceneNoDataSwitcherState, prevState?: SceneNoDataSwitcherState) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
         this.setState({ hideNoData: newState.hideNoData === 'on' });
 
-        // we force render because this.state.items certainly have not changed but we want to update the UI panels anyway
-        this.renderGridItems(true);
+        this.refetchData(true);
       }
     };
-
-    onChangeState(noDataSwitcher.state);
 
     return noDataSwitcher.subscribeToState(onChangeState);
   }
@@ -221,29 +232,25 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     // the handler will be called each time a filter is added/removed/modified
     return filtersVariable.subscribeToState(() => {
       if (noDataSwitcher.state.hideNoData === 'on') {
-        // to be sure the list is updated we force render because the filters only influence the query made in each panel
-        this.renderGridItems(true);
+        // to be sure the list is updated we refetch because the filters only influence the query made in each panel
+        this.refetchData();
       }
     });
   }
 
-  buildItemsData(variable: QueryVariable) {
-    const { mapOptionToItem } = this.state;
+  refetchData(forceRender = false) {
+    this.setState({
+      isLoading: true,
+      $data: new SceneDataTransformer({
+        $data: buildTimeSeriesQueryRunner({ groupBy: { label: this.state.label } }),
+        transformations: [addRefId, addStats, sortSeries],
+      }),
+    });
 
-    const variableValues = {
-      serviceName: getSceneVariableValue(this, 'serviceName'),
-      profileMetricId: getSceneVariableValue(this, 'profileMetricId'),
-      panelType: sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).state.panelType,
-    };
-
-    const items = variable.state.options
-      .map((option, i) => mapOptionToItem(option, i, variableValues))
-      .filter(Boolean) as GridItemData[];
-
-    return this.filterItems(items).sort(this.state.sortItemsFn);
+    this.subscribeOnceToDataChange(forceRender);
   }
 
-  shouldRenderItems(newItems: SceneByVariableRepeaterGridState['items']) {
+  shouldRenderItems(newItems: SceneLabelValuesGridState['items']) {
     const { items } = this.state;
 
     if (!newItems.length || items.length !== newItems.length) {
@@ -253,19 +260,53 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return !isEqual(items, newItems);
   }
 
+  buildItemsData(series: DataFrame[]) {
+    const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+
+    const { label, startColorIndex, sortItemsFn } = this.state;
+
+    // the series are already sorted by the data transformation
+    const items = series.map((s, index) => {
+      const metricField = s.fields[1];
+      const labelValue = metricField.labels?.[label] || '';
+      const labelName = getSeriesLabelFieldName(metricField, label);
+
+      return {
+        index: startColorIndex + index,
+        value: labelValue,
+        label: labelName,
+        queryRunnerParams: {
+          serviceName,
+          profileMetricId,
+          // defaults to an "is empty" operator in the UI when the label value is not set
+          filters: [{ key: label, operator: '=', value: labelValue }],
+        },
+        panelType: PanelType.TIMESERIES,
+      };
+    });
+
+    return this.filterItems(items).sort(sortItemsFn);
+  }
+
   renderGridItems(forceRender = false) {
-    const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
-
-    if (variable.state.loading) {
+    if (!this.state.$data.state.data) {
       return;
     }
 
-    if (variable.state.error) {
-      this.renderErrorState(variable.state.error);
+    const { state: loadingState, series, errors } = this.state.$data.state.data;
+
+    if (loadingState === LoadingState.Loading) {
       return;
     }
 
-    const newItems = this.buildItemsData(variable);
+    if (loadingState === LoadingState.Error) {
+      // TODO: check
+      this.renderErrorState(errors?.[0] as Error);
+      return;
+    }
+
+    const newItems = this.buildItemsData(series);
 
     if (!forceRender && !this.shouldRenderItems(newItems)) {
       return;
@@ -278,16 +319,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return;
     }
 
-    const gridItems = this.state.items.map((item) => {
-      const vizPanel = this.buildVizPanel(item);
-
-      if (this.state.hideNoData) {
-        this.setupHideNoData(vizPanel);
-      }
-
+    const gridItems = newItems.map((item) => {
       return new SceneCSSGridItem({
-        key: SceneByVariableRepeaterGrid.buildGridItemKey(item),
-        body: vizPanel,
+        key: SceneLabelValuesGrid.buildGridItemKey(item),
+        body: this.buildVizPanel(item),
       });
     });
 
@@ -298,25 +333,13 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   buildVizPanel(item: GridItemData) {
-    switch (item.panelType) {
-      case PanelType.BARGAUGE:
-        return new SceneLabelValuesBarGauge({
-          item,
-          headerActions: this.state.headerActions.bind(null, item, this.state.items),
-        });
+    const vizPanel = new SceneLabelValuePanel({
+      item,
+      headerActions: this.state.headerActions.bind(null, item, this.state.items),
+    });
 
-      case PanelType.TIMESERIES:
-      default:
-        return new SceneLabelValuesTimeseries({
-          item,
-          headerActions: this.state.headerActions.bind(null, item, this.state.items),
-        });
-    }
-  }
-
-  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
     const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
-      if (event.payload.series.length > 0) {
+      if (!this.state.hideNoData || event.payload.series.length) {
         return;
       }
 
@@ -338,9 +361,11 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
         sub.unsubscribe();
       };
     });
+
+    return vizPanel;
   }
 
-  filterItems(items: SceneByVariableRepeaterGridState['items']) {
+  filterItems(items: SceneLabelValuesGridState['items']) {
     const quickFilterScene = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     const { searchText } = quickFilterScene.state;
 
@@ -390,10 +415,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
-  static Component({ model }: SceneComponentProps<SceneByVariableRepeaterGrid>) {
-    const { body, variableName } = model.useState();
-    const { loading } = (sceneGraph.lookupVariable(variableName, model) as QueryVariable)?.useState();
+  static Component({ model }: SceneComponentProps<SceneLabelValuesGrid>) {
+    const { body, isLoading } = model.useState();
 
-    return loading ? <Spinner /> : <body.Component model={body} />;
+    return isLoading ? <Spinner /> : <body.Component model={body} />;
   }
 }
