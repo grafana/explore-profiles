@@ -9,7 +9,7 @@ import React, { useEffect, useMemo } from 'react';
 import { ProfileMetricVariable } from '../ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../ServiceNameVariable';
-import { convertPyroscopeToVariableFilter, expressionBuilder } from './filters-ops';
+import { convertPyroscopeToVariableFilter } from './filters-ops';
 
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
@@ -20,31 +20,35 @@ export class FiltersVariable extends AdHocFiltersVariable {
       name: 'filters',
       label: 'Filters',
       filters: FiltersVariable.DEFAULT_VALUE,
+      expressionBuilder: (filters) =>
+        filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(','),
     });
 
-    this.addActivationHandler(() => {
-      // VariableDependencyConfig does not work :man_shrug: (never called)
-      const dataSourceSub = sceneGraph
-        .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
-        .subscribeToState(() => {
-          this.setState({ filters: [] });
-        });
-
-      return () => {
-        dataSourceSub.unsubscribe();
-      };
-    });
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  updateQuery = (query: string, filters: CompleteFilters) => {
+  onActivate() {
+    // VariableDependencyConfig does not work :man_shrug: (never called)
+    const dataSourceSub = sceneGraph
+      .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
+      .subscribeToState(() => {
+        this.setState({ filters: [] });
+      });
+
+    return () => {
+      dataSourceSub.unsubscribe();
+    };
+  }
+
+  onChangeQuery = (query: string, filters: CompleteFilters) => {
     this.setState({
       filters: filters.map(convertPyroscopeToVariableFilter),
     });
   };
 
-  static Component = ({ model }: SceneComponentProps<AdHocFiltersVariable & { updateQuery?: any }>) => {
+  static Component = ({ model }: SceneComponentProps<AdHocFiltersVariable & { onChangeQuery?: any }>) => {
     const styles = useStyles2(getStyles);
-    const { filters } = model.useState();
+    const { filterExpression } = model.useState();
     const [, setQuery] = useQueryFromUrl();
 
     const { value: dataSourceUid } = sceneGraph
@@ -57,19 +61,19 @@ export class FiltersVariable extends AdHocFiltersVariable {
       .findByKeyAndType(model, 'profileMetricId', ProfileMetricVariable)
       .useState();
 
-    const filterExpression = useMemo(
-      () => expressionBuilder(serviceName as string, profileMetricId as string, filters),
-      [filters, profileMetricId, serviceName]
+    const query = useMemo(
+      () => `${profileMetricId}{service_name="${serviceName}",${filterExpression}}`,
+      [filterExpression, profileMetricId, serviceName]
     );
 
-    const { from, to } = sceneGraph.getTimeRange(model).state.value;
-
     useEffect(() => {
-      if (typeof filterExpression === 'string') {
+      if (typeof query === 'string') {
         // Explain Flame Graph (AI button) depends on the query value so we have to sync it here
-        setQuery(filterExpression);
+        setQuery(query);
       }
-    }, [filterExpression, setQuery]);
+    }, [query, setQuery]);
+
+    const { from, to } = sceneGraph.getTimeRange(model).state.value;
 
     return (
       <QueryBuilder
@@ -77,10 +81,10 @@ export class FiltersVariable extends AdHocFiltersVariable {
         autoExecute
         className={styles.queryBuilder}
         dataSourceUid={dataSourceUid as string}
-        query={filterExpression as string}
+        query={query}
         from={from.unix() * 1000}
         to={to.unix() * 1000}
-        onChangeQuery={model.updateQuery}
+        onChangeQuery={model.onChangeQuery}
       />
     );
   };

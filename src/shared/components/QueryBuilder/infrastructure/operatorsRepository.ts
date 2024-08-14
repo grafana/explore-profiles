@@ -8,8 +8,7 @@ class OperatorsRepository {
       { value: '=~', label: '=~' },
       { value: '!~', label: '!~' },
       { value: 'is-empty', label: 'is empty' },
-      // TODO: enable after exhaustive testing
-      // { value: 'in', label: 'in' },
+      { value: 'in', label: 'in' },
     ];
   }
 }

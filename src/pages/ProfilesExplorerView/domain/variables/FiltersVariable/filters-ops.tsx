@@ -4,11 +4,29 @@ import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/do
 
 import { FiltersVariable } from './FiltersVariable';
 
-export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocVariableFilter => ({
-  key: filter.attribute.value,
-  operator: filter.operator.value === OperatorKind['is-empty'] ? OperatorKind['='] : filter.operator.value,
-  value: filter.value.value,
-});
+export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocVariableFilter => {
+  if (filter.operator.value === OperatorKind['is-empty']) {
+    return {
+      key: filter.attribute.value,
+      operator: OperatorKind['='],
+      value: '',
+    };
+  }
+
+  if (filter.operator.value === OperatorKind['in']) {
+    return {
+      key: filter.attribute.value,
+      operator: OperatorKind['=~'],
+      value: filter.value.value,
+    };
+  }
+
+  return {
+    key: filter.attribute.value,
+    operator: filter.operator.value,
+    value: filter.value.value,
+  };
+};
 
 export const addFilter = (model: FiltersVariable, filter: AdHocVariableFilter) => {
   const found = model.state.filters.find((f) => f.key === filter.key);
@@ -20,17 +38,6 @@ export const addFilter = (model: FiltersVariable, filter: AdHocVariableFilter) =
   }
 
   model.setState({ filters: [...model.state.filters, filter] });
-};
-
-export const expressionBuilder = (serviceName: string, profileMetricId: string, filters: AdHocVariableFilter[]) => {
-  if (!serviceName || !profileMetricId) {
-    return '';
-  }
-
-  const completeFilters = [{ key: 'service_name', operator: '=', value: serviceName }, ...filters];
-  const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
-
-  return `${profileMetricId}{${selector}}`;
 };
 
 export const parseVariableValue = (variableValue = '') =>
