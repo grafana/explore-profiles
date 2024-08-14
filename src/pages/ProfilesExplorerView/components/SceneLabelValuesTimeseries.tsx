@@ -142,7 +142,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     return series.map((s, i) => {
       const metricField = s.fields[1];
-      let displayName = getSeriesLabelFieldName(metricField, groupByLabel);
+      let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
 
       if (series.length === 1) {
         const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
