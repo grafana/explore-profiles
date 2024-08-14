@@ -4,6 +4,7 @@ import {
   EmbeddedSceneState,
   getUrlSyncManager,
   SceneComponentProps,
+  sceneGraph,
   SceneObject,
   SceneObjectBase,
   SceneObjectUrlSyncConfig,
@@ -34,7 +35,6 @@ import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByV
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
@@ -47,9 +47,10 @@ import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+  $variables: SceneVariableSet;
+  gridControls: Array<SceneObject & { key?: string }>;
   explorationType?: ExplorationType;
   body?: SplitLayout;
-  gridControls: Array<SceneObject & { key?: string }>;
 }
 
 export enum ExplorationType {
@@ -274,17 +275,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   resetVariables(explorationType: string) {
-    (findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter).clear();
+    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
 
     if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
-      (findSceneObjectByClass(this, FiltersVariable) as FiltersVariable)?.setState({
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable)?.setState({
         filters: FiltersVariable.DEFAULT_VALUE,
       });
     }
 
-    (findSceneObjectByClass(this, GroupByVariable) as GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
+    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
 
-    (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher)?.reset();
+    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher)?.reset();
   }
 
   onClickShareLink = async () => {
@@ -301,14 +302,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   useProfilesExplorer = () => {
-    const { explorationType, controls, body } = this.useState();
+    const { explorationType, controls, body, $variables } = this.useState();
 
     const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
-    const dataSourceVariable = this.state.$variables!.state!.variables[0] as ProfilesDataSourceVariable;
+    const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
 
     const { variables: sceneVariables, gridControls } = (body?.state.primary as any).getVariablesAndGridControls() as {
       variables: SceneVariable[];
-      gridControls: Array<SceneObject & { key?: string }>;
+      gridControls: SceneObject[];
     };
 
     return {
@@ -380,7 +381,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             ))}
 
             {gridControls.map((control) => (
-              <control.Component key={control.key} model={control} />
+              <control.Component key={control.state.key} model={control} />
             ))}
           </div>
         </div>

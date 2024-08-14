@@ -1,22 +1,27 @@
-import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase, SceneVariableSet } from '@grafana/scenes';
+import {
+  EmbeddedSceneState,
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneVariableSet,
+} from '@grafana/scenes';
 import React from 'react';
 
 import { PanelType } from '../../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneDrawer } from '../../components/SceneDrawer';
-import { SceneLabelValuesBarGauge } from '../../components/SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../../components/SceneLabelValuesTimeseries';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventExpandPanel } from '../../domain/events/EventExpandPanel';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { FavoriteVariable } from '../../domain/variables/FavoriteVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
+import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
+import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawer: SceneDrawer;
@@ -72,7 +77,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   onActivate() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     quickFilter.setPlaceholder('Search favorites (comma-separated regexes are supported)');
 
     const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
@@ -89,9 +94,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
     return {
       variables: [],
       gridControls: [
-        findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter,
-        findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher,
-        findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher,
+        sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter),
+        sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher),
+        sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher),
       ],
     };
   }

@@ -1,4 +1,10 @@
-import { EmbeddedSceneState, SceneComponentProps, SceneObjectBase, SceneVariableSet } from '@grafana/scenes';
+import {
+  EmbeddedSceneState,
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneVariableSet,
+} from '@grafana/scenes';
 import React from 'react';
 
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
@@ -8,7 +14,6 @@ import { EventViewServiceFlameGraph } from '../../domain/events/EventViewService
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
@@ -54,7 +59,7 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
   }
 
   onActivate(item?: GridItemData) {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     quickFilter.setPlaceholder('Search profile types (comma-separated regexes are supported)');
 
     if (item) {
@@ -64,7 +69,7 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
 
   initVariables(item: GridItemData) {
     if (item.queryRunnerParams.serviceName) {
-      const serviceNameVariable = findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable;
+      const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
       serviceNameVariable.changeValueTo(item.queryRunnerParams.serviceName);
     }
   }
@@ -72,10 +77,10 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
   // see SceneProfilesExplorer
   getVariablesAndGridControls() {
     return {
-      variables: [findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable],
+      variables: [sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable)],
       gridControls: [
-        findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter,
-        findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher,
+        sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter),
+        sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher),
       ],
     };
   }

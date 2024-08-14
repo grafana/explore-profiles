@@ -1,4 +1,4 @@
-import { DashboardCursorSync, LoadingState, VariableRefresh } from '@grafana/data';
+import { DashboardCursorSync, VariableRefresh } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -8,7 +8,6 @@ import {
   SceneCSSGridLayout,
   sceneGraph,
   SceneObjectBase,
-  SceneQueryRunner,
   VariableValueOption,
   VizPanelState,
 } from '@grafana/scenes';
@@ -17,19 +16,18 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { FavAction } from '../../domain/actions/FavAction';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
+import { EventDataReceived } from '../../domain/events/EventDataReceived';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
 import { SceneLabelValueStat } from '../SceneLabelValueStat';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
-import { LayoutType, SceneLayoutSwitcher } from './components/SceneLayoutSwitcher';
-import { SceneNoDataSwitcher } from './components/SceneNoDataSwitcher';
+import { LayoutType, SceneLayoutSwitcher, SceneLayoutSwitcherState } from './components/SceneLayoutSwitcher';
+import { SceneNoDataSwitcher, SceneNoDataSwitcherState } from './components/SceneNoDataSwitcher';
 import { PanelType, ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
-import { SceneQuickFilter } from './components/SceneQuickFilter';
+import { SceneQuickFilter, SceneQuickFilterState } from './components/SceneQuickFilter';
+import { sortFavGridItems } from './domain/sortFavGridItems';
 import { GridItemData } from './types/GridItemData';
 
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
@@ -48,25 +46,6 @@ interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
 const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(400px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
-
-const DEFAULT_SORT_ITEMS_FN: SceneByVariableRepeaterGridState['sortItemsFn'] = function (a, b) {
-  const aIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(a));
-  const bIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(b));
-
-  if (aIsFav && bIsFav) {
-    return a.label.localeCompare(b.label);
-  }
-
-  if (bIsFav) {
-    return +1;
-  }
-
-  if (aIsFav) {
-    return -1;
-  }
-
-  return 0;
-};
 
 export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
   static buildGridItemKey(item: GridItemData) {
@@ -96,7 +75,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       items: [],
       headerActions,
       mapOptionToItem,
-      sortItemsFn: sortItemsFn || DEFAULT_SORT_ITEMS_FN,
+      sortItemsFn: sortItemsFn || sortFavGridItems,
       hideNoData: false,
       body: new SceneCSSGridLayout({
         templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(SceneLayoutSwitcher.DEFAULT_LAYOUT),
@@ -179,9 +158,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToQuickFilterChange() {
-    const quickFilter = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
 
-    const onChangeState = (newState: typeof quickFilter.state, prevState?: typeof quickFilter.state) => {
+    const onChangeState = (newState: SceneQuickFilterState, prevState?: SceneQuickFilterState) => {
       if (newState.searchText !== prevState?.searchText) {
         this.renderGridItems();
       }
@@ -191,11 +170,11 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToLayoutChange() {
-    const layoutSwitcher = findSceneObjectByClass(this, SceneLayoutSwitcher) as SceneLayoutSwitcher;
+    const layoutSwitcher = sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher);
 
     const body = this.state.body as SceneCSSGridLayout;
 
-    const onChangeState = (newState: typeof layoutSwitcher.state, prevState?: typeof layoutSwitcher.state) => {
+    const onChangeState = (newState: SceneLayoutSwitcherState, prevState?: SceneLayoutSwitcherState) => {
       if (newState.layout !== prevState?.layout) {
         body.setState({
           templateColumns: SceneByVariableRepeaterGrid.getGridColumnsTemplate(newState.layout),
@@ -209,7 +188,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToHideNoDataChange() {
-    const noDataSwitcher = findSceneObjectByClass(this, SceneNoDataSwitcher) as SceneNoDataSwitcher;
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     if (!noDataSwitcher.isActive) {
       this.setState({ hideNoData: false });
@@ -219,7 +198,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       };
     }
 
-    const onChangeState = (newState: typeof noDataSwitcher.state, prevState?: typeof noDataSwitcher.state) => {
+    const onChangeState = (newState: SceneNoDataSwitcherState, prevState?: SceneNoDataSwitcherState) => {
       if (newState.hideNoData !== prevState?.hideNoData) {
         this.setState({ hideNoData: newState.hideNoData === 'on' });
 
@@ -239,7 +218,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const variableValues = {
       serviceName: getSceneVariableValue(this, 'serviceName'),
       profileMetricId: getSceneVariableValue(this, 'profileMetricId'),
-      panelType: (findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher).state.panelType,
+      panelType: sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).state.panelType,
     };
 
     const items = variable.state.options
@@ -327,8 +306,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge | SceneLabelValueStat) {
-    const sub = (vizPanel.state.body.state.$data as SceneQueryRunner)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done || state.data.series.length > 0) {
+    const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
+      if (event.payload.series.length > 0) {
         return;
       }
 
@@ -353,7 +332,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   filterItems(items: SceneByVariableRepeaterGridState['items']) {
-    const quickFilterScene = findSceneObjectByClass(this, SceneQuickFilter) as SceneQuickFilter;
+    const quickFilterScene = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
     const { searchText } = quickFilterScene.state;
 
     if (!searchText) {
@@ -377,9 +356,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   renderEmptyState() {
-    const body = this.state.body as SceneCSSGridLayout;
-
-    body.setState({
+    (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({
@@ -392,9 +369,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   renderErrorState(error: Error) {
-    const body = this.state.body as SceneCSSGridLayout;
-
-    body.setState({
+    (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({

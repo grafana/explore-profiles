@@ -17,11 +17,13 @@ export class GroupByVariable extends QueryVariable {
 
   constructor() {
     super({
+      key: 'groupBy',
       name: 'groupBy',
       label: 'Group by labels',
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,
       // "hack": we want to subscribe to changes of dataSource, serviceName and profileMetricId
       // we could also add filters, but the Service labels exploration type would reload all labels each time they are modified
+      // which wouldn't be great UX
       query: '$dataSource and $profileMetricId{service_name="$serviceName"}',
       loading: true,
     });

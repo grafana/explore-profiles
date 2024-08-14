@@ -5,6 +5,7 @@ import {
   SceneComponentProps,
   SceneFlexItem,
   SceneFlexLayout,
+  sceneGraph,
   SceneObjectBase,
 } from '@grafana/scenes';
 import React from 'react';
@@ -18,7 +19,6 @@ import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersV
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
-import { findSceneObjectByClass } from '../../helpers/findSceneObjectByClass';
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneGroupByLabels } from './components/SceneGroupByLabels';
@@ -41,6 +41,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
           new SceneFlexItem({
             minHeight: SceneMainServiceTimeseries.MIN_HEIGHT,
             body: new SceneMainServiceTimeseries({
+              item,
               headerActions: (item) => [
                 new SelectAction({ EventClass: EventViewServiceProfiles, item }),
                 new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
@@ -63,7 +64,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
       this.initVariablesAndControls(item);
     }
 
-    const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
 
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
@@ -80,22 +81,22 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     const { serviceName, profileMetricId, filters, groupBy } = queryRunnerParams;
 
     if (serviceName) {
-      const serviceNameVariable = findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable;
+      const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
       serviceNameVariable.changeValueTo(serviceName);
     }
 
     if (profileMetricId) {
-      const profileMetricVariable = findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable;
+      const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
       profileMetricVariable.changeValueTo(profileMetricId);
     }
 
     if (filters) {
-      const filtersVariable = findSceneObjectByClass(this, FiltersVariable) as FiltersVariable;
+      const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
       filtersVariable.setState({ filters });
     }
 
     if (groupBy?.label) {
-      const groupByVariable = findSceneObjectByClass(this, GroupByVariable) as GroupByVariable;
+      const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
 
       // because (to the contrary of the "Series" data) we don't load labels if the groupBy variable is not active
       // (see src/pages/ProfilesExplorerView/data/labels/LabelsDataSource.ts)
@@ -111,7 +112,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
     }
 
     if (panelType) {
-      const panelTypeSwitcher = findSceneObjectByClass(this, ScenePanelTypeSwitcher) as ScenePanelTypeSwitcher;
+      const panelTypeSwitcher = sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher);
       panelTypeSwitcher.setState({ panelType });
     }
   }
@@ -120,9 +121,9 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
   getVariablesAndGridControls() {
     return {
       variables: [
-        findSceneObjectByClass(this, ServiceNameVariable) as ServiceNameVariable,
-        findSceneObjectByClass(this, ProfileMetricVariable) as ProfileMetricVariable,
-        findSceneObjectByClass(this, FiltersVariable) as FiltersVariable,
+        sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
+        sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
+        sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable),
       ],
       gridControls: [],
     };
