@@ -19,6 +19,7 @@ import { EventDataReceived } from '../../../../../../domain/events/EventDataRece
 import { FiltersVariable } from '../../../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../../../helpers/getSceneVariableValue';
+import { getSeriesLabelFieldName } from '../../../../../../infrastructure/helpers/getSeriesLabelFieldName';
 import { buildTimeSeriesQueryRunner } from '../../../../../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneEmptyState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
@@ -268,9 +269,8 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     // the series are already sorted by the data transformation
     const items = series.map((s, index) => {
       const metricField = s.fields[1];
-      const labelValueFromFieldLabels = metricField.labels?.[label]; // can be empty when the ingested profiles do not have a label value set
-      const labelValue = labelValueFromFieldLabels || metricField.name; // ensures a non-empy value for the UI
-      const labelName = labelValue;
+      const labelValue = metricField.labels?.[label] || '';
+      const labelName = getSeriesLabelFieldName(metricField, label);
 
       return {
         index: startColorIndex + index,
@@ -280,7 +280,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
           serviceName,
           profileMetricId,
           // defaults to an "is empty" operator in the UI when the label value is not set
-          filters: [{ key: label, operator: '=', value: labelValueFromFieldLabels || '' }],
+          filters: [{ key: label, operator: '=', value: labelValue }],
         },
         panelType: PanelType.TIMESERIES,
       };
