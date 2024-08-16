@@ -75,14 +75,12 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
-    const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done) {
+    const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((newState) => {
+      if (newState.data?.state !== LoadingState.Done) {
         return;
       }
 
-      const { series } = state.data;
-
-      this.publishEvent(new EventDataReceived({ series }), true);
+      const { series } = newState.data;
 
       if (!series.length) {
         return;
@@ -91,6 +89,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
 
       body.setState(config);
+
+      // we publish the event only after setting the new config so that the subscribers can modify it
+      // (e.g. sync y-axis in SceneExploreDiffFlameGraphs.tsx)
+      this.publishEvent(new EventDataReceived({ series }), true);
+      // FIXME: this event is also published for unrelated reasons (see SceneComparePanel.ts and SceneTimeRangeWithAnnotations.ts)
     });
 
     return () => {

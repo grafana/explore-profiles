@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
+import { DashboardCursorSync, DataFrame, GrafanaTheme2, TimeRange } from '@grafana/data';
 import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
@@ -10,8 +10,10 @@ import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { InlineBanner } from '@shared/ui/InlineBanner';
+import { cloneDeep, merge } from 'lodash';
 import React, { useEffect } from 'react';
 
+import { EventDataReceived } from '../../domain/events/EventDataReceived';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
@@ -36,7 +38,6 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
         target: CompareTarget.COMPARISON,
       }),
       $behaviors: [
-        // TODO: add behaviour to sync y-axis
         new behaviors.CursorSync({
           key: 'metricCrosshairSync',
           sync: DashboardCursorSync.Crosshair,
@@ -53,11 +54,9 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
-    const eventSub = this.subscribeToEvents();
+    this.subscribeToEvents();
 
     return () => {
-      eventSub.unsubscribe();
-
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
       profileMetricVariable.update(true);
     };
@@ -79,9 +78,64 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     // because the timeseries are not directly built (see SceneComparePanel) and the values of the annotation time ranges
     // are not determined directly neither (see SceneTimeRangeWithAnnotations)
     // TODO: we really need a native Scenes diff flame graph panel
-    return this.subscribeToEvent(EventAnnotationTimeRangeChanged, () => {
-      this.forceRender();
-    });
+    this._subs.add(
+      this.subscribeToEvent(EventAnnotationTimeRangeChanged, () => {
+        this.forceRender();
+      })
+    );
+
+    const { baselinePanel, comparisonPanel } = this.state;
+
+    function findYMax(series: DataFrame[]) {
+      let yMax = -1;
+
+      for (const value of series[0].fields[1].values) {
+        if (value > yMax) {
+          yMax = value;
+        }
+      }
+
+      return yMax;
+    }
+
+    let lastMax = -1;
+
+    function updateYMax() {
+      const max = Math.max(yBaselineMax, yComparisonMax);
+
+      if (max === lastMax) {
+        return;
+      }
+
+      [baselinePanel, comparisonPanel].forEach((panel) => {
+        const timeseries = panel.state.timeseriesPanel!.state.body;
+        const { state: prevState } = timeseries;
+
+        timeseries.clearFieldConfigCache();
+
+        timeseries.setState({
+          fieldConfig: merge(cloneDeep(prevState.fieldConfig), { defaults: { max } }),
+        });
+      });
+    }
+
+    let yBaselineMax = -1;
+    this._subs.add(
+      baselinePanel.subscribeToEvent(EventDataReceived, (event) => {
+        yBaselineMax = -1;
+        yBaselineMax = findYMax(event.payload.series);
+        updateYMax();
+      })
+    );
+
+    let yComparisonMax = -1;
+    this._subs.add(
+      comparisonPanel.subscribeToEvent(EventDataReceived, (event) => {
+        yComparisonMax = -1;
+        yComparisonMax = findYMax(event.payload.series);
+        updateYMax();
+      })
+    );
   }
 
   useSceneExploreDiffFlameGraphs = () => {

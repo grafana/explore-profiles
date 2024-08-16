@@ -59,7 +59,7 @@ export class SceneTimeRangeWithAnnotations
 
     this._subs.add(ancestorTimeRangeObject.subscribeToState((newState) => this.setState(newState)));
 
-    const { $data } = this.getTimeseriesPanel().state;
+    const { $data } = this.getTimeseries().state;
 
     this._subs.add(
       $data?.subscribeToState((newState, prevState) => {
@@ -78,7 +78,7 @@ export class SceneTimeRangeWithAnnotations
     return sceneGraph.getTimeRange(this.parent.parent);
   }
 
-  protected getTimeseriesPanel(): VizPanel {
+  protected getTimeseries(): VizPanel {
     try {
       const vizPanel = sceneGraph.getAncestor(this, VizPanel);
 
@@ -95,7 +95,7 @@ export class SceneTimeRangeWithAnnotations
   protected updateTimeseriesAnnotation() {
     const { annotationTimeRange, annotationColor, annotationTitle } = this.state;
 
-    const { $data } = this.getTimeseriesPanel().state;
+    const { $data } = this.getTimeseries().state;
 
     const data = $data?.state.data;
     if (!data || !annotationTimeRange) {
@@ -111,6 +111,7 @@ export class SceneTimeRangeWithAnnotations
       timeEnd: annotationTimeRange.to.unix() * 1000,
     });
 
+    // FIXME: this will cause a EventDataReceived to be published in SceneLabelValuesTimeseries
     $data?.setState({
       data: {
         ...data,

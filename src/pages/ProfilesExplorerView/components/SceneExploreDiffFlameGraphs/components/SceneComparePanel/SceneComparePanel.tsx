@@ -41,7 +41,7 @@ export interface SceneComparePanelState extends SceneObjectState {
   color: string;
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
-  timeseries?: SceneLabelValuesTimeseries;
+  timeseriesPanel?: SceneLabelValuesTimeseries;
   $timeRange: SceneTimeRange;
 }
 
@@ -49,7 +49,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
     onVariableUpdateCompleted: () => {
-      this.state.timeseries?.updateTitle(this.buildTimeseriesTitle());
+      this.state.timeseriesPanel?.updateTitle(this.buildTimeseriesTitle());
     },
   });
 
@@ -63,7 +63,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       $timeRange: new SceneTimeRange(),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
-      timeseries: undefined,
+      timeseriesPanel: undefined,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -72,11 +72,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   onActivate() {
     const { $timeRange, title, target } = this.state;
 
+    // TODO: sync with URL search params
     $timeRange.setState(sceneGraph.getTimeRange(this.parent!).state);
 
-    const timeseries = this.buildTimeSeries();
+    const timeseriesPanel = this.buildTimeSeriesPanel();
 
-    timeseries.state.body.setState({
+    timeseriesPanel.state.body.setState({
       $timeRange: new SceneTimeRangeWithAnnotations({
         mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
         annotationColor:
@@ -85,7 +86,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }),
     });
 
-    this.setState({ timeseries });
+    this.setState({ timeseriesPanel: timeseriesPanel });
 
     const eventSub = this.subscribeToEvents();
 
@@ -96,7 +97,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   subscribeToEvents() {
     return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
-      (this.state.timeseries?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
+      // FIXME: this will cause a EventDataReceived to be published in SceneLabelValuesTimeseries
+      (this.state.timeseriesPanel?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
         mode:
           event.payload.mode === TimerangeSelectionMode.FLAMEGRAPH
             ? TimeRangeWithAnnotationsMode.ANNOTATIONS
@@ -105,7 +107,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     });
   }
 
-  buildTimeSeries() {
+  buildTimeSeriesPanel() {
     const { target, filterKey, title, color } = this.state;
 
     return new SceneLabelValuesTimeseries({
@@ -151,12 +153,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   getDiffTimeRange() {
-    return this.state.timeseries?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
+    return this.state.timeseriesPanel?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
     const styles = useStyles2(getStyles);
-    const { title, timeseries, timePicker, refreshPicker, filterKey } = model.useState();
+    const { title, timeseriesPanel: timeseries, timePicker, refreshPicker, filterKey } = model.useState();
 
     const filtersVariable = sceneGraph.findByKey(model, filterKey) as FiltersVariable;
 
