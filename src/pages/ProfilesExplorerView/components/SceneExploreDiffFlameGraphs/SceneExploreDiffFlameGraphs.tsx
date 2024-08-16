@@ -1,21 +1,24 @@
 import { css } from '@emotion/css';
-import { DashboardCursorSync, GrafanaTheme2 } from '@grafana/data';
+import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
 import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
+import { displayWarning } from '@shared/domain/displayStatus';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
+import { InlineBanner } from '@shared/ui/InlineBanner';
 import React, { useEffect } from 'react';
 
-import { useFetchDiffProfile } from '../../../../pages/ComparisonView/components/FlameGraphContainer/infrastructure/useFetchDiffProfile';
-import { useDefaultComparisonParamsFromUrl } from '../../../../pages/ComparisonView/domain/useDefaultComparisonParamsFromUrl';
+import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
+import { EventAnnotationTimeRangeChanged } from './components/SceneComparePanel/domain/events/EventAnnotationTimeRangeChanged';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
+import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 
 interface SceneExploreDiffFlameGraphsState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
@@ -33,6 +36,7 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
         target: CompareTarget.COMPARISON,
       }),
       $behaviors: [
+        // TODO: add behaviour to sync y-axis
         new behaviors.CursorSync({
           key: 'metricCrosshairSync',
           sync: DashboardCursorSync.Crosshair,
@@ -49,7 +53,11 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
+    const eventSub = this.subscribeToEvents();
+
     return () => {
+      eventSub.unsubscribe();
+
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
       profileMetricVariable.update(true);
     };
@@ -66,28 +74,88 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     };
   }
 
+  subscribeToEvents() {
+    // we use the EventAnnotationTimeRangeChanged instead of React hooks to get the annotation time ranges
+    // because the timeseries are not directly built (see SceneComparePanel) and the values of the annotation time ranges
+    // are not determined directly neither (see SceneTimeRangeWithAnnotations)
+    // TODO: we really need a native Scenes diff flame graph panel
+    return this.subscribeToEvent(EventAnnotationTimeRangeChanged, () => {
+      this.forceRender();
+    });
+  }
+
+  useSceneExploreDiffFlameGraphs = () => {
+    const { baselinePanel, comparisonPanel } = this.useState();
+
+    const baselineTimeRange = baselinePanel.getDiffTimeRange()?.state.annotationTimeRange as TimeRange;
+    const baselineQuery = useBuildPyroscopeQuery(this, 'filtersBaseline');
+
+    const comparisonTimeRange = comparisonPanel.getDiffTimeRange()?.state.annotationTimeRange as TimeRange;
+    const comparisonQuery = useBuildPyroscopeQuery(this, 'filtersComparison');
+
+    const {
+      isFetching,
+      error: fetchProfileError,
+      profile,
+    } = useFetchDiffProfile({
+      baselineTimeRange,
+      baselineQuery,
+      comparisonTimeRange,
+      comparisonQuery,
+    });
+
+    const noProfileDataAvailable = !fetchProfileError && (!profile || profile?.flamebearer.numTicks === 0);
+    const shouldDisplayFlamegraph = Boolean(!fetchProfileError && !noProfileDataAvailable && profile);
+
+    const { settings, error: fetchSettingsError } = useFetchPluginSettings();
+
+    return {
+      data: {
+        baselinePanel,
+        comparisonPanel,
+        isLoading: isFetching,
+        fetchProfileError,
+        noProfileDataAvailable,
+        shouldDisplayFlamegraph,
+        profile,
+        settings,
+        fetchSettingsError,
+      },
+      actions: {},
+    };
+  };
+
   static Component({ model }: SceneComponentProps<SceneExploreDiffFlameGraphs>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
 
-    const { baselinePanel, comparisonPanel } = model.useState();
-
-    useDefaultComparisonParamsFromUrl(); // eslint-disable-line react-hooks/rules-of-hooks
-    const { isFetching, error, profile } = useFetchDiffProfile({}); // eslint-disable-line react-hooks/rules-of-hooks
-    const noProfileDataAvailable = !error && profile?.flamebearer.numTicks === 0;
-    const shouldDisplayFlamegraph = Boolean(!error && !noProfileDataAvailable && profile);
-
-    const { settings /*, error: isFetchingSettingsError*/ } = useFetchPluginSettings(); // eslint-disable-line react-hooks/rules-of-hooks
+    const { data } = model.useSceneExploreDiffFlameGraphs();
+    const {
+      baselinePanel,
+      comparisonPanel,
+      isLoading,
+      fetchProfileError,
+      noProfileDataAvailable,
+      shouldDisplayFlamegraph,
+      profile,
+      fetchSettingsError,
+      settings,
+    } = data;
 
     const sidePanel = useToggleSidePanel(); // eslint-disable-line react-hooks/rules-of-hooks
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
-      if (isFetching) {
+      if (isLoading) {
         sidePanel.close();
       }
-    }, [isFetching, sidePanel]);
+    }, [isLoading, sidePanel]);
 
-    // console.log('*** Component', left, right, isFetching, error, profile);
+    if (fetchSettingsError) {
+      displayWarning([
+        'Error while retrieving the plugin settings!',
+        'Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.',
+      ]);
+    }
 
     return (
       <div className={styles.container}>
@@ -98,29 +166,41 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
 
         <div className={styles.flex}>
           <div className={styles.flameGraphPanel}>
-            {isFetching && <Spinner inline />}
+            {fetchProfileError && (
+              <InlineBanner severity="error" title="Error while loading profile data!" errors={[fetchProfileError]} />
+            )}
+
+            {noProfileDataAvailable && (
+              <InlineBanner
+                severity="warning"
+                title="No profile data available"
+                message="Please verify that you've selected adequate time ranges and filters."
+              />
+            )}
+
+            <div className={styles.flameGraphHeaderActions}>
+              {isLoading && <Spinner inline />}
+
+              {shouldDisplayFlamegraph && (
+                <AIButton
+                  onClick={() => {
+                    sidePanel.open('ai');
+                  }}
+                  disabled={isLoading || noProfileDataAvailable || sidePanel.isOpen('ai')}
+                  interactionName="g_pyroscope_app_explain_flamegraph_clicked"
+                >
+                  Explain Flame Graph
+                </AIButton>
+              )}
+            </div>
 
             {shouldDisplayFlamegraph && (
-              <>
-                <div className={styles.flameGraphHeaderActions}>
-                  <AIButton
-                    onClick={() => {
-                      sidePanel.open('ai');
-                    }}
-                    disabled={isFetching || noProfileDataAvailable || sidePanel.isOpen('ai')}
-                    interactionName="g_pyroscope_app_explain_flamegraph_clicked"
-                  >
-                    Explain Flame Graph
-                  </AIButton>
-                </div>
-
-                <FlameGraph
-                  diff={true}
-                  profile={profile as FlamebearerProfile}
-                  enableFlameGraphDotComExport={settings?.enableFlameGraphDotComExport}
-                  collapsedFlamegraphs={settings?.collapsedFlamegraphs}
-                />
-              </>
+              <FlameGraph
+                diff={true}
+                profile={profile as FlamebearerProfile}
+                enableFlameGraphDotComExport={settings?.enableFlameGraphDotComExport}
+                collapsedFlamegraphs={settings?.collapsedFlamegraphs}
+              />
             )}
           </div>
 
@@ -160,7 +240,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   flameGraphHeaderActions: css`
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
 
     & > button {
       margin-left: auto;

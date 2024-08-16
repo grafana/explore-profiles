@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2, PanelData, TimeRange } from '@grafana/data';
+import { FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -9,7 +9,6 @@ import {
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
-  SceneTimeRangeState,
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { InlineLabel, useStyles2 } from '@grafana/ui';
@@ -25,39 +24,27 @@ import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrast
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
 import {
+  SceneTimeRangeWithAnnotations,
+  TimeRangeWithAnnotationsMode,
+} from './components/SceneTimeRangeWithAnnotations';
+import {
   SwitchTimeRangeSelectionModeAction,
   TimerangeSelectionMode,
 } from './domain/actions/SwitchTimeRangeSelectionModeAction';
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
-import { RangeAnnotation } from './domain/RangeAnnotation';
+import { getDefaultTimeRange } from './domain/getDefaultTimeRange';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
-import { SceneTimeRangeWithAnnotations, TimeRangeWithAnnotationsMode } from './SceneTimeRangeWithAnnotations';
 
 export interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
   title: string;
   filterKey: 'filtersBaseline' | 'filtersComparison';
   color: string;
-  annotationColor: string;
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
   timeseries?: SceneLabelValuesTimeseries;
   $timeRange: SceneTimeRange;
 }
-
-const getDefaultTimeRange = (): SceneTimeRangeState => {
-  const now = dateTime();
-
-  return {
-    from: 'now-5m',
-    to: 'now',
-    value: {
-      from: dateTime(now).subtract(5, 'minutes'),
-      to: now,
-      raw: { from: 'now-5m', to: 'now' },
-    },
-  };
-};
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
@@ -74,8 +61,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       title: target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison',
       filterKey: target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison',
       color: target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString(),
-      annotationColor:
-        target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),
       $timeRange: new SceneTimeRange(getDefaultTimeRange()),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
@@ -86,61 +71,36 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onActivate() {
-    const { title, annotationColor } = this.state;
-
-    this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
-      this.switchSelectionMode(event.payload);
-    });
+    const { title, target } = this.state;
 
     const timeseries = this.buildTimeSeries();
 
-    function updateAnnotation(timeRange: TimeRange, data?: PanelData) {
-      if (!data) {
-        return;
-      }
-
-      const annotation = new RangeAnnotation();
-
-      annotation.addRange({
-        text: `${title} time range`,
-        color: annotationColor,
-        time: timeRange.from.unix() * 1000,
-        timeEnd: timeRange.to.unix() * 1000,
-      });
-
-      $data?.setState({
-        data: {
-          ...data,
-          annotations: [annotation],
-        },
-      });
-    }
-
-    timeseries.setState({
+    timeseries.state.body.setState({
       $timeRange: new SceneTimeRangeWithAnnotations({
-        onTimeRangeChange(timeRange) {
-          updateAnnotation(timeRange, timeseries.state.body.state.$data?.state.data);
-        },
+        mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
+        annotationColor:
+          target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),
+        annotationTitle: `${title} time range`,
       }),
     });
 
     this.setState({ timeseries });
 
-    const { $data } = timeseries.state.body.state;
+    const eventSub = this.subscribeToEvents();
 
-    $data?.subscribeToState((newState, prevState) => {
-      if (!newState.data) {
-        return;
-      }
+    return () => {
+      eventSub.unsubscribe();
+    };
+  }
 
-      if (!newState.data?.annotations?.length && !prevState.data?.annotations?.length) {
-        // updateAnnotation(this.state.$timeRange.state.value, newState.data);
-        return;
-      }
-
-      if (!newState.data?.annotations?.length && prevState.data?.annotations?.length) {
-        newState.data.annotations = prevState.data.annotations;
-      }
+  subscribeToEvents() {
+    return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
+      (this.state.timeseries?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
+        mode:
+          event.payload.mode === TimerangeSelectionMode.FLAMEGRAPH
+            ? TimeRangeWithAnnotationsMode.ANNOTATIONS
+            : TimeRangeWithAnnotationsMode.DEFAULT,
+      });
     });
   }
 
@@ -189,13 +149,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return description || getProfileMetricLabel(profileMetricId);
   }
 
-  switchSelectionMode({ mode }: { mode: TimerangeSelectionMode }) {
-    const newMode =
-      mode === TimerangeSelectionMode.FLAMEGRAPH
-        ? TimeRangeWithAnnotationsMode.ANNOTATIONS
-        : TimeRangeWithAnnotationsMode.DEFAULT;
-
-    (this.state.timeseries?.state.$timeRange as SceneTimeRangeWithAnnotations).changeMode(newMode);
+  getDiffTimeRange() {
+    return this.state.timeseries?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
