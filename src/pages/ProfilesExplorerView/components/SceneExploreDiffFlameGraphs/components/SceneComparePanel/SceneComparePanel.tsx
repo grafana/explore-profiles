@@ -32,7 +32,6 @@ import {
   TimerangeSelectionMode,
 } from './domain/actions/SwitchTimeRangeSelectionModeAction';
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
-import { getDefaultTimeRange } from './domain/getDefaultTimeRange';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 
 export interface SceneComparePanelState extends SceneObjectState {
@@ -61,7 +60,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       title: target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison',
       filterKey: target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison',
       color: target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString(),
-      $timeRange: new SceneTimeRange(getDefaultTimeRange()),
+      $timeRange: new SceneTimeRange(),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseries: undefined,
@@ -71,7 +70,9 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onActivate() {
-    const { title, target } = this.state;
+    const { $timeRange, title, target } = this.state;
+
+    $timeRange.setState(sceneGraph.getTimeRange(this.parent!).state);
 
     const timeseries = this.buildTimeSeries();
 
