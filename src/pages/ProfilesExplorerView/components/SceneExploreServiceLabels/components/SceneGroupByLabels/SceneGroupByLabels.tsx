@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { config } from '@grafana/runtime';
 import {
   MultiValueVariableState,
   SceneComponentProps,
@@ -11,7 +10,6 @@ import {
 } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { buildQuery } from '@shared/domain/url-params/parseQuery';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
@@ -24,7 +22,6 @@ import { EventViewServiceFlameGraph } from '../../../../domain/events/EventViewS
 import { addFilter } from '../../../../domain/variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
-import { computeRoundedTimeRange } from '../../../../helpers/computeRoundedTimeRange';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { interpolateQueryRunnerVariables } from '../../../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
@@ -41,7 +38,7 @@ import { GridItemData } from '../../../SceneByVariableRepeaterGrid/types/GridIte
 import { SceneDrawer } from '../../../SceneDrawer';
 import { SceneLabelValuesBarGauge } from '../../../SceneLabelValuesBarGauge';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
-import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
+import { ExplorationType, SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
@@ -331,58 +328,31 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     this.setState({ compare: new Map() });
   }
 
-  buildDiffUrl(): string {
+  updateCompareFilters() {
     const { compare } = this.state;
     const baselineItem = compare.get(CompareTarget.BASELINE);
     const comparisonItem = compare.get(CompareTarget.COMPARISON);
 
-    let { appUrl } = config;
-    if (appUrl.at(-1) !== '/') {
-      // ensures that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
-      appUrl += '/';
-    }
-
-    const diffUrl = new URL('a/grafana-pyroscope-app/comparison-diff', appUrl);
-
-    // data source
-    diffUrl.searchParams.set('var-dataSource', getSceneVariableValue(this, 'dataSource'));
-
-    // time range
-    const { from, to } = computeRoundedTimeRange(sceneGraph.getTimeRange(this).state.value);
-    diffUrl.searchParams.set('from', from.toString());
-    diffUrl.searchParams.set('to', to.toString());
-
     const baselineQueryRunnerParams = interpolateQueryRunnerVariables(this, baselineItem as GridItemData);
     const comparisonQueryRunnerParams = interpolateQueryRunnerVariables(this, comparisonItem as GridItemData);
 
-    // // query - just in case
-    const query = buildQuery({
-      serviceId: baselineQueryRunnerParams.serviceName,
-      profileMetricId: baselineQueryRunnerParams.profileMetricId,
-      labels: baselineQueryRunnerParams.filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`),
+    sceneGraph.findByKeyAndType(this, 'filtersBaseline', FiltersVariable).setState({
+      filters: baselineQueryRunnerParams.filters,
     });
-    diffUrl.searchParams.set('query', query);
 
-    // left & right queries
-    const [leftQuery, rightQuery] = [baselineQueryRunnerParams, comparisonQueryRunnerParams].map(
-      ({ serviceName: serviceId, profileMetricId, filters }) =>
-        buildQuery({
-          serviceId,
-          profileMetricId,
-          labels: filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`),
-        })
-    );
-
-    diffUrl.searchParams.set('leftQuery', leftQuery);
-    diffUrl.searchParams.set('rightQuery', rightQuery);
-
-    return diffUrl.toString();
+    sceneGraph.findByKeyAndType(this, 'filtersComparison', FiltersVariable).setState({
+      filters: comparisonQueryRunnerParams.filters,
+    });
   }
 
   onClickCompareButton = () => {
-    window.open(this.buildDiffUrl(), '_blank');
+    this.updateCompareFilters();
 
     reportInteraction('g_pyroscope_app_compare_link_clicked');
+
+    (
+      sceneGraph.findByKeyAndType(this, 'profiles-explorer', SceneProfilesExplorer) as SceneProfilesExplorer
+    ).setExplorationType({ type: ExplorationType.DIFF_FLAME_GRAPH });
   };
 
   onClickClearCompareButton = () => {

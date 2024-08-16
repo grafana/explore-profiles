@@ -194,7 +194,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const profilesSub = this.subscribeToEvent(EventViewServiceProfiles, (event) => {
       this.setExplorationType({
         type: ExplorationType.PROFILE_TYPES,
-        comesFromUserAction: true,
+        resetVariables: true,
         item: event.payload.item,
       });
     });
@@ -202,7 +202,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const labelsSub = this.subscribeToEvent(EventViewServiceLabels, (event) => {
       this.setExplorationType({
         type: ExplorationType.LABELS,
-        comesFromUserAction: true,
+        resetVariables: true,
         item: event.payload.item,
       });
     });
@@ -210,7 +210,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const flameGraphSub = this.subscribeToEvent(EventViewServiceFlameGraph, (event) => {
       this.setExplorationType({
         type: ExplorationType.FLAME_GRAPH,
-        comesFromUserAction: true,
+        resetVariables: true,
         item: event.payload.item,
       });
     });
@@ -226,14 +226,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   setExplorationType({
     type,
-    comesFromUserAction,
+    resetVariables,
     item,
   }: {
     type: ExplorationType;
-    comesFromUserAction?: boolean;
+    resetVariables?: boolean;
     item?: GridItemData;
   }) {
-    if (comesFromUserAction) {
+    if (resetVariables) {
       this.resetVariables(type);
     }
 
@@ -283,7 +283,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.setExplorationType({
       type: explorationType as ExplorationType,
-      comesFromUserAction: true,
+      resetVariables: true,
     });
   };
 
@@ -293,6 +293,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
       sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable)?.setState({
         filters: FiltersVariable.DEFAULT_VALUE,
+      });
+    }
+
+    if (explorationType !== ExplorationType.DIFF_FLAME_GRAPH) {
+      ['filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
+        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable)?.setState({
+          filters: FiltersVariable.DEFAULT_VALUE,
+        });
       });
     }
 
