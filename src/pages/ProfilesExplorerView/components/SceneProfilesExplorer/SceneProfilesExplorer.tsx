@@ -317,7 +317,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   useProfilesExplorer = () => {
     const { explorationType, controls, body, $variables } = this.useState();
 
-    const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
+    const [timePickerControl, refreshPickerControl] =
+      explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as [SceneObject, SceneObject]);
+
     const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
 
     const bodySceneObject = body?.state.primary as any;
