@@ -48,6 +48,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
     align-items: center;
+    ${theme.breakpoints.down('xl')} {
+      label {
+        display: none;
+      }
+    }
   `,
   breadcrumb: css`
     height: 32px;

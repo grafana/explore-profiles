@@ -415,6 +415,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   dataSourceVariable: css`
     display: flex;
+    ${theme.breakpoints.down('xl')} {
+      label {
+        display: none;
+      }
+    }
   `,
   variable: css`
     display: flex;
