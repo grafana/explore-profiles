@@ -9,9 +9,9 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 
+import { getDefaultTimeRange } from '../../../../../domain/getDefaultTimeRange';
 import { evaluateTimeRange } from '../domain/evaluateTimeRange';
 import { EventAnnotationTimeRangeChanged } from '../domain/events/EventAnnotationTimeRangeChanged';
-import { getDefaultTimeRange } from '../domain/getDefaultTimeRange';
 import { parseUrlParam } from '../domain/parseUrlParam';
 import { RangeAnnotation } from '../domain/RangeAnnotation';
 

@@ -20,7 +20,6 @@ import {
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
 
@@ -31,6 +30,7 @@ import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreSe
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { getDefaultTimeRange } from '../../domain/getDefaultTimeRange';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -108,7 +108,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       key: 'profiles-explorer',
       explorationType: undefined,
       body: undefined,
-      $timeRange: new SceneTimeRange({}),
+      $timeRange: new SceneTimeRange(getDefaultTimeRange()),
       $variables: new SceneVariableSet({
         // in order to sync with the URL and...
         // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -363,9 +363,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    // TODO: TEMP to ensure that the default timerange is set
-    useTimeRangeFromUrl(); // eslint-disable-line react-hooks/rules-of-hooks
-
     const { data, actions } = model.useProfilesExplorer();
 
     const {

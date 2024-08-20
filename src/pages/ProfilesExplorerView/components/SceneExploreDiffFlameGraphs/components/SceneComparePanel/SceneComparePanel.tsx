@@ -9,6 +9,7 @@ import {
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
+  SceneTimeRangeLike,
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { InlineLabel, useStyles2 } from '@grafana/ui';
@@ -42,7 +43,7 @@ export interface SceneComparePanelState extends SceneObjectState {
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
   timeseriesPanel?: SceneLabelValuesTimeseries;
-  $timeRange: SceneTimeRange;
+  $timeRange?: SceneTimeRange;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
@@ -60,7 +61,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       title: target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison',
       filterKey: target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison',
       color: target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString(),
-      $timeRange: new SceneTimeRange(),
+      $timeRange: undefined,
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: undefined,
@@ -71,6 +72,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   onActivate() {
     const { title, target } = this.state;
+
+    const { from, to, value } = this.getAncestorTimeRange().state;
+
+    this.setState({ $timeRange: new SceneTimeRange({ from, to, value }) });
 
     const timeseriesPanel = this.buildTimeSeriesPanel();
 
@@ -90,6 +95,14 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return () => {
       eventSub.unsubscribe();
     };
+  }
+
+  protected getAncestorTimeRange(): SceneTimeRangeLike {
+    if (!this.parent || !this.parent.parent) {
+      throw new Error(typeof this + ' must be used within $timeRange scope');
+    }
+
+    return sceneGraph.getTimeRange(this.parent.parent);
   }
 
   subscribeToEvents() {
