@@ -74,9 +74,10 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
   }
 
   subscribeToEvents() {
-    // we use the EventAnnotationTimeRangeChanged instead of React hooks to get the annotation time ranges
+    // we use the EventAnnotationTimeRangeChanged event and forcing a re-render instead of just calling React hooks
+    // in useSceneExploreDiffFlameGraphs() below (see getDiffTimeRange())
     // because the timeseries are not directly built (see SceneComparePanel) and the values of the annotation time ranges
-    // are not determined directly neither (see SceneTimeRangeWithAnnotations)
+    // are not determined directly neither (see SceneTimeRangeWithAnnotations) so we would have conditional hooks calls, which is not allowed
     // TODO: we really need a native Scenes diff flame graph panel
     this._subs.add(
       this.subscribeToEvent(EventAnnotationTimeRangeChanged, () => {

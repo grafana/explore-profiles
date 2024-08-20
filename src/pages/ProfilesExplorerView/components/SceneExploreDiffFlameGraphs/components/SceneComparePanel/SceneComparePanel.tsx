@@ -97,7 +97,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   subscribeToEvents() {
     return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
-      // FIXME: this will cause a EventDataReceived to be published in SceneLabelValuesTimeseries
       (this.state.timeseriesPanel?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
         mode:
           event.payload.mode === TimerangeSelectionMode.FLAMEGRAPH

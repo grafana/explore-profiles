@@ -111,7 +111,6 @@ export class SceneTimeRangeWithAnnotations
       timeEnd: annotationTimeRange.to.unix() * 1000,
     });
 
-    // FIXME: this will cause a EventDataReceived to be published in SceneLabelValuesTimeseries
     $data?.setState({
       data: {
         ...data,
