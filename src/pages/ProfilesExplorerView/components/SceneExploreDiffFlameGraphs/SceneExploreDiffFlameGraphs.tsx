@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { DashboardCursorSync, DataFrame, GrafanaTheme2, TimeRange } from '@grafana/data';
+import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
 import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
@@ -10,16 +10,15 @@ import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { InlineBanner } from '@shared/ui/InlineBanner';
-import { cloneDeep, merge } from 'lodash';
 import React, { useEffect } from 'react';
 
-import { EventDataReceived } from '../../domain/events/EventDataReceived';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { EventAnnotationTimeRangeChanged } from './components/SceneComparePanel/domain/events/EventAnnotationTimeRangeChanged';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
+import { syncYAxis } from './domain/behaviours/syncYAxis';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 
 interface SceneExploreDiffFlameGraphsState extends SceneObjectState {
@@ -29,19 +28,24 @@ interface SceneExploreDiffFlameGraphsState extends SceneObjectState {
 
 export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDiffFlameGraphsState> {
   constructor() {
+    const baselinePanel = new SceneComparePanel({
+      target: CompareTarget.BASELINE,
+    });
+
+    const comparisonPanel = new SceneComparePanel({
+      target: CompareTarget.COMPARISON,
+    });
+
     super({
       key: 'explore-diff-flame-graphs',
-      baselinePanel: new SceneComparePanel({
-        target: CompareTarget.BASELINE,
-      }),
-      comparisonPanel: new SceneComparePanel({
-        target: CompareTarget.COMPARISON,
-      }),
+      baselinePanel,
+      comparisonPanel,
       $behaviors: [
         new behaviors.CursorSync({
           key: 'metricCrosshairSync',
           sync: DashboardCursorSync.Crosshair,
         }),
+        syncYAxis(),
       ],
     });
 
@@ -54,7 +58,16 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
-    this.subscribeToEvents();
+    // we use the EventAnnotationTimeRangeChanged event and forcing a re-render instead of just calling React hooks
+    // in useSceneExploreDiffFlameGraphs() below (see getDiffTimeRange())
+    // because the timeseries are not directly built (see SceneComparePanel) and the values of the annotation time ranges
+    // are not determined directly neither (see SceneTimeRangeWithAnnotations) so we would have conditional hooks calls, which is not allowed
+    // TODO: we really need a native Scenes diff flame graph panel
+    this._subs.add(
+      this.subscribeToEvent(EventAnnotationTimeRangeChanged, () => {
+        this.forceRender();
+      })
+    );
 
     return () => {
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
@@ -71,72 +84,6 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
       ],
       gridControls: [],
     };
-  }
-
-  subscribeToEvents() {
-    // we use the EventAnnotationTimeRangeChanged event and forcing a re-render instead of just calling React hooks
-    // in useSceneExploreDiffFlameGraphs() below (see getDiffTimeRange())
-    // because the timeseries are not directly built (see SceneComparePanel) and the values of the annotation time ranges
-    // are not determined directly neither (see SceneTimeRangeWithAnnotations) so we would have conditional hooks calls, which is not allowed
-    // TODO: we really need a native Scenes diff flame graph panel
-    this._subs.add(
-      this.subscribeToEvent(EventAnnotationTimeRangeChanged, () => {
-        this.forceRender();
-      })
-    );
-
-    const { baselinePanel, comparisonPanel } = this.state;
-
-    function findYMax(series: DataFrame[]) {
-      let yMax = -1;
-
-      for (const value of series[0].fields[1].values) {
-        if (value > yMax) {
-          yMax = value;
-        }
-      }
-
-      return yMax;
-    }
-
-    let lastMax = -1;
-
-    function updateYMax() {
-      const max = Math.max(yBaselineMax, yComparisonMax);
-
-      if (max === lastMax) {
-        return;
-      }
-
-      [baselinePanel, comparisonPanel].forEach((panel) => {
-        const timeseries = panel.state.timeseriesPanel!.state.body;
-        const { state: prevState } = timeseries;
-
-        timeseries.clearFieldConfigCache();
-
-        timeseries.setState({
-          fieldConfig: merge(cloneDeep(prevState.fieldConfig), { defaults: { max } }),
-        });
-      });
-    }
-
-    let yBaselineMax = -1;
-    this._subs.add(
-      baselinePanel.subscribeToEvent(EventDataReceived, (event) => {
-        yBaselineMax = -1;
-        yBaselineMax = findYMax(event.payload.series);
-        updateYMax();
-      })
-    );
-
-    let yComparisonMax = -1;
-    this._subs.add(
-      comparisonPanel.subscribeToEvent(EventDataReceived, (event) => {
-        yComparisonMax = -1;
-        yComparisonMax = findYMax(event.payload.series);
-        updateYMax();
-      })
-    );
   }
 
   useSceneExploreDiffFlameGraphs = () => {

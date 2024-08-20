@@ -4,7 +4,7 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanelState }
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { EventDataReceived } from '../../../../../../../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../../../../../../../domain/events/EventTimeseriesDataReceived';
 import { getSeriesStatsValue } from '../../../../../../../infrastructure/helpers/getSeriesStatsValue';
 import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries';
@@ -40,7 +40,7 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   onActivate() {
     const { statsPanel, timeseriesPanel } = this.state;
 
-    const timeseriesSub = timeseriesPanel.subscribeToEvent(EventDataReceived, (event) => {
+    const timeseriesSub = timeseriesPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
       const [s] = event.payload.series;
 
       if (!s) {

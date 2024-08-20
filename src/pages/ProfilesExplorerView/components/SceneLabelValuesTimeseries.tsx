@@ -12,7 +12,7 @@ import {
 import { GraphGradientMode } from '@grafana/schema';
 import React from 'react';
 
-import { EventDataReceived } from '../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
@@ -75,22 +75,20 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
-    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
-      if (newState.data?.state === LoadingState.Done && prevState.data?.state !== LoadingState.Done) {
-        const { series } = newState.data;
-
-        if (!series.length) {
-          return;
-        }
-
-        const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
-
-        body.setState(config);
-
-        // we publish the event only after setting the new config so that the subscribers can modify it
-        // (e.g. sync y-axis in SceneExploreDiffFlameGraphs.tsx)
-        this.publishEvent(new EventDataReceived({ series }), true);
+    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState) => {
+      if (newState.data?.state !== LoadingState.Done) {
+        return;
       }
+
+      const { series } = newState.data;
+
+      const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
+
+      body.setState(config);
+
+      // we publish the event only after setting the new config so that the subscribers can modify it
+      // (e.g. sync y-axis in SceneExploreDiffFlameGraphs.tsx)
+      this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
     });
 
     return () => {

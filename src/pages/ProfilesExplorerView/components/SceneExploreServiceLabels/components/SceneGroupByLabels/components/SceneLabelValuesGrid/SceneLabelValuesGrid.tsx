@@ -15,7 +15,7 @@ import { Spinner } from '@grafana/ui';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { EventDataReceived } from '../../../../../../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../../../../../../domain/events/EventTimeseriesDataReceived';
 import { FiltersVariable } from '../../../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../../../helpers/getSceneVariableValue';
@@ -338,7 +338,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       headerActions: this.state.headerActions.bind(null, item, this.state.items),
     });
 
-    const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
+    const sub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
       if (!this.state.hideNoData || event.payload.series.length) {
         return;
       }
