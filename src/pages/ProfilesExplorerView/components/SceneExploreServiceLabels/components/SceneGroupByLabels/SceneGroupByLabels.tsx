@@ -12,6 +12,7 @@ import { Stack, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
+import { EventViewDiffFlameGraph } from 'src/pages/ProfilesExplorerView/domain/events/EventViewDiffFlameGraph';
 
 import { FavAction } from '../../../../domain/actions/FavAction';
 import { SelectAction } from '../../../../domain/actions/SelectAction';
@@ -38,7 +39,7 @@ import { GridItemData } from '../../../SceneByVariableRepeaterGrid/types/GridIte
 import { SceneDrawer } from '../../../SceneDrawer';
 import { SceneLabelValuesBarGauge } from '../../../SceneLabelValuesBarGauge';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
-import { ExplorationType, SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
+import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
@@ -346,13 +347,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   }
 
   onClickCompareButton = () => {
-    this.updateCompareFilters();
-
     reportInteraction('g_pyroscope_app_compare_link_clicked');
 
-    (
-      sceneGraph.findByKeyAndType(this, 'profiles-explorer', SceneProfilesExplorer) as SceneProfilesExplorer
-    ).setExplorationType({ type: ExplorationType.DIFF_FLAME_GRAPH });
+    this.updateCompareFilters();
+
+    this.publishEvent(new EventViewDiffFlameGraph({}), true);
   };
 
   onClickClearCompareButton = () => {

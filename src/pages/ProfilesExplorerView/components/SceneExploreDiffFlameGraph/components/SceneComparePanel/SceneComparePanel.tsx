@@ -81,6 +81,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
     timeseriesPanel.state.body.setState({
       $timeRange: new SceneTimeRangeWithAnnotations({
+        key: `${target}-annotation-timerange`,
         mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
         annotationColor:
           target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),

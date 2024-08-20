@@ -21,12 +21,12 @@ import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePa
 import { syncYAxis } from './domain/behaviours/syncYAxis';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 
-interface SceneExploreDiffFlameGraphsState extends SceneObjectState {
+interface SceneExploreDiffFlameGraphState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
   comparisonPanel: SceneComparePanel;
 }
 
-export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDiffFlameGraphsState> {
+export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
   constructor() {
     const baselinePanel = new SceneComparePanel({
       target: CompareTarget.BASELINE,
@@ -37,7 +37,7 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     });
 
     super({
-      key: 'explore-diff-flame-graphs',
+      key: 'explore-diff-flame-graph',
       baselinePanel,
       comparisonPanel,
       $behaviors: [
@@ -59,7 +59,7 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     profileMetricVariable.update(true);
 
     // we use the EventAnnotationTimeRangeChanged event and forcing a re-render instead of just calling React hooks
-    // in useSceneExploreDiffFlameGraphs() below (see getDiffTimeRange())
+    // in useSceneExploreDiffFlameGraph() below (see getDiffTimeRange())
     // because the timeseries are not directly built (see SceneComparePanel) and the values of the annotation time ranges
     // are not determined directly neither (see SceneTimeRangeWithAnnotations) so we would have conditional hooks calls, which is not allowed
     // TODO: we really need a native Scenes diff flame graph panel
@@ -86,7 +86,7 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     };
   }
 
-  useSceneExploreDiffFlameGraphs = () => {
+  useSceneExploreDiffFlameGraph = () => {
     const { baselinePanel, comparisonPanel } = this.useState();
 
     const baselineTimeRange = baselinePanel.getDiffTimeRange()?.state.annotationTimeRange as TimeRange;
@@ -129,10 +129,10 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     };
   };
 
-  static Component({ model }: SceneComponentProps<SceneExploreDiffFlameGraphs>) {
+  static Component({ model }: SceneComponentProps<SceneExploreDiffFlameGraph>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
 
-    const { data } = model.useSceneExploreDiffFlameGraphs();
+    const { data } = model.useSceneExploreDiffFlameGraph();
     const {
       baselinePanel,
       comparisonPanel,

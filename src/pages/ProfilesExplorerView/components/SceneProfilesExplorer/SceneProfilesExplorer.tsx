@@ -27,6 +27,7 @@ import { SceneExploreAllServices } from '../../components/SceneExploreAllService
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameGraph';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
@@ -44,7 +45,8 @@ import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/S
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneExploreDiffFlameGraphs } from '../SceneExploreDiffFlameGraphs/SceneExploreDiffFlameGraphs';
+import { SceneTimeRangeWithAnnotations } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/components/SceneTimeRangeWithAnnotations';
+import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
@@ -216,8 +218,16 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       });
     });
 
+    const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, () => {
+      this.setExplorationType({
+        type: ExplorationType.DIFF_FLAME_GRAPH,
+        resetVariables: true,
+      });
+    });
+
     return {
       unsubscribe() {
+        diffFlameGraphSub.unsubscribe();
         flameGraphSub.unsubscribe();
         labelsSub.unsubscribe();
         profilesSub.unsubscribe();
@@ -261,7 +271,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.DIFF_FLAME_GRAPH:
-        primary = new SceneExploreDiffFlameGraphs();
+        primary = new SceneExploreDiffFlameGraph();
         break;
 
       case ExplorationType.FAVORITES:
@@ -288,26 +298,33 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   };
 
-  resetVariables(explorationType: string) {
+  resetVariables(nextExplorationType: string) {
     sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
 
-    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
-      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable)?.setState({
+    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(nextExplorationType as ExplorationType)) {
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
         filters: FiltersVariable.DEFAULT_VALUE,
       });
     }
 
-    if (explorationType !== ExplorationType.DIFF_FLAME_GRAPH) {
+    if (
+      nextExplorationType !== ExplorationType.DIFF_FLAME_GRAPH &&
+      this.state.explorationType === ExplorationType.DIFF_FLAME_GRAPH
+    ) {
       ['filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
-        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable)?.setState({
+        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable).setState({
           filters: FiltersVariable.DEFAULT_VALUE,
         });
       });
+
+      ['baseline-annotation-timerange', 'comparison-annotation-timerange'].forEach((timeRangeKey) => {
+        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRangeWithAnnotations).nullifyAnnotationTimeRange();
+      });
     }
 
-    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
+    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
 
-    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher)?.reset();
+    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
   }
 
   onClickShareLink = async () => {
@@ -317,11 +334,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
       searchParams.delete('query'); // TODO: temp while removing the comparison pages
 
-      ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'aFrom', 'aTo', 'aFrom-2', 'aTo-2'].forEach((name) => {
-        if (searchParams.has(name)) {
-          searchParams.set(name, String(dateMath.parse(searchParams.get(name))!.valueOf()));
+      ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'diffFrom', 'diffTo', 'diffFrom-2', 'diffTo-2'].forEach(
+        (name) => {
+          if (searchParams.has(name)) {
+            searchParams.set(name, String(dateMath.parse(searchParams.get(name))!.valueOf()));
+          }
         }
-      });
+      );
 
       await navigator.clipboard.writeText(shareableUrl.toString());
       displaySuccess(['Link copied to clipboard!']);

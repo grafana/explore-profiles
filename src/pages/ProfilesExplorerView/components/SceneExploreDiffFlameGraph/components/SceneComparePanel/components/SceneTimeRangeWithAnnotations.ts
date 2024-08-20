@@ -27,17 +27,25 @@ interface SceneTimeRangeWithAnnotationsState extends SceneTimeRangeState {
   mode: TimeRangeWithAnnotationsMode;
 }
 
+const TIMERANGE_NIL = {
+  from: dateTime(0),
+  to: dateTime(0),
+  raw: { from: '', to: '' },
+};
+
 export class SceneTimeRangeWithAnnotations
   extends SceneObjectBase<SceneTimeRangeWithAnnotationsState>
   implements SceneTimeRangeLike
 {
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['aFrom', 'aTo'] });
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['diffFrom', 'diffTo'] });
 
   constructor({
+    key,
     annotationColor,
     annotationTitle,
     mode,
   }: {
+    key: string;
     annotationColor: SceneTimeRangeWithAnnotationsState['annotationColor'];
     annotationTitle: SceneTimeRangeWithAnnotationsState['annotationTitle'];
     mode: SceneTimeRangeWithAnnotationsState['mode'];
@@ -45,13 +53,10 @@ export class SceneTimeRangeWithAnnotations
     const defaultTimeRange = getDefaultTimeRange();
 
     super({
+      key,
       // temporary values, they will be updated in onActivate
       ...defaultTimeRange,
-      annotationTimeRange: {
-        from: dateTime(0),
-        to: dateTime(0),
-        raw: { from: '', to: '' },
-      },
+      annotationTimeRange: TIMERANGE_NIL,
       annotationColor,
       annotationTitle,
       mode,
@@ -60,55 +65,18 @@ export class SceneTimeRangeWithAnnotations
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  getUrlState() {
-    const { annotationTimeRange } = this.state;
-
-    return {
-      aFrom:
-        typeof annotationTimeRange.raw.from === 'string'
-          ? annotationTimeRange.raw.from
-          : annotationTimeRange.raw.from.toISOString(),
-      aTo:
-        typeof annotationTimeRange.raw.to === 'string'
-          ? annotationTimeRange.raw.to
-          : annotationTimeRange.raw.to.toISOString(),
-    };
-  }
-
-  // eslint-disable-next-line sonarjs/cognitive-complexity
-  updateFromUrl(values: SceneObjectUrlValues) {
-    const { aFrom, aTo } = values;
-
-    if (!aTo && !aFrom) {
-      return;
-    }
-
-    const { annotationTimeRange } = this.state;
-
-    this.setState({
-      annotationTimeRange: evaluateTimeRange(
-        parseUrlParam(aFrom) ?? annotationTimeRange.from,
-        parseUrlParam(aTo) ?? annotationTimeRange.to,
-        this.getTimeZone(),
-        this.state.fiscalYearStartMonth,
-        this.state.UNSAFE_nowDelay
-      ),
-    });
-  }
-
   onActivate() {
     const ancestorTimeRangeObject = this.getAncestorTimeRange();
 
     this.setState({
       ...ancestorTimeRangeObject.state,
+      key: this.state.key,
     });
 
     this._subs.add(ancestorTimeRangeObject.subscribeToState((newState) => this.setState(newState)));
 
-    const { $data } = this.getTimeseries().state;
-
     this._subs.add(
-      $data?.subscribeToState((newState, prevState) => {
+      this.getTimeseries().state.$data?.subscribeToState((newState, prevState) => {
         if (!newState.data) {
           return;
         }
@@ -119,6 +87,7 @@ export class SceneTimeRangeWithAnnotations
           return;
         }
 
+        // ensure we retain the previous annotations, if they exist
         if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
           newState.data.annotations = prevState.data.annotations;
         }
@@ -173,6 +142,45 @@ export class SceneTimeRangeWithAnnotations
         ...data,
         annotations: [annotation],
       },
+    });
+  }
+
+  nullifyAnnotationTimeRange() {
+    this.setState({ annotationTimeRange: TIMERANGE_NIL });
+  }
+
+  getUrlState() {
+    const { annotationTimeRange } = this.state;
+
+    return {
+      diffFrom:
+        typeof annotationTimeRange.raw.from === 'string'
+          ? annotationTimeRange.raw.from
+          : annotationTimeRange.raw.from.toISOString(),
+      diffTo:
+        typeof annotationTimeRange.raw.to === 'string'
+          ? annotationTimeRange.raw.to
+          : annotationTimeRange.raw.to.toISOString(),
+    };
+  }
+
+  updateFromUrl(values: SceneObjectUrlValues) {
+    const { diffFrom, diffTo } = values;
+
+    if (!diffTo && !diffFrom) {
+      return;
+    }
+
+    const { annotationTimeRange } = this.state;
+
+    this.setState({
+      annotationTimeRange: evaluateTimeRange(
+        parseUrlParam(diffFrom) ?? annotationTimeRange.from,
+        parseUrlParam(diffTo) ?? annotationTimeRange.to,
+        this.getTimeZone(),
+        this.state.fiscalYearStartMonth,
+        this.state.UNSAFE_nowDelay
+      ),
     });
   }
 
