@@ -1,8 +1,18 @@
 import { dateTime, TimeRange } from '@grafana/data';
-import { sceneGraph, SceneObjectBase, SceneTimeRangeLike, SceneTimeRangeState, VizPanel } from '@grafana/scenes';
+import {
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectUrlSyncConfig,
+  SceneObjectUrlValues,
+  SceneTimeRangeLike,
+  SceneTimeRangeState,
+  VizPanel,
+} from '@grafana/scenes';
 
+import { evaluateTimeRange } from '../domain/evaluateTimeRange';
 import { EventAnnotationTimeRangeChanged } from '../domain/events/EventAnnotationTimeRangeChanged';
 import { getDefaultTimeRange } from '../domain/getDefaultTimeRange';
+import { parseUrlParam } from '../domain/parseUrlParam';
 import { RangeAnnotation } from '../domain/RangeAnnotation';
 
 export enum TimeRangeWithAnnotationsMode {
@@ -21,6 +31,8 @@ export class SceneTimeRangeWithAnnotations
   extends SceneObjectBase<SceneTimeRangeWithAnnotationsState>
   implements SceneTimeRangeLike
 {
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['aFrom', 'aTo'] });
+
   constructor({
     annotationColor,
     annotationTitle,
@@ -38,7 +50,7 @@ export class SceneTimeRangeWithAnnotations
       annotationTimeRange: {
         from: dateTime(0),
         to: dateTime(0),
-        raw: { from: dateTime(0), to: dateTime(0) },
+        raw: { from: '', to: '' },
       },
       annotationColor,
       annotationTitle,
@@ -48,13 +60,47 @@ export class SceneTimeRangeWithAnnotations
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
+  getUrlState() {
+    const { annotationTimeRange } = this.state;
+
+    return {
+      aFrom:
+        typeof annotationTimeRange.raw.from === 'string'
+          ? annotationTimeRange.raw.from
+          : annotationTimeRange.raw.from.toISOString(),
+      aTo:
+        typeof annotationTimeRange.raw.to === 'string'
+          ? annotationTimeRange.raw.to
+          : annotationTimeRange.raw.to.toISOString(),
+    };
+  }
+
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  updateFromUrl(values: SceneObjectUrlValues) {
+    const { aFrom, aTo } = values;
+
+    if (!aTo && !aFrom) {
+      return;
+    }
+
+    const { annotationTimeRange } = this.state;
+
+    this.setState({
+      annotationTimeRange: evaluateTimeRange(
+        parseUrlParam(aFrom) ?? annotationTimeRange.from,
+        parseUrlParam(aTo) ?? annotationTimeRange.to,
+        this.getTimeZone(),
+        this.state.fiscalYearStartMonth,
+        this.state.UNSAFE_nowDelay
+      ),
+    });
+  }
+
   onActivate() {
     const ancestorTimeRangeObject = this.getAncestorTimeRange();
 
     this.setState({
       ...ancestorTimeRangeObject.state,
-      // TODO
-      // annotationTimeRange: ancestorTimeRangeObject.state.value,
     });
 
     this._subs.add(ancestorTimeRangeObject.subscribeToState((newState) => this.setState(newState)));
@@ -63,7 +109,17 @@ export class SceneTimeRangeWithAnnotations
 
     this._subs.add(
       $data?.subscribeToState((newState, prevState) => {
-        if (newState.data && !newState.data.annotations?.length && prevState.data?.annotations?.length) {
+        if (!newState.data) {
+          return;
+        }
+
+        // add annotation for the first time
+        if (!newState.data.annotations?.length && !prevState.data?.annotations?.length) {
+          this.updateTimeseriesAnnotation();
+          return;
+        }
+
+        if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
           newState.data.annotations = prevState.data.annotations;
         }
       })
@@ -98,7 +154,7 @@ export class SceneTimeRangeWithAnnotations
     const { $data } = this.getTimeseries().state;
 
     const data = $data?.state.data;
-    if (!data || !annotationTimeRange) {
+    if (!data) {
       return;
     }
 
@@ -111,6 +167,7 @@ export class SceneTimeRangeWithAnnotations
       timeEnd: annotationTimeRange.to.unix() * 1000,
     });
 
+    // tradeoff: this will trigger any $data subscribers even though the data itself hasn't changed
     $data?.setState({
       data: {
         ...data,
@@ -120,22 +177,21 @@ export class SceneTimeRangeWithAnnotations
   }
 
   onTimeRangeChange(timeRange: TimeRange): void {
-    const { mode, annotationTimeRange } = this.state;
+    const { mode } = this.state;
 
     if (mode === TimeRangeWithAnnotationsMode.DEFAULT) {
       this.getAncestorTimeRange().onTimeRangeChange(timeRange);
       return;
     }
 
-    // we don't do this.setState({ annotationTimeRange: timeRange });
-    // because it would cause a ttimeseries query to be made to the API
-    annotationTimeRange.from = timeRange.from;
-    annotationTimeRange.to = timeRange.to;
-    annotationTimeRange.raw = timeRange.raw;
-
-    this.publishEvent(new EventAnnotationTimeRangeChanged({ timeRange }), true);
+    // note: this update causes a timeseries query to be made to the API
+    this.setState({
+      annotationTimeRange: timeRange,
+    });
 
     this.updateTimeseriesAnnotation();
+
+    this.publishEvent(new EventAnnotationTimeRangeChanged({ timeRange }), true);
   }
 
   onTimeZoneChange(timeZone: string): void {

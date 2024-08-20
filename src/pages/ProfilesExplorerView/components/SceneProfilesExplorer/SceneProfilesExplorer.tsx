@@ -20,6 +20,7 @@ import {
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
 
@@ -362,6 +363,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    // TODO: TEMP to ensure that the default timerange is set
+    useTimeRangeFromUrl(); // eslint-disable-line react-hooks/rules-of-hooks
+
     const { data, actions } = model.useProfilesExplorer();
 
     const {

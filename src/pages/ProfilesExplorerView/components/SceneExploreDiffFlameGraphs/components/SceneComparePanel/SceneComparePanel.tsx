@@ -70,10 +70,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onActivate() {
-    const { $timeRange, title, target } = this.state;
-
-    // TODO: sync with URL search params
-    $timeRange.setState(sceneGraph.getTimeRange(this.parent!).state);
+    const { title, target } = this.state;
 
     const timeseriesPanel = this.buildTimeSeriesPanel();
 

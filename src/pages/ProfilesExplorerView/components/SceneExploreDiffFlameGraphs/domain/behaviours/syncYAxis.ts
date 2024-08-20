@@ -10,6 +10,12 @@ export function syncYAxis() {
 
     const eventSub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
       const { series } = event.payload;
+      const refId = series[0]?.refId;
+
+      if (!refId) {
+        console.warn('Missing refId! Cannot sync y-axis on the timeseries.', series);
+        return;
+      }
 
       maxima.set(series[0].refId as string, findMaxValue(series));
 
