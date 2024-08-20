@@ -95,6 +95,8 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
     const comparisonTimeRange = comparisonPanel.getDiffTimeRange()?.state.annotationTimeRange as TimeRange;
     const comparisonQuery = useBuildPyroscopeQuery(this, 'filtersComparison');
 
+    const { settings, error: fetchSettingsError } = useFetchPluginSettings();
+
     const {
       isFetching,
       error: fetchProfileError,
@@ -106,10 +108,10 @@ export class SceneExploreDiffFlameGraphs extends SceneObjectBase<SceneExploreDif
       comparisonQuery,
     });
 
-    const noProfileDataAvailable = !fetchProfileError && (!profile || profile?.flamebearer.numTicks === 0);
-    const shouldDisplayFlamegraph = Boolean(!fetchProfileError && !noProfileDataAvailable && profile);
+    const noProfileDataAvailable =
+      !isFetching && !fetchProfileError && (!profile || profile?.flamebearer.numTicks === 0);
 
-    const { settings, error: fetchSettingsError } = useFetchPluginSettings();
+    const shouldDisplayFlamegraph = Boolean(!fetchProfileError && !noProfileDataAvailable && profile);
 
     return {
       data: {
