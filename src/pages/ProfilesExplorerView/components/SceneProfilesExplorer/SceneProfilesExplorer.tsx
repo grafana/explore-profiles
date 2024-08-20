@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { dateTimeParse, GrafanaTheme2 } from '@grafana/data';
+import { dateMath, GrafanaTheme2 } from '@grafana/data';
 import {
   EmbeddedSceneState,
   getUrlSyncManager,
@@ -313,9 +313,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onClickShareLink = async () => {
     try {
       const shareableUrl = new URL(window.location.toString());
+      const { searchParams } = shareableUrl;
 
-      ['from', 'to'].forEach((name) => {
-        shareableUrl.searchParams.set(name, String(dateTimeParse(shareableUrl.searchParams.get(name)).valueOf()));
+      searchParams.delete('query'); // TODO: temp while removing the comparison pages
+
+      ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'aFrom', 'aTo', 'aFrom-2', 'aTo-2'].forEach((name) => {
+        if (searchParams.has(name)) {
+          searchParams.set(name, String(dateMath.parse(searchParams.get(name))!.valueOf()));
+        }
       });
 
       await navigator.clipboard.writeText(shareableUrl.toString());
