@@ -28,13 +28,9 @@ interface SceneExploreDiffFlameGraphState extends SceneObjectState {
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
   constructor() {
-    const baselinePanel = new SceneComparePanel({
-      target: CompareTarget.BASELINE,
-    });
+    const baselinePanel = new SceneComparePanel({ target: CompareTarget.BASELINE });
 
-    const comparisonPanel = new SceneComparePanel({
-      target: CompareTarget.COMPARISON,
-    });
+    const comparisonPanel = new SceneComparePanel({ target: CompareTarget.COMPARISON });
 
     super({
       key: 'explore-diff-flame-graph',
@@ -108,10 +104,16 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
       comparisonQuery,
     });
 
-    const noProfileDataAvailable =
-      !isFetching && !fetchProfileError && (!profile || profile?.flamebearer.numTicks === 0);
-
+    const noProfileDataAvailable = !isFetching && !fetchProfileError && profile?.flamebearer.numTicks === 0;
     const shouldDisplayFlamegraph = Boolean(!fetchProfileError && !noProfileDataAvailable && profile);
+    const shouldDisplayInfo = !Boolean(
+      baselineQuery &&
+        comparisonQuery &&
+        baselineTimeRange?.raw.from.valueOf() &&
+        baselineTimeRange?.raw.to.valueOf() &&
+        comparisonTimeRange?.raw.from.valueOf() &&
+        comparisonTimeRange?.raw.to.valueOf()
+    );
 
     return {
       data: {
@@ -121,6 +123,7 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         fetchProfileError,
         noProfileDataAvailable,
         shouldDisplayFlamegraph,
+        shouldDisplayInfo,
         profile,
         settings,
         fetchSettingsError,
@@ -138,8 +141,9 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
       comparisonPanel,
       isLoading,
       fetchProfileError,
-      noProfileDataAvailable,
+      shouldDisplayInfo,
       shouldDisplayFlamegraph,
+      noProfileDataAvailable,
       profile,
       fetchSettingsError,
       settings,
@@ -170,6 +174,14 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
 
         <div className={styles.flex}>
           <div className={styles.flameGraphPanel}>
+            {shouldDisplayInfo && (
+              <InlineBanner
+                severity="info"
+                title=""
+                message="Select both the baseline and the comparison flame graph time ranges to view the diff flame graph."
+              />
+            )}
+
             {fetchProfileError && (
               <InlineBanner severity="error" title="Error while loading profile data!" errors={[fetchProfileError]} />
             )}
@@ -241,6 +253,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
     padding: ${theme.spacing(1)};
     border: 1px solid ${theme.colors.border.weak};
     border-radius: 2px;
+
+    & [role='status'],
+    & [role='alert'] {
+      margin-bottom: 0;
+    }
   `,
   flameGraphHeaderActions: css`
     display: flex;

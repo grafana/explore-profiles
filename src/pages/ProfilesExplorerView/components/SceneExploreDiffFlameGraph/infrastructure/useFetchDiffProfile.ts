@@ -25,8 +25,7 @@ export function useFetchDiffProfile({
     enabled: Boolean(
       baselineQuery &&
         comparisonQuery &&
-        // determining the correct left/right ranges takes time and can lead to some values being 0
-        // in this case, we would send 0 values to the API, which would make the pods crash
+        // warning: sending zero parameters values to the API would make the pods crash
         // so we enable only when we have non-zero parameters values
         baselineTimeRange?.raw.from.valueOf() &&
         baselineTimeRange?.raw.to.valueOf() &&
