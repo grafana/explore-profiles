@@ -58,6 +58,10 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
 
       const { series } = newState.data;
 
+      if (!series?.length) {
+        return;
+      }
+
       body.setState(this.getConfig(item, series));
 
       // we publish the event only after setting the new config so that the subscribers can modify it

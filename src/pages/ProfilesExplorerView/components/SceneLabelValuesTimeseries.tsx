@@ -82,6 +82,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       const { series } = newState.data;
 
+      if (!series?.length) {
+        return;
+      }
+
       const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
 
       body.setState(config);

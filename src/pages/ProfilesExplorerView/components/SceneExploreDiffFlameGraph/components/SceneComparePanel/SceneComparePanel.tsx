@@ -157,6 +157,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   subscribeToEvents() {
     return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
+      // this triggers a timeseries request to the API
+      // TODO: caching?
       (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
         mode:
           event.payload.mode === TimerangeSelectionMode.FLAMEGRAPH

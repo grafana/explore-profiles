@@ -183,10 +183,9 @@ export class SceneTimeRangeWithAnnotations
       return;
     }
 
-    // note: this update causes a timeseries query to be made to the API
-    this.setState({
-      annotationTimeRange: timeRange,
-    });
+    // this triggers a timeseries request to the API
+    // TODO: caching?
+    this.setState({ annotationTimeRange: timeRange });
 
     this.updateTimeseriesAnnotation();
   }
