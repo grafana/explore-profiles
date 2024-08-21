@@ -21,6 +21,7 @@ import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
+import { omit } from 'lodash';
 import React from 'react';
 
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
@@ -51,6 +52,7 @@ import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+  $timeRange: SceneTimeRange;
   $variables: SceneVariableSet;
   gridControls: Array<SceneObject & { key?: string }>;
   explorationType?: ExplorationType;
@@ -128,7 +130,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         ],
       }),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
-      // these scenes sync with the URL so...
+      // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
       gridControls: [
         new SceneQuickFilter({ placeholder: '' }),
@@ -197,7 +199,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const profilesSub = this.subscribeToEvent(EventViewServiceProfiles, (event) => {
       this.setExplorationType({
         type: ExplorationType.PROFILE_TYPES,
-        resetVariables: true,
+        comesFromUserAction: true,
         item: event.payload.item,
       });
     });
@@ -205,7 +207,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const labelsSub = this.subscribeToEvent(EventViewServiceLabels, (event) => {
       this.setExplorationType({
         type: ExplorationType.LABELS,
-        resetVariables: true,
+        comesFromUserAction: true,
         item: event.payload.item,
       });
     });
@@ -213,7 +215,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const flameGraphSub = this.subscribeToEvent(EventViewServiceFlameGraph, (event) => {
       this.setExplorationType({
         type: ExplorationType.FLAME_GRAPH,
-        resetVariables: true,
+        comesFromUserAction: true,
         item: event.payload.item,
       });
     });
@@ -221,7 +223,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, () => {
       this.setExplorationType({
         type: ExplorationType.DIFF_FLAME_GRAPH,
-        resetVariables: true,
+        comesFromUserAction: true,
       });
     });
 
@@ -237,24 +239,59 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   setExplorationType({
     type,
-    resetVariables,
+    comesFromUserAction,
     item,
   }: {
     type: ExplorationType;
-    resetVariables?: boolean;
+    comesFromUserAction?: boolean;
     item?: GridItemData;
   }) {
-    if (resetVariables) {
+    if (comesFromUserAction) {
       this.resetVariables(type);
     }
 
     this.setState({
       explorationType: type,
-      body: this.buildBodyScene(type, item),
+      body: this.buildBodyScene(type, item, comesFromUserAction),
     });
   }
 
-  buildBodyScene(explorationType: ExplorationType, item?: GridItemData) {
+  resetVariables(nextExplorationType: string) {
+    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
+    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
+    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
+
+    // preserve existing filters only when switching to "Labels" or "Flame graph"
+    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(nextExplorationType as ExplorationType)) {
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
+        filters: FiltersVariable.DEFAULT_VALUE,
+      });
+    }
+
+    // clear baseline/comparison filters and time ranges when leaving "Diff flame graph"
+    if (
+      nextExplorationType !== ExplorationType.DIFF_FLAME_GRAPH &&
+      this.state.explorationType === ExplorationType.DIFF_FLAME_GRAPH
+    ) {
+      ['filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
+        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable).setState({
+          filters: FiltersVariable.DEFAULT_VALUE,
+        });
+      });
+
+      const { from, to, value } = this.state.$timeRange.state;
+
+      ['baseline-panel-timerange', 'comparison-panel-timerange'].forEach((timeRangeKey) => {
+        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRange).setState({ from, to, value });
+      });
+
+      ['baseline-annotation-timerange', 'comparison-annotation-timerange'].forEach((timeRangeKey) => {
+        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRangeWithAnnotations).nullifyAnnotationTimeRange();
+      });
+    }
+  }
+
+  buildBodyScene(explorationType: ExplorationType, item?: GridItemData, comesFromUserAction?: boolean) {
     let primary;
 
     switch (explorationType) {
@@ -271,7 +308,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.DIFF_FLAME_GRAPH:
-        primary = new SceneExploreDiffFlameGraph();
+        primary = new SceneExploreDiffFlameGraph({
+          initTimeRangeState: comesFromUserAction ? omit(this.state.$timeRange.state, 'key') : undefined,
+        });
         break;
 
       case ExplorationType.FAVORITES:
@@ -294,38 +333,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.setExplorationType({
       type: explorationType as ExplorationType,
-      resetVariables: true,
+      comesFromUserAction: true,
     });
   };
-
-  resetVariables(nextExplorationType: string) {
-    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
-
-    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(nextExplorationType as ExplorationType)) {
-      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
-        filters: FiltersVariable.DEFAULT_VALUE,
-      });
-    }
-
-    if (
-      nextExplorationType !== ExplorationType.DIFF_FLAME_GRAPH &&
-      this.state.explorationType === ExplorationType.DIFF_FLAME_GRAPH
-    ) {
-      ['filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
-        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable).setState({
-          filters: FiltersVariable.DEFAULT_VALUE,
-        });
-      });
-
-      ['baseline-annotation-timerange', 'comparison-annotation-timerange'].forEach((timeRangeKey) => {
-        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRangeWithAnnotations).nullifyAnnotationTimeRange();
-      });
-    }
-
-    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
-
-    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
-  }
 
   onClickShareLink = async () => {
     try {

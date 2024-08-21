@@ -1,6 +1,13 @@
 import { css } from '@emotion/css';
 import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
-import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import {
+  behaviors,
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneTimeRangeState,
+} from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
@@ -27,10 +34,16 @@ interface SceneExploreDiffFlameGraphState extends SceneObjectState {
 }
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
-  constructor() {
-    const baselinePanel = new SceneComparePanel({ target: CompareTarget.BASELINE });
+  constructor({ initTimeRangeState }: { initTimeRangeState?: SceneTimeRangeState }) {
+    const baselinePanel = new SceneComparePanel({
+      target: CompareTarget.BASELINE,
+      initTimeRangeState,
+    });
 
-    const comparisonPanel = new SceneComparePanel({ target: CompareTarget.COMPARISON });
+    const comparisonPanel = new SceneComparePanel({
+      target: CompareTarget.COMPARISON,
+      initTimeRangeState,
+    });
 
     super({
       key: 'explore-diff-flame-graph',

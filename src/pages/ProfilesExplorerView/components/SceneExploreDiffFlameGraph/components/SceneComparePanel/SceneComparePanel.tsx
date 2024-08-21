@@ -10,6 +10,7 @@ import {
   SceneTimePicker,
   SceneTimeRange,
   SceneTimeRangeLike,
+  SceneTimeRangeState,
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { InlineLabel, useStyles2 } from '@grafana/ui';
@@ -42,8 +43,8 @@ export interface SceneComparePanelState extends SceneObjectState {
   color: string;
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
+  $timeRange: SceneTimeRange;
   timeseriesPanel?: SceneLabelValuesTimeseries;
-  $timeRange?: SceneTimeRange;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
@@ -54,28 +55,34 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     },
   });
 
-  constructor({ target }: { target: SceneComparePanelState['target'] }) {
+  constructor({
+    target,
+    initTimeRangeState,
+  }: {
+    target: SceneComparePanelState['target'];
+    initTimeRangeState?: SceneTimeRangeState;
+  }) {
     super({
-      key: `diff-panel-${target}`,
+      key: `${target}-panel`,
       target,
       title: target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison',
       filterKey: target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison',
       color: target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString(),
-      $timeRange: undefined,
+      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange` }),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: undefined,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this));
+    this.addActivationHandler(this.onActivate.bind(this, initTimeRangeState));
   }
 
-  onActivate() {
-    const { title, target } = this.state;
+  onActivate(initTimeRangeState?: SceneTimeRangeState) {
+    const { title, target, $timeRange } = this.state;
 
-    const { from, to, value } = this.getAncestorTimeRange().state;
-
-    this.setState({ $timeRange: new SceneTimeRange({ from, to, value }) });
+    if (initTimeRangeState) {
+      $timeRange.setState(initTimeRangeState);
+    }
 
     const timeseriesPanel = this.buildTimeSeriesPanel();
 

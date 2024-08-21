@@ -8,8 +8,8 @@ import {
   SceneTimeRangeState,
   VizPanel,
 } from '@grafana/scenes';
+import { omit } from 'lodash';
 
-import { getDefaultTimeRange } from '../../../../../domain/getDefaultTimeRange';
 import { evaluateTimeRange } from '../domain/evaluateTimeRange';
 import { EventAnnotationTimeRangeChanged } from '../domain/events/EventAnnotationTimeRangeChanged';
 import { parseUrlParam } from '../domain/parseUrlParam';
@@ -22,9 +22,9 @@ export enum TimeRangeWithAnnotationsMode {
 
 interface SceneTimeRangeWithAnnotationsState extends SceneTimeRangeState {
   annotationTimeRange: TimeRange;
+  mode: TimeRangeWithAnnotationsMode;
   annotationColor: string;
   annotationTitle: string;
-  mode: TimeRangeWithAnnotationsMode;
 }
 
 const TIMERANGE_NIL = {
@@ -39,41 +39,33 @@ export class SceneTimeRangeWithAnnotations
 {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['diffFrom', 'diffTo'] });
 
-  constructor({
-    key,
-    annotationColor,
-    annotationTitle,
-    mode,
-  }: {
+  constructor(options: {
     key: string;
-    annotationColor: SceneTimeRangeWithAnnotationsState['annotationColor'];
-    annotationTitle: SceneTimeRangeWithAnnotationsState['annotationTitle'];
-    mode: SceneTimeRangeWithAnnotationsState['mode'];
+    mode: TimeRangeWithAnnotationsMode;
+    annotationColor: string;
+    annotationTitle: string;
   }) {
-    const defaultTimeRange = getDefaultTimeRange();
-
     super({
-      key,
-      // temporary values, they will be updated in onActivate
-      ...defaultTimeRange,
+      from: TIMERANGE_NIL.raw.from,
+      to: TIMERANGE_NIL.raw.to,
+      value: TIMERANGE_NIL,
       annotationTimeRange: TIMERANGE_NIL,
-      annotationColor,
-      annotationTitle,
-      mode,
+      ...options,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
   onActivate() {
-    const ancestorTimeRangeObject = this.getAncestorTimeRange();
+    const ancestorTimeRange = this.getAncestorTimeRange();
 
-    this.setState({
-      ...ancestorTimeRangeObject.state,
-      key: this.state.key,
-    });
+    this.setState(omit(ancestorTimeRange.state, 'key'));
 
-    this._subs.add(ancestorTimeRangeObject.subscribeToState((newState) => this.setState(newState)));
+    this._subs.add(
+      ancestorTimeRange.subscribeToState((newState) => {
+        this.setState(omit(newState, 'key'));
+      })
+    );
 
     this._subs.add(
       this.getTimeseries().state.$data?.subscribeToState((newState, prevState) => {
