@@ -11,7 +11,6 @@ import {
 import { omit } from 'lodash';
 
 import { evaluateTimeRange } from '../domain/evaluateTimeRange';
-import { EventAnnotationTimeRangeChanged } from '../domain/events/EventAnnotationTimeRangeChanged';
 import { parseUrlParam } from '../domain/parseUrlParam';
 import { RangeAnnotation } from '../domain/RangeAnnotation';
 
@@ -190,8 +189,6 @@ export class SceneTimeRangeWithAnnotations
     });
 
     this.updateTimeseriesAnnotation();
-
-    this.publishEvent(new EventAnnotationTimeRangeChanged({ timeRange }), true);
   }
 
   onTimeZoneChange(timeZone: string): void {

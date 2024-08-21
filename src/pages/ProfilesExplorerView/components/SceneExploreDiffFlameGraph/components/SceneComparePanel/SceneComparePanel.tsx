@@ -10,11 +10,11 @@ import {
   SceneTimePicker,
   SceneTimeRange,
   SceneTimeRangeLike,
-  SceneTimeRangeState,
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { InlineLabel, useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { omit } from 'lodash';
 import React from 'react';
 
 import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../../pages/ComparisonView/ui/colors';
@@ -38,65 +38,58 @@ import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompare
 
 export interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
-  title: string;
   filterKey: 'filtersBaseline' | 'filtersComparison';
+  title: string;
   color: string;
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
   $timeRange: SceneTimeRange;
-  timeseriesPanel?: SceneLabelValuesTimeseries;
+  timeseriesPanel: SceneLabelValuesTimeseries;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
     onVariableUpdateCompleted: () => {
-      this.state.timeseriesPanel?.updateTitle(this.buildTimeseriesTitle());
+      this.state.timeseriesPanel.updateTitle(this.buildTimeseriesTitle());
     },
   });
 
   constructor({
     target,
-    initTimeRangeState,
+    useAncestorTimeRange,
   }: {
     target: SceneComparePanelState['target'];
-    initTimeRangeState?: SceneTimeRangeState;
+    useAncestorTimeRange: boolean;
   }) {
+    const filterKey = target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison';
+    const title = target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
+    const color =
+      target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString();
+
     super({
       key: `${target}-panel`,
       target,
-      title: target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison',
-      filterKey: target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison',
-      color: target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString(),
+      filterKey,
+      title,
+      color,
       $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange` }),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
-      timeseriesPanel: undefined,
+      timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, initTimeRangeState));
+    this.addActivationHandler(this.onActivate.bind(this, useAncestorTimeRange));
   }
 
-  onActivate(initTimeRangeState?: SceneTimeRangeState) {
-    const { title, target, $timeRange } = this.state;
+  onActivate(useAncestorTimeRange: boolean) {
+    const { $timeRange, timeseriesPanel } = this.state;
 
-    if (initTimeRangeState) {
-      $timeRange.setState(initTimeRangeState);
+    if (useAncestorTimeRange) {
+      $timeRange.setState(omit(this.getAncestorTimeRange().state, 'key'));
     }
 
-    const timeseriesPanel = this.buildTimeSeriesPanel();
-
-    timeseriesPanel.state.body.setState({
-      $timeRange: new SceneTimeRangeWithAnnotations({
-        key: `${target}-annotation-timerange`,
-        mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
-        annotationColor:
-          target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),
-        annotationTitle: `${title} time range`,
-      }),
-    });
-
-    this.setState({ timeseriesPanel: timeseriesPanel });
+    timeseriesPanel.updateTitle(this.buildTimeseriesTitle());
 
     const eventSub = this.subscribeToEvents();
 
@@ -105,33 +98,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     };
   }
 
-  protected getAncestorTimeRange(): SceneTimeRangeLike {
-    if (!this.parent || !this.parent.parent) {
-      throw new Error(typeof this + ' must be used within $timeRange scope');
-    }
-
-    return sceneGraph.getTimeRange(this.parent.parent);
-  }
-
-  subscribeToEvents() {
-    return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
-      (this.state.timeseriesPanel?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
-        mode:
-          event.payload.mode === TimerangeSelectionMode.FLAMEGRAPH
-            ? TimeRangeWithAnnotationsMode.ANNOTATIONS
-            : TimeRangeWithAnnotationsMode.DEFAULT,
-      });
-    });
-  }
-
-  buildTimeSeriesPanel() {
-    const { target, filterKey, title, color } = this.state;
-
-    return new SceneLabelValuesTimeseries({
+  static buildTimeSeriesPanel({ target, filterKey, title, color }: any) {
+    const timeseriesPanel = new SceneLabelValuesTimeseries({
       item: {
         index: 0,
         value: target,
-        label: this.buildTimeseriesTitle(),
+        label: '',
         queryRunnerParams: {},
       },
       data: new SceneDataTransformer({
@@ -161,6 +133,37 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         }),
       headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
     });
+
+    timeseriesPanel.state.body.setState({
+      $timeRange: new SceneTimeRangeWithAnnotations({
+        key: `${target}-annotation-timerange`,
+        mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
+        annotationColor:
+          target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),
+        annotationTitle: `${title} time range`,
+      }),
+    });
+
+    return timeseriesPanel;
+  }
+
+  protected getAncestorTimeRange(): SceneTimeRangeLike {
+    if (!this.parent || !this.parent.parent) {
+      throw new Error(typeof this + ' must be used within $timeRange scope');
+    }
+
+    return sceneGraph.getTimeRange(this.parent.parent);
+  }
+
+  subscribeToEvents() {
+    return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
+      (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
+        mode:
+          event.payload.mode === TimerangeSelectionMode.FLAMEGRAPH
+            ? TimeRangeWithAnnotationsMode.ANNOTATIONS
+            : TimeRangeWithAnnotationsMode.DEFAULT,
+      });
+    });
   }
 
   buildTimeseriesTitle() {
@@ -169,8 +172,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return description || getProfileMetricLabel(profileMetricId);
   }
 
-  getDiffTimeRange() {
-    return this.state.timeseriesPanel?.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
+  useDiffTimeRange() {
+    return (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).useState();
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {

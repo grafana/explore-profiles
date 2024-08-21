@@ -21,7 +21,6 @@ import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
-import { omit } from 'lodash';
 import React from 'react';
 
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
@@ -308,9 +307,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.DIFF_FLAME_GRAPH:
-        primary = new SceneExploreDiffFlameGraph({
-          initTimeRangeState: comesFromUserAction ? omit(this.state.$timeRange.state, 'key') : undefined,
-        });
+        primary = new SceneExploreDiffFlameGraph({ useAncestorTimeRange: Boolean(comesFromUserAction) });
         break;
 
       case ExplorationType.FAVORITES:

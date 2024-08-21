@@ -1,13 +1,6 @@
 import { css } from '@emotion/css';
-import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
-import {
-  behaviors,
-  SceneComponentProps,
-  sceneGraph,
-  SceneObjectBase,
-  SceneObjectState,
-  SceneTimeRangeState,
-} from '@grafana/scenes';
+import { DashboardCursorSync, GrafanaTheme2 } from '@grafana/data';
+import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
@@ -23,7 +16,6 @@ import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
-import { EventAnnotationTimeRangeChanged } from './components/SceneComparePanel/domain/events/EventAnnotationTimeRangeChanged';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 import { syncYAxis } from './domain/behaviours/syncYAxis';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
@@ -34,15 +26,15 @@ interface SceneExploreDiffFlameGraphState extends SceneObjectState {
 }
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
-  constructor({ initTimeRangeState }: { initTimeRangeState?: SceneTimeRangeState }) {
+  constructor({ useAncestorTimeRange }: { useAncestorTimeRange: boolean }) {
     const baselinePanel = new SceneComparePanel({
       target: CompareTarget.BASELINE,
-      initTimeRangeState,
+      useAncestorTimeRange,
     });
 
     const comparisonPanel = new SceneComparePanel({
       target: CompareTarget.COMPARISON,
-      initTimeRangeState,
+      useAncestorTimeRange,
     });
 
     super({
@@ -67,17 +59,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
-    // we use the EventAnnotationTimeRangeChanged event and forcing a re-render instead of just calling React hooks
-    // in useSceneExploreDiffFlameGraph() below (see getDiffTimeRange())
-    // because the timeseries are not directly built (see SceneComparePanel) and the values of the annotation time ranges
-    // are not determined directly neither (see SceneTimeRangeWithAnnotations) so we would have conditional hooks calls, which is not allowed
-    // TODO: we really need a native Scenes diff flame graph panel
-    this._subs.add(
-      this.subscribeToEvent(EventAnnotationTimeRangeChanged, () => {
-        this.forceRender();
-      })
-    );
-
     return () => {
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
       profileMetricVariable.update(true);
@@ -98,10 +79,10 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   useSceneExploreDiffFlameGraph = () => {
     const { baselinePanel, comparisonPanel } = this.useState();
 
-    const baselineTimeRange = baselinePanel.getDiffTimeRange()?.state.annotationTimeRange as TimeRange;
+    const { annotationTimeRange: baselineTimeRange } = baselinePanel.useDiffTimeRange();
     const baselineQuery = useBuildPyroscopeQuery(this, 'filtersBaseline');
 
-    const comparisonTimeRange = comparisonPanel.getDiffTimeRange()?.state.annotationTimeRange as TimeRange;
+    const { annotationTimeRange: comparisonTimeRange } = comparisonPanel.useDiffTimeRange();
     const comparisonQuery = useBuildPyroscopeQuery(this, 'filtersComparison');
 
     const { settings, error: fetchSettingsError } = useFetchPluginSettings();
@@ -122,10 +103,10 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     const shouldDisplayInfo = !Boolean(
       baselineQuery &&
         comparisonQuery &&
-        baselineTimeRange?.raw.from.valueOf() &&
-        baselineTimeRange?.raw.to.valueOf() &&
-        comparisonTimeRange?.raw.from.valueOf() &&
-        comparisonTimeRange?.raw.to.valueOf()
+        baselineTimeRange.raw.from.valueOf() &&
+        baselineTimeRange.raw.to.valueOf() &&
+        comparisonTimeRange.raw.from.valueOf() &&
+        comparisonTimeRange.raw.to.valueOf()
     );
 
     return {
@@ -145,8 +126,9 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     };
   };
 
+  /* eslint-disable react-hooks/rules-of-hooks */
   static Component({ model }: SceneComponentProps<SceneExploreDiffFlameGraph>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles);
 
     const { data } = model.useSceneExploreDiffFlameGraph();
     const {
@@ -162,9 +144,8 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
       settings,
     } = data;
 
-    const sidePanel = useToggleSidePanel(); // eslint-disable-line react-hooks/rules-of-hooks
+    const sidePanel = useToggleSidePanel();
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       if (isLoading) {
         sidePanel.close();
