@@ -1,7 +1,7 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 
-import { DataSourceProxyClient } from '../../../infrastructure/series/http/DataSourceProxyClient';
+import { DataSourceProxyClient } from '../../../../../infrastructure/series/http/DataSourceProxyClient';
 
 type DiffProfileResponse = FlamebearerProfile;
 

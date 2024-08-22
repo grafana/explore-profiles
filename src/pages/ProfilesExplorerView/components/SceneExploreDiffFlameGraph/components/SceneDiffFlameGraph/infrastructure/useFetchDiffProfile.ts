@@ -4,7 +4,7 @@ import { queryClient } from '@shared/infrastructure/react-query/queryClient';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-import { DataSourceProxyClientBuilder } from '../../../infrastructure/series/http/DataSourceProxyClientBuilder';
+import { DataSourceProxyClientBuilder } from '../../../../../infrastructure/series/http/DataSourceProxyClientBuilder';
 import { DiffProfileApiClient } from './DiffProfileApiClient';
 
 type FetchParams = {

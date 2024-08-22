@@ -17,7 +17,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { omit } from 'lodash';
 import React from 'react';
 
-import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../../pages/ComparisonView/ui/colors';
+import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../ComparisonView/ui/colors';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
