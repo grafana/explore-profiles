@@ -70,11 +70,11 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
     const isSelected = actionChecks[0] || actionChecks[1];
 
     return (
-      <div className={styles.container}>
-        <div className={cx(styles.statsPanel, isSelected && 'selected')}>
+      <div className={cx(styles.container, isSelected && 'selected')}>
+        <div className={styles.statsPanel}>
           <statsPanel.Component model={statsPanel} />
         </div>
-        <div className={cx(styles.timeseriesPanel, isSelected && 'selected')}>
+        <div className={styles.timeseriesPanel}>
           <timeseriesPanel.Component model={timeseriesPanel} />
         </div>
       </div>
