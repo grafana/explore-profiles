@@ -294,7 +294,11 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   selectForCompare(compareTarget: CompareTarget, item: GridItemData) {
     const compare = new Map(this.state.compare);
 
-    compare.set(compareTarget, item);
+    if (compare.get(compareTarget)?.value === item.value) {
+      compare.delete(compareTarget);
+    } else {
+      compare.set(compareTarget, item);
+    }
 
     this.setState({ compare });
 
