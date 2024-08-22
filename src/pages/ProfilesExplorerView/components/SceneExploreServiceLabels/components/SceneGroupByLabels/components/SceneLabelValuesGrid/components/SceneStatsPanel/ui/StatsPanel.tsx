@@ -1,6 +1,6 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { getValueFormat, GrafanaTheme2 } from '@grafana/data';
-import { RadioButtonGroup, Spinner, useStyles2 } from '@grafana/ui';
+import { Checkbox, Spinner, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
 import { GridItemData } from '../../../../../../../../../components/SceneByVariableRepeaterGrid/types/GridItemData';
@@ -11,11 +11,11 @@ import { ItemStats } from '../SceneStatsPanel';
 export type StatsPanelProps = {
   item: GridItemData;
   itemStats?: ItemStats;
-  compareTargetValue?: CompareTarget;
+  actionChecks: boolean[];
   onChangeCompareTarget: (compareTarget: CompareTarget) => void;
 };
 
-export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompareTarget }: StatsPanelProps) {
+export function StatsPanel({ item, itemStats, actionChecks, onChangeCompareTarget }: StatsPanelProps) {
   const styles = useStyles2(getStyles);
 
   const { index, value } = item;
@@ -38,17 +38,15 @@ export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompar
       {
         label: 'Baseline',
         value: CompareTarget.BASELINE,
-        description:
-          compareTargetValue !== CompareTarget.BASELINE ? `Click to select "${value}" as baseline for comparison` : '',
+        description: !actionChecks[0] ? `Click to select "${value}" as baseline for comparison` : '',
       },
       {
         label: 'Comparison',
         value: CompareTarget.COMPARISON,
-        description:
-          compareTargetValue !== CompareTarget.COMPARISON ? `Click to select "${value}" as target for comparison` : '',
+        description: !actionChecks[1] ? `Click to select "${value}" as target for comparison` : '',
       },
     ],
-    [compareTargetValue, value]
+    [actionChecks, value]
   );
 
   return (
@@ -57,14 +55,17 @@ export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompar
         {total}
       </h1>
 
-      <div>
-        <RadioButtonGroup
-          className={styles.radioButtonsGroup}
-          size="sm"
-          options={options}
-          onChange={onChangeCompareTarget}
-          value={compareTargetValue}
-        />
+      <div className={styles.controls}>
+        {options.map((option, i) => (
+          <Checkbox
+            key={option.value}
+            className={cx(styles.checkbox, actionChecks[i] && 'checked')}
+            checked={actionChecks[i]}
+            label={option.label}
+            title={option.description}
+            onChange={() => onChangeCompareTarget(option.value)}
+          />
+        ))}
       </div>
     </div>
   );
@@ -88,21 +89,31 @@ const getStyles = (theme: GrafanaTheme2) => ({
     text-align: center;
     margin-top: ${theme.spacing(5)};
   `,
-  radioButtonsGroup: css`
-    width: 100%;
+  controls: css`
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 11px;
+  `,
 
-    & > * {
-      flex-grow: 1 !important;
+  checkbox: css`
+    column-gap: 4px;
+
+    &:nth-child(2) {
+      & :nth-child(1) {
+        grid-column-start: 2;
+      }
+      & :nth-child(2) {
+        grid-column-start: 1;
+      }
     }
 
-    & :nth-child(1):checked + label {
-      color: #fff;
-      background-color: ${theme.colors.primary.main}; // TODO
+    span {
+      color: ${theme.colors.text.secondary};
     }
 
-    & :nth-child(2):checked + label {
-      color: #fff;
-      background-color: ${theme.colors.primary.main}; // TODO
+    &.checked span {
+      color: ${theme.colors.text.primary};
     }
   `,
 });

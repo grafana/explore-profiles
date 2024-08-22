@@ -66,14 +66,15 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   static Component({ model }: SceneComponentProps<SceneLabelValuePanel>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
     const { statsPanel, timeseriesPanel } = model.useState();
-    const { compareTargetValue } = statsPanel.useState();
+    const { actionChecks } = statsPanel.useState();
+    const isSelected = actionChecks[0] || actionChecks[1];
 
     return (
       <div className={styles.container}>
-        <div className={cx(styles.statsPanel, compareTargetValue && 'selected')}>
+        <div className={cx(styles.statsPanel, isSelected && 'selected')}>
           <statsPanel.Component model={statsPanel} />
         </div>
-        <div className={cx(styles.timeseriesPanel, compareTargetValue && 'selected')}>
+        <div className={cx(styles.timeseriesPanel, isSelected && 'selected')}>
           <timeseriesPanel.Component model={timeseriesPanel} />
         </div>
       </div>

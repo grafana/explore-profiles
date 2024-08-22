@@ -294,12 +294,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   selectForCompare(compareTarget: CompareTarget, item: GridItemData) {
     const compare = new Map(this.state.compare);
 
-    const otherTarget = compareTarget === CompareTarget.BASELINE ? CompareTarget.COMPARISON : CompareTarget.BASELINE;
-
-    if (compare.get(otherTarget)?.value === item.value) {
-      compare.delete(otherTarget);
-    }
-
     compare.set(compareTarget, item);
 
     this.setState({ compare });
@@ -317,7 +311,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     // TODO: optimize if needed
     // we can remove the loop if we clear the current selection in the UI before updating the compare map (see selectForCompare() and onClickClearCompareButton())
     for (const panel of statsPanels) {
-      panel.setCompareTargetValue(baselineItem, comparisonItem);
+      panel.updateCompareActions(baselineItem, comparisonItem);
     }
   }
 
