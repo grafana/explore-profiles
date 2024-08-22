@@ -89,6 +89,12 @@ const getStyles = (theme: GrafanaTheme2) => ({
     min-height: ${GRID_AUTO_ROWS};
     flex-flow: row;
 
+    box-sizing: border-box;
+    border: 1px solid transparent;
+    &.selected {
+      border: 1px solid ${theme.colors.primary.main};
+    }
+
     & > div {
       display: flex;
       position: relative;
@@ -99,25 +105,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   statsPanel: css`
     width: ${SceneStatsPanel.WIDTH_IN_PIXELS}px;
-
-    &.selected > div {
-      border-top: 1px solid ${theme.colors.primary.main};
-      border-bottom: 1px solid ${theme.colors.primary.main};
-      border-left: 1px solid ${theme.colors.primary.main};
-    }
   `,
   timeseriesPanel: css`
     flex-grow: 1;
 
-    & [data-viz-panel-key] > div {
+    & [data-viz-panel-key] > * {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
-    }
-
-    &.selected [data-viz-panel-key] > div {
-      border-top: 1px solid ${theme.colors.primary.main};
-      border-bottom: 1px solid ${theme.colors.primary.main};
-      border-right: 1px solid ${theme.colors.primary.main};
     }
   `,
 });
