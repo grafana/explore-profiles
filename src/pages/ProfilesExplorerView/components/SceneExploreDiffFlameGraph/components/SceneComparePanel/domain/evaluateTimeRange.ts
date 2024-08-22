@@ -1,6 +1,8 @@
 import { dateMath, DateTime, TimeRange } from '@grafana/data';
 import { TimeZone } from '@grafana/schema';
 
+/* Copied from https://github.com/grafana/scenes/blob/main/packages/scenes/src/utils/evaluateTimeRange.ts */
+
 export function evaluateTimeRange(
   from: string | DateTime,
   to: string | DateTime,

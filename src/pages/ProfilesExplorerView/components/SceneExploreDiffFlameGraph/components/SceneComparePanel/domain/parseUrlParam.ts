@@ -3,6 +3,8 @@ import { SceneObjectUrlValue } from '@grafana/scenes';
 
 const INTERVAL_STRING_REGEX = /^\d+[yYmMsSwWhHdD]$/;
 
+/* Copied from https://github.com/grafana/scenes/blob/main/packages/scenes/src/utils/parseUrlParam.ts */
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function parseUrlParam(value: SceneObjectUrlValue): string | null {
   if (typeof value !== 'string') {
