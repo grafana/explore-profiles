@@ -50,7 +50,7 @@ export interface SceneComparePanelState extends SceneObjectState {
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
-    onVariableUpdateCompleted: () => {
+    onReferencedVariableValueChanged: () => {
       this.state.timeseriesPanel.updateTitle(this.buildTimeseriesTitle());
     },
   });

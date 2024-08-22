@@ -6,6 +6,7 @@ import {
   SceneObjectUrlValues,
   SceneTimeRangeLike,
   SceneTimeRangeState,
+  VariableDependencyConfig,
   VizPanel,
 } from '@grafana/scenes';
 import { omit } from 'lodash';
@@ -36,6 +37,14 @@ export class SceneTimeRangeWithAnnotations
   extends SceneObjectBase<SceneTimeRangeWithAnnotationsState>
   implements SceneTimeRangeLike
 {
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['dataSource', 'serviceName'],
+    onReferencedVariableValueChanged: () => {
+      this.nullifyAnnotationTimeRange();
+      this.updateTimeseriesAnnotation();
+    },
+  });
+
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['diffFrom', 'diffTo'] });
 
   constructor(options: {
@@ -108,7 +117,7 @@ export class SceneTimeRangeWithAnnotations
     }
   }
 
-  protected updateTimeseriesAnnotation() {
+  updateTimeseriesAnnotation() {
     const { annotationTimeRange, annotationColor, annotationTitle } = this.state;
 
     const { $data } = this.getTimeseries().state;

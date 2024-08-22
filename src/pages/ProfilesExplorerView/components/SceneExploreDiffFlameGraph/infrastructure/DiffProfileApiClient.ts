@@ -1,6 +1,7 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
-import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
+
+import { DataSourceProxyClient } from '../../../infrastructure/series/http/DataSourceProxyClient';
 
 type DiffProfileResponse = FlamebearerProfile;
 
@@ -12,7 +13,11 @@ type GetParams = {
   maxNodes: number | null;
 };
 
-class DiffProfileApiClient extends ApiClient {
+export class DiffProfileApiClient extends DataSourceProxyClient {
+  constructor(options: { dataSourceUid: string }) {
+    super(options);
+  }
+
   async get(params: GetParams): Promise<DiffProfileResponse> {
     // /pyroscope/render-diff requests: timerange can be YYYYDDMM, Unix time, Unix time in ms (unix * 1000)
     const leftFrom = Number(dateTimeParse(params.leftTimeRange.raw.from).unix()) * 1000;
@@ -40,5 +45,3 @@ class DiffProfileApiClient extends ApiClient {
     return json;
   }
 }
-
-export const diffProfileApiClient = new DiffProfileApiClient();

@@ -14,6 +14,7 @@ import React, { useEffect } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
+import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
@@ -87,11 +88,18 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
 
     const { settings, error: fetchSettingsError } = useFetchPluginSettings();
 
+    const dataSourceUid = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
+      .value as string;
+    const serviceName = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable).useState()
+      .value as string;
+
     const {
       isFetching,
       error: fetchProfileError,
       profile,
     } = useFetchDiffProfile({
+      dataSourceUid,
+      serviceName,
       baselineTimeRange,
       baselineQuery,
       comparisonTimeRange,
