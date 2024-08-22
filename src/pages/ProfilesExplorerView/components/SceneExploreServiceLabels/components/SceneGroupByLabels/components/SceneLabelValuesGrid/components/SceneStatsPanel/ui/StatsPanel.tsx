@@ -94,7 +94,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     justify-content: space-between;
     font-size: 11px;
   `,
-
   checkbox: css`
     column-gap: 3px;
 
@@ -109,6 +108,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
     span {
       color: ${theme.colors.text.secondary};
+    }
+    span:hover {
+      color: ${theme.colors.text.primary};
     }
 
     &.checked span {

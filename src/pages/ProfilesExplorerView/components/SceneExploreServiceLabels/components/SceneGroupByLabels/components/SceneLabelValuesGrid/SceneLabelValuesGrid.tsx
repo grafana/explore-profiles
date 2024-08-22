@@ -418,6 +418,12 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
   static Component({ model }: SceneComponentProps<SceneLabelValuesGrid>) {
     const { body, isLoading } = model.useState();
 
-    return isLoading ? <Spinner /> : <body.Component model={body} />;
+    return isLoading ? (
+      <Spinner />
+    ) : (
+      <div style={{ marginBottom: '2px' }}>
+        <body.Component model={body} />
+      </div>
+    );
   }
 }

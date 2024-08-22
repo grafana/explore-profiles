@@ -19,7 +19,7 @@ interface SceneStatsPanelState extends SceneObjectState {
 }
 
 export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
-  static WIDTH_IN_PIXELS = 180;
+  static WIDTH_IN_PIXELS = 186;
 
   constructor({ item }: { item: GridItemData }) {
     super({
