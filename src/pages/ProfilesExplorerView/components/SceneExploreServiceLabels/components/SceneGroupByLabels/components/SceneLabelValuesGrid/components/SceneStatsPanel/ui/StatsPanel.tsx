@@ -92,12 +92,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
   controls: css`
     display: flex;
     justify-content: space-between;
-    gap: 4px;
     font-size: 11px;
   `,
 
   checkbox: css`
-    column-gap: 4px;
+    column-gap: 3px;
 
     &:nth-child(2) {
       & :nth-child(1) {
