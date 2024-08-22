@@ -1,4 +1,3 @@
-import { DataFrame } from '@grafana/data';
 import { sceneGraph, SceneObject, SceneObjectState, VizPanel } from '@grafana/scenes';
 import { cloneDeep, merge } from 'lodash';
 
@@ -17,7 +16,7 @@ export function syncYAxis() {
         return;
       }
 
-      maxima.set(series[0].refId as string, findMaxValue(series));
+      maxima.set(series[0].refId as string, Math.max(...series[0].fields[1].values));
 
       updateTimeseriesAxis(vizPanel, Math.max(...maxima.values()));
     });
@@ -26,18 +25,6 @@ export function syncYAxis() {
       eventSub.unsubscribe();
     };
   };
-}
-
-function findMaxValue(series: DataFrame[]) {
-  let max = -1;
-
-  for (const value of series[0].fields[1].values) {
-    if (value > max) {
-      max = value;
-    }
-  }
-
-  return max;
 }
 
 function updateTimeseriesAxis(vizPanel: SceneObject, max: number) {
