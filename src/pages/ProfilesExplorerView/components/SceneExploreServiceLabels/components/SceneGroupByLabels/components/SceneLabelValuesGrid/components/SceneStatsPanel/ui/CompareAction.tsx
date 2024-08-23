@@ -22,6 +22,7 @@ export function CompareAction({ option, checked, onChange }: CompareActionProps)
   const checkboxRef = useRef<HTMLInputElement>(null);
   const label = (checkboxRef.current as HTMLInputElement)?.closest('label');
 
+  // we write custom code to provide the tooltips because wrapping our checkbox into the <Tooltip> component does not work
   useEffect(() => {
     if (!label || checked) {
       setShowTooltip(false);
@@ -48,7 +49,7 @@ export function CompareAction({ option, checked, onChange }: CompareActionProps)
   return (
     <>
       <Tooltip content={option.description} show={!checked && showTooltip} placement="top">
-        <span className={styles.tooltipContent} />
+        <span className={styles.tooltipAnchor} />
       </Tooltip>
       <Checkbox
         ref={checkboxRef}
@@ -62,7 +63,7 @@ export function CompareAction({ option, checked, onChange }: CompareActionProps)
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  tooltipContent: css`
+  tooltipAnchor: css`
     position: relative;
     left: 42px;
   `,
