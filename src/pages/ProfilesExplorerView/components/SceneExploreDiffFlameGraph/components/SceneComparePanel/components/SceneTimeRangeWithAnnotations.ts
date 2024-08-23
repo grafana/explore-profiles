@@ -124,10 +124,6 @@ export class SceneTimeRangeWithAnnotations
   updateTimeseriesAnnotation() {
     const { annotationTimeRange, annotationColor, annotationTitle } = this.state;
 
-    if (!annotationTimeRange.from.unix() || !annotationTimeRange.to.unix()) {
-      return;
-    }
-
     const { $data } = this.getTimeseries().state;
 
     const data = $data?.state.data;

@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { DashboardCursorSync, GrafanaTheme2 } from '@grafana/data';
+import { locationService } from '@grafana/runtime';
 import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
@@ -43,6 +44,11 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   }
 
   onActivate() {
+    // hack to force UrlSyncManager to handle a new location
+    // this will sync the state from the URL by calling updateFromUrl() on all the time ranges (`SceneTimeRange` and our custom `SceneTimeRangeWithAnnotations`) that are defined on `SceneComparePanel`
+    // if not, landing on this view will result in empty URL search parameters (to/from and diffTo/diffFrom) which will make shareable links useless
+    locationService.partial({}, true); // replace to avoid creating history items
+
     const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
 
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
