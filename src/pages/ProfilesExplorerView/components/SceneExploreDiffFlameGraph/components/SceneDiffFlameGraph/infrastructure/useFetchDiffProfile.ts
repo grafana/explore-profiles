@@ -33,10 +33,10 @@ export function useFetchDiffProfile({
     // for UX: keep previous data while fetching -> profile does not re-render with empty panels when refreshing
     placeholderData: (previousData) => previousData,
     enabled,
-    // we use "raw" to cache relative time ranges between renders, so that only refetch() will trigger a new query
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       'diff-profile',
+      dataSourceUid,
       baselineQuery,
       baselineTimeRange.from.unix(),
       baselineTimeRange.to.unix(),

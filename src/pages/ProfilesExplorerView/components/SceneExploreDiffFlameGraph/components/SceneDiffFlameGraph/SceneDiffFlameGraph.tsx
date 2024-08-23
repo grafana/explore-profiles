@@ -2,8 +2,6 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
-import { AiPanel } from '@shared/components/AiPanel/AiPanel';
-import { AIButton } from '@shared/components/AiPanel/components/AIButton';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
@@ -16,20 +14,35 @@ import { Panel } from '@shared/ui/Panel/Panel';
 import React, { useEffect, useMemo } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
-import { ProfileMetricVariable } from '../../../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from '../../../../domain/variables/ServiceNameVariable';
+import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
+import { AIButton } from '../../../SceneAiPanel/components/AiButton/AIButton';
+import { SceneAiPanel } from '../../../SceneAiPanel/SceneAiPanel';
 import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 
-interface SceneDiffFlameGraphState extends SceneObjectState {}
+interface SceneDiffFlameGraphState extends SceneObjectState {
+  aiPanel: SceneAiPanel;
+}
 
 export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphState> {
   constructor() {
-    super({ key: 'diff-flame-graph' });
+    super({
+      key: 'diff-flame-graph',
+      aiPanel: new SceneAiPanel({ isDiff: true }),
+    });
+  }
+
+  buildTitle() {
+    const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
+
+    return `🔥 Diff flame graph for ${serviceName} (${profileMetricType})`;
   }
 
   useSceneDiffFlameGraph = (): DomainHookReturnValue => {
+    const { aiPanel } = this.useState();
     const { baselineTimeRange, comparisonTimeRange } = (this.parent as SceneExploreDiffFlameGraph).useDiffTimeRanges();
 
     const baselineQuery = useBuildPyroscopeQuery(this, 'filtersBaseline');
@@ -39,11 +52,6 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
 
     const dataSourceUid = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
       .value as string;
-    const serviceName = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable).useState()
-      .value as string;
-    const profileMetricId = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable).useState()
-      .value as string;
-    const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
     const isDiffQueryEnabled = Boolean(
       baselineQuery &&
@@ -79,7 +87,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
 
     return {
       data: {
-        title: `${serviceName} diff flame graph (${profileMetricType})`,
+        title: this.buildTitle(),
         isLoading: isFetching,
         fetchProfileError,
         noProfileDataAvailable,
@@ -88,6 +96,13 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
         profile: profile as FlamebearerProfile,
         settings,
         fetchSettingsError,
+        ai: {
+          panel: aiPanel,
+          params: [
+            { query: baselineQuery, timeRange: baselineTimeRange },
+            { query: comparisonQuery, timeRange: comparisonTimeRange },
+          ],
+        },
       },
       actions: {},
     };
@@ -97,26 +112,17 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const styles = useStyles2(getStyles);
 
     const { data } = model.useSceneDiffFlameGraph();
-    const {
-      isLoading,
-      fetchProfileError,
-      shouldDisplayInfo,
-      shouldDisplayFlamegraph,
-      noProfileDataAvailable,
-      profile,
-      fetchSettingsError,
-      settings,
-    } = data;
-
     const sidePanel = useToggleSidePanel();
 
+    const isAiButtonDisabled = data.isLoading || data.shouldDisplayInfo || data.noProfileDataAvailable;
+
     useEffect(() => {
-      if (data.isLoading) {
+      if (isAiButtonDisabled) {
         sidePanel.close();
       }
-    }, [data.isLoading, sidePanel]);
+    }, [isAiButtonDisabled, sidePanel]);
 
-    if (fetchSettingsError) {
+    if (data.fetchSettingsError) {
       displayWarning([
         'Error while retrieving the plugin settings!',
         'Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.',
@@ -141,15 +147,15 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
           isLoading={data.isLoading}
           headerActions={
             <AIButton
+              disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
               onClick={() => sidePanel.open('ai')}
-              disabled={isLoading || noProfileDataAvailable || sidePanel.isOpen('ai')}
               interactionName="g_pyroscope_app_explain_flamegraph_clicked"
             >
               Explain Flame Graph
             </AIButton>
           }
         >
-          {shouldDisplayInfo && (
+          {data.shouldDisplayInfo && (
             <InlineBanner
               severity="info"
               title=""
@@ -157,11 +163,15 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
             />
           )}
 
-          {fetchProfileError && (
-            <InlineBanner severity="error" title="Error while loading profile data!" errors={[fetchProfileError]} />
+          {data.fetchProfileError && (
+            <InlineBanner
+              severity="error"
+              title="Error while loading profile data!"
+              errors={[data.fetchProfileError]}
+            />
           )}
 
-          {noProfileDataAvailable && (
+          {data.noProfileDataAvailable && (
             <InlineBanner
               severity="warning"
               title="No profile data available"
@@ -169,17 +179,19 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
             />
           )}
 
-          {shouldDisplayFlamegraph && (
+          {data.shouldDisplayFlamegraph && (
             <FlameGraph
               diff={true}
-              profile={profile}
-              enableFlameGraphDotComExport={settings?.enableFlameGraphDotComExport}
-              collapsedFlamegraphs={settings?.collapsedFlamegraphs}
+              profile={data.profile}
+              enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}
+              collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
             />
           )}
         </Panel>
 
-        {sidePanel.isOpen('ai') && <AiPanel className={styles.sidePanel} onClose={sidePanel.close} />}
+        {sidePanel.isOpen('ai') && (
+          <data.ai.panel.Component model={data.ai.panel} params={data.ai.params} onClose={sidePanel.close} />
+        )}
       </div>
     );
   };
