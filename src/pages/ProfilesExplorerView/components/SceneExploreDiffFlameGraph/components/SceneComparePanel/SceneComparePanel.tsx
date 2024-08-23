@@ -236,7 +236,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   timeseries: css`
     height: 200px;
 
-    & [data-viz-panel-key] > div {
+    & [data-viz-panel-key] > * {
       border: 0 none;
     }
   `,
