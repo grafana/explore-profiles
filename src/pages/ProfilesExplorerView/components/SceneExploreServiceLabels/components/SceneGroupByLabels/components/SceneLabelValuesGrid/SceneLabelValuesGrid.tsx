@@ -339,7 +339,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     });
 
     const sub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
-      if (!this.state.hideNoData || event.payload.series.length) {
+      if (!this.state.hideNoData || event.payload.series?.length) {
         return;
       }
 

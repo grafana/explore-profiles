@@ -316,7 +316,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
 
   setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
     const sub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
-      if (event.payload.series.length > 0) {
+      if (event.payload.series?.length) {
         return;
       }
 

@@ -1,7 +1,7 @@
 import { BusEventWithPayload, DataFrame } from '@grafana/data';
 
 export interface EventTimeseriesDataReceivedPayload {
-  series: DataFrame[];
+  series?: DataFrame[];
 }
 
 export class EventTimeseriesDataReceived extends BusEventWithPayload<EventTimeseriesDataReceivedPayload> {

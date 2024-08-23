@@ -41,7 +41,7 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
     const { statsPanel, timeseriesPanel } = this.state;
 
     const timeseriesSub = timeseriesPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
-      const [s] = event.payload.series;
+      const s = event.payload.series?.[0];
 
       if (!s) {
         statsPanel.updateStats({ allValuesSum: 0, unit: 'short' });

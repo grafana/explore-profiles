@@ -82,13 +82,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       const { series } = newState.data;
 
-      if (!series?.length) {
-        return;
+      if (series?.length) {
+        const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
+        body.setState(config);
       }
-
-      const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
-
-      body.setState(config);
 
       // we publish the event only after setting the new config so that the subscribers can modify it
       // (e.g. sync y-axis in SceneExploreDiffFlameGraphs.tsx)

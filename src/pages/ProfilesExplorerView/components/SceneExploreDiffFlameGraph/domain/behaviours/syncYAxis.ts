@@ -8,15 +8,15 @@ export function syncYAxis() {
     const maxima = new Map<string, number>();
 
     const eventSub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
-      const { series } = event.payload;
-      const refId = series[0]?.refId;
+      const s = event.payload.series?.[0];
+      const refId = s?.refId;
 
       if (!refId) {
-        console.warn('Missing refId! Cannot sync y-axis on the timeseries.', series);
+        console.warn('Missing refId! Cannot sync y-axis on the timeseries.', event.payload.series);
         return;
       }
 
-      maxima.set(series[0].refId as string, Math.max(...series[0].fields[1].values));
+      maxima.set(s.refId as string, Math.max(...s.fields[1].values));
 
       updateTimeseriesAxis(vizPanel, Math.max(...maxima.values()));
     });

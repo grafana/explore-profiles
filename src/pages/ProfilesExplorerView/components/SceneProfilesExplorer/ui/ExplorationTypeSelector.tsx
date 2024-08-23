@@ -35,7 +35,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 {option.label}
               </Button>
 
-              {i < options.length - 3 ? <Icon name="arrow-right" /> : <>&nbsp;&nbsp;</>}
+              {i < options.length - 3 && <Icon name="arrow-right" />}
             </>
           );
         })}
@@ -59,8 +59,12 @@ const getStyles = (theme: GrafanaTheme2) => ({
     height: 30px;
     line-height: 30px;
 
-    &:last-child {
+    &:nth-last-child(2) {
       margin-left: ${theme.spacing(1)};
+    }
+
+    &:nth-last-child(1) {
+      margin-left: ${theme.spacing(2)};
     }
   `,
   active: css`
