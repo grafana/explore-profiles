@@ -29,7 +29,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
   constructor() {
     super({
       key: 'diff-flame-graph',
-      aiPanel: new SceneAiPanel({ isDiff: true }),
+      aiPanel: new SceneAiPanel(),
     });
   }
 
@@ -98,7 +98,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
         fetchSettingsError,
         ai: {
           panel: aiPanel,
-          params: [
+          fetchParams: [
             { query: baselineQuery, timeRange: baselineTimeRange },
             { query: comparisonQuery, timeRange: comparisonTimeRange },
           ],
@@ -190,7 +190,12 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
         </Panel>
 
         {sidePanel.isOpen('ai') && (
-          <data.ai.panel.Component model={data.ai.panel} params={data.ai.params} onClose={sidePanel.close} />
+          <data.ai.panel.Component
+            model={data.ai.panel}
+            isDiff
+            fetchParams={data.ai.fetchParams}
+            onClose={sidePanel.close}
+          />
         )}
       </div>
     );

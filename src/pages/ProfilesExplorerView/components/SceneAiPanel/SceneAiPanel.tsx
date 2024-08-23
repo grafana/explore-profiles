@@ -15,21 +15,35 @@ import { FollowUpForm } from './components/FollowUpForm';
 import { useOpenAiChatCompletions } from './domain/useOpenAiChatCompletions';
 import { FetchParams, useFetchDotProfiles } from './infrastructure/useFetchDotProfiles';
 
-interface SceneAiPanelState extends SceneObjectState {
-  isDiff: boolean;
-}
+interface SceneAiPanelState extends SceneObjectState {}
 
 export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
-  constructor({ isDiff }: { isDiff: SceneAiPanelState['isDiff'] }) {
-    super({
-      key: 'ai-panel',
-      isDiff,
-    });
+  constructor() {
+    super({ key: 'ai-panel' });
   }
 
-  useSceneAiPanel = (params: FetchParams): DomainHookReturnValue => {
+  validateFetchParams(isDiff: boolean, fetchParams: FetchParams) {
+    let params = fetchParams;
+    let error;
+
+    if (isDiff && fetchParams.length !== 2) {
+      error = new Error(
+        `Invalid number of fetch parameters for analyzing the diff flame graph (${fetchParams.length})!`
+      );
+      params = [];
+    } else if (!isDiff && fetchParams.length !== 1) {
+      error = new Error(`Invalid number of fetch parameters for analyzing the flame graph (${fetchParams.length})!`);
+      params = [];
+    }
+
+    return { params, error };
+  }
+
+  useSceneAiPanel = (isDiff: boolean, fetchParams: FetchParams): DomainHookReturnValue => {
     const dataSourceUid = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
       .value as string;
+
+    const { params, error: validationError } = this.validateFetchParams(isDiff, fetchParams);
 
     const { error: fetchError, isFetching, profiles } = useFetchDotProfiles(dataSourceUid, params);
 
@@ -40,6 +54,7 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
 
     return {
       data: {
+        validationError,
         isLoading: isFetching || (!isFetching && !fetchError && !llmError && !reply.text.trim()),
         fetchError,
         llmError,
@@ -58,14 +73,16 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
 
   static Component = ({
     model,
-    params,
+    isDiff,
+    fetchParams,
     onClose,
   }: SceneComponentProps<SceneAiPanel> & {
-    params: FetchParams;
+    isDiff: boolean;
+    fetchParams: FetchParams;
     onClose: () => void;
   }) => {
     const styles = useStyles2(getStyles);
-    const { data, actions } = model.useSceneAiPanel(params);
+    const { data, actions } = model.useSceneAiPanel(isDiff, fetchParams);
 
     return (
       <Panel
@@ -84,11 +101,16 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
         dataTestId="ai-panel"
       >
         <div className={styles.content}>
+          {data.validationError && (
+            <InlineBanner severity="error" title="Validation error!" errors={[data.validationError]} />
+          )}
+
           {data.fetchError && (
             <InlineBanner
               severity="error"
               title="Error while loading profile data!"
               message="Sorry for any inconvenience, please try again later."
+              errors={[data.fetchError]}
             />
           )}
 

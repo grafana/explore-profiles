@@ -40,7 +40,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         queries: [],
       }),
       lastTimeRange: undefined,
-      aiPanel: new SceneAiPanel({ isDiff: false }),
+      aiPanel: new SceneAiPanel(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -124,7 +124,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         settings,
         ai: {
           panel: aiPanel,
-          params: [{ query, timeRange: lastTimeRange }],
+          fetchParams: [{ query, timeRange: lastTimeRange }],
         },
       },
       actions: {
@@ -183,7 +183,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         </Panel>
 
         {sidePanel.isOpen('ai') && (
-          <data.ai.panel.Component model={data.ai.panel} params={data.ai.params} onClose={sidePanel.close} />
+          <data.ai.panel.Component model={data.ai.panel} fetchParams={data.ai.fetchParams} onClose={sidePanel.close} />
         )}
 
         {sidePanel.isOpen('function-details') && (
