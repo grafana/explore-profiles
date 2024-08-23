@@ -71,12 +71,10 @@ export class SceneTimeRangeWithAnnotations
   }
 
   onActivate() {
-    const ancestorTimeRange = this.getAncestorTimeRange();
-
-    this.setState(omit(ancestorTimeRange.state, 'key'));
+    this.setState(omit(this.getAncestorTimeRange().state, 'key'));
 
     this._subs.add(
-      ancestorTimeRange.subscribeToState((newState) => {
+      this.getAncestorTimeRange().subscribeToState((newState) => {
         this.setState(omit(newState, 'key'));
       })
     );

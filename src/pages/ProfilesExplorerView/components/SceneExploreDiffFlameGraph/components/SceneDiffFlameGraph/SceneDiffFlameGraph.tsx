@@ -45,29 +45,37 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
       .value as string;
     const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
+    const isDiffQueryEnabled = Boolean(
+      baselineQuery &&
+        comparisonQuery &&
+        // warning: sending zero parameters values to the API would make the pods crash
+        // so we enable only when we have non-zero parameters values
+        baselineTimeRange.from.unix() &&
+        baselineTimeRange.to.unix() &&
+        comparisonTimeRange.from.unix() &&
+        comparisonTimeRange.to.unix()
+    );
+
     const {
       isFetching,
       error: fetchProfileError,
       profile,
     } = useFetchDiffProfile({
+      enabled: isDiffQueryEnabled,
       dataSourceUid,
-      serviceName,
       baselineTimeRange,
       baselineQuery,
       comparisonTimeRange,
       comparisonQuery,
     });
 
-    const noProfileDataAvailable = !isFetching && !fetchProfileError && profile?.flamebearer.numTicks === 0;
-    const shouldDisplayFlamegraph = Boolean(!fetchProfileError && !noProfileDataAvailable && profile);
-    const shouldDisplayInfo = !Boolean(
-      baselineQuery &&
-        comparisonQuery &&
-        baselineTimeRange.raw.from.valueOf() &&
-        baselineTimeRange.raw.to.valueOf() &&
-        comparisonTimeRange.raw.from.valueOf() &&
-        comparisonTimeRange.raw.to.valueOf()
+    const noProfileDataAvailable =
+      isDiffQueryEnabled && !isFetching && !fetchProfileError && profile?.flamebearer.numTicks === 0;
+
+    const shouldDisplayFlamegraph = Boolean(
+      isDiffQueryEnabled && !fetchProfileError && !noProfileDataAvailable && profile
     );
+    const shouldDisplayInfo = !isDiffQueryEnabled;
 
     return {
       data: {
