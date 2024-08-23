@@ -14,7 +14,7 @@ export function useUrlSearchParams() {
         newSearchParams.set(key, value);
       }
 
-      history.push({ search: newSearchParams.toString() });
+      history.replace({ search: newSearchParams.toString() });
     },
   };
 }

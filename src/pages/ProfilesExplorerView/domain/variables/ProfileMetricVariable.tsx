@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
+import { prepareHistoryEntry } from '@shared/domain/history';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
@@ -103,6 +104,9 @@ export class ProfileMetricVariable extends QueryVariable {
   onSelect = (newValue: string) => {
     reportInteraction('g_pyroscope_app_profile_metric_selected');
 
+    if (!this.state.skipUrlSync) {
+      prepareHistoryEntry();
+    }
     this.changeValueTo(newValue);
   };
 
