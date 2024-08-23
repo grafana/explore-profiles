@@ -25,7 +25,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
 
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
-    onVariableUpdateCompleted: () => {
+    onReferencedVariableValueChanged: () => {
       this.state.body?.updateTitle(this.buildTitle());
     },
   });

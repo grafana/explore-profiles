@@ -15,17 +15,17 @@ export type ItemStats = {
 interface SceneStatsPanelState extends SceneObjectState {
   item: GridItemData;
   itemStats?: ItemStats;
-  compareTargetValue?: CompareTarget;
+  compareActionChecks: boolean[];
 }
 
 export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
-  static WIDTH_IN_PIXELS = 180;
+  static WIDTH_IN_PIXELS = 186;
 
   constructor({ item }: { item: GridItemData }) {
     super({
       item,
       itemStats: undefined,
-      compareTargetValue: undefined,
+      compareActionChecks: [false, false],
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -34,20 +34,15 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   onActivate() {
     const compare = sceneGraph.findByKeyAndType(this, 'group-by-labels', SceneGroupByLabels).getCompare();
 
-    this.setCompareTargetValue(compare.get(CompareTarget.BASELINE), compare.get(CompareTarget.COMPARISON));
+    this.updateCompareActions(compare.get(CompareTarget.BASELINE), compare.get(CompareTarget.COMPARISON));
   }
 
-  setCompareTargetValue(baselineItem?: GridItemData, comparisonItem?: GridItemData) {
+  updateCompareActions(baselineItem?: GridItemData, comparisonItem?: GridItemData) {
     const { item } = this.state;
-    let compareTargetValue;
 
-    if (baselineItem?.value === item.value) {
-      compareTargetValue = CompareTarget.BASELINE;
-    } else if (comparisonItem?.value === item.value) {
-      compareTargetValue = CompareTarget.COMPARISON;
-    }
-
-    this.setState({ compareTargetValue });
+    this.setState({
+      compareActionChecks: [baselineItem?.value === item.value, comparisonItem?.value === item.value],
+    });
   }
 
   onChangeCompareTarget = (compareTarget: CompareTarget) => {
@@ -69,13 +64,13 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   }
 
   static Component({ model }: SceneComponentProps<SceneStatsPanel>) {
-    const { item, itemStats, compareTargetValue } = model.useState();
+    const { item, itemStats, compareActionChecks } = model.useState();
 
     return (
       <StatsPanel
         item={item}
         itemStats={itemStats}
-        compareTargetValue={compareTargetValue}
+        compareActionChecks={compareActionChecks}
         onChangeCompareTarget={model.onChangeCompareTarget}
       />
     );

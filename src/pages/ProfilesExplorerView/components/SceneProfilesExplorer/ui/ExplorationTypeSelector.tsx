@@ -35,7 +35,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 {option.label}
               </Button>
 
-              {i < options.length - 2 && <Icon name="arrow-right" />}
+              {i < options.length - 3 && <Icon name="arrow-right" />}
             </>
           );
         })}
@@ -59,14 +59,18 @@ const getStyles = (theme: GrafanaTheme2) => ({
     line-height: 32px;
     display: flex;
     align-items: center;
-
-    & > button:last-child {
-      margin-left: ${theme.spacing(2)};
-    }
   `,
   button: css`
     height: 30px;
     line-height: 30px;
+
+    &:nth-last-child(2) {
+      margin-left: ${theme.spacing(1)};
+    }
+
+    &:nth-last-child(1) {
+      margin-left: ${theme.spacing(2)};
+    }
   `,
   active: css`
     &:hover {

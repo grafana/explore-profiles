@@ -116,8 +116,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
 
-    const sidePanel = useToggleSidePanel();
     const { data, actions } = model.useSceneFlameGraph();
+
+    const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
     useEffect(() => {

@@ -8,6 +8,7 @@ test.describe('Explore Profiles', () => {
       { type: 'profiles', label: 'Profile types' },
       { type: 'labels', label: 'Labels' },
       { type: 'flame-graph', label: 'Flame graph' },
+      { type: 'diff-flame-graph', label: 'Diff flame graph' },
       { type: 'favorites', label: 'Favorites' },
     ]) {
       test(label, async ({ exploreProfilesPage }) => {

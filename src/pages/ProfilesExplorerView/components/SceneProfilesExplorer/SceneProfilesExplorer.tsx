@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { dateTimeParse, GrafanaTheme2 } from '@grafana/data';
+import { dateMath, GrafanaTheme2 } from '@grafana/data';
 import {
   EmbeddedSceneState,
   getUrlSyncManager,
@@ -27,9 +27,11 @@ import { SceneExploreAllServices } from '../../components/SceneExploreAllService
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameGraph';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { getDefaultTimeRange } from '../../domain/getDefaultTimeRange';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -43,10 +45,13 @@ import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/S
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneTimeRangeWithAnnotations } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/components/SceneTimeRangeWithAnnotations';
+import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+  $timeRange: SceneTimeRange;
   $variables: SceneVariableSet;
   gridControls: Array<SceneObject & { key?: string }>;
   explorationType?: ExplorationType;
@@ -58,6 +63,7 @@ export enum ExplorationType {
   PROFILE_TYPES = 'profiles',
   LABELS = 'labels',
   FLAME_GRAPH = 'flame-graph',
+  DIFF_FLAME_GRAPH = 'diff-flame-graph',
   FAVORITES = 'favorites',
 }
 
@@ -84,6 +90,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       description: 'Single service flame graph',
     },
     {
+      value: ExplorationType.DIFF_FLAME_GRAPH,
+      label: 'Diff flame graph',
+      description: 'Compare the differences between two flame graphs',
+    },
+    {
       value: ExplorationType.FAVORITES,
       label: 'Favorites',
       description: 'Overview of favorited visualizations',
@@ -100,7 +111,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       key: 'profiles-explorer',
       explorationType: undefined,
       body: undefined,
-      $timeRange: new SceneTimeRange({}),
+      $timeRange: new SceneTimeRange(getDefaultTimeRange()),
       $variables: new SceneVariableSet({
         // in order to sync with the URL and...
         // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -111,12 +122,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new ProfilesDataSourceVariable(),
           new ServiceNameVariable(),
           new ProfileMetricVariable(),
-          new FiltersVariable(),
+          new FiltersVariable({ key: 'filters' }),
+          new FiltersVariable({ key: 'filtersBaseline' }),
+          new FiltersVariable({ key: 'filtersComparison' }),
           new GroupByVariable(),
         ],
       }),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
-      // these scenes sync with the URL so...
+      // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
       gridControls: [
         new SceneQuickFilter({ placeholder: '' }),
@@ -206,8 +219,16 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       });
     });
 
+    const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, () => {
+      this.setExplorationType({
+        type: ExplorationType.DIFF_FLAME_GRAPH,
+        comesFromUserAction: true,
+      });
+    });
+
     return {
       unsubscribe() {
+        diffFlameGraphSub.unsubscribe();
         flameGraphSub.unsubscribe();
         labelsSub.unsubscribe();
         profilesSub.unsubscribe();
@@ -230,11 +251,46 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.setState({
       explorationType: type,
-      body: this.buildBodyScene(type, item),
+      body: this.buildBodyScene(type, item, comesFromUserAction),
     });
   }
 
-  buildBodyScene(explorationType: ExplorationType, item?: GridItemData) {
+  resetVariables(nextExplorationType: string) {
+    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
+    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
+    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
+
+    // preserve existing filters only when switching to "Labels" or "Flame graph"
+    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(nextExplorationType as ExplorationType)) {
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
+        filters: FiltersVariable.DEFAULT_VALUE,
+      });
+    }
+
+    // clear baseline/comparison filters and time ranges when leaving "Diff flame graph"
+    if (
+      nextExplorationType !== ExplorationType.DIFF_FLAME_GRAPH &&
+      this.state.explorationType === ExplorationType.DIFF_FLAME_GRAPH
+    ) {
+      ['filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
+        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable).setState({
+          filters: FiltersVariable.DEFAULT_VALUE,
+        });
+      });
+
+      const { from, to, value } = this.state.$timeRange.state;
+
+      ['baseline-panel-timerange', 'comparison-panel-timerange'].forEach((timeRangeKey) => {
+        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRange).setState({ from, to, value });
+      });
+
+      ['baseline-annotation-timerange', 'comparison-annotation-timerange'].forEach((timeRangeKey) => {
+        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRangeWithAnnotations).nullifyAnnotationTimeRange();
+      });
+    }
+  }
+
+  buildBodyScene(explorationType: ExplorationType, item?: GridItemData, comesFromUserAction?: boolean) {
     let primary;
 
     switch (explorationType) {
@@ -248,6 +304,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
       case ExplorationType.FLAME_GRAPH:
         primary = new SceneExploreServiceFlameGraph({ item });
+        break;
+
+      case ExplorationType.DIFF_FLAME_GRAPH:
+        primary = new SceneExploreDiffFlameGraph({ useAncestorTimeRange: Boolean(comesFromUserAction) });
         break;
 
       case ExplorationType.FAVORITES:
@@ -274,40 +334,47 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   };
 
-  resetVariables(explorationType: string) {
-    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
-
-    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
-      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable)?.setState({
-        filters: FiltersVariable.DEFAULT_VALUE,
-      });
-    }
-
-    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
-
-    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher)?.reset();
-  }
-
   onClickShareLink = async () => {
     try {
       const shareableUrl = new URL(window.location.toString());
+      const { searchParams } = shareableUrl;
 
-      ['from', 'to'].forEach((name) => {
-        shareableUrl.searchParams.set(name, String(dateTimeParse(shareableUrl.searchParams.get(name)).valueOf()));
-      });
+      searchParams.delete('query'); // TODO: temp while removing the comparison pages
+
+      ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'diffFrom', 'diffTo', 'diffFrom-2', 'diffTo-2'].forEach(
+        (name) => {
+          const value = searchParams.get(name);
+          if (value) {
+            searchParams.set(name, String(dateMath.parse(value)!.valueOf()));
+          }
+        }
+      );
 
       await navigator.clipboard.writeText(shareableUrl.toString());
       displaySuccess(['Link copied to clipboard!']);
-    } catch {}
+    } catch (error) {
+      console.error('Error while creating the shareable link!');
+      console.error(error);
+    }
   };
 
   useProfilesExplorer = () => {
     const { explorationType, controls, body, $variables } = this.useState();
 
-    const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
+    const [timePickerControl, refreshPickerControl] =
+      explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as [SceneObject, SceneObject]);
+
     const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
 
-    const { variables: sceneVariables, gridControls } = (body?.state.primary as any).getVariablesAndGridControls() as {
+    const bodySceneObject = body?.state.primary as any;
+
+    if (typeof bodySceneObject.getVariablesAndGridControls !== 'function') {
+      throw new Error(
+        `Error while rendering "${bodySceneObject.constructor.name}": the "getVariablesAndGridControls" method is missing! Please implement it.`
+      );
+    }
+
+    const { variables: sceneVariables, gridControls } = bodySceneObject.getVariablesAndGridControls() as {
       variables: SceneVariable[];
       gridControls: SceneObject[];
     };
@@ -361,8 +428,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             </div>
 
             <div className={styles.headerRight}>
-              <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
-              <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
+              {timePickerControl && (
+                <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
+              )}
+              {refreshPickerControl && (
+                <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
+              )}
+
               <IconButton
                 name="share-alt"
                 tooltip="Copy shareable link to the clipboard"

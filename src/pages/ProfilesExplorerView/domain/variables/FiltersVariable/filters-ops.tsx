@@ -22,17 +22,6 @@ export const addFilter = (model: FiltersVariable, filter: AdHocVariableFilter) =
   model.setState({ filters: [...model.state.filters, filter] });
 };
 
-export const expressionBuilder = (serviceName: string, profileMetricId: string, filters: AdHocVariableFilter[]) => {
-  if (!serviceName || !profileMetricId) {
-    return '';
-  }
-
-  const completeFilters = [{ key: 'service_name', operator: '=', value: serviceName }, ...filters];
-  const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
-
-  return `${profileMetricId}{${selector}}`;
-};
-
 export const parseVariableValue = (variableValue = '') =>
   !variableValue
     ? []
