@@ -33,6 +33,12 @@ const TIMERANGE_NIL = {
   raw: { from: '', to: '' },
 };
 
+/**
+ * This custom SceneTimeRange class provides the ability to draw annotations on timeseries vizualisations.
+ * Indeed, timeseries visualizations don't support drawing annotations by dragging (it's only supported when holding ctrl/command key) so we need to hijack the zooming event to emulate drawing.
+ * At the same time, the only way to hijack it is by passing custom $timeRange because TimeSeries vizualization handles zooming internally by looking for the nearest time range object.
+ * @see https://github.com/grafana/scenes/pull/744
+ */
 export class SceneTimeRangeWithAnnotations
   extends SceneObjectBase<SceneTimeRangeWithAnnotationsState>
   implements SceneTimeRangeLike

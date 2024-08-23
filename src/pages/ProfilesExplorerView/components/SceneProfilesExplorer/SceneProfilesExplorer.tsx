@@ -343,15 +343,19 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
       ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'diffFrom', 'diffTo', 'diffFrom-2', 'diffTo-2'].forEach(
         (name) => {
-          if (searchParams.has(name)) {
-            searchParams.set(name, String(dateMath.parse(searchParams.get(name))!.valueOf()));
+          const value = searchParams.get(name);
+          if (value) {
+            searchParams.set(name, String(dateMath.parse(value)!.valueOf()));
           }
         }
       );
 
       await navigator.clipboard.writeText(shareableUrl.toString());
       displaySuccess(['Link copied to clipboard!']);
-    } catch {}
+    } catch (error) {
+      console.error('Error while creating the shareable link!');
+      console.error(error);
+    }
   };
 
   useProfilesExplorer = () => {
