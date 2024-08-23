@@ -1,21 +1,22 @@
-import { css, cx } from '@emotion/css';
+import { css } from '@emotion/css';
 import { getValueFormat, GrafanaTheme2 } from '@grafana/data';
-import { Checkbox, Spinner, useStyles2 } from '@grafana/ui';
+import { Spinner, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
 import { GridItemData } from '../../../../../../../../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { getColorByIndex } from '../../../../../../../../../helpers/getColorByIndex';
 import { CompareTarget } from '../../../domain/types';
 import { ItemStats } from '../SceneStatsPanel';
+import { CompareAction } from './CompareAction';
 
 export type StatsPanelProps = {
   item: GridItemData;
   itemStats?: ItemStats;
-  actionChecks: boolean[];
+  compareActionChecks: boolean[];
   onChangeCompareTarget: (compareTarget: CompareTarget) => void;
 };
 
-export function StatsPanel({ item, itemStats, actionChecks, onChangeCompareTarget }: StatsPanelProps) {
+export function StatsPanel({ item, itemStats, compareActionChecks, onChangeCompareTarget }: StatsPanelProps) {
   const styles = useStyles2(getStyles);
 
   const { index, value } = item;
@@ -38,15 +39,15 @@ export function StatsPanel({ item, itemStats, actionChecks, onChangeCompareTarge
       {
         label: 'Baseline',
         value: CompareTarget.BASELINE,
-        description: !actionChecks[0] ? `Click to select "${value}" as baseline for comparison` : '',
+        description: !compareActionChecks[0] ? `Click to select "${value}" as baseline for comparison` : '',
       },
       {
         label: 'Comparison',
         value: CompareTarget.COMPARISON,
-        description: !actionChecks[1] ? `Click to select "${value}" as target for comparison` : '',
+        description: !compareActionChecks[1] ? `Click to select "${value}" as target for comparison` : '',
       },
     ],
-    [actionChecks, value]
+    [compareActionChecks, value]
   );
 
   return (
@@ -55,15 +56,13 @@ export function StatsPanel({ item, itemStats, actionChecks, onChangeCompareTarge
         {total}
       </h1>
 
-      <div className={styles.controls}>
+      <div className={styles.compareActions}>
         {options.map((option, i) => (
-          <Checkbox
+          <CompareAction
             key={option.value}
-            className={cx(styles.checkbox, actionChecks[i] && 'checked')}
-            checked={actionChecks[i]}
-            label={option.label}
-            title={option.description}
-            onChange={() => onChangeCompareTarget(option.value)}
+            option={option}
+            checked={compareActionChecks[i]}
+            onChange={onChangeCompareTarget}
           />
         ))}
       </div>
@@ -89,32 +88,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
     text-align: center;
     margin-top: ${theme.spacing(5)};
   `,
-  controls: css`
+  compareActions: css`
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-  `,
-  checkbox: css`
-    column-gap: 4px;
-
-    &:nth-child(2) {
-      & :nth-child(1) {
-        grid-column-start: 2;
-      }
-      & :nth-child(2) {
-        grid-column-start: 1;
-      }
-    }
-
-    span {
-      color: ${theme.colors.text.secondary};
-    }
-    span:hover {
-      color: ${theme.colors.text.primary};
-    }
-
-    &.checked span {
-      color: ${theme.colors.text.primary};
-    }
   `,
 });

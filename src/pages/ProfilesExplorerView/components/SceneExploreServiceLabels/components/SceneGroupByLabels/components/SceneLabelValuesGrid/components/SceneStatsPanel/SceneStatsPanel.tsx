@@ -15,7 +15,7 @@ export type ItemStats = {
 interface SceneStatsPanelState extends SceneObjectState {
   item: GridItemData;
   itemStats?: ItemStats;
-  actionChecks: boolean[];
+  compareActionChecks: boolean[];
 }
 
 export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
@@ -25,7 +25,7 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
     super({
       item,
       itemStats: undefined,
-      actionChecks: [false, false],
+      compareActionChecks: [false, false],
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -41,7 +41,7 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
     const { item } = this.state;
 
     this.setState({
-      actionChecks: [baselineItem?.value === item.value, comparisonItem?.value === item.value],
+      compareActionChecks: [baselineItem?.value === item.value, comparisonItem?.value === item.value],
     });
   }
 
@@ -64,13 +64,13 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   }
 
   static Component({ model }: SceneComponentProps<SceneStatsPanel>) {
-    const { item, itemStats, actionChecks } = model.useState();
+    const { item, itemStats, compareActionChecks } = model.useState();
 
     return (
       <StatsPanel
         item={item}
         itemStats={itemStats}
-        actionChecks={actionChecks}
+        compareActionChecks={compareActionChecks}
         onChangeCompareTarget={model.onChangeCompareTarget}
       />
     );
