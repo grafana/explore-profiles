@@ -18,6 +18,7 @@ import { omit } from 'lodash';
 import React from 'react';
 
 import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../ComparisonView/ui/colors';
+import { getDefaultTimeRange } from '../../../../domain/getDefaultTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
@@ -73,7 +74,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       filterKey,
       title,
       color,
-      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange` }),
+      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...getDefaultTimeRange() }),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
