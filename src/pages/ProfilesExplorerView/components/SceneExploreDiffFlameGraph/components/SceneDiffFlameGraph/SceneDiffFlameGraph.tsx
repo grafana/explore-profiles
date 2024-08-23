@@ -175,7 +175,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
             <InlineBanner
               severity="warning"
               title="No profile data available"
-              message="Please verify that you've selected adequate time ranges and filters."
+              message="Please verify that you've selected adequate filters and time ranges."
             />
           )}
 
