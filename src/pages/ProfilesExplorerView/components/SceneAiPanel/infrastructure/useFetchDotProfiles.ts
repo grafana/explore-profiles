@@ -1,9 +1,9 @@
 import { TimeRange } from '@grafana/data';
 import { useQuery } from '@tanstack/react-query';
 
+import { ProfileApiClient } from '../../../infrastructure/profiles/ProfileApiClient';
 import { DataSourceProxyClientBuilder } from '../../../infrastructure/series/http/DataSourceProxyClientBuilder';
 import { cleanupDotResponse } from './cleanupDotResponse';
-import { ProfileApiClient } from './ProfileApiClient';
 
 export type FetchParams = Array<{
   query: string;
@@ -26,7 +26,9 @@ export function useFetchDotProfiles(dataSourceUid: string, fetchParams: FetchPar
       // TODO: pass a signal options to properly abort all in-flight requests
       return Promise.all(
         fetchParams.map(({ query, timeRange }) =>
-          profileApiClient.get({ query, timeRange, format: 'dot', maxNodes: MAX_NODES }).then(cleanupDotResponse)
+          profileApiClient
+            .get({ query, timeRange, format: 'dot', maxNodes: MAX_NODES })
+            .then((response) => cleanupDotResponse(response as string))
         )
       );
     },

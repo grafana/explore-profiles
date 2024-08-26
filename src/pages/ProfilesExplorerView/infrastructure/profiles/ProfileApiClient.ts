@@ -1,14 +1,14 @@
 import { TimeRange } from '@grafana/data';
+import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 
-import { DataSourceProxyClient } from '../../../infrastructure/series/http/DataSourceProxyClient';
+import { DataSourceProxyClient } from '../series/http/DataSourceProxyClient';
 
-// dot format returns string (TODO: json format later)
-type DiffProfileResponse = string;
+type DiffProfileResponse = string | FlamebearerProfile;
 
 type GetParams = {
   query: string;
   timeRange: TimeRange;
-  format: string; // dot (TODO: json)
+  format: 'dot' | 'json';
   maxNodes: number;
 };
 
@@ -31,8 +31,15 @@ export class ProfileApiClient extends DataSourceProxyClient {
 
     const response = await this.fetch(`/pyroscope/render?${searchParams.toString()}`);
 
-    const text = await response.text();
+    switch (params.format) {
+      case 'dot':
+        return response.text();
 
-    return text;
+      case 'json':
+        return response.json();
+
+      default:
+        throw new TypeError(`Unknown format "${params.format}"!`);
+    }
   }
 }
