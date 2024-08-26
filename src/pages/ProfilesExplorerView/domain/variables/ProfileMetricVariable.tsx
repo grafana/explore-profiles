@@ -129,11 +129,20 @@ export class ProfileMetricVariable extends QueryVariable {
       );
     }
 
+    // Additional key to force re-render when list of options change. It's needed when the variable is updated from
+    // the URL (value and loading props are overridden by setting them directly and Cascader is not forced to re-render
+    let optionsKeys: string;
+    try {
+      optionsKeys = JSON.stringify(cascaderOptions);
+    } catch (e) {
+      optionsKeys = String(options.length);
+    }
+
     return (
       <Cascader
         // we add a key to ensure that the Cascader selects the initial value properly when landing on the page
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
-        key={String(loading) + String(value)}
+        key={String(loading) + String(value) + String(optionsKeys)}
         aria-label="Profile metrics list"
         width={24}
         separator="/"
