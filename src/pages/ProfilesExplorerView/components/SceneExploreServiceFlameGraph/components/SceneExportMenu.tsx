@@ -2,6 +2,7 @@ import { TimeRange } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, Dropdown, Menu } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
+import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
@@ -34,7 +35,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     query,
     timeRange,
     maxNodes,
-  }: ExtraProps & { dataSourceUid: string; maxNodes?: number }): Promise<FlamebearerProfile | null> {
+  }: ExtraProps & { dataSourceUid: string; maxNodes: number | null }): Promise<FlamebearerProfile | null> {
     const profileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, ProfileApiClient) as ProfileApiClient;
 
     let profile;
@@ -54,9 +55,36 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     return profile as FlamebearerProfile;
   }
 
+  async fetchPprofProfile({
+    dataSourceUid,
+    query,
+    timeRange,
+    maxNodes,
+  }: ExtraProps & { dataSourceUid: string; maxNodes: number | null }): Promise<Blob | null> {
+    const pprofApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, PprofApiClient) as PprofApiClient;
+
+    let profile;
+
+    try {
+      const blob = await pprofApiClient.selectMergeProfile({
+        query,
+        timeRange,
+        maxNodes: maxNodes || DEFAULT_SETTINGS.maxNodes,
+      });
+      profile = await new Response(blob.stream().pipeThrough(new CompressionStream('gzip'))).blob();
+    } catch (error) {
+      displayError(error, ['Failed to export to pprof!', (error as Error).message]);
+      return null;
+    }
+
+    return profile;
+  }
+
   useSceneExportMenu = ({ query, timeRange }: ExtraProps): DomainHookReturnValue => {
     const dataSourceUid = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
       .value as string;
+
+    const [maxNodes] = useMaxNodesFromUrl();
     const { settings } = useFetchPluginSettings();
 
     const downloadPng = () => {
@@ -74,12 +102,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     };
 
     const downloadJson = async () => {
-      const profile = await this.fetchFlamebearerProfile({
-        dataSourceUid,
-        query,
-        timeRange,
-        maxNodes: settings?.maxNodes,
-      });
+      const profile = await this.fetchFlamebearerProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {
         return;
       }
@@ -90,30 +113,19 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
       saveAs(data, filename);
     };
 
-    const downloadPprof = async function () {
-      const pprofApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, PprofApiClient) as PprofApiClient;
-      let data;
-
-      try {
-        const blob = await pprofApiClient.selectMergeProfile(query, timeRange);
-        data = await new Response(blob.stream().pipeThrough(new CompressionStream('gzip'))).blob();
-      } catch (error) {
-        displayError(error, ['Failed to export to pprof!', (error as Error).message]);
+    const downloadPprof = async () => {
+      const profile = await this.fetchPprofProfile({ dataSourceUid, query, timeRange, maxNodes });
+      if (!profile) {
         return;
       }
 
       const filename = `${getExportFilename(query, timeRange)}.pb.gz`;
 
-      saveAs(data, filename);
+      saveAs(profile, filename);
     };
 
     const downloadFlamegraphDotCom = async () => {
-      const profile = await this.fetchFlamebearerProfile({
-        dataSourceUid,
-        query,
-        timeRange,
-        maxNodes: settings?.maxNodes,
-      });
+      const profile = await this.fetchFlamebearerProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {
         return;
       }
