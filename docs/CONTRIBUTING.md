@@ -37,7 +37,18 @@ Then visit http://localhost:3000/a/grafana-pyroscope-app
 - To use **a local version of Pyroscope**, read the "Enable with a local version of Pyroscope" section below.
 - To use **a local version of Grafana**, read [this section](./GRAFANA-CROSS-DEVELOPMENT.md).
 
-### Enable GitHub integration
+### Enable with live remote profile data
+
+1. If not already done, copy the content of the `.env.local` file to a new `.env` file in the root directory.
+2. Fill in the missing `REMOTE_` values in the `.env` file.
+3. Start the Grafana server: `yarn server:remote`
+
+### Enable with a local version of Pyroscope
+
+1. Start the local version of Pyroscope (see [Pyroscope's contributing guide](https://github.com/grafana/pyroscope/tree/main/docs/internal/contributing))
+2. Execute `yarn server:local`
+
+### Enable GitHub integration ("Function details")
 
 When clicking on a node of the flame graph, the plugin can offer to display information about the function being profiled in the form of a "Function details" contextual menu item.
 
@@ -49,16 +60,17 @@ To enable this feature:
 
 For more information, refer to the [Pyroscope GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/) documentation.
 
-### Enable with live remote profile data
+### Enable AI integration ("Explain Flame Graph")
+
+The plugin can help understand flame graphs by using a large-language model (LLM) to assist with profiling data interpretation.
+
+To enable this feature:
 
 1. If not already done, copy the content of the `.env.local` file to a new `.env` file in the root directory.
-2. Fill in the missing `REMOTE_` values in the `.env` file.
-3. Start the Grafana server: `yarn server:remote`
+2. Fill in the missing `OPENAI_` values in the `.env` file.
+3. Start the Grafana server.
 
-### Enable with a local version of Pyroscope
-
-1. Start the local version of Pyroscope (see [Pyroscope's contributing guide](https://github.com/grafana/pyroscope/tree/main/docs/internal/contributing))
-2. Execute `yarn server:local`
+For more information, refer to the [Flame graph AI](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/) documentation.
 
 ## Contribution guidelines
 

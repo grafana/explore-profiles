@@ -92,5 +92,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     justify-content: space-between;
     font-size: 11px;
+    border-top: 1px solid ${theme.colors.border.weak};
+    padding: ${theme.spacing(1)} 0 0 0;
   `,
 });
