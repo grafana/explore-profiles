@@ -77,10 +77,12 @@ export class ServiceNameVariable extends QueryVariable {
     }
     this.changeValueTo(newValue);
 
-    // manually reset filters - the "Scenes way" would be to listen to the variable changes but it leads to errors
-    // see comments in src/pages/ProfilesExplorerView/variables/FiltersVariable/FiltersVariable.tsx
-    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
-    filtersVariable.setState({ filters: [] });
+    // manually reset filters - we should listen to the variables changes but it leads to unwanted behaviour
+    // (filters set in the URL search parameters are resetted when the user lands on the page)
+    ['filters', 'filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
+      const filtersVariable = sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable);
+      filtersVariable.setState({ filters: [] });
+    });
   };
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable & { selectNewValue?: any }>) => {

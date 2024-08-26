@@ -16,7 +16,7 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { EventDataReceived } from '../../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
@@ -315,8 +315,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
-    const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
-      if (event.payload.series.length > 0) {
+    const sub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
+      if (event.payload.series?.length) {
         return;
       }
 

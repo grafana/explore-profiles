@@ -1,21 +1,22 @@
 import { css } from '@emotion/css';
 import { getValueFormat, GrafanaTheme2 } from '@grafana/data';
-import { RadioButtonGroup, Spinner, useStyles2 } from '@grafana/ui';
+import { Spinner, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
 import { GridItemData } from '../../../../../../../../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { getColorByIndex } from '../../../../../../../../../helpers/getColorByIndex';
 import { CompareTarget } from '../../../domain/types';
 import { ItemStats } from '../SceneStatsPanel';
+import { CompareAction } from './CompareAction';
 
 export type StatsPanelProps = {
   item: GridItemData;
   itemStats?: ItemStats;
-  compareTargetValue?: CompareTarget;
+  compareActionChecks: boolean[];
   onChangeCompareTarget: (compareTarget: CompareTarget) => void;
 };
 
-export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompareTarget }: StatsPanelProps) {
+export function StatsPanel({ item, itemStats, compareActionChecks, onChangeCompareTarget }: StatsPanelProps) {
   const styles = useStyles2(getStyles);
 
   const { index, value } = item;
@@ -38,17 +39,15 @@ export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompar
       {
         label: 'Baseline',
         value: CompareTarget.BASELINE,
-        description:
-          compareTargetValue !== CompareTarget.BASELINE ? `Click to select "${value}" as baseline for comparison` : '',
+        description: !compareActionChecks[0] ? `Click to select "${value}" as baseline for comparison` : '',
       },
       {
         label: 'Comparison',
         value: CompareTarget.COMPARISON,
-        description:
-          compareTargetValue !== CompareTarget.COMPARISON ? `Click to select "${value}" as target for comparison` : '',
+        description: !compareActionChecks[1] ? `Click to select "${value}" as target for comparison` : '',
       },
     ],
-    [compareTargetValue, value]
+    [compareActionChecks, value]
   );
 
   return (
@@ -57,14 +56,15 @@ export function StatsPanel({ item, itemStats, compareTargetValue, onChangeCompar
         {total}
       </h1>
 
-      <div>
-        <RadioButtonGroup
-          className={styles.radioButtonsGroup}
-          size="sm"
-          options={options}
-          onChange={onChangeCompareTarget}
-          value={compareTargetValue}
-        />
+      <div className={styles.compareActions}>
+        {options.map((option, i) => (
+          <CompareAction
+            key={option.value}
+            option={option}
+            checked={compareActionChecks[i]}
+            onChange={onChangeCompareTarget}
+          />
+        ))}
       </div>
     </div>
   );
@@ -88,21 +88,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
     text-align: center;
     margin-top: ${theme.spacing(5)};
   `,
-  radioButtonsGroup: css`
-    width: 100%;
-
-    & > * {
-      flex-grow: 1 !important;
-    }
-
-    & :nth-child(1):checked + label {
-      color: #fff;
-      background-color: ${theme.colors.primary.main}; // TODO
-    }
-
-    & :nth-child(2):checked + label {
-      color: #fff;
-      background-color: ${theme.colors.primary.main}; // TODO
-    }
+  compareActions: css`
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    border-top: 1px solid ${theme.colors.border.weak};
+    padding: ${theme.spacing(1)} 0 0 0;
   `,
 });

@@ -2,6 +2,7 @@ import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafan
 import {
   PanelBuilders,
   SceneComponentProps,
+  SceneDataProvider,
   SceneDataTransformer,
   SceneObjectBase,
   SceneObjectState,
@@ -11,7 +12,7 @@ import {
 import { GraphGradientMode } from '@grafana/schema';
 import React from 'react';
 
-import { EventDataReceived } from '../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
@@ -30,6 +31,7 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
   displayAllValues: boolean;
   body: VizPanel;
+  overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
@@ -37,25 +39,31 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     item,
     headerActions,
     displayAllValues,
+    data,
+    overrides,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
     displayAllValues?: SceneLabelValuesTimeseriesState['displayAllValues'];
+    data?: SceneDataProvider;
+    overrides?: SceneLabelValuesTimeseriesState['overrides'];
   }) {
     super({
       key: 'timeseries-label-values',
       item,
       headerActions,
       displayAllValues: Boolean(displayAllValues),
+      overrides,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
-          new SceneDataTransformer({
-            $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-            transformations: displayAllValues
-              ? [addRefId, addStats, sortSeries]
-              : [addRefId, addStats, sortSeries, limitNumberOfSeries],
-          })
+          data ||
+            new SceneDataTransformer({
+              $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
+              transformations: displayAllValues
+                ? [addRefId, addStats, sortSeries]
+                : [addRefId, addStats, sortSeries, limitNumberOfSeries],
+            })
         )
         .setHeaderActions(headerActions(item))
         .build(),
@@ -67,22 +75,21 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
-    const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done) {
+    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState) => {
+      if (newState.data?.state !== LoadingState.Done) {
         return;
       }
 
-      const { series } = state.data;
+      const { series } = newState.data;
 
-      this.publishEvent(new EventDataReceived({ series }), true);
-
-      if (!series.length) {
-        return;
+      if (series?.length) {
+        const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
+        body.setState(config);
       }
 
-      const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
-
-      body.setState(config);
+      // we publish the event only after setting the new config so that the subscribers can modify it
+      // (e.g. sync y-axis in SceneExploreDiffFlameGraphs.tsx)
+      this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
     });
 
     return () => {
@@ -137,6 +144,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   getOverrides(series: DataFrame[]) {
+    if (this.state.overrides) {
+      return this.state.overrides(series);
+    }
+
     const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
