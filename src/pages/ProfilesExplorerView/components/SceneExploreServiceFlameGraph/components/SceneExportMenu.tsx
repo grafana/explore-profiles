@@ -1,4 +1,5 @@
 import { TimeRange } from '@grafana/data';
+import { reportInteraction } from '@grafana/runtime';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, Dropdown, Menu } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
@@ -88,6 +89,8 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     const { settings } = useFetchPluginSettings();
 
     const downloadPng = () => {
+      reportInteraction('g_pyroscope_export_profile', { format: 'png' });
+
       const filename = `${getExportFilename(query, timeRange)}.png`;
 
       (document.querySelector('canvas[data-testid="flameGraph"]') as HTMLCanvasElement).toBlob((blob) => {
@@ -102,6 +105,8 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     };
 
     const downloadJson = async () => {
+      reportInteraction('g_pyroscope_export_profile', { format: 'json' });
+
       const profile = await this.fetchFlamebearerProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {
         return;
@@ -114,6 +119,8 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     };
 
     const downloadPprof = async () => {
+      reportInteraction('g_pyroscope_export_profile', { format: 'pprof' });
+
       const profile = await this.fetchPprofProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {
         return;
@@ -124,7 +131,9 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
       saveAs(profile, filename);
     };
 
-    const downloadFlamegraphDotCom = async () => {
+    const uploadToFlamegraphDotCom = async () => {
+      reportInteraction('g_pyroscope_export_profile', { format: 'flamegraph.com' });
+
       const profile = await this.fetchFlamebearerProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {
         return;
@@ -157,7 +166,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
         downloadPng,
         downloadJson,
         downloadPprof,
-        downloadFlamegraphDotCom,
+        uploadToFlamegraphDotCom,
       },
     };
   };
@@ -173,7 +182,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
             <Menu.Item label="json" onClick={actions.downloadJson} />
             <Menu.Item label="pprof" onClick={actions.downloadPprof} />
             {data.shouldDisplayFlamegraphDotCom && (
-              <Menu.Item label="flamegraph.com" onClick={actions.downloadFlamegraphDotCom} />
+              <Menu.Item label="flamegraph.com" onClick={actions.uploadToFlamegraphDotCom} />
             )}
           </Menu>
         }

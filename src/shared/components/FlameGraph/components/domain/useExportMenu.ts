@@ -1,3 +1,4 @@
+import { reportInteraction } from '@grafana/runtime';
 import { displayError } from '@shared/domain/displayStatus';
 import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
@@ -14,6 +15,8 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   const [timeRange] = useTimeRangeFromUrl();
 
   const downloadPng = () => {
+    reportInteraction('g_pyroscope_export_profile', { format: 'png' });
+
     const customExportName = getExportFilename(timeRange, profile.metadata.appName);
     const filename = `${customExportName}.png`;
 
@@ -32,6 +35,8 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   };
 
   const downloadJson = () => {
+    reportInteraction('g_pyroscope_export_profile', { format: 'json' });
+
     const customExportName = getExportFilename(timeRange, profile.metadata.appName);
     const filename = `${customExportName}.json`;
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(profile))}`;
@@ -40,6 +45,8 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   };
 
   const downloadPprof = async function () {
+    reportInteraction('g_pyroscope_export_profile', { format: 'pprof' });
+
     const customExportName = getExportFilename(timeRange, profile.metadata.appName);
 
     let response;
@@ -57,7 +64,9 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
     saveAs(data, filename);
   };
 
-  const downloadFlamegraphDotCom = async () => {
+  const uploadToFlamegraphDotCom = async () => {
+    reportInteraction('g_pyroscope_export_profile', { format: 'flamegraph.com' });
+
     const customExportName = getExportFilename(timeRange, profile.metadata.appName);
 
     let response;
@@ -85,7 +94,7 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
       downloadPng,
       downloadJson,
       downloadPprof,
-      downloadFlamegraphDotCom,
+      uploadToFlamegraphDotCom,
     },
   };
 }
