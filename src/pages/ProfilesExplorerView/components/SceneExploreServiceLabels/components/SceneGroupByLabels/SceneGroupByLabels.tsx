@@ -9,6 +9,7 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
+import { prepareHistoryEntry } from '@shared/domain/history';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
@@ -253,6 +254,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const labelValue = queryRunnerParams!.groupBy!.label;
     const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
 
+    prepareHistoryEntry();
     groupByVariable.changeValueTo(labelValue);
 
     // the event may be published from an expanded panel in the drawer
