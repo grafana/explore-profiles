@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
+import { dateTimeFormat, FieldMatcherID, getValueFormat, GrafanaTheme2, systemDateFormats } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -35,6 +35,7 @@ import {
   TimerangeSelectionMode,
 } from './domain/actions/SwitchTimeRangeSelectionModeAction';
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
+import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 
 export interface SceneComparePanelState extends SceneObjectState {
@@ -116,7 +117,19 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
           const metricField = s.fields[1];
           const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
           const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
-          const displayName = `${title} total = ${formattedValue.text}${formattedValue.suffix}`;
+          const total = `${formattedValue.text}${formattedValue.suffix}`;
+          const [diffFrom, diffTo, timeZone] = SceneComparePanel.getFlameGraphRange(timeseriesPanel);
+
+          const displayName =
+            diffFrom && diffTo
+              ? `${title} total = ${total} / Flame graph range = ${dateTimeFormat(diffFrom, {
+                  format: systemDateFormats.fullDate,
+                  timeZone,
+                })} → ${dateTimeFormat(diffTo, {
+                  format: systemDateFormats.fullDate,
+                  timeZone,
+                })}`
+              : `${title} total = ${total}`;
 
           return {
             matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
@@ -141,11 +154,28 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
         annotationColor:
           target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),
-        annotationTitle: `${title} time range`,
+        annotationTitle: `${title} flame graph range`,
       }),
     });
 
     return timeseriesPanel;
+  }
+
+  static getFlameGraphRange(
+    timeseriesPanel: SceneLabelValuesTimeseries
+  ): [number | undefined, number | undefined, string | undefined] {
+    let diffFrom: number | undefined;
+    let diffTo: number | undefined;
+
+    const annotation = timeseriesPanel.state.body.state.$data?.state.data?.annotations?.[0] as RangeAnnotation;
+
+    annotation?.fields.some(({ name, values }) => {
+      diffFrom ||= name === 'time' ? values[0] : undefined;
+      diffTo ||= name === 'timeEnd' ? values[0] : undefined;
+      return diffFrom && diffTo;
+    });
+
+    return [diffFrom, diffTo, timeseriesPanel.state.$timeRange?.state.timeZone];
   }
 
   protected getAncestorTimeRange(): SceneTimeRangeLike {

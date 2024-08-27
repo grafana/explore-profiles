@@ -75,9 +75,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
-    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState) => {
+    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
         return;
+      }
+
+      // ensure we retain the previous annotations, if they exist
+      if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
+        newState.data.annotations = prevState.data.annotations;
       }
 
       const { series } = newState.data;
