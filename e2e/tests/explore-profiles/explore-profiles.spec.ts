@@ -1,5 +1,5 @@
 import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS } from '../../config/constants';
-import { expect, test } from '../../fixtures';
+import { test } from '../../fixtures';
 
 test.describe('Explore Profiles', () => {
   test.describe('Smoke tests', () => {
@@ -17,7 +17,7 @@ test.describe('Explore Profiles', () => {
         urlParams.set('explorationType', type);
         await exploreProfilesPage.goto(urlParams.toString());
 
-        expect(await exploreProfilesPage.getSelectedExplorationType()).toBe(label);
+        await exploreProfilesPage.asserSelectedExplorationType(label);
       });
     }
   });

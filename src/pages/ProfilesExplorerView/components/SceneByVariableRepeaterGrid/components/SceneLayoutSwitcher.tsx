@@ -65,6 +65,7 @@ export class SceneLayoutSwitcher extends SceneObjectBase<SceneLayoutSwitcherStat
 
     return (
       <RadioButtonGroup
+        aria-label="Layout switcher"
         options={SceneLayoutSwitcher.OPTIONS}
         value={layout}
         onChange={model.onChange}

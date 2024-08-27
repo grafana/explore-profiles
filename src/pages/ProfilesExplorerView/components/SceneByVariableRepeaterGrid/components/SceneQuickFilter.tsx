@@ -21,6 +21,8 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
 
   static DEFAULT_SEARCH_TEXT = '';
 
+  static DEBOUNCE_DELAY = 250;
+
   constructor({ placeholder }: { placeholder: string }) {
     super({
       key: 'quick-filter',
@@ -69,6 +71,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
       <div className={styles.filter}>
         <Input
           type="text"
+          aria-label="Quick filter"
           placeholder={placeholder}
           value={searchText}
           prefix={<Icon name="search" />}
