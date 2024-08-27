@@ -1,9 +1,9 @@
 apiVersion: 1
 
 datasources:
-  - uid: grafanacloud-profiles-local
+  - uid: grafanacloud-profiles-local-a
     type: grafana-pyroscope-datasource
-    name: 🔥 Local (http://pyroscope:4100)
+    name: Local Pyroscope A
     url: http://pyroscope:4100
     isDefault: true
     jsonData:
@@ -15,9 +15,9 @@ datasources:
     secureJsonData:
       basicAuthPassword: 'mypassword'
 
-  - uid: grafanacloud-profiles-local-bis
+  - uid: grafanacloud-profiles-local-b
     type: grafana-pyroscope-datasource
-    name: 🔥 Local bis (http://pyroscope:4100)
+    name: Local Pyroscope B
     url: http://pyroscope:4100
     isDefault: false
     jsonData:

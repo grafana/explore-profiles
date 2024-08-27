@@ -168,7 +168,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       }
     };
 
-    return quickFilter.subscribeToState(debounce(onChangeState, 250));
+    return quickFilter.subscribeToState(debounce(onChangeState, SceneQuickFilter.DEBOUNCE_DELAY));
   }
 
   subscribeToLayoutChange() {

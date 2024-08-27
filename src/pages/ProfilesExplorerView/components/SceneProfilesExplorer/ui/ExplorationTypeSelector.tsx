@@ -25,6 +25,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
               <Button
                 className={isActive ? cx(styles.button, styles.active) : styles.button}
                 size="sm"
+                aria-label={option.label}
                 icon={option.icon as any}
                 variant={isActive ? 'primary' : 'secondary'}
                 onClick={isActive ? noOp : () => onChange(option.value as string)}

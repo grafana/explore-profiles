@@ -189,7 +189,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       }
     };
 
-    return quickFilter.subscribeToState(debounce(onChangeState, 250));
+    return quickFilter.subscribeToState(debounce(onChangeState, SceneQuickFilter.DEBOUNCE_DELAY));
   }
 
   subscribeToLayoutChange() {
