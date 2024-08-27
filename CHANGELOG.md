@@ -1,3 +1,25 @@
+## [0.1.6](https://github.com/grafana/explore-profiles/compare/v0.1.5...v0.1.6) (2024-08-27)
+
+
+### Bug Fixes
+
+* **Ci:** Fix docker compose commands ([#111](https://github.com/grafana/explore-profiles/issues/111)) ([4ee541a](https://github.com/grafana/explore-profiles/commit/4ee541acbe822d92abfc9344eda4611600b1476e))
+* **DiffFlameGraph:** Fix the "Explain Flame Graph" (AI) feature ([#129](https://github.com/grafana/explore-profiles/issues/129)) ([a40c02b](https://github.com/grafana/explore-profiles/commit/a40c02b7c37ac309d878689c5929ef770900d6f5))
+* **Favorites:** Render "No results" when there are no favorites ([#101](https://github.com/grafana/explore-profiles/issues/101)) ([426469d](https://github.com/grafana/explore-profiles/commit/426469d239b9ac86ad7e6fe4a21385836926a264))
+* **Labels:** Fix "Discarded by user" error in the UI ([#110](https://github.com/grafana/explore-profiles/issues/110)) ([2e9baab](https://github.com/grafana/explore-profiles/commit/2e9baab391168022f4de7bf3933e8ba4baac95df))
+* **SceneLabelValuePanel:** Fix border color when baseline/comparison is selected ([#123](https://github.com/grafana/explore-profiles/issues/123)) ([5b4058a](https://github.com/grafana/explore-profiles/commit/5b4058a90ac6f713d50c9686813f273233dc4a39))
+* **ScenesProfileExplorer:** Make labels more responsive on smaller screens ([10c97dc](https://github.com/grafana/explore-profiles/commit/10c97dc69714a6a0f97bbaa086dd7263e8e72950))
+
+
+### Features
+
+* **CompareView:** Implement new Comparison view with Scenes ([#119](https://github.com/grafana/explore-profiles/issues/119)) ([127d6c3](https://github.com/grafana/explore-profiles/commit/127d6c3f952d1e679bcb29c6e2d62ca9d1eed51f))
+* **FlameGraph:** Add missing export menu ([#132](https://github.com/grafana/explore-profiles/issues/132)) ([f57b0ca](https://github.com/grafana/explore-profiles/commit/f57b0ca5329b0b2a7e58f7387391299475ddc952))
+* **Labels:** Improve comparison flow ([#117](https://github.com/grafana/explore-profiles/issues/117)) ([31d0632](https://github.com/grafana/explore-profiles/commit/31d06326fa9e82a906635ac371a9e206cfa2bb54))
+* **Timeseries:** Add total resource consumption in legend ([#108](https://github.com/grafana/explore-profiles/issues/108)) ([1fbb2df](https://github.com/grafana/explore-profiles/commit/1fbb2dfbc1d0a5d837afa74c4783171aded0258a))
+
+
+
 ## [0.1.5](https://github.com/grafana/explore-profiles/compare/v0.1.4...v0.1.5) (2024-07-29)
 
 
