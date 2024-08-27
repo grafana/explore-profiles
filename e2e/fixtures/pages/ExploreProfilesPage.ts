@@ -10,13 +10,13 @@ export class ExploreProfilesPage extends PyroscopePage {
     super(page, '/a/grafana-pyroscope-app/profiles-explorer', urlParams.toString());
   }
 
-  goto(explorationType?: string) {
+  goto(explorationType: string | undefined) {
     if (!explorationType) {
       return super.goto();
     }
 
     const urlParams = new URLSearchParams(DEFAULT_EXPLORE_PROFILES_URL_PARAMS);
-    urlParams.set('explorationType', explorationType as string);
+    urlParams.set('explorationType', explorationType);
 
     return super.goto(urlParams.toString());
   }
