@@ -22,6 +22,7 @@ test.describe('All services view', () => {
 
   test('Profile type selector', async ({ exploreProfilesPage }) => {
     await exploreProfilesPage.selectProfileType('memory/inuse_objects');
+
     await exploreProfilesPage.assertSelectedProfileType('memory/inuse_objects');
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
