@@ -72,7 +72,7 @@ test.describe('Profile types view', () => {
     });
 
     test('Favorite action', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnPanelAction('inuse_space (memory)', 'Favorite');
+      await exploreProfilesPage.clickOnPanelAction('alloc_space (memory)', 'Favorite');
 
       await exploreProfilesPage.selectExplorationType('Favorites');
 
