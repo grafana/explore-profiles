@@ -56,12 +56,14 @@ test.describe('All services view', () => {
     });
 
     test('Labels action', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectProfileType('memory/alloc_space');
+
       const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app');
       await panel.getByLabel('Labels').click();
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
-      await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
+      await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
         stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
@@ -69,12 +71,14 @@ test.describe('All services view', () => {
     });
 
     test('Flame graph action', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectProfileType('memory/alloc_space');
+
       const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app');
       await panel.getByLabel('Flame graph').click();
 
       await exploreProfilesPage.asserSelectedExplorationType('Flame graph');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
-      await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
+      await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
         stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
