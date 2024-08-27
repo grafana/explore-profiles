@@ -37,6 +37,9 @@ export const DEFAULT_EXPLORE_PROFILES_URL_PARAMS = ENV_VARS.E2E_BASE_URL.startsW
       // We use static data in local and PR build (where the host is http://localhost):
       from: '2024-03-13T18:00:00.000Z',
       to: '2024-03-13T18:50:00.000Z',
+      'var-dataSource': 'grafanacloud-profiles-local-a',
+      'var-serviceName': 'ride-sharing-app',
+      'var-profileMetricId': 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
       maxNodes: '16384',
     })
   : new URLSearchParams();
