@@ -31,6 +31,7 @@ test.describe('All services view', () => {
   test('Quick filter', async ({ exploreProfilesPage }) => {
     await exploreProfilesPage.enterQuickFilterText('sharing,load');
 
+    await expect(exploreProfilesPage.getPanels()).toHaveCount(2);
     await expect(exploreProfilesPage.getPanelByTitle('load-generator')).toBeVisible();
     await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app')).toBeVisible();
     await expect(exploreProfilesPage.getPanelByTitle('pyroscope')).not.toBeVisible();
