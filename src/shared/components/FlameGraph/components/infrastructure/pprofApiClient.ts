@@ -3,7 +3,7 @@ import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { PprofProfile } from '@shared/types/PprofProfile';
 
-import { PprofRequest } from './PprofRequest';
+import { PprofRequestWithoutMaxNodes } from './PprofRequestWithoutMaxNodes';
 
 type SelectMergeProfileProps = {
   profileMetricId: string;
@@ -20,9 +20,9 @@ class PprofApiClient extends ApiClient {
     const start = timeRange.from.unix() * 1000;
     const end = timeRange.to.unix() * 1000;
 
-    const message = new PprofRequest(profileMetricId, labelsSelector, start, end);
+    const message = new PprofRequestWithoutMaxNodes(profileMetricId, labelsSelector, start, end);
 
-    return PprofRequest.encode(message).finish();
+    return PprofRequestWithoutMaxNodes.encode(message).finish();
   }
 
   async selectMergeProfile(query: string, timeRange: TimeRange): Promise<Blob> {

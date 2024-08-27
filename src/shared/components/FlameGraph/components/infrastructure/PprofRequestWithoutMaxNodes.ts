@@ -1,6 +1,6 @@
 import { Field, Message } from 'protobufjs/light';
 
-export class PprofRequest extends Message<PprofRequest> {
+export class PprofRequestWithoutMaxNodes extends Message<PprofRequestWithoutMaxNodes> {
     constructor(
         profile_typeID: string,
         label_selector: string,

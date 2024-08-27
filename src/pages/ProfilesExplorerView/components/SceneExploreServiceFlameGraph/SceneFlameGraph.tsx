@@ -22,11 +22,13 @@ import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/bui
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
+import { SceneExportMenu } from './components/SceneExportMenu';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
   lastTimeRange?: TimeRange;
   aiPanel: SceneAiPanel;
+  exportMenu: SceneExportMenu;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -41,6 +43,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       }),
       lastTimeRange: undefined,
       aiPanel: new SceneAiPanel(),
+      exportMenu: new SceneExportMenu(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -90,7 +93,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, aiPanel, lastTimeRange } = this.useState();
+    const { $data, lastTimeRange, aiPanel, exportMenu } = this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -125,6 +128,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         ai: {
           panel: aiPanel,
           fetchParams: [{ query, timeRange: lastTimeRange }],
+        },
+        export: {
+          menu: exportMenu,
+          query,
+          timeRange: lastTimeRange,
         },
       },
       actions: {
@@ -179,6 +187,13 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             disableCollapsing={!data.settings?.collapsedFlamegraphs}
             getTheme={actions.getTheme as any}
             getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
+            extraHeaderElements={
+              <data.export.menu.Component
+                model={data.export.menu}
+                query={data.export.query}
+                timeRange={data.export.timeRange}
+              />
+            }
           />
         </Panel>
 
