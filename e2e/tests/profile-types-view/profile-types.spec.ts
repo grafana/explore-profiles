@@ -1,18 +1,18 @@
 import { expect, test } from '../../fixtures';
 
-test.describe('All services view', () => {
+test.describe('Profile types view', () => {
   test.beforeEach(async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.goto();
+    await exploreProfilesPage.goto('profiles');
   });
 
   test('Main UI elements', async ({ exploreProfilesPage }) => {
     // app controls
     await exploreProfilesPage.assertSelectedDataSource('Local Pyroscope A');
-    await exploreProfilesPage.asserSelectedExplorationType('All services');
+    await exploreProfilesPage.asserSelectedExplorationType('Profile types');
     await exploreProfilesPage.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
 
     // body scene controls
-    await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
+    await exploreProfilesPage.assertSelectedService('ride-sharing-app');
     await exploreProfilesPage.assertQuickFilterValue('');
     await exploreProfilesPage.assertSelectedLayout('Grid');
 
@@ -20,21 +20,22 @@ test.describe('All services view', () => {
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
   });
 
-  test('Profile type selector', async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.selectProfileType('memory/inuse_objects');
+  test('Service selector', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.selectService('pyroscope');
 
-    await exploreProfilesPage.assertSelectedProfileType('memory/inuse_objects');
+    await exploreProfilesPage.assertSelectedService('pyroscope');
 
-    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
+    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+    });
   });
 
   test('Quick filter', async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.enterQuickFilterText('sharing,load');
+    await exploreProfilesPage.enterQuickFilterText('samples,alloc_space');
 
     await expect(exploreProfilesPage.getPanels()).toHaveCount(2);
-    await expect(exploreProfilesPage.getPanelByTitle('load-generator')).toBeVisible();
-    await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app')).toBeVisible();
-    await expect(exploreProfilesPage.getPanelByTitle('pyroscope')).not.toBeVisible();
+    await expect(exploreProfilesPage.getPanelByTitle('samples (process_cpu)')).toBeVisible();
+    await expect(exploreProfilesPage.getPanelByTitle('alloc_space (memory)')).toBeVisible();
   });
 
   test('Layout switcher', async ({ exploreProfilesPage }) => {
@@ -46,20 +47,8 @@ test.describe('All services view', () => {
   });
 
   test.describe('Panel actions', () => {
-    test('Profile types action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app');
-      await panel.getByLabel('Profile types').click();
-
-      await exploreProfilesPage.asserSelectedExplorationType('Profile types');
-      await exploreProfilesPage.assertSelectedService('ride-sharing-app');
-
-      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
-    });
-
     test('Labels action', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.selectProfileType('memory/alloc_space');
-
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app');
+      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
       await panel.getByLabel('Labels').click();
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
@@ -72,9 +61,7 @@ test.describe('All services view', () => {
     });
 
     test('Flame graph action', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.selectProfileType('memory/alloc_space');
-
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app');
+      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
       await panel.getByLabel('Flame graph').click();
 
       await exploreProfilesPage.asserSelectedExplorationType('Flame graph');
@@ -87,7 +74,7 @@ test.describe('All services view', () => {
     });
 
     test('Favorite action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app');
+      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
       await panel.getByLabel('Favorite').click();
 
       await exploreProfilesPage.selectExplorationType('Favorites');

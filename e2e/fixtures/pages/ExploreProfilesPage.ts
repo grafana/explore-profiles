@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
+import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS } from '../../config/constants';
 import { PyroscopePage } from './PyroscopePage';
 
 export class ExploreProfilesPage extends PyroscopePage {
@@ -7,6 +8,17 @@ export class ExploreProfilesPage extends PyroscopePage {
     const urlParams = new URLSearchParams(defaultUrlParams);
 
     super(page, '/a/grafana-pyroscope-app/profiles-explorer', urlParams.toString());
+  }
+
+  goto(explorationType: string | undefined) {
+    if (!explorationType) {
+      return super.goto();
+    }
+
+    const urlParams = new URLSearchParams(DEFAULT_EXPLORE_PROFILES_URL_PARAMS);
+    urlParams.set('explorationType', explorationType);
+
+    return super.goto(urlParams.toString());
   }
 
   getDataSourceSelector() {
@@ -47,6 +59,14 @@ export class ExploreProfilesPage extends PyroscopePage {
     await expect(this.getProfileTypeSelector()).toHaveValue(expectedProfileType);
   }
 
+  async selectProfileType(profileType: string) {
+    const [category, type] = profileType.split('/');
+
+    await this.getProfileTypeSelector().click();
+    await this.page.getByText(category, { exact: true }).click();
+    await this.page.getByText(type, { exact: true }).click();
+  }
+
   getServiceSelector() {
     return this.page.getByTestId('serviceName').locator('input');
   }
@@ -55,12 +75,9 @@ export class ExploreProfilesPage extends PyroscopePage {
     await expect(this.getServiceSelector()).toHaveValue(expectedService);
   }
 
-  async selectProfileType(profileType: string) {
-    const [category, type] = profileType.split('/');
-
-    await this.getProfileTypeSelector().click();
-    await this.page.getByText(category, { exact: true }).click();
-    await this.page.getByText(type, { exact: true }).click();
+  async selectService(serviceName: string) {
+    await this.getServiceSelector().click();
+    await this.page.getByText(serviceName, { exact: true }).click();
   }
 
   getQuickFilterInput() {
@@ -95,5 +112,9 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   getPanelByTitle(title: string) {
     return this.getSceneBody().locator(`[data-viz-panel-key]:has([title="${title}"])`);
+  }
+
+  getPanels() {
+    return this.getSceneBody().locator(`[data-viz-panel-key]`);
   }
 }
