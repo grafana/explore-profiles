@@ -48,8 +48,7 @@ test.describe('Profile types view', () => {
 
   test.describe('Panel actions', () => {
     test('Labels action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
-      await panel.getByLabel('Labels').click();
+      await exploreProfilesPage.clickOnPanelAction('alloc_space (memory)', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -61,8 +60,7 @@ test.describe('Profile types view', () => {
     });
 
     test('Flame graph action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
-      await panel.getByLabel('Flame graph').click();
+      await exploreProfilesPage.clickOnPanelAction('alloc_space (memory)', 'Flame graph');
 
       await exploreProfilesPage.asserSelectedExplorationType('Flame graph');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -74,8 +72,7 @@ test.describe('Profile types view', () => {
     });
 
     test('Favorite action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
-      await panel.getByLabel('Favorite').click();
+      await exploreProfilesPage.clickOnPanelAction('inuse_space (memory)', 'Favorite');
 
       await exploreProfilesPage.selectExplorationType('Favorites');
 

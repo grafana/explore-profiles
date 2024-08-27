@@ -20,21 +20,29 @@ export const ChicletAttributeOperator = ({ filter, onClick, onRemove }: ChicletA
   const className = active ? styles.chiclet : cx(styles.chiclet, styles.inactiveChiclet);
 
   return (
-    <div className={className}>
-      <Tag className={styles.chicletAttribute} name={attribute.label} title="Cannot edit label" onClick={noOp} />
+    <div className={className} aria-label="Filter">
+      <Tag
+        aria-label="Filter label"
+        title="Cannot edit label"
+        className={styles.chicletAttribute}
+        name={attribute.label}
+        onClick={noOp}
+      />
 
       <Tag
-        name={operator.label}
+        aria-label="Filter operator"
         title="Edit operator"
+        name={operator.label}
         onClick={(name, e) => onClick(e, filter, FilterPartKind.operator)}
         tabIndex={0}
       />
 
       <Tag
+        aria-label="Remove filter"
+        title="Remove filter"
         className={styles.chicletRemoveButton}
         icon="times"
         name=""
-        title="Remove filter"
         onClick={(name, e) => onRemove(e, filter)}
         tabIndex={0}
       />
