@@ -1,8 +1,9 @@
+import { ExplorationType } from '../../config/constants';
 import { expect, test } from '../../fixtures';
 
 test.describe('Profile types view', () => {
   test.beforeEach(async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.goto('profiles');
+    await exploreProfilesPage.goto(ExplorationType.ProfileTypes);
   });
 
   test('Main UI elements', async ({ exploreProfilesPage }) => {

@@ -1,8 +1,9 @@
+import { ExplorationType } from '../../config/constants';
 import { expect, test } from '../../fixtures';
 
 test.describe('Flame graph view', () => {
   test.beforeEach(async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.goto('flame-graph');
+    await exploreProfilesPage.goto(ExplorationType.FlameGraph);
   });
 
   test('Main UI elements', async ({ exploreProfilesPage }) => {

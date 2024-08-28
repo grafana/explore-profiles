@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS } from '../../config/constants';
+import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS, ExplorationType } from '../../config/constants';
 import { PyroscopePage } from './PyroscopePage';
 
 export class ExploreProfilesPage extends PyroscopePage {
@@ -10,12 +10,12 @@ export class ExploreProfilesPage extends PyroscopePage {
     super(page, '/a/grafana-pyroscope-app/profiles-explorer', urlParams.toString());
   }
 
-  goto(explorationType?: string) {
-    if (!explorationType) {
-      return super.goto();
-    }
+  goto(explorationType: ExplorationType, urlSearchParams = new URLSearchParams()) {
+    const urlParams = new URLSearchParams({
+      ...Object.fromEntries(DEFAULT_EXPLORE_PROFILES_URL_PARAMS),
+      ...Object.fromEntries(urlSearchParams),
+    });
 
-    const urlParams = new URLSearchParams(DEFAULT_EXPLORE_PROFILES_URL_PARAMS);
     urlParams.set('explorationType', explorationType);
 
     return super.goto(urlParams.toString());
@@ -24,7 +24,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Data source */
 
   getDataSourceSelector() {
-    return this.page.locator('#dataSource');
+    return this.locator('#dataSource');
   }
 
   async assertSelectedDataSource(expectedDataSource: string) {
@@ -35,7 +35,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Exploration type */
 
   getExplorationTypeSelector() {
-    return this.page.getByTestId('exploration-types');
+    return this.getByTestId('exploration-types');
   }
 
   async asserSelectedExplorationType(expectedLabel: string) {
@@ -50,7 +50,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Time picker */
 
   getTimePicker() {
-    return this.page.getByTestId('data-testid TimePicker Open Button');
+    return this.getByTestId('data-testid TimePicker Open Button');
   }
 
   async assertSelectedTimeRange(expectedTimeRange: string) {
@@ -60,7 +60,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Service */
 
   getServiceSelector() {
-    return this.page.getByTestId('serviceName').locator('input');
+    return this.getByTestId('serviceName').locator('input');
   }
 
   async assertSelectedService(expectedService: string) {
@@ -69,13 +69,13 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async selectService(serviceName: string) {
     await this.getServiceSelector().click();
-    await this.page.locator('[role="menu"]').getByText(serviceName, { exact: true }).click();
+    await this.locator('[role="menu"]').getByText(serviceName, { exact: true }).click();
   }
 
   /* Profile type */
 
   getProfileTypeSelector() {
-    return this.page.getByTestId('profileMetricId').locator('input');
+    return this.getByTestId('profileMetricId').locator('input');
   }
 
   async assertSelectedProfileType(expectedProfileType: string) {
@@ -87,7 +87,7 @@ export class ExploreProfilesPage extends PyroscopePage {
 
     await this.getProfileTypeSelector().click();
 
-    const menu = this.page.locator('[role="menu"]');
+    const menu = this.locator('[role="menu"]');
     await menu.getByText(category, { exact: true }).click();
     await menu.getByText(type, { exact: true }).click();
   }
@@ -95,7 +95,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   async assertProfileTypeSelectorOptions(expectedCategories: string[], expectedTypesPerCategory: string[][]) {
     await this.getProfileTypeSelector().click();
 
-    const menuItems = this.page.locator('[role="menu"] [role="menuitemcheckbox"]');
+    const menuItems = this.locator('[role="menu"] [role="menuitemcheckbox"]');
     const categories = await menuItems.allTextContents();
 
     expect(categories).toEqual(expectedCategories);
@@ -103,8 +103,7 @@ export class ExploreProfilesPage extends PyroscopePage {
     for (let i = 0; i < categories.length; i += 1) {
       await menuItems.nth(i).click();
 
-      const categoryTypes = await this.page
-        .locator('[role="menu"]')
+      const categoryTypes = await this.locator('[role="menu"]')
         .last()
         .locator('[role="menuitemcheckbox"]')
         .allTextContents();
@@ -116,7 +115,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Quick filter */
 
   getQuickFilterInput() {
-    return this.page.getByLabel('Quick filter');
+    return this.getByLabel('Quick filter');
   }
 
   async assertQuickFilterValue(expectedValue: string) {
@@ -131,7 +130,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Layout switcher */
 
   getLayoutSwitcher() {
-    return this.page.getByLabel('Layout switcher');
+    return this.getByLabel('Layout switcher');
   }
 
   async assertSelectedLayout(expectedLayoutName: string) {
@@ -146,7 +145,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Scene body & grid panels */
 
   getSceneBody() {
-    return this.page.getByTestId('sceneBody');
+    return this.getByTestId('sceneBody');
   }
 
   getPanelByTitle(title: string) {
@@ -165,7 +164,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Filters */
 
   getFilters() {
-    return this.page.getByTestId('filters');
+    return this.getByTestId('filters');
   }
 
   async assertFilters(expectedFilters: string[][]) {
@@ -188,10 +187,36 @@ export class ExploreProfilesPage extends PyroscopePage {
   async addFilter(parts: string[]) {
     await this.getFilters().getByRole('combobox').click();
 
-    const selectMenu = this.page.getByLabel('Select options menu');
+    const selectMenu = this.getByLabel('Select options menu');
 
     for (const part of parts) {
       await selectMenu.getByText(part, { exact: true }).click();
     }
+  }
+
+  /* Flame graph component */
+
+  getExportDataButton() {
+    return this.getByLabel('Export data');
+  }
+
+  getFlamegraph() {
+    return this.getByTestId('flameGraph');
+  }
+
+  clickOnFlameGraphNode({ x, y }: { x: number; y: number }) {
+    return this.getFlamegraph().click({ position: { x, y } });
+  }
+
+  getFlameGraphContextualMenu() {
+    return this.getByLabel('Context menu');
+  }
+
+  getFlameGraphContextMenuItem(menuItemLabel: string) {
+    return this.getFlameGraphContextualMenu().getByRole('menuitem', { name: menuItemLabel, exact: true });
+  }
+
+  closeFlameGraphContextualMenu() {
+    return this.getByTestId('panel').getByRole('heading').click();
   }
 }
