@@ -99,7 +99,7 @@ export class SceneLabelValuesHistogram extends SceneObjectBase<SceneLabelValuesH
           // we force the label value because the overrides don't seem to work when we receive a single serie
           displayName: series.length === 1 ? groupByLabel : undefined,
           custom: {
-            lineWidth: 0,
+            lineWidth: 1,
           },
         },
         overrides: this.getOverrides(item, series),
