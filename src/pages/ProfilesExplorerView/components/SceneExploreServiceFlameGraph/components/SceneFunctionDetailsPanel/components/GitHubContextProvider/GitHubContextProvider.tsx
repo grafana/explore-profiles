@@ -1,5 +1,5 @@
 import { displayError } from '@shared/domain/displayStatus';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { DataSourceProxyClientBuilder } from 'src/pages/ProfilesExplorerView/infrastructure/series/http/DataSourceProxyClientBuilder';
 
 import { VcsClient } from '../../infrastructure/VcsClient';
@@ -24,6 +24,13 @@ export function GitHubContextProvider({ dataSourceUid, children }: GitHubContext
   const [isLoginInProgress, setIsLoginInProgress] = useState(DEFAULT_GITHUB_CONTEXT.isLoginInProgress);
   const [sessionCookie, setSessionCookie] = useGithubSessionCookie();
   const [externalWindow, setExternalWindow] = useState<Window | null>();
+
+  // hack to prevent failures impossible to fix for the user (unless they know they have to delete the cookie)
+  // when logged in and changing data source
+  // TODO: provide a better way
+  useEffect(() => {
+    setSessionCookie('');
+  }, [dataSourceUid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   usePollGitHubPopup({ vcsClient, externalWindow, setExternalWindow, setSessionCookie, nonce });
 
