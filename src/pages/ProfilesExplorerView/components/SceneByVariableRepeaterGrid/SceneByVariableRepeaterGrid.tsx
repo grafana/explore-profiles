@@ -19,13 +19,15 @@ import React from 'react';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
+import { panelBuilder } from '../../helpers/panelBuilder';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
+import { SceneLabelValuesHistogram } from '../SceneLabelValuesHistogram';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
 import { LayoutType, SceneLayoutSwitcher, SceneLayoutSwitcherState } from './components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher, SceneNoDataSwitcherState } from './components/SceneNoDataSwitcher';
-import { PanelType, ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
+import { ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter, SceneQuickFilterState } from './components/SceneQuickFilter';
 import { sortFavGridItems } from './domain/sortFavGridItems';
 import { GridItemData } from './types/GridItemData';
@@ -279,7 +281,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     }
 
     const gridItems = this.state.items.map((item) => {
-      const vizPanel = this.buildVizPanel(item);
+      const vizPanel = panelBuilder(item.panelType, {
+        item,
+        headerActions: this.state.headerActions.bind(null, item, this.state.items),
+      });
 
       if (this.state.hideNoData) {
         this.setupHideNoData(vizPanel);
@@ -297,24 +302,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
-  buildVizPanel(item: GridItemData) {
-    switch (item.panelType) {
-      case PanelType.BARGAUGE:
-        return new SceneLabelValuesBarGauge({
-          item,
-          headerActions: this.state.headerActions.bind(null, item, this.state.items),
-        });
-
-      case PanelType.TIMESERIES:
-      default:
-        return new SceneLabelValuesTimeseries({
-          item,
-          headerActions: this.state.headerActions.bind(null, item, this.state.items),
-        });
-    }
-  }
-
-  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
+  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge | SceneLabelValuesHistogram) {
     const sub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
       if (event.payload.series?.length) {
         return;

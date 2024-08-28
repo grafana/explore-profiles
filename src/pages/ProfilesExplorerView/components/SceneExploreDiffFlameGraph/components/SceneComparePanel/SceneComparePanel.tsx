@@ -23,6 +23,7 @@ import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/Fi
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
+import { PanelType } from '../../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
@@ -107,6 +108,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         value: target,
         label: '',
         queryRunnerParams: {},
+        panelType: PanelType.TIMESERIES,
       },
       data: new SceneDataTransformer({
         $data: buildCompareTimeSeriesQueryRunner({ filterKey }),
