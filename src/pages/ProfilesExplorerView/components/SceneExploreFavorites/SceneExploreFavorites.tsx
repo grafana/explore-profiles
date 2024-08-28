@@ -16,7 +16,7 @@ import { EventExpandPanel } from '../../domain/events/EventExpandPanel';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { FavoriteVariable } from '../../domain/variables/FavoriteVariable';
-import { panelBuilder } from '../../helpers/panelBuilder';
+import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
@@ -107,7 +107,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
     this.state.drawer.open({
       title: item.label,
-      body: panelBuilder(item.panelType, {
+      body: vizPanelBuilder(item.panelType, {
         displayAllValues: true,
         legendPlacement: 'right',
         item,

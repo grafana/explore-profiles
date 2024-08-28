@@ -19,7 +19,7 @@ import React from 'react';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
-import { panelBuilder } from '../../helpers/panelBuilder';
+import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
 import { SceneLabelValuesHistogram } from '../SceneLabelValuesHistogram';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
@@ -281,7 +281,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     }
 
     const gridItems = this.state.items.map((item) => {
-      const vizPanel = panelBuilder(item.panelType, {
+      const vizPanel = vizPanelBuilder(item.panelType, {
         item,
         headerActions: this.state.headerActions.bind(null, item, this.state.items),
       });
