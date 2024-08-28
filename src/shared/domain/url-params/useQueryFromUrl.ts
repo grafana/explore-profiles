@@ -6,14 +6,6 @@ import { buildQuery } from './parseQuery';
 import { useTimeRangeFromUrl } from './useTimeRangeFromUrl';
 import { useUrlSearchParams } from './useUrlSearchParams';
 
-type TargetTimeline = 'main' | 'left' | 'right';
-
-const PARAM_NAMES = new Map<TargetTimeline, string>([
-  ['main', 'query'],
-  ['left', 'leftQuery'],
-  ['right', 'rightQuery'],
-]);
-
 function useSetDefaultQuery(hasQuery: boolean, setQuery: (newQuery: string) => void) {
   const [timeRange] = useTimeRangeFromUrl();
   const { services } = useFetchServices({ timeRange, enabled: !hasQuery });
@@ -38,26 +30,15 @@ function useSetDefaultQuery(hasQuery: boolean, setQuery: (newQuery: string) => v
   setQuery(buildQuery({ serviceId, profileMetricId }));
 }
 
-function buildHook(targetTimeline: TargetTimeline) {
-  const paramName = PARAM_NAMES.get(targetTimeline);
-  if (paramName === undefined) {
-    throw new TypeError(`Undefined parameter name for "${targetTimeline}" timeline!`);
-  }
+export function useQueryFromUrl(): [string, (newQuery: string) => void] {
+  const { searchParams, pushNewUrl } = useUrlSearchParams();
+  const query = searchParams.get('query') ?? '';
 
-  return function useQueryFromUrl(): [string, (newQuery: string) => void] {
-    const { searchParams, pushNewUrl } = useUrlSearchParams();
-    const query = searchParams.get(paramName) ?? '';
-
-    const setQuery = (newQuery: string) => {
-      pushNewUrl({ [paramName]: newQuery });
-    };
-
-    useSetDefaultQuery(Boolean(query), setQuery);
-
-    return [query, setQuery];
+  const setQuery = (newQuery: string) => {
+    pushNewUrl({ query: newQuery });
   };
-}
 
-export const useQueryFromUrl = buildHook('main');
-export const useLeftQueryFromUrl = buildHook('left');
-export const useRightQueryFromUrl = buildHook('right');
+  useSetDefaultQuery(Boolean(query), setQuery);
+
+  return [query, setQuery];
+}

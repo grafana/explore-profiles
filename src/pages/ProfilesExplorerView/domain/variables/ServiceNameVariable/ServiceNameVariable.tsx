@@ -8,13 +8,13 @@ import {
   VariableValueOption,
 } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
-import { buildServiceNameCascaderOptions } from '@shared/components/Toolbar/domain/useBuildServiceNameOptions';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
-import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
-import { FiltersVariable } from './FiltersVariable/FiltersVariable';
+import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../../infrastructure/pyroscope-data-sources';
+import { FiltersVariable } from '../FiltersVariable/FiltersVariable';
+import { buildServiceNameCascaderOptions } from './domain/useBuildServiceNameOptions';
 
 type ServiceNameVariableState = {
   query: string;

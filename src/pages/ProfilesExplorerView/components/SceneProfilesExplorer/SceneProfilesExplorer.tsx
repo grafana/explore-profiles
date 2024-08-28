@@ -36,7 +36,7 @@ import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersV
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
