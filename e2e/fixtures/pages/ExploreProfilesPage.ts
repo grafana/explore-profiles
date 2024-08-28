@@ -57,6 +57,21 @@ export class ExploreProfilesPage extends PyroscopePage {
     await expect(this.getTimePicker()).toContainText(expectedTimeRange);
   }
 
+  /* Service */
+
+  getServiceSelector() {
+    return this.page.getByTestId('serviceName').locator('input');
+  }
+
+  async assertSelectedService(expectedService: string) {
+    await expect(this.getServiceSelector()).toHaveValue(expectedService);
+  }
+
+  async selectService(serviceName: string) {
+    await this.getServiceSelector().click();
+    await this.page.locator('[role="menu"]').getByText(serviceName, { exact: true }).click();
+  }
+
   /* Profile type */
 
   getProfileTypeSelector() {
@@ -71,23 +86,31 @@ export class ExploreProfilesPage extends PyroscopePage {
     const [category, type] = profileType.split('/');
 
     await this.getProfileTypeSelector().click();
-    await this.page.getByText(category, { exact: true }).click();
-    await this.page.getByText(type, { exact: true }).click();
+
+    const menu = this.page.locator('[role="menu"]');
+    await menu.getByText(category, { exact: true }).click();
+    await menu.getByText(type, { exact: true }).click();
   }
 
-  /* Service */
+  async assertProfileTypeSelectorOptions(expectedCategories: string[], expectedTypesPerCategory: string[][]) {
+    await this.getProfileTypeSelector().click();
 
-  getServiceSelector() {
-    return this.page.getByTestId('serviceName').locator('input');
-  }
+    const menuItems = this.page.locator('[role="menu"] [role="menuitemcheckbox"]');
+    const categories = await menuItems.allTextContents();
 
-  async assertSelectedService(expectedService: string) {
-    await expect(this.getServiceSelector()).toHaveValue(expectedService);
-  }
+    expect(categories).toEqual(expectedCategories);
 
-  async selectService(serviceName: string) {
-    await this.getServiceSelector().click();
-    await this.page.getByText(serviceName, { exact: true }).click();
+    for (let i = 0; i < categories.length; i += 1) {
+      await menuItems.nth(i).click();
+
+      const categoryTypes = await this.page
+        .locator('[role="menu"]')
+        .last()
+        .locator('[role="menuitemcheckbox"]')
+        .allTextContents();
+
+      expect(categoryTypes).toEqual(expectedTypesPerCategory[i]);
+    }
   }
 
   /* Quick filter */

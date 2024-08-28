@@ -42,6 +42,31 @@ test.describe('Flame graph view', () => {
     });
   });
 
+  test('Dependency between the service selected and the profile type selector options', async ({
+    exploreProfilesPage,
+  }) => {
+    await exploreProfilesPage.assertProfileTypeSelectorOptions(
+      ['process_cpu', 'memory'],
+      [
+        ['cpu', 'samples'],
+        ['alloc_objects', 'alloc_space', 'inuse_objects', 'inuse_space'],
+      ]
+    );
+
+    await exploreProfilesPage.selectService('pyroscope');
+
+    await exploreProfilesPage.assertProfileTypeSelectorOptions(
+      ['process_cpu', 'mutex', 'memory', 'goroutine', 'block'],
+      [
+        ['cpu', 'samples'],
+        ['contentions', 'delay'],
+        ['alloc_objects', 'alloc_space', 'inuse_objects', 'inuse_space'],
+        ['goroutine'],
+        ['contentions', 'delay'],
+      ]
+    );
+  });
+
   test('Filters', async ({ exploreProfilesPage }) => {
     const filter = ['vehicle', '=', 'scooter'];
     await exploreProfilesPage.addFilter(filter);
