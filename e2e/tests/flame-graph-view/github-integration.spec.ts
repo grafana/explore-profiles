@@ -1,20 +1,29 @@
 import { ExplorationType } from '../../config/constants';
 import { expect, test } from '../../fixtures';
 
+const pyroscopeUrlParams = new URLSearchParams({
+  // we use the "pyroscope" service because the static data from "ride-sharing-app" does not work woth the GitHub integration
+  from: 'now-5m',
+  to: 'now',
+  'var-serviceName': 'pyroscope',
+});
+
 test.describe('Flame graph view', () => {
   test.beforeEach(async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.goto(ExplorationType.FlameGraph);
+    await exploreProfilesPage.goto(ExplorationType.FlameGraph, pyroscopeUrlParams);
   });
 
   test.describe('GitHub Integration', () => {
+    const nodePosition = { x: 40, y: 40 };
+
     test('Adds a "Function details" item when clicking on a flame graph node', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 160 });
+      await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
 
       await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Function details')).toBeVisible();
     });
 
     test('After clicking on "Function details", it opens a details panel', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 160 });
+      await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
       await exploreProfilesPage.getFlameGraphContextualMenuItem('Function details').click();
 
       const detailsPanel = exploreProfilesPage.getByTestId('function-details-panel');
@@ -25,20 +34,22 @@ test.describe('Flame graph view', () => {
       const functionNameRow = detailsPanel.getByTestId('row-function-name');
       await expect(functionNameRow.getByText('Function name')).toBeVisible();
       await expect(functionNameRow.locator('span')).toHaveText(
-        'github.com/grafana/pyroscope-rideshare-go/car.OrderCar'
+        'github.com/grafana/dskit/services.(*BasicService).main'
       );
 
       const startLineRow = detailsPanel.getByTestId('row-start-line');
       await expect(startLineRow.getByText('Start line')).toBeVisible();
-      await expect(startLineRow.locator('span')).toHaveText('10');
+      await expect(startLineRow.locator('span')).toHaveText('153');
 
       const filePathRow = detailsPanel.getByTestId('row-file-path');
       await expect(filePathRow.getByText('File')).toBeVisible();
-      await expect(filePathRow.locator('span')).toHaveText('go/src/app/car/car.go/');
+      await expect(filePathRow.locator('span')).toHaveText(
+        'github.com/grafana/dskit@v0.0.0-20231221015914-de83901bf4d6/services/basic_service.go'
+      );
 
       const repositoryRow = detailsPanel.getByTestId('row-repository');
       await expect(repositoryRow.getByText('Repository')).toBeVisible();
-      await expect(repositoryRow.getByText('Connect to grafana/pyroscope-rideshare-go')).toBeVisible();
+      await expect(repositoryRow.getByText('Connect to grafana/pyroscope')).toBeVisible();
 
       const commitRow = detailsPanel.getByTestId('row-commit');
       await expect(commitRow.getByText('Commit')).toBeVisible();
@@ -47,18 +58,26 @@ test.describe('Flame graph view', () => {
       await expect(codeContainer.getByText('Breakdown per line')).toBeVisible();
       await expect(codeContainer.getByText('View on GitHub')).toBeVisible();
 
-      await expect(codeContainer.getByTestId('function-details-code')).toHaveScreenshot(
-        'GitHub-integration-After-clicking-on-Function-details-it-opens-a-details-panel-1.png'
-      );
+      await expect(codeContainer.getByTestId('function-details-code')).toHaveScreenshot();
     });
 
     test('The details panel is automatically closed when loading new data', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 160 });
+      await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
       await exploreProfilesPage.getFlameGraphContextualMenuItem('Function details').click();
 
       await expect(exploreProfilesPage.getByTestId('function-details-panel')).toBeVisible();
 
-      exploreProfilesPage.selectProfileType('memory/alloc_space');
+      await Promise.all([
+        exploreProfilesPage.selectProfileType('memory/alloc_space'),
+        // only needed for this test: we have to throttle the query requests to force the correct loading state in SceneFlameGraph
+        exploreProfilesPage.route('**/*', async (route) => {
+          if (route.request().url().includes('/query')) {
+            await new Promise((f) => setTimeout(f, 250));
+          }
+
+          await route.continue();
+        }),
+      ]);
 
       await expect(exploreProfilesPage.getByTestId('function-details-panel')).not.toBeVisible();
     });
