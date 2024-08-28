@@ -18,7 +18,7 @@ test.describe('Flame graph view', () => {
 
     // body
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+      stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
 
@@ -28,7 +28,7 @@ test.describe('Flame graph view', () => {
     await exploreProfilesPage.assertSelectedService('pyroscope');
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+      stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
 
@@ -38,7 +38,7 @@ test.describe('Flame graph view', () => {
     await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+      stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
 
@@ -48,7 +48,7 @@ test.describe('Flame graph view', () => {
     await exploreProfilesPage.assertFilters([filter]);
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+      stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
 
@@ -61,7 +61,7 @@ test.describe('Flame graph view', () => {
       await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-        stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
 

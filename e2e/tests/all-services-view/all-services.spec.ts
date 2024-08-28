@@ -41,7 +41,7 @@ test.describe('All services view', () => {
     await exploreProfilesPage.selectLayout('Rows');
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+      stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
 
@@ -65,7 +65,7 @@ test.describe('All services view', () => {
       await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-        stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
 
@@ -79,7 +79,7 @@ test.describe('All services view', () => {
       await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-        stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
 
