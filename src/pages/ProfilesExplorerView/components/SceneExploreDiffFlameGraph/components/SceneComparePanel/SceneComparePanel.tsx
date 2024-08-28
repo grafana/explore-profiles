@@ -170,8 +170,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const annotation = timeseriesPanel.state.body.state.$data?.state.data?.annotations?.[0] as RangeAnnotation;
 
     annotation?.fields.some(({ name, values }) => {
-      diffFrom ||= name === 'time' ? values[0] : undefined;
-      diffTo ||= name === 'timeEnd' ? values[0] : undefined;
+      diffFrom = name === 'time' ? values[0] : diffFrom;
+      diffTo = name === 'timeEnd' ? values[0] : diffTo;
       return diffFrom && diffTo;
     });
 
