@@ -39,8 +39,8 @@ test.describe('Plugin Settings', () => {
       await exploreProfilesPage.goto(ExplorationType.FlameGraph);
 
       await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 50 });
-      await expect(exploreProfilesPage.getFlameGraphContextMenuItem('Expand group')).toBeVisible();
-      await expect(exploreProfilesPage.getFlameGraphContextMenuItem('Expand all groups')).toBeVisible();
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand group')).toBeVisible();
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand all groups')).toBeVisible();
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
       await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();
@@ -49,8 +49,8 @@ test.describe('Plugin Settings', () => {
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
 
       await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 50 });
-      await expect(exploreProfilesPage.getFlameGraphContextMenuItem('Expand group')).toBeVisible();
-      await expect(exploreProfilesPage.getFlameGraphContextMenuItem('Expand all groups')).toBeVisible();
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand group')).toBeVisible();
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand all groups')).toBeVisible();
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
       await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();

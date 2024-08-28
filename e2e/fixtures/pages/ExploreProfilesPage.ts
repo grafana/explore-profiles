@@ -212,7 +212,7 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByLabel('Context menu');
   }
 
-  getFlameGraphContextMenuItem(menuItemLabel: string) {
+  getFlameGraphContextualMenuItem(menuItemLabel: string) {
     return this.getFlameGraphContextualMenu().getByRole('menuitem', { name: menuItemLabel, exact: true });
   }
 
