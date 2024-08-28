@@ -1,5 +1,4 @@
-import { ApiClient } from '@shared/infrastructure/http/ApiClient';
-
+import { DataSourceProxyClient } from '../../../../../../../infrastructure/series/http/DataSourceProxyClient';
 import { GitSessionCookieManager, gitSessionCookieManager } from './GitSessionCookieManager';
 
 type GetFileResponse = {
@@ -45,7 +44,7 @@ export const PLACEHOLDER_COMMIT_DATA = Object.freeze({
  * will refresh the `GitSession` cookie whenever it expires and multiple
  * instances will cause unexpected errors and race conditions.
  */
-export class PrivateVcsClient extends ApiClient {
+export class PrivateVcsClient extends DataSourceProxyClient {
   private sessionManager: GitSessionCookieManager;
 
   private pendingQueue: Array<(err: Error | undefined) => void>;
@@ -54,8 +53,8 @@ export class PrivateVcsClient extends ApiClient {
   /** Time interval where the session should be considered expired. */
   private static readonly BIAS_MS = 5 * 60 * 1000; // 5 minutes
 
-  constructor() {
-    super();
+  constructor(options: { dataSourceUid: string }) {
+    super(options);
 
     this.sessionManager = gitSessionCookieManager;
     this.isRefreshing = false;

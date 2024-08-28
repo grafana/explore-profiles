@@ -24,9 +24,15 @@ beforeEach(() => {
   }));
 });
 
+function buildClient() {
+  const { PrivateVcsClient } = require('../PrivateVcsClient');
+  const privateVcsClient = new PrivateVcsClient({ dataSourceUid: 'test-private-vcs-client-uid' });
+  return { privateVcsClient };
+}
+
 describe('PrivateVcsClient queue', () => {
   it('can add a promise to the queue', () => {
-    const { privateVcsClient } = require('../PrivateVcsClient');
+    const { privateVcsClient } = buildClient();
     const client = privateVcsClient as any;
 
     expect(client.pendingQueue).toHaveLength(0);
@@ -35,7 +41,7 @@ describe('PrivateVcsClient queue', () => {
   });
 
   it('can resolve a queue of requests', async () => {
-    const { privateVcsClient } = require('../PrivateVcsClient');
+    const { privateVcsClient } = buildClient();
     const client = privateVcsClient as any;
 
     const postSpy = jest.spyOn(client, 'post').mockReturnValue(200);
@@ -51,7 +57,7 @@ describe('PrivateVcsClient queue', () => {
   });
 
   it('can resolve a queue of requests with an error during refresh', async () => {
-    const { privateVcsClient } = require('../PrivateVcsClient');
+    const { privateVcsClient } = buildClient();
     const client = privateVcsClient as any;
 
     const postSpy = jest.spyOn(client, 'post');
@@ -67,7 +73,7 @@ describe('PrivateVcsClient queue', () => {
 
 describe('PrivateVcsClient postWithRefresh', () => {
   it("doesn't refresh with a non-expired session", async () => {
-    const { privateVcsClient } = require('../PrivateVcsClient');
+    const { privateVcsClient } = buildClient();
     const client = privateVcsClient as any;
 
     const mockDate = new Date(1713212000000); // 2024-04-15T20:13:20.000Z
@@ -89,7 +95,7 @@ describe('PrivateVcsClient postWithRefresh', () => {
   });
 
   it('refreshes with an expired session', async () => {
-    const { privateVcsClient } = require('../PrivateVcsClient');
+    const { privateVcsClient } = buildClient();
     const client = privateVcsClient as any;
 
     const mockDate = new Date(1713212000000); // 2024-04-15T20:13:20.000Z

@@ -1,11 +1,21 @@
 import { VcsClient } from '../../../../infrastructure/VcsClient';
 import { authFromUrl } from '../authFromUrl';
 
-const vcsClient = new VcsClient({ dataSourceUid: 'test-auth-from-url-uid' });
-vcsClient.githubLogin = jest.fn().mockResolvedValue({});
-vcsClient.githubApp = jest.fn().mockResolvedValue('');
+jest.mock('../../../../infrastructure/VcsClient', () => {
+  class VcsClientMock {
+    githubLogin = jest.fn(async () => ({}));
 
-describe('authFromUrl(urlSearchParams, nonce)', () => {
+    githubApp = jest.fn(async () => '');
+  }
+
+  return {
+    VcsClient: VcsClientMock,
+  };
+});
+
+const vcsClient = new VcsClient({ dataSourceUid: 'test-auth-from-url-uid' });
+
+describe('authFromUrl(vcsClient, urlSearchParams, nonce)', () => {
   describe('if the "code" parameter is not in the URL', () => {
     it('returns an empty string', async () => {
       const result = await authFromUrl(vcsClient, new URLSearchParams(), 'crypto-nonce');
