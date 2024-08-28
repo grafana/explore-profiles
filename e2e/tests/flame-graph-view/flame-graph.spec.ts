@@ -67,13 +67,33 @@ test.describe('Flame graph view', () => {
     );
   });
 
-  test('Filters', async ({ exploreProfilesPage }) => {
-    const filter = ['vehicle', '=', 'scooter'];
-    await exploreProfilesPage.addFilter(filter);
-    await exploreProfilesPage.assertFilters([filter]);
+  test.describe('Filters', () => {
+    test('Adding a filter', async ({ exploreProfilesPage }) => {
+      const filter = ['vehicle', '=', 'scooter'];
+      await exploreProfilesPage.addFilter(filter);
+      await exploreProfilesPage.assertFilters([filter]);
 
-    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test('Filters are persisted when changing the profile type', async ({ exploreProfilesPage }) => {
+      const filter = ['vehicle', '=', 'bike'];
+      await exploreProfilesPage.addFilter(filter);
+
+      await exploreProfilesPage.selectProfileType('memory/alloc_space');
+
+      await exploreProfilesPage.assertFilters([filter]);
+    });
+
+    test('Filters are cleared when changing the service', async ({ exploreProfilesPage }) => {
+      const filter = ['vehicle', '=', 'car'];
+      await exploreProfilesPage.addFilter(filter);
+
+      await exploreProfilesPage.selectService('pyroscope');
+
+      await exploreProfilesPage.assertFilters([]);
     });
   });
 
