@@ -251,7 +251,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
     margin-bottom: ${theme.spacing(2)};
 
     & > h6 {
-      margin-top: -2px;
+      height: 32px;
+      line-height: 32px;
+      margin: 0 ${theme.spacing(1)} 0 0;
     }
   `,
   timePicker: css`
