@@ -7,7 +7,6 @@ import {
 } from '@grafana/scenes';
 import React from 'react';
 
-import { PanelType } from '../../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneDrawer } from '../../components/SceneDrawer';
@@ -17,11 +16,10 @@ import { EventExpandPanel } from '../../domain/events/EventExpandPanel';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { FavoriteVariable } from '../../domain/variables/FavoriteVariable';
+import { panelBuilder } from '../../helpers/panelBuilder';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
-import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 
 interface SceneExploreFavoritesState extends EmbeddedSceneState {
   drawer: SceneDrawer;
@@ -102,25 +100,19 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
+    const headerActions = () => [
+      new SelectAction({ EventClass: EventViewServiceLabels, item }),
+      new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+    ];
+
     this.state.drawer.open({
       title: item.label,
-      body:
-        item.panelType === PanelType.BARGAUGE
-          ? new SceneLabelValuesBarGauge({
-              item,
-              headerActions: () => [
-                new SelectAction({ EventClass: EventViewServiceLabels, item }),
-                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-              ],
-            })
-          : new SceneLabelValuesTimeseries({
-              displayAllValues: true,
-              item,
-              headerActions: () => [
-                new SelectAction({ EventClass: EventViewServiceLabels, item }),
-                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-              ],
-            }),
+      body: panelBuilder(item.panelType, {
+        displayAllValues: true,
+        legendPlacement: 'right',
+        item,
+        headerActions,
+      }),
     });
   }
 
