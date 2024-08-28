@@ -1,4 +1,4 @@
-import { expect, test } from '../fixtures';
+import { expect, test } from '../../fixtures';
 
 test.describe('Onboarding', () => {
   test('displays an onboarding modal that can be closed', async ({ page }) => {
