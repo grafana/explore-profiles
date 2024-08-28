@@ -27,7 +27,7 @@ test.describe('Plugin Settings', () => {
   });
 
   test.describe('Flame graph settings', () => {
-    test('Can be modified for the "Flame graph" view', async ({ settingsPage, exploreProfilesPage }) => {
+    test('Can be modified for the "Flame graph" views', async ({ settingsPage, exploreProfilesPage }) => {
       await settingsPage.resetTestSettings();
 
       await settingsPage.getCollapsedFlamegraphsCheckbox().click();
