@@ -1,3 +1,15 @@
+## [0.1.7](https://github.com/grafana/explore-profiles/compare/v0.1.6...v0.1.7) (2024-08-29)
+
+
+### Features
+
+* Add histogram visualizations ([#141](https://github.com/grafana/explore-profiles/issues/141)) ([2265be7](https://github.com/grafana/explore-profiles/commit/2265be70ea67cfdc44aad33e1a1f7951076db815))
+* create new browser history entry on some user actions  ([#128](https://github.com/grafana/explore-profiles/issues/128)) ([5439ab3](https://github.com/grafana/explore-profiles/commit/5439ab32f0e4a21f3affbe6bfbe12da7cacd12b1))
+* **DiffFlameGraph:** Add flame graph range in timeseries legend ([#140](https://github.com/grafana/explore-profiles/issues/140)) ([8729c31](https://github.com/grafana/explore-profiles/commit/8729c31dddf383d2d6ca4c2178397045c31d9654))
+* **GitHubIntegration:** Migrate GitHub integration to Scenes ([#142](https://github.com/grafana/explore-profiles/issues/142)) ([0386bbc](https://github.com/grafana/explore-profiles/commit/0386bbc369538763c69fce1cc07a45fb82619beb))
+
+
+
 ## [0.1.6](https://github.com/grafana/explore-profiles/compare/v0.1.5...v0.1.6) (2024-08-27)
 
 
