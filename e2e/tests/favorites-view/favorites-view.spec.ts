@@ -31,7 +31,7 @@ test.describe('Favorites view', () => {
     // body scene controls
     await exploreProfilesPage.assertQuickFilter('Search favorites (comma-separated regexes are supported)', '');
     await exploreProfilesPage.assertSelectedLayout('Grid');
-    await exploreProfilesPage.assertNoDataSwitcher(false);
+    await exploreProfilesPage.assertHideNoDataSwitcher(false);
 
     // body
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
@@ -53,6 +53,25 @@ test.describe('Favorites view', () => {
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
       stylePath: './e2e/fixtures/css/hide-all-controls.css',
+    });
+  });
+
+  test.describe('Hide no data switcher', () => {
+    test('Removes the panels without data from the grid', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectTimeRange('Last 5 minutes');
+
+      await expect(exploreProfilesPage.getPanels()).toHaveCount(4);
+      await expect(exploreProfilesPage.getPanelByTitle('load-generator · cpu (process_cpu)')).toBeVisible();
+      await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
+      await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)')).toBeVisible();
+      await expect(
+        exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle (4)')
+      ).toBeVisible();
+
+      await exploreProfilesPage.selectHidePanelsWithoutNoData();
+
+      await expect(exploreProfilesPage.getPanels()).toHaveCount(1);
+      await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
     });
   });
 

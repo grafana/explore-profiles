@@ -49,12 +49,17 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   /* Time picker/refresh */
 
-  getTimePicker() {
+  getTimePickerButton() {
     return this.getByTestId('data-testid TimePicker Open Button');
   }
 
   async assertSelectedTimeRange(expectedTimeRange: string) {
-    await expect(this.getTimePicker()).toContainText(expectedTimeRange);
+    await expect(this.getTimePickerButton()).toContainText(expectedTimeRange);
+  }
+
+  async selectTimeRange(quickRangeLabel: string) {
+    await this.getTimePickerButton().click();
+    await this.getByTestId('data-testid TimePicker Overlay Content').getByText(quickRangeLabel).click();
   }
 
   getRefreshPicker() {
@@ -151,25 +156,25 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getLayoutSwitcher().getByLabel(layoutName).click();
   }
 
-  /* No data switch */
+  /* Hide panels without data switcher */
 
-  async getNoDataSwitcher() {
-    const inputId = await this.getByLabel('Hide panels without data').getAttribute('for');
-    return this.locator(`input[type="checkbox"]#${inputId}`);
+  getHideNoDataSwitcher() {
+    return this.getByTestId('noDataSwitcher');
   }
 
-  async assertNoDataSwitcher(isChecked: boolean) {
-    const checkBoxInput = await this.getNoDataSwitcher();
-
+  async assertHideNoDataSwitcher(isChecked: boolean) {
     if (isChecked) {
-      await expect(checkBoxInput).toBeChecked();
+      await expect(this.getHideNoDataSwitcher()).toBeChecked();
     } else {
-      await expect(checkBoxInput).not.toBeChecked();
+      await expect(this.getHideNoDataSwitcher()).not.toBeChecked();
     }
   }
 
-  async selectNoData() {
-    return (await this.getNoDataSwitcher()).click();
+  async selectHidePanelsWithoutNoData() {
+    // weirdly the mouse is on the "Flame graph" panel action at this point
+    // so we have to move it for the label to become actionable
+    await this.page.mouse.move(0, 0);
+    await this.getByLabel('Hide panels without data').click();
   }
 
   /* Scene body & grid panels */
