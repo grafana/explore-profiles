@@ -155,6 +155,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
     return (
       <Button
         className={styles.selectButton}
+        aria-label={label}
         variant="primary"
         size="sm"
         fill="text"

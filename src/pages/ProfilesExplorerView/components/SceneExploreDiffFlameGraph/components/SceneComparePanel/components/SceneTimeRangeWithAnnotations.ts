@@ -1,4 +1,4 @@
-import { dateTime, TimeRange } from '@grafana/data';
+import { dateTime, LoadingState, TimeRange } from '@grafana/data';
 import {
   sceneGraph,
   SceneObjectBase,
@@ -81,7 +81,7 @@ export class SceneTimeRangeWithAnnotations
 
     this._subs.add(
       this.getTimeseries().state.$data?.subscribeToState((newState, prevState) => {
-        if (!newState.data) {
+        if (!newState.data || newState.data.state !== LoadingState.Done) {
           return;
         }
 

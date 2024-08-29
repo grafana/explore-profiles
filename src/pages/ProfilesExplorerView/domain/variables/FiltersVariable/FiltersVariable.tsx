@@ -3,8 +3,7 @@ import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/
 import { useStyles2 } from '@grafana/ui';
 import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
-import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { useBuildPyroscopeQuery } from '../../useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
@@ -47,17 +46,10 @@ export class FiltersVariable extends AdHocFiltersVariable {
 
   static Component = ({ model }: SceneComponentProps<AdHocFiltersVariable & { onChangeQuery?: any }>) => {
     const styles = useStyles2(getStyles);
+
     const { key } = model.useState();
-    const [, setQuery] = useQueryFromUrl();
 
     const query = useBuildPyroscopeQuery(model, key as string);
-
-    useEffect(() => {
-      if (typeof query === 'string') {
-        // Explain Flame Graph (AI button) depends on the query value so we have to sync it here
-        setQuery(query);
-      }
-    }, [query, setQuery]);
 
     const { value: dataSourceUid } = sceneGraph
       .findByKeyAndType(model, 'dataSource', ProfilesDataSourceVariable)

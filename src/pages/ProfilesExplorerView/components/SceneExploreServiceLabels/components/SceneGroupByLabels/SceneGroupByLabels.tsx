@@ -25,6 +25,7 @@ import { addFilter } from '../../../../domain/variables/FiltersVariable/filters-
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
+import { panelBuilder } from '../../../../helpers/panelBuilder';
 import { interpolateQueryRunnerVariables } from '../../../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { SceneLayoutSwitcher } from '../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -38,8 +39,6 @@ import { SceneQuickFilter } from '../../../SceneByVariableRepeaterGrid/component
 import { SceneByVariableRepeaterGrid } from '../../../SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneDrawer } from '../../../SceneDrawer';
-import { SceneLabelValuesBarGauge } from '../../../SceneLabelValuesBarGauge';
-import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
 import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
@@ -276,20 +275,18 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   openExpandedPanelDrawer(item: GridItemData) {
     const serviceName = getSceneVariableValue(this, 'serviceName');
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    const title = `${serviceName} · ${getProfileMetricLabel(profileMetricId)} · ${item.label}`;
+
+    const headerActions = () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })];
 
     this.state.drawer.open({
-      title: `${serviceName} · ${getProfileMetricLabel(profileMetricId)} · ${item.label}`,
-      body:
-        item.panelType === PanelType.BARGAUGE
-          ? new SceneLabelValuesBarGauge({
-              item,
-              headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
-            })
-          : new SceneLabelValuesTimeseries({
-              displayAllValues: true,
-              item,
-              headerActions: () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })],
-            }),
+      title,
+      body: panelBuilder(item.panelType, {
+        displayAllValues: true,
+        legendPlacement: 'right',
+        item,
+        headerActions,
+      }),
     });
   }
 

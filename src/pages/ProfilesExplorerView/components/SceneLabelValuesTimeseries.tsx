@@ -9,7 +9,8 @@ import {
   VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
-import { GraphGradientMode } from '@grafana/schema';
+import { GraphGradientMode, SortOrder } from '@grafana/schema';
+import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
@@ -29,8 +30,9 @@ import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
-  displayAllValues: boolean;
   body: VizPanel;
+  displayAllValues: boolean;
+  legendPlacement: VizLegendOptions['placement'];
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
 }
 
@@ -39,12 +41,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     item,
     headerActions,
     displayAllValues,
+    legendPlacement,
     data,
     overrides,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
     displayAllValues?: SceneLabelValuesTimeseriesState['displayAllValues'];
+    legendPlacement?: SceneLabelValuesTimeseriesState['legendPlacement'];
     data?: SceneDataProvider;
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
   }) {
@@ -53,6 +57,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       item,
       headerActions,
       displayAllValues: Boolean(displayAllValues),
+      legendPlacement: legendPlacement || 'bottom',
       overrides,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
@@ -75,9 +80,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
-    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState) => {
+    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
         return;
+      }
+
+      // ensure we retain the previous annotations, if they exist
+      if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
+        newState.data.annotations = prevState.data.annotations;
       }
 
       const { series } = newState.data;
@@ -98,8 +108,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   getConfig(series: DataFrame[]) {
-    const { item } = this.state;
-    let { title } = this.state.body.state;
+    const { body, item, legendPlacement } = this.state;
+    let { title } = body.state;
     let description;
 
     if (item.queryRunnerParams.groupBy?.label) {
@@ -116,6 +126,17 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     return {
       title,
       description,
+      options: {
+        tooltip: {
+          mode: 'single',
+          sort: 'none',
+        },
+        legend: {
+          showLegend: true,
+          displayMode: 'list',
+          placement: legendPlacement,
+        },
+      },
       fieldConfig: {
         defaults: {
           min: 0,
@@ -130,7 +151,21 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   getAllValuesConfig(series: DataFrame[]) {
+    const { legendPlacement } = this.state;
+
     return {
+      options: {
+        tooltip: {
+          mode: TooltipDisplayMode.Single,
+          sort: SortOrder.None,
+        },
+        legend: {
+          showLegend: true,
+          displayMode: LegendDisplayMode.List,
+          placement: legendPlacement,
+          calcs: [],
+        },
+      },
       fieldConfig: {
         defaults: {
           min: 0,

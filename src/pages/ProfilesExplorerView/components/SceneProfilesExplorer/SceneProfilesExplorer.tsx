@@ -411,8 +411,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     return (
       <>
-        <div className={styles.header}>
-          <div className={styles.controls}>
+        <div className={styles.header} data-testid="allControls">
+          <div className={styles.controls} data-testid="appControls">
             <div className={styles.headerLeft}>
               <div className={styles.dataSourceVariable}>
                 <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
@@ -443,9 +443,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             </div>
           </div>
 
-          <div id={`scene-controls-${explorationType}`} className={styles.sceneControls}>
+          <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
             {sceneVariables.map((variable) => (
-              <div key={variable.state.name} className={styles.variable}>
+              <div key={variable.state.name} className={styles.variable} data-testid={variable.state.name}>
                 <InlineLabel width="auto">{variable.state.label}</InlineLabel>
                 <variable.Component model={variable} />
               </div>
@@ -457,7 +457,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           </div>
         </div>
 
-        <div className={styles.body}>{body && <body.Component model={body} />}</div>
+        <div className={styles.body} data-testid="sceneBody">
+          {body && <body.Component model={body} />}
+        </div>
       </>
     );
   }

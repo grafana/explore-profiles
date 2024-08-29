@@ -34,10 +34,12 @@ export class PyroscopePage {
     return this.page.getByRole(role, options);
   }
 
+  // TODO: check if we can delete it once legacy comparison views have been removed from the code base
   clickOnNavLink(label: string) {
     return this.page.getByLabel(label).click();
   }
 
+  // TODO: check if we can delete it once legacy comparison views have been removed from the code base
   getTitle() {
     return this.page.getByTestId('page-title');
   }
@@ -51,6 +53,7 @@ export class PyroscopePage {
     return queryAnalysisSpan;
   }
 
+  // TODO: check if we can delete it once legacy comparison views have been removed from the code base
   async assertNoLoadingPanels() {
     const slowExpect = expect.configure({ timeout: 10000 });
 
