@@ -19,6 +19,7 @@ import {
 } from '@grafana/scenes';
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
+import { prepareHistoryEntry } from '@shared/domain/history';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
@@ -150,11 +151,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const eventsSub = this.subscribeToEvents();
 
-    this.setExplorationType({
-      type: Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
-        ? (this.state.explorationType as ExplorationType)
-        : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
-    });
+    if (!this.state.explorationType) {
+      this.setExplorationType({
+        type: SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
+    }
 
     return () => {
       eventsSub.unsubscribe();
@@ -168,13 +169,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   updateFromUrl(values: SceneObjectUrlValues) {
-    const stateUpdate: Partial<SceneProfilesExplorerState> = {};
-
     if (typeof values.explorationType === 'string' && values.explorationType !== this.state.explorationType) {
-      stateUpdate.explorationType = values.explorationType as ExplorationType;
+      const type = values.explorationType as ExplorationType;
+      this.setExplorationType({
+        type: Object.values(ExplorationType).includes(type) ? type : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
     }
-
-    this.setState(stateUpdate);
   }
 
   registerRuntimeDataSources() {
@@ -247,6 +247,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     item?: GridItemData;
   }) {
     if (comesFromUserAction) {
+      prepareHistoryEntry();
       this.resetVariables(type);
     }
 
