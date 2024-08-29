@@ -100,7 +100,7 @@ test.describe('Favorites view', () => {
       });
     });
 
-    test.only('Expand panel action', async ({ exploreProfilesPage }) => {
+    test('Expand panel action', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.clickOnPanelAction(
         'ride-sharing-app · samples (process_cpu) · vehicle (4)',
         'Expand panel'
