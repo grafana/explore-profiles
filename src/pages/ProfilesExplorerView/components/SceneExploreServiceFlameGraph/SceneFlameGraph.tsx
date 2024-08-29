@@ -3,14 +3,11 @@ import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/da
 import { FlameGraph } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
-import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
 import { displayWarning } from '@shared/domain/displayStatus';
-import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-profile/timelineAndProfileApiClient';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { Panel } from '@shared/ui/Panel/Panel';
 import React, { useEffect, useMemo } from 'react';
@@ -22,13 +19,16 @@ import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/bui
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
-import { SceneExportMenu } from './components/SceneExportMenu';
+import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
+import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
+import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
   lastTimeRange?: TimeRange;
-  aiPanel: SceneAiPanel;
   exportMenu: SceneExportMenu;
+  aiPanel: SceneAiPanel;
+  functionDetailsPanel: SceneFunctionDetailsPanel;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -42,8 +42,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         queries: [],
       }),
       lastTimeRange: undefined,
-      aiPanel: new SceneAiPanel(),
       exportMenu: new SceneExportMenu(),
+      aiPanel: new SceneAiPanel(),
+      functionDetailsPanel: new SceneFunctionDetailsPanel(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -63,12 +64,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
       dataSubscription = newState.$data?.subscribeToState((newDataState) => {
         if (newDataState.data?.state === LoadingState.Done) {
-          const lastTimeRange = newDataState.data.timeRange;
-
-          // For the "Function Details" feature only
-          timelineAndProfileApiClient.setLastTimeRange(lastTimeRange);
-
-          this.setState({ lastTimeRange });
+          this.setState({ lastTimeRange: newDataState.data.timeRange });
         }
       });
     });
@@ -93,7 +89,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, lastTimeRange, aiPanel, exportMenu } = this.useState();
+    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel } = this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -125,13 +121,17 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         hasProfileData,
         profileData,
         settings,
+        export: {
+          menu: exportMenu,
+          query,
+          timeRange: lastTimeRange,
+        },
         ai: {
           panel: aiPanel,
           fetchParams: [{ query, timeRange: lastTimeRange }],
         },
-        export: {
-          menu: exportMenu,
-          query,
+        gitHub: {
+          panel: functionDetailsPanel,
           timeRange: lastTimeRange,
         },
       },
@@ -202,9 +202,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         )}
 
         {sidePanel.isOpen('function-details') && (
-          <FunctionDetailsPanel
-            className={styles.sidePanel}
-            stacktrace={gitHubIntegration.data.stacktrace}
+          <data.gitHub.panel.Component
+            model={data.gitHub.panel}
+            timeRange={data.gitHub.timeRange}
+            stackTrace={gitHubIntegration.data.stacktrace}
             onClose={sidePanel.close}
           />
         )}
@@ -220,11 +221,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
   flamegraphPanel: css`
     min-width: 0;
     flex-grow: 1;
-  `,
-  sidePanel: css`
-    flex: 1 0 50%;
-    margin-left: 8px;
-    max-width: calc(50% - 4px);
   `,
   spinner: css`
     margin-left: ${theme.spacing(1)};

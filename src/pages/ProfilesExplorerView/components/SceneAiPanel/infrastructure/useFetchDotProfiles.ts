@@ -13,7 +13,7 @@ export type FetchParams = Array<{
 const MAX_NODES = 100;
 
 export function useFetchDotProfiles(dataSourceUid: string, fetchParams: FetchParams) {
-  const profileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, ProfileApiClient) as ProfileApiClient;
+  const profileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, ProfileApiClient);
 
   const { isFetching, error, data } = useQuery({
     queryKey: [

@@ -1,20 +1,22 @@
 import { DataSourceProxyClient } from './DataSourceProxyClient';
 
-type ApiClientContructor = new (options: { dataSourceUid: string }) => DataSourceProxyClient;
-
 export class DataSourceProxyClientBuilder {
   private static cache = new Map<string, DataSourceProxyClient>();
 
-  static build(dataSourceUid: string, ApiClientClass: ApiClientContructor): DataSourceProxyClient {
+  static build<ApiClentType>(
+    dataSourceUid: string,
+    ApiClientClass: { new (options: { dataSourceUid: string }): ApiClentType }
+  ) {
     const cacheKey = `${dataSourceUid}-${ApiClientClass.name}`;
 
-    if (DataSourceProxyClientBuilder.cache.has(cacheKey)) {
-      return DataSourceProxyClientBuilder.cache.get(cacheKey) as DataSourceProxyClient;
+    const cachedInstance = DataSourceProxyClientBuilder.cache.get(cacheKey);
+    if (cachedInstance instanceof ApiClientClass) {
+      return cachedInstance;
     }
 
     const clientInstance = new ApiClientClass({ dataSourceUid });
 
-    DataSourceProxyClientBuilder.cache.set(cacheKey, clientInstance);
+    DataSourceProxyClientBuilder.cache.set(cacheKey, clientInstance as DataSourceProxyClient);
 
     return clientInstance;
   }

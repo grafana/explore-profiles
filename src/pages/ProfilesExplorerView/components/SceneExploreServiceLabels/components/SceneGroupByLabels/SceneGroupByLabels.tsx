@@ -24,7 +24,7 @@ import { addFilter } from '../../../../domain/variables/FiltersVariable/filters-
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
-import { panelBuilder } from '../../../../helpers/panelBuilder';
+import { vizPanelBuilder } from '../../../../helpers/vizPanelBuilder';
 import { interpolateQueryRunnerVariables } from '../../../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { SceneLayoutSwitcher } from '../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -279,7 +279,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     this.state.drawer.open({
       title,
-      body: panelBuilder(item.panelType, {
+      body: vizPanelBuilder(item.panelType, {
         displayAllValues: true,
         legendPlacement: 'right',
         item,
