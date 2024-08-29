@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { AiPanel } from '@shared/components/AiPanel/AiPanel';
 import { AIButton } from '@shared/components/AiPanel/components/AIButton';
@@ -7,7 +6,7 @@ import { SidePanel } from '@shared/domain/useToggleSidePanel';
 import { Panel } from '@shared/ui/Panel/Panel';
 import React, { ReactNode } from 'react';
 
-export const getStyles = (theme: GrafanaTheme2) => ({
+export const getStyles = () => ({
   flex: css`
     display: flex;
   `,
@@ -19,9 +18,6 @@ export const getStyles = (theme: GrafanaTheme2) => ({
     flex: 1 0 50%;
     margin-left: 8px;
     max-width: calc(50% - 4px);
-  `,
-  aiButton: css`
-    margin-top: ${theme.spacing(1)};
   `,
 });
 
@@ -49,7 +45,6 @@ export function ComparisonDiffPanel({
         title={isLoading ? <Spinner /> : null}
         headerActions={
           <AIButton
-            className={styles.aiButton}
             onClick={() => sidePanel.open('ai')}
             disabled={isLoading || !showExplainFlameGraphButton || sidePanel.isOpen('ai')}
             interactionName="g_pyroscope_app_explain_flamegraph_clicked"

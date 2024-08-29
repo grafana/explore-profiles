@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS } from '../../config/constants';
+import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS, ExplorationType } from '../../config/constants';
 import { PyroscopePage } from './PyroscopePage';
 
 export class ExploreProfilesPage extends PyroscopePage {
@@ -10,19 +10,21 @@ export class ExploreProfilesPage extends PyroscopePage {
     super(page, '/a/grafana-pyroscope-app/profiles-explorer', urlParams.toString());
   }
 
-  goto(explorationType: string | undefined) {
-    if (!explorationType) {
-      return super.goto();
-    }
+  goto(explorationType: ExplorationType, urlSearchParams = new URLSearchParams()) {
+    const urlParams = new URLSearchParams({
+      ...Object.fromEntries(DEFAULT_EXPLORE_PROFILES_URL_PARAMS),
+      ...Object.fromEntries(urlSearchParams),
+    });
 
-    const urlParams = new URLSearchParams(DEFAULT_EXPLORE_PROFILES_URL_PARAMS);
     urlParams.set('explorationType', explorationType);
 
     return super.goto(urlParams.toString());
   }
 
+  /* Data source */
+
   getDataSourceSelector() {
-    return this.page.locator('#dataSource');
+    return this.locator('#dataSource');
   }
 
   async assertSelectedDataSource(expectedDataSource: string) {
@@ -30,8 +32,10 @@ export class ExploreProfilesPage extends PyroscopePage {
     await expect(name?.trim()).toBe(expectedDataSource);
   }
 
+  /* Exploration type */
+
   getExplorationTypeSelector() {
-    return this.page.getByTestId('exploration-types');
+    return this.getByTestId('exploration-types');
   }
 
   async asserSelectedExplorationType(expectedLabel: string) {
@@ -43,16 +47,35 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getExplorationTypeSelector().getByLabel(explorationType).click();
   }
 
+  /* Time picker */
+
   getTimePicker() {
-    return this.page.getByTestId('data-testid TimePicker Open Button');
+    return this.getByTestId('data-testid TimePicker Open Button');
   }
 
   async assertSelectedTimeRange(expectedTimeRange: string) {
     await expect(this.getTimePicker()).toContainText(expectedTimeRange);
   }
 
+  /* Service */
+
+  getServiceSelector() {
+    return this.getByTestId('serviceName').locator('input');
+  }
+
+  async assertSelectedService(expectedService: string) {
+    await expect(this.getServiceSelector()).toHaveValue(expectedService);
+  }
+
+  async selectService(serviceName: string) {
+    await this.getServiceSelector().click();
+    await this.locator('[role="menu"]').getByText(serviceName, { exact: true }).click();
+  }
+
+  /* Profile type */
+
   getProfileTypeSelector() {
-    return this.page.getByTestId('profileMetricId').locator('input');
+    return this.getByTestId('profileMetricId').locator('input');
   }
 
   async assertSelectedProfileType(expectedProfileType: string) {
@@ -63,25 +86,36 @@ export class ExploreProfilesPage extends PyroscopePage {
     const [category, type] = profileType.split('/');
 
     await this.getProfileTypeSelector().click();
-    await this.page.getByText(category, { exact: true }).click();
-    await this.page.getByText(type, { exact: true }).click();
+
+    const menu = this.locator('[role="menu"]');
+    await menu.getByText(category, { exact: true }).click();
+    await menu.getByText(type, { exact: true }).click();
   }
 
-  getServiceSelector() {
-    return this.page.getByTestId('serviceName').locator('input');
+  async assertProfileTypeSelectorOptions(expectedCategories: string[], expectedTypesPerCategory: string[][]) {
+    await this.getProfileTypeSelector().click();
+
+    const menuItems = this.locator('[role="menu"] [role="menuitemcheckbox"]');
+    const categories = await menuItems.allTextContents();
+
+    expect(categories).toEqual(expectedCategories);
+
+    for (let i = 0; i < categories.length; i += 1) {
+      await menuItems.nth(i).click();
+
+      const categoryTypes = await this.locator('[role="menu"]')
+        .last()
+        .locator('[role="menuitemcheckbox"]')
+        .allTextContents();
+
+      expect(categoryTypes).toEqual(expectedTypesPerCategory[i]);
+    }
   }
 
-  async assertSelectedService(expectedService: string) {
-    await expect(this.getServiceSelector()).toHaveValue(expectedService);
-  }
-
-  async selectService(serviceName: string) {
-    await this.getServiceSelector().click();
-    await this.page.getByText(serviceName, { exact: true }).click();
-  }
+  /* Quick filter */
 
   getQuickFilterInput() {
-    return this.page.getByLabel('Quick filter');
+    return this.getByLabel('Quick filter');
   }
 
   async assertQuickFilterValue(expectedValue: string) {
@@ -93,8 +127,10 @@ export class ExploreProfilesPage extends PyroscopePage {
     await this.waitForTimeout(250); // see SceneQuickFilter.DEBOUNCE_DELAY
   }
 
+  /* Layout switcher */
+
   getLayoutSwitcher() {
-    return this.page.getByLabel('Layout switcher');
+    return this.getByLabel('Layout switcher');
   }
 
   async assertSelectedLayout(expectedLayoutName: string) {
@@ -106,8 +142,10 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getLayoutSwitcher().getByLabel(layoutName).click();
   }
 
+  /* Scene body & grid panels */
+
   getSceneBody() {
-    return this.page.getByTestId('sceneBody');
+    return this.getByTestId('sceneBody');
   }
 
   getPanelByTitle(title: string) {
@@ -116,5 +154,73 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   getPanels() {
     return this.getSceneBody().locator(`[data-viz-panel-key]`);
+  }
+
+  async clickOnPanelAction(panelTitle: string, actionLabel: string) {
+    const panel = await this.getPanelByTitle(panelTitle);
+    await panel.getByLabel(actionLabel).click();
+  }
+
+  /* Filters */
+
+  getFilters() {
+    return this.getByTestId('filters');
+  }
+
+  async assertFilters(expectedFilters: string[][]) {
+    const filters = this.getFilters().getByTestId('filtersList').getByLabel('Filter', { exact: true });
+
+    await expect(filters).toHaveCount(expectedFilters.length);
+
+    for (let i = 0; i < expectedFilters.length; i += 1) {
+      const [expectedLabel, expectedOperator, expectedValue] = expectedFilters[i];
+
+      const filter = filters.nth(0);
+      const filterParts = filter.locator('button');
+
+      await expect(filterParts.nth(0)).toHaveText(expectedLabel);
+      await expect(filterParts.nth(1)).toHaveText(expectedOperator);
+      await expect(filterParts.nth(2)).toHaveText(expectedValue);
+    }
+  }
+
+  async addFilter(parts: string[]) {
+    await this.getFilters().getByRole('combobox').click();
+
+    const selectMenu = this.getByLabel('Select options menu');
+
+    for (const part of parts) {
+      await selectMenu.getByText(part, { exact: true }).click();
+    }
+  }
+
+  /* Flame graph component */
+
+  getExportDataButton() {
+    return this.getByLabel('Export data');
+  }
+
+  getFlamegraph() {
+    return this.getByTestId('flameGraph');
+  }
+
+  getTopTable() {
+    return this.getByTestId('topTable');
+  }
+
+  clickOnFlameGraphNode({ x, y }: { x: number; y: number }) {
+    return this.getFlamegraph().click({ position: { x, y } });
+  }
+
+  getFlameGraphContextualMenu() {
+    return this.getByLabel('Context menu');
+  }
+
+  getFlameGraphContextualMenuItem(menuItemLabel: string) {
+    return this.getFlameGraphContextualMenu().getByRole('menuitem', { name: menuItemLabel, exact: true });
+  }
+
+  closeFlameGraphContextualMenu() {
+    return this.getByTestId('panel').getByRole('heading').click();
   }
 }

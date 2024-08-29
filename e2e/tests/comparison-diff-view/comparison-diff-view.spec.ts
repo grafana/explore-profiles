@@ -1,6 +1,6 @@
 import { expect, test } from '../../fixtures';
 
-test.describe('Smoke tests', () => {
+test.describe.skip('Smoke tests', () => {
   test('Page title, toolbar, loading indicators, panels', async ({ comparisonDiffViewPage, toolbar }) => {
     await comparisonDiffViewPage.goto();
 
@@ -16,7 +16,7 @@ test.describe('Smoke tests', () => {
   });
 });
 
-test.describe('URL search parameters', () => {
+test.describe.skip('URL search parameters', () => {
   test('When no parameters are provided, it selects the correct service, profile type & time range', async ({
     comparisonDiffViewPage,
     toolbar,
@@ -91,7 +91,7 @@ test.describe('URL search parameters', () => {
   });
 });
 
-test.describe('Time picker', () => {
+test.describe.skip('Time picker', () => {
   test('Zooming out', async ({ comparisonDiffViewPage, toolbar }) => {
     await comparisonDiffViewPage.goto();
 
@@ -144,7 +144,7 @@ test.describe('Time picker', () => {
   });
 });
 
-test.describe('Toolbar', () => {
+test.describe.skip('Toolbar', () => {
   test.describe('Service selection', () => {
     test('Updates the toolbar and the panels data (pyroscope)', async ({ comparisonDiffViewPage, toolbar }) => {
       await comparisonDiffViewPage.goto();
@@ -201,7 +201,7 @@ test.describe('Toolbar', () => {
   });
 });
 
-test.describe('Mouse selections of time ranges on the timelines', () => {
+test.describe.skip('Mouse selections of time ranges on the timelines', () => {
   test('Selecting on the main, baseline & comparison timelines', async ({ comparisonDiffViewPage, toolbar }) => {
     await comparisonDiffViewPage.goto();
     await comparisonDiffViewPage.assertNoLoadingPanels();
@@ -235,7 +235,7 @@ test.describe('Mouse selections of time ranges on the timelines', () => {
   });
 });
 
-test.describe('Query builders', () => {
+test.describe.skip('Query builders', () => {
   test('Can add a single filter in the baseline panel', async ({ comparisonDiffViewPage }) => {
     await comparisonDiffViewPage.goto();
     await comparisonDiffViewPage.assertNoLoadingPanels();

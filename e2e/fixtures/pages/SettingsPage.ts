@@ -1,6 +1,7 @@
 import { type Page } from '@playwright/test';
 
 import { DEFAULT_SETTINGS } from '../../../src/shared/infrastructure/settings/PluginSettings';
+import { DEFAULT_EXPLORE_PROFILES_DATASOURCE_UID } from '../../config/constants';
 import { PyroscopePage } from './PyroscopePage';
 
 export class SettingsPage extends PyroscopePage {
@@ -12,16 +13,21 @@ export class SettingsPage extends PyroscopePage {
     await this.page.goto(this.pathname);
   }
 
-  async resetTestSettings() {
+  async resetTestSettings(reloadPage = true) {
     // see src/shared/infrastructure/http/ApiClient.ts
-    let appUrl = await this.page.evaluate(() => (window as any).grafanaBootData.settings.appUrl);
+    let { appUrl, dataSourceUid } = await this.page.evaluate(() => ({
+      appUrl: (window as any).grafanaBootData.settings.appUrl,
+      dataSourceUid: new URL(window.location.href).searchParams.get('var-dataSource'),
+    }));
+
     if (appUrl.at(-1) !== '/') {
       appUrl += '/';
     }
 
-    // IMPORTANT: the path must match the default data source in samples/provisioning/datasources/datasources.yaml
     const apiUrl = new URL(
-      'api/datasources/proxy/uid/grafanacloud-profiles-local-bis/settings.v1.SettingsService/Set',
+      `api/datasources/proxy/uid/${
+        dataSourceUid || DEFAULT_EXPLORE_PROFILES_DATASOURCE_UID
+      }/settings.v1.SettingsService/Set`,
       appUrl
     );
 
@@ -34,7 +40,9 @@ export class SettingsPage extends PyroscopePage {
       },
     });
 
-    await this.page.reload();
+    if (reloadPage) {
+      await this.page.reload();
+    }
   }
 
   getFlamegraphSettings() {

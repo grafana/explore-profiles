@@ -1,8 +1,9 @@
+import { ExplorationType } from '../../config/constants';
 import { expect, test } from '../../fixtures';
 
 test.describe('Profile types view', () => {
   test.beforeEach(async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.goto('profiles');
+    await exploreProfilesPage.goto(ExplorationType.ProfileTypes);
   });
 
   test('Main UI elements', async ({ exploreProfilesPage }) => {
@@ -26,7 +27,7 @@ test.describe('Profile types view', () => {
     await exploreProfilesPage.assertSelectedService('pyroscope');
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+      stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
 
@@ -42,40 +43,37 @@ test.describe('Profile types view', () => {
     await exploreProfilesPage.selectLayout('Rows');
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-      stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+      stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
 
   test.describe('Panel actions', () => {
     test('Labels action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
-      await panel.getByLabel('Labels').click();
+      await exploreProfilesPage.clickOnPanelAction('alloc_space (memory)', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
       await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-        stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
 
     test('Flame graph action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
-      await panel.getByLabel('Flame graph').click();
+      await exploreProfilesPage.clickOnPanelAction('alloc_space (memory)', 'Flame graph');
 
       await exploreProfilesPage.asserSelectedExplorationType('Flame graph');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
       await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-        stylePath: './e2e/tests/all-services-view/hide-all-controls.css',
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
 
     test('Favorite action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
-      await panel.getByLabel('Favorite').click();
+      await exploreProfilesPage.clickOnPanelAction('alloc_space (memory)', 'Favorite');
 
       await exploreProfilesPage.selectExplorationType('Favorites');
 

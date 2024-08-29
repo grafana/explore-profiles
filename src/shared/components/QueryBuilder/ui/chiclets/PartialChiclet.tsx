@@ -19,7 +19,7 @@ export const PartialChiclet = ({ filter, onClick }: PartialChicletProps) => {
   }
 
   return (
-    <div className={cx(styles.chiclet, styles.partialChiclet)}>
+    <div className={cx(styles.chiclet, styles.partialChiclet)} aria-label="Partial filter">
       <Tag
         colorIndex={9}
         name={attribute.label}
