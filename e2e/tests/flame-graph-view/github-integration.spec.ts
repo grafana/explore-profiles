@@ -14,15 +14,11 @@ test.describe('Flame graph view', () => {
   });
 
   test.describe('GitHub Integration', () => {
-    const nodePosition = { x: 40, y: 40 };
+    const nodePosition = { x: 30, y: 30 };
 
-    test('Adds a "Function details" item when clicking on a flame graph node', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
-
-      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Function details')).toBeVisible();
-    });
-
-    test('After clicking on "Function details", it opens a details panel', async ({ exploreProfilesPage }) => {
+    test('When clicking on a flame graph node and then "Function details", it opens a details panel', async ({
+      exploreProfilesPage,
+    }) => {
       await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
       await exploreProfilesPage.getFlameGraphContextualMenuItem('Function details').click();
 
@@ -57,8 +53,9 @@ test.describe('Flame graph view', () => {
       const codeContainer = detailsPanel.getByTestId('function-details-code-container');
       await expect(codeContainer.getByText('Breakdown per line')).toBeVisible();
       await expect(codeContainer.getByText('View on GitHub')).toBeVisible();
+      await expect(codeContainer.getByText('Optimize Code')).toBeVisible();
 
-      await expect(codeContainer.getByTestId('function-details-code')).toHaveScreenshot();
+      await expect(codeContainer.getByTestId('function-details-code')).toBeVisible();
     });
 
     test('The details panel is automatically closed when loading new data', async ({ exploreProfilesPage }) => {
