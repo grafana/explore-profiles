@@ -104,5 +104,13 @@ test.describe('Labels view', () => {
     });
   });
 
-  test.describe('Group by labels actions', () => {});
+  test.describe('Label selector', () => {
+    test('Selects a label and displays the breakdown in a new grid', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectLabel('region');
+
+      await expect(exploreProfilesPage.getByTestId('groupByLabelsContainer')).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+  });
 });

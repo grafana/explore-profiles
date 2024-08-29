@@ -262,4 +262,17 @@ export class ExploreProfilesPage extends PyroscopePage {
   closeFlameGraphContextualMenu() {
     return this.getByTestId('header-container').first().click();
   }
+
+  /* Group by */
+
+  getLabelsSelector() {
+    return this.getByLabel('Labels selector');
+  }
+
+  // we assume that the width will render a <Select /> and not a <RadioButtonGroup />
+  // (see GroupBySelector.tsx)
+  async selectLabel(label: string) {
+    await this.getLabelsSelector().click();
+    await this.getByLabel('Select options menu').getByText(label).click();
+  }
 }
