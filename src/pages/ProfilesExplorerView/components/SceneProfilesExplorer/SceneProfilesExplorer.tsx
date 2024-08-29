@@ -150,11 +150,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const eventsSub = this.subscribeToEvents();
 
-    this.setExplorationType({
-      type: Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
-        ? (this.state.explorationType as ExplorationType)
-        : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
-    });
+    if (!this.state.explorationType) {
+      this.setExplorationType({
+        type: SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
+    }
 
     return () => {
       eventsSub.unsubscribe();
@@ -170,7 +170,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   updateFromUrl(values: SceneObjectUrlValues) {
     if (typeof values.explorationType === 'string' && values.explorationType !== this.state.explorationType) {
       const type = values.explorationType as ExplorationType;
-      this.setExplorationType({ type });
+      this.setExplorationType({
+        type: Object.values(ExplorationType).includes(type) ? type : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
     }
   }
 
