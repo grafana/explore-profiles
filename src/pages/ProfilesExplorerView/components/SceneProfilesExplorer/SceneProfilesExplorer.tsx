@@ -47,6 +47,7 @@ import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/Scen
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneTimeRangeWithAnnotations } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/components/SceneTimeRangeWithAnnotations';
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
+import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
@@ -379,6 +380,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       gridControls: SceneObject[];
     };
 
+    const dataSourceUid = dataSourceVariable.useState().value as string;
+
     return {
       data: {
         explorationType,
@@ -388,6 +391,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         sceneVariables,
         gridControls,
         body,
+        dataSourceUid,
       },
       actions: {
         onChangeExplorationType: this.onChangeExplorationType,
@@ -408,10 +412,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       sceneVariables,
       gridControls,
       body,
+      dataSourceUid,
     } = data;
 
     return (
-      <>
+      <GitHubContextProvider dataSourceUid={dataSourceUid}>
         <div className={styles.header} data-testid="allControls">
           <div className={styles.controls} data-testid="appControls">
             <div className={styles.headerLeft}>
@@ -461,7 +466,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         <div className={styles.body} data-testid="sceneBody">
           {body && <body.Component model={body} />}
         </div>
-      </>
+      </GitHubContextProvider>
     );
   }
 }
