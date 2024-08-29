@@ -260,6 +260,6 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   closeFlameGraphContextualMenu() {
-    return this.getByTestId('panel').getByRole('heading').click();
+    return this.getByTestId('header-container').first().click();
   }
 }

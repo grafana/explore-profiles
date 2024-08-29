@@ -43,7 +43,11 @@ test.describe('Plugin Settings', () => {
       await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand all groups')).toBeVisible();
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();
+      // screenshot of the whole panel instead of the flame graph to prevent flakiness
+      // ("Expected an image 781px by 858px, received 780px by 858px" :man_shrug:)
+      await expect(exploreProfilesPage.getByTestId('flame-graph-panel')).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
 
       // diff flame graph
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
@@ -53,7 +57,11 @@ test.describe('Plugin Settings', () => {
       await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand all groups')).toBeVisible();
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();
+      // screenshot of the whole panel instead of the flame graph to prevent flakiness
+      // ("Expected an image 781px by 858px, received 780px by 858px" :man_shrug:)
+      await expect(exploreProfilesPage.getByTestId('diff-flame-graph-panel')).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
     });
   });
 
