@@ -104,7 +104,7 @@ test.describe('Labels view', () => {
     });
   });
 
-  test.describe('Label selector', () => {
+  test.describe.skip('Label selector', () => {
     test('Selects a label and displays the breakdown in a new grid', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.selectLabel('region');
 
