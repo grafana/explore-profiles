@@ -55,6 +55,7 @@ const Events = new Map<EventContructor, EventLookup>([
     EventExpandPanel,
     Object.freeze({
       icon: 'expand-arrows',
+      ariaLabel: 'Expand panel',
       tooltip: () => 'Expand this panel to view all the data for the current filters',
     }),
   ],
@@ -102,6 +103,7 @@ interface SelectActionState extends SceneObjectState {
   EventClass: EventContructor;
   item: GridItemData;
   label?: string;
+  ariaLabel?: string;
   icon?: IconName;
   tooltip?: EventLookup['tooltip'];
   skipVariablesInterpolation?: boolean;
@@ -150,12 +152,12 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
 
   public static Component = ({ model }: SceneComponentProps<SelectAction>) => {
     const styles = useStyles2(getStyles);
-    const { label, icon, tooltip, item } = model.useState();
+    const { ariaLabel, label, icon, tooltip, item } = model.useState();
 
     return (
       <Button
         className={styles.selectButton}
-        aria-label={label}
+        aria-label={ariaLabel || label}
         variant="primary"
         size="sm"
         fill="text"

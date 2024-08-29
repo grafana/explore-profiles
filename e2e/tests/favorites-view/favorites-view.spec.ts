@@ -100,14 +100,16 @@ test.describe('Favorites view', () => {
       });
     });
 
-    // test('Expand action', async ({ exploreProfilesPage }) => {
-    //   const panel = await exploreProfilesPage.getPanelByTitle('alloc_space (memory)');
-    //   await panel.getByLabel('Favorite').click();
+    test.only('Expand panel action', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.clickOnPanelAction(
+        'ride-sharing-app · samples (process_cpu) · vehicle (4)',
+        'Expand panel'
+      );
 
-    //   await exploreProfilesPage.selectExplorationType('Favorites');
-
-    //   await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
-    // });
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
 
     test('Favorite action, after clicking on the main refresh button', async ({ exploreProfilesPage }) => {
       const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)');
