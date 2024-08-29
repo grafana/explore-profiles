@@ -15,12 +15,20 @@ test.describe('Flame graph view', () => {
 
   test.describe('GitHub Integration', () => {
     const nodePosition = { x: 30, y: 30 };
+    const functionName = 'github.com/grafana/dskit/services.(*BasicService).main';
+    const startLine = '153';
+    const file = 'github.com/grafana/dskit@v0.0.0-20231221015914-de83901bf4d6/services/basic_service.go';
 
     test('When clicking on a flame graph node and then "Function details", it opens a details panel', async ({
       exploreProfilesPage,
     }) => {
-      // to prevent flakiness, we chose this profile type for the arrangements of its nodes
+      // to prevent flakiness, we choose this profile type for the arrangements of its nodes
       await exploreProfilesPage.selectProfileType('block/delay');
+
+      const topTable = exploreProfilesPage.getTopTable();
+      await topTable.getByText('Total').click();
+      await topTable.getByText('Total').click();
+      await expect(topTable.getByText(functionName)).toBeVisible();
 
       await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
       await exploreProfilesPage.getFlameGraphContextualMenuItem('Function details').click();
@@ -32,19 +40,15 @@ test.describe('Flame graph view', () => {
 
       const functionNameRow = detailsPanel.getByTestId('row-function-name');
       await expect(functionNameRow.getByText('Function name')).toBeVisible();
-      await expect(functionNameRow.locator('span')).toHaveText(
-        'github.com/grafana/dskit/services.(*BasicService).main'
-      );
+      await expect(functionNameRow.locator('span')).toHaveText(functionName);
 
       const startLineRow = detailsPanel.getByTestId('row-start-line');
       await expect(startLineRow.getByText('Start line')).toBeVisible();
-      await expect(startLineRow.locator('span')).toHaveText('153');
+      await expect(startLineRow.locator('span')).toHaveText(startLine);
 
       const filePathRow = detailsPanel.getByTestId('row-file-path');
       await expect(filePathRow.getByText('File')).toBeVisible();
-      await expect(filePathRow.locator('span')).toHaveText(
-        'github.com/grafana/dskit@v0.0.0-20231221015914-de83901bf4d6/services/basic_service.go'
-      );
+      await expect(filePathRow.locator('span')).toHaveText(file);
 
       const repositoryRow = detailsPanel.getByTestId('row-repository');
       await expect(repositoryRow.getByText('Repository')).toBeVisible();

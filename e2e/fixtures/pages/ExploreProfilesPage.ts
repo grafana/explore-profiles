@@ -204,6 +204,10 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('flameGraph');
   }
 
+  getTopTable() {
+    return this.getByTestId('topTable');
+  }
+
   clickOnFlameGraphNode({ x, y }: { x: number; y: number }) {
     return this.getFlamegraph().click({ position: { x, y } });
   }
