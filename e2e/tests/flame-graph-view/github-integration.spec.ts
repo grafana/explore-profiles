@@ -36,7 +36,7 @@ test.describe('Flame graph view', () => {
       await Promise.all([
         exploreProfilesPage.getFlameGraphContextualMenuItem('Function details').click(),
         /// we mock the request to ensure the correct UI
-        // TODO: figure out why in CI, without request interception, we we don't see all the values on the UI but in a local Docker, yes :man_shrug:
+        // TODO: figure out why in CI, without request interception, we don't see all the values on the UI but in a local Docker, yes :man_shrug:
         exploreProfilesPage.route('**/SelectMergeProfile', async (route) => {
           await route.fulfill({
             status: 200,
