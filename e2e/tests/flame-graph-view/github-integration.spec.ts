@@ -3,7 +3,7 @@ import { expect, test } from '../../fixtures';
 import SelectMergeProfileResponse from './fixtures/SelectMergeProfile.json';
 
 const pyroscopeUrlParams = new URLSearchParams({
-  // we use the "pyroscope" service because the static data from "ride-sharing-app" does not work woth the GitHub integration
+  // we use the "pyroscope" service because the static data from "ride-sharing-app" does not work with the GitHub integration
   from: 'now-5m',
   to: 'now',
   'var-serviceName': 'pyroscope',
@@ -23,7 +23,7 @@ test.describe('Flame graph view', () => {
     test('When clicking on a flame graph node and then "Function details", it opens a details panel', async ({
       exploreProfilesPage,
     }) => {
-      // to prevent flakiness, we choose this profile type for the arrangements of its nodes
+      // to prevent flakiness, we choose this profile type for the arrangement of its nodes
       await exploreProfilesPage.selectProfileType('block/delay');
 
       const topTable = exploreProfilesPage.getTopTable();
