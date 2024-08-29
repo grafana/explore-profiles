@@ -19,6 +19,9 @@ test.describe('Flame graph view', () => {
     test('When clicking on a flame graph node and then "Function details", it opens a details panel', async ({
       exploreProfilesPage,
     }) => {
+      // to prevent flakiness, we chose this profile type for the arrangements of its nodes
+      await exploreProfilesPage.selectProfileType('block/delay');
+
       await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
       await exploreProfilesPage.getFlameGraphContextualMenuItem('Function details').click();
 
