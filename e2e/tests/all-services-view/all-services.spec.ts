@@ -14,7 +14,7 @@ test.describe('All services view', () => {
 
     // body scene controls
     await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
-    await exploreProfilesPage.assertQuickFilterValue('');
+    await exploreProfilesPage.assertQuickFilter('Search services (comma-separated regexes are supported)', '');
     await exploreProfilesPage.assertSelectedLayout('Grid');
 
     // body

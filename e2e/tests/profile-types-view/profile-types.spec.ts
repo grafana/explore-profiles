@@ -14,7 +14,7 @@ test.describe('Profile types view', () => {
 
     // body scene controls
     await exploreProfilesPage.assertSelectedService('ride-sharing-app');
-    await exploreProfilesPage.assertQuickFilterValue('');
+    await exploreProfilesPage.assertQuickFilter('Search profile types (comma-separated regexes are supported)', '');
     await exploreProfilesPage.assertSelectedLayout('Grid');
 
     // body

@@ -47,7 +47,7 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getExplorationTypeSelector().getByLabel(explorationType).click();
   }
 
-  /* Time picker */
+  /* Time picker/refresh */
 
   getTimePicker() {
     return this.getByTestId('data-testid TimePicker Open Button');
@@ -55,6 +55,14 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async assertSelectedTimeRange(expectedTimeRange: string) {
     await expect(this.getTimePicker()).toContainText(expectedTimeRange);
+  }
+
+  getRefreshPicker() {
+    return this.getByTestId('data-testid RefreshPicker run button');
+  }
+
+  clickOnRefresh() {
+    return this.getRefreshPicker().click();
   }
 
   /* Service */
@@ -87,7 +95,7 @@ export class ExploreProfilesPage extends PyroscopePage {
 
     await this.getProfileTypeSelector().click();
 
-    const menu = this.locator('[role="menu"]');
+    const menu = this.locator('[role="menu"]').last();
     await menu.getByText(category, { exact: true }).click();
     await menu.getByText(type, { exact: true }).click();
   }
@@ -118,7 +126,8 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByLabel('Quick filter');
   }
 
-  async assertQuickFilterValue(expectedValue: string) {
+  async assertQuickFilter(explectedPlaceholder: string, expectedValue: string) {
+    await expect(await this.getQuickFilterInput().getAttribute('placeholder')).toBe(explectedPlaceholder);
     await expect(this.getQuickFilterInput()).toHaveValue(expectedValue);
   }
 
@@ -142,6 +151,27 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getLayoutSwitcher().getByLabel(layoutName).click();
   }
 
+  /* No data switch */
+
+  async getNoDataSwitcher() {
+    const inputId = await this.getByLabel('Hide panels without data').getAttribute('for');
+    return this.locator(`input[type="checkbox"]#${inputId}`);
+  }
+
+  async assertNoDataSwitcher(isChecked: boolean) {
+    const checkBoxInput = await this.getNoDataSwitcher();
+
+    if (isChecked) {
+      await expect(checkBoxInput).toBeChecked();
+    } else {
+      await expect(checkBoxInput).not.toBeChecked();
+    }
+  }
+
+  async selectNoData() {
+    return (await this.getNoDataSwitcher()).click();
+  }
+
   /* Scene body & grid panels */
 
   getSceneBody() {
@@ -159,6 +189,10 @@ export class ExploreProfilesPage extends PyroscopePage {
   async clickOnPanelAction(panelTitle: string, actionLabel: string) {
     const panel = await this.getPanelByTitle(panelTitle);
     await panel.getByLabel(actionLabel).click();
+  }
+
+  async assertNoSpinner() {
+    await expect(this.getByTestId('Spinner')).toHaveCount(0);
   }
 
   /* Filters */
