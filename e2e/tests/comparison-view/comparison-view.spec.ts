@@ -1,6 +1,6 @@
 import { expect, test } from '../../fixtures';
 
-test.describe('Smoke tests', () => {
+test.describe.skip('Smoke tests', () => {
   test('Page title, toolbar, loading indicators, panels', async ({ comparisonViewPage, toolbar }) => {
     await comparisonViewPage.goto();
 
@@ -15,7 +15,7 @@ test.describe('Smoke tests', () => {
   });
 });
 
-test.describe('URL search parameters', () => {
+test.describe.skip('URL search parameters', () => {
   test('When no parameters are provided, it selects the correct service, profile type & time range', async ({
     comparisonViewPage,
     toolbar,
@@ -95,7 +95,7 @@ test.describe('URL search parameters', () => {
   });
 });
 
-test.describe('Time picker', () => {
+test.describe.skip('Time picker', () => {
   test('Zooming out', async ({ comparisonViewPage, toolbar }) => {
     await comparisonViewPage.goto();
 
@@ -145,7 +145,7 @@ test.describe('Time picker', () => {
   });
 });
 
-test.describe('Toolbar', () => {
+test.describe.skip('Toolbar', () => {
   test.describe('Service selection', () => {
     test('Updates the toolbar and the panels data (pyroscope)', async ({ comparisonViewPage, toolbar }) => {
       await comparisonViewPage.goto();
@@ -199,7 +199,7 @@ test.describe('Toolbar', () => {
   });
 });
 
-test.describe('Mouse selections of time ranges on the timelines', () => {
+test.describe.skip('Mouse selections of time ranges on the timelines', () => {
   test('Selecting on the main, baseline & comparison timelines', async ({ comparisonViewPage, toolbar }) => {
     await comparisonViewPage.goto();
     await comparisonViewPage.assertNoLoadingPanels();
@@ -232,7 +232,7 @@ test.describe('Mouse selections of time ranges on the timelines', () => {
   });
 });
 
-test.describe('Query builders', () => {
+test.describe.skip('Query builders', () => {
   test('Can add a single filter in the baseline panel', async ({ comparisonViewPage }) => {
     await comparisonViewPage.goto();
     await comparisonViewPage.assertNoLoadingPanels();

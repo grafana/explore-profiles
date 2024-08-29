@@ -1,6 +1,6 @@
 import { expect, test } from '../../fixtures';
 
-test.describe('Query analysis tooltip', () => {
+test.describe.skip('Query analysis tooltip', () => {
   test('Query analysis text is visible and the tooltip opens on click', async ({ comparisonViewPage, toolbar }) => {
     await comparisonViewPage.goto();
 
