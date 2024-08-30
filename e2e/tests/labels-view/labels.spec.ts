@@ -141,9 +141,9 @@ test.describe('Labels view', () => {
   });
 
   test('Layout switcher', async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.selectLayout('Rows');
-
     await exploreProfilesPage.assertNoSpinner();
+
+    await exploreProfilesPage.selectLayout('Rows');
 
     await expect(exploreProfilesPage.getGroupByContainer()).toHaveScreenshot({
       stylePath: './e2e/fixtures/css/hide-all-controls.css',

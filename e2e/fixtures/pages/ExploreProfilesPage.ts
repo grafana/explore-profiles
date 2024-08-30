@@ -292,14 +292,33 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getGroupByContainer().locator(`[data-viz-panel-key]`);
   }
 
-  getLabelsSelector() {
-    return this.getByLabel('Labels selector');
+  getGroupByLabelsSelector() {
+    return this.getGroupByContainer().getByLabel('Labels selector', { exact: true });
   }
 
   // we assume that the width will render a <Select /> and not a <RadioButtonGroup />
   // (see GroupBySelector.tsx)
-  async selectLabel(label: string) {
-    await this.getLabelsSelector().click();
-    await this.getByLabel('Select options menu').getByText(label).click();
+  async selectGroupByLabel(label: string) {
+    const selector = this.getGroupByLabelsSelector();
+
+    if ((await selector.getAttribute('role')) === 'radiogroup') {
+      await this.getGroupByLabelsSelector().getByLabel(label, { exact: true }).click();
+      return;
+    }
+
+    await this.getGroupByLabelsSelector().click();
+    await this.getByLabel('Select options menu').getByText(label, { exact: true }).click();
+  }
+
+  getCompareButton() {
+    return this.getGroupByContainer().getByRole('button', {
+      name: 'Compare (0/2)',
+    });
+  }
+
+  getClearComparisonButton() {
+    return this.getGroupByContainer().getByRole('button', {
+      name: 'Clear comparison selection',
+    });
   }
 }
