@@ -51,7 +51,7 @@ export function StatsPanel({ item, itemStats, compareActionChecks, onChangeCompa
   );
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-testid={`stats-panel-${value}`}>
       <h1 style={{ color }} className={styles.title}>
         {total}
       </h1>

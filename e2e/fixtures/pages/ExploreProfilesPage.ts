@@ -296,20 +296,8 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getGroupByContainer().getByLabel('Labels selector', { exact: true });
   }
 
-  // we assume that the width will render a <Select /> and not a <RadioButtonGroup />
-  // (see GroupBySelector.tsx)
   async selectGroupByLabel(label: string) {
-    const selector = this.getGroupByLabelsSelector();
-
-    // horizontal selector
-    if ((await selector.getAttribute('role')) === 'radiogroup') {
-      await this.getGroupByLabelsSelector().getByLabel(label, { exact: true }).click();
-      return;
-    }
-
-    // dropdown selector
-    await this.getGroupByLabelsSelector().click();
-    await this.getByLabel('Select options menu').getByText(label, { exact: true }).click();
+    await this.getGroupByLabelsSelector().getByLabel(label, { exact: true }).click();
   }
 
   getCompareButton() {
@@ -319,5 +307,13 @@ export class ExploreProfilesPage extends PyroscopePage {
   getClearComparisonButton() {
     // getByRole('button', { name:... }) does not work :man_shrug:
     return this.getGroupByContainer().getByTestId('clearComparison');
+  }
+
+  getStatsPanel(labelValue: string) {
+    return this.getGroupByContainer().getByTestId(`stats-panel-${labelValue}`);
+  }
+
+  async selectForComparison(panelTitle: string, target: string) {
+    await this.getStatsPanel(panelTitle).getByText(target).click();
   }
 }

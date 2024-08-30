@@ -183,6 +183,48 @@ test.describe('Labels view', () => {
           });
         });
       });
+
+      test.describe('Compare flow', () => {
+        test('Selecting different baseline and comparison items then clicking on the "Compare" button', async ({
+          exploreProfilesPage,
+        }) => {
+          await exploreProfilesPage.selectForComparison('us-east', 'Baseline');
+
+          await expect(exploreProfilesPage.getCompareButton()).toBeDisabled();
+          await expect(exploreProfilesPage.getCompareButton()).toHaveText('Compare (1/2)');
+
+          await exploreProfilesPage.selectForComparison('eu-north', 'Comparison');
+
+          await expect(exploreProfilesPage.getCompareButton()).not.toBeDisabled();
+          await expect(exploreProfilesPage.getCompareButton()).toHaveText('Compare (2/2)');
+
+          await exploreProfilesPage.getCompareButton().click();
+
+          await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+            stylePath: './e2e/fixtures/css/hide-all-controls.css',
+          });
+        });
+
+        test('Selecting the same baseline and comparison item then clicking on the "Compare" button', async ({
+          exploreProfilesPage,
+        }) => {
+          await exploreProfilesPage.selectForComparison('us-east', 'Baseline');
+
+          await expect(exploreProfilesPage.getCompareButton()).toBeDisabled();
+          await expect(exploreProfilesPage.getCompareButton()).toHaveText('Compare (1/2)');
+
+          await exploreProfilesPage.selectForComparison('us-east', 'Comparison');
+
+          await expect(exploreProfilesPage.getCompareButton()).not.toBeDisabled();
+          await expect(exploreProfilesPage.getCompareButton()).toHaveText('Compare (2/2)');
+
+          await exploreProfilesPage.getCompareButton().click();
+
+          await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+            stylePath: './e2e/fixtures/css/hide-all-controls.css',
+          });
+        });
+      });
     });
   });
 
