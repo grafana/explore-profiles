@@ -14,7 +14,7 @@ type CompareButtonProps = {
   onClickClear: () => void;
 };
 
-export function CompareActions({ compare, onClickCompare, onClickClear }: CompareButtonProps) {
+export function CompareControls({ compare, onClickCompare, onClickClear }: CompareButtonProps) {
   const styles = useStyles2(getStyles);
   const compareIsDisabled = compare.size < 2;
   const hasSelection = compare.size > 0;
@@ -37,6 +37,7 @@ export function CompareActions({ compare, onClickCompare, onClickClear }: Compar
   return (
     <div className={styles.container}>
       <Button
+        arial-label="Compare"
         className={styles.compareButton}
         variant="primary"
         disabled={compareIsDisabled}
@@ -47,10 +48,11 @@ export function CompareActions({ compare, onClickCompare, onClickClear }: Compar
       </Button>
 
       <Button
+        data-testid="clearComparison"
         className={cx(styles.clearButton, !compareIsDisabled ? styles.clearButtonActive : undefined)}
         icon="times"
         variant="secondary"
-        tooltip={hasSelection ? 'Clear the comparison selection' : ''}
+        tooltip={hasSelection ? 'Clear comparison selection' : ''}
         disabled={!hasSelection}
         onClick={!hasSelection ? noOp : onClickClear}
       />

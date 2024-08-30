@@ -108,14 +108,36 @@ test.describe('Labels view', () => {
     });
   });
 
-  test.describe.skip('Label selector', () => {
+  test.describe('Group by labels selector', () => {
     test('Selects a label and displays the breakdown in a new grid', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.selectLabel('region');
+      await exploreProfilesPage.selectGroupByLabel('region (3)');
 
       await exploreProfilesPage.assertNoSpinner();
 
       await expect(exploreProfilesPage.getGroupByContainer()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test.describe('After selecting a label', () => {
+      test.beforeEach(async ({ exploreProfilesPage }) => {
+        await exploreProfilesPage.selectGroupByLabel('region (3)');
+        await exploreProfilesPage.assertNoSpinner();
+      });
+
+      test('Main UI elements', async ({ exploreProfilesPage }) => {
+        await expect(exploreProfilesPage.getCompareButton()).toBeVisible();
+        await expect(exploreProfilesPage.getCompareButton()).toBeDisabled();
+
+        await expect(exploreProfilesPage.getClearComparisonButton()).toBeVisible();
+        await expect(exploreProfilesPage.getClearComparisonButton()).toBeDisabled();
+      });
+
+      test('Quick filter', async ({ exploreProfilesPage }) => {
+        await exploreProfilesPage.enterQuickFilterText('us-east');
+
+        await expect(exploreProfilesPage.getGroupByPanels()).toHaveCount(1);
+        await expect(exploreProfilesPage.getPanelByTitle('us-east')).toBeVisible();
       });
     });
   });

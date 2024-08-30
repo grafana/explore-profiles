@@ -311,14 +311,11 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   getCompareButton() {
-    return this.getGroupByContainer().getByRole('button', {
-      name: 'Compare (0/2)',
-    });
+    return this.getGroupByContainer().getByRole('button', { name: 'Compare' });
   }
 
   getClearComparisonButton() {
-    return this.getGroupByContainer().getByRole('button', {
-      name: 'Clear comparison selection',
-    });
+    // getByRole('button', { name:... }) does not work :man_shrug:
+    return this.getGroupByContainer().getByTestId('clearComparison');
   }
 }

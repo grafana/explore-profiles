@@ -44,7 +44,7 @@ import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/Sc
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
 import { EventSelectForCompare } from './domain/events/EventSelectForCompare';
-import { CompareActions } from './ui/CompareActions';
+import { CompareControls } from './ui/CompareControls';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
@@ -383,7 +383,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         <div className={styles.sceneControls}>
           <Stack wrap="wrap">
             {groupByVariableValue !== 'all' && (
-              <CompareActions
+              <CompareControls
                 compare={compare}
                 onClickCompare={model.onClickCompareButton}
                 onClickClear={model.onClickClearCompareButton}
