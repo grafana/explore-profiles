@@ -108,6 +108,28 @@ test.describe('Labels view', () => {
     });
   });
 
+  test.describe('Panel actions', () => {
+    test('Select action', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.assertNoSpinner();
+
+      await exploreProfilesPage.clickOnPanelAction('region (3)', 'Select');
+
+      await expect(exploreProfilesPage.getGroupByContainer()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test('Expand panel action', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.assertNoSpinner();
+
+      await exploreProfilesPage.clickOnPanelAction('region (3)', 'Expand panel');
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+  });
+
   test.describe('Group by labels selector', () => {
     test('Selects a label and displays the breakdown in a new grid', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.selectGroupByLabel('region (3)');
@@ -138,6 +160,31 @@ test.describe('Labels view', () => {
 
         await expect(exploreProfilesPage.getGroupByPanels()).toHaveCount(1);
         await expect(exploreProfilesPage.getPanelByTitle('us-east')).toBeVisible();
+      });
+
+      test.describe('Panel actions', () => {
+        test('Flame graph action', async ({ exploreProfilesPage }) => {
+          await exploreProfilesPage.clickOnPanelAction('us-east', 'Flame graph');
+
+          await exploreProfilesPage.asserSelectedExplorationType('Flame graph');
+          await exploreProfilesPage.assertSelectedService('ride-sharing-app');
+          await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
+          await exploreProfilesPage.assertFilters([['region', '=', 'us-east']]);
+
+          await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+            stylePath: './e2e/fixtures/css/hide-all-controls.css',
+          });
+        });
+
+        test('Add to filters action', async ({ exploreProfilesPage }) => {
+          await exploreProfilesPage.clickOnPanelAction('eu-north', 'Add to filters');
+
+          await exploreProfilesPage.assertFilters([['region', '=', 'eu-north']]);
+
+          await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+            stylePath: './e2e/fixtures/css/hide-all-controls.css',
+          });
+        });
       });
     });
   });

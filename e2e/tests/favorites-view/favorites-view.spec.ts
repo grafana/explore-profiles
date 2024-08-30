@@ -74,8 +74,7 @@ test.describe('Favorites view', () => {
 
   test.describe('Panel actions', () => {
     test('Labels action without "group by"', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)');
-      await panel.getByLabel('Labels').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · inuse_space (memory)', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -89,8 +88,7 @@ test.describe('Favorites view', () => {
     });
 
     test('Labels action with "group by"', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle (4)');
-      await panel.getByLabel('Labels').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · samples (process_cpu) · vehicle (4)', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -104,8 +102,7 @@ test.describe('Favorites view', () => {
     });
 
     test('Flame graph action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)');
-      await panel.getByLabel('Flame graph').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · inuse_space (memory)', 'Flame graph');
 
       await exploreProfilesPage.asserSelectedExplorationType('Flame graph');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -128,8 +125,7 @@ test.describe('Favorites view', () => {
     });
 
     test('Favorite action, after clicking on the main refresh button', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)');
-      await panel.getByLabel('Favorite').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · inuse_space (memory)', 'Favorite');
 
       await exploreProfilesPage.clickOnRefresh();
 
