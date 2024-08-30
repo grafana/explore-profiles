@@ -1,6 +1,7 @@
 export type FunctionVersion = {
   repository: string;
   git_ref: string;
+  root_path: string;
 };
 
 export type Commit = {
