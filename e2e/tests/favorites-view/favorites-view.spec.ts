@@ -56,23 +56,20 @@ test.describe('Favorites view', () => {
     });
   });
 
-  test.describe('Hide no data switcher', () => {
-    test('Removes the panels without data from the grid', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.selectTimeRange('Last 5 minutes');
+  test('Hide no data switcher', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.selectTimeRange('Last 5 minutes');
 
-      await expect(exploreProfilesPage.getPanels()).toHaveCount(4);
-      await expect(exploreProfilesPage.getPanelByTitle('load-generator · cpu (process_cpu)')).toBeVisible();
-      await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
-      await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)')).toBeVisible();
-      await expect(
-        exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle (4)')
-      ).toBeVisible();
+    await expect(exploreProfilesPage.getPanels()).toHaveCount(4);
+    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
 
-      await exploreProfilesPage.selectHidePanelsWithoutNoData();
+    await exploreProfilesPage.assertPanelHasNoData('load-generator · cpu (process_cpu)');
+    await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · inuse_space (memory)');
+    await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · samples (process_cpu) · vehicle (4)');
 
-      await expect(exploreProfilesPage.getPanels()).toHaveCount(1);
-      await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
-    });
+    await exploreProfilesPage.selectHidePanelsWithoutNoData();
+
+    await expect(exploreProfilesPage.getPanels()).toHaveCount(1);
+    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
   });
 
   test.describe('Panel actions', () => {

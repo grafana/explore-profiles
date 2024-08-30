@@ -149,4 +149,18 @@ test.describe('Labels view', () => {
       stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
+
+  test('Hide no data switcher', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.enterQuickFilterText('region,vehicle');
+    await exploreProfilesPage.addFilter(['pyroscope_spy', '!=', 'gospy']);
+
+    await expect(exploreProfilesPage.getGroupByPanels()).toHaveCount(2);
+    await exploreProfilesPage.assertPanelHasNoData('region (3)');
+    await exploreProfilesPage.assertPanelHasNoData('vehicle (4)');
+
+    await exploreProfilesPage.selectHidePanelsWithoutNoData();
+
+    await expect(exploreProfilesPage.getGroupByPanels()).toHaveCount(0);
+    await expect(exploreProfilesPage.getGroupByContainer().getByText('No results')).toBeVisible();
+  });
 });

@@ -211,6 +211,10 @@ export class ExploreProfilesPage extends PyroscopePage {
     await panel.getByLabel(actionLabel).click();
   }
 
+  async assertPanelHasNoData(panelTitle: string) {
+    await expect(this.getPanelByTitle(panelTitle).getByText('No data')).toBeVisible();
+  }
+
   async assertNoSpinner() {
     await expect(this.getByTestId('Spinner')).toHaveCount(0);
   }
