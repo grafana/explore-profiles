@@ -71,6 +71,7 @@ export class ScenePanelTypeSwitcher extends SceneObjectBase<ScenePanelTypeSwitch
 
     return (
       <RadioButtonGroup
+        aria-label="Panel type switcher"
         options={ScenePanelTypeSwitcher.OPTIONS}
         value={panelType}
         onChange={model.onChange}

@@ -58,7 +58,6 @@ test.describe('All services view', () => {
     await expect(exploreProfilesPage.getPanels()).toHaveCount(2);
     await expect(exploreProfilesPage.getPanelByTitle('load-generator')).toBeVisible();
     await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app')).toBeVisible();
-    await expect(exploreProfilesPage.getPanelByTitle('pyroscope')).not.toBeVisible();
   });
 
   test('Layout switcher', async ({ exploreProfilesPage }) => {

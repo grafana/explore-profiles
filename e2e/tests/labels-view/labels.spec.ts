@@ -16,10 +16,14 @@ test.describe('Labels view', () => {
     await exploreProfilesPage.assertSelectedService('ride-sharing-app');
     await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
     await exploreProfilesPage.assertFilters([]);
-
-    await exploreProfilesPage.assertNoSpinner();
+    await exploreProfilesPage.assertQuickFilter('Search labels (comma-separated regexes are supported)', '');
+    await exploreProfilesPage.assertSelectedPanelType('Time series');
+    await exploreProfilesPage.assertSelectedLayout('Grid');
+    await exploreProfilesPage.assertHideNoDataSwitcher(false);
 
     // body
+    await exploreProfilesPage.assertNoSpinner();
+
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
       stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
@@ -108,9 +112,31 @@ test.describe('Labels view', () => {
     test('Selects a label and displays the breakdown in a new grid', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.selectLabel('region');
 
-      await expect(exploreProfilesPage.getByTestId('groupByLabelsContainer')).toHaveScreenshot({
+      await exploreProfilesPage.assertNoSpinner();
+
+      await expect(exploreProfilesPage.getGroupByContainer()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
+  });
+
+  test('Quick filter', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.enterQuickFilterText('region,vehicle');
+
+    await expect(exploreProfilesPage.getGroupByPanels()).toHaveCount(2);
+    await expect(exploreProfilesPage.getPanelByTitle('region (3)')).toBeVisible();
+    await expect(exploreProfilesPage.getPanelByTitle('vehicle (4)')).toBeVisible();
+  });
+
+  test('Panel type switcher', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.assertNoSpinner();
+
+    for (const panelType of ['Totals', 'Histograms']) {
+      await exploreProfilesPage.selectPanelType(panelType);
+
+      await expect(exploreProfilesPage.getGroupByContainer()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    }
   });
 });

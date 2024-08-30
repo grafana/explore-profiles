@@ -177,6 +177,21 @@ export class ExploreProfilesPage extends PyroscopePage {
     await this.getByLabel('Hide panels without data').click();
   }
 
+  /* Panel type switcher */
+
+  getPanelTypeSwitcher() {
+    return this.getByLabel('Panel type switcher');
+  }
+
+  async assertSelectedPanelType(expectedPanelType: string) {
+    const panelType = await this.getPanelTypeSwitcher().locator('input[checked]~label').textContent();
+    await expect(panelType?.trim()).toBe(expectedPanelType);
+  }
+
+  selectPanelType(panelType: string) {
+    return this.getPanelTypeSwitcher().getByLabel(panelType).click();
+  }
+
   /* Scene body & grid panels */
 
   getSceneBody() {
@@ -264,6 +279,14 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   /* Group by */
+
+  getGroupByContainer() {
+    return this.getByTestId('groupByLabelsContainer');
+  }
+
+  getGroupByPanels() {
+    return this.getGroupByContainer().locator(`[data-viz-panel-key]`);
+  }
 
   getLabelsSelector() {
     return this.getByLabel('Labels selector');

@@ -377,7 +377,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     );
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid="groupByLabelsContainer">
         <groupByVariable.Component model={groupByVariable} />
 
         <div className={styles.sceneControls}>
