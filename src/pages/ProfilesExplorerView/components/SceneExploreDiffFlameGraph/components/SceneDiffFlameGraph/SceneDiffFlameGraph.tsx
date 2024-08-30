@@ -142,6 +142,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     return (
       <div className={styles.flex}>
         <Panel
+          dataTestId="diff-flame-graph-panel"
           className={styles.flamegraphPanel}
           title={panelTitle}
           isLoading={data.isLoading}

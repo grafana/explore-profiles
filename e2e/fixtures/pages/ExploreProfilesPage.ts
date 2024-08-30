@@ -49,12 +49,17 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   /* Time picker/refresh */
 
-  getTimePicker() {
+  getTimePickerButton() {
     return this.getByTestId('data-testid TimePicker Open Button');
   }
 
   async assertSelectedTimeRange(expectedTimeRange: string) {
-    await expect(this.getTimePicker()).toContainText(expectedTimeRange);
+    await expect(this.getTimePickerButton()).toContainText(expectedTimeRange);
+  }
+
+  async selectTimeRange(quickRangeLabel: string) {
+    await this.getTimePickerButton().click();
+    await this.getByTestId('data-testid TimePicker Overlay Content').getByText(quickRangeLabel).click();
   }
 
   getRefreshPicker() {
@@ -151,25 +156,40 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getLayoutSwitcher().getByLabel(layoutName).click();
   }
 
-  /* No data switch */
+  /* Hide panels without data switcher */
 
-  async getNoDataSwitcher() {
-    const inputId = await this.getByLabel('Hide panels without data').getAttribute('for');
-    return this.locator(`input[type="checkbox"]#${inputId}`);
+  getHideNoDataSwitcher() {
+    return this.getByTestId('noDataSwitcher');
   }
 
-  async assertNoDataSwitcher(isChecked: boolean) {
-    const checkBoxInput = await this.getNoDataSwitcher();
-
+  async assertHideNoDataSwitcher(isChecked: boolean) {
     if (isChecked) {
-      await expect(checkBoxInput).toBeChecked();
+      await expect(this.getHideNoDataSwitcher()).toBeChecked();
     } else {
-      await expect(checkBoxInput).not.toBeChecked();
+      await expect(this.getHideNoDataSwitcher()).not.toBeChecked();
     }
   }
 
-  async selectNoData() {
-    return (await this.getNoDataSwitcher()).click();
+  async selectHidePanelsWithoutNoData() {
+    // weirdly the mouse is on the "Flame graph" panel action at this point
+    // so we have to move it for the label to become actionable
+    await this.page.mouse.move(0, 0);
+    await this.getByLabel('Hide panels without data').click();
+  }
+
+  /* Panel type switcher */
+
+  getPanelTypeSwitcher() {
+    return this.getByLabel('Panel type switcher');
+  }
+
+  async assertSelectedPanelType(expectedPanelType: string) {
+    const panelType = await this.getPanelTypeSwitcher().locator('input[checked]~label').textContent();
+    await expect(panelType?.trim()).toBe(expectedPanelType);
+  }
+
+  selectPanelType(panelType: string) {
+    return this.getPanelTypeSwitcher().getByLabel(panelType).click();
   }
 
   /* Scene body & grid panels */
@@ -189,6 +209,10 @@ export class ExploreProfilesPage extends PyroscopePage {
   async clickOnPanelAction(panelTitle: string, actionLabel: string) {
     const panel = await this.getPanelByTitle(panelTitle);
     await panel.getByLabel(actionLabel).click();
+  }
+
+  async assertPanelHasNoData(panelTitle: string) {
+    await expect(this.getPanelByTitle(panelTitle).getByText('No data')).toBeVisible();
   }
 
   async assertNoSpinner() {
@@ -255,6 +279,41 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   closeFlameGraphContextualMenu() {
-    return this.getByTestId('panel').getByRole('heading').click();
+    return this.getByTestId('header-container').first().click();
+  }
+
+  /* Group by */
+
+  getGroupByContainer() {
+    return this.getByTestId('groupByLabelsContainer');
+  }
+
+  getGroupByPanels() {
+    return this.getGroupByContainer().locator(`[data-viz-panel-key]`);
+  }
+
+  getGroupByLabelsSelector() {
+    return this.getGroupByContainer().getByLabel('Labels selector', { exact: true });
+  }
+
+  async selectGroupByLabel(label: string) {
+    await this.getGroupByLabelsSelector().getByLabel(label, { exact: true }).click();
+  }
+
+  getCompareButton() {
+    return this.getGroupByContainer().getByRole('button', { name: 'Compare' });
+  }
+
+  getClearComparisonButton() {
+    // getByRole('button', { name:... }) does not work :man_shrug:
+    return this.getGroupByContainer().getByTestId('clearComparison');
+  }
+
+  getStatsPanel(labelValue: string) {
+    return this.getGroupByContainer().getByTestId(`stats-panel-${labelValue}`);
+  }
+
+  async selectForComparison(panelTitle: string, target: string) {
+    await this.getStatsPanel(panelTitle).getByText(target).click();
   }
 }

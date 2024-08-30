@@ -31,7 +31,7 @@ test.describe('Favorites view', () => {
     // body scene controls
     await exploreProfilesPage.assertQuickFilter('Search favorites (comma-separated regexes are supported)', '');
     await exploreProfilesPage.assertSelectedLayout('Grid');
-    await exploreProfilesPage.assertNoDataSwitcher(false);
+    await exploreProfilesPage.assertHideNoDataSwitcher(false);
 
     // body
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
@@ -56,10 +56,25 @@ test.describe('Favorites view', () => {
     });
   });
 
+  test('Hide no data switcher', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.selectTimeRange('Last 5 minutes');
+
+    await expect(exploreProfilesPage.getPanels()).toHaveCount(4);
+    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
+
+    await exploreProfilesPage.assertPanelHasNoData('load-generator · cpu (process_cpu)');
+    await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · inuse_space (memory)');
+    await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · samples (process_cpu) · vehicle (4)');
+
+    await exploreProfilesPage.selectHidePanelsWithoutNoData();
+
+    await expect(exploreProfilesPage.getPanels()).toHaveCount(1);
+    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
+  });
+
   test.describe('Panel actions', () => {
     test('Labels action without "group by"', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)');
-      await panel.getByLabel('Labels').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · inuse_space (memory)', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -73,8 +88,7 @@ test.describe('Favorites view', () => {
     });
 
     test('Labels action with "group by"', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle (4)');
-      await panel.getByLabel('Labels').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · samples (process_cpu) · vehicle (4)', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -88,8 +102,7 @@ test.describe('Favorites view', () => {
     });
 
     test('Flame graph action', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)');
-      await panel.getByLabel('Flame graph').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · inuse_space (memory)', 'Flame graph');
 
       await exploreProfilesPage.asserSelectedExplorationType('Flame graph');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -112,8 +125,7 @@ test.describe('Favorites view', () => {
     });
 
     test('Favorite action, after clicking on the main refresh button', async ({ exploreProfilesPage }) => {
-      const panel = await exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)');
-      await panel.getByLabel('Favorite').click();
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · inuse_space (memory)', 'Favorite');
 
       await exploreProfilesPage.clickOnRefresh();
 

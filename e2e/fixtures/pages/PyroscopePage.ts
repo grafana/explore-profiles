@@ -26,8 +26,8 @@ export class PyroscopePage {
     return this.page.getByTestId(testId);
   }
 
-  getByLabel(label: string) {
-    return this.page.getByLabel(label);
+  getByLabel(label: string, options?: Record<string, unknown>) {
+    return this.page.getByLabel(label, options);
   }
 
   getByText(text, options?: Record<string, unknown>) {

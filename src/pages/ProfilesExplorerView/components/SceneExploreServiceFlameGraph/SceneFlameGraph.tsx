@@ -169,6 +169,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     return (
       <div className={styles.flex}>
         <Panel
+          dataTestId="flame-graph-panel"
           className={styles.flamegraphPanel}
           title={panelTitle}
           isLoading={data.isLoading}
