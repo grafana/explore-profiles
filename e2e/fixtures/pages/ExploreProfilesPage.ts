@@ -301,11 +301,13 @@ export class ExploreProfilesPage extends PyroscopePage {
   async selectGroupByLabel(label: string) {
     const selector = this.getGroupByLabelsSelector();
 
+    // horizontal selector
     if ((await selector.getAttribute('role')) === 'radiogroup') {
       await this.getGroupByLabelsSelector().getByLabel(label, { exact: true }).click();
       return;
     }
 
+    // dropdown selector
     await this.getGroupByLabelsSelector().click();
     await this.getByLabel('Select options menu').getByText(label, { exact: true }).click();
   }

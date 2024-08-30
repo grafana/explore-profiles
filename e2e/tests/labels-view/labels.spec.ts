@@ -131,22 +131,19 @@ test.describe('Labels view', () => {
   });
 
   test.describe('Group by labels selector', () => {
-    test('Selects a label and displays the breakdown in a new grid', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.selectGroupByLabel('region (3)');
-
+    test.beforeEach(async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.assertNoSpinner();
+      await exploreProfilesPage.selectGroupByLabel('region (3)');
+      await exploreProfilesPage.assertNoSpinner();
+    });
 
+    test('Selects a label and displays the breakdown in a new grid', async ({ exploreProfilesPage }) => {
       await expect(exploreProfilesPage.getGroupByContainer()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
 
     test.describe('After selecting a label', () => {
-      test.beforeEach(async ({ exploreProfilesPage }) => {
-        await exploreProfilesPage.selectGroupByLabel('region (3)');
-        await exploreProfilesPage.assertNoSpinner();
-      });
-
       test('Main UI elements', async ({ exploreProfilesPage }) => {
         await expect(exploreProfilesPage.getCompareButton()).toBeVisible();
         await expect(exploreProfilesPage.getCompareButton()).toBeDisabled();
