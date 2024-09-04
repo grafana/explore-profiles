@@ -23,6 +23,18 @@ describe('GitSessionCookieManager', () => {
     expect(cookie2).toStrictEqual(cookie1);
   });
 
+  it('can read and cache a namespaced cookie from the browser', () => {
+    const metadata = btoa('some encrypted secret');
+    const expiry = 1712762580000;
+    document.cookie = createNamespacedCookie(metadata, expiry);
+
+    const cookie1 = manager.getCookie();
+    expect(cookie1).toEqual(new GitSessionCookie(metadata, expiry));
+
+    const cookie2 = manager.getCookie();
+    expect(cookie2).toStrictEqual(cookie1);
+  });
+
   it('can read a legacy cookie', () => {
     const metadata = btoa('some encrypted secret');
     const newCookie = createLegacyCookie(metadata);
@@ -39,6 +51,20 @@ describe('GitSessionCookieManager', () => {
     const metadata = btoa('some encrypted secret');
     const expiry = 1712762580000;
     const newCookie = createCookie(metadata, expiry);
+
+    const cookie1 = manager.getCookie();
+    expect(cookie1).toBeUndefined();
+
+    manager.setCookie(newCookie);
+    const cookie2 = manager.getCookie();
+    expect(cookie2).toEqual(new GitSessionCookie(metadata, expiry));
+    expect(document.cookie).toEqual(newCookie);
+  });
+
+  it('can set a namespaced cookie', () => {
+    const metadata = btoa('some encrypted secret');
+    const expiry = 1712762580000;
+    const newCookie = createNamespacedCookie(metadata, expiry);
 
     const cookie1 = manager.getCookie();
     expect(cookie1).toBeUndefined();
@@ -121,4 +147,13 @@ function createCookie(metadata: string, expiry: number): string {
 
 function createLegacyCookie(metadata: string): string {
   return `GitSession=${metadata}`;
+}
+
+function createNamespacedCookie(metadata: string, expiry: number): string {
+  const sessionCookie = JSON.stringify({
+    metadata: metadata,
+    expiry: expiry,
+  });
+  const encoded = btoa(sessionCookie);
+  return `pyroscope_git_session=${encoded}`;
 }

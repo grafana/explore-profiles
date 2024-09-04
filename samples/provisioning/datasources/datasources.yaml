@@ -7,7 +7,7 @@ datasources:
     url: http://pyroscope:4100
     isDefault: true
     jsonData:
-      keepCookies: [GitSession]
+      keepCookies: [GitSession, pyroscope_git_session]
     basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
@@ -25,7 +25,7 @@ datasources:
       # i.e. if a Prometheus DS is set to default, we can't set a Profiles DS to default
       # for these situations, we can override the default value here
       overridesDefault: true
-      keepCookies: [GitSession]
+      keepCookies: [GitSession, pyroscope_git_session]
     basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
