@@ -40,9 +40,9 @@ export const PLACEHOLDER_COMMIT_DATA = Object.freeze({
  * is refreshed, the queued requests will be dispatched using the new token.
  *
  * WARNING: Only one instance of this class should be instantiated because it
- * needs to keep a singleton reference to the `GitSession` cookie. This class
- * will refresh the `GitSession` cookie whenever it expires and multiple
- * instances will cause unexpected errors and race conditions.
+ * needs to keep a singleton reference to the `pyroscope_git_session` cookie.
+ * This class will refresh the `pyroscope_git_session` cookie whenever it expires
+ * and multiple instances will cause unexpected errors and race conditions.
  */
 export class PrivateVcsClient extends DataSourceProxyClient {
   private sessionManager: GitSessionCookieManager;

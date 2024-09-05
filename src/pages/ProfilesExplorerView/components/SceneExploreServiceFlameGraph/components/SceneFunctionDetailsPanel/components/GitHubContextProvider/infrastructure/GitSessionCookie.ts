@@ -2,8 +2,8 @@
 const MAX_UNIX_TS_MS = 8640000000000000;
 
 /**
- * This is a value class representing a GitSession cookie value in the browser.
- * It provides APIs to decode a GitSession cookie value and to check if the the
+ * This is a value class representing a pyroscope_git_session cookie value in the browser.
+ * It provides APIs to decode a pyroscope_git_session cookie value and to check if the the
  * underlying user token is expired.
  */
 export class GitSessionCookie {
@@ -43,7 +43,7 @@ export class GitSessionCookie {
     try {
       decoded = atob(value);
     } catch (e) {
-      console.error('failed to base64 decode GitSession value', e);
+      console.error('failed to base64 decode pyroscope_git_session value', e);
       return undefined;
     }
 
