@@ -20,9 +20,10 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
   } = useFetchVCSFile({
     enabled: isLoggedIn,
     dataSourceUid,
-    path: functionDetails.fileName,
+    localPath: functionDetails.fileName,
     repository: version?.repository ?? '',
     gitRef: version?.git_ref ?? '',
+    rootPath: version?.root_path ?? '',
   });
 
   // might be a bit costly so we memoize it
