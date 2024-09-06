@@ -1,7 +1,8 @@
 import { css, cx } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
-import React, { memo, useCallback, useEffect, useRef } from 'react';
+import { usePrevious } from '@shared/components/QueryBuilder/ui/hooks';
+import React, { memo, useCallback, useEffect } from 'react';
 import { StateListener } from 'xstate/lib/interpreter';
 
 import { Actor } from './domain/stateMachine';
@@ -223,18 +224,18 @@ function useSelectHandlers(actor: Actor, suggestions: QueryBuilderContext['sugge
     (document.querySelector(`#${queryBuilderId} input`) as HTMLInputElement)?.blur();
   }, [queryBuilderId]);
 
-  const isVisibleRef = useRef(suggestions.isVisible);
+  const previousSuggestionsIsVisible = usePrevious(suggestions.isVisible);
 
-  if (!suggestions.isVisible && isVisibleRef.current) {
-    // ensures that the input is blurred when a filter has been completed.
-    // we could have used blurInputOnSelect but this allows us to handle properly the case of
-    // editing a complete filter operator from (e.g.) =~ to = (and vice-versa).
-    // indeed, in such cases, we know if the input should be blurred only after selecting a
-    // suggestion, when the select is already rendered.
-    blurInput();
-  }
-
-  isVisibleRef.current = suggestions.isVisible;
+  useEffect(() => {
+    if (!suggestions.isVisible && previousSuggestionsIsVisible) {
+      // ensures that the input is blurred when a filter has been completed.
+      // we could have used blurInputOnSelect but this allows us to handle properly the case of
+      // editing a complete filter operator from (e.g.) =~ to = (and vice-versa).
+      // indeed, in such cases, we know if the input should be blurred only after selecting a
+      // suggestion, when the select is already rendered.
+      blurInput();
+    }
+  }, [suggestions.isVisible, previousSuggestionsIsVisible, blurInput]);
 
   return {
     onFocus,
