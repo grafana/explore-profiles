@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/playwright:v1.46.0
 WORKDIR /app
 
 # required by the e2e test code
-RUN yarn add "@playwright/test@^1.46.0" "dotenv@^16.3.1"
+RUN yarn add "@playwright/test@~1.46.0" "dotenv@^16.3.1"
 
 ENV E2E_BASE_URL="http://localhost:3000"
 
