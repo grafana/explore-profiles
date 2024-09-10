@@ -1,19 +1,23 @@
 import { reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
 
-import { reportInteraction, setTrackingVersion } from '../reportInteraction';
+import { reportInteraction } from '../reportInteraction';
 
-jest.mock('@grafana/runtime', () => ({ reportInteraction: jest.fn() }));
+jest.mock('@grafana/runtime', () => ({
+  reportInteraction: jest.fn(),
+  config: {
+    apps: {
+      'grafana-pyroscope-app': {
+        version: '1.0.0',
+      },
+    },
+  },
+}));
 
 describe('reportInteraction(interactionName, properties)', () => {
   const originalLocation = window.location;
 
-  beforeEach(() => {
-    setTrackingVersion('1.0.0');
-  });
-
   afterEach(() => {
     window.location = originalLocation;
-    setTrackingVersion('unset');
   });
 
   it('calls Grafana\'s reportInteraction with a new "page" property', () => {

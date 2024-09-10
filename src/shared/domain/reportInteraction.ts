@@ -1,6 +1,6 @@
-import { reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
+import { config, reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
 
-import { ROUTES } from '../../constants';
+import { PYROSCOPE_APP_ID, ROUTES } from '../../constants';
 
 const PROFILES_EXPLORER_PAGE_NAME = ROUTES.PROFILES_EXPLORER_VIEW.slice(1);
 
@@ -11,6 +11,7 @@ function getCurrentPage(): string {
 
 function getExtraProperties() {
   const page = getCurrentPage();
+  const version = config.apps[PYROSCOPE_APP_ID].version;
   const extraProperties: Record<string, any> = { page, version };
 
   if (page === PROFILES_EXPLORER_PAGE_NAME) {
@@ -25,13 +26,4 @@ export function reportInteraction(interactionName: string, properties?: Record<s
     ...properties,
     ...getExtraProperties(),
   });
-}
-
-/**
- * "unset" may be tracked in case reportInteraction is called before the plugin version is retrieved
- */
-let version = 'unset';
-
-export function setTrackingVersion(value: string): void {
-  version = value;
 }
