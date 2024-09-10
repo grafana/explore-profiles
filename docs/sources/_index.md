@@ -32,7 +32,7 @@ cards:
       description: How do you use profiling data to investigate an issue? Start here.
       height: 24
     - title: Determine your use case
-      href: ./troubleshooting/
+      href: ./determine-use-case/
       description: Choose one of the two most common use cases to guide your exploration.
       height: 24
     - title: Choose a view

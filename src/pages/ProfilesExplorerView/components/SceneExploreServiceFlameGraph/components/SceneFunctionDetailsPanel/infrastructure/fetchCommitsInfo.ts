@@ -11,6 +11,7 @@ export async function fetchCommitsInfo(
   const commits = functionsDetails.map((details) => ({
     repositoryUrl: details?.version?.repository || '',
     gitRef: details?.version?.git_ref || 'HEAD',
+    rootPath: details?.version?.root_path || '',
   }));
 
   // TODO: extract to its own hook and simplify useSceneFunctionDetailsPanel()?
