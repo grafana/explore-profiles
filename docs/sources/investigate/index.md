@@ -11,6 +11,8 @@ weight: 600
 
 # Investigate trends and spikes
 
+{{< docs/public-preview product="Explore Profiles" >}}
+
 Explore Profiles provides powerful tools that help you identify and analyze problems in your applications and services.
 
 Using these steps, you can use the profile data to investigate issues.

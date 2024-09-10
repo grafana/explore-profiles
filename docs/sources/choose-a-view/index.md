@@ -11,6 +11,8 @@ weight: 500
 
 # Choose a view
 
+{{< docs/public-preview product="Explore Profiles" >}}
+
 The available views in Explore Profiles correspond to how you move through your data: from broader to more specific.
 For example, you can start with **All services** and then move to **Profile types** or **Labels** for more specific views into your data.
 

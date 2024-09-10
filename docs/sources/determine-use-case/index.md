@@ -11,6 +11,8 @@ weight: 400
 
 # Determine your use case
 
+{{< docs/public-preview product="Explore Profiles" >}}
+
 When you start investigating an issue, you may either know what's wrong (for example, you know the affected service or that there’s too much CPU usage), or you may want to explore data.
 This can lead you to two different starting points:
 

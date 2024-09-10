@@ -11,9 +11,7 @@ weight: 300
 
 # Get started with Explore Profiles
 
-{{% admonition type="note" %}}
-Expand your observability journey and learn about [Explore Traces](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/).
-{{% /admonition %}}
+{{< docs/public-preview product="public-preview-feature" >}}
 
 Profiles can help you identify errors in your apps and services.
 Using this information, you can optimize and streamline your apps.
@@ -22,7 +20,11 @@ Your investigation begins with the big picture and then drills down using profil
 
 To learn more about Explore Profiles, read [The new, queryless UI for Grafana Pyroscope: Introducing Explore Profiles](https://grafana.com/blog/2024/07/18/the-new-queryless-ui-for-grafana-pyroscope-introducing-explore-profiles/).
 
-{{< youtube id="_8SbNN5DRmQ" >}}
+<!-- Needs to be updated - {{< youtube id="_8SbNN5DRmQ" >}} -->
+
+{{< admonition type="note" >}}
+Expand your observability journey and learn about [Explore Traces](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/).
+{{<> /admonition >}}
 
 ## Before you begin
 
