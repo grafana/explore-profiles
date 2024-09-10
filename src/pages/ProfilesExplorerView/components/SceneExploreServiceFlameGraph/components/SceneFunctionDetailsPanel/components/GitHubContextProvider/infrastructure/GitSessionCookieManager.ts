@@ -1,8 +1,7 @@
 import { GitSessionCookie } from './GitSessionCookie';
 
-const GITHUB_SESSION_COOKIE_NAME = 'GitSession';
-const NEW_GITHUB_SESSION_COOKIE_NAME = 'pyroscope_git_session';
-const ACCEPTED_GITHUB_SESSION_COOKIE_NAMES = [GITHUB_SESSION_COOKIE_NAME, NEW_GITHUB_SESSION_COOKIE_NAME];
+const LEGACY_GITHUB_SESSION_COOKIE_NAME = 'GitSession';
+const GITHUB_SESSION_COOKIE_NAME = 'pyroscope_git_session';
 
 export interface GitSessionCookieManager {
   getCookie(): GitSessionCookie | undefined;
@@ -27,37 +26,36 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
   }
 
   setCookie(cookie: string): void {
-    if (
-      !cookie.startsWith(`${GITHUB_SESSION_COOKIE_NAME}=`) &&
-      !cookie.startsWith(`${NEW_GITHUB_SESSION_COOKIE_NAME}=`)
-    ) {
-      // If incoming cookie is not named, we use the old cookie name
+    if (!cookie.startsWith(`${GITHUB_SESSION_COOKIE_NAME}=`)) {
       cookie = `${GITHUB_SESSION_COOKIE_NAME}=${cookie}`;
     }
 
-    const rawCookie = InternalGitSessionCookieManager.getCookieFromJar(cookie, ACCEPTED_GITHUB_SESSION_COOKIE_NAMES);
+    const rawCookie = InternalGitSessionCookieManager.getCookieFromJar(cookie, GITHUB_SESSION_COOKIE_NAME);
     if (rawCookie === undefined) {
       // If we can't parse the key-value pair out of [cookie], let's return now
       // to avoid corrupting the state of the manager or browser cookie.
       return;
     }
 
+    this.deleteLegacyCookie();
     this.rawCookie = rawCookie;
     this.sessionCookie = GitSessionCookie.decode(rawCookie.value);
     document.cookie = `${cookie}; path=/`;
   }
 
   deleteCookie(): void {
-    document.cookie = `${GITHUB_SESSION_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+    document.cookie = `${GITHUB_SESSION_COOKIE_NAME}=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+    this.deleteLegacyCookie();
     this.rawCookie = undefined;
     this.sessionCookie = undefined;
   }
 
+  private deleteLegacyCookie(): void {
+    document.cookie = `${LEGACY_GITHUB_SESSION_COOKIE_NAME}=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+  }
+
   private syncCookieWithBrowser(): void {
-    const cookie = InternalGitSessionCookieManager.getCookieFromJar(
-      document.cookie,
-      ACCEPTED_GITHUB_SESSION_COOKIE_NAMES
-    );
+    const cookie = InternalGitSessionCookieManager.getCookieFromJar(document.cookie, GITHUB_SESSION_COOKIE_NAME);
     if (cookie?.key === this.rawCookie?.key && cookie?.value === this.rawCookie?.value) {
       return;
     }
@@ -65,7 +63,7 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
     cookie !== undefined ? this.setCookie(`${cookie.key}=${cookie.value}`) : this.deleteCookie();
   }
 
-  private static getCookieFromJar(jar: string, candidates: string[]): Cookie | undefined {
+  private static getCookieFromJar(jar: string, name: string): Cookie | undefined {
     return jar
       .split(';')
       .map((ck) => {
@@ -77,7 +75,7 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
         const value = rest.join('=');
         return { key: key.trim(), value: value?.trim() };
       })
-      .find(({ key }) => candidates.includes(key));
+      .find(({ key }) => key === name);
   }
 }
 
