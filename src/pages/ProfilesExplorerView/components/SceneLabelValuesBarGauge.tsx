@@ -100,9 +100,9 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
         namePlacement: BarGaugeNamePlacement.Top,
         minVizHeight: 36,
         maxVizHeight: 36,
-        // namePlacement: BarGaugeNamePlacement.Left,
-        // minVizHeight: 20,
-        // maxVizHeight: 20,
+        legend: {
+          showLegend: false,
+        },
       },
       fieldConfig: {
         defaults: {
