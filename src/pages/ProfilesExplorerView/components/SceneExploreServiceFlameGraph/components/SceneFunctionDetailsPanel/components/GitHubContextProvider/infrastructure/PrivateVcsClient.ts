@@ -69,13 +69,14 @@ export class PrivateVcsClient extends DataSourceProxyClient {
    * @param localPath A file path relative to the repository root
    * @returns Base64 encoded file contents.
    */
-  async getFile(repositoryUrl: string, gitRef: string, localPath: string): Promise<GetFileResponse> {
+  async getFile(repositoryUrl: string, gitRef: string, localPath: string, rootPath: string): Promise<GetFileResponse> {
     const response = await this.postWithRefresh(
       '/vcs.v1.VCSService/GetFile',
       JSON.stringify({
         repositoryURL: repositoryUrl,
         ref: gitRef,
         localPath,
+        rootPath,
       })
     );
 
