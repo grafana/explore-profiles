@@ -39,4 +39,4 @@ When you use Explore Profiles, your investigations follow these steps.
    - Select the checkbox in two graphs. Select **Compare** to view your selections in the **Diff flame graph** view.
    - Use the **Service** and **Profile type** drop-downs to change the service or profile type displayed.
 1. Use the **Flame graph** view to drill into the code level to pinpoint issues in specific functions, for example.
-   ![Viewing a flame graph during an investigation](../images/explore-profiles-flamegraph.png)
+<!-->   ![Viewing a flame graph during an investigation](../images/explore-profiles-flamegraph.png) -->

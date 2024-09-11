@@ -24,6 +24,8 @@ After you choose a view, you can [Investigate trends and spikes](../investigate/
 
 Select a view by choosing an Exploration type: **All services**, **Profile types**, **Labels**, **Flame graph**, or **Diff flame graph**.
 
+<!-- screenshots need to be updated -->
+
 ![Select an Exploration type to begin](../images/explore-profiles-view-bar.png)
 
 You can refine any selected views by selecting a Profile type, Label, or Flame graph from one of the charts.
