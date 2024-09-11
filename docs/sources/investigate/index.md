@@ -36,7 +36,7 @@ When you use Explore Profiles, your investigations follow these steps.
    - From the Labels view: Select **Add to filters** from one of the areas of interest.
 1. Optional: Click and drag on any graph to select a specific time frame or data range.
 1. Use the **Labels** view to select two processes to compare.
-   - Select the checkbox in two graphs. Select **Compare** to view your selections in the **Comparison diff view**.
-   - Use the **Service** and **Profile** drop-downs to change the service or profile type displayed.
+   - Select the checkbox in two graphs. Select **Compare** to view your selections in the **Diff flame graph** view.
+   - Use the **Service** and **Profile type** drop-downs to change the service or profile type displayed.
 1. Use the **Flame graph** view to drill into the code level to pinpoint issues in specific functions, for example.
    ![Viewing a flame graph during an investigation](../images/explore-profiles-flamegraph.png)

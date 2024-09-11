@@ -17,14 +17,14 @@ weight: 200
 
 # Concepts
 
-{{< docs/public-preview product="Explore Profiles" >}}
-
 To use profiling, you should understand these concepts:
 
 - Profile data hierarchy
 - Profile types
 - Labels
 - Flame graphs
+
+{{< docs/public-preview product="Explore Profiles" >}}
 
 ## Profile data hierarchy
 

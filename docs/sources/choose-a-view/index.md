@@ -11,8 +11,6 @@ weight: 500
 
 # Choose a view
 
-{{< docs/public-preview product="Explore Profiles" >}}
-
 The available views in Explore Profiles correspond to how you move through your data: from broader to more specific.
 For example, you can start with **All services** and then move to **Profile types** or **Labels** for more specific views into your data.
 
@@ -20,9 +18,11 @@ This matches the hierarchy of the [profiling data](../concepts/).
 
 After you choose a view, you can [Investigate trends and spikes](../investigate/).
 
+{{< docs/public-preview product="Explore Profiles" >}}
+
 ## Select a view
 
-Select a view by choosing an Exploration type: **All services**, **Profile types**, **Labels**, or **Flame graph**.
+Select a view by choosing an Exploration type: **All services**, **Profile types**, **Labels**, **Flame graph**, or **Diff flame graph**.
 
 ![Select an Exploration type to begin](../images/explore-profiles-view-bar.png)
 
@@ -46,7 +46,7 @@ Determining which view to use frames the rest of your investigation.
    </td>
   </tr>
   <tr>
-   <td>All services
+   <td>Services
    </td>
    <td>Overview of all services for any given profile metric
    </td>
@@ -91,7 +91,7 @@ Determining which view to use frames the rest of your investigation.
    </td>
   </tr>
   <tr>
-   <td>Flame graphs
+   <td>Flame graph
    </td>
    <td>Single service flame graph
    </td>
@@ -126,18 +126,34 @@ Determining which view to use frames the rest of your investigation.
 
 The **All services** view is the default view when you first open Explore Profiles.
 
-![All services](../images/explore-profiles-homescreen.png)
+![The Services view](../images/explore-profiles-homescreen.png)
 
 ### Profile types
 
 The Profile types shows one chart for each profile available for the selected service.
+You can select to display the charts in a grid or one chart per row.
 
 ![Profile types](../images/explore-profiles-profile-types.png)
 
 ### Labels
 
+The Labels view lets you navigate and analyze performance data through tags and labels.
+This feature is crucial for identifying performance anomalies and understanding the behavior of different application segments under various conditions.
+
 ![Labels view](../images/explore-profiles-labels.png)
 
 ### Flame graphs
 
+The Flame graph view visualizes profiling data of a single service in a flame graph format, allowing easy identification of resource-intensive functions.
+
 ![Flame graphs](../images/explore-profiles-flamegraph-2.png)
+
+### Diff flame graph
+
+The **Diff flame graph** view shows the differences between two profiling data sets.
+It normalizes the data by comparing the percentage of total time spent in each function so that the resulting flame graph is comparing the share of time spent in each function rather than the absolute amount of time spent in each function.
+This lets you compare two different queries that may have different total amounts of time spent in each function.
+
+Similar to a `git diff`, it takes the selected flame graphs and highlights the differences between them.
+<!-- from old screenshot of cpu usage profile Red represents an increase in CPU usage from the baseline to the comparison and green represents a decrease. -->
+

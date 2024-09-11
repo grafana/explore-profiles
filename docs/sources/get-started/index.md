@@ -24,7 +24,7 @@ To learn more about Explore Profiles, read [The new, queryless UI for Grafana Py
 
 {{< admonition type="note" >}}
 Expand your observability journey and learn about [Explore Traces](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/).
-{{<> /admonition >}}
+{{< /admonition >}}
 
 ## Before you begin
 
