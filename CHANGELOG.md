@@ -1,3 +1,21 @@
+## [0.1.8](https://github.com/grafana/explore-profiles/compare/v0.1.6...v0.1.8) (2024-09-11)
+
+
+### Bug Fixes
+
+* **Labels:** Fix error with bar gauges viz and new Grafana version ([#159](https://github.com/grafana/explore-profiles/issues/159)) ([b527961](https://github.com/grafana/explore-profiles/commit/b52796103af9db785d681fdac22bf6d751a7f734))
+
+
+### Features
+
+* Add histogram visualizations ([#141](https://github.com/grafana/explore-profiles/issues/141)) ([2265be7](https://github.com/grafana/explore-profiles/commit/2265be70ea67cfdc44aad33e1a1f7951076db815))
+* create new browser history entry on some user actions  ([#128](https://github.com/grafana/explore-profiles/issues/128)) ([5439ab3](https://github.com/grafana/explore-profiles/commit/5439ab32f0e4a21f3affbe6bfbe12da7cacd12b1))
+* **DiffFlameGraph:** Add flame graph range in timeseries legend ([#140](https://github.com/grafana/explore-profiles/issues/140)) ([8729c31](https://github.com/grafana/explore-profiles/commit/8729c31dddf383d2d6ca4c2178397045c31d9654))
+* **GitHubIntegration:** Migrate GitHub integration to Scenes ([#142](https://github.com/grafana/explore-profiles/issues/142)) ([0386bbc](https://github.com/grafana/explore-profiles/commit/0386bbc369538763c69fce1cc07a45fb82619beb))
+* support submodules for GitHub Integration ([#147](https://github.com/grafana/explore-profiles/issues/147)) ([52ecea8](https://github.com/grafana/explore-profiles/commit/52ecea89b5a436b3dc03ff352127f55ea315e037))
+
+
+
 ## [0.1.7](https://github.com/grafana/explore-profiles/compare/v0.1.6...v0.1.7) (2024-08-29)
 
 

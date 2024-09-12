@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
-import React from 'react';
+import React, { Fragment } from 'react';
 
 export type ExplorationTypeSelectorProps = {
   options: Array<SelectableValue<string>>;
@@ -21,7 +21,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
         {options.map((option, i) => {
           const isActive = value === option.value;
           return (
-            <>
+            <Fragment key={option.value}>
               <Button
                 className={isActive ? cx(styles.button, styles.active) : styles.button}
                 size="sm"
@@ -37,7 +37,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
               </Button>
 
               {i < options.length - 3 && <Icon name="arrow-right" />}
-            </>
+            </Fragment>
           );
         })}
       </div>
