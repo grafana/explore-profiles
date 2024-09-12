@@ -173,7 +173,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   async selectHidePanelsWithoutNoData() {
     // weirdly the mouse is on the "Flame graph" panel action at this point
     // so we have to move it for the label to become actionable
-    await this.page.mouse.move(0, 0);
+    await this.mouse.move(0, 0);
     await this.getByLabel('Hide panels without data').click();
   }
 
@@ -221,12 +221,12 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   /* Filters */
 
-  getFilters() {
-    return this.getByTestId('filters');
+  getFilters(filterKey: string) {
+    return this.locator(`#query-builder-${filterKey}`);
   }
 
-  async assertFilters(expectedFilters: string[][]) {
-    const filters = this.getFilters().getByTestId('filtersList').getByLabel('Filter', { exact: true });
+  async assertFilters(expectedFilters: string[][], filterKey = 'filters') {
+    const filters = this.getFilters(filterKey).getByTestId('filtersList').getByLabel('Filter', { exact: true });
 
     await expect(filters).toHaveCount(expectedFilters.length);
 
@@ -242,8 +242,8 @@ export class ExploreProfilesPage extends PyroscopePage {
     }
   }
 
-  async addFilter(parts: string[]) {
-    await this.getFilters().getByRole('combobox').click();
+  async addFilter(parts: string[], filterKey = 'filters') {
+    await this.getFilters(filterKey).getByRole('combobox').click();
 
     const selectMenu = this.getByLabel('Select options menu');
 
@@ -315,5 +315,15 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async selectForComparison(panelTitle: string, target: string) {
     await this.getStatsPanel(panelTitle).getByText(target).click();
+  }
+
+  /* Diff panels */
+
+  getComparisonPanel(target: 'baseline' | 'comparison') {
+    return this.getByTestId(`panel-${target}`);
+  }
+
+  getComparisonTimePickerButton(target: 'baseline' | 'comparison') {
+    return this.getByTestId(`panel-${target}`).getByTestId('data-testid TimePicker Open Button');
   }
 }
