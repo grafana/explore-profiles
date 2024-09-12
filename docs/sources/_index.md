@@ -55,7 +55,7 @@ By profiling a program, developers can identify which parts of the program consu
 You can use this information to optimize the program, making it run faster or use fewer resources.
 
 Explore Profiles provides an intuitive interface for exploring your profile data.
-This design lets you navigate the UI and drill down into which tags are most interesting to you.
+This design lets you navigate the UI and drill down into which labels are most interesting to you.
 This app helps you start at the highest level possible and drill down into a specific root cause analysis.
 You don’t know what’s wrong, but you should be able to find it by drilling down.
 

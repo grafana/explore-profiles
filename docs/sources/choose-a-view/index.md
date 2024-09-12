@@ -22,7 +22,7 @@ After you choose a view, you can [Investigate trends and spikes](../investigate/
 
 ## Select a view
 
-Select a view by choosing an Exploration type: **All services**, **Profile types**, **Labels**, **Flame graph**, or **Diff flame graph**.
+Select a view by choosing an **Exploration**: **All services**, **Profile types**, **Labels**, **Flame graph**, or **Diff flame graph**.
 
 <!-- screenshots need to be updated -->
 
@@ -92,8 +92,8 @@ Determining which view to use frames the rest of your investigation.
 </ul>
    </td>
   </tr>
-  <tr>
-   <td>Flame graph
+<tr>
+  <td>Flame graph
    </td>
    <td>Single service flame graph
    </td>
@@ -102,8 +102,21 @@ Determining which view to use frames the rest of your investigation.
 
 <li>Analyze the flame graph of a particular service, profile type, and label selection
 
-<li>Use tools like "Explain Flame Graph" or "GitHub Code View" (aka "Function Details") to get deeper insights into performance
+<li>Use tools like **Explain flame graph**, GitHub code view, and Function details to get deeper insights into performance.
 </li>
+</ul>
+   </td>
+  </tr>
+<tr>
+  <td>Diff flame graph
+   </td>
+   <td>Compare the differences between two flame graphs
+   </td>
+   <td>
+<ul>
+
+<li>Compare queries that may have different total amounts of time spent in each function
+
 </ul>
    </td>
   </tr>
@@ -139,7 +152,7 @@ You can select to display the charts in a grid or one chart per row.
 
 ### Labels
 
-The Labels view lets you navigate and analyze performance data through tags and labels.
+The Labels view lets you navigate and analyze performance data through labels.
 This feature is crucial for identifying performance anomalies and understanding the behavior of different application segments under various conditions.
 
 ![Labels view](../images/explore-profiles-labels.png)
