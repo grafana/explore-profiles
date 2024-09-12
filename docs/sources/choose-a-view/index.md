@@ -48,7 +48,7 @@ Determining which view to use frames the rest of your investigation.
    </td>
   </tr>
   <tr>
-   <td>Services
+   <td>All services
    </td>
    <td>Overview of all services for any given profile metric
    </td>
@@ -128,7 +128,7 @@ Determining which view to use frames the rest of your investigation.
 
 The **All services** view is the default view when you first open Explore Profiles.
 
-![The Services view](../images/explore-profiles-homescreen.png)
+![The All services view](../images/explore-profiles-homescreen.png)
 
 ### Profile types
 

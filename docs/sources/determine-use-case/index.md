@@ -35,19 +35,21 @@ With capabilities like the Flame graph AI interpreter or the GitHub integration,
 
 ## Use case 1: Investigate an issue
 
-Profiling data is idea when you know there is a specific service or area where there is a performance issue.
+Profiling data is ideal when you know there is a specific service or area where there is a performance issue.
 Maybe an alert from spike in CPU led you to profiles or maybe your logs showed OOM issue for a particular service and you need to debug it.
 Explore Profiles lets you quickly drill into a service and identify the performance issue in these scenarios.
 
 ### Example: Know the problem service, not the cause
 
-If you know the affected service (use case 1), your investigation starts by viewing that service using the **All services** view and reviewing the profiles for that service.
-In the first scenario, you may have identified that the `checkoutservice` has an issue.
+If you know the affected service, your investigation starts by viewing that service and then reviewing the profiles for that service.
+In this example, you may have identified that the `checkoutservice` has an issue.
 You can use **Search services** to locate `checkoutservice` and then use the **Profile types** view to examine all profiles for that service.
+
+Alternatively, you can select the **Profile types** view and then choose the `checkoutservice` from the **Service** drop-down list.
 
 ### Example: Know there is an issue, need to investigate
 
-If you only know there is an issue and have to investigate, then your investigation starts by using the **All services** exploration type.
+If you only know there is an issue and have to investigate, then your investigation starts by using the **All services** view.
 Using the **Profile type** selector, you can check the services’ CPU processes, memory allocation, blocks, locks, exceptions, and other available profile types.
 
 After you locate the profile with a spike, select either **Profile types** view to examine all profile types for that service, or select **Labels** to view the labels (such as `hostname` or `span_name`) for that service.
@@ -56,7 +58,6 @@ After you locate the profile with a spike, select either **Profile types** view 
 
 Illuminate performance issues across a number of dimensions when you are doing a proactive analysis.
 This could be a cost-cutting exercise or attempt to improve latency or memory usage in a non-incident scenario. This exercise could be across multiple services or within a service across profile types, labels, or a combination of the two.
-The flow guides you through identifying the bottleneck.
 
 
 **Next step: [Investigate and identify issues](../investigate/)**
