@@ -1,4 +1,4 @@
-# Developing the Pyroscope app plugin with a local version of Grafana
+# Developing the Explore Profiles plugin with a local version of Grafana
 
 In some cases, you might want to:
 
@@ -8,71 +8,55 @@ In some cases, you might want to:
 
 This section describes how you can set up your local development environment to work **both on the plugin and on Grafana code bases**.
 
-> [!NOTE]
-> This document provides instructions for Unix environments. Any contribution to help covering Windows environments is more than welcome :)
-
 ## Requirements
 
 1. Ensure that your local version of the plugin is properly [set up](./CONTRIBUTING.md)
 2. Check out a local copy of Grafana:
 
    ```shell
-   git clone https://github.com/grafana/grafana
+   git clone --depth 1 https://github.com/grafana/grafana
    ```
 
 3. Setup your local Grafana development environment by following [Grafana's Developer's guide](https://github.com/grafana/grafana/blob/HEAD/contribute/developer-guide.md).
 
-## Setup, only once
+4. Customize Grafana with the following `$WORKING_DIR/conf/custom.ini` file:
 
-### Define some environments variables
-
-In a terminal:
-
-```shell
-# path to Grafana's local copy
-GRAFANA_DIR=~/path/to/grafana
-# path to the plugin's local copy
-PYROSCOPE_APP_DIR=~/path/to/the/pyroscope-app-plugin
+```ini
+[paths]
+plugins = /path/to/the/explore-profiles/folder
 ```
 
-### Provision Grafana with the plugin
+The [plugins option](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#plugins) lets you customize where Grafana will look for plugins.
 
-By default, Grafana will search for its plugins in this directory:
-`$GRAFANA_DIR/data/plugins`.
-
-As it may not exist, let's create it:
-
-```shell
-mkdir -pv $GRAFANA_DIR/data/plugins
-```
-
-Then we provide a plugin's configuration file:
-
-```shell
-cp $PYROSCOPE_APP_DIR/samples/provisioning-remote/plugins/app.yaml $GRAFANA_DIR/conf/provisioning/plugins/pyroscope-app.yaml
-```
-
-And finally we create a [symbolic link](https://www.freecodecamp.org/news/symlink-tutorial-in-linux-how-to-create-and-remove-a-symbolic-link/) named `pyroscope-app` to the `dist` folder of the plugin:
-
-```shell
-cd $GRAFANA_DIR/data/plugins
-ln -s $PYROSCOPE_APP_DIR/dist pyrosope-app
-```
+See the [Configure Grafana documentation](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/) for more information.
 
 ## Development
 
-Start Grafana:
+### In the plugin folder
+
+In the terminal, execute:
 
 ```shell
-cd $GRAFANA_DIR
+yarn dev
+```
+
+to build the frontend assets.
+
+### In the Grafana folder
+
+In a different terminal tab execute:
+
+```shell
 yarn start
 ```
 
-In a different terminal tab, start the plugin:
+to build the frontend assets.
+
+In a different terminal tab, run the Pyroscope data source then start the Grafana server:
 
 ```shell
-cd $PYROSCOPE_APP_DIR
-yarn dev
+make devenv sources=pyroscope
+make run
 ```
 
 Then visit http://localhost:3000
