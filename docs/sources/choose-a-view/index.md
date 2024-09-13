@@ -170,5 +170,5 @@ It normalizes the data by comparing the percentage of total time spent in each f
 This lets you compare two different queries that may have different total amounts of time spent in each function.
 
 Similar to a `git diff`, it takes the selected flame graphs and highlights the differences between them.
-<!-- from old screenshot of cpu usage profile Red represents an increase in CPU usage from the baseline to the comparison and green represents a decrease. -->
 
+<!-- from old screenshot of cpu usage profile Red represents an increase in CPU usage from the baseline to the comparison and green represents a decrease. -->
