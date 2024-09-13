@@ -10,11 +10,15 @@ import {
 import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
+import pLimit from 'p-limit';
 
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
 import { LabelsApiClient } from './http/LabelsApiClient';
+
+const MAX_CONCURRENT_LABEL_VALUES_REQUESTS = 20;
+const limit = pLimit(MAX_CONCURRENT_LABEL_VALUES_REQUESTS);
 
 export class LabelsDataSource extends RuntimeDataSource {
   static MAX_TIMESERIES_LABEL_VALUES = 10;
@@ -91,34 +95,32 @@ export class LabelsDataSource extends RuntimeDataSource {
 
     labelsRepository.setApiClient(new LabelsApiClient({ dataSourceUid }));
 
-    const labels = await labelsRepository.listLabels({ query, from, to });
+    const labels = (await labelsRepository.listLabels({ query, from, to })).filter(
+      ({ value }) => !isPrivateLabel(value)
+    );
 
-    const sortedLabelsWithCounts = (
-      await Promise.all(
-        labels
-          .filter(({ value }) => !isPrivateLabel(value))
-          .sort((a, b) => a.label.localeCompare(b.label))
-          .map(async ({ value }) => {
-            const values = (await labelsRepository.listLabelValues({ query, from, to, label: value })).map(
-              ({ value }) => value
-            );
-            const count = values.length;
-
-            return {
-              // TODO: check if there's a better way
-              value: JSON.stringify({
-                value,
-                groupBy: {
-                  label: value,
-                  values,
-                },
-              }),
-              text: `${value} (${count})`,
-              count,
-            };
-          })
+    const labelsWithValuesAndCount = await Promise.all(
+      labels.map(({ value }) =>
+        limit(async () => {
+          const values = await labelsRepository.listLabelValues({ query, from, to, label: value });
+          const count = values.length;
+          return {
+            // TODO: check if there's a better way
+            value: JSON.stringify({
+              value,
+              groupBy: {
+                label: value,
+                values,
+              },
+            }),
+            text: `${value} (${count})`,
+            count,
+          };
+        })
       )
-    )
+    );
+
+    const sortedLabels = labelsWithValuesAndCount
       .sort((a, b) => b.count - a.count)
       .map(({ value, text }) => ({ value, text }));
 
@@ -128,7 +130,7 @@ export class LabelsDataSource extends RuntimeDataSource {
         value: 'all',
         text: 'All',
       },
-      ...sortedLabelsWithCounts,
+      ...sortedLabels,
     ];
   }
 
