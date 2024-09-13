@@ -118,4 +118,80 @@ test.describe('Diff flame graph view', () => {
       await exploreProfilesPage.assertFilters([], 'filtersComparison');
     });
   });
+
+  test.describe('Baseline panel', () => {
+    test('Baseline time picker', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectService('pyroscope'); // clears the flame graph ranges
+
+      await exploreProfilesPage.selectComparisonTimeRange(
+        'baseline',
+        '2024-03-13T19:21:00.000Z',
+        '2024-03-13T19:34:00.000Z'
+      );
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test('Baseline time picker selection mode', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectService('pyroscope'); // clears the flame graph ranges
+
+      await exploreProfilesPage.switchComparisonSelectionMode('baseline', 'Time picker');
+
+      await exploreProfilesPage.clickAndDragOnComparisonPanel('baseline', { x: 200, y: 200 }, { x: 360, y: 200 });
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test('Baseline flame graph selection mode', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.switchComparisonSelectionMode('baseline', 'Flame graph');
+
+      await exploreProfilesPage.clickAndDragOnComparisonPanel('baseline', { x: 200, y: 200 }, { x: 360, y: 200 });
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+  });
+
+  test.describe('Comparison panel', () => {
+    test('Comparison time picker', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectService('pyroscope'); // clears the flame graph ranges
+
+      await exploreProfilesPage.selectComparisonTimeRange(
+        'comparison',
+        '2024-03-13T19:37:00.000Z',
+        '2024-03-13T19:41:00.000Z'
+      );
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test('Comparison time picker selection mode', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.selectService('pyroscope'); // clears the flame graph ranges
+
+      await exploreProfilesPage.switchComparisonSelectionMode('comparison', 'Time picker');
+
+      await exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 });
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test('Comparison flame graph selection mode', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.switchComparisonSelectionMode('comparison', 'Flame graph');
+
+      await exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 });
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+  });
 });
