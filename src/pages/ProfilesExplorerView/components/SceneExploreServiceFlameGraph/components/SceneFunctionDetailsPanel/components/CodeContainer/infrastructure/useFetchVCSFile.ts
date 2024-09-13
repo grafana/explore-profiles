@@ -21,14 +21,7 @@ type FetchResponse = {
   };
 };
 
-export function useFetchVCSFile({
-  enabled,
-  dataSourceUid,
-  repository,
-  gitRef,
-  localPath,
-  rootPath,
-}: FetchParams): FetchResponse {
+export function useFetchVCSFile({ enabled, dataSourceUid, repository, gitRef, localPath, rootPath }: FetchParams): FetchResponse {
   const privateVcsClient = DataSourceProxyClientBuilder.build(dataSourceUid, PrivateVcsClient);
   const { isFetching, error, data } = useQuery({
     enabled: Boolean(enabled && localPath),
