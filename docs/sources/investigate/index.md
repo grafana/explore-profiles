@@ -11,6 +11,8 @@ weight: 600
 
 # Investigate trends and spikes
 
+{{< docs/public-preview product="Explore Profiles" >}}
+
 Explore Profiles provides powerful tools that help you identify and analyze problems in your applications and services.
 
 Using these steps, you can use the profile data to investigate issues.
@@ -34,7 +36,7 @@ When you use Explore Profiles, your investigations follow these steps.
    - From the Labels view: Select **Add to filters** from one of the areas of interest.
 1. Optional: Click and drag on any graph to select a specific time frame or data range.
 1. Use the **Labels** view to select two processes to compare.
-   - Select the checkbox in two graphs. Select **Compare** to view your selections in the **Comparison diff view**.
-   - Use the **Service** and **Profile** drop-downs to change the service or profile type displayed.
+   - Select both the **Baseline** and **Comparison** checkboxes. Select **Compare** to view your selections in the **Diff flame graph** view.
+   - Select both a time range in the baseline graph and in the comparison graph to view the diff flame graph.
 1. Use the **Flame graph** view to drill into the code level to pinpoint issues in specific functions, for example.
-   ![Viewing a flame graph during an investigation](../images/explore-profiles-flamegraph.png)
+<!-->   ![Viewing a flame graph during an investigation](../images/explore-profiles-flamegraph.png) -->

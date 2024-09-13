@@ -2,9 +2,6 @@
 cascade:
   FULL_PRODUCT_NAME: Grafana Explore Profiles
   PRODUCT_NAME: Explore Profiles
-  _build:
-    list: false
-  noindex: true
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/
 description: Learn how to use Explore Profiles to understand and troubleshoot
   your applications and services.
@@ -58,7 +55,7 @@ By profiling a program, developers can identify which parts of the program consu
 You can use this information to optimize the program, making it run faster or use fewer resources.
 
 Explore Profiles provides an intuitive interface for exploring your profile data.
-This design lets you navigate the UI and drill down into which tags are most interesting to you.
+This design lets you navigate the UI and drill down into which labels are most interesting to you.
 This app helps you start at the highest level possible and drill down into a specific root cause analysis.
 You don’t know what’s wrong, but you should be able to find it by drilling down.
 
@@ -67,6 +64,8 @@ Using Explore Profiles, you can:
 - View high-level service performance: Get a high-level view of all of your services and how they're functioning
 - Optimize processes: Identify processes or services that you can optimize for better performance
 - Diagnose issues: Determine the root cause of an issue
+
+{{< docs/public-preview product="Explore Profiles" >}}
 
 ## Explore
 
