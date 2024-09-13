@@ -41,6 +41,7 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable'
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
+import { GiveFeedbackButton } from '../GiveFeedbackButton';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
@@ -419,6 +420,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     return (
       <GitHubContextProvider dataSourceUid={dataSourceUid}>
         <div className={styles.header} data-testid="allControls">
+          <GiveFeedbackButton />
+
           <div className={styles.controls} data-testid="appControls">
             <div className={styles.headerLeft}>
               <div className={styles.dataSourceVariable}>
