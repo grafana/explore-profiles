@@ -14,7 +14,7 @@ import { EventViewServiceFlameGraph } from '../../domain/events/EventViewService
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
-import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';

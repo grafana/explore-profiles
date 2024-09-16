@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import { FiltersVariable } from './variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from './variables/ProfileMetricVariable';
-import { ServiceNameVariable } from './variables/ServiceNameVariable';
+import { ServiceNameVariable } from './variables/ServiceNameVariable/ServiceNameVariable';
 
 export function useBuildPyroscopeQuery(sceneObject: SceneObject, filterKey: string) {
   const { value: serviceName } = sceneGraph
