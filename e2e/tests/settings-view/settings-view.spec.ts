@@ -42,9 +42,9 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot(
-        'Plugin-Settings-Flame-graph-settings-Can-be-modified-1.png'
-      );
+      // get the whole panel to prevent flakiness
+      // e.g. this error: "Expected an image 781px by 132px, received 780px by 132px."
+      await expect(exploreProfilesPage.getByTestId('flame-graph-panel')).toHaveScreenshot();
 
       // diff flame graph
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
@@ -55,9 +55,9 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot(
-        'Plugin-Settings-Flame-graph-settings-Can-be-modified-2.png'
-      );
+      // get the whole panel to prevent flakiness
+      // e.g. this error: "Expected an image 781px by 132px, received 780px by 132px."
+      await expect(exploreProfilesPage.getByTestId('diff-flame-graph-panel')).toHaveScreenshot();
     });
   });
 
