@@ -42,7 +42,9 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();
+      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot(
+        'Plugin-Settings-Flame-graph-settings-Can-be-modified-1.png'
+      );
 
       // diff flame graph
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
@@ -53,7 +55,9 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();
+      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot(
+        'Plugin-Settings-Flame-graph-settings-Can-be-modified-2.png'
+      );
     });
   });
 
