@@ -1,0 +1,14 @@
+OLD_VERSION=$1
+NEW_VERSION=$2
+
+if [ -z "$OLD_VERSION" ] || [ -z "$NEW_VERSION" ]; then
+    echo "Error: Please provide both the old and new Playwright versions!"
+    echo "\nUsage: upgrade-playwright [old version number] [new version number]"
+    exit 1
+fi
+
+yarn up @playwright/test@^$NEW_VERSION 
+
+find Dockerfile.plugin.e2e -type f -exec sed -i "" "s/$OLD_VERSION/$NEW_VERSION/g" {} \;
+
+yarn e2e:ci:prepare
