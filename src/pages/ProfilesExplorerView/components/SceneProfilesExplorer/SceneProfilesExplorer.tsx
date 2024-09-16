@@ -22,7 +22,9 @@ import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/history';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
-import React from 'react';
+import { History } from 'history';
+import React, { useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
@@ -337,6 +339,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   onClickShareLink = async () => {
+    reportInteraction('g_pyroscope_app_share_link_clicked');
+
     try {
       const shareableUrl = new URL(window.location.toString());
       const { searchParams } = shareableUrl;
@@ -359,6 +363,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       console.error(error);
     }
   };
+
+  onClickUserSettings(history: History) {
+    reportInteraction('g_pyroscope_app_user_settings_clicked');
+
+    const settingsPathname = new URL(window.location.toString()).pathname.replace('/profiles-explorer', '/settings');
+
+    history.push(settingsPathname);
+  }
 
   useProfilesExplorer = () => {
     const { explorationType, controls, body, $variables } = this.useState();
@@ -383,6 +395,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     const dataSourceUid = dataSourceVariable.useState().value as string;
 
+    const history = useHistory();
+
     return {
       data: {
         explorationType,
@@ -397,6 +411,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       actions: {
         onChangeExplorationType: this.onChangeExplorationType,
         onClickShareLink: this.onClickShareLink,
+        onClickUserSettings: useCallback(() => {
+          this.onClickUserSettings(history);
+        }, [history]),
       },
     };
   };
@@ -441,12 +458,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
               )}
 
-              <IconButton
-                name="share-alt"
-                tooltip="Copy shareable link to the clipboard"
-                onClick={actions.onClickShareLink}
-              />
-              <VersionInfoTooltip />
+              <div className={styles.miscButtons}>
+                <IconButton name="cog" tooltip="View/edit user settings" onClick={actions.onClickUserSettings} />
+
+                <IconButton
+                  name="share-alt"
+                  tooltip="Copy shareable link to the clipboard"
+                  onClick={actions.onClickShareLink}
+                />
+
+                <VersionInfoTooltip />
+              </div>
             </div>
           </div>
 
@@ -483,7 +505,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     padding: ${theme.spacing(1)} 0;
     justify-content: space-between;
-    gap: ${theme.spacing(4)};
+    gap: ${theme.spacing(2)};
   `,
   headerLeft: css`
     display: flex;
@@ -493,9 +515,23 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     gap: ${theme.spacing(1)};
   `,
+  miscButtons: css`
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid ${theme.colors.border.weak};
+    background-color: ${theme.colors.background.secondary};
+    height: 32px;
+    padding: 0 ${theme.spacing(1)};
+
+    & svg {
+      width: 18px;
+      height: 18px;
+    }
+  `,
   dataSourceVariable: css`
     display: flex;
-    ${theme.breakpoints.down('xl')} {
+    ${theme.breakpoints.down('xxl')} {
       label {
         display: none;
       }
