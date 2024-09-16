@@ -16,7 +16,7 @@ import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
-import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneGroupByLabels } from './components/SceneGroupByLabels/SceneGroupByLabels';
 

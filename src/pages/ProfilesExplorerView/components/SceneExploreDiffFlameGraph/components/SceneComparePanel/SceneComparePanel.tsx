@@ -17,7 +17,6 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { omit } from 'lodash';
 import React from 'react';
 
-import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../ComparisonView/ui/colors';
 import { getDefaultTimeRange } from '../../../../domain/getDefaultTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
@@ -38,6 +37,7 @@ import {
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
+import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 
 export interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;

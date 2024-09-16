@@ -27,9 +27,7 @@ test.describe('Plugin Settings', () => {
   });
 
   test.describe('Flame graph settings', () => {
-    test('Can be modified for the "Flame graph" views', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.resetTestSettings();
-
+    test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
       await settingsPage.getCollapsedFlamegraphsCheckbox().click();
       await settingsPage.getMaxNodesInput().fill('4');
       await settingsPage.getSaveSettingsButton().click();
@@ -44,7 +42,9 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();
+      // get the whole panel to prevent flakiness
+      // e.g. this error: "Expected an image 781px by 132px, received 780px by 132px."
+      await expect(exploreProfilesPage.getByTestId('flame-graph-panel')).toHaveScreenshot();
 
       // diff flame graph
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
@@ -55,14 +55,14 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot();
+      // get the whole panel to prevent flakiness
+      // e.g. this error: "Expected an image 781px by 132px, received 780px by 132px."
+      await expect(exploreProfilesPage.getByTestId('diff-flame-graph-panel')).toHaveScreenshot();
     });
   });
 
   test.describe('Export settings', () => {
     test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.resetTestSettings();
-
       await settingsPage.getEnableFlamegraphDotComCheckbox().click();
       await settingsPage.getSaveSettingsButton().click();
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();

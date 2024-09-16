@@ -1,10 +1,19 @@
-import { translatePyroscopeTimeRangeToGrafana } from '@shared/domain/translation';
+import { dateTimeParse } from '@grafana/data';
 
 import { getExportFilename } from '../getExportFilename';
 
 describe('getFileName(query, timeRange)', () => {
   it('computes the correct filename', () => {
-    const timeRange = translatePyroscopeTimeRangeToGrafana('1708210800', '1708297200'); // 2024-02-18 - 2024-02-19
+    // 2024-02-18 - 2024-02-19
+    const timeRange = {
+      raw: {
+        from: '1708210800',
+        to: '1708297200',
+      },
+      from: dateTimeParse(1708210800000),
+      to: dateTimeParse(1708297200000),
+    };
+
     const filename = getExportFilename(
       'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="alerting-ops/grafana",}',
       timeRange
