@@ -3,6 +3,11 @@ import { expect, type Page } from '@playwright/test';
 import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS, ExplorationType } from '../../config/constants';
 import { PyroscopePage } from './PyroscopePage';
 
+type Coords = {
+  x: number;
+  y: number;
+};
+
 export class ExploreProfilesPage extends PyroscopePage {
   constructor(readonly page: Page, defaultUrlParams: URLSearchParams) {
     const urlParams = new URLSearchParams(defaultUrlParams);
@@ -173,7 +178,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   async selectHidePanelsWithoutNoData() {
     // weirdly the mouse is on the "Flame graph" panel action at this point
     // so we have to move it for the label to become actionable
-    await this.page.mouse.move(0, 0);
+    await this.mouse.move(0, 0);
     await this.getByLabel('Hide panels without data').click();
   }
 
@@ -221,12 +226,12 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   /* Filters */
 
-  getFilters() {
-    return this.getByTestId('filters');
+  getFilters(filterKey: string) {
+    return this.locator(`#query-builder-${filterKey}`);
   }
 
-  async assertFilters(expectedFilters: string[][]) {
-    const filters = this.getFilters().getByTestId('filtersList').getByLabel('Filter', { exact: true });
+  async assertFilters(expectedFilters: string[][], filterKey = 'filters') {
+    const filters = this.getFilters(filterKey).getByTestId('filtersList').getByLabel('Filter', { exact: true });
 
     await expect(filters).toHaveCount(expectedFilters.length);
 
@@ -242,8 +247,8 @@ export class ExploreProfilesPage extends PyroscopePage {
     }
   }
 
-  async addFilter(parts: string[]) {
-    await this.getFilters().getByRole('combobox').click();
+  async addFilter(parts: string[], filterKey = 'filters') {
+    await this.getFilters(filterKey).getByRole('combobox').click();
 
     const selectMenu = this.getByLabel('Select options menu');
 
@@ -315,5 +320,40 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async selectForComparison(panelTitle: string, target: string) {
     await this.getStatsPanel(panelTitle).getByText(target).click();
+  }
+
+  /* Diff panels */
+
+  getComparisonPanel(target: 'baseline' | 'comparison') {
+    return this.getByTestId(`panel-${target}`);
+  }
+
+  getComparisonTimePickerButton(target: 'baseline' | 'comparison') {
+    return this.getByTestId(`panel-${target}`).getByTestId('data-testid TimePicker Open Button');
+  }
+
+  async selectComparisonTimeRange(target: 'baseline' | 'comparison', from: string, to: string) {
+    await this.getComparisonTimePickerButton(target).click();
+
+    const overlay = this.getByTestId('data-testid TimePicker Overlay Content');
+
+    await overlay.getByTestId('data-testid Time Range from field').fill(from);
+    await overlay.getByTestId('data-testid Time Range to field').fill(to);
+
+    await overlay.getByTestId('data-testid TimePicker submit button').click();
+  }
+
+  async switchComparisonSelectionMode(target: 'baseline' | 'comparison', label: 'Time picker' | 'Flame graph') {
+    await this.getComparisonPanel(target).getByLabel('Range selection mode').getByLabel(label).click();
+  }
+
+  async clickAndDragOnComparisonPanel(target: 'baseline' | 'comparison', coordsFrom: Coords, coordsTo: Coords) {
+    const panel = this.getComparisonPanel(target);
+
+    await panel.hover({ position: coordsFrom });
+    await this.mouse.down();
+
+    await panel.hover({ position: coordsTo });
+    await this.mouse.up();
   }
 }

@@ -17,6 +17,11 @@ test.describe('Flame graph view', () => {
     await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
     await exploreProfilesPage.assertFilters([]);
 
+    // flame graph panel
+    const flameGraphPanel = exploreProfilesPage.getByTestId('flame-graph-panel');
+    await expect(flameGraphPanel.locator('h6')).toContainText('Flame graph for ride-sharing-app (cpu)');
+    await expect(flameGraphPanel.getByRole('button', { name: /Explain Flame Graph/i })).toBeVisible();
+
     // body
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
       stylePath: './e2e/fixtures/css/hide-all-controls.css',
