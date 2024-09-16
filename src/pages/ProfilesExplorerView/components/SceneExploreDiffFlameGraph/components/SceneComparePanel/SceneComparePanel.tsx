@@ -213,12 +213,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
     const styles = useStyles2(getStyles);
-    const { title, timeseriesPanel: timeseries, timePicker, refreshPicker, filterKey } = model.useState();
+    const { target, title, timeseriesPanel: timeseries, timePicker, refreshPicker, filterKey } = model.useState();
 
     const filtersVariable = sceneGraph.findByKey(model, filterKey) as FiltersVariable;
 
     return (
-      <div className={styles.panel}>
+      <div className={styles.panel} data-testid={`panel-${target}`}>
         <div className={styles.panelHeader}>
           <h6>{title}</h6>
 

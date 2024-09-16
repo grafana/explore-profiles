@@ -55,6 +55,7 @@ export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherStat
 
     return (
       <InlineSwitch
+        data-testid="noDataSwitcher"
         showLabel
         label="Hide panels without data"
         value={hideNoData === 'on'}

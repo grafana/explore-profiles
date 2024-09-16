@@ -24,10 +24,7 @@ export function useFetchDiffProfile({
 }: FetchParams) {
   const [maxNodes] = useMaxNodesFromUrl();
 
-  const diffProfileApiClient = DataSourceProxyClientBuilder.build(
-    dataSourceUid,
-    DiffProfileApiClient
-  ) as DiffProfileApiClient;
+  const diffProfileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, DiffProfileApiClient);
 
   const { isFetching, error, data, refetch } = useQuery({
     // for UX: keep previous data while fetching -> profile does not re-render with empty panels when refreshing

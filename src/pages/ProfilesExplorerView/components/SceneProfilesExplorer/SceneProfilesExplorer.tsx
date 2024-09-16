@@ -19,6 +19,7 @@ import {
 } from '@grafana/scenes';
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
+import { prepareHistoryEntry } from '@shared/domain/history';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
 import React from 'react';
@@ -47,6 +48,7 @@ import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/Scen
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneTimeRangeWithAnnotations } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/components/SceneTimeRangeWithAnnotations';
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
+import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
@@ -149,11 +151,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const eventsSub = this.subscribeToEvents();
 
-    this.setExplorationType({
-      type: Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
-        ? (this.state.explorationType as ExplorationType)
-        : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
-    });
+    if (!this.state.explorationType) {
+      this.setExplorationType({
+        type: SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
+    }
 
     return () => {
       eventsSub.unsubscribe();
@@ -167,13 +169,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   updateFromUrl(values: SceneObjectUrlValues) {
-    const stateUpdate: Partial<SceneProfilesExplorerState> = {};
-
     if (typeof values.explorationType === 'string' && values.explorationType !== this.state.explorationType) {
-      stateUpdate.explorationType = values.explorationType as ExplorationType;
+      const type = values.explorationType as ExplorationType;
+      this.setExplorationType({
+        type: Object.values(ExplorationType).includes(type) ? type : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
     }
-
-    this.setState(stateUpdate);
   }
 
   registerRuntimeDataSources() {
@@ -246,6 +247,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     item?: GridItemData;
   }) {
     if (comesFromUserAction) {
+      prepareHistoryEntry();
       this.resetVariables(type);
     }
 
@@ -379,6 +381,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       gridControls: SceneObject[];
     };
 
+    const dataSourceUid = dataSourceVariable.useState().value as string;
+
     return {
       data: {
         explorationType,
@@ -388,6 +392,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         sceneVariables,
         gridControls,
         body,
+        dataSourceUid,
       },
       actions: {
         onChangeExplorationType: this.onChangeExplorationType,
@@ -408,10 +413,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       sceneVariables,
       gridControls,
       body,
+      dataSourceUid,
     } = data;
 
     return (
-      <>
+      <GitHubContextProvider dataSourceUid={dataSourceUid}>
         <div className={styles.header} data-testid="allControls">
           <div className={styles.controls} data-testid="appControls">
             <div className={styles.headerLeft}>
@@ -461,7 +467,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         <div className={styles.body} data-testid="sceneBody">
           {body && <body.Component model={body} />}
         </div>
-      </>
+      </GitHubContextProvider>
     );
   }
 }

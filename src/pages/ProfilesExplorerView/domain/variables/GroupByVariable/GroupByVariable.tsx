@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Field, Icon, RefreshPicker, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
+import { prepareHistoryEntry } from '@shared/domain/history';
 import { noOp } from '@shared/domain/noOp';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
@@ -61,6 +62,7 @@ export class GroupByVariable extends QueryVariable {
   onChange = (newValue: string) => {
     reportInteraction('g_pyroscope_app_group_by_label_clicked', { label: newValue });
 
+    prepareHistoryEntry();
     this.changeValueTo(newValue);
   };
 

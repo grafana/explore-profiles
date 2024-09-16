@@ -3,6 +3,11 @@ import { expect, type Page } from '@playwright/test';
 import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS, ExplorationType } from '../../config/constants';
 import { PyroscopePage } from './PyroscopePage';
 
+type Coords = {
+  x: number;
+  y: number;
+};
+
 export class ExploreProfilesPage extends PyroscopePage {
   constructor(readonly page: Page, defaultUrlParams: URLSearchParams) {
     const urlParams = new URLSearchParams(defaultUrlParams);
@@ -47,14 +52,27 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getExplorationTypeSelector().getByLabel(explorationType).click();
   }
 
-  /* Time picker */
+  /* Time picker/refresh */
 
-  getTimePicker() {
+  getTimePickerButton() {
     return this.getByTestId('data-testid TimePicker Open Button');
   }
 
   async assertSelectedTimeRange(expectedTimeRange: string) {
-    await expect(this.getTimePicker()).toContainText(expectedTimeRange);
+    await expect(this.getTimePickerButton()).toContainText(expectedTimeRange);
+  }
+
+  async selectTimeRange(quickRangeLabel: string) {
+    await this.getTimePickerButton().click();
+    await this.getByTestId('data-testid TimePicker Overlay Content').getByText(quickRangeLabel).click();
+  }
+
+  getRefreshPicker() {
+    return this.getByTestId('data-testid RefreshPicker run button');
+  }
+
+  clickOnRefresh() {
+    return this.getRefreshPicker().click();
   }
 
   /* Service */
@@ -87,7 +105,7 @@ export class ExploreProfilesPage extends PyroscopePage {
 
     await this.getProfileTypeSelector().click();
 
-    const menu = this.locator('[role="menu"]');
+    const menu = this.locator('[role="menu"]').last();
     await menu.getByText(category, { exact: true }).click();
     await menu.getByText(type, { exact: true }).click();
   }
@@ -118,7 +136,8 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByLabel('Quick filter');
   }
 
-  async assertQuickFilterValue(expectedValue: string) {
+  async assertQuickFilter(explectedPlaceholder: string, expectedValue: string) {
+    await expect(await this.getQuickFilterInput().getAttribute('placeholder')).toBe(explectedPlaceholder);
     await expect(this.getQuickFilterInput()).toHaveValue(expectedValue);
   }
 
@@ -142,6 +161,42 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getLayoutSwitcher().getByLabel(layoutName).click();
   }
 
+  /* Hide panels without data switcher */
+
+  getHideNoDataSwitcher() {
+    return this.getByTestId('noDataSwitcher');
+  }
+
+  async assertHideNoDataSwitcher(isChecked: boolean) {
+    if (isChecked) {
+      await expect(this.getHideNoDataSwitcher()).toBeChecked();
+    } else {
+      await expect(this.getHideNoDataSwitcher()).not.toBeChecked();
+    }
+  }
+
+  async selectHidePanelsWithoutNoData() {
+    // weirdly the mouse is on the "Flame graph" panel action at this point
+    // so we have to move it for the label to become actionable
+    await this.mouse.move(0, 0);
+    await this.getByLabel('Hide panels without data').click();
+  }
+
+  /* Panel type switcher */
+
+  getPanelTypeSwitcher() {
+    return this.getByLabel('Panel type switcher');
+  }
+
+  async assertSelectedPanelType(expectedPanelType: string) {
+    const panelType = await this.getPanelTypeSwitcher().locator('input[checked]~label').textContent();
+    await expect(panelType?.trim()).toBe(expectedPanelType);
+  }
+
+  selectPanelType(panelType: string) {
+    return this.getPanelTypeSwitcher().getByLabel(panelType).click();
+  }
+
   /* Scene body & grid panels */
 
   getSceneBody() {
@@ -161,14 +216,22 @@ export class ExploreProfilesPage extends PyroscopePage {
     await panel.getByLabel(actionLabel).click();
   }
 
-  /* Filters */
-
-  getFilters() {
-    return this.getByTestId('filters');
+  async assertPanelHasNoData(panelTitle: string) {
+    await expect(this.getPanelByTitle(panelTitle).getByText('No data')).toBeVisible();
   }
 
-  async assertFilters(expectedFilters: string[][]) {
-    const filters = this.getFilters().getByTestId('filtersList').getByLabel('Filter', { exact: true });
+  async assertNoSpinner() {
+    await expect(this.getByTestId('Spinner')).toHaveCount(0);
+  }
+
+  /* Filters */
+
+  getFilters(filterKey: string) {
+    return this.locator(`#query-builder-${filterKey}`);
+  }
+
+  async assertFilters(expectedFilters: string[][], filterKey = 'filters') {
+    const filters = this.getFilters(filterKey).getByTestId('filtersList').getByLabel('Filter', { exact: true });
 
     await expect(filters).toHaveCount(expectedFilters.length);
 
@@ -184,8 +247,8 @@ export class ExploreProfilesPage extends PyroscopePage {
     }
   }
 
-  async addFilter(parts: string[]) {
-    await this.getFilters().getByRole('combobox').click();
+  async addFilter(parts: string[], filterKey = 'filters') {
+    await this.getFilters(filterKey).getByRole('combobox').click();
 
     const selectMenu = this.getByLabel('Select options menu');
 
@@ -204,6 +267,10 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('flameGraph');
   }
 
+  getTopTable() {
+    return this.getByTestId('topTable');
+  }
+
   clickOnFlameGraphNode({ x, y }: { x: number; y: number }) {
     return this.getFlamegraph().click({ position: { x, y } });
   }
@@ -217,6 +284,76 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   closeFlameGraphContextualMenu() {
-    return this.getByTestId('panel').getByRole('heading').click();
+    return this.getByTestId('header-container').first().click();
+  }
+
+  /* Group by */
+
+  getGroupByContainer() {
+    return this.getByTestId('groupByLabelsContainer');
+  }
+
+  getGroupByPanels() {
+    return this.getGroupByContainer().locator(`[data-viz-panel-key]`);
+  }
+
+  getGroupByLabelsSelector() {
+    return this.getGroupByContainer().getByLabel('Labels selector', { exact: true });
+  }
+
+  async selectGroupByLabel(label: string) {
+    await this.getGroupByLabelsSelector().getByLabel(label, { exact: true }).click();
+  }
+
+  getCompareButton() {
+    return this.getGroupByContainer().getByRole('button', { name: 'Compare' });
+  }
+
+  getClearComparisonButton() {
+    // getByRole('button', { name:... }) does not work :man_shrug:
+    return this.getGroupByContainer().getByTestId('clearComparison');
+  }
+
+  getStatsPanel(labelValue: string) {
+    return this.getGroupByContainer().getByTestId(`stats-panel-${labelValue}`);
+  }
+
+  async selectForComparison(panelTitle: string, target: string) {
+    await this.getStatsPanel(panelTitle).getByText(target).click();
+  }
+
+  /* Diff panels */
+
+  getComparisonPanel(target: 'baseline' | 'comparison') {
+    return this.getByTestId(`panel-${target}`);
+  }
+
+  getComparisonTimePickerButton(target: 'baseline' | 'comparison') {
+    return this.getByTestId(`panel-${target}`).getByTestId('data-testid TimePicker Open Button');
+  }
+
+  async selectComparisonTimeRange(target: 'baseline' | 'comparison', from: string, to: string) {
+    await this.getComparisonTimePickerButton(target).click();
+
+    const overlay = this.getByTestId('data-testid TimePicker Overlay Content');
+
+    await overlay.getByTestId('data-testid Time Range from field').fill(from);
+    await overlay.getByTestId('data-testid Time Range to field').fill(to);
+
+    await overlay.getByTestId('data-testid TimePicker submit button').click();
+  }
+
+  async switchComparisonSelectionMode(target: 'baseline' | 'comparison', label: 'Time picker' | 'Flame graph') {
+    await this.getComparisonPanel(target).getByLabel('Range selection mode').getByLabel(label).click();
+  }
+
+  async clickAndDragOnComparisonPanel(target: 'baseline' | 'comparison', coordsFrom: Coords, coordsTo: Coords) {
+    const panel = this.getComparisonPanel(target);
+
+    await panel.hover({ position: coordsFrom });
+    await this.mouse.down();
+
+    await panel.hover({ position: coordsTo });
+    await this.mouse.up();
   }
 }

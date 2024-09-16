@@ -2,7 +2,16 @@ import { reportInteraction as grafanaReportInteraction } from '@grafana/runtime'
 
 import { reportInteraction } from '../reportInteraction';
 
-jest.mock('@grafana/runtime', () => ({ reportInteraction: jest.fn() }));
+jest.mock('@grafana/runtime', () => ({
+  reportInteraction: jest.fn(),
+  config: {
+    apps: {
+      'grafana-pyroscope-app': {
+        version: '1.0.0',
+      },
+    },
+  },
+}));
 
 describe('reportInteraction(interactionName, properties)', () => {
   const originalLocation = window.location;
@@ -19,7 +28,10 @@ describe('reportInteraction(interactionName, properties)', () => {
 
     reportInteraction('unit_test_executed');
 
-    expect(grafanaReportInteraction).toHaveBeenCalledWith('unit_test_executed', { page: 'test-page-1' });
+    expect(grafanaReportInteraction).toHaveBeenCalledWith('unit_test_executed', {
+      page: 'test-page-1',
+      version: '1.0.0',
+    });
   });
 
   describe('if some extra properties are passed', () => {
@@ -34,6 +46,7 @@ describe('reportInteraction(interactionName, properties)', () => {
       expect(grafanaReportInteraction).toHaveBeenCalledWith('unit_test_executed', {
         page: 'test-page-2',
         testFramework: 'Jest',
+        version: '1.0.0',
       });
     });
   });

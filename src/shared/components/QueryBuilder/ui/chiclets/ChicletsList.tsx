@@ -53,7 +53,7 @@ function ChicletsListComponent({
   const styles = useStyles2(getStyles);
 
   return (
-    <div className={styles.chicletsList}>
+    <div className={styles.chicletsList} data-testid="filtersList">
       {filters.map((filter) => (
         <div key={filter.id} className={styles.editChicletContainer}>
           <Chiclet filter={filter} onClick={onClickChiclet} onRemove={onRemoveChiclet} />

@@ -1,12 +1,15 @@
-import { expect, type Page, Request, Route } from '@playwright/test';
+import { expect, Mouse, type Page, Request, Route } from '@playwright/test';
 
 export class PyroscopePage {
   readonly page: Page;
+  readonly mouse: Mouse;
+
   pathname: string;
   urlParams: string;
 
   constructor(page: Page, pathname: string, urlParams: string) {
     this.page = page;
+    this.mouse = page.mouse;
     this.pathname = pathname;
     this.urlParams = urlParams;
   }
@@ -26,8 +29,8 @@ export class PyroscopePage {
     return this.page.getByTestId(testId);
   }
 
-  getByLabel(label: string) {
-    return this.page.getByLabel(label);
+  getByLabel(label: string, options?: Record<string, unknown>) {
+    return this.page.getByLabel(label, options);
   }
 
   getByText(text, options?: Record<string, unknown>) {

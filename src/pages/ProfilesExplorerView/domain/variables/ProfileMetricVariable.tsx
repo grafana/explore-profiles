@@ -2,8 +2,10 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
+import { prepareHistoryEntry } from '@shared/domain/history';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { nanoid } from 'nanoid';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -103,6 +105,9 @@ export class ProfileMetricVariable extends QueryVariable {
   onSelect = (newValue: string) => {
     reportInteraction('g_pyroscope_app_profile_metric_selected');
 
+    if (!this.state.skipUrlSync) {
+      prepareHistoryEntry();
+    }
     this.changeValueTo(newValue);
   };
 
@@ -127,9 +132,9 @@ export class ProfileMetricVariable extends QueryVariable {
 
     return (
       <Cascader
-        // we add a key to ensure that the Cascader selects the initial value properly when landing on the page
+        // we add a key to ensure that the Cascader selects the initial value or available options properly when landing on the page
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
-        key={String(loading) + String(value)}
+        key={nanoid(5)}
         aria-label="Profile metrics list"
         width={24}
         separator="/"

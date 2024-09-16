@@ -4,6 +4,7 @@ services:
     build:
       dockerfile: ./Dockerfile.remote
       args:
+        grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
         grafana_version: ${GRAFANA_VERSION:-10.4.3}
         backendUrl: ${REMOTE_BACKEND_URL}
         basicAuthUser: ${REMOTE_BASIC_AUTH_USER}

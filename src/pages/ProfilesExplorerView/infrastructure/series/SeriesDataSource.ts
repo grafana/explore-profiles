@@ -22,7 +22,7 @@ export class SeriesDataSource extends RuntimeDataSource {
   }
 
   async fetchSeries(dataSourceUid: string, timeRange: TimeRange) {
-    const seriesApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, SeriesApiClient) as SeriesApiClient;
+    const seriesApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, SeriesApiClient);
     seriesRepository.setApiClient(seriesApiClient);
     return seriesRepository.list({ timeRange });
   }

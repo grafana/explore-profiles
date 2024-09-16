@@ -9,6 +9,7 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
+import { prepareHistoryEntry } from '@shared/domain/history';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
@@ -24,7 +25,7 @@ import { addFilter } from '../../../../domain/variables/FiltersVariable/filters-
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
-import { panelBuilder } from '../../../../helpers/panelBuilder';
+import { vizPanelBuilder } from '../../../../helpers/vizPanelBuilder';
 import { interpolateQueryRunnerVariables } from '../../../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { SceneLayoutSwitcher } from '../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -43,7 +44,7 @@ import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/Sc
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
 import { EventSelectForCompare } from './domain/events/EventSelectForCompare';
-import { CompareActions } from './ui/CompareActions';
+import { CompareControls } from './ui/CompareControls';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
@@ -252,6 +253,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const labelValue = queryRunnerParams!.groupBy!.label;
     const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
 
+    prepareHistoryEntry();
     groupByVariable.changeValueTo(labelValue);
 
     // the event may be published from an expanded panel in the drawer
@@ -279,7 +281,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     this.state.drawer.open({
       title,
-      body: panelBuilder(item.panelType, {
+      body: vizPanelBuilder(item.panelType, {
         displayAllValues: true,
         legendPlacement: 'right',
         item,
@@ -375,13 +377,13 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     );
 
     return (
-      <div className={styles.container}>
+      <div className={styles.container} data-testid="groupByLabelsContainer">
         <groupByVariable.Component model={groupByVariable} />
 
         <div className={styles.sceneControls}>
           <Stack wrap="wrap">
             {groupByVariableValue !== 'all' && (
-              <CompareActions
+              <CompareControls
                 compare={compare}
                 onClickCompare={model.onClickCompareButton}
                 onClickClear={model.onClickClearCompareButton}

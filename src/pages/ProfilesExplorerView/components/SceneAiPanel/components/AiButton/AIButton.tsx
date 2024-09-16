@@ -20,12 +20,12 @@ export function AIButton({ children, onClick, disabled, interactionName }: AIBut
   let icon: IconName = 'ai';
   let title = '';
 
-  if (error) {
-    icon = 'shield-exclamation';
-    title = 'Grafana LLM plugin missing or not configured!';
-  } else if (isFetching) {
+  if (isFetching) {
     icon = 'fa fa-spinner';
     title = 'Checking the status of the Grafana LLM plugin...';
+  } else if (!isEnabled || error) {
+    icon = 'shield-exclamation';
+    title = 'Grafana LLM plugin missing or not configured!';
   }
 
   return (
@@ -34,8 +34,9 @@ export function AIButton({ children, onClick, disabled, interactionName }: AIBut
       size="md"
       fill="text"
       icon={icon}
-      title={isEnabled ? 'Ask FlameGrot AI' : title}
       disabled={!isEnabled || disabled}
+      tooltip={title}
+      tooltipPlacement="top"
       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
         reportInteraction(interactionName);
         onClick(event);
