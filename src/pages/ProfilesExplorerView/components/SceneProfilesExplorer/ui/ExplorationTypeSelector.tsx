@@ -13,6 +13,8 @@ export type ExplorationTypeSelectorProps = {
 export function ExplorationTypeSelector({ options, value, onChange }: ExplorationTypeSelectorProps) {
   const styles = useStyles2(getStyles);
 
+  const activeIndex = options.findIndex((o) => o.value === value);
+
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
       <InlineLabel width="auto">Exploration</InlineLabel>
@@ -20,14 +22,15 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
       <div className={styles.breadcrumb}>
         {options.map((option, i) => {
           const isActive = value === option.value;
+
           return (
             <Fragment key={option.value}>
               <Button
-                className={isActive ? cx(styles.button, styles.active) : styles.button}
+                className={isActive ? cx(styles.button, styles.defaultMouseCursor) : styles.button}
+                variant={i <= activeIndex ? 'primary' : 'secondary'}
                 size="sm"
                 aria-label={option.label}
                 icon={option.icon as any}
-                variant={isActive ? 'primary' : 'secondary'}
                 onClick={isActive ? noOp : () => onChange(option.value as string)}
                 tooltip={option.description}
                 tooltipPlacement="top"
@@ -49,7 +52,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
     align-items: center;
-    ${theme.breakpoints.down('xl')} {
+    ${theme.breakpoints.down('xxl')} {
       label {
         display: none;
       }
@@ -73,7 +76,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
       margin-left: ${theme.spacing(2)};
     }
   `,
-  active: css`
+  defaultMouseCursor: css`
     &:hover {
       cursor: default;
     }
