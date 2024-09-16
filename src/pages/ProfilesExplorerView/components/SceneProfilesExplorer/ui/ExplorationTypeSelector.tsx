@@ -15,6 +15,15 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
 
   const activeIndex = options.findIndex((o) => o.value === value);
 
+  const getButtonVariant = (currentIndex: number) => {
+    if (activeIndex === options.length - 1) {
+      // "Favorites" is the last option, so in this case we don't want all the previous buttons to be active
+      return currentIndex === activeIndex ? 'primary' : 'secondary';
+    }
+
+    return currentIndex <= activeIndex ? 'primary' : 'secondary';
+  };
+
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
       <InlineLabel width="auto">Exploration</InlineLabel>
@@ -27,7 +36,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
             <Fragment key={option.value}>
               <Button
                 className={isActive ? cx(styles.button, styles.defaultMouseCursor) : styles.button}
-                variant={i <= activeIndex ? 'primary' : 'secondary'}
+                variant={getButtonVariant(i)}
                 size="sm"
                 aria-label={option.label}
                 icon={option.icon as any}
@@ -39,6 +48,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 {option.label}
               </Button>
 
+              {/* add an arrow only for buttons before "Diff flame graph" and "Favorites" */}
               {i < options.length - 3 && <Icon name="arrow-right" />}
             </Fragment>
           );
