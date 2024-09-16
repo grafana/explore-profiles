@@ -29,7 +29,7 @@ export function useFetchDiffProfile({
   const { isFetching, error, data, refetch } = useQuery({
     // for UX: keep previous data while fetching -> profile does not re-render with empty panels when refreshing
     placeholderData: (previousData) => previousData,
-    enabled,
+    enabled: Boolean(enabled && maxNodes),
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
     queryKey: [
       'diff-profile',
