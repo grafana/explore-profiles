@@ -59,5 +59,4 @@ After you locate the profile with a spike, select either **Profile types** view 
 Illuminate performance issues across a number of dimensions when you are doing a proactive analysis.
 This could be a cost-cutting exercise or attempt to improve latency or memory usage in a non-incident scenario. This exercise could be across multiple services or within a service across profile types, labels, or a combination of the two.
 
-
 **Next step: [Investigate and identify issues](../investigate/)**
