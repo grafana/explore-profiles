@@ -54,14 +54,6 @@
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false
-    },
-    {
-      "type": "page",
-      "name": "Settings",
-      "path": "/a/%PLUGIN_ID%/settings",
-      "role": "Admin",
-      "addToNav": true,
-      "defaultNav": false
     }
   ]
 }
