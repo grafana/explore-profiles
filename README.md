@@ -36,7 +36,7 @@ GF_INSTALL_PLUGINS=grafana-pyroscope-app
 ## Getting Started
 
 1. In the main navigation bar, click on Explore > Profiles.
-2. You’ll land in the "All services" overview that shows time series and CPU utilization visualizations for all the services in your selected Pyroscope instance.
+2. You’ll land in the **All services** overview that shows time series and CPU utilization visualizations for all the services in your selected Pyroscope instance.
 3. If needed, change your data source with the drop-down on the top left.
 4. Modify your time range in two ways:
 
