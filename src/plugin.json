@@ -6,7 +6,7 @@
   "autoEnabled": true,
   "backend": false,
   "dependencies": {
-    "grafanaDependency": ">=10.4.3",
+    "grafanaDependency": ">=11.2.0",
     "plugins": []
   },
   "info": {
