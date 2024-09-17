@@ -8,25 +8,25 @@ import { GIT_COMMIT } from '../../version';
 const ENVS = [
   // Uncomment to test from your local machine
   // {
-  //   matchHost: RegExp('localhost'),
+  //   matchHost:/localhost/,
   //   faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/463f8b5f923a05942a042b078fe73a5b',
   //   appName: 'grafana-pyroscope-local',
   //   environment: 'local',
   // },
   {
-    matchHost: RegExp('grafana-dev\\.net'),
+    matchHost: /grafana-dev\.net/,
     faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/ef0e8de540b188353797d3d95a3b62f8',
     appName: 'grafana-pyroscope-dev',
     environment: 'dev',
   },
   {
-    matchHost: RegExp('grafana-ops\\.net'),
+    matchHost: /grafana-ops\.net/,
     faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/7d1458bdee74eef4d3d7c57665862e33',
     appName: 'grafana-pyroscope-ops',
     environment: 'ops',
   },
   {
-    matchHost: RegExp('grafana\\.net'),
+    matchHost: /grafana\.net/,
     faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/20ca4982e590cb9b90ad1a6e9f152230',
     appName: 'grafana-pyroscope-prod',
     environment: 'prod',
