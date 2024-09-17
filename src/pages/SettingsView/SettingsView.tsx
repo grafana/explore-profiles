@@ -97,7 +97,7 @@ export function SettingsView() {
               <Button variant="primary" type="submit">
                 Save settings
               </Button>
-              <Button variant="secondary" onClick={actions.goBack}>
+              <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Explore Profiles">
                 Back to Explore Profiles
               </Button>
             </div>

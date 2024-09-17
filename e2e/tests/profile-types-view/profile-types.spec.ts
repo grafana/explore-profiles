@@ -91,7 +91,7 @@ test.describe('Profile types view', () => {
 
     await expect(exploreProfilesPage.getByTestId('page-title')).toHaveText('Profiles settings');
 
-    await exploreProfilesPage.page.goBack();
+    await exploreProfilesPage.getByLabel('Back to Explore Profiles').click();
 
     await assertMainUiElements(exploreProfilesPage);
   });
