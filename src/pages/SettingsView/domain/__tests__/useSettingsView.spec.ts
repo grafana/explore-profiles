@@ -46,6 +46,7 @@ describe('useSettingsView(plugin)', () => {
         toggleEnableFlameGraphDotComExport: expect.any(Function),
         toggleEnableFunctionDetails: expect.any(Function),
         saveSettings: expect.any(Function),
+        goBack: expect.any(Function),
       },
     });
   });
