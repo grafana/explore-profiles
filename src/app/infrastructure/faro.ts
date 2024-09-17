@@ -2,44 +2,53 @@ import { Faro, getWebInstrumentations, initializeFaro, MetaUser } from '@grafana
 import { TracingInstrumentation } from '@grafana/faro-web-tracing';
 import { config } from '@grafana/runtime';
 
+import { PYROSCOPE_APP_ID } from '../../constants';
 import { GIT_COMMIT } from '../../version';
 
 const ENVS = [
-  // TODO: enable this for testing locally
-  //  {
-  //    appName: 'pyroscope-app-local',
-  //    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/b5d98983a44fc0d4d425aad4997b69d0',
-  //    matchHost: RegExp('localhost:3000'),
-  //  },
+  // Uncomment to test from your local machine
+  // {
+  //   matchHost:/localhost/,
+  //   faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/463f8b5f923a05942a042b078fe73a5b',
+  //   appName: 'grafana-pyroscope-local',
+  //   environment: 'local',
+  // },
   {
-    appName: 'pyroscope-app-dev',
-    faroUrl: 'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/31b6971780839bbf89ec070a092a9490',
-    matchHost: RegExp('grafana-dev\\.net'),
+    matchHost: /grafana-dev\.net/,
+    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/ef0e8de540b188353797d3d95a3b62f8',
+    appName: 'grafana-pyroscope-dev',
+    environment: 'dev',
   },
   {
-    appName: 'pyroscope-app-ops',
-    faroUrl: 'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/2a05f9e7c907b04c28ba5638f5174dde',
-    matchHost: RegExp('grafana-ops\\.net'),
+    matchHost: /grafana-ops\.net/,
+    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/7d1458bdee74eef4d3d7c57665862e33',
+    appName: 'grafana-pyroscope-ops',
+    environment: 'ops',
   },
   {
-    appName: 'pyroscope-app-prod',
-    faroUrl: 'https://faro-collector-ops-us-east-0.grafana-ops.net/collect/3a26d34f379b4256b828e6da4f5d0cae',
-    matchHost: RegExp('grafana\\.net'),
+    matchHost: /grafana\.net/,
+    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/20ca4982e590cb9b90ad1a6e9f152230',
+    appName: 'grafana-pyroscope-prod',
+    environment: 'prod',
   },
 ];
 
-function matchHost(host: string) {
-  return ENVS.find((a) => {
-    return a.matchHost.test(host);
-  });
+const matchHost = (host: string) => ENVS.find((a) => a.matchHost.test(host));
+
+function extractUserMeta(): MetaUser {
+  const { id, email, login } = config.bootData.user;
+
+  const user = {
+    id: String(id),
+    email: email,
+    username: login,
+  };
+
+  return user;
 }
 
 function init(): Faro | undefined {
-  if (!window) {
-    return;
-  }
-
-  if (!window.location.host) {
+  if (!window?.location?.host) {
     return;
   }
 
@@ -50,26 +59,16 @@ function init(): Faro | undefined {
 
   return initializeFaro({
     url: env.faroUrl,
-    user: extractUserMeta(),
-    isolate: true,
-    instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
     app: {
       name: env.appName,
+      release: config.apps[PYROSCOPE_APP_ID].version,
       version: GIT_COMMIT,
+      environment: env.environment,
     },
+    instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
+    isolate: true,
+    user: extractUserMeta(),
   });
-}
-
-function extractUserMeta() {
-  const { id, email, login } = config.bootData.user;
-
-  const user: MetaUser = {
-    id: String(id),
-    email: email,
-    username: login,
-  };
-
-  return user;
 }
 
 export const faro = init();
