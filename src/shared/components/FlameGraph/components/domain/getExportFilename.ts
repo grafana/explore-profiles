@@ -1,4 +1,5 @@
-import { TimeRange } from '@grafana/data';
+import { dateTimeParse, TimeRange } from '@grafana/data';
+import { CompareTarget } from 'src/pages/ProfilesExplorerView/components/SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 
 type DateParts = {
   year: string;
@@ -35,8 +36,27 @@ function dateForExportFilename(timeRange: TimeRange) {
   return `${format(from)}-to-${format(to)}`;
 }
 
-export function getExportFilename(timeRange: TimeRange, appName?: string) {
-  const date = dateForExportFilename(timeRange);
+function getTimeRange(target: CompareTarget) {
+  const [fromKey, toKey] = target === CompareTarget.BASELINE ? ['diffFrom', 'diffTo'] : ['diffFrom-2', 'diffTo-2'];
 
-  return appName ? [appName, date].join('_') : ['flamegraph', date].join('_');
+  const searchParams = new URLSearchParams(window.location.search);
+  const from = searchParams.get(fromKey) as string;
+  const to = searchParams.get(toKey) as string;
+
+  return {
+    raw: { from, to },
+    from: dateTimeParse(from),
+    to: dateTimeParse(to),
+  };
+}
+
+export function getExportFilename(appName?: string) {
+  const timeRanges = [
+    'baseline',
+    dateForExportFilename(getTimeRange(CompareTarget.BASELINE)),
+    'comparison',
+    dateForExportFilename(getTimeRange(CompareTarget.COMPARISON)),
+  ];
+
+  return appName ? [appName, ...timeRanges].join('_') : ['flamegraph', ...timeRanges].join('_');
 }

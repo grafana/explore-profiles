@@ -22,16 +22,6 @@ function getEnvVars(): EnvVars {
 
 export const ENV_VARS = getEnvVars();
 
-export const DEFAULT_URL_PARAMS = ENV_VARS.E2E_BASE_URL.startsWith('http://localhost')
-  ? new URLSearchParams({
-      // We use static data in local and PR build (where the host is http://localhost):
-      query: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ride-sharing-app"}',
-      from: '1710352800', // 2024-03-13 19:00:00
-      to: '1710355800', // 2024-03-13 19:50:00
-      maxNodes: '16384',
-    })
-  : new URLSearchParams();
-
 export const AUTH_FILE = path.join(process.cwd(), 'e2e', 'auth', 'user.json');
 
 /* Explore Profiles */
@@ -70,3 +60,7 @@ export const EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS = new URLSearchParams({
   'diffFrom-2': '2024-03-13T18:35:00.000Z',
   'diffTo-2': '2024-03-13T18:45:00.000Z',
 });
+
+// taken from Grafana
+// see https://github.com/grafana/grafana/blob/852d032e1ae1f7c989d8b2ec7d8e05bf2a54928e/public/app/core/components/AppChrome/AppChromeService.tsx#L33
+export const DOCKED_MENU_OPEN_LOCAL_STORAGE_KEY = 'grafana.navigation.open';

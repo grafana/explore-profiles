@@ -13,7 +13,7 @@ import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
-import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';

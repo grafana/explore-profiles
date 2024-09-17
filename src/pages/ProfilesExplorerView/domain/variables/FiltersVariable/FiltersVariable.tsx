@@ -59,7 +59,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
 
     return (
       <QueryBuilder
-        id="query-builder-explore"
+        id={`query-builder-${key}`}
         autoExecute
         className={styles.queryBuilder}
         dataSourceUid={dataSourceUid as string}

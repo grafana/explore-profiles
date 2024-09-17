@@ -219,11 +219,6 @@ function useSelectHandlers(actor: Actor, suggestions: QueryBuilderContext['sugge
 
   /* misc */
 
-  // when closed by the state machine
-  const blurInput = useCallback(() => {
-    (document.querySelector(`#${queryBuilderId} input`) as HTMLInputElement)?.blur();
-  }, [queryBuilderId]);
-
   const previousSuggestionsIsVisible = usePrevious(suggestions.isVisible);
 
   useEffect(() => {
@@ -233,9 +228,9 @@ function useSelectHandlers(actor: Actor, suggestions: QueryBuilderContext['sugge
       // editing a complete filter operator from (e.g.) =~ to = (and vice-versa).
       // indeed, in such cases, we know if the input should be blurred only after selecting a
       // suggestion, when the select is already rendered.
-      blurInput();
+      (document.querySelector(`#${queryBuilderId} input`) as HTMLInputElement)?.blur();
     }
-  }, [suggestions.isVisible, previousSuggestionsIsVisible, blurInput]);
+  }, [suggestions.isVisible, previousSuggestionsIsVisible, queryBuilderId]);
 
   return {
     onFocus,

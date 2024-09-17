@@ -17,7 +17,6 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { omit } from 'lodash';
 import React from 'react';
 
-import { BASELINE_COLORS, COMPARISON_COLORS } from '../../../../../ComparisonView/ui/colors';
 import { getDefaultTimeRange } from '../../../../domain/getDefaultTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
@@ -38,6 +37,7 @@ import {
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
+import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 
 export interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
@@ -213,12 +213,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
     const styles = useStyles2(getStyles);
-    const { title, timeseriesPanel: timeseries, timePicker, refreshPicker, filterKey } = model.useState();
+    const { target, title, timeseriesPanel: timeseries, timePicker, refreshPicker, filterKey } = model.useState();
 
     const filtersVariable = sceneGraph.findByKey(model, filterKey) as FiltersVariable;
 
     return (
-      <div className={styles.panel}>
+      <div className={styles.panel} data-testid={`panel-${target}`}>
         <div className={styles.panelHeader}>
           <h6>{title}</h6>
 

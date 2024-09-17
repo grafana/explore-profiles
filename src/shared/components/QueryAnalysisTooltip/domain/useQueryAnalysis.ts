@@ -1,12 +1,22 @@
-import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
-import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
+import { dateTimeParse } from '@grafana/data';
 import { useQuery } from '@tanstack/react-query';
 
 import { queryAnalysisApiClient } from '../infrastructure/queryAnalysisApiClient';
 
 export function useQueryAnalysis() {
-  const [query] = useQueryFromUrl();
-  const [timeRange] = useTimeRangeFromUrl();
+  // const [query] = useQueryFromUrl();
+  // const [timeRange] = useTimeRangeFromUrl();
+
+  // TODO: get the real values when we add the analysis tooltip again
+  const query = '';
+  const timeRange = {
+    raw: {
+      from: 'now-5m',
+      to: 'now',
+    },
+    from: dateTimeParse('now-5m'),
+    to: dateTimeParse('now'),
+  };
 
   const { isFetching, error, data } = useQuery({
     enabled: Boolean(query),
