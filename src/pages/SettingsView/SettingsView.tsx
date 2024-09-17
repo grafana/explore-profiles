@@ -7,19 +7,6 @@ import React from 'react';
 
 import { useSettingsView } from './domain/useSettingsView';
 
-const getStyles = (theme: GrafanaTheme2) => ({
-  settingsForm: css`
-    & > fieldset {
-      border: 0 none;
-      border-bottom: 1px solid ${theme.colors.border.weak};
-      padding-left: 0;
-    }
-    & > fieldset > legend {
-      font-size: ${theme.typography.h4.fontSize};
-    }
-  `,
-});
-
 export function SettingsView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useSettingsView();
@@ -106,12 +93,35 @@ export function SettingsView() {
               </InlineFieldRow>
             </FieldSet>
 
-            <Button variant="primary" type="submit">
-              Save settings
-            </Button>
+            <div className={styles.buttons}>
+              <Button variant="primary" type="submit">
+                Save settings
+              </Button>
+              <Button variant="secondary" onClick={actions.goBack}>
+                Back to Explore Profiles
+              </Button>
+            </div>
           </>
         )}
       </Form>
     </>
   );
 }
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  settingsForm: css`
+    & > fieldset {
+      border: 0 none;
+      border-bottom: 1px solid ${theme.colors.border.weak};
+      padding-left: 0;
+    }
+
+    & > fieldset > legend {
+      font-size: ${theme.typography.h4.fontSize};
+    }
+  `,
+  buttons: css`
+    display: flex;
+    gap: ${theme.spacing(1)};
+  `,
+});
