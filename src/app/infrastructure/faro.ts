@@ -6,6 +6,13 @@ import { PYROSCOPE_APP_ID } from '../../constants';
 import { GIT_COMMIT } from '../../version';
 
 const ENVS = [
+  // Uncomment to test from your local machine
+  // {
+  //   matchHost: RegExp('localhost'),
+  //   faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/463f8b5f923a05942a042b078fe73a5b',
+  //   appName: 'grafana-pyroscope-local',
+  //   environment: 'local',
+  // },
   {
     matchHost: RegExp('grafana-dev\\.net'),
     faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/ef0e8de540b188353797d3d95a3b62f8',
@@ -28,10 +35,10 @@ const ENVS = [
 
 const matchHost = (host: string) => ENVS.find((a) => a.matchHost.test(host));
 
-function extractUserMeta() {
+function extractUserMeta(): MetaUser {
   const { id, email, login } = config.bootData.user;
 
-  const user: MetaUser = {
+  const user = {
     id: String(id),
     email: email,
     username: login,
