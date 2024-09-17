@@ -60,3 +60,7 @@ export const EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS = new URLSearchParams({
   'diffFrom-2': '2024-03-13T18:35:00.000Z',
   'diffTo-2': '2024-03-13T18:45:00.000Z',
 });
+
+// taken from Grafana
+// see https://github.com/grafana/grafana/blob/852d032e1ae1f7c989d8b2ec7d8e05bf2a54928e/public/app/core/components/AppChrome/AppChromeService.tsx#L33
+export const DOCKED_MENU_OPEN_LOCAL_STORAGE_KEY = 'grafana.navigation.open';
