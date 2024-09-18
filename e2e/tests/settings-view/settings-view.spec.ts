@@ -42,9 +42,8 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      // get the whole panel to prevent flakiness
-      // e.g. this error: "Expected an image 781px by 132px, received 780px by 132px."
-      await expect(exploreProfilesPage.getByTestId('flame-graph-panel')).toHaveScreenshot();
+      // tweak max diff pixel ratio because sometimes the screenshot is 1px bigger in height
+      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot({ maxDiffPixelRatio: 0.02 });
 
       // diff flame graph
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
@@ -55,9 +54,10 @@ test.describe('Plugin Settings', () => {
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
 
-      // get the whole panel to prevent flakiness
-      // e.g. this error: "Expected an image 781px by 132px, received 780px by 132px."
-      await expect(exploreProfilesPage.getByTestId('diff-flame-graph-panel')).toHaveScreenshot();
+      // tweak max diff pixel ratio because sometimes the screenshot is 1px bigger in height
+      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot({
+        maxDiffPixelRatio: 0.02,
+      });
     });
   });
 

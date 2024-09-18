@@ -12,9 +12,6 @@ async function assertMainUiElements(exploreProfilesPage: ExploreProfilesPage) {
   await exploreProfilesPage.assertSelectedService('ride-sharing-app');
   await exploreProfilesPage.assertQuickFilter('Search profile types (comma-separated regexes are supported)', '');
   await exploreProfilesPage.assertSelectedLayout('Grid');
-
-  // body
-  await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
 }
 
 test.describe('Profile types view', () => {
@@ -24,6 +21,9 @@ test.describe('Profile types view', () => {
 
   test('Main UI elements', async ({ exploreProfilesPage }) => {
     await assertMainUiElements(exploreProfilesPage);
+
+    // body
+    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
   });
 
   test('Service selector', async ({ exploreProfilesPage }) => {
@@ -94,5 +94,11 @@ test.describe('Profile types view', () => {
     await exploreProfilesPage.getByLabel('Back to Explore Profiles').click();
 
     await assertMainUiElements(exploreProfilesPage);
+
+    // body
+    // tweak max diff pixel ratio because sometimes the screenshot is 1px bigger in height
+    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+      maxDiffPixelRatio: 0.02,
+    });
   });
 });
