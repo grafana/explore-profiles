@@ -71,6 +71,20 @@ export function VersionInfoTooltip() {
             </>
           )}
         </dd>
+        <dt>Documentation</dt>
+        <dd>
+          <>
+            🔗{' '}
+            <a
+              href="https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Explore Profiles documentation"
+            >
+              Explore Profiles
+            </a>
+          </>
+        </dd>
       </dl>
     );
   }, [updated, styles.list, version]);
