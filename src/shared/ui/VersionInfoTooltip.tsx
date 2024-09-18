@@ -45,13 +45,11 @@ export function VersionInfoTooltip() {
 
     return (
       <dl className={styles.list}>
-        <dt>
-          Grafana {buildInfo.edition} ({buildInfo.env})
-        </dt>
+        <dt>Grafana {buildInfo.edition}</dt>
         <dd>
           🔗{' '}
           <a href={grafanaCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
-            v{buildInfo.version}
+            v{buildInfo.version} ({buildInfo.env})
           </a>
         </dd>
         <dt>Plugin version</dt>
