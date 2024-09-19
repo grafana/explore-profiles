@@ -22,7 +22,7 @@ To use Explore Profiles with Grafana Cloud, you need:
 - A Grafana Cloud account
 - A Grafana stack in Grafana Cloud with a configured [Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) receiving profiling data
 
-To use Explore Traces with self-hosted Grafana open source or Grafana Enterprise, you need:
+To use Explore Profiles with self-hosted Grafana open source or Grafana Enterprise, you need:
 
 - Your own Grafana instance running 11.0 or newer
 - Pyroscope 1.7 or newer
@@ -43,7 +43,7 @@ For instructions installing, refer to the [access and installation instructions]
 
 We love accepting contributions!
 If your change is minor, please feel free submit
-a [pull request](https://help.github.com/articles/about-pull-requests/).
+a [pull request](https://github.com/grafana/explore-profiles/pull/new)
 If your change is larger, or adds a feature, please file an issue beforehand so
 that we can discuss the change. You're welcome to file an implementation pull
 request immediately as well, although we generally lean towards discussing the
