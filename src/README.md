@@ -10,6 +10,10 @@ Key features include:
 - **Query-Less Browsing**: Navigate profiling data without the need for complex queries.
 - **AI-Powered flame graph analysis**: uses a large-language model (LLM) to assist with flame graph data interpretation so you can identify bottlenecks, and get to the bottom of performance issues faster.
 
+> [!IMPORTANT]
+> Explore Traces is presently undergoing active development and is offered in a preview state. Subsequent updates are likely to incorporate significant changes that may impact existing functionality.
+
+![Exlore Profiles main screen](/media/docs/explore-profiles/explore-profiles-homescreen.png)
 
 ## Before you begin
 
