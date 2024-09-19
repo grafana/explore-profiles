@@ -1,6 +1,8 @@
 import { defineConfig, PlaywrightTestConfig, Project } from '@playwright/test';
 import path from 'path';
 
+import { DOCKED_MENU_OPEN_LOCAL_STORAGE_KEY } from './constants';
+
 type CustomEnvConfig = {
   baseURL: string;
   projects: Project[];
@@ -37,6 +39,21 @@ export function config(config: CustomEnvConfig) {
       video: 'on-first-retry',
       /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
       trace: 'on-first-retry',
+      storageState: {
+        cookies: [],
+        origins: [
+          {
+            origin: config.baseURL,
+            localStorage: [
+              {
+                // ensures that Grafana's main menu is closed, for screenshots predictability
+                name: DOCKED_MENU_OPEN_LOCAL_STORAGE_KEY,
+                value: 'false',
+              },
+            ],
+          },
+        ],
+      },
     },
     expect: {
       timeout: Number(config.timeout) > 0 ? config.timeout : 5000,

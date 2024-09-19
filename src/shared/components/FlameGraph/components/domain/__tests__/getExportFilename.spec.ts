@@ -1,23 +1,39 @@
-import { translatePyroscopeTimeRangeToGrafana } from '@shared/domain/translation';
-
 import { getExportFilename } from '../getExportFilename';
 
-describe('getFileName(timeRange, appName)', () => {
-  describe('when all arguments are passed', () => {
-    it('computes the correct filename', () => {
-      const timeRange = translatePyroscopeTimeRangeToGrafana('1708210800', '1708297200'); // 2024-02-18 - 2024-02-19
-      const filename = getExportFilename(timeRange, 'simple.golang.app.cpu');
+describe('getFileName(appName)', () => {
+  const originalLocation = window.location;
 
-      expect(filename).toBe('simple.golang.app.cpu_2024-02-17_2300-to-2024-02-18_2300');
+  beforeEach(() => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search:
+          '?explorationType=diff-flame-graph&var-serviceName=pyroscope&var-profileMetricId=process_cpu:cpu:nanoseconds:cpu:nanoseconds&var-dataSource=grafanacloud-profiles-local-a&var-groupBy=all&maxNodes=128&var-filters=&from-2=now-30m&to-2=now&from-3=now-30m&to-3=now&diffFrom=2024-09-16T12:21:51.298Z&diffTo=2024-09-16T12:25:35.688Z&diffFrom-2=2024-09-16T12:31:56.176Z&diffTo-2=2024-09-16T12:34:56.664Z',
+      },
+      writable: true,
     });
   });
 
-  describe('when only "timeRange" passed', () => {
-    it('computes the correct filename', () => {
-      const timeRange = translatePyroscopeTimeRangeToGrafana('1708210800', '1708297200'); // 2024-02-18 - 2024-02-19
-      const filename = getExportFilename(timeRange);
+  afterEach(() => {
+    window.location = originalLocation;
+  });
 
-      expect(filename).toBe('flamegraph_2024-02-17_2300-to-2024-02-18_2300');
+  describe('when "appName" is passed', () => {
+    it('computes the correct filename', () => {
+      const filename = getExportFilename('simple.golang.app.cpu');
+
+      expect(filename).toBe(
+        'simple.golang.app.cpu_baseline_2024-09-16_1221-to-2024-09-16_1225_comparison_2024-09-16_1231-to-2024-09-16_1234'
+      );
+    });
+  });
+
+  describe('when "appName" is not passed', () => {
+    it('computes the correct filename', () => {
+      const filename = getExportFilename();
+
+      expect(filename).toBe(
+        'flamegraph_baseline_2024-09-16_1221-to-2024-09-16_1225_comparison_2024-09-16_1231-to-2024-09-16_1234'
+      );
     });
   });
 });

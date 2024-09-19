@@ -66,6 +66,7 @@ export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTi
           options={SwitchTimeRangeSelectionModeAction.OPTIONS}
           value={mode}
           onChange={model.onChange}
+          aria-label="Range selection mode"
         />
       </div>
     );

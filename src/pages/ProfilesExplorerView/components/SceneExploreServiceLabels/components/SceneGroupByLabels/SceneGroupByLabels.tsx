@@ -9,7 +9,7 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
-import { prepareHistoryEntry } from '@shared/domain/history';
+import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';

@@ -1,5 +1,18 @@
 import { ExplorationType } from '../../config/constants';
 import { expect, test } from '../../fixtures';
+import { ExploreProfilesPage } from '../../fixtures/pages/ExploreProfilesPage';
+
+async function assertMainUiElements(exploreProfilesPage: ExploreProfilesPage) {
+  // app controls
+  await exploreProfilesPage.assertSelectedDataSource('Local Pyroscope A');
+  await exploreProfilesPage.asserSelectedExplorationType('Profile types');
+  await exploreProfilesPage.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
+
+  // body scene controls
+  await exploreProfilesPage.assertSelectedService('ride-sharing-app');
+  await exploreProfilesPage.assertQuickFilter('Search profile types (comma-separated regexes are supported)', '');
+  await exploreProfilesPage.assertSelectedLayout('Grid');
+}
 
 test.describe('Profile types view', () => {
   test.beforeEach(async ({ exploreProfilesPage }) => {
@@ -7,15 +20,7 @@ test.describe('Profile types view', () => {
   });
 
   test('Main UI elements', async ({ exploreProfilesPage }) => {
-    // app controls
-    await exploreProfilesPage.assertSelectedDataSource('Local Pyroscope A');
-    await exploreProfilesPage.asserSelectedExplorationType('Profile types');
-    await exploreProfilesPage.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
-
-    // body scene controls
-    await exploreProfilesPage.assertSelectedService('ride-sharing-app');
-    await exploreProfilesPage.assertQuickFilter('Search profile types (comma-separated regexes are supported)', '');
-    await exploreProfilesPage.assertSelectedLayout('Grid');
+    await assertMainUiElements(exploreProfilesPage);
 
     // body
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
@@ -78,6 +83,22 @@ test.describe('Profile types view', () => {
       await exploreProfilesPage.selectExplorationType('Favorites');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
+    });
+  });
+
+  test('Settings button', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.getByLabel('View/edit user settings').click();
+
+    await expect(exploreProfilesPage.getByTestId('page-title')).toHaveText('Profiles settings');
+
+    await exploreProfilesPage.getByLabel('Back to Explore Profiles').click();
+
+    await assertMainUiElements(exploreProfilesPage);
+
+    // body
+    // tweak max diff pixel ratio because sometimes the screenshot is 1px bigger in height
+    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+      maxDiffPixelRatio: 0.02,
     });
   });
 });

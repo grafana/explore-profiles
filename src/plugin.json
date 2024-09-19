@@ -6,7 +6,7 @@
   "autoEnabled": true,
   "backend": false,
   "dependencies": {
-    "grafanaDependency": ">=10.4.3",
+    "grafanaDependency": ">=11.2.0",
     "plugins": []
   },
   "info": {
@@ -52,14 +52,6 @@
       "name": "Ad hoc view",
       "path": "/a/%PLUGIN_ID%/ad-hoc",
       "role": "Viewer",
-      "addToNav": true,
-      "defaultNav": false
-    },
-    {
-      "type": "page",
-      "name": "Settings",
-      "path": "/a/%PLUGIN_ID%/settings",
-      "role": "Admin",
       "addToNav": true,
       "defaultNav": false
     }

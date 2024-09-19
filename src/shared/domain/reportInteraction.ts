@@ -1,6 +1,6 @@
-import { reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
+import { config, reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
 
-import { ROUTES } from '../../constants';
+import { PYROSCOPE_APP_ID, ROUTES } from '../../constants';
 
 const PROFILES_EXPLORER_PAGE_NAME = ROUTES.PROFILES_EXPLORER_VIEW.slice(1);
 
@@ -11,7 +11,8 @@ function getCurrentPage(): string {
 
 function getExtraProperties() {
   const page = getCurrentPage();
-  const extraProperties: Record<string, any> = { page };
+  const version = config.apps[PYROSCOPE_APP_ID].version;
+  const extraProperties: Record<string, any> = { page, version };
 
   if (page === PROFILES_EXPLORER_PAGE_NAME) {
     extraProperties.explorationType = new URLSearchParams(window.location.search).get('explorationType');

@@ -99,6 +99,8 @@ In build time (PR and main branch), we run a [Pyroscope server with static data]
 
 ### The build of my PR has failed because Playwright was just updated, how to fix it?
 
-- In a terminal: `yarn upgrade @playwright/test --latest`
-- Open `Dockerfile.plugin.e2e` and upgrade Playwright versions to the latest one
-- Open a PR to verify that the E2E are passing in the build
+- Identify the current Playwright version, e.g. `1.46.0`
+- Identify the new Playwright version, e.g. `1.47.0`
+- In a terminal, execute: `./scripts/upgrade-playwright 1.46.0 1.47.0`
+- Launch the E2E tests locally with Docker to verify that the new version works: `yarn e2e:ci:server:up && yarn e2e:ci`
+- Push the modified files to the PR

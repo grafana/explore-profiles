@@ -1,23 +1,18 @@
 import { reportInteraction } from '@grafana/runtime';
 import { displayError } from '@shared/domain/displayStatus';
-import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
-import { useTimeRangeFromUrl } from '@shared/domain/url-params/useTimeRangeFromUrl';
 import 'compression-streams-polyfill';
 import saveAs from 'file-saver';
 
 import { ExportDataProps } from '../ExportData';
 import { flamegraphDotComApiClient } from '../infrastructure/flamegraphDotComApiClient';
-import { pprofApiClient } from '../infrastructure/pprofApiClient';
 import { getExportFilename } from './getExportFilename';
 
+/* Note: no pprof export, as the underlying API only accepts a single query (see PprofApiClient) */
 export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportDataProps) {
-  const [query] = useQueryFromUrl();
-  const [timeRange] = useTimeRangeFromUrl();
-
   const downloadPng = () => {
     reportInteraction('g_pyroscope_export_profile', { format: 'png' });
 
-    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
+    const customExportName = getExportFilename(profile.metadata.appName);
     const filename = `${customExportName}.png`;
 
     // TODO use ref, this won't work for comparison side by side (??!)
@@ -37,37 +32,17 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   const downloadJson = () => {
     reportInteraction('g_pyroscope_export_profile', { format: 'json' });
 
-    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
+    const customExportName = getExportFilename(profile.metadata.appName);
     const filename = `${customExportName}.json`;
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(profile))}`;
 
     saveAs(dataStr, filename);
   };
 
-  const downloadPprof = async function () {
-    reportInteraction('g_pyroscope_export_profile', { format: 'pprof' });
-
-    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
-
-    let response;
-
-    try {
-      response = await pprofApiClient.selectMergeProfile(query, timeRange);
-    } catch (error) {
-      displayError(error, ['Failed to export to pprof!', (error as Error).message]);
-      return;
-    }
-
-    const filename = `${customExportName}.pb.gz`;
-    const data = await new Response(response.stream().pipeThrough(new CompressionStream('gzip'))).blob();
-
-    saveAs(data, filename);
-  };
-
   const uploadToFlamegraphDotCom = async () => {
     reportInteraction('g_pyroscope_export_profile', { format: 'flamegraph.com' });
 
-    const customExportName = getExportFilename(timeRange, profile.metadata.appName);
+    const customExportName = getExportFilename(profile.metadata.appName);
 
     let response;
 
@@ -93,7 +68,6 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
     actions: {
       downloadPng,
       downloadJson,
-      downloadPprof,
       uploadToFlamegraphDotCom,
     },
   };

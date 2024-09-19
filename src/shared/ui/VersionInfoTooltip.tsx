@@ -45,13 +45,11 @@ export function VersionInfoTooltip() {
 
     return (
       <dl className={styles.list}>
-        <dt>
-          Grafana {buildInfo.edition} ({buildInfo.env})
-        </dt>
+        <dt>Grafana {buildInfo.edition}</dt>
         <dd>
           🔗{' '}
           <a href={grafanaCommitURL} target="_blank" rel="noopener noreferrer" title="Go to commit">
-            v{buildInfo.version}
+            v{buildInfo.version} ({buildInfo.env})
           </a>
         </dd>
         <dt>Plugin version</dt>
@@ -70,6 +68,20 @@ export function VersionInfoTooltip() {
               </a>
             </>
           )}
+        </dd>
+        <dt>Documentation</dt>
+        <dd>
+          <>
+            🔗{' '}
+            <a
+              href="https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Explore Profiles documentation"
+            >
+              Explore Profiles
+            </a>
+          </>
         </dd>
       </dl>
     );

@@ -1,3 +1,42 @@
+## [0.1.9](https://github.com/grafana/explore-profiles/compare/v0.1.8...v0.1.9) (2024-09-17)
+
+
+### Bug Fixes
+
+* **DiffFlameGraph:** Remove non-working pprof export ([#169](https://github.com/grafana/explore-profiles/issues/169)) ([662cd48](https://github.com/grafana/explore-profiles/commit/662cd488ae7a41e4843ca66694743d4777ac1230))
+* **ExplainFlameGraph:** Add tooltip when the LLM plugin is not installed ([#163](https://github.com/grafana/explore-profiles/issues/163)) ([d395391](https://github.com/grafana/explore-profiles/commit/d3953913be2b072ddac8413fd9341a43dc4f865e))
+* **Faro:** Fix Faro SDK config ([#174](https://github.com/grafana/explore-profiles/issues/174)) ([3ed6362](https://github.com/grafana/explore-profiles/commit/3ed636207927c0423cbca8c40444ba57cd6885b2))
+* Fix useUrlSearchParams ([#171](https://github.com/grafana/explore-profiles/issues/171)) ([179b060](https://github.com/grafana/explore-profiles/commit/179b0608d5d99fa5370dcee52c8431259de1da1f))
+* **LabelsDataSource:** Limit the maximum number of concurrent requests to fetch label values ([#165](https://github.com/grafana/explore-profiles/issues/165)) ([cb8149c](https://github.com/grafana/explore-profiles/commit/cb8149c36f4f40502b62d1f4ed96c46ea10a2c65))
+
+
+### Features
+
+* Add give feeback button and preview badge ([#167](https://github.com/grafana/explore-profiles/issues/167)) ([a23fa61](https://github.com/grafana/explore-profiles/commit/a23fa61b8982b0c8877a0b70ecab26747d1e4fa0))
+* **AppHeader:** Add Settings button ([#172](https://github.com/grafana/explore-profiles/issues/172)) ([9d7fb6b](https://github.com/grafana/explore-profiles/commit/9d7fb6b08b9bea0cfebe6a74c883d8ff92cc9ad9))
+* Remove legacy comparison views code ([#143](https://github.com/grafana/explore-profiles/issues/143)) ([816363f](https://github.com/grafana/explore-profiles/commit/816363faea2dcbf10789bb68a50b3e85947fc2a4))
+* Upgrade Grafana to v11.2.0 ([#173](https://github.com/grafana/explore-profiles/issues/173)) ([15680e6](https://github.com/grafana/explore-profiles/commit/15680e6b810f7771e9a874b0cacd6d093403354d))
+
+
+
+## [0.1.8](https://github.com/grafana/explore-profiles/compare/v0.1.6...v0.1.8) (2024-09-11)
+
+
+### Bug Fixes
+
+* **Labels:** Fix error with bar gauges viz and new Grafana version ([#159](https://github.com/grafana/explore-profiles/issues/159)) ([b527961](https://github.com/grafana/explore-profiles/commit/b52796103af9db785d681fdac22bf6d751a7f734))
+
+
+### Features
+
+* Add histogram visualizations ([#141](https://github.com/grafana/explore-profiles/issues/141)) ([2265be7](https://github.com/grafana/explore-profiles/commit/2265be70ea67cfdc44aad33e1a1f7951076db815))
+* create new browser history entry on some user actions  ([#128](https://github.com/grafana/explore-profiles/issues/128)) ([5439ab3](https://github.com/grafana/explore-profiles/commit/5439ab32f0e4a21f3affbe6bfbe12da7cacd12b1))
+* **DiffFlameGraph:** Add flame graph range in timeseries legend ([#140](https://github.com/grafana/explore-profiles/issues/140)) ([8729c31](https://github.com/grafana/explore-profiles/commit/8729c31dddf383d2d6ca4c2178397045c31d9654))
+* **GitHubIntegration:** Migrate GitHub integration to Scenes ([#142](https://github.com/grafana/explore-profiles/issues/142)) ([0386bbc](https://github.com/grafana/explore-profiles/commit/0386bbc369538763c69fce1cc07a45fb82619beb))
+* support submodules for GitHub Integration ([#147](https://github.com/grafana/explore-profiles/issues/147)) ([52ecea8](https://github.com/grafana/explore-profiles/commit/52ecea89b5a436b3dc03ff352127f55ea315e037))
+
+
+
 ## [0.1.7](https://github.com/grafana/explore-profiles/compare/v0.1.6...v0.1.7) (2024-08-29)
 
 

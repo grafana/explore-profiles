@@ -27,9 +27,7 @@ test.describe('Plugin Settings', () => {
   });
 
   test.describe('Flame graph settings', () => {
-    test('Can be modified for the "Flame graph" views', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.resetTestSettings();
-
+    test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
       await settingsPage.getCollapsedFlamegraphsCheckbox().click();
       await settingsPage.getMaxNodesInput().fill('4');
       await settingsPage.getSaveSettingsButton().click();
@@ -43,11 +41,9 @@ test.describe('Plugin Settings', () => {
       await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand all groups')).toBeVisible();
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
-      // screenshot of the whole panel instead of the flame graph to prevent flakiness
-      // ("Expected an image 781px by 858px, received 780px by 858px" :man_shrug:)
-      await expect(exploreProfilesPage.getByTestId('flame-graph-panel')).toHaveScreenshot({
-        stylePath: './e2e/fixtures/css/hide-all-controls.css',
-      });
+
+      // tweak max diff pixel ratio because sometimes the screenshot is 1px bigger in height
+      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot({ maxDiffPixelRatio: 0.02 });
 
       // diff flame graph
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
@@ -57,18 +53,16 @@ test.describe('Plugin Settings', () => {
       await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Expand all groups')).toBeVisible();
 
       await exploreProfilesPage.closeFlameGraphContextualMenu();
-      // screenshot of the whole panel instead of the flame graph to prevent flakiness
-      // ("Expected an image 781px by 858px, received 780px by 858px" :man_shrug:)
-      await expect(exploreProfilesPage.getByTestId('diff-flame-graph-panel')).toHaveScreenshot({
-        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+
+      // tweak max diff pixel ratio because sometimes the screenshot is 1px bigger in height
+      await expect(exploreProfilesPage.getFlamegraph()).toHaveScreenshot({
+        maxDiffPixelRatio: 0.02,
       });
     });
   });
 
   test.describe('Export settings', () => {
     test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.resetTestSettings();
-
       await settingsPage.getEnableFlamegraphDotComCheckbox().click();
       await settingsPage.getSaveSettingsButton().click();
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();

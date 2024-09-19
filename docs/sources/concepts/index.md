@@ -24,6 +24,8 @@ To use profiling, you should understand these concepts:
 - Labels
 - Flame graphs
 
+{{< docs/public-preview product="Explore Profiles" >}}
+
 ## Profile data hierarchy
 
 Each profile has data for services. A service can be one of the processes running on your system or application.
