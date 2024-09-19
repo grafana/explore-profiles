@@ -2,6 +2,7 @@ import { DataSourceProxyClient } from '../../../../../infrastructure/series/http
 
 type GithubLoginResponse = {
   cookie: string;
+  token: string;
 };
 
 export class VcsClient extends DataSourceProxyClient {

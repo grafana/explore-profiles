@@ -28,5 +28,5 @@ export async function authFromUrl(
   }
 
   const res = await vcsClient.githubLogin(code);
-  return res.cookie;
+  return res.token;
 }

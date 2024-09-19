@@ -1,6 +1,7 @@
 import { GitSessionCookie } from './GitSessionCookie';
 
 const GITHUB_SESSION_COOKIE_NAME = 'GitSession';
+const GITHUB_REFRESH_EXPIRY_DURATION = 15897600000;
 
 export interface GitSessionCookieManager {
   getCookie(): GitSessionCookie | undefined;
@@ -38,7 +39,8 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
 
     this.rawCookie = rawCookie;
     this.sessionCookie = GitSessionCookie.decode(rawCookie.value);
-    document.cookie = `${cookie}; path=/`;
+    const expiryDate = new Date(Date.now() + GITHUB_REFRESH_EXPIRY_DURATION).toUTCString();
+    document.cookie = `${cookie}; Expires=${expiryDate}; Secure; SameSite=Lax; path=/`;
   }
 
   deleteCookie(): void {
