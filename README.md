@@ -2,7 +2,8 @@
 
 Explore Profiles is a native Grafana application designed to integrate seamlessly with [Pyroscope](https://github.com/grafana/pyroscope), the open-source continuous profiling platform, providing a smooth, query-less experience for browsing and analyzing profiling data.
 
-> \***\*NOTE:\*\*** Explore Profiles is presently undergoing active development and is offered in a preview state. Subsequent updates are likely to incorporate significant changes that may impact existing functionality.
+> [!IMPORTANT]
+> Explore Profiles is presently undergoing active development and is offered in a preview state. Subsequent updates are likely to incorporate significant changes that may impact existing functionality.
 
 ## Install Explore Profiles
 
