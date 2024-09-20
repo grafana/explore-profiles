@@ -1,6 +1,3 @@
-/** Name of the key for the session cookie. */
-export const GITHUB_SESSION_COOKIE_NAME = 'GitSession';
-
 /** The maximum Unix ms timestamp that can be stored in a JS Date object. */
 const MAX_UNIX_TS_MS = 8640000000000000;
 

@@ -1,6 +1,7 @@
 import { GitSessionCookie } from './GitSessionCookie';
 
-const GITHUB_SESSION_COOKIE_NAME = 'GitSession';
+const LEGACY_GITHUB_SESSION_COOKIE_NAME = 'GitSession';
+const GITHUB_SESSION_COOKIE_NAME = 'pyroscope_git_session';
 
 export interface GitSessionCookieManager {
   getCookie(): GitSessionCookie | undefined;
@@ -36,15 +37,21 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
       return;
     }
 
+    this.deleteLegacyCookie();
     this.rawCookie = rawCookie;
     this.sessionCookie = GitSessionCookie.decode(rawCookie.value);
     document.cookie = `${cookie}; path=/`;
   }
 
   deleteCookie(): void {
-    document.cookie = `${GITHUB_SESSION_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+    document.cookie = `${GITHUB_SESSION_COOKIE_NAME}=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+    this.deleteLegacyCookie();
     this.rawCookie = undefined;
     this.sessionCookie = undefined;
+  }
+
+  private deleteLegacyCookie(): void {
+    document.cookie = `${LEGACY_GITHUB_SESSION_COOKIE_NAME}=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
   }
 
   private syncCookieWithBrowser(): void {

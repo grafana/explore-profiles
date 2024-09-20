@@ -7,7 +7,7 @@ datasources:
     url: http://pyroscope:4100
     isDefault: true
     jsonData:
-      keepCookies: [GitSession]
+      keepCookies: [pyroscope_git_session]
     basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
