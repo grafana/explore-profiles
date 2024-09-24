@@ -159,6 +159,11 @@ This feature is crucial for identifying performance anomalies and understanding 
 
 The Flame graph view visualizes profiling data of a single service in a flame graph format, allowing easy identification of resource-intensive functions.
 
+On views with a flame graph, you can use **Explain flame graph** to provide an AI flame graph analysis that explains the performance bottleneck, root cause, and recommended fixes.
+For more information, refer to [Flame graph AI](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/).
+
+You can also use line-level insights from the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/).
+
 ![Flame graphs](../images/explore-profiles-flamegraph-2.png)
 
 ### Diff flame graph
