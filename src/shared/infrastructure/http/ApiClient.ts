@@ -47,7 +47,7 @@ export class ApiClient extends HttpClient {
   static getBaseUrl() {
     const pyroscopeDataSource = ApiClient.selectDefaultDataSource();
 
-    let appSubUrl = config.appSubUrl;
+    let appSubUrl = config.appSubUrl || '';
     if (appSubUrl.at(-1) !== '/') {
       // ensures that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
       appSubUrl += '/';
