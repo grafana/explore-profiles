@@ -9,10 +9,14 @@ const TEST_DATA_SOURCES = {
   },
 };
 
-function setupMocks(options?: { appUrl?: string; bootData?: Record<string, any>; dataSources?: Record<string, any> }) {
+function setupMocks(options?: {
+  appSubUrl?: string;
+  bootData?: Record<string, any>;
+  dataSources?: Record<string, any>;
+}) {
   jest.doMock('@grafana/runtime', () => ({
     config: {
-      appUrl: options?.appUrl || 'https://localhost:3000/',
+      appSubUrl: options?.appSubUrl,
       bootData: options?.bootData,
       datasources: {
         ...TEST_DATA_SOURCES,
@@ -62,24 +66,15 @@ describe('ApiClient', () => {
     });
 
     describe.each([
-      ['https://localhost:3000/', 'https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test'],
-      [
-        'https://firedev001.grafana-dev.net/',
-        'https://firedev001.grafana-dev.net/api/datasources/proxy/uid/grafanacloud-profiles-test',
-      ],
+      ['/', '/api/datasources/proxy/uid/grafanacloud-profiles-test'],
+      ['', '/api/datasources/proxy/uid/grafanacloud-profiles-test'],
       // app URL with pathname
-      [
-        'https://admin-dev-us-central-0.grafana-dev.net/stable-grafana/',
-        'https://admin-dev-us-central-0.grafana-dev.net/stable-grafana/api/datasources/proxy/uid/grafanacloud-profiles-test',
-      ],
+      ['/stable-grafana/', '/stable-grafana/api/datasources/proxy/uid/grafanacloud-profiles-test'],
       // app URL with no slash at the end
-      [
-        'https://admin-dev-us-central-0.grafana-dev.net/stable-grafana',
-        'https://admin-dev-us-central-0.grafana-dev.net/stable-grafana/api/datasources/proxy/uid/grafanacloud-profiles-test',
-      ],
-    ])('when the app URL provided by the platform is "%s"', (appUrl, expectedApiBaseUrl) => {
+      ['/stable-grafana', '/stable-grafana/api/datasources/proxy/uid/grafanacloud-profiles-test'],
+    ])('when the app URL provided by the platform is "%s"', (appSubUrl, expectedApiBaseUrl) => {
       test(`the API base URL is "${expectedApiBaseUrl}"`, () => {
-        setupMocks({ appUrl });
+        setupMocks({ appSubUrl });
 
         const { ApiClient } = require('../ApiClient');
 
@@ -111,9 +106,7 @@ describe('ApiClient', () => {
 
           const apiClient = new ApiClient();
 
-          expect(apiClient.baseUrl).toBe(
-            'https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test-bis'
-          );
+          expect(apiClient.baseUrl).toBe('/api/datasources/proxy/uid/grafanacloud-profiles-test-bis');
         });
       });
     });
@@ -151,9 +144,7 @@ describe('ApiClient', () => {
 
           const apiClient = new ApiClient();
 
-          expect(apiClient.baseUrl).toBe(
-            'https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test-local-storage'
-          );
+          expect(apiClient.baseUrl).toBe('/api/datasources/proxy/uid/grafanacloud-profiles-test-local-storage');
         });
       });
 
@@ -186,9 +177,7 @@ describe('ApiClient', () => {
 
           const apiClient = new ApiClient();
 
-          expect(apiClient.baseUrl).toBe(
-            'https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test-ter'
-          );
+          expect(apiClient.baseUrl).toBe('/api/datasources/proxy/uid/grafanacloud-profiles-test-ter');
         });
       });
 
@@ -213,7 +202,7 @@ describe('ApiClient', () => {
 
           const apiClient = new ApiClient();
 
-          expect(apiClient.baseUrl).toBe('https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test');
+          expect(apiClient.baseUrl).toBe('/api/datasources/proxy/uid/grafanacloud-profiles-test');
         });
       });
 
@@ -246,7 +235,7 @@ describe('ApiClient', () => {
 
           const apiClient = new ApiClient();
 
-          expect(apiClient.baseUrl).toBe('https://localhost:3000/api/datasources/proxy/uid/grafanacloud-profiles-test');
+          expect(apiClient.baseUrl).toBe('/api/datasources/proxy/uid/grafanacloud-profiles-test');
         });
       });
     });

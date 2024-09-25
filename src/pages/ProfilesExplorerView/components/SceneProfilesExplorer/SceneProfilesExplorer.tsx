@@ -26,6 +26,7 @@ import { History } from 'history';
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { PLUGIN_BASE_URL } from '../../../../constants';
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
@@ -368,9 +369,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onClickUserSettings(history: History) {
     reportInteraction('g_pyroscope_app_user_settings_clicked');
 
-    const settingsPathname = new URL(window.location.toString()).pathname.replace('/profiles-explorer', '/settings');
-
-    history.push(settingsPathname);
+    history.push(`${PLUGIN_BASE_URL}/settings`);
   }
 
   useProfilesExplorer = () => {
