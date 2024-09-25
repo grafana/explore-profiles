@@ -47,13 +47,13 @@ export class ApiClient extends HttpClient {
   static getBaseUrl() {
     const pyroscopeDataSource = ApiClient.selectDefaultDataSource();
 
-    let appUrl = config.appUrl;
-    if (appUrl.at(-1) !== '/') {
+    let appSubUrl = config.appSubUrl || '';
+    if (appSubUrl.at(-1) !== '/') {
       // ensures that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
-      appUrl += '/';
+      appSubUrl += '/';
     }
 
-    return new URL(`api/datasources/proxy/uid/${pyroscopeDataSource.uid}`, appUrl);
+    return `${appSubUrl}api/datasources/proxy/uid/${pyroscopeDataSource.uid}`;
   }
 
   constructor() {
