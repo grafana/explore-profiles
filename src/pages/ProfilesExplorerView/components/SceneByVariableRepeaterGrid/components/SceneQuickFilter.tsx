@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { GrafanaTheme2 } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneObjectBase,
@@ -6,7 +7,7 @@ import {
   SceneObjectUrlSyncConfig,
   SceneObjectUrlValues,
 } from '@grafana/scenes';
-import { Icon, IconButton, Input, useStyles2 } from '@grafana/ui';
+import { Icon, IconButton, Input, Tag, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
@@ -14,6 +15,7 @@ export interface SceneQuickFilterState extends SceneObjectState {
   placeholder: string;
   searchText: string;
   onChange?: (searchText: string) => void;
+  resultsCount: string;
 }
 
 export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
@@ -28,11 +30,16 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
       key: 'quick-filter',
       placeholder,
       searchText: SceneQuickFilter.DEFAULT_SEARCH_TEXT,
+      resultsCount: '',
     });
   }
 
   setPlaceholder(placeholder: string) {
     this.setState({ placeholder });
+  }
+
+  setResultsCount(resultsCount: number) {
+    this.setState({ resultsCount: String(resultsCount) });
   }
 
   getUrlState() {
@@ -65,7 +72,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
 
   static Component = ({ model }: SceneComponentProps<SceneQuickFilter>) => {
     const styles = useStyles2(getStyles);
-    const { placeholder, searchText } = model.useState();
+    const { placeholder, searchText, resultsCount } = model.useState();
 
     return (
       <div className={styles.filter}>
@@ -75,7 +82,12 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
           placeholder={placeholder}
           value={searchText}
           prefix={<Icon name="search" />}
-          suffix={<IconButton name="times" aria-label="Clear search" onClick={model.clear} />}
+          suffix={
+            <>
+              {resultsCount !== '' && <Tag className={styles.resultsCount} name={resultsCount} colorIndex={9} />}
+              <IconButton name="times" aria-label="Clear search" onClick={model.clear} />
+            </>
+          }
           onChange={model.onChange}
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === 'Escape') {
@@ -89,9 +101,16 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
   };
 }
 
-const getStyles = () => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   filter: css`
     flex: 1;
     min-width: 112px;
+  `,
+  resultsCount: css`
+    margin-right: ${theme.spacing(1)};
+    border-radius: 11px;
+    padding: 2px 8px;
+    color: ${theme.colors.text.primary};
+    background-color: ${theme.colors.background.secondary};
   `,
 });

@@ -164,6 +164,12 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   subscribeToQuickFilterChange() {
     const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
 
+    this.subscribeToState((newState, prevState) => {
+      if (newState.items.length !== prevState.items.length) {
+        quickFilter.setResultsCount(newState.items.length);
+      }
+    });
+
     const onChangeState = (newState: SceneQuickFilterState, prevState?: SceneQuickFilterState) => {
       if (newState.searchText !== prevState?.searchText) {
         this.renderGridItems();
