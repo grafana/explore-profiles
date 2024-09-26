@@ -14,7 +14,7 @@ test.describe('All services view', () => {
 
     // body scene controls
     await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
-    await exploreProfilesPage.assertQuickFilter('Search services (comma-separated regexes are supported)', '');
+    await exploreProfilesPage.assertQuickFilter('Search services (comma-separated regexes are supported)', '', 3);
     await exploreProfilesPage.assertSelectedLayout('Grid');
 
     // body
@@ -53,7 +53,11 @@ test.describe('All services view', () => {
   });
 
   test('Quick filter', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.assertQuickFilterResultsCount(3);
+
     await exploreProfilesPage.enterQuickFilterText('sharing,load');
+
+    await exploreProfilesPage.assertQuickFilterResultsCount(2);
 
     await expect(exploreProfilesPage.getPanels()).toHaveCount(2);
     await expect(exploreProfilesPage.getPanelByTitle('load-generator')).toBeVisible();

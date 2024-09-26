@@ -88,7 +88,14 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
           prefix={<Icon name="search" />}
           suffix={
             <>
-              {resultsCount !== '' && <Tag className={styles.resultsCount} name={resultsCount} colorIndex={9} />}
+              {resultsCount !== '' && (
+                <Tag
+                  className={styles.resultsCount}
+                  name={resultsCount}
+                  colorIndex={9}
+                  data-testid="quick-filter-results-count"
+                />
+              )}
               <IconButton name="times" aria-label="Clear search" onClick={model.clearSearchText} />
             </>
           }

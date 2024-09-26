@@ -16,7 +16,7 @@ test.describe('Labels view', () => {
     await exploreProfilesPage.assertSelectedService('ride-sharing-app');
     await exploreProfilesPage.assertSelectedProfileType('process_cpu/cpu');
     await exploreProfilesPage.assertFilters([]);
-    await exploreProfilesPage.assertQuickFilter('Search labels (comma-separated regexes are supported)', '');
+    await exploreProfilesPage.assertQuickFilter('Search labels (comma-separated regexes are supported)', '', 7);
     await exploreProfilesPage.assertSelectedPanelType('Time series');
     await exploreProfilesPage.assertSelectedLayout('Grid');
     await exploreProfilesPage.assertHideNoDataSwitcher(false);
@@ -153,7 +153,11 @@ test.describe('Labels view', () => {
       });
 
       test('Quick filter', async ({ exploreProfilesPage }) => {
+        await exploreProfilesPage.assertQuickFilterResultsCount(3);
+
         await exploreProfilesPage.enterQuickFilterText('us-east');
+
+        await exploreProfilesPage.assertQuickFilterResultsCount(1);
 
         await expect(exploreProfilesPage.getGroupByPanels()).toHaveCount(1);
         await expect(exploreProfilesPage.getPanelByTitle('us-east')).toBeVisible();
@@ -229,7 +233,11 @@ test.describe('Labels view', () => {
   });
 
   test('Quick filter', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.assertQuickFilterResultsCount(7);
+
     await exploreProfilesPage.enterQuickFilterText('region,vehicle');
+
+    await exploreProfilesPage.assertQuickFilterResultsCount(2);
 
     await expect(exploreProfilesPage.getGroupByPanels()).toHaveCount(2);
     await expect(exploreProfilesPage.getPanelByTitle('region (3)')).toBeVisible();

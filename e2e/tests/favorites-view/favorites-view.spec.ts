@@ -29,7 +29,7 @@ test.describe('Favorites view', () => {
     await exploreProfilesPage.assertSelectedTimeRange('2024-03-13 19:00:00 to 2024-03-13 19:50:00');
 
     // body scene controls
-    await exploreProfilesPage.assertQuickFilter('Search favorites (comma-separated regexes are supported)', '');
+    await exploreProfilesPage.assertQuickFilter('Search favorites (comma-separated regexes are supported)', '', 4);
     await exploreProfilesPage.assertSelectedLayout('Grid');
     await exploreProfilesPage.assertHideNoDataSwitcher(false);
 
@@ -38,7 +38,11 @@ test.describe('Favorites view', () => {
   });
 
   test('Quick filter', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.assertQuickFilterResultsCount(4);
+
     await exploreProfilesPage.enterQuickFilterText('load,ride');
+
+    await exploreProfilesPage.assertQuickFilterResultsCount(3);
 
     await expect(exploreProfilesPage.getPanels()).toHaveCount(3);
     await expect(exploreProfilesPage.getPanelByTitle('load-generator · cpu (process_cpu)')).toBeVisible();
