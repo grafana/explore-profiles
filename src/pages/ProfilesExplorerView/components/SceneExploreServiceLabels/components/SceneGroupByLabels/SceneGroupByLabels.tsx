@@ -111,7 +111,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     return groupByVariable.subscribeToState((newState, prevState) => {
       if (newState.value !== prevState?.value) {
-        quickFilter.clear();
+        quickFilter.clearSearchText();
 
         this.renderBody(newState);
       }

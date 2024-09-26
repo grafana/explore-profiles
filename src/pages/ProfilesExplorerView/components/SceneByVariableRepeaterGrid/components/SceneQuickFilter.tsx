@@ -62,8 +62,12 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
     this.setState({ searchText: e.target.value });
   };
 
-  clear = () => {
-    this.setState({ searchText: '', resultsCount: '' });
+  reset() {
+    this.setState({ placeholder: '', searchText: '', resultsCount: '' });
+  }
+
+  clearSearchText = () => {
+    this.setState({ searchText: '' });
   };
 
   onFocus = () => {
@@ -85,13 +89,13 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
           suffix={
             <>
               {resultsCount !== '' && <Tag className={styles.resultsCount} name={resultsCount} colorIndex={9} />}
-              <IconButton name="times" aria-label="Clear search" onClick={model.clear} />
+              <IconButton name="times" aria-label="Clear search" onClick={model.clearSearchText} />
             </>
           }
           onChange={model.onChange}
           onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === 'Escape') {
-              model.clear();
+              model.clearSearchText();
             }
           }}
           onFocus={model.onFocus}

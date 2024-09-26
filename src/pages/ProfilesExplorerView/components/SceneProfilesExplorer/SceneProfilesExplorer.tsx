@@ -262,7 +262,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   resetVariables(nextExplorationType: string) {
-    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
+    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).reset();
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
 
