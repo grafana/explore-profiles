@@ -63,7 +63,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
   };
 
   clear = () => {
-    this.setState({ searchText: '' });
+    this.setState({ searchText: '', resultsCount: '' });
   };
 
   onFocus = () => {
