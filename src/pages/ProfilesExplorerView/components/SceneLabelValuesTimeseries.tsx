@@ -143,6 +143,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           custom: {
             fillOpacity: series.length >= LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES ? 0 : 9,
             gradientMode: series.length === 1 ? GraphGradientMode.None : GraphGradientMode.Opacity,
+            pointSize: 3,
           },
         },
         overrides: this.getOverrides(series),
@@ -171,6 +172,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           min: 0,
           custom: {
             fillOpacity: 0,
+            pointSize: 5,
           },
         },
         overrides: this.getOverrides(series),

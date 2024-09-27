@@ -21,7 +21,7 @@ import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
+import { PluginInfo } from '@shared/ui/PluginInfo';
 import { History } from 'history';
 import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -469,7 +469,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                   onClick={actions.onClickShareLink}
                 />
 
-                <VersionInfoTooltip />
+                <PluginInfo />
               </div>
             </div>
           </div>
