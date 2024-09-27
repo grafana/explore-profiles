@@ -53,7 +53,7 @@ function InfoMenu() {
       <Menu.Divider />
       <Menu.Item
         label={`Grafana ${grafanaBuildInfo.edition} v${grafanaBuildInfo.version} (${grafanaBuildInfo.env})`}
-        icon="external-link-alt"
+        icon="github"
         onClick={() => window.open(`https://github.com/grafana/grafana/commit/${grafanaBuildInfo.commit}`)}
       />
     </Menu>
