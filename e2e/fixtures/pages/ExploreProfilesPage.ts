@@ -136,14 +136,19 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByLabel('Quick filter');
   }
 
-  async assertQuickFilter(explectedPlaceholder: string, expectedValue: string) {
+  async assertQuickFilter(explectedPlaceholder: string, expectedValue: string, expectedResultsCount: number) {
     await expect(await this.getQuickFilterInput().getAttribute('placeholder')).toBe(explectedPlaceholder);
     await expect(this.getQuickFilterInput()).toHaveValue(expectedValue);
+    await this.assertQuickFilterResultsCount(expectedResultsCount);
   }
 
   async enterQuickFilterText(searchText: string) {
     await this.getQuickFilterInput().fill(searchText);
     await this.waitForTimeout(250); // see SceneQuickFilter.DEBOUNCE_DELAY
+  }
+
+  async assertQuickFilterResultsCount(expectedCount: number) {
+    await expect(this.getByTestId('quick-filter-results-count')).toHaveText(String(expectedCount));
   }
 
   /* Layout switcher */

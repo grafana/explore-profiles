@@ -10,7 +10,7 @@ async function assertMainUiElements(exploreProfilesPage: ExploreProfilesPage) {
 
   // body scene controls
   await exploreProfilesPage.assertSelectedService('ride-sharing-app');
-  await exploreProfilesPage.assertQuickFilter('Search profile types (comma-separated regexes are supported)', '');
+  await exploreProfilesPage.assertQuickFilter('Search profile types (comma-separated regexes are supported)', '', 6);
   await exploreProfilesPage.assertSelectedLayout('Grid');
 }
 
@@ -37,7 +37,11 @@ test.describe('Profile types view', () => {
   });
 
   test('Quick filter', async ({ exploreProfilesPage }) => {
+    await exploreProfilesPage.assertQuickFilterResultsCount(6);
+
     await exploreProfilesPage.enterQuickFilterText('samples,alloc_space');
+
+    await exploreProfilesPage.assertQuickFilterResultsCount(2);
 
     await expect(exploreProfilesPage.getPanels()).toHaveCount(2);
     await expect(exploreProfilesPage.getPanelByTitle('samples (process_cpu)')).toBeVisible();

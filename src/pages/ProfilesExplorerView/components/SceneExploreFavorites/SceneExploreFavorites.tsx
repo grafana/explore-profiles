@@ -75,8 +75,9 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
   }
 
   onActivate() {
-    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
-    quickFilter.setPlaceholder('Search favorites (comma-separated regexes are supported)');
+    sceneGraph
+      .findByKeyAndType(this, 'quick-filter', SceneQuickFilter)
+      .setPlaceholder('Search favorites (comma-separated regexes are supported)');
 
     const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
       this.openExpandedPanelDrawer(event.payload.item);

@@ -60,8 +60,9 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
   }
 
   onActivate() {
-    const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
-    quickFilter.setPlaceholder('Search services (comma-separated regexes are supported)');
+    sceneGraph
+      .findByKeyAndType(this, 'quick-filter', SceneQuickFilter)
+      .setPlaceholder('Search services (comma-separated regexes are supported)');
   }
 
   // see SceneProfilesExplorer
