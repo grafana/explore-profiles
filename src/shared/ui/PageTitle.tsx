@@ -6,7 +6,7 @@ import { QueryAnalysisTooltip } from '@shared/components/QueryAnalysisTooltip/Qu
 import React, { memo, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 
-import { VersionInfoTooltip } from './VersionInfoTooltip';
+import { PluginInfo } from './PluginInfo';
 
 type PageTitleProps = {
   title: ReactNode;
@@ -31,7 +31,7 @@ function PageTitleComponent({ title, queryAnalysis }: PageTitleProps) {
             </h1>
           </div>
           <div className={styles.infoArea}>
-            <VersionInfoTooltip />
+            <PluginInfo />
             {queryAnalysis ? <QueryAnalysisTooltip data={queryAnalysis} /> : null}
           </div>
         </Stack>
