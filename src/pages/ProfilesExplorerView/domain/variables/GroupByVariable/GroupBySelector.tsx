@@ -52,8 +52,9 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
       <div ref={controlsContainer} className={styles.container}>
         {useHorizontalLabelSelector ? (
           <>
-            <RadioButtonGroup options={mainOptions} value={value} onChange={onChange} />
+            <RadioButtonGroup aria-label="Labels selector" options={mainOptions} value={value} onChange={onChange} />
             <Select
+              aria-label="Other labels selector"
               className={styles.select}
               placeholder="Other labels"
               options={otherOptions}
@@ -64,6 +65,7 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
           </>
         ) : (
           <Select
+            aria-label="Labels selector"
             className={styles.select}
             value={value}
             placeholder="Select label"

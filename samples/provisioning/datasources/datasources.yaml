@@ -1,13 +1,13 @@
 apiVersion: 1
 
 datasources:
-  - uid: grafanacloud-profiles-local
+  - uid: grafanacloud-profiles-local-a
     type: grafana-pyroscope-datasource
-    name: 🔥 Local (http://pyroscope:4100)
+    name: Local Pyroscope A
     url: http://pyroscope:4100
     isDefault: true
     jsonData:
-      keepCookies: [GitSession]
+      keepCookies: [pyroscope_git_session]
     basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml
@@ -15,9 +15,9 @@ datasources:
     secureJsonData:
       basicAuthPassword: 'mypassword'
 
-  - uid: grafanacloud-profiles-local-bis
+  - uid: grafanacloud-profiles-local-b
     type: grafana-pyroscope-datasource
-    name: 🔥 Local bis (http://pyroscope:4100)
+    name: Local Pyroscope B
     url: http://pyroscope:4100
     isDefault: false
     jsonData:
@@ -25,7 +25,7 @@ datasources:
       # i.e. if a Prometheus DS is set to default, we can't set a Profiles DS to default
       # for these situations, we can override the default value here
       overridesDefault: true
-      keepCookies: [GitSession]
+      keepCookies: [pyroscope_git_session]
     basicAuth: true
     # 1. our plugin backend expects a string
     # 2. this value must match the one in samples/provisioning/plugins/app.yaml

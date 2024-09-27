@@ -12,6 +12,7 @@ import React from 'react';
 export enum PanelType {
   TIMESERIES = 'time-series',
   BARGAUGE = 'bar-gauge',
+  HISTOGRAM = 'histogram',
 }
 
 export interface ScenePanelTypeSwitcherState extends SceneObjectState {
@@ -24,7 +25,8 @@ export class ScenePanelTypeSwitcher extends SceneObjectBase<ScenePanelTypeSwitch
 
   static OPTIONS = [
     { label: 'Time series', value: PanelType.TIMESERIES, icon: 'heart-rate' },
-    { label: 'Totals', value: PanelType.BARGAUGE, icon: 'graph-bar' },
+    { label: 'Totals', value: PanelType.BARGAUGE, icon: 'align-left' },
+    { label: 'Histograms', value: PanelType.HISTOGRAM, icon: 'graph-bar' },
   ];
 
   static DEFAULT_PANEL_TYPE = PanelType.TIMESERIES;
@@ -69,6 +71,7 @@ export class ScenePanelTypeSwitcher extends SceneObjectBase<ScenePanelTypeSwitch
 
     return (
       <RadioButtonGroup
+        aria-label="Panel type switcher"
         options={ScenePanelTypeSwitcher.OPTIONS}
         value={panelType}
         onChange={model.onChange}

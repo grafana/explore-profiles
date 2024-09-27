@@ -11,9 +11,9 @@ export function ExportMenu(props: ExportDataProps) {
     <Menu>
       <Menu.Item label="png" onClick={actions.downloadPng} />
       <Menu.Item label="json" onClick={actions.downloadJson} />
-      <Menu.Item label="pprof" onClick={actions.downloadPprof} />
+      {/* no pprof export, as the underlying API only accepts a single query (see PprofApiClient) */}
       {data.shouldDisplayFlamegraphDotCom && (
-        <Menu.Item label="flamegraph.com" onClick={actions.downloadFlamegraphDotCom} />
+        <Menu.Item label="flamegraph.com" onClick={actions.uploadToFlamegraphDotCom} />
       )}
     </Menu>
   );

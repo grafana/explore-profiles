@@ -1,12 +1,15 @@
-import { expect, type Page, Request, Route } from '@playwright/test';
+import { expect, Mouse, type Page, Request, Route } from '@playwright/test';
 
 export class PyroscopePage {
   readonly page: Page;
+  readonly mouse: Mouse;
+
   pathname: string;
   urlParams: string;
 
   constructor(page: Page, pathname: string, urlParams: string) {
     this.page = page;
+    this.mouse = page.mouse;
     this.pathname = pathname;
     this.urlParams = urlParams;
   }
@@ -22,8 +25,12 @@ export class PyroscopePage {
     return this.page.locator(selector, options);
   }
 
-  getByTestid(testId: string | RegExp) {
+  getByTestId(testId: string | RegExp) {
     return this.page.getByTestId(testId);
+  }
+
+  getByLabel(label: string, options?: Record<string, unknown>) {
+    return this.page.getByLabel(label, options);
   }
 
   getByText(text, options?: Record<string, unknown>) {
@@ -34,10 +41,12 @@ export class PyroscopePage {
     return this.page.getByRole(role, options);
   }
 
+  // TODO: check if we can delete it once legacy comparison views have been removed from the code base
   clickOnNavLink(label: string) {
     return this.page.getByLabel(label).click();
   }
 
+  // TODO: check if we can delete it once legacy comparison views have been removed from the code base
   getTitle() {
     return this.page.getByTestId('page-title');
   }
@@ -51,6 +60,7 @@ export class PyroscopePage {
     return queryAnalysisSpan;
   }
 
+  // TODO: check if we can delete it once legacy comparison views have been removed from the code base
   async assertNoLoadingPanels() {
     const slowExpect = expect.configure({ timeout: 10000 });
 

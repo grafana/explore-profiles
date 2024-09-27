@@ -11,7 +11,7 @@ import {
 import { BarGaugeDisplayMode, BarGaugeNamePlacement, BarGaugeSizing, BarGaugeValueMode } from '@grafana/schema';
 import React from 'react';
 
-import { EventDataReceived } from '../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
@@ -51,16 +51,19 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
   onActivate(item: GridItemData) {
     const { body } = this.state;
 
-    const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((state) => {
-      if (state.data?.state !== LoadingState.Done) {
+    const sub = (body.state.$data as SceneDataTransformer)!.subscribeToState((newState) => {
+      if (newState.data?.state !== LoadingState.Done) {
         return;
       }
 
-      const { series } = state.data;
+      const { series } = newState.data;
 
-      this.publishEvent(new EventDataReceived({ series }), true);
+      if (series?.length) {
+        body.setState(this.getConfig(item, series));
+      }
 
-      body.setState(this.getConfig(item, series));
+      // we publish the event only after setting the new config so that the subscribers can modify it
+      this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
     });
 
     return () => {
@@ -97,9 +100,9 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
         namePlacement: BarGaugeNamePlacement.Top,
         minVizHeight: 36,
         maxVizHeight: 36,
-        // namePlacement: BarGaugeNamePlacement.Left,
-        // minVizHeight: 20,
-        // maxVizHeight: 20,
+        legend: {
+          showLegend: false,
+        },
       },
       fieldConfig: {
         defaults: {

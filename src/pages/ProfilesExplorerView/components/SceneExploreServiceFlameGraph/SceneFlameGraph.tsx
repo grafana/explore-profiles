@@ -1,29 +1,34 @@
 import { css } from '@emotion/css';
-import { createTheme, GrafanaTheme2, LoadingState } from '@grafana/data';
+import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
 import { FlameGraph } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
-import { AiPanel } from '@shared/components/AiPanel/AiPanel';
-import { AIButton } from '@shared/components/AiPanel/components/AIButton';
-import { FunctionDetailsPanel } from '@shared/components/FunctionDetailsPanel/FunctionDetailsPanel';
 import { displayWarning } from '@shared/domain/displayStatus';
-import { useGitHubIntegration } from '@shared/domain/github-integration/useGitHubIntegration';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { timelineAndProfileApiClient } from '@shared/infrastructure/timeline-profile/timelineAndProfileApiClient';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { Panel } from '@shared/ui/Panel/Panel';
 import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
+import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
+import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
+import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
+import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
+import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
+import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
+  lastTimeRange?: TimeRange;
+  exportMenu: SceneExportMenu;
+  aiPanel: SceneAiPanel;
+  functionDetailsPanel: SceneFunctionDetailsPanel;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -36,6 +41,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         datasource: PYROSCOPE_DATA_SOURCE,
         queries: [],
       }),
+      lastTimeRange: undefined,
+      exportMenu: new SceneExportMenu(),
+      aiPanel: new SceneAiPanel(),
+      functionDetailsPanel: new SceneFunctionDetailsPanel(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -55,7 +64,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
       dataSubscription = newState.$data?.subscribeToState((newDataState) => {
         if (newDataState.data?.state === LoadingState.Done) {
-          timelineAndProfileApiClient.setLastTimeRange(newDataState.data.timeRange);
+          this.setState({ lastTimeRange: newDataState.data.timeRange });
         }
       });
     });
@@ -66,13 +75,21 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     };
   }
 
+  buildTitle() {
+    const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
+
+    return `🔥 Flame graph for ${serviceName} (${profileMetricType})`;
+  }
+
   useSceneFlameGraph = (): DomainHookReturnValue => {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data } = this.useState();
+    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel } = this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -94,18 +111,29 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const profileData = $dataState?.data?.series?.[0];
     const hasProfileData = Number(profileData?.length) > 1;
 
-    const serviceName = getSceneVariableValue(this, 'serviceName');
-    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
-    const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
+    const query = useBuildPyroscopeQuery(this, 'filters');
 
     return {
       data: {
-        title: `${serviceName} flame graph (${profileMetricType})`,
+        title: this.buildTitle(),
         isLoading: isFetchingProfileData,
         isFetchingProfileData,
         hasProfileData,
         profileData,
         settings,
+        export: {
+          menu: exportMenu,
+          query,
+          timeRange: lastTimeRange,
+        },
+        ai: {
+          panel: aiPanel,
+          fetchParams: [{ query, timeRange: lastTimeRange }],
+        },
+        gitHub: {
+          panel: functionDetailsPanel,
+          timeRange: lastTimeRange,
+        },
       },
       actions: {
         getTheme,
@@ -116,15 +144,17 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
 
-    const sidePanel = useToggleSidePanel();
     const { data, actions } = model.useSceneFlameGraph();
+    const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
+    const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
+
     useEffect(() => {
-      if (data.isLoading) {
+      if (isAiButtonDisabled) {
         sidePanel.close();
       }
-    }, [data.isLoading, sidePanel]);
+    }, [isAiButtonDisabled, sidePanel]);
 
     const panelTitle = useMemo(
       () => (
@@ -139,16 +169,14 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     return (
       <div className={styles.flex}>
         <Panel
+          dataTestId="flame-graph-panel"
           className={styles.flamegraphPanel}
           title={panelTitle}
           isLoading={data.isLoading}
           headerActions={
             <AIButton
-              className={styles.aiButton}
-              onClick={() => {
-                sidePanel.open('ai');
-              }}
-              disabled={data.isLoading || !data.hasProfileData || sidePanel.isOpen('ai')}
+              disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
+              onClick={() => sidePanel.open('ai')}
               interactionName="g_pyroscope_app_explain_flamegraph_clicked"
             >
               Explain Flame Graph
@@ -160,15 +188,25 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             disableCollapsing={!data.settings?.collapsedFlamegraphs}
             getTheme={actions.getTheme as any}
             getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
+            extraHeaderElements={
+              <data.export.menu.Component
+                model={data.export.menu}
+                query={data.export.query}
+                timeRange={data.export.timeRange}
+              />
+            }
           />
         </Panel>
 
-        {sidePanel.isOpen('ai') && <AiPanel className={styles.sidePanel} onClose={sidePanel.close} />}
+        {sidePanel.isOpen('ai') && (
+          <data.ai.panel.Component model={data.ai.panel} fetchParams={data.ai.fetchParams} onClose={sidePanel.close} />
+        )}
 
         {sidePanel.isOpen('function-details') && (
-          <FunctionDetailsPanel
-            className={styles.sidePanel}
-            stacktrace={gitHubIntegration.data.stacktrace}
+          <data.gitHub.panel.Component
+            model={data.gitHub.panel}
+            timeRange={data.gitHub.timeRange}
+            stackTrace={gitHubIntegration.data.stacktrace}
             onClose={sidePanel.close}
           />
         )}
@@ -185,15 +223,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     min-width: 0;
     flex-grow: 1;
   `,
-  sidePanel: css`
-    flex: 1 0 50%;
-    margin-left: 8px;
-    max-width: calc(50% - 4px);
-  `,
   spinner: css`
     margin-left: ${theme.spacing(1)};
-  `,
-  aiButton: css`
-    margin-top: ${theme.spacing(1)};
   `,
 });

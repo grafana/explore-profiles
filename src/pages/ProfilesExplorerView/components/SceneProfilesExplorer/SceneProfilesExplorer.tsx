@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { dateTimeParse, GrafanaTheme2 } from '@grafana/data';
+import { dateMath, GrafanaTheme2 } from '@grafana/data';
 import {
   EmbeddedSceneState,
   getUrlSyncManager,
@@ -19,34 +19,45 @@ import {
 } from '@grafana/scenes';
 import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
+import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { VersionInfoTooltip } from '@shared/ui/VersionInfoTooltip';
-import React from 'react';
+import { History } from 'history';
+import React, { useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
+import { PLUGIN_BASE_URL } from '../../../../constants';
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameGraph';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { getDefaultTimeRange } from '../../domain/getDefaultTimeRange';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
-import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
+import { GiveFeedbackButton } from '../GiveFeedbackButton';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneTimeRangeWithAnnotations } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/components/SceneTimeRangeWithAnnotations';
+import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
+import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+  $timeRange: SceneTimeRange;
   $variables: SceneVariableSet;
   gridControls: Array<SceneObject & { key?: string }>;
   explorationType?: ExplorationType;
@@ -58,6 +69,7 @@ export enum ExplorationType {
   PROFILE_TYPES = 'profiles',
   LABELS = 'labels',
   FLAME_GRAPH = 'flame-graph',
+  DIFF_FLAME_GRAPH = 'diff-flame-graph',
   FAVORITES = 'favorites',
 }
 
@@ -84,6 +96,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       description: 'Single service flame graph',
     },
     {
+      value: ExplorationType.DIFF_FLAME_GRAPH,
+      label: 'Diff flame graph',
+      description: 'Compare the differences between two flame graphs',
+    },
+    {
       value: ExplorationType.FAVORITES,
       label: 'Favorites',
       description: 'Overview of favorited visualizations',
@@ -100,7 +117,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       key: 'profiles-explorer',
       explorationType: undefined,
       body: undefined,
-      $timeRange: new SceneTimeRange({}),
+      $timeRange: new SceneTimeRange(getDefaultTimeRange()),
       $variables: new SceneVariableSet({
         // in order to sync with the URL and...
         // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -111,12 +128,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new ProfilesDataSourceVariable(),
           new ServiceNameVariable(),
           new ProfileMetricVariable(),
-          new FiltersVariable(),
+          new FiltersVariable({ key: 'filters' }),
+          new FiltersVariable({ key: 'filtersBaseline' }),
+          new FiltersVariable({ key: 'filtersComparison' }),
           new GroupByVariable(),
         ],
       }),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
-      // these scenes sync with the URL so...
+      // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
       gridControls: [
         new SceneQuickFilter({ placeholder: '' }),
@@ -136,11 +155,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const eventsSub = this.subscribeToEvents();
 
-    this.setExplorationType({
-      type: Object.values(ExplorationType).includes(this.state.explorationType as ExplorationType)
-        ? (this.state.explorationType as ExplorationType)
-        : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
-    });
+    if (!this.state.explorationType) {
+      this.setExplorationType({
+        type: SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
+    }
 
     return () => {
       eventsSub.unsubscribe();
@@ -154,13 +173,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   updateFromUrl(values: SceneObjectUrlValues) {
-    const stateUpdate: Partial<SceneProfilesExplorerState> = {};
-
     if (typeof values.explorationType === 'string' && values.explorationType !== this.state.explorationType) {
-      stateUpdate.explorationType = values.explorationType as ExplorationType;
+      const type = values.explorationType as ExplorationType;
+      this.setExplorationType({
+        type: Object.values(ExplorationType).includes(type) ? type : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
+      });
     }
-
-    this.setState(stateUpdate);
   }
 
   registerRuntimeDataSources() {
@@ -206,8 +224,16 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       });
     });
 
+    const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, () => {
+      this.setExplorationType({
+        type: ExplorationType.DIFF_FLAME_GRAPH,
+        comesFromUserAction: true,
+      });
+    });
+
     return {
       unsubscribe() {
+        diffFlameGraphSub.unsubscribe();
         flameGraphSub.unsubscribe();
         labelsSub.unsubscribe();
         profilesSub.unsubscribe();
@@ -225,16 +251,52 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     item?: GridItemData;
   }) {
     if (comesFromUserAction) {
+      prepareHistoryEntry();
       this.resetVariables(type);
     }
 
     this.setState({
       explorationType: type,
-      body: this.buildBodyScene(type, item),
+      body: this.buildBodyScene(type, item, comesFromUserAction),
     });
   }
 
-  buildBodyScene(explorationType: ExplorationType, item?: GridItemData) {
+  resetVariables(nextExplorationType: string) {
+    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).reset();
+    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
+    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
+
+    // preserve existing filters only when switching to "Labels" or "Flame graph"
+    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(nextExplorationType as ExplorationType)) {
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
+        filters: FiltersVariable.DEFAULT_VALUE,
+      });
+    }
+
+    // clear baseline/comparison filters and time ranges when leaving "Diff flame graph"
+    if (
+      nextExplorationType !== ExplorationType.DIFF_FLAME_GRAPH &&
+      this.state.explorationType === ExplorationType.DIFF_FLAME_GRAPH
+    ) {
+      ['filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
+        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable).setState({
+          filters: FiltersVariable.DEFAULT_VALUE,
+        });
+      });
+
+      const { from, to, value } = this.state.$timeRange.state;
+
+      ['baseline-panel-timerange', 'comparison-panel-timerange'].forEach((timeRangeKey) => {
+        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRange).setState({ from, to, value });
+      });
+
+      ['baseline-annotation-timerange', 'comparison-annotation-timerange'].forEach((timeRangeKey) => {
+        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRangeWithAnnotations).nullifyAnnotationTimeRange();
+      });
+    }
+  }
+
+  buildBodyScene(explorationType: ExplorationType, item?: GridItemData, comesFromUserAction?: boolean) {
     let primary;
 
     switch (explorationType) {
@@ -248,6 +310,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
       case ExplorationType.FLAME_GRAPH:
         primary = new SceneExploreServiceFlameGraph({ item });
+        break;
+
+      case ExplorationType.DIFF_FLAME_GRAPH:
+        primary = new SceneExploreDiffFlameGraph({ useAncestorTimeRange: Boolean(comesFromUserAction) });
         break;
 
       case ExplorationType.FAVORITES:
@@ -274,43 +340,62 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   };
 
-  resetVariables(explorationType: string) {
-    sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).clear();
-
-    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(explorationType as ExplorationType)) {
-      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable)?.setState({
-        filters: FiltersVariable.DEFAULT_VALUE,
-      });
-    }
-
-    sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable)?.changeValueTo(GroupByVariable.DEFAULT_VALUE);
-
-    sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher)?.reset();
-  }
-
   onClickShareLink = async () => {
+    reportInteraction('g_pyroscope_app_share_link_clicked');
+
     try {
       const shareableUrl = new URL(window.location.toString());
+      const { searchParams } = shareableUrl;
 
-      ['from', 'to'].forEach((name) => {
-        shareableUrl.searchParams.set(name, String(dateTimeParse(shareableUrl.searchParams.get(name)).valueOf()));
-      });
+      searchParams.delete('query'); // TODO: temp while removing the comparison pages
+
+      ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'diffFrom', 'diffTo', 'diffFrom-2', 'diffTo-2'].forEach(
+        (name) => {
+          const value = searchParams.get(name);
+          if (value) {
+            searchParams.set(name, String(dateMath.parse(value)!.valueOf()));
+          }
+        }
+      );
 
       await navigator.clipboard.writeText(shareableUrl.toString());
       displaySuccess(['Link copied to clipboard!']);
-    } catch {}
+    } catch (error) {
+      console.error('Error while creating the shareable link!');
+      console.error(error);
+    }
   };
+
+  onClickUserSettings(history: History) {
+    reportInteraction('g_pyroscope_app_user_settings_clicked');
+
+    history.push(`${PLUGIN_BASE_URL}/settings`);
+  }
 
   useProfilesExplorer = () => {
     const { explorationType, controls, body, $variables } = this.useState();
 
-    const [timePickerControl, refreshPickerControl] = controls as [SceneObject, SceneObject];
+    const [timePickerControl, refreshPickerControl] =
+      explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as [SceneObject, SceneObject]);
+
     const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
 
-    const { variables: sceneVariables, gridControls } = (body?.state.primary as any).getVariablesAndGridControls() as {
+    const bodySceneObject = body?.state.primary as any;
+
+    if (typeof bodySceneObject.getVariablesAndGridControls !== 'function') {
+      throw new Error(
+        `Error while rendering "${bodySceneObject.constructor.name}": the "getVariablesAndGridControls" method is missing! Please implement it.`
+      );
+    }
+
+    const { variables: sceneVariables, gridControls } = bodySceneObject.getVariablesAndGridControls() as {
       variables: SceneVariable[];
       gridControls: SceneObject[];
     };
+
+    const dataSourceUid = dataSourceVariable.useState().value as string;
+
+    const history = useHistory();
 
     return {
       data: {
@@ -321,10 +406,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         sceneVariables,
         gridControls,
         body,
+        dataSourceUid,
       },
       actions: {
         onChangeExplorationType: this.onChangeExplorationType,
         onClickShareLink: this.onClickShareLink,
+        onClickUserSettings: useCallback(() => {
+          this.onClickUserSettings(history);
+        }, [history]),
       },
     };
   };
@@ -341,12 +430,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       sceneVariables,
       gridControls,
       body,
+      dataSourceUid,
     } = data;
 
     return (
-      <>
-        <div className={styles.header}>
-          <div className={styles.controls}>
+      <GitHubContextProvider dataSourceUid={dataSourceUid}>
+        <div className={styles.header} data-testid="allControls">
+          <GiveFeedbackButton />
+
+          <div className={styles.controls} data-testid="appControls">
             <div className={styles.headerLeft}>
               <div className={styles.dataSourceVariable}>
                 <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
@@ -361,20 +453,30 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             </div>
 
             <div className={styles.headerRight}>
-              <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
-              <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
-              <IconButton
-                name="share-alt"
-                tooltip="Copy shareable link to the clipboard"
-                onClick={actions.onClickShareLink}
-              />
-              <VersionInfoTooltip />
+              {timePickerControl && (
+                <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
+              )}
+              {refreshPickerControl && (
+                <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
+              )}
+
+              <div className={styles.miscButtons}>
+                <IconButton name="cog" tooltip="View/edit user settings" onClick={actions.onClickUserSettings} />
+
+                <IconButton
+                  name="share-alt"
+                  tooltip="Copy shareable link to the clipboard"
+                  onClick={actions.onClickShareLink}
+                />
+
+                <VersionInfoTooltip />
+              </div>
             </div>
           </div>
 
-          <div id={`scene-controls-${explorationType}`} className={styles.sceneControls}>
+          <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
             {sceneVariables.map((variable) => (
-              <div key={variable.state.name} className={styles.variable}>
+              <div key={variable.state.name} className={styles.variable} data-testid={variable.state.name}>
                 <InlineLabel width="auto">{variable.state.label}</InlineLabel>
                 <variable.Component model={variable} />
               </div>
@@ -386,8 +488,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           </div>
         </div>
 
-        <div className={styles.body}>{body && <body.Component model={body} />}</div>
-      </>
+        <div className={styles.body} data-testid="sceneBody">
+          {body && <body.Component model={body} />}
+        </div>
+      </GitHubContextProvider>
     );
   }
 }
@@ -403,7 +507,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     padding: ${theme.spacing(1)} 0;
     justify-content: space-between;
-    gap: ${theme.spacing(4)};
+    gap: ${theme.spacing(2)};
   `,
   headerLeft: css`
     display: flex;
@@ -413,8 +517,27 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
     gap: ${theme.spacing(1)};
   `,
+  miscButtons: css`
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid ${theme.colors.border.weak};
+    background-color: ${theme.colors.background.secondary};
+    height: 32px;
+    padding: 0 ${theme.spacing(1)};
+
+    & svg {
+      width: 18px;
+      height: 18px;
+    }
+  `,
   dataSourceVariable: css`
     display: flex;
+    ${theme.breakpoints.down('xxl')} {
+      label {
+        display: none;
+      }
+    }
   `,
   variable: css`
     display: flex;

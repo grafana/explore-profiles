@@ -29,14 +29,6 @@ E2E_USERNAME=user
 E2E_PASSWORD=pass
 ```
 
-To launch the tests against a non-local environment (dev, ops, prod):
-
-1. Open the 1Password app
-2. Search for "E2E Pyroscope", choose the environment you want to target
-3. Set these values to the `.env` file
-
-By doing so, an [authentication step](https://playwright.dev/docs/auth) will automatically be added before launching the tests.
-
 ### Each time you want to develop a new test
 
 Start the app, in one terminal window:
@@ -107,6 +99,8 @@ In build time (PR and main branch), we run a [Pyroscope server with static data]
 
 ### The build of my PR has failed because Playwright was just updated, how to fix it?
 
-- In a terminal: `yarn upgrade @playwright/test --latest`
-- Open `Dockerfile.plugin.e2e` and upgrade Playwright versions to the latest one
-- Open a PR to verify that the E2E are passing in the build
+- Identify the current Playwright version, e.g. `1.46.0`
+- Identify the new Playwright version, e.g. `1.47.0`
+- In a terminal, execute: `./scripts/upgrade-playwright 1.46.0 1.47.0`
+- Launch the E2E tests locally with Docker to verify that the new version works: `yarn e2e:ci:server:up && yarn e2e:ci`
+- Push the modified files to the PR

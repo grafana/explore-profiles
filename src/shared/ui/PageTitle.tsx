@@ -3,7 +3,6 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Stack, useStyles2 } from '@grafana/ui';
 import { QueryAnalysisResult } from '@shared/components/QueryAnalysisTooltip/domain/QueryAnalysis';
 import { QueryAnalysisTooltip } from '@shared/components/QueryAnalysisTooltip/QueryAnalysisTooltip';
-import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
 import React, { memo, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 
@@ -16,8 +15,7 @@ type PageTitleProps = {
 
 function PageTitleComponent({ title, queryAnalysis }: PageTitleProps) {
   const styles = useStyles2(getStyles);
-  const [query] = useQueryFromUrl();
-  const fullTitle = typeof title === 'string' ? `${title} | ${query} | Pyroscope` : '...';
+  const fullTitle = typeof title === 'string' ? `${title} | Pyroscope` : 'Pyroscope';
 
   return (
     <>

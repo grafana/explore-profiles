@@ -4,7 +4,7 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState, VizPanelState }
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-import { EventDataReceived } from '../../../../../../../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../../../../../../../domain/events/EventTimeseriesDataReceived';
 import { getSeriesStatsValue } from '../../../../../../../infrastructure/helpers/getSeriesStatsValue';
 import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries';
@@ -40,8 +40,8 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   onActivate() {
     const { statsPanel, timeseriesPanel } = this.state;
 
-    const timeseriesSub = timeseriesPanel.subscribeToEvent(EventDataReceived, (event) => {
-      const [s] = event.payload.series;
+    const timeseriesSub = timeseriesPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
+      const s = event.payload.series?.[0];
 
       if (!s) {
         statsPanel.updateStats({ allValuesSum: 0, unit: 'short' });
@@ -66,10 +66,11 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
   static Component({ model }: SceneComponentProps<SceneLabelValuePanel>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
     const { statsPanel, timeseriesPanel } = model.useState();
-    const { compareTargetValue } = statsPanel.useState();
+    const { compareActionChecks } = statsPanel.useState();
+    const isSelected = compareActionChecks[0] || compareActionChecks[1];
 
     return (
-      <div className={cx(styles.container, compareTargetValue && 'selected')}>
+      <div className={cx(styles.container, isSelected && 'selected')}>
         <div className={styles.statsPanel}>
           <statsPanel.Component model={statsPanel} />
         </div>

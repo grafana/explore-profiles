@@ -16,16 +16,18 @@ import { noOp } from '@shared/domain/noOp';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
-import { EventDataReceived } from '../../domain/events/EventDataReceived';
+import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
+import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
+import { SceneLabelValuesHistogram } from '../SceneLabelValuesHistogram';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
 import { LayoutType, SceneLayoutSwitcher, SceneLayoutSwitcherState } from './components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher, SceneNoDataSwitcherState } from './components/SceneNoDataSwitcher';
-import { PanelType, ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
+import { ScenePanelTypeSwitcher } from './components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter, SceneQuickFilterState } from './components/SceneQuickFilter';
 import { sortFavGridItems } from './domain/sortFavGridItems';
 import { GridItemData } from './types/GridItemData';
@@ -162,13 +164,19 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   subscribeToQuickFilterChange() {
     const quickFilter = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
 
+    this.subscribeToState((newState, prevState) => {
+      if (newState.items.length !== prevState.items.length) {
+        quickFilter.setResultsCount(newState.items.length);
+      }
+    });
+
     const onChangeState = (newState: SceneQuickFilterState, prevState?: SceneQuickFilterState) => {
       if (newState.searchText !== prevState?.searchText) {
         this.renderGridItems();
       }
     };
 
-    return quickFilter.subscribeToState(debounce(onChangeState, 250));
+    return quickFilter.subscribeToState(debounce(onChangeState, SceneQuickFilter.DEBOUNCE_DELAY));
   }
 
   subscribeToLayoutChange() {
@@ -279,7 +287,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     }
 
     const gridItems = this.state.items.map((item) => {
-      const vizPanel = this.buildVizPanel(item);
+      const vizPanel = vizPanelBuilder(item.panelType, {
+        item,
+        headerActions: this.state.headerActions.bind(null, item, this.state.items),
+      });
 
       if (this.state.hideNoData) {
         this.setupHideNoData(vizPanel);
@@ -297,26 +308,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
-  buildVizPanel(item: GridItemData) {
-    switch (item.panelType) {
-      case PanelType.BARGAUGE:
-        return new SceneLabelValuesBarGauge({
-          item,
-          headerActions: this.state.headerActions.bind(null, item, this.state.items),
-        });
-
-      case PanelType.TIMESERIES:
-      default:
-        return new SceneLabelValuesTimeseries({
-          item,
-          headerActions: this.state.headerActions.bind(null, item, this.state.items),
-        });
-    }
-  }
-
-  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge) {
-    const sub = vizPanel.subscribeToEvent(EventDataReceived, (event) => {
-      if (event.payload.series.length > 0) {
+  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge | SceneLabelValuesHistogram) {
+    const sub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
+      if (event.payload.series?.length) {
         return;
       }
 

@@ -3,21 +3,19 @@ import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/
 import { useStyles2 } from '@grafana/ui';
 import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
-import { useQueryFromUrl } from '@shared/domain/url-params/useQueryFromUrl';
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 
-import { ProfileMetricVariable } from '../ProfileMetricVariable';
+import { useBuildPyroscopeQuery } from '../../useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
-import { ServiceNameVariable } from '../ServiceNameVariable';
 import { convertPyroscopeToVariableFilter } from './filters-ops';
 
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
 
-  constructor() {
+  constructor({ key }: { key: string }) {
     super({
-      key: 'filters',
-      name: 'filters',
+      key,
+      name: key,
       label: 'Filters',
       filters: FiltersVariable.DEFAULT_VALUE,
       expressionBuilder: (filters) =>
@@ -48,36 +46,20 @@ export class FiltersVariable extends AdHocFiltersVariable {
 
   static Component = ({ model }: SceneComponentProps<AdHocFiltersVariable & { onChangeQuery?: any }>) => {
     const styles = useStyles2(getStyles);
-    const { filterExpression } = model.useState();
-    const [, setQuery] = useQueryFromUrl();
+
+    const { key } = model.useState();
+
+    const query = useBuildPyroscopeQuery(model, key as string);
 
     const { value: dataSourceUid } = sceneGraph
       .findByKeyAndType(model, 'dataSource', ProfilesDataSourceVariable)
       .useState();
 
-    const { value: serviceName } = sceneGraph.findByKeyAndType(model, 'serviceName', ServiceNameVariable).useState();
-
-    const { value: profileMetricId } = sceneGraph
-      .findByKeyAndType(model, 'profileMetricId', ProfileMetricVariable)
-      .useState();
-
-    const query = useMemo(
-      () => `${profileMetricId}{service_name="${serviceName}",${filterExpression}}`,
-      [filterExpression, profileMetricId, serviceName]
-    );
-
-    useEffect(() => {
-      if (typeof query === 'string') {
-        // Explain Flame Graph (AI button) depends on the query value so we have to sync it here
-        setQuery(query);
-      }
-    }, [query, setQuery]);
-
     const { from, to } = sceneGraph.getTimeRange(model).state.value;
 
     return (
       <QueryBuilder
-        id="query-builder-explore"
+        id={`query-builder-${key}`}
         autoExecute
         className={styles.queryBuilder}
         dataSourceUid={dataSourceUid as string}

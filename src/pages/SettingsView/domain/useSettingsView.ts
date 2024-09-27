@@ -60,6 +60,9 @@ export function useSettingsView() {
           ]);
         }
       },
+      goBack() {
+        history.back();
+      },
     },
   };
 }
