@@ -172,6 +172,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           min: 0,
           custom: {
             fillOpacity: 0,
+            pointSize: 5,
           },
         },
         overrides: this.getOverrides(series),
