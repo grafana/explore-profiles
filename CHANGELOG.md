@@ -1,3 +1,13 @@
+## [0.1.11](https://github.com/grafana/explore-profiles/compare/v0.1.10...v0.1.11) (2024-09-30)
+
+
+### Features
+
+* Minor UI improvements (timeseries point size, plugin info tooltip) ([#194](https://github.com/grafana/explore-profiles/issues/194)) ([621982a](https://github.com/grafana/explore-profiles/commit/621982a990c320594c6764e1ce035aacde652ac8))
+* **QuickFilter:** Add results count ([#193](https://github.com/grafana/explore-profiles/issues/193)) ([dc4012d](https://github.com/grafana/explore-profiles/commit/dc4012d39aed84561fb7d14726e426aad95544b6))
+
+
+
 ## [0.1.10](https://github.com/grafana/explore-profiles/compare/v0.1.9...v0.1.10) (2024-09-25)
 
 
