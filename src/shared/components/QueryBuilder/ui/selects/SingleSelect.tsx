@@ -9,6 +9,10 @@ export const getStyles = () => ({
   select: css`
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+
+    & [aria-label='Remove'] svg {
+      display: none;
+    }
   `,
 });
 

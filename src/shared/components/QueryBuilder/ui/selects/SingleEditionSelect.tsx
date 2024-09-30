@@ -15,6 +15,10 @@ export const getStyles = () => ({
     & input:focus {
       outline: none !important;
     }
+
+    & [aria-label='Remove'] svg {
+      display: none;
+    }
   `,
 });
 

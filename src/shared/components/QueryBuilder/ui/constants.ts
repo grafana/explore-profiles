@@ -1,5 +1,5 @@
 export const MESSAGES = {
-  FILTER_ADD: 'Add a filter...',
+  FILTER_ADD: 'Filter by label values...',
   SELECT_LABEL: 'Select a label...',
   SELECT_OPERATOR: 'Select an operator...',
   SELECT_VALUE: 'Select a value...',

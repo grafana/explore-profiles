@@ -37,6 +37,7 @@ export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: M
       placeholder={suggestions.placeholder}
       loadingMessage={MESSAGES.LOADING}
       closeMenuOnSelect={false}
+      hideSelectedOptions={false}
       // auto focus required when switching from another operator type
       autoFocus
       value={values}
