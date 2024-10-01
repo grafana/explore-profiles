@@ -41,6 +41,7 @@ export const ChicletAttributeOperatorValue = ({ filter, onClick, onRemove }: Chi
         aria-label="Filter value"
         title="Edit value"
         name={value.label}
+        className={styles.chicletValue}
         onClick={(name, e) => onClick(e, filter, FilterPartKind.value)}
         tabIndex={0}
       />

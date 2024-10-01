@@ -73,6 +73,10 @@ export const getStyles = (theme: GrafanaTheme2) => ({
       cursor: default !important;
     }
   `,
+  chicletValue: css`
+    flex-grow: 1;
+    text-align: left;
+  `,
   chicletRemoveButton: css`
     & svg {
       width: 12px;
