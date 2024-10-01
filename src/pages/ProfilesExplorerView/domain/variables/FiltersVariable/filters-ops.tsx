@@ -1,12 +1,12 @@
 import { AdHocVariableFilter } from '@grafana/data';
 import { parseRawFilters } from '@shared/components/QueryBuilder/domain/helpers/queryToFilters';
-import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
+import { CompleteFilter } from '@shared/components/QueryBuilder/domain/types';
 
 import { FiltersVariable } from './FiltersVariable';
 
 export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocVariableFilter => ({
   key: filter.attribute.value,
-  operator: filter.operator.value === OperatorKind['is-empty'] ? OperatorKind['='] : filter.operator.value,
+  operator: filter.operator.value,
   value: filter.value.value,
 });
 
