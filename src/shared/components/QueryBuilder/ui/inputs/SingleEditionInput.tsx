@@ -33,7 +33,7 @@ export function SingleEditionInput({ placeholder, defaultValue, onFocus, onChang
     }
   });
 
-  // we have to implement a customized version of the input because the <Input /> from the Sage Design system does not
+  // we have to implement a customized version of the input because the <Input /> from the Saga Design system does not
   // allow any `ref` prop to be passed
   return (
     <div className={cx(styles.wrapper, defaultValue && styles.wrapperForEdition)}>
