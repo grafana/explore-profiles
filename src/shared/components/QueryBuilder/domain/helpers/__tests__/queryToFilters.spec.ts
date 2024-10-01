@@ -74,7 +74,7 @@ const cases: TestCase[] = [
         },
         value: {
           label: '',
-          value: '',
+          value: 'is-empty',
         },
       },
     ],
