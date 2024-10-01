@@ -127,6 +127,10 @@ export const actions: any = {
 
       const previousOperator = filter.operator!.value;
 
+      if (previousOperator === OperatorKind['is-empty']) {
+        filter.value = { value: '', label: '' };
+      }
+
       if (newOperator.value === OperatorKind['is-empty']) {
         return {
           ...filter,
