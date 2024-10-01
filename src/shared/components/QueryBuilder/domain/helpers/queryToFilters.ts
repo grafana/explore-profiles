@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 
-import { FilterKind, Filters, OperatorKind } from '../types';
+import { FilterKind, Filters, IsEmptyFilter, OperatorKind } from '../types';
 
 export const parseRawFilters = (rawFilters: string) =>
   rawFilters.split(',').map((f) => {
@@ -36,15 +36,9 @@ export function queryToFilters(query: string): Filters {
       if (shouldChangeToIsEmptyOperator) {
         return {
           id: nanoid(10),
-          type: FilterKind['attribute-operator'],
           active: true,
           attribute: { value: attribute, label: attribute },
-          // TODO: don't hardcode the label
-          operator: { value: OperatorKind['is-empty'], label: 'is empty' },
-          value: {
-            value: '',
-            label: '',
-          },
+          ...IsEmptyFilter,
         };
       }
 

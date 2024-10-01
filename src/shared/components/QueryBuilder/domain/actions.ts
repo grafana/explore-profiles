@@ -16,6 +16,7 @@ import {
   FilterKind,
   FilterPartKind,
   Filters,
+  IsEmptyFilter,
   OperatorKind,
   PartialFilter,
   QueryBuilderContext,
@@ -87,7 +88,7 @@ export const actions: any = {
   // FILTER OPERATORS
   setFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
     const newOperator = event.data;
-    const newValue = newOperator.value === OperatorKind['is-empty'] ? { value: '', label: '' } : undefined;
+    const newValue = newOperator.value === OperatorKind['is-empty'] ? IsEmptyFilter.value : undefined;
 
     const newFilters = context.filters.map((filter) => {
       if (isPartialFilter(filter)) {
@@ -126,12 +127,14 @@ export const actions: any = {
 
       const previousOperator = filter.operator!.value;
 
+      if (previousOperator === OperatorKind['is-empty']) {
+        filter.value = { value: '', label: '' };
+      }
+
       if (newOperator.value === OperatorKind['is-empty']) {
         return {
           ...filter,
-          type: FilterKind['attribute-operator'],
-          operator: newOperator,
-          value: { value: '', label: '' },
+          ...IsEmptyFilter,
           active: false,
         };
       }

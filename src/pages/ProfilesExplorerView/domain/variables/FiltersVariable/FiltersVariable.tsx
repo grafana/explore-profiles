@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
-import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
+import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import React from 'react';
 
@@ -19,7 +19,11 @@ export class FiltersVariable extends AdHocFiltersVariable {
       label: 'Filters',
       filters: FiltersVariable.DEFAULT_VALUE,
       expressionBuilder: (filters) =>
-        filters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(','),
+        filters
+          .map(({ key, operator, value }) =>
+            operator === OperatorKind['is-empty'] ? `${key}=""` : `${key}${operator}"${value}"`
+          )
+          .join(','),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
