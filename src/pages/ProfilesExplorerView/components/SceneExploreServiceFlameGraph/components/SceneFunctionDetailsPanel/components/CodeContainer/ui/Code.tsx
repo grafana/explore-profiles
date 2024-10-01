@@ -6,7 +6,7 @@ import React from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
-import { LineProfile } from '../../../domain/types/FunctionDetails';
+import { CodeLine } from '../CodeContainer';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   codeContainer: css`
@@ -43,7 +43,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 });
 
 type CodeProps = {
-  lines: LineProfile[];
+  lines: CodeLine[];
   unit: string;
   githubUrl?: string;
   isLoadingCode: boolean;
@@ -137,7 +137,7 @@ const formatLine = (lineNumber: string, self: string, total: string, rest?: stri
   return `${cols} ${rest}`;
 };
 
-const trimIndentPrefix = (lines: LineProfile[]) => {
+const trimIndentPrefix = (lines: CodeLine[]) => {
   if (lines.length === 0) {
     return;
   }

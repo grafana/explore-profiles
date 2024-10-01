@@ -1,13 +1,15 @@
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { useMemo, useState } from 'react';
 
-import { FunctionDetails } from '../../../domain/types/FunctionDetails';
+import { FunctionDetails, LineProfile } from '../../../domain/types/FunctionDetails';
 import { useGitHubContext } from '../../GitHubContextProvider/useGitHubContext';
 import { useFetchVCSFile } from '../infrastructure/useFetchVCSFile';
 import { buildGithubUrlForFunction } from './buildGithubUrlForFunction';
 import { buildLineProfiles, buildPlaceholderLineProfiles } from './buildLineProfiles';
 
-export function useCodeContainer(dataSourceUid: string, functionDetails: FunctionDetails): DomainHookReturnValue {
+type CodeContainerDomainValue = DomainHookReturnValue & { data: { lines: LineProfile[] } };
+
+export function useCodeContainer(dataSourceUid: string, functionDetails: FunctionDetails): CodeContainerDomainValue {
   const { isLoggedIn } = useGitHubContext();
   const { version } = functionDetails;
 
@@ -43,7 +45,7 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
       unit: functionDetails.unit,
       githubUrl: fileInfo?.URL ? buildGithubUrlForFunction(fileInfo.URL, functionDetails.startLine) : undefined,
       lines,
-      noCodeAvailable: Boolean(fetchError) || !lines.length,
+      noCodeAvailable: Boolean(fetchError) || !lines.some((line) => line.line),
     },
     actions: {
       setOpenAiSuggestions,

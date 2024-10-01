@@ -2,7 +2,7 @@ import { displayError } from '@shared/domain/displayStatus';
 import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import React from 'react';
 
-import { FunctionDetails } from '../../domain/types/FunctionDetails';
+import { FunctionDetails, LineProfile } from '../../domain/types/FunctionDetails';
 import { AiSuggestionsPanel } from '../AiSuggestionsPanel/AiSuggestionsPanel';
 import { useCodeContainer } from './domain/useCodeContainer';
 import { Code } from './ui/Code';
@@ -12,6 +12,11 @@ type CodeContainerProps = {
   functionDetails: FunctionDetails;
 };
 
+/**
+ * View model for Code component
+ */
+export type CodeLine = LineProfile & { line: string };
+
 export function CodeContainer({ dataSourceUid, functionDetails }: CodeContainerProps) {
   const { data, actions } = useCodeContainer(dataSourceUid, functionDetails);
 
@@ -19,10 +24,12 @@ export function CodeContainer({ dataSourceUid, functionDetails }: CodeContainerP
     displayError(data.fetchError, ['Failed to fetch file information!', (data.fetchError as Error).message]);
   }
 
+  const codeLines: CodeLine[] = data.lines.map((line) => ({ ...line, line: line.line || '???' }));
+
   return (
     <>
       <Code
-        lines={data.lines}
+        lines={codeLines}
         unit={data.unit}
         githubUrl={data.githubUrl}
         isLoadingCode={data.isLoadingCode}
