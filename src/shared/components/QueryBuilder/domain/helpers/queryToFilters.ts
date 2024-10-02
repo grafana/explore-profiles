@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid';
 
-import { FilterKind, Filters, IsEmptyFilter, OperatorKind } from '../types';
+import { FilterKind, Filters, OperatorKind } from '../types';
+import { buildIsEmptyFilter } from './buildIsEmptyFilter';
 
 export const parseRawFilters = (rawFilters: string): string[][] => {
   const matches = rawFilters.matchAll(/(\w+)(=|!=|=~|!~)"([^"]*)"/g);
@@ -27,53 +28,7 @@ export function queryToFilters(query: string): Filters {
   return (rawFilters as string[][])
     .filter(([attribute]) => attribute !== 'service_name')
     .map(([attribute, operator, value]) => {
-      const shouldChangeToIsEmptyOperator = operator === OperatorKind['='] && value === '';
-      if (shouldChangeToIsEmptyOperator) {
-        return {
-          id: nanoid(10),
-          active: true,
-          attribute: { value: attribute, label: attribute },
-          ...IsEmptyFilter,
-        };
-      }
-
-      const shouldChangeToInOperator = operator === OperatorKind['=~'];
-      if (shouldChangeToInOperator) {
-        return {
-          id: nanoid(10),
-          type: FilterKind['attribute-operator-value'],
-          active: true,
-          attribute: { value: attribute, label: attribute },
-          operator: { value: OperatorKind.in, label: 'in' },
-          value: {
-            value: value,
-            label: value
-              .split('|')
-              .map((v) => v.trim())
-              .join(', '),
-          },
-        };
-      }
-
-      const shouldChangeToNotInOperator = operator === OperatorKind['!~'];
-      if (shouldChangeToNotInOperator) {
-        return {
-          id: nanoid(10),
-          type: FilterKind['attribute-operator-value'],
-          active: true,
-          attribute: { value: attribute, label: attribute },
-          operator: { value: OperatorKind['not-in'], label: 'not in' },
-          value: {
-            value: value,
-            label: value
-              .split('|')
-              .map((v) => v.trim())
-              .join(', '),
-          },
-        };
-      }
-
-      return {
+      const filter = {
         id: nanoid(10),
         type: FilterKind['attribute-operator-value'],
         active: true,
@@ -81,5 +36,31 @@ export function queryToFilters(query: string): Filters {
         operator: { value: operator, label: operator },
         value: { value: value, label: value },
       };
+
+      const shouldConvertToIsEmptyOperator = operator === OperatorKind['='] && value === '';
+      if (shouldConvertToIsEmptyOperator) {
+        return buildIsEmptyFilter(filter);
+      }
+
+      const shouldConvertToInNotInOperator =
+        [OperatorKind['=~'], OperatorKind['!~']].includes(operator as OperatorKind) && value.includes('|');
+      if (shouldConvertToInNotInOperator) {
+        return {
+          ...filter,
+          operator:
+            operator === OperatorKind['=~']
+              ? { value: OperatorKind.in, label: 'in' }
+              : { value: OperatorKind['not-in'], label: 'not in' },
+          value: {
+            value: value,
+            label: value
+              .split('|')
+              .map((v) => v.trim())
+              .join(', '),
+          },
+        };
+      }
+
+      return filter;
     });
 }

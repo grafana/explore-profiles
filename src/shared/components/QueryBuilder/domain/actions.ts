@@ -4,6 +4,7 @@ import { assign } from 'xstate';
 import { LabelsApiClient } from '../../../../pages/ProfilesExplorerView/infrastructure/labels/http/LabelsApiClient';
 import { labelsRepository } from '../../../infrastructure/labels/labelsRepository';
 import { areFiltersEqual } from './helpers/areFiltersEqual';
+import { buildIsEmptyFilter } from './helpers/buildIsEmptyFilter';
 import { filtersToQuery } from './helpers/filtersToQuery';
 import { getLastFilter } from './helpers/getLastFilter';
 import { isMultipleValuesOperator } from './helpers/isMultipleValuesOperator';
@@ -16,9 +17,7 @@ import {
   EditEvent,
   FilterKind,
   Filters,
-  IsEmptyFilter,
   OperatorKind,
-  PartialFilter,
   QueryBuilderContext,
   RemoveFilterEvent,
   SelectEvent,
@@ -87,22 +86,22 @@ export const actions: any = {
   }),
   // FILTER OPERATORS
   setFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
-    const newOperator = event.data;
-    const newValue = newOperator.value === OperatorKind['is-empty'] ? IsEmptyFilter.value : undefined;
-
     const newFilters = context.filters.map((filter) => {
-      if (isPartialFilter(filter)) {
-        const newType = newOperator.value === OperatorKind['is-empty'] ? FilterKind['attribute-operator'] : filter.type;
-
-        return {
-          ...filter,
-          type: newType,
-          operator: newOperator,
-          value: newValue,
-        } as PartialFilter;
+      if (!isPartialFilter(filter)) {
+        return filter;
       }
 
-      return filter;
+      const newOperator = event.data;
+
+      if (newOperator.value === OperatorKind['is-empty']) {
+        return buildIsEmptyFilter(filter);
+      }
+
+      return {
+        ...filter,
+        operator: newOperator,
+        value: undefined,
+      };
     }) as Filters;
 
     return {
@@ -132,11 +131,10 @@ export const actions: any = {
       }
 
       if (newOperator.value === OperatorKind['is-empty']) {
-        return {
+        return buildIsEmptyFilter({
           ...filter,
-          ...IsEmptyFilter,
           active: false,
-        };
+        });
       }
 
       if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {
