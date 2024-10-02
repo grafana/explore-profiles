@@ -127,45 +127,89 @@ const cases: TestCase[] = [
     ],
   ],
   [
-    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",free_text=~"one,two"}',
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",method=~"GET"}',
     [
       {
         id: expect.any(String),
         type: FilterKind['attribute-operator-value'],
         active: true,
         attribute: {
-          label: 'free_text',
-          value: 'free_text',
+          label: 'method',
+          value: 'method',
+        },
+        operator: {
+          label: 'in',
+          value: 'in',
+        },
+        value: {
+          label: 'GET',
+          value: 'GET',
+        },
+      },
+    ],
+  ],
+  [
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",method!~"GET"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'method',
+          value: 'method',
+        },
+        operator: {
+          label: 'not in',
+          value: 'not-in',
+        },
+        value: {
+          label: 'GET',
+          value: 'GET',
+        },
+      },
+    ],
+  ],
+  [
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",region=~"eu.+"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'region',
+          value: 'region',
         },
         operator: {
           label: '=~',
           value: '=~',
         },
         value: {
-          label: 'one,two',
-          value: 'one,two',
+          label: 'eu.+',
+          value: 'eu.+',
         },
       },
     ],
   ],
   [
-    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",free_text!~"three,four"}',
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",region!~"us.*"}',
     [
       {
         id: expect.any(String),
         type: FilterKind['attribute-operator-value'],
         active: true,
         attribute: {
-          label: 'free_text',
-          value: 'free_text',
+          label: 'region',
+          value: 'region',
         },
         operator: {
           label: '!~',
           value: '!~',
         },
         value: {
-          label: 'three,four',
-          value: 'three,four',
+          label: 'us.*',
+          value: 'us.*',
         },
       },
     ],

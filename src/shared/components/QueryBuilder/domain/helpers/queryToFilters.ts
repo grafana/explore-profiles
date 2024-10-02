@@ -8,7 +8,7 @@ export const parseRawFilters = (rawFilters: string): string[][] => {
   return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
 };
 
-const ONE_OF_VALUES_REGEX = /([\w.+*]+\|)+([\w.+*]+)/;
+const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+).*/;
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
@@ -45,7 +45,7 @@ export function queryToFilters(query: string): Filters {
       }
 
       const shouldConvertToInNotInOperator =
-        [OperatorKind['=~'], OperatorKind['!~']].includes(operator as OperatorKind) && ONE_OF_VALUES_REGEX.test(value);
+        [OperatorKind['=~'], OperatorKind['!~']].includes(operator as OperatorKind) && !REGEX_CHARS_REGEX.test(value);
 
       if (shouldConvertToInNotInOperator) {
         return {
