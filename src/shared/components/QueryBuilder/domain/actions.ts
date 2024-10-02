@@ -27,16 +27,8 @@ import {
 function updateFiltersAndQuery(newFilters: Filters, context: QueryBuilderContext) {
   const isQueryUpToDate = areFiltersEqual(newFilters, queryToFilters(context.inputParams.query));
 
-  if (isQueryUpToDate) {
-    return {
-      filters: toggleCompleteFilters(newFilters, true),
-      query: filtersToQuery(context.query, newFilters),
-      isQueryUpToDate,
-    };
-  }
-
   return {
-    filters: newFilters,
+    filters: isQueryUpToDate ? toggleCompleteFilters(newFilters, true) : newFilters,
     query: filtersToQuery(context.query, newFilters),
     isQueryUpToDate,
   };
@@ -127,35 +119,33 @@ export const actions: any = {
         return filter;
       }
 
+      if (newOperator.value === OperatorKind['is-empty']) {
+        return buildIsEmptyFilter({
+          ...filter,
+          active: true,
+        });
+      }
+
       if (previousOperator === OperatorKind['is-empty']) {
         filter.value = { value: '', label: '' };
       }
 
-      if (newOperator.value === OperatorKind['is-empty']) {
-        return buildIsEmptyFilter({
-          ...filter,
-          active: false,
-        });
-      }
-
-      let active = false;
-
       if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {
         newEdition = { ...context.edition, part: FilterPartKind.value };
-        active = true;
       }
 
       return {
         ...filter,
+        type: FilterKind['attribute-operator-value'],
         operator: newOperator,
         value:
-          isMultipleValuesOperator(previousOperator) && filter.value
+          isMultipleValuesOperator(previousOperator) && !isMultipleValuesOperator(newOperator.value) && filter.value
             ? {
                 value: filter.value.value.split('|').shift(),
                 label: filter.value.label.split(', ').shift(),
               }
             : filter.value,
-        active,
+        active: !isPartialFilter(filter),
       };
     }) as Filters;
 

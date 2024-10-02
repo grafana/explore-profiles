@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { QueryBuilderProps } from '../QueryBuilder';
 import { buildStateMachine } from './stateMachine';
-import { CompleteFilters, FilterKind, QueryBuilderContext } from './types';
+import { CompleteFilters, QueryBuilderContext } from './types';
 
 export function useStateMachine({ dataSourceUid, query, from, to, onChangeQuery }: QueryBuilderProps) {
   const { actor, initialContext } = useMemo(
@@ -27,11 +27,7 @@ export function useStateMachine({ dataSourceUid, query, from, to, onChangeQuery 
     //   logger.debug('*** ---------------------> "%s"', state);
     actor.subscribe(({ event, context }) => {
       if (event.type === 'EXECUTE_QUERY') {
-        // we filter out any partial filter for one specific use case when auto execute is enabled, for instance:
-        // when the "is empty" operator is edited and becomes "=", the `editFilterOperator` action (see domain/actions.ts)
-        // will convert the existing complete filter to a partial one, which will update the query and thus, auto-execute it
-        // but we don't want the onChangeQuery listener to have to dwal with partial filters (e.g. see ProfilesExplorerView/domain/variables/FiltersVariable/filters-ops.tsx)
-        onChangeQuery(context.query, context.filters.filter((f) => f.type !== FilterKind.partial) as CompleteFilters);
+        onChangeQuery(context.query, context.filters as CompleteFilters);
       }
 
       setInternalProps(context);

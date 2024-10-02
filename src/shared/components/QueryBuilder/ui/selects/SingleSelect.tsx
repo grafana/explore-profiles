@@ -64,11 +64,6 @@ export function SingleSelect({ suggestions, onFocus, onChange, onKeyDown, onClos
       placeholder={suggestions.placeholder}
       loadingMessage={MESSAGES.LOADING}
       closeMenuOnSelect={false}
-      allowCustomValue={suggestions.allowCustomValue}
-      // TODO remove when https://github.com/grafana/explore-profiles/pull/207 is merged
-      // when allowCustomValue toggles to true, the menu will close.
-      // setting `autofocus` prevents it. it works in combination with `isOpen` below.
-      autoFocus={suggestions.allowCustomValue}
       value={null}
       onFocus={onFocus}
       onKeyDown={onKeyDown}

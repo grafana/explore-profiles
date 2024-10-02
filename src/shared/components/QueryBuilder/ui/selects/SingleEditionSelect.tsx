@@ -47,9 +47,8 @@ export function SingleEditionSelect({ selection, suggestions, onChange, onCloseM
       placeholder={suggestions.placeholder}
       loadingMessage={MESSAGES.LOADING}
       closeMenuOnSelect={false}
-      allowCustomValue={suggestions.allowCustomValue}
       autoFocus
-      value={suggestions.allowCustomValue ? undefined : selection.value}
+      value={selection.value}
       onChange={onChange}
       onCloseMenu={onCloseMenu}
       options={suggestions.items}

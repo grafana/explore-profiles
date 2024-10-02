@@ -6,7 +6,7 @@ import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
 import { getLastFilter } from '../helpers/getLastFilter';
 import { isMultipleValuesOperator } from '../helpers/isMultipleValuesOperator';
 import { isPrivateLabel } from '../helpers/isPrivateLabel';
-import { isRegexValueOperator } from '../helpers/isRegexValueOperator';
+import { isRegexOperator } from '../helpers/isRegexOperator';
 import { defaultContext } from '../stateMachine';
 import { QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
 
@@ -78,7 +78,7 @@ export const displayLabelValues: StateNodeConfig<
       const targetOperator = targetFilter!.operator!.value;
 
       const allowCustomValue =
-        isRegexValueOperator(targetOperator) ||
+        isRegexOperator(targetOperator) ||
         // See https://github.com/grafana/pyroscope-app-plugin/issues/335
         context.suggestions.disabled;
 
