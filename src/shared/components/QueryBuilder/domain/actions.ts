@@ -16,6 +16,7 @@ import {
   ChangeInputParamsEvent,
   EditEvent,
   FilterKind,
+  FilterPartKind,
   Filters,
   OperatorKind,
   QueryBuilderContext,
@@ -137,9 +138,11 @@ export const actions: any = {
         });
       }
 
+      let active = false;
+
       if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {
-        filter.type = FilterKind.partial;
-        delete filter.value;
+        newEdition = { ...context.edition, part: FilterPartKind.value };
+        active = true;
       }
 
       return {
@@ -148,11 +151,11 @@ export const actions: any = {
         value:
           isMultipleValuesOperator(previousOperator) && filter.value
             ? {
-                value: filter.value.value.split('|').pop(),
-                label: filter.value.label.split(', ').pop(),
+                value: filter.value.value.split('|').shift(),
+                label: filter.value.label.split(', ').shift(),
               }
             : filter.value,
-        active: false,
+        active,
       };
     }) as Filters;
 

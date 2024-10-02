@@ -32,7 +32,12 @@ export function SingleEditionSelect({ selection, suggestions, onChange, onCloseM
 
   if (suggestions.allowCustomValue) {
     return (
-      <SingleEditionInput defaultValue={selection.value} placeholder={suggestions.placeholder} onChange={onChange} />
+      <SingleEditionInput
+        defaultValue={selection.value}
+        placeholder={suggestions.placeholder}
+        onChange={onChange}
+        onBlur={onCloseMenu}
+      />
     );
   }
 

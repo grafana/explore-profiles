@@ -48,7 +48,14 @@ export function SingleSelect({ suggestions, onFocus, onChange, onKeyDown, onClos
   const isOpen = useEnsureIsOpenHack(suggestions.isVisible);
 
   if (suggestions.allowCustomValue) {
-    return <SingleEditionInput placeholder={suggestions.placeholder} onFocus={onFocus} onChange={onChange} />;
+    return (
+      <SingleEditionInput
+        placeholder={suggestions.placeholder}
+        onFocus={onFocus}
+        onChange={onChange}
+        onBlur={onCloseMenu}
+      />
+    );
   }
 
   return (
