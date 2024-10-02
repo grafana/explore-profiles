@@ -12,7 +12,7 @@ export type MultipleEditionSelectProps = {
   onCloseMenu: (values: Suggestions) => void;
 };
 
-const buildSelectedSort = (values: Suggestions) => (a: Suggestion, b: Suggestion) => {
+const placeSelectedValuesFirst = (values: Suggestions) => (a: Suggestion, b: Suggestion) => {
   const aIsSelected = values.some((v) => v.value === a.value);
   const bIsSelected = values.some((v) => v.value === b.value);
 
@@ -44,7 +44,7 @@ export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: M
 
   // we don't sort when values change so that, for long lists, the user keeps the context they're in
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const sortedOptions = useMemo(() => suggestions.items.sort(buildSelectedSort(values)), [suggestions.items]);
+  const sortedOptions = useMemo(() => suggestions.items.sort(placeSelectedValuesFirst(values)), [suggestions.items]);
 
   const onChange = useCallback((newValues: Array<SelectableValue<string>>) => {
     setValues(newValues.map(({ value = '', label = '' }) => ({ value, label })));
