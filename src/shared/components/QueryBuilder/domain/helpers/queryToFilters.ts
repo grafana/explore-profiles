@@ -44,6 +44,7 @@ export function queryToFilters(query: string): Filters {
 
       const shouldConvertToInNotInOperator =
         [OperatorKind['=~'], OperatorKind['!~']].includes(operator as OperatorKind) && value.includes('|');
+
       if (shouldConvertToInNotInOperator) {
         return {
           ...filter,

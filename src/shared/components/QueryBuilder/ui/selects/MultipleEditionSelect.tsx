@@ -78,6 +78,9 @@ export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: M
 
 const getStyles = () => ({
   editionSelect: css`
+    position: absolute;
+    z-index: 1;
+
     [aria-label='Remove'] svg {
       display: none;
     }
