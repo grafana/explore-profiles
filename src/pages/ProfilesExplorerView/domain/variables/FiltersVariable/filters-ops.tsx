@@ -5,25 +5,19 @@ import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/do
 import { FiltersVariable } from './FiltersVariable';
 
 export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocVariableFilter => {
+  let operator = filter.operator.value;
+
   if (filter.operator.value === OperatorKind['in']) {
-    return {
-      key: filter.attribute.value,
-      operator: OperatorKind['=~'],
-      value: filter.value.value,
-    };
+    operator = OperatorKind['=~'];
   }
 
   if (filter.operator.value === OperatorKind['not-in']) {
-    return {
-      key: filter.attribute.value,
-      operator: OperatorKind['!~'],
-      value: filter.value.value,
-    };
+    operator = OperatorKind['!~'];
   }
 
   return {
     key: filter.attribute.value,
-    operator: filter.operator.value,
+    operator,
     value: filter.value.value,
   };
 };

@@ -8,6 +8,8 @@ export const parseRawFilters = (rawFilters: string): string[][] => {
   return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
 };
 
+const ONE_OF_VALUES_REGEX = /([\w.+*]+\|)+([\w.+*]+)/;
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
   // 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ebpf/gcp-logs-ops/grafana-agent", namespace="gcp-logs-ops"}'
@@ -43,7 +45,7 @@ export function queryToFilters(query: string): Filters {
       }
 
       const shouldConvertToInNotInOperator =
-        [OperatorKind['=~'], OperatorKind['!~']].includes(operator as OperatorKind) && value.includes('|');
+        [OperatorKind['=~'], OperatorKind['!~']].includes(operator as OperatorKind) && ONE_OF_VALUES_REGEX.test(value);
 
       if (shouldConvertToInNotInOperator) {
         return {
