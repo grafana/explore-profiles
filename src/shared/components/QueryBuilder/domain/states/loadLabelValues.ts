@@ -4,9 +4,11 @@ import { invariant } from '../../../../types/helpers/invariant';
 import { MESSAGES } from '../../ui/constants';
 import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
 import { getLastFilter } from '../helpers/getLastFilter';
+import { isMultipleValuesOperator } from '../helpers/isMultipleValuesOperator';
 import { isPrivateLabel } from '../helpers/isPrivateLabel';
+import { isRegexValueOperator } from '../helpers/isRegexValueOperator';
 import { defaultContext } from '../stateMachine';
-import { OperatorKind, QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
+import { QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
 
 export const loadLabelValues: StateNodeConfig<
   QueryBuilderContext,
@@ -73,11 +75,11 @@ export const displayLabelValues: StateNodeConfig<
       const targetOperator = targetFilter!.operator!.value;
 
       const allowCustomValue =
-        ['=~', '!~'].includes(targetOperator) ||
+        isRegexValueOperator(targetOperator) ||
         // See https://github.com/grafana/pyroscope-app-plugin/issues/335
         context.suggestions.disabled;
 
-      const multiple = targetOperator === OperatorKind.in;
+      const multiple = isMultipleValuesOperator(targetOperator);
 
       let placeholder: string;
 

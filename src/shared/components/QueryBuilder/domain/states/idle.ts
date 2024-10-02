@@ -2,9 +2,10 @@ import { assign, State, StateNodeConfig } from 'xstate';
 
 import { MESSAGES } from '../../ui/constants';
 import { getLastFilter } from '../helpers/getLastFilter';
+import { isMultipleValuesOperator } from '../helpers/isMultipleValuesOperator';
 import { isPartialFilter } from '../helpers/isPartialFilter';
 import { defaultContext } from '../stateMachine';
-import { OperatorKind, QueryBuilderContext, QueryBuilderEvent } from '../types';
+import { QueryBuilderContext, QueryBuilderEvent } from '../types';
 
 export const idle: StateNodeConfig<
   QueryBuilderContext,
@@ -22,8 +23,9 @@ export const idle: StateNodeConfig<
           if (!lastFilter.operator) {
             placeholder = MESSAGES.SELECT_OPERATOR;
           } else {
-            placeholder =
-              lastFilter?.operator.value === OperatorKind.in ? MESSAGES.SELECT_VALUES : MESSAGES.SELECT_VALUE;
+            placeholder = isMultipleValuesOperator(lastFilter?.operator.value)
+              ? MESSAGES.SELECT_VALUES
+              : MESSAGES.SELECT_VALUE;
           }
         }
 

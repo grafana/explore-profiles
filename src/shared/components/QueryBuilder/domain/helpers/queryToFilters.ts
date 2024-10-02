@@ -49,7 +49,25 @@ export function queryToFilters(query: string): Filters {
           type: FilterKind['attribute-operator-value'],
           active: true,
           attribute: { value: attribute, label: attribute },
-          operator: { value: OperatorKind.in, label: OperatorKind.in },
+          operator: { value: OperatorKind.in, label: 'in' },
+          value: {
+            value: value,
+            label: value
+              .split('|')
+              .map((v) => v.trim())
+              .join(', '),
+          },
+        };
+      }
+
+      const shouldChangeToNotInOperator = operator === OperatorKind['!~'];
+      if (shouldChangeToNotInOperator) {
+        return {
+          id: nanoid(10),
+          type: FilterKind['attribute-operator-value'],
+          active: true,
+          attribute: { value: attribute, label: attribute },
+          operator: { value: OperatorKind['not-in'], label: 'not in' },
           value: {
             value: value,
             label: value

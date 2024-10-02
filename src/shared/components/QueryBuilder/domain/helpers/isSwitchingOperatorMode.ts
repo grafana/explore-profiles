@@ -19,7 +19,18 @@ export function isEditingOperatorMode(currentOperator: string, newOperator: stri
     return false;
   }
 
-  return ['=~', '!~', 'in', 'is-empty'].includes(currentOperator) || ['=~', '!~', 'in'].includes(newOperator);
+  return (
+    [
+      OperatorKind['=~'],
+      OperatorKind['!~'],
+      OperatorKind['in'],
+      OperatorKind['not-in'],
+      OperatorKind['is-empty'],
+    ].includes(currentOperator as OperatorKind) ||
+    [OperatorKind['=~'], OperatorKind['!~'], OperatorKind['in'], OperatorKind['not-in']].includes(
+      newOperator as OperatorKind
+    )
+  );
 }
 
 export function isSwitchingOperatorMode(filterUnderEdition: Filter, newOperator: string) {

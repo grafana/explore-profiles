@@ -80,6 +80,29 @@ const cases: TestCase[] = [
     ],
   ],
   [
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id!~"83|84"}',
+    [
+      expectedCountFilter,
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'pod_id',
+          value: 'pod_id',
+        },
+        operator: {
+          label: 'not in',
+          value: 'not-in',
+        },
+        value: {
+          label: '83, 84',
+          value: '83|84',
+        },
+      },
+    ],
+  ],
+  [
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
     [
       expectedCountFilter,

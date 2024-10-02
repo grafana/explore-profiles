@@ -9,10 +9,11 @@ export enum FilterKind {
 export enum OperatorKind {
   '=' = '=',
   '!=' = '!=',
+  'in' = 'in',
+  'not-in' = 'not-in',
+  'is-empty' = 'is-empty',
   '=~' = '=~',
   '!~' = '!~',
-  'is-empty' = 'is-empty',
-  'in' = 'in',
 }
 
 export const IsEmptyFilter = {
@@ -60,6 +61,7 @@ export enum FilterPartKind {
 export type Suggestion = {
   value: string;
   label: string;
+  description?: string;
 };
 
 export type Suggestions = Suggestion[];

@@ -78,6 +78,24 @@ const podIdFilter = {
   },
 };
 
+const vehicleFilter = {
+  id: 'YoH3Bnu4iX',
+  type: FilterKind['attribute-operator-value'],
+  active: true,
+  attribute: {
+    value: 'region',
+    label: 'region',
+  },
+  operator: {
+    value: 'not-in',
+    label: 'not in',
+  },
+  value: {
+    value: 'eu|us',
+    label: 'eu, us',
+  },
+};
+
 type TestCase = [string, Filters, string];
 
 const cases: TestCase[] = [
@@ -121,6 +139,12 @@ const cases: TestCase[] = [
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests"}',
     [actionFilter, podIdFilter],
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
+  ],
+  // with complete filters: not in operator
+  [
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests"}',
+    [actionFilter, vehicleFilter],
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",region!~"eu|us"}',
   ],
 ];
 

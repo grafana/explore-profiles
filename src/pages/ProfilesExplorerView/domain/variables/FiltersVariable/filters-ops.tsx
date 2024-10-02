@@ -13,6 +13,14 @@ export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocV
     };
   }
 
+  if (filter.operator.value === OperatorKind['not-in']) {
+    return {
+      key: filter.attribute.value,
+      operator: OperatorKind['!~'],
+      value: filter.value.value,
+    };
+  }
+
   return {
     key: filter.attribute.value,
     operator: filter.operator.value,
