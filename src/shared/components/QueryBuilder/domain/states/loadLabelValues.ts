@@ -23,8 +23,11 @@ export const loadLabelValues: StateNodeConfig<
 
       return {
         ...defaultContext.suggestions,
-        // See https://github.com/grafana/pyroscope-app-plugin/issues/335
-        disabled: isPrivateLabel(targetFilter!.attribute!.value),
+        disabled:
+          // don't fetch for these operators, an input will appear in the UI instead of a select
+          ['=~', '!~'].includes(targetFilter!.operator!.value) ||
+          // See https://github.com/grafana/pyroscope-app-plugin/issues/335
+          isPrivateLabel(targetFilter!.attribute!.value),
         isVisible: true,
         isLoading: true,
       };

@@ -4,7 +4,7 @@ export const MESSAGES = {
   SELECT_OPERATOR: 'Select an operator...',
   SELECT_VALUE: 'Select a value...',
   SELECT_VALUES: 'Select values...',
-  TYPE_VALUE: 'Type a value...',
+  TYPE_VALUE: 'Type a regex...',
   LOADING: 'Loading...',
   ERROR_LOAD: 'An unexpected error occurred while loading! Please try again.',
   SUGGESTIONS_NONE: 'No suggestions available.',

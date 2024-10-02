@@ -4,6 +4,7 @@ import { Select, useStyles2 } from '@grafana/ui';
 import React, { useEffect, useState } from 'react';
 
 import { MESSAGES } from '../constants';
+import { SingleEditionInput } from '../inputs/SingleEditionInput';
 
 export const getStyles = () => ({
   select: css`
@@ -45,6 +46,10 @@ function useEnsureIsOpenHack(isVisible: boolean) {
 export function SingleSelect({ suggestions, onFocus, onChange, onKeyDown, onCloseMenu }: SingleSelectProps) {
   const styles = useStyles2(getStyles);
   const isOpen = useEnsureIsOpenHack(suggestions.isVisible);
+
+  if (suggestions.allowCustomValue) {
+    return <SingleEditionInput placeholder={suggestions.placeholder} onFocus={onFocus} onChange={onChange} />;
+  }
 
   return (
     <Select
