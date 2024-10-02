@@ -5,6 +5,7 @@ import React from 'react';
 
 import { Suggestion } from '../../domain/types';
 import { MESSAGES } from '../constants';
+import { SingleEditionInput } from '../inputs/SingleEditionInput';
 
 export const getStyles = () => ({
   editionSelect: css`
@@ -12,6 +13,7 @@ export const getStyles = () => ({
     z-index: 1;
     min-width: 160px;
     box-shadow: none;
+
     & input:focus {
       outline: none !important;
     }
@@ -27,6 +29,12 @@ export type EditionSelectProps = {
 
 export function SingleEditionSelect({ selection, suggestions, onChange, onCloseMenu }: EditionSelectProps) {
   const styles = useStyles2(getStyles);
+
+  if (suggestions.allowCustomValue) {
+    return (
+      <SingleEditionInput defaultValue={selection.value} placeholder={suggestions.placeholder} onChange={onChange} />
+    );
+  }
 
   return (
     <Select

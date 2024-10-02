@@ -60,6 +60,7 @@ export enum FilterPartKind {
 export type Suggestion = {
   value: string;
   label: string;
+  description?: string;
 };
 
 export type Suggestions = Suggestion[];
