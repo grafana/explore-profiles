@@ -47,7 +47,7 @@ export function SingleEditionInput({ placeholder, defaultValue, onFocus, onChang
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  });
+  }, []);
 
   return (
     <Input
