@@ -33,6 +33,7 @@ export const PartialChiclet = ({ filter, onClick }: PartialChicletProps) => {
           colorIndex={9}
           name={operator.label}
           title={`Edit "${operator.label}"`}
+          className={styles.chicletOperator}
           onClick={(name, e) => onClick(e, filter, FilterPartKind.operator)}
           tabIndex={0}
         />
