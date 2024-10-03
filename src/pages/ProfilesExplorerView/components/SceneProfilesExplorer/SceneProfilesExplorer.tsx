@@ -477,7 +477,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
             {sceneVariables.map((variable) => (
               <div key={variable.state.name} className={styles.variable} data-testid={variable.state.name}>
-                <InlineLabel width="auto">{variable.state.label}</InlineLabel>
+                {variable.state.label && <InlineLabel width="auto">{variable.state.label}</InlineLabel>}
                 <variable.Component model={variable} />
               </div>
             ))}

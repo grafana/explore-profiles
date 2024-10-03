@@ -9,23 +9,12 @@ export enum FilterKind {
 export enum OperatorKind {
   '=' = '=',
   '!=' = '!=',
+  'in' = 'in',
+  'not-in' = 'not-in',
+  'is-empty' = 'is-empty',
   '=~' = '=~',
   '!~' = '!~',
-  'is-empty' = 'is-empty',
-  'in' = 'in',
 }
-
-export const IsEmptyFilter = {
-  type: FilterKind['attribute-operator'],
-  operator: {
-    value: OperatorKind['is-empty'],
-    label: 'is empty',
-  },
-  value: {
-    value: OperatorKind['is-empty'],
-    label: '',
-  },
-};
 
 export type PartialFilter = {
   id: string;

@@ -32,6 +32,7 @@ export const ChicletAttributeOperator = ({ filter, onClick, onRemove }: ChicletA
       <Tag
         aria-label="Filter operator"
         title="Edit operator"
+        className={styles.chicletOperator}
         name={operator.label}
         onClick={(name, e) => onClick(e, filter, FilterPartKind.operator)}
         tabIndex={0}

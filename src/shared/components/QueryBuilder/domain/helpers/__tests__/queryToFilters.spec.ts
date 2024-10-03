@@ -80,51 +80,162 @@ const cases: TestCase[] = [
     ],
   ],
   [
-    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",free_text=~"one,two"}',
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id!~"83|84"}',
+    [
+      expectedCountFilter,
+
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'pod_id',
+          value: 'pod_id',
+        },
+        operator: {
+          label: 'not in',
+          value: 'not-in',
+        },
+        value: {
+          label: '83, 84',
+          value: '83|84',
+        },
+      },
+    ],
+  ],
+  [
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
+    [
+      expectedCountFilter,
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'pod_id',
+          value: 'pod_id',
+        },
+        operator: {
+          label: 'in',
+          value: 'in',
+        },
+        value: {
+          label: '83, 84',
+          value: '83|84',
+        },
+      },
+    ],
+  ],
+  [
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",method=~"GET"}',
     [
       {
         id: expect.any(String),
         type: FilterKind['attribute-operator-value'],
         active: true,
         attribute: {
-          label: 'free_text',
-          value: 'free_text',
+          label: 'method',
+          value: 'method',
+        },
+        operator: {
+          label: 'in',
+          value: 'in',
+        },
+        value: {
+          label: 'GET',
+          value: 'GET',
+        },
+      },
+    ],
+  ],
+  [
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",method!~"GET"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'method',
+          value: 'method',
+        },
+        operator: {
+          label: 'not in',
+          value: 'not-in',
+        },
+        value: {
+          label: 'GET',
+          value: 'GET',
+        },
+      },
+    ],
+  ],
+  [
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",region=~"eu.+"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'region',
+          value: 'region',
         },
         operator: {
           label: '=~',
           value: '=~',
         },
         value: {
-          label: 'one,two',
-          value: 'one,two',
+          label: 'eu.+',
+          value: 'eu.+',
         },
       },
     ],
   ],
-  // TODO: uncomment when we'll support the "in" operator
-  // [
-  //   'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",pod_id=~"83|84"}',
-  //   [
-  //     expectedCountFilter,
-  //     {
-  //       id: expect.any(String),
-  //       type: FilterKind['attribute-operator-value'],
-  //       active: true,
-  //       attribute: {
-  //         label: 'pod_id',
-  //         value: 'pod_id',
-  //       },
-  //       operator: {
-  //         label: 'in',
-  //         value: 'in',
-  //       },
-  //       value: {
-  //         label: '83, 84',
-  //         value: '83|84',
-  //       },
-  //     },
-  //   ],
-  // ],
+  [
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",region!~"us.*"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'region',
+          value: 'region',
+        },
+        operator: {
+          label: '!~',
+          value: '!~',
+        },
+        value: {
+          label: 'us.*',
+          value: 'us.*',
+        },
+      },
+    ],
+  ],
+  [
+    'query process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope-rideshare-go",hostname=~"r{1}"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'hostname',
+          value: 'hostname',
+        },
+        operator: {
+          label: '=~',
+          value: '=~',
+        },
+        value: {
+          label: 'r{1}',
+          value: 'r{1}',
+        },
+      },
+    ],
+  ],
 ];
 
 describe('queryToFilters(query: string)', () => {

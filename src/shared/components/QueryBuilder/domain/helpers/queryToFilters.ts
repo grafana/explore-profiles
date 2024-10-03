@@ -1,11 +1,15 @@
 import { nanoid } from 'nanoid';
 
-import { FilterKind, Filters, IsEmptyFilter, OperatorKind } from '../types';
+import { FilterKind, Filters, OperatorKind } from '../types';
+import { buildIsEmptyFilter } from './buildIsEmptyFilter';
 
 export const parseRawFilters = (rawFilters: string): string[][] => {
   const matches = rawFilters.matchAll(/(\w+)(=|!=|=~|!~)"([^"]*)"/g);
   return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
 };
+
+const LABELS_REGEX = /.+:[^{]+\{(.+)\}$/;
+const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+|\{|\}|\?).*/;
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
@@ -14,7 +18,7 @@ export function queryToFilters(query: string): Filters {
     return [];
   }
 
-  const rawLabels = query.match(/.+:.+\{(.+)\}/);
+  const rawLabels = query.match(LABELS_REGEX);
   // [_, 'service_name="ebpf/gcp-logs-ops/grafana-agent", namespace="gcp-logs-ops"']
   if (!rawLabels) {
     return [];
@@ -27,36 +31,7 @@ export function queryToFilters(query: string): Filters {
   return (rawFilters as string[][])
     .filter(([attribute]) => attribute !== 'service_name')
     .map(([attribute, operator, value]) => {
-      const shouldChangeToIsEmptyOperator = operator === OperatorKind['='] && value === '';
-      if (shouldChangeToIsEmptyOperator) {
-        return {
-          id: nanoid(10),
-          active: true,
-          attribute: { value: attribute, label: attribute },
-          ...IsEmptyFilter,
-        };
-      }
-
-      // TODO: uncomment when we'll support the "in" operator
-      // const shouldChangeToInOperator = operator === OperatorKind['=~'] && value.includes('|');
-      // if (shouldChangeToInOperator) {
-      //   return {
-      //     id: nanoid(10),
-      //     type: FilterKind['attribute-operator-value'],
-      //     active: true,
-      //     attribute: { value: attribute, label: attribute },
-      //     operator: { value: OperatorKind.in, label: OperatorKind.in },
-      //     value: {
-      //       value: value,
-      //       label: value
-      //         .split('|')
-      //         .map((v) => v.trim())
-      //         .join(', '),
-      //     },
-      //   };
-      // }
-
-      return {
+      const filter = {
         id: nanoid(10),
         type: FilterKind['attribute-operator-value'],
         active: true,
@@ -64,5 +39,32 @@ export function queryToFilters(query: string): Filters {
         operator: { value: operator, label: operator },
         value: { value: value, label: value },
       };
+
+      const shouldConvertToIsEmptyOperator = operator === OperatorKind['='] && value === '';
+      if (shouldConvertToIsEmptyOperator) {
+        return buildIsEmptyFilter(filter);
+      }
+
+      const shouldConvertToInNotInOperator =
+        [OperatorKind['=~'], OperatorKind['!~']].includes(operator as OperatorKind) && !REGEX_CHARS_REGEX.test(value);
+
+      if (shouldConvertToInNotInOperator) {
+        return {
+          ...filter,
+          operator:
+            operator === OperatorKind['=~']
+              ? { value: OperatorKind.in, label: 'in' }
+              : { value: OperatorKind['not-in'], label: 'not in' },
+          value: {
+            value: value,
+            label: value
+              .split('|')
+              .map((v) => v.trim())
+              .join(', '),
+          },
+        };
+      }
+
+      return filter;
     });
 }

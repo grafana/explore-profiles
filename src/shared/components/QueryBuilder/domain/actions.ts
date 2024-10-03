@@ -4,8 +4,10 @@ import { assign } from 'xstate';
 import { LabelsApiClient } from '../../../../pages/ProfilesExplorerView/infrastructure/labels/http/LabelsApiClient';
 import { labelsRepository } from '../../../infrastructure/labels/labelsRepository';
 import { areFiltersEqual } from './helpers/areFiltersEqual';
+import { buildIsEmptyFilter } from './helpers/buildIsEmptyFilter';
 import { filtersToQuery } from './helpers/filtersToQuery';
 import { getLastFilter } from './helpers/getLastFilter';
+import { isMultipleValuesOperator } from './helpers/isMultipleValuesOperator';
 import { isPartialFilter } from './helpers/isPartialFilter';
 import { isEditingOperatorMode } from './helpers/isSwitchingOperatorMode';
 import { queryToFilters } from './helpers/queryToFilters';
@@ -16,9 +18,7 @@ import {
   FilterKind,
   FilterPartKind,
   Filters,
-  IsEmptyFilter,
   OperatorKind,
-  PartialFilter,
   QueryBuilderContext,
   RemoveFilterEvent,
   SelectEvent,
@@ -27,16 +27,8 @@ import {
 function updateFiltersAndQuery(newFilters: Filters, context: QueryBuilderContext) {
   const isQueryUpToDate = areFiltersEqual(newFilters, queryToFilters(context.inputParams.query));
 
-  if (isQueryUpToDate) {
-    return {
-      filters: toggleCompleteFilters(newFilters, true),
-      query: filtersToQuery(context.query, newFilters),
-      isQueryUpToDate,
-    };
-  }
-
   return {
-    filters: newFilters,
+    filters: isQueryUpToDate ? toggleCompleteFilters(newFilters, true) : newFilters,
     query: filtersToQuery(context.query, newFilters),
     isQueryUpToDate,
   };
@@ -87,22 +79,22 @@ export const actions: any = {
   }),
   // FILTER OPERATORS
   setFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
-    const newOperator = event.data;
-    const newValue = newOperator.value === OperatorKind['is-empty'] ? IsEmptyFilter.value : undefined;
-
     const newFilters = context.filters.map((filter) => {
-      if (isPartialFilter(filter)) {
-        const newType = newOperator.value === OperatorKind['is-empty'] ? FilterKind['attribute-operator'] : filter.type;
-
-        return {
-          ...filter,
-          type: newType,
-          operator: newOperator,
-          value: newValue,
-        } as PartialFilter;
+      if (!isPartialFilter(filter)) {
+        return filter;
       }
 
-      return filter;
+      const newOperator = event.data;
+
+      if (newOperator.value === OperatorKind['is-empty']) {
+        return buildIsEmptyFilter(filter);
+      }
+
+      return {
+        ...filter,
+        operator: newOperator,
+        value: undefined,
+      };
     }) as Filters;
 
     return {
@@ -113,7 +105,7 @@ export const actions: any = {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   editFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
     if (context.edition === null) {
-      throw new Error('Cannot edit filter attribute without edition data!');
+      throw new Error('Cannot edit filter operator without edition data!');
     }
 
     const { filterId } = context.edition;
@@ -121,22 +113,21 @@ export const actions: any = {
     let newEdition = null;
 
     const newFilters = context.filters.map((filter) => {
-      if (filter.id !== filterId) {
+      const previousOperator = filter.operator!.value;
+
+      if (filter.id !== filterId || previousOperator === newOperator.value) {
         return filter;
       }
 
-      const previousOperator = filter.operator!.value;
-
-      if (previousOperator === OperatorKind['is-empty']) {
-        filter.value = { value: '', label: '' };
+      if (newOperator.value === OperatorKind['is-empty']) {
+        return buildIsEmptyFilter({
+          ...filter,
+          active: false,
+        });
       }
 
-      if (newOperator.value === OperatorKind['is-empty']) {
-        return {
-          ...filter,
-          ...IsEmptyFilter,
-          active: false,
-        };
+      if (previousOperator === OperatorKind['is-empty']) {
+        filter.value = { value: '(no value)', label: '(no value)' };
       }
 
       if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {
@@ -147,10 +138,10 @@ export const actions: any = {
         ...filter,
         operator: newOperator,
         value:
-          previousOperator === OperatorKind.in && filter.value
+          isMultipleValuesOperator(previousOperator) && !isMultipleValuesOperator(newOperator.value) && filter.value
             ? {
-                value: filter.value.value.split('|').pop(),
-                label: filter.value.label.split(', ').pop(),
+                value: filter.value.value.split('|').shift(),
+                label: filter.value.label.split(', ').shift(),
               }
             : filter.value,
         active: false,
@@ -183,7 +174,7 @@ export const actions: any = {
   }),
   editFilterValue: assign((context: QueryBuilderContext, event: SelectEvent) => {
     if (context.edition === null) {
-      throw new Error('Cannot edit filter attribute without edition data!');
+      throw new Error('Cannot edit filter value without edition data!');
     }
 
     const { filterId } = context.edition;

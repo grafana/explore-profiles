@@ -12,7 +12,7 @@ import {
   SceneTimeRangeLike,
   VariableDependencyConfig,
 } from '@grafana/scenes';
-import { InlineLabel, useStyles2 } from '@grafana/ui';
+import { useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { omit } from 'lodash';
 import React from 'react';
@@ -229,7 +229,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         </div>
 
         <div className={styles.filter}>
-          <InlineLabel width="auto">{filtersVariable.state.label}</InlineLabel>
           <filtersVariable.Component model={filtersVariable} />
         </div>
 

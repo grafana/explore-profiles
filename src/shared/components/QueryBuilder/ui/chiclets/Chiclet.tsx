@@ -73,7 +73,27 @@ export const getStyles = (theme: GrafanaTheme2) => ({
       cursor: default !important;
     }
   `,
+  chicletValue: css`
+    flex-grow: 1;
+    text-align: left;
+
+    &:hover {
+      background-color: ${theme.colors.background.secondary};
+    }
+  `,
+  chicletOperator: css`
+    flex-grow: 1;
+    text-align: left;
+
+    &:hover {
+      background-color: ${theme.colors.background.secondary};
+    }
+  `,
   chicletRemoveButton: css`
+    &:hover {
+      background-color: ${theme.colors.background.secondary};
+    }
+
     & svg {
       width: 12px;
       height: 12px;

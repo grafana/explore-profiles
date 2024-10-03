@@ -6,17 +6,19 @@ export function filtersToQuery(query: string, filters: Filters) {
     .map((filter) => {
       const { attribute, operator, value } = filter as CompleteFilter;
 
-      // TODO: uncomment when we'll support the "in" operator
-      // if (operator.value === OperatorKind.in) {
-      //   return `${attribute.value}=~"${value.value}"`;
-      // }
+      switch (operator.value) {
+        case OperatorKind.in:
+          return `${attribute.value}=~"${value.value}"`;
 
-      // TODO: use "attribute-operator" FilterKind? We still set a value for these filters that we could use here.
-      if (operator.value === OperatorKind['is-empty']) {
-        return `${attribute.value}=""`;
+        case OperatorKind['not-in']:
+          return `${attribute.value}!~"${value.value}"`;
+
+        case OperatorKind['is-empty']:
+          return `${attribute.value}=""`;
+
+        default:
+          return `${attribute.value}${operator.value}"${value.value}"`;
       }
-
-      return `${attribute.value}${operator.value}"${value.value}"`;
     });
 
   const [, serviceNameLabel] = query.match(/{.*(service_name="[^"]*").*}/) ?? [];

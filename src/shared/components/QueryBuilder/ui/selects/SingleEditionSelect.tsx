@@ -32,7 +32,12 @@ export function SingleEditionSelect({ selection, suggestions, onChange, onCloseM
 
   if (suggestions.allowCustomValue) {
     return (
-      <SingleEditionInput defaultValue={selection.value} placeholder={suggestions.placeholder} onChange={onChange} />
+      <SingleEditionInput
+        defaultValue={selection.value}
+        placeholder={suggestions.placeholder}
+        onChange={onChange}
+        onBlur={onCloseMenu}
+      />
     );
   }
 
@@ -42,9 +47,8 @@ export function SingleEditionSelect({ selection, suggestions, onChange, onCloseM
       placeholder={suggestions.placeholder}
       loadingMessage={MESSAGES.LOADING}
       closeMenuOnSelect={false}
-      allowCustomValue={suggestions.allowCustomValue}
       autoFocus
-      value={suggestions.allowCustomValue ? undefined : selection.value}
+      value={selection.value}
       onChange={onChange}
       onCloseMenu={onCloseMenu}
       options={suggestions.items}

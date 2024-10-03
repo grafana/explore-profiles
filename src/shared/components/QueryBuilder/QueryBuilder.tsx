@@ -78,8 +78,8 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
       return;
     }
 
-    const onTransition: StateListener<QueryBuilderContext, QueryBuilderEvent> = ({ context }, event) => {
-      if (['SELECT_SUGGESTION', 'REMOVE_FILTER'].includes(event.type) && !context.isQueryUpToDate) {
+    const onTransition: StateListener<QueryBuilderContext, QueryBuilderEvent> = ({ value, context, event }) => {
+      if (value === 'idle' && !context.isQueryUpToDate && event.type !== 'EXECUTE_QUERY') {
         actor.send({ type: 'EXECUTE_QUERY' });
       }
     };

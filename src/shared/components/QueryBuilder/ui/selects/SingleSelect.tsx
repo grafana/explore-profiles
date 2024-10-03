@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { Select, useStyles2 } from '@grafana/ui';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { MESSAGES } from '../constants';
 import { SingleEditionInput } from '../inputs/SingleEditionInput';
@@ -21,11 +21,41 @@ type SingleSelectProps = {
   onCloseMenu: () => void;
 };
 
+// we use this hack to force the select to open after (e.g.) editing an existing attribute
+// in this case, regardless that the `isOpen` prop of the <Select /> component is true
+// the dropdown does not appear on the UI
+// it seems it's a bug from the <Select /> component itself
+// TODO: report it!
+function useEnsureIsOpenHack(isVisible: boolean) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isVisible && !isOpen) {
+      setTimeout(() => setIsOpen(true), 0);
+      return;
+    }
+
+    if (isVisible !== isOpen) {
+      setIsOpen(isVisible);
+    }
+  }, [isOpen, isVisible]);
+
+  return isOpen;
+}
+
 export function SingleSelect({ suggestions, onFocus, onChange, onKeyDown, onCloseMenu }: SingleSelectProps) {
   const styles = useStyles2(getStyles);
+  const isOpen = useEnsureIsOpenHack(suggestions.isVisible);
 
   if (suggestions.allowCustomValue) {
-    return <SingleEditionInput placeholder={suggestions.placeholder} onFocus={onFocus} onChange={onChange} />;
+    return (
+      <SingleEditionInput
+        placeholder={suggestions.placeholder}
+        onFocus={onFocus}
+        onChange={onChange}
+        onBlur={onCloseMenu}
+      />
+    );
   }
 
   return (
@@ -34,17 +64,13 @@ export function SingleSelect({ suggestions, onFocus, onChange, onKeyDown, onClos
       placeholder={suggestions.placeholder}
       loadingMessage={MESSAGES.LOADING}
       closeMenuOnSelect={false}
-      allowCustomValue={suggestions.allowCustomValue}
-      // when allowCustomValue toggles to true, the menu will close.
-      // setting `autofocus` prevents it. it works in combination with `isOpen` below.
-      autoFocus={suggestions.allowCustomValue}
       value={null}
       onFocus={onFocus}
       onKeyDown={onKeyDown}
       onChange={onChange}
       onCloseMenu={onCloseMenu}
       options={suggestions.items}
-      isOpen={suggestions.isVisible}
+      isOpen={isOpen}
       isLoading={suggestions.isLoading}
       invalid={Boolean(suggestions.error)}
       noOptionsMessage={suggestions.noOptionsMessage}

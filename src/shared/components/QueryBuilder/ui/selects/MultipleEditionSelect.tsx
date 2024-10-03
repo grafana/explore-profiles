@@ -1,15 +1,34 @@
+import { css } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { MultiSelect, useStyles2 } from '@grafana/ui';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { Suggestion, Suggestions } from '../../domain/types';
 import { MESSAGES } from '../constants';
-import { getStyles } from './SingleEditionSelect';
 
 export type MultipleEditionSelectProps = {
   selection: Suggestion;
   suggestions: any;
   onCloseMenu: (values: Suggestions) => void;
+};
+
+const placeSelectedValuesFirst = (values: Suggestions) => (a: Suggestion, b: Suggestion) => {
+  const aIsSelected = values.some((v) => v.value === a.value);
+  const bIsSelected = values.some((v) => v.value === b.value);
+
+  if (aIsSelected && bIsSelected) {
+    return a.value.localeCompare(b.value);
+  }
+
+  if (bIsSelected) {
+    return +1;
+  }
+
+  if (aIsSelected) {
+    return -1;
+  }
+
+  return 0;
 };
 
 export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: MultipleEditionSelectProps) {
@@ -22,6 +41,10 @@ export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: M
   }, [selection]);
 
   const [values, setValues] = useState<Suggestions>(defaultValue);
+
+  // we don't sort when values change so that, for long lists, the user keeps the context they're in
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const sortedOptions = useMemo(() => suggestions.items.sort(placeSelectedValuesFirst(values)), [suggestions.items]);
 
   const onChange = useCallback((newValues: Array<SelectableValue<string>>) => {
     setValues(newValues.map(({ value = '', label = '' }) => ({ value, label })));
@@ -37,12 +60,14 @@ export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: M
       placeholder={suggestions.placeholder}
       loadingMessage={MESSAGES.LOADING}
       closeMenuOnSelect={false}
+      hideSelectedOptions={false}
+      backspaceRemovesValue
       // auto focus required when switching from another operator type
       autoFocus
       value={values}
       onChange={onChange}
       onCloseMenu={onInternalCloseMenu}
-      options={suggestions.items}
+      options={sortedOptions}
       isOpen
       isLoading={suggestions.isLoading}
       invalid={Boolean(suggestions.error)}
@@ -50,3 +75,14 @@ export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: M
     />
   );
 }
+
+const getStyles = () => ({
+  editionSelect: css`
+    position: absolute;
+    z-index: 1;
+
+    [aria-label='Remove'] svg {
+      display: none;
+    }
+  `,
+});
