@@ -136,7 +136,6 @@ export const actions: any = {
 
       return {
         ...filter,
-        type: FilterKind['attribute-operator-value'],
         operator: newOperator,
         value:
           isMultipleValuesOperator(previousOperator) && !isMultipleValuesOperator(newOperator.value) && filter.value
