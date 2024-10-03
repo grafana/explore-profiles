@@ -1,12 +1,11 @@
 import { nanoid } from 'nanoid';
 
-import { FilterKind, Filters, OperatorKind } from '../types';
+import { FilterKind, Filters, IsEmptyFilter, OperatorKind } from '../types';
 
-export const parseRawFilters = (rawFilters: string) =>
-  rawFilters.split(',').map((f) => {
-    const parts = f.match(/\W*([^=!~]+)(=|!=|=~|!~)"(.*)"/);
-    return parts === null ? null : [parts[1], parts[2], parts[3]];
-  });
+export const parseRawFilters = (rawFilters: string): string[][] => {
+  const matches = rawFilters.matchAll(/(\w+)(=|!=|=~|!~)"([^"]*)"/g);
+  return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
+};
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
@@ -23,11 +22,7 @@ export function queryToFilters(query: string): Filters {
 
   const rawFilters = parseRawFilters(rawLabels[1]);
 
-  // [[_, service_name, =, ebpf/gcp-logs-ops/grafana-agent] [_, namespace, =, gcp-logs-ops]] or [null, null]
-  if (rawFilters.some((m) => m === null)) {
-    // let's be strict on parsing
-    return [];
-  }
+  // [[service_name, =, ebpf/gcp-logs-ops/grafana-agent], [namespace, =, gcp-logs-ops]]
 
   return (rawFilters as string[][])
     .filter(([attribute]) => attribute !== 'service_name')
@@ -36,15 +31,9 @@ export function queryToFilters(query: string): Filters {
       if (shouldChangeToIsEmptyOperator) {
         return {
           id: nanoid(10),
-          type: FilterKind['attribute-operator'],
           active: true,
           attribute: { value: attribute, label: attribute },
-          // TODO: don't hardcode the label
-          operator: { value: OperatorKind['is-empty'], label: 'is empty' },
-          value: {
-            value: '',
-            label: '',
-          },
+          ...IsEmptyFilter,
         };
       }
 

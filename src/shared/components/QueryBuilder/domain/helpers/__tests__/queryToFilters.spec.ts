@@ -74,7 +74,29 @@ const cases: TestCase[] = [
         },
         value: {
           label: '',
-          value: '',
+          value: 'is-empty',
+        },
+      },
+    ],
+  ],
+  [
+    ' process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="core-requests",free_text=~"one,two"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'free_text',
+          value: 'free_text',
+        },
+        operator: {
+          label: '=~',
+          value: '=~',
+        },
+        value: {
+          label: 'one,two',
+          value: 'one,two',
         },
       },
     ],
