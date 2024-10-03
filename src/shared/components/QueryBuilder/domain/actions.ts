@@ -127,7 +127,7 @@ export const actions: any = {
       }
 
       if (previousOperator === OperatorKind['is-empty']) {
-        filter.value = { value: '', label: '' };
+        filter.value = { value: '(no value)', label: '(no value)' };
       }
 
       if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {
