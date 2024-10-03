@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
-import { useStyles2 } from '@grafana/ui';
+import { Icon, InlineLabel, useStyles2 } from '@grafana/ui';
 import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import React from 'react';
@@ -16,7 +16,6 @@ export class FiltersVariable extends AdHocFiltersVariable {
     super({
       key,
       name: key,
-      label: 'Filters',
       filters: FiltersVariable.DEFAULT_VALUE,
       expressionBuilder: (filters) =>
         filters
@@ -62,16 +61,22 @@ export class FiltersVariable extends AdHocFiltersVariable {
     const { from, to } = sceneGraph.getTimeRange(model).state.value;
 
     return (
-      <QueryBuilder
-        id={`query-builder-${key}`}
-        autoExecute
-        className={styles.queryBuilder}
-        dataSourceUid={dataSourceUid as string}
-        query={query}
-        from={from.unix() * 1000}
-        to={to.unix() * 1000}
-        onChangeQuery={model.onChangeQuery}
-      />
+      <>
+        <InlineLabel width="auto">
+          <Icon name="filter" />
+          &nbsp;Filters
+        </InlineLabel>
+        <QueryBuilder
+          id={`query-builder-${key}`}
+          autoExecute
+          className={styles.queryBuilder}
+          dataSourceUid={dataSourceUid as string}
+          query={query}
+          from={from.unix() * 1000}
+          to={to.unix() * 1000}
+          onChangeQuery={model.onChangeQuery}
+        />
+      </>
     );
   };
 }
