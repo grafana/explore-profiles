@@ -9,15 +9,14 @@ import React from 'react';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { interpolateQueryRunnerVariables } from '../../infrastructure/helpers/interpolateQueryRunnerVariables';
-import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
+import { EventExcludeLabelFromFilters, EventIncludeLabelInFilters } from '../events/EventIncludeLabelInFilters';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
 
 type EventContructor =
-  | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
   | (new (payload: EventExpandPanelPayload) => EventExpandPanel)
   | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
   | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
@@ -32,22 +31,22 @@ type EventLookup = {
 
 const Events = new Map<EventContructor, EventLookup>([
   [
-    EventAddLabelToFilters,
+    EventIncludeLabelInFilters,
     Object.freeze({
-      label: 'Add to filters',
-      tooltip: (item, model) => {
+      label: 'Include',
+      tooltip: ({ label }, model) => {
         const groupByValue = getSceneVariableValue(model, 'groupBy');
-
-        if (groupByValue === 'all' && item.queryRunnerParams.groupBy) {
-          if (item.queryRunnerParams.groupBy) {
-            const { label, values } = item.queryRunnerParams.groupBy;
-            return `Add "${label}=${values[0]}" to the filters`;
-          }
-
-          return 'Add this label value to the filters'; // just in case, should not happen
-        }
-
-        return `Add "${groupByValue}=${item.label}" to the filters`;
+        return `Include "${groupByValue}=${label}" in the filters`;
+      },
+    }),
+  ],
+  [
+    EventExcludeLabelFromFilters,
+    Object.freeze({
+      label: 'Exclude',
+      tooltip: ({ label }, model) => {
+        const groupByValue = getSceneVariableValue(model, 'groupBy');
+        return `Exclude "${groupByValue}=${label}" from the filters`;
       },
     }),
   ],
