@@ -122,7 +122,7 @@ export const actions: any = {
       if (newOperator.value === OperatorKind['is-empty']) {
         return buildIsEmptyFilter({
           ...filter,
-          active: true,
+          active: false,
         });
       }
 
@@ -144,7 +144,7 @@ export const actions: any = {
                 label: filter.value.label.split(', ').shift(),
               }
             : filter.value,
-        active: !isPartialFilter(filter),
+        active: false,
       };
     }) as Filters;
 
