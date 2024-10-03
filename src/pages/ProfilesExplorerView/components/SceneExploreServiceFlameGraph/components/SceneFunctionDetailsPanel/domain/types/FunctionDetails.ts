@@ -32,7 +32,8 @@ export type CallSiteProps = {
 };
 
 export type LineProfile = {
-  line: string;
+  // May not be defined when code is not loaded via e.g. GitHub Integration
+  line?: string;
   number: number;
   cum: number;
   flat: number;

@@ -20,7 +20,7 @@ export function buildPlaceholderLineProfiles(callSitesMap: CallSitesMap) {
     const callSite = callSitesMap.get(lineNumber);
 
     lines.push({
-      line: '???',
+      line: undefined,
       number: lineNumber,
       cum: callSite?.cum ?? 0,
       flat: callSite?.flat ?? 0,
