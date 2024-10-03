@@ -35,6 +35,12 @@ Typically a container component receives data and actions (functions to modify t
 
 An example of presentational component is the [AdHocColumns component](../src/pages/AdHocView/ui/AdHocColums.tsx) (a micro-layout component). This component receives simple props that, most of the time, can be used directly. If there’s some logic involved during rendering, it only concerns how things will look on the UI. No data fetching, no domain logic.
 
+### Domain logic layer
+
+This layer contains functions and React hooks concerned with how the plugin works. The rules defined by the business are implemented here. They typically use infrastructure hooks/functions to retrieve data (from APIs, etc.), to combine them and to define functions that will act on them. As a convention, they typically return “data” and “actions” objects.
+
+For example, the [useSettingsView](../src/pages/SettingsView/domain/useSettingsView.ts) hook, used in the [Settings view](../src/pages/SettingsView/SettingsView.tsx).
+
 ### Infrastructure layer
 
 This layer contains the hooks/functions/classes concerned with fetching the data (from backend APIs, from browser storage, etc.) as well as with side-effects.
