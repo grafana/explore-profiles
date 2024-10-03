@@ -214,6 +214,28 @@ const cases: TestCase[] = [
       },
     ],
   ],
+  [
+    'query process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="pyroscope-rideshare-go",hostname=~"r{1}"}',
+    [
+      {
+        id: expect.any(String),
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: {
+          label: 'hostname',
+          value: 'hostname',
+        },
+        operator: {
+          label: '=~',
+          value: '=~',
+        },
+        value: {
+          label: 'r{1}',
+          value: 'r{1}',
+        },
+      },
+    ],
+  ],
 ];
 
 describe('queryToFilters(query: string)', () => {

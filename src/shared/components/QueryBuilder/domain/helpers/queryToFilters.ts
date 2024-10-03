@@ -8,7 +8,8 @@ export const parseRawFilters = (rawFilters: string): string[][] => {
   return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
 };
 
-const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+).*/;
+const LABELS_REGEX = /.+:[^{]+\{(.+)\}$/;
+const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+|\{|\}).*/;
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
@@ -17,7 +18,7 @@ export function queryToFilters(query: string): Filters {
     return [];
   }
 
-  const rawLabels = query.match(/.+:.+\{(.+)\}/);
+  const rawLabels = query.match(LABELS_REGEX);
   // [_, 'service_name="ebpf/gcp-logs-ops/grafana-agent", namespace="gcp-logs-ops"']
   if (!rawLabels) {
     return [];
