@@ -97,6 +97,10 @@ export const getStyles = (theme: GrafanaTheme2) => ({
     text-overflow: ellipsis;
     text-wrap: nowrap;
     overflow: hidden;
+
+    &:hover {
+      background-color: ${theme.colors.background.secondary};
+    }
   `,
   chicletRemoveButton: css`
     &:hover {
