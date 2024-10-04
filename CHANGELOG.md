@@ -1,3 +1,21 @@
+## [0.1.12](https://github.com/grafana/explore-profiles/compare/v0.1.11...v0.1.12) (2024-10-04)
+
+
+### Bug Fixes
+
+* **Code:** do not show Optimize Code button when no code is available ([#208](https://github.com/grafana/explore-profiles/issues/208)) ([6af234d](https://github.com/grafana/explore-profiles/commit/6af234d6a4fec65a1c51adf9439cd28802462173))
+* **Filters:** ensure "is empty" filter is synced with URL ([#205](https://github.com/grafana/explore-profiles/issues/205)) ([8fc8fc4](https://github.com/grafana/explore-profiles/commit/8fc8fc4fdc31860cd1d1def3ca7f603ffe5b10fe))
+* **QueryBuilder:** Filters with regex values can be edited in place ([#207](https://github.com/grafana/explore-profiles/issues/207)) ([75de5e2](https://github.com/grafana/explore-profiles/commit/75de5e291cb46930e18e7f41fef6166ec69fa341))
+
+
+### Features
+
+* Minor improvements ([#211](https://github.com/grafana/explore-profiles/issues/211)) ([0486f33](https://github.com/grafana/explore-profiles/commit/0486f338404915525f53ae26b9723ac0455e216a))
+* **QueryBuilder:** Enable "in"/"not in" operators ([#122](https://github.com/grafana/explore-profiles/issues/122)) ([9574828](https://github.com/grafana/explore-profiles/commit/9574828fead1168e0d143de49357f5997c5eaf5f))
+* **StatsPanel:** Add title on hover value + vertical border to separate compare actions ([#212](https://github.com/grafana/explore-profiles/issues/212)) ([71a29e5](https://github.com/grafana/explore-profiles/commit/71a29e506596d3f9207cab2ae9f658ff079c088e))
+
+
+
 ## [0.1.11](https://github.com/grafana/explore-profiles/compare/v0.1.10...v0.1.11) (2024-09-30)
 
 
