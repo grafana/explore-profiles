@@ -1,5 +1,8 @@
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
+import { getSceneVariableValue } from 'src/pages/ProfilesExplorerView/helpers/getSceneVariableValue';
+import { getProfileMetricLabel } from 'src/pages/ProfilesExplorerView/infrastructure/series/helpers/getProfileMetricLabel';
 
 import { GridItemData } from '../../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { EventSelectForCompare } from '../../../../domain/events/EventSelectForCompare';
@@ -16,6 +19,7 @@ interface SceneStatsPanelState extends SceneObjectState {
   item: GridItemData;
   itemStats?: ItemStats;
   compareActionChecks: boolean[];
+  statsDescription: string;
 }
 
 export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
@@ -26,6 +30,7 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
       item,
       itemStats: undefined,
       compareActionChecks: [false, false],
+      statsDescription: '',
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -35,6 +40,8 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
     const compare = sceneGraph.findByKeyAndType(this, 'group-by-labels', SceneGroupByLabels).getCompare();
 
     this.updateCompareActions(compare.get(CompareTarget.BASELINE), compare.get(CompareTarget.COMPARISON));
+
+    this.setState({ statsDescription: this.getStatsDescription() });
   }
 
   updateCompareActions(baselineItem?: GridItemData, comparisonItem?: GridItemData) {
@@ -43,6 +50,12 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
     this.setState({
       compareActionChecks: [baselineItem?.value === item.value, comparisonItem?.value === item.value],
     });
+  }
+
+  getStatsDescription() {
+    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
+    const { description } = getProfileMetric(profileMetricId as ProfileMetricId);
+    return description || getProfileMetricLabel(profileMetricId);
   }
 
   onChangeCompareTarget = (compareTarget: CompareTarget) => {
@@ -64,12 +77,13 @@ export class SceneStatsPanel extends SceneObjectBase<SceneStatsPanelState> {
   }
 
   static Component({ model }: SceneComponentProps<SceneStatsPanel>) {
-    const { item, itemStats, compareActionChecks } = model.useState();
+    const { item, itemStats, statsDescription, compareActionChecks } = model.useState();
 
     return (
       <StatsPanel
         item={item}
         itemStats={itemStats}
+        statsDescription={statsDescription}
         compareActionChecks={compareActionChecks}
         onChangeCompareTarget={model.onChangeCompareTarget}
       />

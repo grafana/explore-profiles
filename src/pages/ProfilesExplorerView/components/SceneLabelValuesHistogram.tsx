@@ -119,7 +119,7 @@ export class SceneLabelValuesHistogram extends SceneObjectBase<SceneLabelValuesH
         const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
         const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
 
-        displayName = `${displayName} / total = ${formattedValue.text}${formattedValue.suffix}`;
+        displayName = `total ${displayName} = ${formattedValue.text}${formattedValue.suffix}`;
       }
 
       return {

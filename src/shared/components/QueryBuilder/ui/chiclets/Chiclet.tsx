@@ -23,16 +23,23 @@ export const getStyles = (theme: GrafanaTheme2) => ({
     align-items: center;
     border: 1px solid ${activeBackgroundColor};
     border-radius: 2px;
+
     & > button {
       height: 30px;
       background-color: ${theme.colors.background.primary};
       color: ${theme.colors.text.maxContrast};
     }
+
     & > :first-child {
       background-color: ${activeBackgroundColor};
       color: ${activeTextColor};
       border-radius: 0;
+
+      &:hover {
+        cursor: not-allowed !important;
+      }
     }
+
     & > :last-child {
       border-left: 1px solid ${activeBackgroundColor};
       border-top-left-radius: 0;
@@ -44,11 +51,13 @@ export const getStyles = (theme: GrafanaTheme2) => ({
     border-right: 0;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+
     & > :first-child {
       background-color: ${theme.colors.background.secondary};
       color: ${theme.colors.text.maxContrast};
       border-radius: 0;
     }
+
     & > :last-child {
       border-color: ${inactiveBorderColor};
       color: ${theme.colors.text.maxContrast};
@@ -56,13 +65,16 @@ export const getStyles = (theme: GrafanaTheme2) => ({
   `,
   inactiveChiclet: css`
     border-color: ${inactiveBorderColor};
+
     & > button {
       color: ${theme.colors.text.maxContrast};
     }
+
     & > :first-child {
       background-color: ${theme.colors.background.secondary};
       color: ${theme.colors.text.maxContrast};
     }
+
     & > :last-child {
       border-color: ${inactiveBorderColor};
     }
@@ -73,17 +85,18 @@ export const getStyles = (theme: GrafanaTheme2) => ({
       cursor: default !important;
     }
   `,
-  chicletValue: css`
-    flex-grow: 1;
-    text-align: left;
-
+  chicletOperator: css`
     &:hover {
       background-color: ${theme.colors.background.secondary};
     }
   `,
-  chicletOperator: css`
+  chicletValue: css`
     flex-grow: 1;
     text-align: left;
+    max-width: 420px;
+    text-overflow: ellipsis;
+    text-wrap: nowrap;
+    overflow: hidden;
 
     &:hover {
       background-color: ${theme.colors.background.secondary};
