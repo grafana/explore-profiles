@@ -266,11 +266,31 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
 
-    // preserve existing filters only when switching to "Labels" or "Flame graph"
-    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(nextExplorationType as ExplorationType)) {
+    // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flamge graph"
+    if (
+      ![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH, ExplorationType.DIFF_FLAME_GRAPH].includes(
+        nextExplorationType as ExplorationType
+      )
+    ) {
       sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
         filters: FiltersVariable.DEFAULT_VALUE,
       });
+    }
+
+    // apply filters when entering "Diff flame graph"
+    if (nextExplorationType === ExplorationType.DIFF_FLAME_GRAPH) {
+      const [filtersVariable, baselineFiltersVariable, comparisonFiltersVariable] = [
+        'filters',
+        'filtersBaseline',
+        'filtersComparison',
+      ].map((filterKey) => sceneGraph.findByKey(this, filterKey)) as FiltersVariable[];
+
+      const existingFilters = filtersVariable.state.filters;
+
+      if (existingFilters.length) {
+        baselineFiltersVariable.setState({ filters: existingFilters });
+        comparisonFiltersVariable.setState({ filters: existingFilters });
+      }
     }
 
     // clear baseline/comparison filters and time ranges when leaving "Diff flame graph"
