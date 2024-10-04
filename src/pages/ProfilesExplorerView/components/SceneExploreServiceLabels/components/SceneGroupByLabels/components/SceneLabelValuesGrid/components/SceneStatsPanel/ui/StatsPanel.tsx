@@ -12,11 +12,18 @@ import { CompareAction } from './CompareAction';
 export type StatsPanelProps = {
   item: GridItemData;
   itemStats?: ItemStats;
+  statsDescription: string;
   compareActionChecks: boolean[];
   onChangeCompareTarget: (compareTarget: CompareTarget) => void;
 };
 
-export function StatsPanel({ item, itemStats, compareActionChecks, onChangeCompareTarget }: StatsPanelProps) {
+export function StatsPanel({
+  item,
+  itemStats,
+  statsDescription,
+  compareActionChecks,
+  onChangeCompareTarget,
+}: StatsPanelProps) {
   const styles = useStyles2(getStyles);
 
   const { index, value } = item;
@@ -52,19 +59,13 @@ export function StatsPanel({ item, itemStats, compareActionChecks, onChangeCompa
 
   return (
     <div className={styles.container} data-testid={`stats-panel-${value}`}>
-      <h1 style={{ color }} className={styles.title}>
+      <h1 style={{ color }} className={styles.title} title={`${statsDescription}: ${total}`}>
         {total}
       </h1>
 
       <div className={styles.compareActions}>
-        {options.map((option, i) => (
-          <CompareAction
-            key={option.value}
-            option={option}
-            checked={compareActionChecks[i]}
-            onChange={onChangeCompareTarget}
-          />
-        ))}
+        <CompareAction option={options[0]} checked={compareActionChecks[0]} onChange={onChangeCompareTarget} />
+        <CompareAction option={options[1]} checked={compareActionChecks[1]} onChange={onChangeCompareTarget} />
       </div>
     </div>
   );
@@ -94,5 +95,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
     font-size: 11px;
     border-top: 1px solid ${theme.colors.border.weak};
     padding: ${theme.spacing(1)} 0 0 0;
+
+    & .checkbox:nth-child(2) {
+      padding-right: 4px;
+      border-right: 1px solid ${theme.colors.border.strong};
+    }
+    & .checkbox:nth-child(4) {
+      padding-left: 4px;
+    }
   `,
 });

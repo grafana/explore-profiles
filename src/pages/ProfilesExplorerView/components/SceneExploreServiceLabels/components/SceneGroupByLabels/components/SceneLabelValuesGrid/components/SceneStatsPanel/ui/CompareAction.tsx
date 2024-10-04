@@ -53,7 +53,7 @@ export function CompareAction({ option, checked, onChange }: CompareActionProps)
       </Tooltip>
       <Checkbox
         ref={checkboxRef}
-        className={cx(styles.checkbox, checked && 'checked')}
+        className={cx(styles.checkbox, 'checkbox', checked && 'checked')}
         checked={checked}
         label={option.label}
         onChange={() => onChange(option.value)}
