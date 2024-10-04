@@ -55,6 +55,11 @@ function InfoMenu() {
         icon="document-info"
         onClick={() => window.open('https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles')}
       />
+      <Menu.Item
+        label="Report an issue"
+        icon="bug"
+        onClick={() => window.open('https://github.com/grafana/explore-profiles/issues/new?template=bug_report.md')}
+      />
       <Menu.Divider />
       <Menu.Item
         label={`Grafana ${grafanaBuildInfo.edition} v${grafanaBuildInfo.version} (${grafanaBuildInfo.env})`}
