@@ -41,6 +41,11 @@ function InfoMenu() {
         disabled={isDev}
       />
       <Menu.Item
+        label="Changelog"
+        icon="list-ul"
+        onClick={() => window.open('https://github.com/grafana/explore-profiles/blob/main/CHANGELOG.md')}
+      />
+      <Menu.Item
         label="Contribute"
         icon="external-link-alt"
         onClick={() => window.open('https://github.com/grafana/explore-profiles/blob/main/docs/CONTRIBUTING.md')}
