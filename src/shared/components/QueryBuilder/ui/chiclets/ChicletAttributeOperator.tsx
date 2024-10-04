@@ -21,17 +21,10 @@ export const ChicletAttributeOperator = ({ filter, onClick, onRemove }: ChicletA
 
   return (
     <div className={className} aria-label="Filter">
-      <Tag
-        aria-label="Filter label"
-        title="Cannot edit label"
-        className={styles.chicletAttribute}
-        name={attribute.label}
-        onClick={noOp}
-      />
+      <Tag aria-label="Filter label" className={styles.chicletAttribute} name={attribute.label} onClick={noOp} />
 
       <Tag
         aria-label="Filter operator"
-        title="Edit operator"
         className={styles.chicletOperator}
         name={operator.label}
         onClick={(name, e) => onClick(e, filter, FilterPartKind.operator)}
@@ -40,7 +33,6 @@ export const ChicletAttributeOperator = ({ filter, onClick, onRemove }: ChicletA
 
       <Tag
         aria-label="Remove filter"
-        title="Remove filter"
         className={styles.chicletRemoveButton}
         icon="times"
         name=""

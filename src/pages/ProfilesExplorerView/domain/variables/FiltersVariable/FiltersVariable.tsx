@@ -1,8 +1,10 @@
 import { css } from '@emotion/css';
+import { reportInteraction } from '@grafana/runtime';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { Icon, InlineLabel, useStyles2 } from '@grafana/ui';
 import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
+import { uniq } from 'lodash';
 import React from 'react';
 
 import { useBuildPyroscopeQuery } from '../../useBuildPyroscopeQuery';
@@ -42,6 +44,12 @@ export class FiltersVariable extends AdHocFiltersVariable {
   }
 
   onChangeQuery = (query: string, filters: CompleteFilters) => {
+    reportInteraction('g_pyroscope_filters_changed', {
+      name: this.state.name,
+      count: filters.length,
+      operators: uniq(filters.map((f) => f.operator.label)),
+    });
+
     this.setState({
       filters: filters.map(convertPyroscopeToVariableFilter),
     });
