@@ -6,7 +6,7 @@ import React from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
-import { CodeLine } from '../CodeContainer';
+import { CodeLine } from '../domain/useCodeContainer';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   codeContainer: css`

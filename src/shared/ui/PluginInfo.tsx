@@ -41,6 +41,11 @@ function InfoMenu() {
         disabled={isDev}
       />
       <Menu.Item
+        label="Changelog"
+        icon="list-ul"
+        onClick={() => window.open('https://github.com/grafana/explore-profiles/blob/main/CHANGELOG.md')}
+      />
+      <Menu.Item
         label="Contribute"
         icon="external-link-alt"
         onClick={() => window.open('https://github.com/grafana/explore-profiles/blob/main/docs/CONTRIBUTING.md')}
@@ -49,6 +54,11 @@ function InfoMenu() {
         label="Documentation"
         icon="document-info"
         onClick={() => window.open('https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles')}
+      />
+      <Menu.Item
+        label="Report an issue"
+        icon="bug"
+        onClick={() => window.open('https://github.com/grafana/explore-profiles/issues/new?template=bug_report.md')}
       />
       <Menu.Divider />
       <Menu.Item
