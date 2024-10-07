@@ -266,7 +266,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
 
-    // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flamge graph"
+    // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"
     if (
       ![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH, ExplorationType.DIFF_FLAME_GRAPH].includes(
         nextExplorationType as ExplorationType
