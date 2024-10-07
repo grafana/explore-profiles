@@ -4,7 +4,7 @@ type PanelId = 'ai' | 'function-details' | null;
 
 type OnOpenHandler = () => void;
 
-export type SidePanel = {
+type SidePanel = {
   onOpen: (handler: OnOpenHandler) => void;
   isOpen: (panelId: PanelId) => boolean;
   open: (panelId: PanelId) => void;

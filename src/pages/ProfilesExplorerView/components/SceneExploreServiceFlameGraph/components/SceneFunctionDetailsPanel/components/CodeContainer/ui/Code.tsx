@@ -1,7 +1,6 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { InlineLabel, LinkButton, Spinner, useStyles2 } from '@grafana/ui';
-import clsx from 'clsx';
 import React from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
@@ -108,7 +107,7 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
       </div>
 
       <pre className={styles.codeBlock} data-testid="function-details-code">
-        <div className={clsx(styles.highlighted, styles.header)}>
+        <div className={cx(styles.highlighted, styles.header)}>
           {formatLine('Total:', formatValue(sumSelf), formatValue(sumTotal), ' (self, total)')}
         </div>
         {lines.map(({ line, number, cum: total, flat: self }) => (

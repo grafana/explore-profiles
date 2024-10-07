@@ -6,7 +6,7 @@ import React, { useCallback, useState } from 'react';
 import { Suggestions } from '../../domain/types';
 import { MESSAGES } from '../constants';
 
-export type MultipleSelectProps = {
+type MultipleSelectProps = {
   suggestions: any;
   onFocus: () => void;
   onKeyDown: (event: any, values: Suggestions) => void;

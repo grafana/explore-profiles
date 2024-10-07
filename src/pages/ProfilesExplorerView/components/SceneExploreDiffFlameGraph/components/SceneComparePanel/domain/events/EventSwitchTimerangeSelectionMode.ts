@@ -2,7 +2,7 @@ import { BusEventWithPayload } from '@grafana/data';
 
 import { TimerangeSelectionMode } from '../actions/SwitchTimeRangeSelectionModeAction';
 
-export interface EventSwitchTimerangeSelectionModePayload {
+interface EventSwitchTimerangeSelectionModePayload {
   mode: TimerangeSelectionMode;
 }
 

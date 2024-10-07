@@ -56,7 +56,7 @@ import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/componen
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
-export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   $timeRange: SceneTimeRange;
   $variables: SceneVariableSet;
   gridControls: Array<SceneObject & { key?: string }>;
@@ -64,7 +64,7 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   body?: SplitLayout;
 }
 
-export enum ExplorationType {
+enum ExplorationType {
   ALL_SERVICES = 'all',
   PROFILE_TYPES = 'profiles',
   LABELS = 'labels',

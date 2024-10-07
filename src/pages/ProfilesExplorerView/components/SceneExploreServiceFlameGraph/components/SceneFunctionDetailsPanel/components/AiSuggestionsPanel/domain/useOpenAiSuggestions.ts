@@ -13,17 +13,6 @@ type Message = {
   function_call?: Object;
 };
 
-export type OpenAiReply = {
-  reply: {
-    text: string;
-    hasStarted: boolean;
-    hasFinished: boolean;
-    messages: Message[];
-    askFollowupQuestion: (question: string) => void;
-  };
-  error: Error | null;
-};
-
 // TODO(@petethepig): this is largely same function as useOpenAiChatCompletions, maybe we should merge them somehow
 export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInputs) {
   const [reply, setReply] = useState('');
