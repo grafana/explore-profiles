@@ -17,7 +17,7 @@ test.describe('Favorites view', () => {
     await exploreProfilesPage.clickOnPanelAction('ride-sharing-app', 'Labels');
     await exploreProfilesPage.assertNoSpinner();
     await exploreProfilesPage.enterQuickFilterText('vehicle');
-    await exploreProfilesPage.clickOnPanelAction('vehicle (4)', 'Favorite');
+    await exploreProfilesPage.clickOnPanelAction('vehicle', 'Favorite');
 
     await exploreProfilesPage.goto(ExplorationType.Favorites);
   });
@@ -48,7 +48,7 @@ test.describe('Favorites view', () => {
     await expect(exploreProfilesPage.getPanelByTitle('load-generator · cpu (process_cpu)')).toBeVisible();
     await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app · inuse_space (memory)')).toBeVisible();
     await expect(
-      exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle (4)')
+      exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle')
     ).toBeVisible();
   });
 
@@ -68,7 +68,7 @@ test.describe('Favorites view', () => {
 
     await exploreProfilesPage.assertPanelHasNoData('load-generator · cpu (process_cpu)');
     await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · inuse_space (memory)');
-    await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · samples (process_cpu) · vehicle (4)');
+    await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · samples (process_cpu) · vehicle');
 
     await exploreProfilesPage.selectHidePanelsWithoutNoData();
 
@@ -92,7 +92,7 @@ test.describe('Favorites view', () => {
     });
 
     test('Labels action with "group by"', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · samples (process_cpu) · vehicle (4)', 'Labels');
+      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · samples (process_cpu) · vehicle', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -119,7 +119,7 @@ test.describe('Favorites view', () => {
 
     test('Expand panel action', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.clickOnPanelAction(
-        'ride-sharing-app · samples (process_cpu) · vehicle (4)',
+        'ride-sharing-app · samples (process_cpu) · vehicle',
         'Expand panel'
       );
 
@@ -137,7 +137,7 @@ test.describe('Favorites view', () => {
       await expect(exploreProfilesPage.getPanelByTitle('load-generator · cpu (process_cpu)')).toBeVisible();
       await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
       await expect(
-        exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle (4)')
+        exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle')
       ).toBeVisible();
     });
   });
