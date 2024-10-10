@@ -38,11 +38,7 @@ import {
   SceneQuickFilterState,
 } from '../../../../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { sortFavGridItems } from '../../../../../SceneByVariableRepeaterGrid/domain/sortFavGridItems';
-import {
-  addRefId,
-  addStats,
-  sortSeries,
-} from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
 
@@ -85,7 +81,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       isLoading: true,
       $data: new SceneDataTransformer({
         $data: buildTimeSeriesQueryRunner({ groupBy: { label } }),
-        transformations: [addRefId, addStats, sortSeries],
+        transformations: [addRefId, addStats],
       }),
       hideNoData: false,
       headerActions,
@@ -249,7 +245,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       isLoading: true,
       $data: new SceneDataTransformer({
         $data: buildTimeSeriesQueryRunner({ groupBy: { label: this.state.label } }),
-        transformations: [addRefId, addStats, sortSeries],
+        transformations: [addRefId, addStats],
       }),
     });
 
