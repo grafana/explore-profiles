@@ -20,7 +20,7 @@ export const plugin = new AppPlugin<AppPluginSettings>()
     description: 'Link to Explore Profiles app',
     path: '/a/grafana-pyroscope-app/profiles-explorer',
     configure(context: QueryToAppPluginContext | undefined) {
-      if (!context || !context.query) {
+      if (!context || !context.query || !context.datasource) {
         return undefined;
       }
 
