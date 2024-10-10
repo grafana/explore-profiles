@@ -522,7 +522,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
   header: css`
     background-color: ${theme.colors.background.canvas};
     position: sticky;
-    top: ${chromeHeaderHeight};
+    top: ${chromeHeaderHeight}px;
     z-index: 1;
   `,
   controls: css`
