@@ -1,10 +1,11 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
-  "name": "Explore Profiles",
+  "name": "Explore with Profiles app",
   "id": "grafana-pyroscope-app",
   "autoEnabled": true,
   "backend": false,
+  "preload": true,
   "dependencies": {
     "grafanaDependency": ">=11.2.0",
     "plugins": []
@@ -55,5 +56,16 @@
       "addToNav": true,
       "defaultNav": false
     }
-  ]
+  ],
+  "extensions": {
+    "addedLinks": [
+      {
+        "title": "Explore with Profiles app",
+        "description": "Link to Explore Profiles app",
+        "targets": [
+          "grafana/query/query-to-app-plugin"
+        ]
+      }
+    ]
+  }
 }
