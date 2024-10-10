@@ -7,7 +7,7 @@ import { Suggestion } from '../../domain/types';
 import { MESSAGES } from '../constants';
 import { SingleEditionInput } from '../inputs/SingleEditionInput';
 
-export const getStyles = () => ({
+const getStyles = () => ({
   editionSelect: css`
     position: absolute;
     z-index: 1;
@@ -20,7 +20,7 @@ export const getStyles = () => ({
   `,
 });
 
-export type EditionSelectProps = {
+type EditionSelectProps = {
   selection: Suggestion;
   suggestions: any;
   onChange: (suggestion: SelectableValue<string>) => void;

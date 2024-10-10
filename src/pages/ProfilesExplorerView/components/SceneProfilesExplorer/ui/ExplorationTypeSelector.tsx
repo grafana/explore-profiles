@@ -4,7 +4,7 @@ import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { Fragment } from 'react';
 
-export type ExplorationTypeSelectorProps = {
+type ExplorationTypeSelectorProps = {
   options: Array<SelectableValue<string>>;
   value: string;
   onChange: (newValue: string) => void;

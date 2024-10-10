@@ -17,7 +17,7 @@ import { MultipleEditionSelect } from '../selects/MultipleEditionSelect';
 import { SingleEditionSelect } from '../selects/SingleEditionSelect';
 import { Chiclet } from './Chiclet';
 
-export const getStyles = () => ({
+const getStyles = () => ({
   chicletsList: css`
     display: flex;
     align-items: center;

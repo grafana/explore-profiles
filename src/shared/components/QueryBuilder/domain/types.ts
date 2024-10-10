@@ -106,14 +106,14 @@ export type QueryBuilderSchema = {
   };
 };
 
-export type StartEvent = { type: 'START_INPUT' };
+type StartEvent = { type: 'START_INPUT' };
 export type SelectEvent = { type: 'SELECT_SUGGESTION'; data: Suggestion };
-export type DiscardEvent = { type: 'DISCARD_SUGGESTIONS' };
+type DiscardEvent = { type: 'DISCARD_SUGGESTIONS' };
 export type EditEvent = { type: 'EDIT_FILTER'; data: Edition };
 export type RemoveFilterEvent = { type: 'REMOVE_FILTER'; data: string }; // data = filterId
-export type RemoveLastFilterEvent = { type: 'REMOVE_LAST_FILTER' };
+type RemoveLastFilterEvent = { type: 'REMOVE_LAST_FILTER' };
 export type ChangeInputParamsEvent = { type: 'CHANGE_INPUT_PARAMS'; data: InputParams };
-export type ExecuteQueryEvent = { type: 'EXECUTE_QUERY' };
+type ExecuteQueryEvent = { type: 'EXECUTE_QUERY' };
 
 export type QueryBuilderEvent =
   | StartEvent

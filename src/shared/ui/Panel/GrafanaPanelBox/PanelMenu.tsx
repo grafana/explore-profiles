@@ -3,7 +3,7 @@ import { selectors } from '@grafana/e2e-selectors';
 import { Dropdown, ToolbarButton } from '@grafana/ui';
 import React, { ReactElement, useCallback } from 'react';
 
-export type TooltipPlacement =
+type TooltipPlacement =
   | 'auto-start'
   | 'auto'
   | 'auto-end'
