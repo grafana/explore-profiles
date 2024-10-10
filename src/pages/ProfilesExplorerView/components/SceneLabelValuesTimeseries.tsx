@@ -111,12 +111,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     if (item.queryRunnerParams.groupBy?.label) {
       title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
 
-      const totalSeriesCount = item.queryRunnerParams.groupBy.values.length;
-      const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+      const totalSeriesCountFromItem = item.queryRunnerParams.groupBy.values?.length;
 
-      description = hasTooManySeries
-        ? `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of a maximum of ${totalSeriesCount} series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`
-        : undefined;
+      // when an item is favorited, it is stored in localStorage without the `values` array
+      if (!item.queryRunnerParams.groupBy.values) {
+        description = `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} series to preserve readability. To view all the series, click on the expand icon on this panel.`;
+      } else if (item.queryRunnerParams.groupBy.values.length > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES) {
+        description = `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of a maximum of ${totalSeriesCountFromItem} series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`;
+      }
     }
 
     return {
