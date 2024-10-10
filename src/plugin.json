@@ -62,9 +62,7 @@
       {
         "title": "Explore with Profiles app",
         "description": "Link to Explore Profiles app",
-        "targets": [
-          "grafana/query/query-to-app-plugin"
-        ]
+        "targets": ["grafana/query/query-to-app-plugin"]
       }
     ]
   }
