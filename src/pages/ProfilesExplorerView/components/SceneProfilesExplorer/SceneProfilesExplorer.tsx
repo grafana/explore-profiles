@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { dateMath, GrafanaTheme2 } from '@grafana/data';
+import { useChromeHeaderHeight } from '@grafana/runtime';
 import {
   EmbeddedSceneState,
   getUrlSyncManager,
@@ -439,7 +440,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const chromeHeaderHeight = useChromeHeaderHeight(); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0); // eslint-disable-line react-hooks/rules-of-hooks
     const { data, actions } = model.useProfilesExplorer();
 
     const {
@@ -516,11 +518,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 }
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
   header: css`
     background-color: ${theme.colors.background.canvas};
     position: sticky;
-    top: 0;
+    top: ${chromeHeaderHeight}px;
     z-index: 1;
   `,
   controls: css`
