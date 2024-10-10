@@ -9,8 +9,3 @@ export const COMPARISON_COLORS = {
   COLOR: Color('#1398f6'),
   OVERLAY: Color('#1398f6').alpha(0.3),
 };
-
-export const GRAY_TIMELINE_SELECTION_COLORS = {
-  COLOR: Color('#f0f0f0'),
-  OVERLAY: Color('#f0f0f0').alpha(0.3),
-};

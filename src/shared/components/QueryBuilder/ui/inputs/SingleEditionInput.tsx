@@ -63,7 +63,7 @@ export function SingleEditionInput({ placeholder, defaultValue, onFocus, onChang
   );
 }
 
-export const getStyles = () => ({
+const getStyles = () => ({
   edition: css`
     position: absolute;
     z-index: 1;

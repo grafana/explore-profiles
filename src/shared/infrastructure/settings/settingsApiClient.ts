@@ -5,7 +5,7 @@ type ApiResponse = {
   settings: Array<{ name: string; value: string }>;
 };
 
-export class SettingsApiClient extends ApiClient {
+class SettingsApiClient extends ApiClient {
   static PLUGIN_SETTING_NAME = 'pluginSettings';
 
   async get(): Promise<PluginSettings> {

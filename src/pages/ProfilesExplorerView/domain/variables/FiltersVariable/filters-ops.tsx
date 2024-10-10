@@ -1,5 +1,5 @@
 import { AdHocVariableFilter } from '@grafana/data';
-import { parseRawFilters, REGEX_CHARS_REGEX } from '@shared/components/QueryBuilder/domain/helpers/queryToFilters';
+import { REGEX_CHARS_REGEX } from '@shared/components/QueryBuilder/domain/helpers/queryToFilters';
 import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 
 import { FiltersVariable } from './FiltersVariable';
@@ -167,17 +167,3 @@ export const excludeFromFilter = (model: FiltersVariable, filter: AdHocVariableF
     filters: [...model.state.filters.filter((f) => f.key !== filter.key), newFilter],
   });
 };
-
-export const parseVariableValue = (variableValue = '') =>
-  !variableValue
-    ? []
-    : (parseRawFilters(variableValue)
-        .map((filterPartsOrNull) => {
-          if (!filterPartsOrNull) {
-            console.error(`Error while parsing filters variable "${variableValue}"!`);
-            return null;
-          }
-
-          return { key: filterPartsOrNull[0], operator: filterPartsOrNull[1], value: filterPartsOrNull[2] };
-        })
-        .filter(Boolean) as AdHocVariableFilter[]);

@@ -21,7 +21,7 @@ import { DisabledSelect } from './ui/selects/DisabledSelect';
 import { MultipleSelect } from './ui/selects/MultipleSelect';
 import { SingleSelect } from './ui/selects/SingleSelect';
 
-export const getStyles = () => ({
+const getStyles = () => ({
   queryBuilder: css`
     display: flex;
     justify-content: flex-start;

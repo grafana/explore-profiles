@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { dateMath, GrafanaTheme2 } from '@grafana/data';
+import { useChromeHeaderHeight } from '@grafana/runtime';
 import {
   EmbeddedSceneState,
   getUrlSyncManager,
@@ -56,7 +57,7 @@ import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/componen
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
-export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   $timeRange: SceneTimeRange;
   $variables: SceneVariableSet;
   gridControls: Array<SceneObject & { key?: string }>;
@@ -64,7 +65,7 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   body?: SplitLayout;
 }
 
-export enum ExplorationType {
+enum ExplorationType {
   ALL_SERVICES = 'all',
   PROFILE_TYPES = 'profiles',
   LABELS = 'labels',
@@ -266,11 +267,31 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
 
-    // preserve existing filters only when switching to "Labels" or "Flame graph"
-    if (![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH].includes(nextExplorationType as ExplorationType)) {
+    // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"
+    if (
+      ![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH, ExplorationType.DIFF_FLAME_GRAPH].includes(
+        nextExplorationType as ExplorationType
+      )
+    ) {
       sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
         filters: FiltersVariable.DEFAULT_VALUE,
       });
+    }
+
+    // apply filters when entering "Diff flame graph"
+    if (nextExplorationType === ExplorationType.DIFF_FLAME_GRAPH) {
+      const [filtersVariable, baselineFiltersVariable, comparisonFiltersVariable] = [
+        'filters',
+        'filtersBaseline',
+        'filtersComparison',
+      ].map((filterKey) => sceneGraph.findByKey(this, filterKey)) as FiltersVariable[];
+
+      const existingFilters = filtersVariable.state.filters;
+
+      if (existingFilters.length) {
+        baselineFiltersVariable.setState({ filters: existingFilters });
+        comparisonFiltersVariable.setState({ filters: existingFilters });
+      }
     }
 
     // clear baseline/comparison filters and time ranges when leaving "Diff flame graph"
@@ -419,7 +440,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const chromeHeaderHeight = useChromeHeaderHeight(); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0); // eslint-disable-line react-hooks/rules-of-hooks
     const { data, actions } = model.useProfilesExplorer();
 
     const {
@@ -496,11 +518,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 }
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
   header: css`
     background-color: ${theme.colors.background.canvas};
     position: sticky;
-    top: 0;
+    top: ${chromeHeaderHeight}px;
     z-index: 1;
   `,
   controls: css`

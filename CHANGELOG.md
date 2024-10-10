@@ -1,3 +1,12 @@
+## [0.1.13](https://github.com/grafana/explore-profiles/compare/v0.1.12...v0.1.13) (2024-10-08)
+
+
+### Features
+
+* **UI:** Another batch of minor improvements ([#213](https://github.com/grafana/explore-profiles/issues/213)) ([8419560](https://github.com/grafana/explore-profiles/commit/8419560160ce99824eaa3f56889a50a9a01b5919))
+
+
+
 ## [0.1.12](https://github.com/grafana/explore-profiles/compare/v0.1.11...v0.1.12) (2024-10-04)
 
 

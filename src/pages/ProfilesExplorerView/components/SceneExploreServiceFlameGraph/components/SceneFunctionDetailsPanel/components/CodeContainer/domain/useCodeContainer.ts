@@ -7,7 +7,12 @@ import { useFetchVCSFile } from '../infrastructure/useFetchVCSFile';
 import { buildGithubUrlForFunction } from './buildGithubUrlForFunction';
 import { buildLineProfiles, buildPlaceholderLineProfiles } from './buildLineProfiles';
 
-type CodeContainerDomainValue = DomainHookReturnValue & { data: { lines: LineProfile[] } };
+/**
+ * View model for Code component
+ */
+export type CodeLine = LineProfile & { line: string };
+
+type CodeContainerDomainValue = DomainHookReturnValue & { data: { lines: CodeLine[] } };
 
 export function useCodeContainer(dataSourceUid: string, functionDetails: FunctionDetails): CodeContainerDomainValue {
   const { isLoggedIn } = useGitHubContext();
@@ -44,7 +49,7 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
       isLoadingCode: isFetching,
       unit: functionDetails.unit,
       githubUrl: fileInfo?.URL ? buildGithubUrlForFunction(fileInfo.URL, functionDetails.startLine) : undefined,
-      lines,
+      lines: lines.map((line) => ({ ...line, line: line.line || '???' })),
       noCodeAvailable: Boolean(fetchError) || !lines.some((line) => line.line),
     },
     actions: {

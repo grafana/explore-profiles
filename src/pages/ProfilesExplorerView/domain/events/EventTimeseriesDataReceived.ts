@@ -1,6 +1,6 @@
 import { BusEventWithPayload, DataFrame } from '@grafana/data';
 
-export interface EventTimeseriesDataReceivedPayload {
+interface EventTimeseriesDataReceivedPayload {
   series?: DataFrame[];
 }
 

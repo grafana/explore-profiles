@@ -1,4 +1,4 @@
-export type DataSourceDef = {
+type DataSourceDef = {
   type: string;
   uid: string;
 };
