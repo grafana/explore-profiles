@@ -19,12 +19,7 @@ import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabe
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import {
-  addRefId,
-  addStats,
-  limitNumberOfSeries,
-  sortSeries,
-} from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
@@ -64,10 +59,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         .setData(
           data ||
             new SceneDataTransformer({
-              $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-              transformations: displayAllValues
-                ? [addRefId, addStats, sortSeries]
-                : [addRefId, addStats, sortSeries, limitNumberOfSeries],
+              $data: buildTimeSeriesQueryRunner(
+                item.queryRunnerParams,
+                displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+              ),
+              transformations: [addRefId, addStats],
             })
         )
         .setHeaderActions(headerActions(item))
@@ -115,11 +111,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     if (item.queryRunnerParams.groupBy?.label) {
       title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
 
-      const totalSeriesCount = getSeriesStatsValue(series[0], 'totalSeriesCount') || 0;
+      const totalSeriesCount = item.queryRunnerParams.groupBy.values.length;
       const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
 
       description = hasTooManySeries
-        ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
+        ? `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of a maximum of ${totalSeriesCount} series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`
         : undefined;
     }
 

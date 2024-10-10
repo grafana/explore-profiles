@@ -3,12 +3,10 @@ import { SceneQueryRunner } from '@grafana/scenes';
 import { PYROSCOPE_DATA_SOURCE } from '../pyroscope-data-sources';
 import { TimeSeriesQueryRunnerParams } from './TimeSeriesQueryRunnerParams';
 
-export function buildTimeSeriesQueryRunner({
-  serviceName,
-  profileMetricId,
-  groupBy,
-  filters,
-}: TimeSeriesQueryRunnerParams) {
+export function buildTimeSeriesQueryRunner(
+  { serviceName, profileMetricId, groupBy, filters }: TimeSeriesQueryRunnerParams,
+  limit?: number
+) {
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: serviceName || '$serviceName' });
 
@@ -23,6 +21,7 @@ export function buildTimeSeriesQueryRunner({
         profileTypeId: profileMetricId || '$profileMetricId',
         labelSelector: `{${selector},$filters}`,
         groupBy: groupBy?.label ? [groupBy.label] : [],
+        limit,
       },
     ],
   });
