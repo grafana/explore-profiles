@@ -4,7 +4,7 @@ import React from 'react';
 
 import { GrotNotFound } from './GrotNotFound';
 
-export interface Props {
+interface Props {
   message: string;
 }
 

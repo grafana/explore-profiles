@@ -11,7 +11,7 @@ export enum TimerangeSelectionMode {
   FLAMEGRAPH = 'flame-graph',
 }
 
-export interface SwitchTimeRangeSelectionTypeActionState extends SceneObjectState {
+interface SwitchTimeRangeSelectionTypeActionState extends SceneObjectState {
   mode: TimerangeSelectionMode;
 }
 

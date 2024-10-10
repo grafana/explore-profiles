@@ -3,7 +3,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { ToolbarButton, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-export interface Props {
+interface Props {
   message?: string;
   onClick?: (e: React.SyntheticEvent) => void;
   ariaLabel?: string;

@@ -42,7 +42,7 @@ import { addRefId, addStats } from '../../../../../SceneByVariableRepeaterGrid/i
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
 
-export interface SceneLabelValuesGridState extends EmbeddedSceneState {
+interface SceneLabelValuesGridState extends EmbeddedSceneState {
   $data: SceneDataProvider;
   isLoading: boolean;
   items: GridItemData[];

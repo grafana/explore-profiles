@@ -9,7 +9,7 @@ import { CompareTarget } from '../../../domain/types';
 import { ItemStats } from '../SceneStatsPanel';
 import { CompareAction } from './CompareAction';
 
-export type StatsPanelProps = {
+type StatsPanelProps = {
   item: GridItemData;
   itemStats?: ItemStats;
   statsDescription: string;

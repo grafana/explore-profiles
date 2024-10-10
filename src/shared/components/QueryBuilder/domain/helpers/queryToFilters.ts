@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { FilterKind, Filters, OperatorKind } from '../types';
 import { buildIsEmptyFilter } from './buildIsEmptyFilter';
 
-export const parseRawFilters = (rawFilters: string): string[][] => {
+const parseRawFilters = (rawFilters: string): string[][] => {
   const matches = rawFilters.matchAll(/(\w+)(=|!=|=~|!~)"([^"]*)"/g);
   return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
 };
