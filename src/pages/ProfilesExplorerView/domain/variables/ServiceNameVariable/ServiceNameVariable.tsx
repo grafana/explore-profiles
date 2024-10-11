@@ -10,6 +10,7 @@ import {
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { userStorage } from '@shared/infrastructure/userStorage';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -30,6 +31,8 @@ export class ServiceNameVariable extends QueryVariable {
   static QUERY_PROFILE_METRIC_DEPENDENT = '$dataSource and only $profileMetricId services';
 
   constructor(state?: ServiceNameVariableState) {
+    const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+
     super({
       key: 'serviceName',
       name: 'serviceName',
@@ -38,6 +41,7 @@ export class ServiceNameVariable extends QueryVariable {
       query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
+      value: serviceNameFromStorage,
       ...state,
     });
 
@@ -45,9 +49,13 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   onActivate() {
-    if (!this.state.value && this.state.options.length) {
-      this.setState({ value: this.state.options[0].value });
-    }
+    this.subscribeToState((newState, prevState) => {
+      if (newState.value && newState.value !== prevState.value) {
+        const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+        storage.serviceName = newState.value;
+        userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
+      }
+    });
   }
 
   async update() {
