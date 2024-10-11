@@ -1,45 +1,11 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { InlineLabel, LinkButton, Spinner, useStyles2 } from '@grafana/ui';
+import { LinkButton, Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
 import { CodeLine } from '../domain/useCodeContainer';
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  codeContainer: css`
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    width: 100%;
-  `,
-
-  label: css`
-    flex-shrink: 1;
-    margin-bottom: 0.5rem;
-    justify-content: start;
-    & > div {
-      margin-left: 18px;
-    }
-  `,
-
-  codeBlock: css`
-    position: relative;
-    min-height: 240px;
-    font-size: 12px;
-    overflow-x: auto;
-    white-space: pre;
-    color: ${theme.colors.text.secondary};
-  `,
-
-  highlighted: css`
-    color: ${theme.colors.text.maxContrast};
-  `,
-  header: css`
-    margin-bottom: 8px;
-  `,
-});
 
 type CodeProps = {
   lines: CodeLine[];
@@ -80,34 +46,40 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
 
   return (
     <div data-testid="function-details-code-container">
-      <div className={styles.codeContainer}>
-        <InlineLabel className={styles.label}>
-          <span>Breakdown per line</span>
-          {isLoadingCode && <Spinner inline />}
-          {noCodeAvailable && <span>&nbsp;- file information unavailable</span>}
-        </InlineLabel>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <div className={styles.breakdownLabel}>
+            <h6>Breakdown per line</h6>
+            <span>
+              {isLoadingCode && <Spinner inline />}
+              {!isLoadingCode && noCodeAvailable && '(file information unavailable)'}
+            </span>
+          </div>
 
-        <LinkButton
-          disabled={Boolean(isLoadingCode || !githubUrl)}
-          href={githubUrl}
-          target="_blank"
-          icon="github"
-          fill="text"
-        >
-          View on GitHub
-        </LinkButton>
+          <div className={styles.buttons}>
+            <LinkButton
+              disabled={Boolean(isLoadingCode || !githubUrl)}
+              href={githubUrl}
+              target="_blank"
+              icon="github"
+              fill="text"
+            >
+              View on GitHub
+            </LinkButton>
 
-        <AIButton
-          onClick={onOptimizeCodeClick}
-          disabled={isLoadingCode || noCodeAvailable}
-          interactionName="g_pyroscope_app_optimize_code_clicked"
-        >
-          Optimize Code
-        </AIButton>
+            <AIButton
+              onClick={onOptimizeCodeClick}
+              disabled={isLoadingCode || noCodeAvailable}
+              interactionName="g_pyroscope_app_optimize_code_clicked"
+            >
+              Optimize Code
+            </AIButton>
+          </div>
+        </div>
       </div>
 
       <pre className={styles.codeBlock} data-testid="function-details-code">
-        <div className={cx(styles.highlighted, styles.header)}>
+        <div className={cx(styles.highlighted, styles.codeBlockHeader)}>
           {formatLine('Total:', formatValue(sumSelf), formatValue(sumTotal), ' (self, total)')}
         </div>
         {lines.map(({ line, number, cum: total, flat: self }) => (
@@ -180,3 +152,51 @@ const longestCommonPrefix = (a: string, b: string): string => {
   }
   return a.substring(0, prefixLen);
 };
+
+const getStyles = (theme: GrafanaTheme2) => ({
+  container: css`
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+  `,
+  header: css`
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    width: 100%;
+  `,
+  breakdownLabel: css`
+    & > h6 {
+      display: inline-block;
+      margin-top: ${theme.spacing(1)};
+    }
+
+    & > span {
+      margin-left: ${theme.spacing(1)};
+      font-size: ${theme.typography.bodySmall.fontSize};
+    }
+
+    & > svg {
+      margin-left: ${theme.spacing(1)};
+    }
+  `,
+  buttons: css`
+    display: flex;
+    flex-wrap: no-wrap;
+  `,
+  codeBlock: css`
+    position: relative;
+    min-height: 240px;
+    font-size: 12px;
+    overflow-x: auto;
+    white-space: pre;
+    color: ${theme.colors.text.secondary};
+  `,
+  highlighted: css`
+    color: ${theme.colors.text.maxContrast};
+  `,
+  codeBlockHeader: css`
+    margin-bottom: 8px;
+  `,
+});

@@ -1,25 +1,17 @@
-import { llms } from '@grafana/experimental';
+import { openai } from '@grafana/llm';
 import { useCallback, useEffect, useState } from 'react';
-import { Subscription } from 'rxjs';
+import { SubscriptionLike } from 'rxjs';
 
 import { buildPrompts, model } from './buildLlmPrompts';
 
-// taken from "@grafana/experimental"
-type Role = 'system' | 'user' | 'assistant' | 'function';
-
-type Message = {
-  role: Role;
-  content: string;
-  name?: string;
-  function_call?: Object;
-};
+type Messages = openai.Message[];
 
 export type OpenAiReply = {
   reply: {
     text: string;
     hasStarted: boolean;
     hasFinished: boolean;
-    messages: Message[];
+    messages: Messages;
     askFollowupQuestion: (question: string) => void;
   };
   retry: () => void;
@@ -30,11 +22,11 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
   const [reply, setReply] = useState('');
   const [replyHasStarted, setReplyHasStarted] = useState(false);
   const [replyHasFinished, setReplyHasFinished] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Messages>([]);
   const [error, setError] = useState<Error | null>(null);
-  const [subscription, setSubscription] = useState<Subscription>();
+  const [subscription, setSubscription] = useState<SubscriptionLike>();
 
-  const sendMessages = useCallback((messagesToSend: Message[]) => {
+  const sendMessages = useCallback((messagesToSend: Messages) => {
     setMessages(messagesToSend);
 
     setError(null);
@@ -43,7 +35,7 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
     setReplyHasStarted(true);
     setReplyHasFinished(false);
 
-    const stream = llms.openai
+    const stream = openai
       .streamChatCompletions({
         model,
         messages: messagesToSend,
@@ -51,7 +43,7 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
       .pipe(
         // Accumulate the stream content into a stream of strings, where each
         // element contains the accumulated message so far.
-        llms.openai.accumulateContent()
+        openai.accumulateContent()
       );
 
     const subscription = stream.subscribe({
@@ -74,7 +66,7 @@ export function useOpenAiChatCompletions(profileType: string, profiles: string[]
 
   const askFollowupQuestion = useCallback(
     (question: string): void => {
-      const messagesToAdd: Message[] = [
+      const messagesToAdd: Messages = [
         {
           role: 'assistant',
           content: reply,
