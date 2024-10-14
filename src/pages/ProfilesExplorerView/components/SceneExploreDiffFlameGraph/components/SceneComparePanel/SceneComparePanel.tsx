@@ -39,7 +39,7 @@ import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 
-export interface SceneComparePanelState extends SceneObjectState {
+interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
   filterKey: 'filtersBaseline' | 'filtersComparison';
   title: string;

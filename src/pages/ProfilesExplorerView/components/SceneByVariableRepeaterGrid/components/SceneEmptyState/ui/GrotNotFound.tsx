@@ -13,7 +13,7 @@ const MAX_ARM_ROTATION = 5;
 const MIN_ARM_TRANSLATION = -5;
 const MAX_ARM_TRANSLATION = 5;
 
-export interface Props {
+interface Props {
   width?: SVGProps<SVGElement>['width'];
   height?: SVGProps<SVGElement>['height'];
   show404?: boolean;

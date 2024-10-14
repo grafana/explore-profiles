@@ -1,7 +1,6 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
-import clsx from 'clsx';
 import React from 'react';
 
 import DecreaseLatency from '../../../../img/decrease-latency.png';
@@ -14,7 +13,7 @@ import { StyledLink } from './StyledLink';
 
 /** This was extracted from the former `styles.module.scss` */
 // TODO Use more spacial and color parameters from `theme`
-export const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = (theme: GrafanaTheme2) => ({
   onboardingRow: css`
     background: ${theme.colors.background.secondary};
     display: flex;
@@ -173,7 +172,7 @@ export function OnboardingModal() {
                 </p>
               </div>
               <div className={styles.onboardingPanel}>
-                <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
+                <div className={cx(styles.onboardingPanelNumber, styles.color2)}>
                   <span className={styles.onboardingPanelNumberSpan}>2</span>
                 </div>
                 <h3 className={styles.onboardingPanelHeader}>Configure Your Applications</h3>
@@ -183,7 +182,7 @@ export function OnboardingModal() {
                 </p>
               </div>
               <div className={styles.onboardingPanel}>
-                <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
+                <div className={cx(styles.onboardingPanelNumber, styles.color3)}>
                   <span className={styles.onboardingPanelNumberSpan}>3</span>
                 </div>
                 <h3 className={styles.onboardingPanelHeader}>Start Getting Performance Insights</h3>
@@ -207,7 +206,7 @@ export function OnboardingModal() {
                 </p>
               </div>
               <div className={styles.onboardingPanel}>
-                <div className={clsx(styles.onboardingPanelNumber, styles.color2)}>
+                <div className={cx(styles.onboardingPanelNumber, styles.color2)}>
                   <span className={styles.onboardingPanelNumberSpan}>2</span>
                 </div>
                 <h3 className={styles.onboardingPanelHeader}>Configure Grafana</h3>
@@ -217,7 +216,7 @@ export function OnboardingModal() {
                 </p>
               </div>
               <div className={styles.onboardingPanel}>
-                <div className={clsx(styles.onboardingPanelNumber, styles.color3)}>
+                <div className={cx(styles.onboardingPanelNumber, styles.color3)}>
                   <span className={styles.onboardingPanelNumberSpan}>3</span>
                 </div>
                 <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>

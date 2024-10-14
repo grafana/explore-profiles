@@ -6,7 +6,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Suggestion, Suggestions } from '../../domain/types';
 import { MESSAGES } from '../constants';
 
-export type MultipleEditionSelectProps = {
+type MultipleEditionSelectProps = {
   selection: Suggestion;
   suggestions: any;
   onCloseMenu: (values: Suggestions) => void;

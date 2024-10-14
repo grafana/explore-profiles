@@ -22,7 +22,7 @@ import { TitleItem } from './TitleItem';
 /**
  * @internal
  */
-export interface PanelChromeProps {
+interface PanelChromeProps {
   children: ReactNode;
   padding?: PanelPadding;
   hoverHeaderOffset?: number;
@@ -58,7 +58,7 @@ export interface PanelChromeProps {
 /**
  * @internal
  */
-export type PanelPadding = 'none' | 'md';
+type PanelPadding = 'none' | 'md';
 
 /**
  * @internal

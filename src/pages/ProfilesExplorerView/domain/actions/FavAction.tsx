@@ -8,7 +8,7 @@ import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types
 import { Favorite, FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { interpolateQueryRunnerVariables } from '../../infrastructure/helpers/interpolateQueryRunnerVariables';
 
-export interface FavActionState extends SceneObjectState {
+interface FavActionState extends SceneObjectState {
   item: GridItemData;
   isFav?: boolean;
   skipVariablesInterpolation?: boolean;
