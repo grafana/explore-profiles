@@ -16,8 +16,8 @@ type QueryToAppPluginContext = {
 export const plugin = new AppPlugin<AppPluginSettings>()
   .addLink({
     targets: [QueryToAppPlugin],
-    title: 'Explore with Profiles app',
-    description: 'Link to Explore Profiles app',
+    title: 'Explore Profiles',
+    description: 'Try our new queryless experience for profiles',
     path: '/a/grafana-pyroscope-app/profiles-explorer',
     configure(context: QueryToAppPluginContext | undefined) {
       if (!context || !context.query || !context.datasource) {
