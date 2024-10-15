@@ -1,5 +1,5 @@
-import { reportInteraction } from '@grafana/runtime';
 import { displayError } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import 'compression-streams-polyfill';
 import saveAs from 'file-saver';
 
@@ -10,7 +10,7 @@ import { getExportFilename } from './getExportFilename';
 /* Note: no pprof export, as the underlying API only accepts a single query (see PprofApiClient) */
 export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportDataProps) {
   const downloadPng = () => {
-    reportInteraction('g_pyroscope_export_profile', { format: 'png' });
+    reportInteraction('g_pyroscope_app_export_profile', { format: 'png' });
 
     const customExportName = getExportFilename(profile.metadata.appName);
     const filename = `${customExportName}.png`;
@@ -30,7 +30,7 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   };
 
   const downloadJson = () => {
-    reportInteraction('g_pyroscope_export_profile', { format: 'json' });
+    reportInteraction('g_pyroscope_app_export_profile', { format: 'json' });
 
     const customExportName = getExportFilename(profile.metadata.appName);
     const filename = `${customExportName}.json`;
@@ -40,7 +40,7 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
   };
 
   const uploadToFlamegraphDotCom = async () => {
-    reportInteraction('g_pyroscope_export_profile', { format: 'flamegraph.com' });
+    reportInteraction('g_pyroscope_app_export_profile', { format: 'flamegraph.com' });
 
     const customExportName = getExportFilename(profile.metadata.appName);
 

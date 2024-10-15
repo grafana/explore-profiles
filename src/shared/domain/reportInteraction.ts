@@ -23,10 +23,12 @@ function getExtraProperties() {
   return extraProperties;
 }
 
+// hey future dev: don't forget to add any new value to our features tracking dashboard!
 export type INTERACTION_NAME =
   | 'g_pyroscope_app_compare_link_clicked'
   | 'g_pyroscope_app_explain_flamegraph_clicked'
   | 'g_pyroscope_app_exploration_type_clicked'
+  | 'g_pyroscope_app_export_profile'
   | 'g_pyroscope_app_fav_action_clicked'
   | 'g_pyroscope_app_function_details_clicked'
   | 'g_pyroscope_app_group_by_label_clicked'
@@ -44,6 +46,8 @@ export type INTERACTION_NAME =
 type INTERACTION_PROPERTIES =
   // g_pyroscope_app_exploration_type_clicked
   | { explorationType: string }
+  // g_pyroscope_app_export_profile
+  | { format: 'png' | 'json' | 'flamegraph.com' }
   // g_pyroscope_app_fav_action_clicked
   | { favAfterClick: boolean }
   // g_pyroscope_app_group_by_label_clicked
