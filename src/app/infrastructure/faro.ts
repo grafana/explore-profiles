@@ -10,7 +10,7 @@ const ENVS = [
   // Uncomment to test from your local machine
   // {
   //   matchHost: /localhost/,
-  //   faroUrl: 'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/4156fc46764bac24484d51e1f26defc8',
+  //   faroUrl: 'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/d6ca259b3387e6ddd641973d0fad3ed0',
   //   appName: 'grafana-pyroscope-local',
   //   environment: 'local',
   // },
