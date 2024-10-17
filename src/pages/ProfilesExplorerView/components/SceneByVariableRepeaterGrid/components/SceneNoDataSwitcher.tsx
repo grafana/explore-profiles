@@ -44,7 +44,7 @@ export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherStat
     this.setState(stateUpdate);
   }
 
-  onChange = (hideNoData: string) => {
+  onChange = (hideNoData: 'on' | 'off') => {
     reportInteraction('g_pyroscope_app_hide_no_data_changed', { hideNoData });
 
     this.setState({ hideNoData });
