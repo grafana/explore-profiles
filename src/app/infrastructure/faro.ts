@@ -1,58 +1,45 @@
-import { Faro, getWebInstrumentations, initializeFaro, MetaUser } from '@grafana/faro-web-sdk';
+import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk';
 import { TracingInstrumentation } from '@grafana/faro-web-tracing';
 import { config } from '@grafana/runtime';
 
 import { PYROSCOPE_APP_ID } from '../../constants';
 import { GIT_COMMIT } from '../../version';
+import { getUserInfo } from './getUserInfo';
 
 const ENVS = [
   // Uncomment to test from your local machine
   // {
-  //   matchHost:/localhost/,
-  //   faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/463f8b5f923a05942a042b078fe73a5b',
+  //   matchHost: /localhost/,
+  //   faroUrl: 'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/d6ca259b3387e6ddd641973d0fad3ed0',
   //   appName: 'grafana-pyroscope-local',
   //   environment: 'local',
   // },
   {
     matchHost: /grafana-dev\.net/,
-    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/ef0e8de540b188353797d3d95a3b62f8',
+    faroUrl: 'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/48e03a2647389f2f6494af7f975b4084',
     appName: 'grafana-pyroscope-dev',
     environment: 'dev',
   },
   {
     matchHost: /grafana-ops\.net/,
-    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/7d1458bdee74eef4d3d7c57665862e33',
+    faroUrl: 'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/b5cfd5eeb412cf5e74bd828b4ddd17ff',
     appName: 'grafana-pyroscope-ops',
     environment: 'ops',
   },
   {
     matchHost: /grafana\.net/,
-    faroUrl: 'https://faro-collector-prod-us-central-0.grafana.net/collect/20ca4982e590cb9b90ad1a6e9f152230',
+    faroUrl: 'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/6cbe17b3af4b72ce5936bf4d15a5c393',
     appName: 'grafana-pyroscope-prod',
     environment: 'prod',
   },
 ];
-
-const matchHost = (host: string) => ENVS.find((a) => a.matchHost.test(host));
-
-function extractUserMeta(): MetaUser {
-  const { id, email, login } = config.bootData.user;
-
-  const user = {
-    id: String(id),
-    email: email,
-    username: login,
-  };
-
-  return user;
-}
 
 function init(): Faro | undefined {
   if (!window?.location?.host) {
     return;
   }
 
-  const env = matchHost(window.location.host);
+  const env = ENVS.find((e) => e.matchHost.test(window.location.host));
   if (!env) {
     return;
   }
@@ -65,9 +52,16 @@ function init(): Faro | undefined {
       version: GIT_COMMIT,
       environment: env.environment,
     },
+    user: getUserInfo(),
     instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
     isolate: true,
-    user: extractUserMeta(),
+    beforeSend: (event) => {
+      if ((event.meta.page?.url ?? '').includes(PYROSCOPE_APP_ID)) {
+        return event;
+      }
+
+      return null;
+    },
   });
 }
 

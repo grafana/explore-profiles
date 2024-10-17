@@ -24,7 +24,7 @@ function getExtraProperties() {
 }
 
 // hey future dev: don't forget to add any new value to our features tracking dashboard!
-export type INTERACTION_NAME =
+export type InteractionName =
   | 'g_pyroscope_app_compare_link_clicked'
   | 'g_pyroscope_app_explain_flamegraph_clicked'
   | 'g_pyroscope_app_exploration_type_clicked'
@@ -43,7 +43,7 @@ export type INTERACTION_NAME =
   | 'g_pyroscope_app_share_link_clicked'
   | 'g_pyroscope_app_user_settings_clicked';
 
-type INTERACTION_PROPERTIES =
+type InteractionProperties =
   // g_pyroscope_app_exploration_type_clicked
   | { explorationType: string }
   // g_pyroscope_app_export_profile
@@ -61,7 +61,7 @@ type INTERACTION_PROPERTIES =
   // g_pyroscope_app_select_action_clicked
   | { type: string };
 
-export function reportInteraction(interactionName: INTERACTION_NAME, properties?: INTERACTION_PROPERTIES) {
+export function reportInteraction(interactionName: InteractionName, properties?: InteractionProperties) {
   grafanaReportInteraction(interactionName, {
     ...properties,
     ...getExtraProperties(),
