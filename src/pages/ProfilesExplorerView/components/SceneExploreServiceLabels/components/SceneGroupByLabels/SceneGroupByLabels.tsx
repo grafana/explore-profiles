@@ -11,17 +11,21 @@ import {
 import { Stack, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
+import {
+  EventExcludeLabelFromFilters,
+  EventIncludeLabelInFilters,
+} from 'src/pages/ProfilesExplorerView/domain/events/EventIncludeLabelInFilters';
 import { EventViewDiffFlameGraph } from 'src/pages/ProfilesExplorerView/domain/events/EventViewDiffFlameGraph';
 
 import { FavAction } from '../../../../domain/actions/FavAction';
 import { SelectAction } from '../../../../domain/actions/SelectAction';
-import { EventAddLabelToFilters } from '../../../../domain/events/EventAddLabelToFilters';
 import { EventExpandPanel } from '../../../../domain/events/EventExpandPanel';
 import { EventSelectLabel } from '../../../../domain/events/EventSelectLabel';
 import { EventViewServiceFlameGraph } from '../../../../domain/events/EventViewServiceFlameGraph';
-import { addFilter } from '../../../../domain/variables/FiltersVariable/filters-ops';
+import { excludeFromFilter, includeInFilter } from '../../../../domain/variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
@@ -132,13 +136,18 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       this.selectForCompare(compareTarget, item);
     });
 
-    const addToFiltersSub = this.subscribeToEvent(EventAddLabelToFilters, (event) => {
-      this.addLabelValueToFilters(event.payload.item);
+    const includeFilterSub = this.subscribeToEvent(EventIncludeLabelInFilters, (event) => {
+      this.includeLabelValueInFilters(event.payload.item);
+    });
+
+    const excludeFilterSub = this.subscribeToEvent(EventExcludeLabelFromFilters, (event) => {
+      this.excludeLabelValueFromFilters(event.payload.item);
     });
 
     return {
       unsubscribe() {
-        addToFiltersSub.unsubscribe();
+        excludeFilterSub.unsubscribe();
+        includeFilterSub.unsubscribe();
         selectForCompareSub.unsubscribe();
         expandPanelSub.unsubscribe();
         selectLabelSub.unsubscribe();
@@ -242,8 +251,22 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       startColorIndex,
       label,
       headerActions: (item) => [
-        new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-        new SelectAction({ EventClass: EventAddLabelToFilters, item }),
+        new SelectAction({ EventClass: EventIncludeLabelInFilters, item }),
+        new SelectAction({ EventClass: EventExcludeLabelFromFilters, item }),
+        new SelectAction({
+          EventClass: EventViewServiceFlameGraph,
+          item,
+          tooltip: (item, model) => {
+            const { queryRunnerParams, label } = item;
+            const profileMetricId =
+              queryRunnerParams.profileMetricId || getSceneVariableValue(model, 'profileMetricId');
+            const groupByValue = getSceneVariableValue(model, 'groupBy');
+
+            return `View the "${
+              getProfileMetric(profileMetricId as ProfileMetricId).type
+            }" flame graph for "${groupByValue}=${label}"`;
+          },
+        }),
         new FavAction({ item }),
       ],
     });
@@ -260,16 +283,14 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     this.state.drawer.close();
   }
 
-  addLabelValueToFilters(item: GridItemData) {
-    const { filters } = item.queryRunnerParams;
+  includeLabelValueInFilters(item: GridItemData) {
+    const [filterToInclude] = item.queryRunnerParams.filters!;
+    includeInFilter(sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable), filterToInclude);
+  }
 
-    if (filters?.[0]) {
-      const filterToAdd = filters?.[0];
-      addFilter(sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable), filterToAdd);
-      return;
-    }
-
-    console.error('Cannot build filter! Missing "filters" and "groupBy" value.', item);
+  excludeLabelValueFromFilters(item: GridItemData) {
+    const [filterToExclude] = item.queryRunnerParams.filters!;
+    excludeFromFilter(sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable), filterToExclude);
   }
 
   openExpandedPanelDrawer(item: GridItemData) {
