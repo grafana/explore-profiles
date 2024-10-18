@@ -36,7 +36,7 @@ export class ServiceNameVariable extends QueryVariable {
     super({
       key: 'serviceName',
       name: 'serviceName',
-      label: '🚀 Service',
+      label: 'Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
