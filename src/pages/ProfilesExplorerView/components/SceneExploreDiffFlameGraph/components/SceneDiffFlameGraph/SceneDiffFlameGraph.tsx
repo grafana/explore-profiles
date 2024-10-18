@@ -245,7 +245,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     margin-top: ${theme.spacing(1)};
   `,
   collapse: css`
-    padding: 0;
     background: transparent;
     border: 0;
   `,
