@@ -1,13 +1,13 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
+import DecreaseLatency from '@img/decrease-latency.png';
+import HeroImageExploreProfiles from '@img/hero-image-explore-profiles.png';
+import HeroImage from '@img/hero-image.png';
+import ReduceCosts from '@img/reduce-costs.png';
+import ResolveIncidents from '@img/resolve-incidents.png';
 import React from 'react';
 
-import DecreaseLatency from '../../../../img/decrease-latency.png';
-import HeroImageExploreProfiles from '../../../../img/hero-image-explore-profiles.png';
-import HeroImage from '../../../../img/hero-image.png';
-import ReduceCosts from '../../../../img/reduce-costs.png';
-import ResolveIncidents from '../../../../img/resolve-incidents.png';
 import { useOnboardingModal } from '../domain/useOnboardingModal';
 import { StyledLink } from './StyledLink';
 

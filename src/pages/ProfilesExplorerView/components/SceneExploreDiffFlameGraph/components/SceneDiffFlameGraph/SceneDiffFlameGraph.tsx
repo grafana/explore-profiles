@@ -1,7 +1,8 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Spinner, useStyles2 } from '@grafana/ui';
+import { Collapse, Spinner, useStyles2 } from '@grafana/ui';
+import DiffViewHowToImg from '@img/diff-view-how-to.gif';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
@@ -11,7 +12,7 @@ import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
@@ -139,6 +140,8 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
       [data.isLoading, data.title, styles.spinner]
     );
 
+    const [isCollapseOpen, setIsCollapseOpen] = useState(false);
+
     return (
       <div className={styles.flex}>
         <Panel
@@ -159,8 +162,27 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
           {data.shouldDisplayInfo && (
             <InlineBanner
               severity="info"
-              title=""
-              message="Select both the baseline and the comparison flame graph time ranges to view the diff flame graph."
+              title="Select both the baseline and the comparison flame graph time ranges to view the diff flame graph"
+              message={
+                <Collapse
+                  label="How?"
+                  collapsible
+                  className={styles.collapse}
+                  isOpen={isCollapseOpen}
+                  onToggle={() => setIsCollapseOpen(!isCollapseOpen)}
+                >
+                  <div className={styles.infoBanner}>
+                    <ol>
+                      <li>Ensure that the &ldquo;Flame graph&rdquo; range selection mode is selected</li>
+                      <li>
+                        Use your mouse to select the desired time ranges on both the baseline and the comparison time
+                        series
+                      </li>
+                    </ol>
+                    <img src={DiffViewHowToImg} alt="How to view the diff flame graph" />
+                  </div>
+                </Collapse>
+              }
             />
           )}
 
@@ -221,5 +243,19 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   aiButton: css`
     margin-top: ${theme.spacing(1)};
+  `,
+  collapse: css`
+    padding: 0;
+    background: transparent;
+    border: 0;
+  `,
+  infoBanner: css`
+    padding: 0 ${theme.spacing(3)};
+
+    & img {
+      max-width: 100%;
+      width: auto;
+      margin-top: ${theme.spacing(2)};
+    }
   `,
 });
