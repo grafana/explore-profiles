@@ -51,7 +51,7 @@ import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/componen
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { Header } from './components/Header';
 
-interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
+export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   $timeRange: SceneTimeRange;
   $variables: SceneVariableSet;
   gridControls: Array<SceneObject & { key?: string }>;
@@ -356,29 +356,40 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   useProfilesExplorer = (): DomainHookReturnValue => {
-    const { body, $variables } = this.useState();
+    const { explorationType, controls, body, $variables } = this.useState();
 
     const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
     const dataSourceUid = dataSourceVariable.useState().value as string;
 
     return {
       data: {
+        explorationType,
+        controls,
         body,
+        $variables,
         dataSourceUid,
       },
-      actions: {},
+      actions: {
+        onChangeExplorationType: this.onChangeExplorationType,
+      },
     };
   };
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
 
-    const { data } = model.useProfilesExplorer();
-    const { body, dataSourceUid } = data;
+    const { data, actions } = model.useProfilesExplorer();
+    const { explorationType, controls, body, $variables, dataSourceUid } = data;
 
     return (
       <GitHubContextProvider dataSourceUid={dataSourceUid}>
-        <Header model={model} />
+        <Header
+          explorationType={explorationType}
+          controls={controls}
+          body={body}
+          $variables={$variables}
+          onChangeExplorationType={actions.onChangeExplorationType}
+        />
 
         <div className={styles.body} data-testid="sceneBody">
           {body && <body.Component model={body} />}

@@ -6,7 +6,8 @@ import { useHistory } from 'react-router-dom';
 import { PLUGIN_BASE_URL } from 'src/constants';
 
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
-import { ExplorationType, SceneProfilesExplorer } from '../../SceneProfilesExplorer';
+import { ExplorationType } from '../../SceneProfilesExplorer';
+import { HeaderProps } from '../Header';
 import { builsShareableUrl } from './builsShareableUrl';
 
 async function onClickShareLink() {
@@ -22,9 +23,7 @@ async function onClickShareLink() {
   }
 }
 
-export function useHeader(model: SceneProfilesExplorer) {
-  const { explorationType, controls, body, $variables } = model.useState();
-
+export function useHeader({ explorationType, controls, body, $variables, onChangeExplorationType }: HeaderProps) {
   const [timePickerControl, refreshPickerControl] =
     explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as [SceneObject, SceneObject]);
 
@@ -59,7 +58,7 @@ export function useHeader(model: SceneProfilesExplorer) {
       dataSourceUid,
     },
     actions: {
-      onChangeExplorationType: model.onChangeExplorationType,
+      onChangeExplorationType,
       onClickShareLink,
       onClickUserSettings: useCallback(() => {
         reportInteraction('g_pyroscope_app_user_settings_clicked');

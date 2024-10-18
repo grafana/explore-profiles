@@ -6,22 +6,25 @@ import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
 
 import { GiveFeedbackButton } from '../../GiveFeedbackButton';
-import { SceneProfilesExplorer } from '../SceneProfilesExplorer';
+import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { useHeader } from './domain/useHeader';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
-type HeaderProps = {
-  model: SceneProfilesExplorer;
+export type HeaderProps = {
+  explorationType: SceneProfilesExplorerState['explorationType'];
+  controls: SceneProfilesExplorerState['controls'];
+  body: SceneProfilesExplorerState['body'];
+  $variables: SceneProfilesExplorerState['$variables'];
+  onChangeExplorationType: (explorationType: string) => void;
 };
 
-export function Header({ model }: HeaderProps) {
+export function Header(props: HeaderProps) {
   const chromeHeaderHeight = useChromeHeaderHeight();
   const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0);
 
-  const { data, actions } = useHeader(model);
+  const { data, actions } = useHeader(props);
 
-  const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
-    data;
+  const { dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } = data;
 
   return (
     <div className={styles.header} data-testid="allControls">
@@ -36,7 +39,7 @@ export function Header({ model }: HeaderProps) {
 
           <ExplorationTypeSelector
             options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
-            value={explorationType as string}
+            value={data.explorationType as string}
             onChange={actions.onChangeExplorationType}
           />
         </div>
@@ -63,7 +66,7 @@ export function Header({ model }: HeaderProps) {
         </div>
       </div>
 
-      <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
+      <div id={`scene-controls-${data.explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
         {sceneVariables.map((variable) => (
           <div key={variable.state.name} className={styles.variable} data-testid={variable.state.name}>
             {variable.state.label && <InlineLabel width="auto">{variable.state.label}</InlineLabel>}
