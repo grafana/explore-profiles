@@ -24,7 +24,8 @@ export function Header(props: HeaderProps) {
 
   const { data, actions } = useHeader(props);
 
-  const { dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } = data;
+  const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
+    data;
 
   return (
     <div className={styles.header} data-testid="allControls">
@@ -39,7 +40,7 @@ export function Header(props: HeaderProps) {
 
           <ExplorationTypeSelector
             options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
-            value={data.explorationType as string}
+            value={explorationType as string}
             onChange={actions.onChangeExplorationType}
           />
         </div>
@@ -66,7 +67,7 @@ export function Header(props: HeaderProps) {
         </div>
       </div>
 
-      <div id={`scene-controls-${data.explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
+      <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
         {sceneVariables.map((variable) => (
           <div key={variable.state.name} className={styles.variable} data-testid={variable.state.name}>
             {variable.state.label && <InlineLabel width="auto">{variable.state.label}</InlineLabel>}
