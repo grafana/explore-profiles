@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
-import { dateMath, GrafanaTheme2 } from '@grafana/data';
-import { useChromeHeaderHeight } from '@grafana/runtime';
+import { GrafanaTheme2 } from '@grafana/data';
 import {
   EmbeddedSceneState,
   getUrlSyncManager,
@@ -14,20 +13,16 @@ import {
   SceneTimePicker,
   SceneTimeRange,
   sceneUtils,
-  SceneVariable,
   SceneVariableSet,
   SplitLayout,
 } from '@grafana/scenes';
-import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
-import { displayError, displaySuccess } from '@shared/domain/displayStatus';
+import { useStyles2 } from '@grafana/ui';
+import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { PluginInfo } from '@shared/ui/PluginInfo';
-import { History } from 'history';
-import React, { useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+import React from 'react';
 
-import { PLUGIN_BASE_URL } from '../../../../constants';
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
@@ -45,7 +40,6 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
-import { GiveFeedbackButton } from '../GiveFeedbackButton';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
@@ -55,7 +49,7 @@ import { SceneTimeRangeWithAnnotations } from '../SceneExploreDiffFlameGraph/com
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
-import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
+import { Header } from './components/Header';
 
 interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   $timeRange: SceneTimeRange;
@@ -65,7 +59,7 @@ interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   body?: SplitLayout;
 }
 
-enum ExplorationType {
+export enum ExplorationType {
   ALL_SERVICES = 'all',
   PROFILE_TYPES = 'profiles',
   LABELS = 'labels',
@@ -361,154 +355,30 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   };
 
-  onClickShareLink = async () => {
-    reportInteraction('g_pyroscope_app_share_link_clicked');
-
-    try {
-      const shareableUrl = new URL(window.location.toString());
-      const { searchParams } = shareableUrl;
-
-      searchParams.delete('query'); // TODO: temp while removing the comparison pages
-
-      ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'diffFrom', 'diffTo', 'diffFrom-2', 'diffTo-2'].forEach(
-        (name) => {
-          const value = searchParams.get(name);
-          if (value) {
-            searchParams.set(name, String(dateMath.parse(value)!.valueOf()));
-          }
-        }
-      );
-
-      await navigator.clipboard.writeText(shareableUrl.toString());
-      displaySuccess(['Link copied to clipboard!']);
-    } catch (error) {
-      console.error('Error while creating the shareable link!');
-      console.error(error);
-    }
-  };
-
-  onClickUserSettings(history: History) {
-    reportInteraction('g_pyroscope_app_user_settings_clicked');
-
-    history.push(`${PLUGIN_BASE_URL}/settings`);
-  }
-
-  useProfilesExplorer = () => {
-    const { explorationType, controls, body, $variables } = this.useState();
-
-    const [timePickerControl, refreshPickerControl] =
-      explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as [SceneObject, SceneObject]);
+  useProfilesExplorer = (): DomainHookReturnValue => {
+    const { body, $variables } = this.useState();
 
     const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
-
-    const bodySceneObject = body?.state.primary as any;
-
-    if (typeof bodySceneObject.getVariablesAndGridControls !== 'function') {
-      throw new Error(
-        `Error while rendering "${bodySceneObject.constructor.name}": the "getVariablesAndGridControls" method is missing! Please implement it.`
-      );
-    }
-
-    const { variables: sceneVariables, gridControls } = bodySceneObject.getVariablesAndGridControls() as {
-      variables: SceneVariable[];
-      gridControls: SceneObject[];
-    };
-
     const dataSourceUid = dataSourceVariable.useState().value as string;
-
-    const history = useHistory();
 
     return {
       data: {
-        explorationType,
-        dataSourceVariable,
-        timePickerControl,
-        refreshPickerControl,
-        sceneVariables,
-        gridControls,
         body,
         dataSourceUid,
       },
-      actions: {
-        onChangeExplorationType: this.onChangeExplorationType,
-        onClickShareLink: this.onClickShareLink,
-        onClickUserSettings: useCallback(() => {
-          this.onClickUserSettings(history);
-        }, [history]),
-      },
+      actions: {},
     };
   };
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
-    const chromeHeaderHeight = useChromeHeaderHeight(); // eslint-disable-line react-hooks/rules-of-hooks
-    const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0); // eslint-disable-line react-hooks/rules-of-hooks
-    const { data, actions } = model.useProfilesExplorer();
+    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
 
-    const {
-      explorationType,
-      dataSourceVariable,
-      timePickerControl,
-      refreshPickerControl,
-      sceneVariables,
-      gridControls,
-      body,
-      dataSourceUid,
-    } = data;
+    const { data } = model.useProfilesExplorer();
+    const { body, dataSourceUid } = data;
 
     return (
       <GitHubContextProvider dataSourceUid={dataSourceUid}>
-        <div className={styles.header} data-testid="allControls">
-          <GiveFeedbackButton />
-
-          <div className={styles.controls} data-testid="appControls">
-            <div className={styles.headerLeft}>
-              <div className={styles.dataSourceVariable}>
-                <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
-                <dataSourceVariable.Component model={dataSourceVariable} />
-              </div>
-
-              <ExplorationTypeSelector
-                options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
-                value={explorationType as string}
-                onChange={actions.onChangeExplorationType}
-              />
-            </div>
-
-            <div className={styles.headerRight}>
-              {timePickerControl && (
-                <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
-              )}
-              {refreshPickerControl && (
-                <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
-              )}
-
-              <div className={styles.miscButtons}>
-                <IconButton name="cog" tooltip="View/edit user settings" onClick={actions.onClickUserSettings} />
-
-                <IconButton
-                  name="share-alt"
-                  tooltip="Copy shareable link to the clipboard"
-                  onClick={actions.onClickShareLink}
-                />
-
-                <PluginInfo />
-              </div>
-            </div>
-          </div>
-
-          <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
-            {sceneVariables.map((variable) => (
-              <div key={variable.state.name} className={styles.variable} data-testid={variable.state.name}>
-                {variable.state.label && <InlineLabel width="auto">{variable.state.label}</InlineLabel>}
-                <variable.Component model={variable} />
-              </div>
-            ))}
-
-            {gridControls.map((control) => (
-              <control.Component key={control.state.key} model={control} />
-            ))}
-          </div>
-        </div>
+        <Header model={model} />
 
         <div className={styles.body} data-testid="sceneBody">
           {body && <body.Component model={body} />}
@@ -518,63 +388,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 }
 
-const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
-  header: css`
-    background-color: ${theme.colors.background.canvas};
-    position: sticky;
-    top: ${chromeHeaderHeight}px;
-    z-index: 1;
-  `,
-  controls: css`
-    display: flex;
-    padding: ${theme.spacing(1)} 0;
-    justify-content: space-between;
-    gap: ${theme.spacing(2)};
-  `,
-  headerLeft: css`
-    display: flex;
-    gap: ${theme.spacing(1)};
-  `,
-  headerRight: css`
-    display: flex;
-    gap: ${theme.spacing(1)};
-  `,
-  miscButtons: css`
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    border: 1px solid ${theme.colors.border.weak};
-    background-color: ${theme.colors.background.secondary};
-    height: 32px;
-    padding: 0 ${theme.spacing(1)};
-
-    & svg {
-      width: 18px;
-      height: 18px;
-    }
-  `,
-  dataSourceVariable: css`
-    display: flex;
-    ${theme.breakpoints.down('xxl')} {
-      label {
-        display: none;
-      }
-    }
-  `,
-  variable: css`
-    display: flex;
-  `,
-  sceneControls: css`
-    display: flex;
-    flex-wrap: wrap;
-    gap: ${theme.spacing(1)};
-    padding: 0 0 ${theme.spacing(1)} 0;
-
-    &#scene-controls-labels > div:last-child,
-    &#scene-controls-flame-graph > div:last-child {
-      flex-grow: 1;
-    }
-  `,
+const getStyles = (theme: GrafanaTheme2) => ({
   body: css`
     position: relative;
     z-index: 0;
