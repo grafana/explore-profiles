@@ -26,7 +26,9 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
 
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
-      <InlineLabel width="auto">Exploration</InlineLabel>
+      <InlineLabel width="auto">
+        <img className={styles.logo} src="public/plugins/grafana-pyroscope-app/img/logo.svg" /> Exploration
+      </InlineLabel>
 
       <div className={styles.breadcrumb}>
         {options.map((option, i) => {
@@ -67,6 +69,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
         display: none;
       }
     }
+  `,
+  logo: css`
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
   `,
   breadcrumb: css`
     height: 32px;

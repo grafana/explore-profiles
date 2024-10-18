@@ -1,7 +1,7 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useChromeHeaderHeight } from '@grafana/runtime';
-import { IconButton, InlineLabel, useStyles2 } from '@grafana/ui';
+import { Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
 import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
 
@@ -33,11 +33,6 @@ export function Header(props: HeaderProps) {
 
       <div className={styles.controls} data-testid="appControls">
         <div className={styles.headerLeft}>
-          <div className={styles.dataSourceVariable}>
-            <InlineLabel width="auto">{dataSourceVariable.state.label}</InlineLabel>
-            <dataSourceVariable.Component model={dataSourceVariable} />
-          </div>
-
           <ExplorationTypeSelector
             options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
             value={explorationType as string}
@@ -68,15 +63,38 @@ export function Header(props: HeaderProps) {
       </div>
 
       <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
+        <Field
+          label={dataSourceVariable.state.label}
+          className={cx(styles.variable, dataSourceVariable.state.name)}
+          data-testid={dataSourceVariable.state.name}
+        >
+          <dataSourceVariable.Component model={dataSourceVariable} />
+        </Field>
+
         {sceneVariables.map((variable) => (
-          <div key={variable.state.name} className={styles.variable} data-testid={variable.state.name}>
-            {variable.state.label && <InlineLabel width="auto">{variable.state.label}</InlineLabel>}
+          <Field
+            key={variable.state.name}
+            label={
+              variable.state.label === 'Filters' ? (
+                <div className={styles.variableLabel}>
+                  <Icon name="filter" className={styles.icon} />
+                  {variable.state.label}
+                </div>
+              ) : (
+                variable.state.label
+              )
+            }
+            className={cx(styles.variable, variable.state.name)}
+            data-testid={variable.state.name}
+          >
             <variable.Component model={variable} />
-          </div>
+          </Field>
         ))}
 
         {gridControls.map((control) => (
-          <control.Component key={control.state.key} model={control} />
+          <Field key={control.state.key} className={cx(styles.gridControl, control.state.key)} label="">
+            <control.Component model={control} />
+          </Field>
         ))}
       </div>
     </div>
@@ -118,26 +136,45 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
       height: 18px;
     }
   `,
-  dataSourceVariable: css`
-    display: flex;
-    ${theme.breakpoints.down('xxl')} {
-      label {
-        display: none;
-      }
-    }
-  `,
-  variable: css`
-    display: flex;
-  `,
   sceneControls: css`
     display: flex;
     flex-wrap: wrap;
     gap: ${theme.spacing(1)};
     padding: 0 0 ${theme.spacing(1)} 0;
+    margin-top: 12px;
 
     &#scene-controls-labels > div:last-child,
     &#scene-controls-flame-graph > div:last-child {
       flex-grow: 1;
+    }
+  `,
+  variable: css`
+    display: flex;
+    margin-bottom: 0;
+
+    & #dataSource {
+      width: ${theme.spacing(32)};
+    }
+  `,
+  variableLabel: css`
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 15px;
+    height: 15px;
+    margin-bottom: 4px;
+    color: rgb(204, 204, 220);
+    max-width: 480px;
+  `,
+  icon: css`
+    display: inline-block;
+    margin-right: 4px;
+  `,
+  gridControl: css`
+    margin-bottom: 0;
+
+    &.quick-filter {
+      flex: 1;
+      min-width: 112px;
     }
   `,
 });
