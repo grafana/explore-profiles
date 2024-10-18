@@ -43,7 +43,7 @@ test.describe('Diff flame graph view', () => {
 
     const diffFlameGraphPanel = exploreProfilesPage.getByTestId('diff-flame-graph-panel');
     await expect(diffFlameGraphPanel).toContainText(
-      'Select both the baseline and the comparison flame graph time ranges to view the diff flame graph.'
+      'Select both the baseline and the comparison flame graph time ranges to view the diff flame graph'
     );
 
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({

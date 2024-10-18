@@ -44,7 +44,9 @@ export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTi
           <Tooltip
             content={
               <div className={styles.tooltip}>
-                <div>Use these buttons to change the behaviour when selecting a time range on the panel:</div>
+                <div>
+                  Use these buttons to change the behaviour when selecting a range with the mouse on the time series:
+                </div>
                 <dl>
                   <dt>Time picker</dt>
                   <dd>Time range zoom in (default behaviour)</dd>
