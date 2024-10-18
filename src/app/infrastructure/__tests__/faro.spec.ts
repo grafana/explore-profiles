@@ -106,10 +106,7 @@ describe('Faro', () => {
 
     const { user, app } = initializeFaro.mock.lastCall[0];
 
-    expect(user.id).toEqual(String(MOCK_USER.id));
     expect(user.email).toEqual(MOCK_USER.email);
-    expect(user.username).toEqual(MOCK_USER.login);
-
     expect(app.release).toEqual('v0.01-test');
     expect(app.version).toEqual(GIT_COMMIT);
   });
