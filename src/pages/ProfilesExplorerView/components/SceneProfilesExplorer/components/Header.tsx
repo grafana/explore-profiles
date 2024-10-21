@@ -162,7 +162,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
     line-height: 15px;
     height: 15px;
     margin-bottom: 4px;
-    color: rgb(204, 204, 220);
+    color: ${theme.colors.text.primary};
     max-width: 480px;
   `,
   icon: css`
