@@ -92,7 +92,7 @@ export function Header(props: HeaderProps) {
         ))}
 
         {gridControls.map((control) => (
-          <Field key={control.state.key} className={cx(styles.gridControl, control.state.key)} label="">
+          <Field key={control.state.key} id={control.state.key} className={styles.gridControl} label="">
             <control.Component model={control} />
           </Field>
         ))}
@@ -172,7 +172,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
   gridControl: css`
     margin-bottom: 0;
 
-    &.quick-filter {
+    &#quick-filter {
       flex: 1;
       min-width: 112px;
     }

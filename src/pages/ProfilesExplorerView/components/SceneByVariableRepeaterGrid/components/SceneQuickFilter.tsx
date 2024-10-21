@@ -81,6 +81,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
     return (
       <Input
         type="text"
+        className="quick-filter"
         aria-label="Quick filter"
         placeholder={placeholder}
         value={searchText}
