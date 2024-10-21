@@ -17,7 +17,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { omit } from 'lodash';
 import React from 'react';
 
-import { getDefaultTimeRange } from '../../../../domain/getDefaultTimeRange';
+import { getDefaultTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';

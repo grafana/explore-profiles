@@ -10,12 +10,14 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 import { SceneDiffFlameGraph } from './components/SceneDiffFlameGraph/SceneDiffFlameGraph';
+import { ScenePresetsPicker } from './components/ScenePresetsPicker/ScenePresetsPicker';
 import { syncYAxis } from './domain/behaviours/syncYAxis';
 
 interface SceneExploreDiffFlameGraphState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
   comparisonPanel: SceneComparePanel;
   body: SceneDiffFlameGraph;
+  presetsPicker: ScenePresetsPicker;
 }
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
@@ -38,6 +40,7 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         syncYAxis(),
       ],
       body: new SceneDiffFlameGraph(),
+      presetsPicker: new ScenePresetsPicker(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -66,6 +69,7 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
       variables: [
         sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
         sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
+        this.state.presetsPicker,
       ],
       gridControls: [],
     };

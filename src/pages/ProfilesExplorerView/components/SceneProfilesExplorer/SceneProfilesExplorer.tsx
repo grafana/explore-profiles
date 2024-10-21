@@ -27,11 +27,11 @@ import { SceneExploreAllServices } from '../../components/SceneExploreAllService
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { getDefaultTimeRange } from '../../domain/buildTimeRange';
 import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameGraph';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
-import { getDefaultTimeRange } from '../../domain/getDefaultTimeRange';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
