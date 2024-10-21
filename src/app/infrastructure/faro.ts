@@ -4,7 +4,6 @@ import { config } from '@grafana/runtime';
 
 import { PYROSCOPE_APP_ID } from '../../constants';
 import { GIT_COMMIT } from '../../version';
-import { getUserInfo } from './getUserInfo';
 
 const ENVS = [
   // Uncomment to test from your local machine
@@ -44,15 +43,19 @@ function init(): Faro | undefined {
     return;
   }
 
+  const { apps, bootData } = config;
+
   return initializeFaro({
     url: env.faroUrl,
     app: {
       name: env.appName,
-      release: config.apps[PYROSCOPE_APP_ID].version,
+      release: apps[PYROSCOPE_APP_ID].version,
       version: GIT_COMMIT,
       environment: env.environment,
     },
-    user: getUserInfo(),
+    user: {
+      email: bootData.user.email,
+    },
     instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
     isolate: true,
     beforeSend: (event) => {
