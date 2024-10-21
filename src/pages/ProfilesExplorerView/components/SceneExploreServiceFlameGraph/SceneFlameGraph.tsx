@@ -10,6 +10,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { Panel } from '@shared/ui/Panel/Panel';
+import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
@@ -80,7 +81,12 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
     const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
-    return `🔥 Flame graph for ${serviceName} (${profileMetricType})`;
+    return (
+      <>
+        <PyroscopeLogo width={16} height={16} />
+        Flame graph for {serviceName} ({profileMetricType})
+      </>
+    );
   }
 
   useSceneFlameGraph = (): DomainHookReturnValue => {

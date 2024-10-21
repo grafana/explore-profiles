@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
+import { Button, Icon, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { Fragment } from 'react';
 
@@ -26,19 +26,18 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
 
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
-      <InlineLabel width="auto">
-        <img className={styles.logo} src="public/plugins/grafana-pyroscope-app/img/logo.svg" /> Exploration
-      </InlineLabel>
+      <div className={styles.label}>Exploration</div>
 
       <div className={styles.breadcrumb}>
         {options.map((option, i) => {
           const isActive = value === option.value;
+          const variant = getButtonVariant(i);
 
           return (
             <Fragment key={option.value}>
               <Button
                 className={isActive ? cx(styles.button, styles.defaultMouseCursor) : styles.button}
-                variant={getButtonVariant(i)}
+                variant={variant}
                 size="sm"
                 aria-label={option.label}
                 icon={option.icon as any}
@@ -51,7 +50,16 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
               </Button>
 
               {/* add an arrow only for buttons before "Diff flame graph" and "Favorites" */}
-              {i < options.length - 3 && <Icon name="arrow-right" />}
+              {i < options.length - 3 && (
+                <Icon
+                  name="arrow-right"
+                  className={
+                    activeIndex !== options.length - 1 && i <= activeIndex - 1
+                      ? cx(styles.arrow, styles.active)
+                      : styles.arrow
+                  }
+                />
+              )}
             </Fragment>
           );
         })}
@@ -64,16 +72,19 @@ const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
     align-items: center;
+
     ${theme.breakpoints.down('xxl')} {
       label {
         display: none;
       }
     }
   `,
-  logo: css`
-    width: 16px;
-    height: 16px;
-    margin-right: 4px;
+  label: css`
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    font-size: 14px;
+    margin-right: ${theme.spacing(1)};
   `,
   breadcrumb: css`
     height: 32px;
@@ -84,6 +95,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
   button: css`
     height: 30px;
     line-height: 30px;
+    border-radius: 15px;
 
     &:nth-last-child(2) {
       margin-left: ${theme.spacing(1)};
@@ -97,5 +109,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
     &:hover {
       cursor: default;
     }
+  `,
+  arrow: css`
+    color: ${theme.colors.text.disabled};
+  `,
+  active: css`
+    color: ${theme.colors.primary.main};
   `,
 });

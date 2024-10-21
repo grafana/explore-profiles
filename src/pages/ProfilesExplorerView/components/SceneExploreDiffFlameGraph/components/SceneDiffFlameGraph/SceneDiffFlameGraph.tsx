@@ -11,6 +11,7 @@ import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
+import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
@@ -38,7 +39,12 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
     const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
-    return `🔥 Diff flame graph for ${serviceName} (${profileMetricType})`;
+    return (
+      <>
+        <PyroscopeLogo width={16} height={16} />
+        Diff flame graph for {serviceName} ({profileMetricType})
+      </>
+    );
   }
 
   useSceneDiffFlameGraph = (): DomainHookReturnValue => {
