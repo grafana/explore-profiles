@@ -71,12 +71,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
     align-items: center;
-
-    ${theme.breakpoints.down('xxl')} {
-      label {
-        display: none;
-      }
-    }
   `,
   label: css`
     display: flex;
@@ -84,6 +78,10 @@ const getStyles = (theme: GrafanaTheme2) => ({
     align-items: center;
     font-size: 14px;
     margin-right: ${theme.spacing(1)};
+
+    ${theme.breakpoints.down('xxl')} {
+      display: none;
+    }
   `,
   breadcrumb: css`
     height: 32px;
