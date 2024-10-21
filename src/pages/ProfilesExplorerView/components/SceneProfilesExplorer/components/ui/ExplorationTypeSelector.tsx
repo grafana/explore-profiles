@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { Button, Icon, useStyles2 } from '@grafana/ui';
+import { Button, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { Fragment } from 'react';
 
@@ -36,7 +36,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
           return (
             <Fragment key={option.value}>
               <Button
-                className={isActive ? cx(styles.button, styles.defaultMouseCursor) : styles.button}
+                className={isActive ? cx(styles.button, styles.activeButton) : styles.button}
                 variant={variant}
                 size="sm"
                 aria-label={option.label}
@@ -49,10 +49,9 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 {option.label}
               </Button>
 
-              {/* add an arrow only for buttons before "Diff flame graph" and "Favorites" */}
+              {/* add a connection only for buttons before "Diff flame graph" and "Favorites" */}
               {i < options.length - 3 && (
-                <Icon
-                  name="arrow-right"
+                <div
                   className={
                     activeIndex !== options.length - 1 && i <= activeIndex - 1
                       ? cx(styles.arrow, styles.active)
@@ -105,15 +104,18 @@ const getStyles = (theme: GrafanaTheme2) => ({
       margin-left: ${theme.spacing(2)};
     }
   `,
-  defaultMouseCursor: css`
+  activeButton: css`
     &:hover {
       cursor: default;
+      background-color: ${theme.colors.primary.main};
     }
   `,
   arrow: css`
-    color: ${theme.colors.text.disabled};
+    background-color: ${theme.colors.text.disabled};
+    width: 10px;
+    height: 2px;
   `,
   active: css`
-    color: ${theme.colors.primary.main};
+    background-color: ${theme.colors.primary.main};
   `,
 });
