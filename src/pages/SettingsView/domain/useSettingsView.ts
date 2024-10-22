@@ -9,7 +9,7 @@ import { PLUGIN_BASE_URL, ROUTES } from '../../../constants';
 
 export function useSettingsView() {
   const { settings, error: fetchError, mutate } = useFetchPluginSettings();
-  const [, setMaxNodes] = useMaxNodesFromUrl();
+  const [maxNodesFromUrl, setMaxNodes] = useMaxNodesFromUrl();
   const [currentSettings, setCurrentSettings] = useState<PluginSettings>(settings ?? DEFAULT_SETTINGS);
 
   const history = useHistory();
@@ -72,7 +72,11 @@ export function useSettingsView() {
         }
 
         const backUrl = new URL(referrerRef.current);
-        backUrl.searchParams.set('maxNodes', String(currentSettings.maxNodes));
+
+        // a call to mutate() above will result in updating the URL search parameter
+        if (maxNodesFromUrl) {
+          backUrl.searchParams.set('maxNodes', String(maxNodesFromUrl));
+        }
 
         history.push(`${backUrl.pathname}${backUrl.search}`);
       },
