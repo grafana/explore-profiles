@@ -73,7 +73,7 @@ export function useSettingsView() {
 
         const backUrl = new URL(referrerRef.current);
 
-        // a call to mutate() above will result in updating the URL search parameter
+        // when calling saveSettings() above, the new maxNodes value is set and the URL search parameter is updated (see useMaxNodesFromUrl.ts)
         if (maxNodesFromUrl) {
           backUrl.searchParams.set('maxNodes', String(maxNodesFromUrl));
         }
