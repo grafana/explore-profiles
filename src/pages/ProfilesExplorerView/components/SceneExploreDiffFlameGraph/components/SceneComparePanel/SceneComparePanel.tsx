@@ -282,5 +282,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
     & [data-viz-panel-key] > * {
       border: 0 none;
     }
+
+    & [data-viz-panel-key] [data-testid='uplot-main-div'] {
+      cursor: crosshair;
+    }
   `,
 });
