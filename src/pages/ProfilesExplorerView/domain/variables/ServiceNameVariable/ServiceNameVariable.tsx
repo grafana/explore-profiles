@@ -31,8 +31,6 @@ export class ServiceNameVariable extends QueryVariable {
   static QUERY_PROFILE_METRIC_DEPENDENT = '$dataSource and only $profileMetricId services';
 
   constructor(state?: ServiceNameVariableState) {
-    const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-
     super({
       key: 'serviceName',
       name: 'serviceName',
@@ -41,7 +39,6 @@ export class ServiceNameVariable extends QueryVariable {
       query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
       refresh: VariableRefresh.onTimeRangeChanged,
-      value: serviceNameFromStorage,
       ...state,
     });
 
@@ -49,6 +46,12 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   onActivate() {
+    const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+
+    if (serviceNameFromStorage) {
+      this.setState({ value: serviceNameFromStorage });
+    }
+
     this.subscribeToState((newState, prevState) => {
       if (newState.value && newState.value !== prevState.value) {
         const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
