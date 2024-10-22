@@ -149,8 +149,12 @@ export class SceneTimeRangeWithAnnotations
     });
   }
 
+  setAnnotationTimeRange(annotationTimeRange: TimeRange) {
+    this.setState({ annotationTimeRange });
+  }
+
   nullifyAnnotationTimeRange() {
-    this.setState({ annotationTimeRange: TIMERANGE_NIL });
+    this.setAnnotationTimeRange(TIMERANGE_NIL);
   }
 
   getUrlState() {
@@ -177,15 +181,15 @@ export class SceneTimeRangeWithAnnotations
 
     const { annotationTimeRange } = this.state;
 
-    this.setState({
-      annotationTimeRange: evaluateTimeRange(
+    this.setAnnotationTimeRange(
+      evaluateTimeRange(
         parseUrlParam(diffFrom) ?? annotationTimeRange.from,
         parseUrlParam(diffTo) ?? annotationTimeRange.to,
         this.getTimeZone(),
         this.state.fiscalYearStartMonth,
         this.state.UNSAFE_nowDelay
-      ),
-    });
+      )
+    );
   }
 
   onTimeRangeChange(timeRange: TimeRange): void {
@@ -198,7 +202,7 @@ export class SceneTimeRangeWithAnnotations
 
     // this triggers a timeseries request to the API
     // TODO: caching?
-    this.setState({ annotationTimeRange: timeRange });
+    this.setAnnotationTimeRange(timeRange);
 
     this.updateTimeseriesAnnotation();
   }

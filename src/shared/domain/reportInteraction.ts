@@ -46,6 +46,8 @@ export type InteractionName =
   | 'g_pyroscope_app_user_settings_clicked';
 
 type InteractionProperties =
+  // g_pyroscope_app_diff_preset_changed
+  | { value: string }
   // g_pyroscope_app_exploration_type_clicked
   | { explorationType: string }
   // g_pyroscope_app_export_profile

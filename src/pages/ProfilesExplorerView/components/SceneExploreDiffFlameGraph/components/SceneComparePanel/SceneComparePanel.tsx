@@ -17,7 +17,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { omit } from 'lodash';
 import React from 'react';
 
-import { getDefaultTimeRange } from '../../../../domain/buildTimeRange';
+import { buildTimeRange, getDefaultTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
@@ -209,6 +209,16 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   useDiffTimeRange() {
     return (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).useState();
+  }
+
+  setTimeRange(from: string, to: string) {
+    this.state.$timeRange.setState(buildTimeRange(from, to));
+  }
+
+  setAnnotationTimeRange(from: string, to: string) {
+    (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setAnnotationTimeRange(
+      buildTimeRange(from, to).value
+    );
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {

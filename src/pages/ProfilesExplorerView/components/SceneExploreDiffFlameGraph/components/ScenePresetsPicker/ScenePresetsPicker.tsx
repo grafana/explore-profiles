@@ -1,12 +1,12 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, SceneTimeRange } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, Modal, Select, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
-import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FEEDBACK_FORM_URL } from '../../../GiveFeedbackButton';
+import { SceneComparePanel } from '../SceneComparePanel/SceneComparePanel';
 
 interface ScenePresetsPickerState extends SceneObjectState {
   name: string;
@@ -23,30 +23,50 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
         {
           value: '1h ago vs now',
           label: '1h ago vs now',
-          baselineFrom: 'now-1h',
-          baselineTo: 'now',
-          comparisonFrom: 'now-1h',
+          baseline: {
+            from: 'now-1h',
+            to: 'now',
+            flameGraphFrom: 'now-1h',
+            flameGraphTo: 'now-30m',
+          },
+          comparison: {
+            from: 'now-1h',
+            to: 'now',
+            flameGraphFrom: 'now-30m',
+            flameGraphTo: 'now',
+          },
         },
         {
           value: '6h ago vs now',
           label: '6h ago vs now',
-          baselineFrom: 'now-6h',
-          baselineTo: 'now-5h',
-          comparisonFrom: 'now-1h',
+          baseline: {
+            from: 'now-6h',
+            to: 'now-5h',
+            flameGraphFrom: 'now-360m',
+            flameGraphTo: 'now-330m',
+          },
+          comparison: {
+            from: 'now-1h',
+            to: 'now',
+            flameGraphFrom: 'now-30m',
+            flameGraphTo: 'now',
+          },
         },
         {
           value: '24h ago vs now',
           label: '24h ago vs now',
-          baselineFrom: 'now-24h',
-          baselineTo: 'now-23h',
-          comparisonFrom: 'now-1h',
-        },
-        {
-          value: '1 week ago vs now',
-          label: '1 week ago vs now',
-          baselineFrom: 'now-7d',
-          baselineTo: 'now-6d',
-          comparisonFrom: 'now-1d',
+          baseline: {
+            from: 'now-24h',
+            to: 'now-23h',
+            flameGraphFrom: 'now-1440m',
+            flameGraphTo: 'now-1410m',
+          },
+          comparison: {
+            from: 'now-1h',
+            to: 'now',
+            flameGraphFrom: 'now-30m',
+            flameGraphTo: 'now',
+          },
         },
       ],
     },
@@ -60,21 +80,25 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   constructor() {
     super({
       name: 'presets',
-      label: 'Presets',
+      label: 'Comparison presets',
       isModalOpen: false,
     });
   }
 
   onChangePreset = (preset: SelectableValue<string>) => {
-    reportInteraction('g_pyroscope_app_diff_preset_changed');
+    reportInteraction('g_pyroscope_app_diff_preset_changed', { value: preset.value as string });
 
-    sceneGraph
-      .findByKeyAndType(this, 'baseline-panel-timerange', SceneTimeRange)
-      .setState(buildTimeRange(preset.baselineFrom, preset.baselineTo));
+    const { baseline, comparison } = preset;
 
-    sceneGraph
-      .findByKeyAndType(this, 'comparison-panel-timerange', SceneTimeRange)
-      .setState(buildTimeRange(preset.comparisonFrom, 'now'));
+    const [baseLinePanel, comparisonPanel] = ['baseline-panel', 'comparison-panel'].map((key) =>
+      sceneGraph.findByKeyAndType(this, key, SceneComparePanel)
+    );
+
+    baseLinePanel.setTimeRange(baseline.from, baseline.to);
+    baseLinePanel.setAnnotationTimeRange(baseline.flameGraphFrom, baseline.flameGraphTo);
+
+    comparisonPanel.setTimeRange(comparison.from, comparison.to);
+    comparisonPanel.setAnnotationTimeRange(comparison.flameGraphFrom, comparison.flameGraphTo);
   };
 
   onClickSave = () => {
