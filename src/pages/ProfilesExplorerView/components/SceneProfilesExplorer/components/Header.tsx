@@ -31,8 +31,8 @@ export function Header(props: HeaderProps) {
     <div className={styles.header} data-testid="allControls">
       <GiveFeedbackButton />
 
-      <div className={styles.controls} data-testid="appControls">
-        <div className={styles.headerLeft}>
+      <div className={styles.appControls} data-testid="appControls">
+        <div className={styles.appControlsLeft}>
           <ExplorationTypeSelector
             options={SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS}
             value={explorationType as string}
@@ -40,7 +40,7 @@ export function Header(props: HeaderProps) {
           />
         </div>
 
-        <div className={styles.headerRight}>
+        <div className={styles.appControlsRight}>
           {timePickerControl && (
             <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
           )}
@@ -48,7 +48,7 @@ export function Header(props: HeaderProps) {
             <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
           )}
 
-          <div className={styles.miscButtons}>
+          <div className={styles.appMiscButtons}>
             <IconButton name="cog" tooltip="View/edit user settings" onClick={actions.onClickUserSettings} />
 
             <IconButton
@@ -65,7 +65,7 @@ export function Header(props: HeaderProps) {
       <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
         <Field
           label={dataSourceVariable.state.label}
-          className={cx(styles.variable, dataSourceVariable.state.name)}
+          className={cx(styles.sceneVariable, dataSourceVariable.state.name)}
           data-testid={dataSourceVariable.state.name}
         >
           <dataSourceVariable.Component model={dataSourceVariable} />
@@ -76,7 +76,7 @@ export function Header(props: HeaderProps) {
             key={variable.state.name}
             label={
               variable.state.label === 'Filters' ? (
-                <div className={styles.variableLabel}>
+                <div className={styles.sceneVariableLabel}>
                   <Icon name="filter" className={styles.icon} />
                   {variable.state.label}
                 </div>
@@ -84,7 +84,7 @@ export function Header(props: HeaderProps) {
                 variable.state.label
               )
             }
-            className={cx(styles.variable, variable.state.name)}
+            className={cx(styles.sceneVariable, variable.state.name)}
             data-testid={variable.state.name}
           >
             <variable.Component model={variable} />
@@ -107,22 +107,23 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
     position: sticky;
     top: ${chromeHeaderHeight}px;
     z-index: 1;
+    padding-bottom: ${theme.spacing(2)};
   `,
-  controls: css`
+  appControls: css`
     display: flex;
     padding: ${theme.spacing(1)} 0;
     justify-content: space-between;
     gap: ${theme.spacing(2)};
   `,
-  headerLeft: css`
+  appControlsLeft: css`
     display: flex;
     gap: ${theme.spacing(1)};
   `,
-  headerRight: css`
+  appControlsRight: css`
     display: flex;
     gap: ${theme.spacing(1)};
   `,
-  miscButtons: css`
+  appMiscButtons: css`
     display: flex;
     align-items: center;
     gap: 4px;
@@ -140,15 +141,15 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
     display: flex;
     flex-wrap: wrap;
     gap: ${theme.spacing(1)};
-    padding: 0 0 ${theme.spacing(1)} 0;
-    margin-top: 12px;
+    padding: 0;
+    margin-top: 20px;
 
     &#scene-controls-labels > div:last-child,
     &#scene-controls-flame-graph > div:last-child {
       flex-grow: 1;
     }
   `,
-  variable: css`
+  sceneVariable: css`
     display: flex;
     margin-bottom: 0;
 
@@ -156,7 +157,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
       width: ${theme.spacing(32)};
     }
   `,
-  variableLabel: css`
+  sceneVariableLabel: css`
     font-size: 12px;
     font-weight: 500;
     line-height: 15px;

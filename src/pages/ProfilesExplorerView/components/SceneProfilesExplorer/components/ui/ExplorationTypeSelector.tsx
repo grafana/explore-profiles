@@ -36,7 +36,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
           return (
             <Fragment key={option.value}>
               <Button
-                className={isActive ? cx(styles.button, styles.activeButton) : styles.button}
+                className={cx(styles.button, isActive && styles.activeButton)}
                 variant={variant}
                 size="sm"
                 aria-label={option.label}
@@ -84,15 +84,19 @@ const getStyles = (theme: GrafanaTheme2) => ({
     }
   `,
   breadcrumb: css`
-    height: 32px;
-    line-height: 32px;
     display: flex;
     align-items: center;
+    height: 32px;
+    line-height: 32px;
   `,
   button: css`
-    height: 30px;
-    line-height: 30px;
+    height: 27px;
+    line-height: 27px;
     border-radius: 15px;
+
+    &:hover {
+      border-color: ${theme.colors.primary.main};
+    }
 
     &:nth-last-child(2) {
       margin-left: ${theme.spacing(1)};
