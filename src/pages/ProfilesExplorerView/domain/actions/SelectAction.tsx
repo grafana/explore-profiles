@@ -56,7 +56,7 @@ const Events = new Map<EventContructor, EventLookup>([
     Object.freeze({
       icon: 'expand-arrows',
       ariaLabel: 'Expand panel',
-      tooltip: () => 'Expand this panel to view all the data for the current filters',
+      tooltip: () => 'Expand panel to view all the data for the current filters',
     }),
   ],
   [
