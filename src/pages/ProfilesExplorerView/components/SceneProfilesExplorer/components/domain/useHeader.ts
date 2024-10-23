@@ -3,7 +3,7 @@ import { SceneObject, SceneVariable } from '@grafana/scenes';
 import { displaySuccess } from '@shared/domain/displayStatus';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { PLUGIN_BASE_URL } from 'src/constants';
+import { PLUGIN_BASE_URL, ROUTES } from 'src/constants';
 
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
 import { ExplorationType } from '../../SceneProfilesExplorer';
@@ -62,7 +62,8 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
       onClickShareLink,
       onClickUserSettings: useCallback(() => {
         reportInteraction('g_pyroscope_app_user_settings_clicked');
-        history.push(`${PLUGIN_BASE_URL}/settings`);
+
+        history.push(`${PLUGIN_BASE_URL}${ROUTES.SETTINGS}`, { referrer: window.location.href });
       }, [history]),
     },
   };
