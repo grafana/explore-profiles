@@ -91,8 +91,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       value: 'custom',
       options: [
         {
-          label: 'Example',
-          value: 'example',
+          label: 'My dummy preset',
+          value: 'dummy',
         },
       ],
     },
@@ -125,7 +125,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   onChangePreset = (option: SelectableValue<string>) => {
     reportInteraction('g_pyroscope_app_diff_preset_changed', { value: option.value as string });
 
-    if (option.value === 'example') {
+    if (option.value === 'dummy') {
       this.setState({ value: undefined, isModalOpen: true });
       return;
     }
@@ -176,6 +176,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           closeOnEscape={true}
           closeOnBackdropClick={true}
           onDismiss={model.closeModal}
+          trapFocus
         >
           <p>
             This feature, which would allow you to save the current time ranges and filters, is currently not
