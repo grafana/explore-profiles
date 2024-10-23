@@ -251,7 +251,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const { from, to } = $timeRange.state.value;
 
     const diff = to.diff(from);
-    const half = Math.round(diff / 2);
+    const half = Math.round(diff / 2); // TODO: cap the max value?
 
     // we have to create a new instance because add() mutates the original one
     const middle = dateTime(from).add(half).toISOString();

@@ -26,6 +26,7 @@ export type Preset = {
 };
 
 export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState> {
+  // TODO: add a preset to auto-select?
   static PRESETS = [
     {
       label: 'Built-in presets',
