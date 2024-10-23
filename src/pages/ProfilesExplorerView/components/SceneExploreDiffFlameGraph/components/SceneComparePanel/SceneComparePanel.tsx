@@ -231,7 +231,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     this.state.$timeRange.setState(buildTimeRange(from, to));
 
     (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setAnnotationTimeRange(
-      buildTimeRange(flameGraphFrom, flameGraphTo).value
+      buildTimeRange(flameGraphFrom, flameGraphTo).value,
+      true
     );
 
     this.updateTitle(label);

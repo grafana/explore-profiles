@@ -149,8 +149,12 @@ export class SceneTimeRangeWithAnnotations
     });
   }
 
-  setAnnotationTimeRange(annotationTimeRange: TimeRange) {
+  setAnnotationTimeRange(annotationTimeRange: TimeRange, updateTimeseries = false) {
     this.setState({ annotationTimeRange });
+
+    if (updateTimeseries) {
+      this.updateTimeseriesAnnotation();
+    }
   }
 
   nullifyAnnotationTimeRange() {
@@ -202,9 +206,7 @@ export class SceneTimeRangeWithAnnotations
 
     // this triggers a timeseries request to the API
     // TODO: caching?
-    this.setAnnotationTimeRange(timeRange);
-
-    this.updateTimeseriesAnnotation();
+    this.setAnnotationTimeRange(timeRange, true);
   }
 
   onTimeZoneChange(timeZone: string): void {
