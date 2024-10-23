@@ -1,10 +1,11 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Collapse, Spinner, useStyles2 } from '@grafana/ui';
+import { Button, Collapse, Spinner, useStyles2 } from '@grafana/ui';
 import DiffViewHowToImg from '@img/diff-view-how-to.gif';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { displayWarning } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -20,6 +21,8 @@ import { ProfilesDataSourceVariable } from '../../../../domain/variables/Profile
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { AIButton } from '../../../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../../../SceneAiPanel/SceneAiPanel';
+import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
+import { EventDiffChoosePreset } from '../../domain/events/EventDiffChoosePreset';
 import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 
@@ -115,7 +118,23 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     };
   };
 
-  static Component = ({ model }: SceneComponentProps<SceneDiffFlameGraph>) => {
+  onClickAutoSelect = () => {
+    reportInteraction('g_pyroscope_app_diff_auto_select_clicked');
+
+    this.publishEvent(new EventDiffAutoSelect({}), true);
+  };
+
+  onClickChoosePreset = () => {
+    reportInteraction('g_pyroscope_app_diff_choose_preset_clicked');
+
+    this.publishEvent(new EventDiffChoosePreset({}), true);
+  };
+
+  onClickLearn = () => {
+    reportInteraction('g_pyroscope_app_diff_learn_with_mouse_clicked');
+  };
+
+  static Component = ({ model }: SceneComponentProps<SceneDiffFlameGraph & { onClickAutoSelect: () => void }>) => {
     const styles = useStyles2(getStyles);
 
     const { data } = model.useSceneDiffFlameGraph();
@@ -168,26 +187,44 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
           {data.shouldDisplayInfo && (
             <InlineBanner
               severity="info"
-              title="Select both the baseline and the comparison flame graph time ranges to view the diff flame graph"
+              title="Select both the baseline and the comparison flame graph ranges to view the diff flame graph"
               message={
-                <Collapse
-                  label="How?"
-                  collapsible
-                  className={styles.collapse}
-                  isOpen={isCollapseOpen}
-                  onToggle={() => setIsCollapseOpen(!isCollapseOpen)}
-                >
-                  <div className={styles.infoBanner}>
-                    <ol>
-                      <li>Ensure that the &ldquo;Flame graph&rdquo; range selection mode is selected</li>
-                      <li>
-                        Use your mouse to select the desired time ranges on both the baseline and the comparison time
-                        series
-                      </li>
-                    </ol>
-                    <img src={DiffViewHowToImg} alt="How to view the diff flame graph" />
-                  </div>
-                </Collapse>
+                <div className={styles.infoMsg}>
+                  <p>How?</p>
+                  <p>
+                    <Button variant="primary" onClick={model.onClickAutoSelect}>
+                      Auto-select
+                    </Button>{' '}
+                    or{' '}
+                    <Button
+                      variant="primary"
+                      fill="text"
+                      className={styles.textButton}
+                      onClick={model.onClickChoosePreset}
+                    >
+                      choose a preset
+                    </Button>
+                  </p>
+                  <p>Alternatively:</p>
+                  <Collapse
+                    label="Click here to learn how to select the flame graph ranges with the mouse"
+                    collapsible
+                    className={styles.collapse}
+                    isOpen={isCollapseOpen}
+                    onToggle={() => setIsCollapseOpen(!isCollapseOpen)}
+                  >
+                    <div className={styles.collapseContent}>
+                      <ol>
+                        <li>Ensure that the &ldquo;Flame graph&rdquo; range selection mode is selected</li>
+                        <li>
+                          Use your mouse to select the desired time ranges on both the baseline and the comparison time
+                          series
+                        </li>
+                      </ol>
+                      <img src={DiffViewHowToImg} alt="How to view the diff flame graph" />
+                    </div>
+                  </Collapse>
+                </div>
               }
             />
           )}
@@ -250,12 +287,18 @@ const getStyles = (theme: GrafanaTheme2) => ({
   aiButton: css`
     margin-top: ${theme.spacing(1)};
   `,
+  infoMsg: css`
+    padding: ${theme.spacing(2)} 0 0 0;
+  `,
+  textButton: css`
+    padding: 0;
+  `,
   collapse: css`
     background: transparent;
     border: 0;
   `,
-  infoBanner: css`
-    padding: 0 ${theme.spacing(3)};
+  collapseContent: css`
+    padding: 0 ${theme.spacing(5)};
 
     & img {
       max-width: 100%;

@@ -13,7 +13,8 @@ interface ScenePresetsPickerState extends SceneObjectState {
   name: string;
   label: string;
   isModalOpen: boolean;
-  value?: string;
+  isSelectOpen: boolean;
+  value: string | null;
 }
 
 export type Preset = {
@@ -102,7 +103,9 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     super({
       name: 'compare-presets',
       label: 'Comparison presets',
+      value: null,
       isModalOpen: false,
+      isSelectOpen: false,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -115,7 +118,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           .findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel)
           .state.$timeRange.subscribeToState((newState, prevState) => {
             if (newState.from !== prevState.from || newState.to !== prevState.to) {
-              this.setState({ value: undefined });
+              this.setState({ value: null });
             }
           })
       );
@@ -123,10 +126,12 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   }
 
   onChangePreset = (option: SelectableValue<string>) => {
-    reportInteraction('g_pyroscope_app_diff_preset_changed', { value: option.value as string });
+    reportInteraction('g_pyroscope_app_diff_preset_selected', { value: option.value as string });
+
+    this.closeSelect();
 
     if (option.value === 'dummy') {
-      this.setState({ value: undefined, isModalOpen: true });
+      this.setState({ value: null, isModalOpen: true });
       return;
     }
 
@@ -138,7 +143,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   };
 
   onClickSave = () => {
-    reportInteraction('g_pyroscope_app_diff_preset_save');
+    reportInteraction('g_pyroscope_app_diff_preset_save_clicked');
 
     this.setState({ isModalOpen: true });
   };
@@ -147,21 +152,38 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     this.setState({ isModalOpen: false });
   };
 
+  openSelect() {
+    this.setState({ isSelectOpen: true });
+  }
+
+  closeSelect() {
+    this.setState({ isSelectOpen: false });
+  }
+
+  onOpenSelect = () => {
+    setTimeout(() => this.openSelect(), 0);
+  };
+
+  onCloseSelect = () => {
+    this.closeSelect();
+  };
+
   static Component({ model }: SceneComponentProps<ScenePresetsPicker & { onChange: any }>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { value, isModalOpen } = model.useState();
+    const { value, isSelectOpen, isModalOpen } = model.useState();
 
     return (
       <>
         <div className={styles.presetsContainer}>
           <Select
-            // we set this key to be able to clear the preset w
-            key={String(!value && Math.random())}
             className={styles.select}
             placeholder="Choose a preset"
             value={value}
             options={ScenePresetsPicker.PRESETS}
             onChange={model.onChangePreset}
+            isOpen={isSelectOpen}
+            onOpenMenu={model.onOpenSelect}
+            onCloseMenu={model.onCloseSelect}
           />
           <Button
             icon="save"
@@ -176,7 +198,6 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           closeOnEscape={true}
           closeOnBackdropClick={true}
           onDismiss={model.closeModal}
-          trapFocus
         >
           <p>
             This feature, which would allow you to save the current time ranges and filters, is currently not
@@ -208,6 +229,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
   `,
   select: css`
+    min-width: ${theme.spacing(24)};
     text-align: left;
   `,
   link: css`

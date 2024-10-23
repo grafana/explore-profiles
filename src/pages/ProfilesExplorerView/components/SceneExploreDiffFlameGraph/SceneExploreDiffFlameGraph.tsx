@@ -12,6 +12,7 @@ import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePa
 import { SceneDiffFlameGraph } from './components/SceneDiffFlameGraph/SceneDiffFlameGraph';
 import { ScenePresetsPicker } from './components/ScenePresetsPicker/ScenePresetsPicker';
 import { syncYAxis } from './domain/behaviours/syncYAxis';
+import { EventDiffChoosePreset } from './domain/events/EventDiffChoosePreset';
 
 interface SceneExploreDiffFlameGraphState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
@@ -57,10 +58,20 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
+    this.subscribeToEvents();
+
     return () => {
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
       profileMetricVariable.update(true);
     };
+  }
+
+  subscribeToEvents() {
+    this._subs.add(
+      this.subscribeToEvent(EventDiffChoosePreset, () => {
+        this.state.presetsPicker.openSelect();
+      })
+    );
   }
 
   // see SceneProfilesExplorer

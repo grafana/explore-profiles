@@ -26,8 +26,11 @@ function getExtraProperties() {
 // hey future dev: don't forget to add any new value to our features tracking dashboard!
 export type InteractionName =
   | 'g_pyroscope_app_compare_link_clicked'
-  | 'g_pyroscope_app_diff_preset_changed'
-  | 'g_pyroscope_app_diff_preset_save'
+  | 'g_pyroscope_app_diff_preset_selected'
+  | 'g_pyroscope_app_diff_preset_save_clicked'
+  | 'g_pyroscope_app_diff_auto_select_clicked'
+  | 'g_pyroscope_app_diff_choose_preset_clicked'
+  | 'g_pyroscope_app_diff_learn_with_mouse_clicked'
   | 'g_pyroscope_app_explain_flamegraph_clicked'
   | 'g_pyroscope_app_exploration_type_clicked'
   | 'g_pyroscope_app_export_profile'
