@@ -42,7 +42,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
 
     return (
       <>
-        <PyroscopeLogo width={16} height={16} />
+        <PyroscopeLogo width={16} height={16} style={{ position: 'relative', top: '-2px' }} />
         Diff flame graph for {serviceName} ({profileMetricType})
       </>
     );

@@ -6,6 +6,7 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 import { FEEDBACK_FORM_URL } from '../../../GiveFeedbackButton';
+import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneComparePanel } from '../SceneComparePanel/SceneComparePanel';
 
 interface ScenePresetsPickerState extends SceneObjectState {
@@ -13,6 +14,14 @@ interface ScenePresetsPickerState extends SceneObjectState {
   label: string;
   isModalOpen: boolean;
 }
+
+export type Preset = {
+  from: string;
+  to: string;
+  flameGraphFrom: string;
+  flameGraphTo: string;
+  label: string;
+};
 
 export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState> {
   static PRESETS = [
@@ -28,12 +37,14 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             to: 'now',
             flameGraphFrom: 'now-1h',
             flameGraphTo: 'now-30m',
+            label: '1h ago',
           },
           comparison: {
             from: 'now-1h',
             to: 'now',
             flameGraphFrom: 'now-30m',
             flameGraphTo: 'now',
+            label: 'now',
           },
         },
         {
@@ -44,12 +55,14 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             to: 'now-5h',
             flameGraphFrom: 'now-360m',
             flameGraphTo: 'now-330m',
+            label: '6h ago',
           },
           comparison: {
             from: 'now-1h',
             to: 'now',
             flameGraphFrom: 'now-30m',
             flameGraphTo: 'now',
+            label: 'now',
           },
         },
         {
@@ -60,12 +73,14 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             to: 'now-23h',
             flameGraphFrom: 'now-1440m',
             flameGraphTo: 'now-1410m',
+            label: '24h ago',
           },
           comparison: {
             from: 'now-1h',
             to: 'now',
             flameGraphFrom: 'now-30m',
             flameGraphTo: 'now',
+            label: 'now',
           },
         },
       ],
@@ -88,17 +103,9 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   onChangePreset = (preset: SelectableValue<string>) => {
     reportInteraction('g_pyroscope_app_diff_preset_changed', { value: preset.value as string });
 
-    const { baseline, comparison } = preset;
-
-    const [baseLinePanel, comparisonPanel] = ['baseline-panel', 'comparison-panel'].map((key) =>
-      sceneGraph.findByKeyAndType(this, key, SceneComparePanel)
-    );
-
-    baseLinePanel.setTimeRange(baseline.from, baseline.to);
-    baseLinePanel.setAnnotationTimeRange(baseline.flameGraphFrom, baseline.flameGraphTo);
-
-    comparisonPanel.setTimeRange(comparison.from, comparison.to);
-    comparisonPanel.setAnnotationTimeRange(comparison.flameGraphFrom, comparison.flameGraphTo);
+    [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
+      sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel).applyPreset(preset[compareTarget]);
+    });
   };
 
   onClickSave = () => {

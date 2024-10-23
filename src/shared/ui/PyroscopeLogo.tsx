@@ -5,14 +5,21 @@ import React from 'react';
 type PyroscopeLogoProps = {
   width: number;
   height: number;
+  style?: Record<string, any>;
 };
 
-export function PyroscopeLogo({ width, height }: PyroscopeLogoProps) {
+function PyroscopeLogoComponent({ width, height, style }: PyroscopeLogoProps) {
   const styles = useStyles2(getStyles);
   return (
-    <img style={{ width, height }} className={styles.logo} src="public/plugins/grafana-pyroscope-app/img/logo.svg" />
+    <img
+      style={{ width, height, ...style }}
+      className={styles.logo}
+      src="public/plugins/grafana-pyroscope-app/img/logo.svg"
+    />
   );
 }
+
+export const PyroscopeLogo = React.memo(PyroscopeLogoComponent);
 
 const getStyles = () => ({
   logo: css`

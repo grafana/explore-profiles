@@ -17,7 +17,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { omit } from 'lodash';
 import React from 'react';
 
-import { buildTimeRange, getDefaultTimeRange } from '../../../../domain/buildTimeRange';
+import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
@@ -26,6 +26,7 @@ import { PanelType } from '../../../SceneByVariableRepeaterGrid/components/Scene
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
+import { Preset } from '../ScenePresetsPicker/ScenePresetsPicker';
 import {
   SceneTimeRangeWithAnnotations,
   TimeRangeWithAnnotationsMode,
@@ -76,7 +77,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       filterKey,
       title,
       color,
-      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...getDefaultTimeRange() }),
+      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...buildTimeRange('now-1h', 'now') }),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
@@ -124,14 +125,14 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
           const displayName =
             diffFrom && diffTo
-              ? `${title} total = ${total} / Flame graph range = ${dateTimeFormat(diffFrom, {
+              ? `Total = ${total} / Flame graph range = ${dateTimeFormat(diffFrom, {
                   format: systemDateFormats.fullDate,
                   timeZone,
                 })} → ${dateTimeFormat(diffTo, {
                   format: systemDateFormats.fullDate,
                   timeZone,
                 })}`
-              : `${title} total = ${total}`;
+              : `Total = ${total}`;
 
           return {
             matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
@@ -189,7 +190,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   subscribeToEvents() {
-    return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
+    const switchSub = this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
       // this triggers a timeseries request to the API
       // TODO: caching?
       (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
@@ -199,6 +200,21 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
             : TimeRangeWithAnnotationsMode.DEFAULT,
       });
     });
+
+    const timeRangeSub = this.state.timeseriesPanel.state.body.state.$timeRange!.subscribeToState(
+      (newState, prevState) => {
+        if (newState.from !== prevState.from || newState.to !== prevState.to) {
+          this.updateTitle('');
+        }
+      }
+    );
+
+    return {
+      unsubscribe() {
+        timeRangeSub.unsubscribe();
+        switchSub.unsubscribe();
+      },
+    };
   }
 
   buildTimeseriesTitle() {
@@ -211,26 +227,44 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).useState();
   }
 
-  setTimeRange(from: string, to: string) {
+  applyPreset({ from, to, flameGraphFrom, flameGraphTo, label }: Preset) {
     this.state.$timeRange.setState(buildTimeRange(from, to));
+
+    (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setAnnotationTimeRange(
+      buildTimeRange(flameGraphFrom, flameGraphTo).value
+    );
+
+    this.updateTitle(label);
   }
 
-  setAnnotationTimeRange(from: string, to: string) {
-    (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setAnnotationTimeRange(
-      buildTimeRange(from, to).value
-    );
+  updateTitle(label = '') {
+    const title = this.state.target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
+    const newTitle = label ? `${title} (${label})` : title;
+
+    this.setState({ title: newTitle });
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
-    const styles = useStyles2(getStyles);
-    const { target, title, timeseriesPanel: timeseries, timePicker, refreshPicker, filterKey } = model.useState();
+    const {
+      target,
+      color,
+      title,
+      timeseriesPanel: timeseries,
+      timePicker,
+      refreshPicker,
+      filterKey,
+    } = model.useState();
+    const styles = useStyles2(getStyles, color);
 
     const filtersVariable = sceneGraph.findByKey(model, filterKey) as FiltersVariable;
 
     return (
       <div className={styles.panel} data-testid={`panel-${target}`}>
         <div className={styles.panelHeader}>
-          <h6>{title}</h6>
+          <h6>
+            <div className={styles.colorCircle} />
+            {title}
+          </h6>
 
           <div className={styles.timePicker}>
             <timePicker.Component model={timePicker} />
@@ -248,7 +282,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   };
 }
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = (theme: GrafanaTheme2, color: string) => ({
   panel: css`
     background-color: ${theme.colors.background.primary};
     padding: ${theme.spacing(1)} ${theme.spacing(1)} 0 ${theme.spacing(1)};
@@ -262,10 +296,19 @@ const getStyles = (theme: GrafanaTheme2) => ({
     margin-bottom: ${theme.spacing(2)};
 
     & > h6 {
+      font-size: 15px;
       height: 32px;
       line-height: 32px;
       margin: 0 ${theme.spacing(1)} 0 0;
     }
+  `,
+  colorCircle: css`
+    display: inline-block;
+    background-color: ${color};
+    border-radius: 50%;
+    width: 9px;
+    height: 9px;
+    margin-right: 6px;
   `,
   timePicker: css`
     display: flex;
