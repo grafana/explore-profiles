@@ -86,9 +86,14 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       ],
     },
     {
-      label: 'User presets',
-      value: 'user-in',
-      options: [],
+      label: 'Custom presets',
+      value: 'custom',
+      options: [
+        {
+          label: 'Example',
+          value: 'example',
+        },
+      ],
     },
   ];
 
@@ -102,6 +107,11 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
 
   onChangePreset = (preset: SelectableValue<string>) => {
     reportInteraction('g_pyroscope_app_diff_preset_changed', { value: preset.value as string });
+
+    if (preset.value === 'example') {
+      this.setState({ isModalOpen: true });
+      return;
+    }
 
     [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
       sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel).applyPreset(preset[compareTarget]);
@@ -134,13 +144,16 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           />
         </div>
         <Modal
-          title="Save custom preset"
+          title="Custom presets"
           isOpen={isModalOpen}
           closeOnEscape={true}
           closeOnBackdropClick={true}
           onDismiss={model.closeModal}
         >
-          <p>This feature is currently not implemented.</p>
+          <p>
+            This feature, which would allow you to save the current time ranges and filters, is currently not
+            implemented.
+          </p>
           <p>
             Please let us know if you would be interested to use it by{' '}
             <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer noopener" className={styles.link}>
