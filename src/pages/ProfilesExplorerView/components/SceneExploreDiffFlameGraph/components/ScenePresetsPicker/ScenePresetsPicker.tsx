@@ -134,20 +134,20 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           />
         </div>
         <Modal
-          title="Save user preset"
+          title="Save custom preset"
           isOpen={isModalOpen}
           closeOnEscape={true}
           closeOnBackdropClick={true}
           onDismiss={model.closeModal}
         >
-          <div>This feature is currently not implemented.</div>
-          <div>
+          <p>This feature is currently not implemented.</p>
+          <p>
             Please let us know if you would be interested to use it by{' '}
             <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer noopener" className={styles.link}>
               leaving us your feedback.
             </a>
-          </div>
-          <div>Thank you!</div>
+          </p>
+          <p>Thank you!</p>
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={model.closeModal}>
               Cancel
