@@ -157,6 +157,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           <Select
             // we set this key to be able to clear the preset w
             key={String(!value && Math.random())}
+            className={styles.select}
             placeholder="Choose a preset"
             value={value}
             options={ScenePresetsPicker.PRESETS}
@@ -204,6 +205,9 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
 const getStyles = (theme: GrafanaTheme2) => ({
   presetsContainer: css`
     display: flex;
+  `,
+  select: css`
+    text-align: left;
   `,
   link: css`
     color: ${theme.colors.text.link};
