@@ -13,6 +13,7 @@ interface ScenePresetsPickerState extends SceneObjectState {
   name: string;
   label: string;
   isModalOpen: boolean;
+  value?: string;
 }
 
 export type Preset = {
@@ -99,23 +100,41 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
 
   constructor() {
     super({
-      name: 'presets',
+      name: 'compare-presets',
       label: 'Comparison presets',
       isModalOpen: false,
     });
+
+    this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  onChangePreset = (preset: SelectableValue<string>) => {
-    reportInteraction('g_pyroscope_app_diff_preset_changed', { value: preset.value as string });
+  onActivate() {
+    [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
+      this._subs.add(
+        sceneGraph
+          .findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel)
+          .state.$timeRange.subscribeToState((newState, prevState) => {
+            if (newState.from !== prevState.from || newState.to !== prevState.to) {
+              this.setState({ value: undefined });
+            }
+          })
+      );
+    });
+  }
 
-    if (preset.value === 'example') {
-      this.setState({ isModalOpen: true });
+  onChangePreset = (option: SelectableValue<string>) => {
+    reportInteraction('g_pyroscope_app_diff_preset_changed', { value: option.value as string });
+
+    if (option.value === 'example') {
+      this.setState({ value: undefined, isModalOpen: true });
       return;
     }
 
     [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
-      sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel).applyPreset(preset[compareTarget]);
+      sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel).applyPreset(option[compareTarget]);
     });
+
+    this.setState({ value: option.value });
   };
 
   onClickSave = () => {
@@ -130,12 +149,19 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
 
   static Component({ model }: SceneComponentProps<ScenePresetsPicker & { onChange: any }>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { isModalOpen } = model.useState();
+    const { value, isModalOpen } = model.useState();
 
     return (
       <>
         <div className={styles.presetsContainer}>
-          <Select placeholder="Choose a preset" options={ScenePresetsPicker.PRESETS} onChange={model.onChangePreset} />
+          <Select
+            // we set this key to be able to clear the preset w
+            key={String(!value && Math.random())}
+            placeholder="Choose a preset"
+            value={value}
+            options={ScenePresetsPicker.PRESETS}
+            onChange={model.onChangePreset}
+          />
           <Button
             icon="save"
             variant="secondary"

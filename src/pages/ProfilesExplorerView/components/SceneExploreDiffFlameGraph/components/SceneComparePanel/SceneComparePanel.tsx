@@ -201,13 +201,11 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       });
     });
 
-    const timeRangeSub = this.state.timeseriesPanel.state.body.state.$timeRange!.subscribeToState(
-      (newState, prevState) => {
-        if (newState.from !== prevState.from || newState.to !== prevState.to) {
-          this.updateTitle('');
-        }
+    const timeRangeSub = this.state.$timeRange.subscribeToState((newState, prevState) => {
+      if (newState.from !== prevState.from || newState.to !== prevState.to) {
+        this.updateTitle('');
       }
-    );
+    });
 
     return {
       unsubscribe() {
