@@ -1,5 +1,12 @@
 import { css } from '@emotion/css';
-import { dateTimeFormat, FieldMatcherID, getValueFormat, GrafanaTheme2, systemDateFormats } from '@grafana/data';
+import {
+  dateTime,
+  dateTimeFormat,
+  FieldMatcherID,
+  getValueFormat,
+  GrafanaTheme2,
+  systemDateFormats,
+} from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -121,7 +128,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
           const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
           const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
           const total = `${formattedValue.text}${formattedValue.suffix}`;
-          const [diffFrom, diffTo, timeZone] = SceneComparePanel.getFlameGraphRange(timeseriesPanel);
+          const [diffFrom, diffTo, timeZone] = SceneComparePanel.getDiffRange(timeseriesPanel);
 
           const displayName =
             diffFrom && diffTo
@@ -164,7 +171,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return timeseriesPanel;
   }
 
-  static getFlameGraphRange(
+  static getDiffRange(
     timeseriesPanel: SceneLabelValuesTimeseries
   ): [number | undefined, number | undefined, string | undefined] {
     let diffFrom: number | undefined;
@@ -225,15 +232,35 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).useState();
   }
 
-  applyPreset({ from, to, flameGraphFrom, flameGraphTo, label }: Preset) {
+  applyPreset({ from, to, diffFrom, diffTo, label }: Preset) {
+    this.updateTitle(label);
+
     this.state.$timeRange.setState(buildTimeRange(from, to));
 
-    (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setAnnotationTimeRange(
-      buildTimeRange(flameGraphFrom, flameGraphTo).value,
-      true
-    );
+    this.setDiffRange(diffFrom, diffTo);
+  }
 
-    this.updateTitle(label);
+  setDiffRange(diffFrom: string, diffTo: string) {
+    const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
+
+    $diffTimeRange.setAnnotationTimeRange($diffTimeRange.buildAnnotationTimeRange(diffFrom, diffTo), true);
+  }
+
+  autoSelectDiffRange() {
+    const { $timeRange, target } = this.state;
+    const { from, to } = $timeRange.state.value;
+
+    const diff = to.diff(from);
+    const half = Math.round(diff / 2);
+
+    // we have to create a new instance because add() mutates the original one
+    const middle = dateTime(from).add(half).toISOString();
+
+    if (target === CompareTarget.BASELINE) {
+      this.setDiffRange(from.toISOString(), middle);
+    } else {
+      this.setDiffRange(middle, to.toISOString());
+    }
   }
 
   updateTitle(label = '') {

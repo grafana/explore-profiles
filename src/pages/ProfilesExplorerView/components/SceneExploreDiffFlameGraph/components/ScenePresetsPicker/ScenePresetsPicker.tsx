@@ -20,8 +20,8 @@ interface ScenePresetsPickerState extends SceneObjectState {
 export type Preset = {
   from: string;
   to: string;
-  flameGraphFrom: string;
-  flameGraphTo: string;
+  diffFrom: string;
+  diffTo: string;
   label: string;
 };
 
@@ -37,15 +37,15 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           baseline: {
             from: 'now-1h',
             to: 'now',
-            flameGraphFrom: 'now-1h',
-            flameGraphTo: 'now-30m',
+            diffFrom: 'now-1h',
+            diffTo: 'now-30m',
             label: '1h ago',
           },
           comparison: {
             from: 'now-1h',
             to: 'now',
-            flameGraphFrom: 'now-30m',
-            flameGraphTo: 'now',
+            diffFrom: 'now-30m',
+            diffTo: 'now',
             label: 'now',
           },
         },
@@ -55,15 +55,15 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           baseline: {
             from: 'now-6h',
             to: 'now-5h',
-            flameGraphFrom: 'now-360m',
-            flameGraphTo: 'now-330m',
+            diffFrom: 'now-360m',
+            diffTo: 'now-330m',
             label: '6h ago',
           },
           comparison: {
             from: 'now-1h',
             to: 'now',
-            flameGraphFrom: 'now-30m',
-            flameGraphTo: 'now',
+            diffFrom: 'now-30m',
+            diffTo: 'now',
             label: 'now',
           },
         },
@@ -73,15 +73,15 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           baseline: {
             from: 'now-24h',
             to: 'now-23h',
-            flameGraphFrom: 'now-1440m',
-            flameGraphTo: 'now-1410m',
+            diffFrom: 'now-1440m',
+            diffTo: 'now-1410m',
             label: '24h ago',
           },
           comparison: {
             from: 'now-1h',
             to: 'now',
-            flameGraphFrom: 'now-30m',
-            flameGraphTo: 'now',
+            diffFrom: 'now-30m',
+            diffTo: 'now',
             label: 'now',
           },
         },

@@ -1,4 +1,4 @@
-import { dateTime, LoadingState, TimeRange } from '@grafana/data';
+import { DateTime, dateTime, LoadingState, TimeRange } from '@grafana/data';
 import {
   sceneGraph,
   SceneObjectBase,
@@ -140,7 +140,7 @@ export class SceneTimeRangeWithAnnotations
       timeEnd: annotationTimeRange.to.unix() * 1000,
     });
 
-    // tradeoff: this will trigger any $data subscribers even though the data itself hasn't changed
+    // tradeoff: this will notify all the $data subscribers even though the data itself hasn't changed
     $data?.setState({
       data: {
         ...data,
@@ -186,13 +186,20 @@ export class SceneTimeRangeWithAnnotations
     const { annotationTimeRange } = this.state;
 
     this.setAnnotationTimeRange(
-      evaluateTimeRange(
+      this.buildAnnotationTimeRange(
         parseUrlParam(diffFrom) ?? annotationTimeRange.from,
-        parseUrlParam(diffTo) ?? annotationTimeRange.to,
-        this.getTimeZone(),
-        this.state.fiscalYearStartMonth,
-        this.state.UNSAFE_nowDelay
+        parseUrlParam(diffTo) ?? annotationTimeRange.to
       )
+    );
+  }
+
+  buildAnnotationTimeRange(diffFrom: string | DateTime, diffTo: string | DateTime) {
+    return evaluateTimeRange(
+      diffFrom,
+      diffTo,
+      this.getTimeZone(),
+      this.state.fiscalYearStartMonth,
+      this.state.UNSAFE_nowDelay
     );
   }
 
