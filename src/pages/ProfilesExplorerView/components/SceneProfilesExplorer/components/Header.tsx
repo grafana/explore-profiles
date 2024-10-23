@@ -149,7 +149,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
     margin-bottom: 0;
 
     & #dataSource {
-      max-width: ${theme.spacing(32)};
+      width: ${theme.spacing(32)};
     }
 
     &.filters {
