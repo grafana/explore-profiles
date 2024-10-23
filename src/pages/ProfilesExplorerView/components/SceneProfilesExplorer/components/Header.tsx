@@ -143,11 +143,6 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
     gap: ${theme.spacing(1)};
     padding: 0;
     margin-top: 20px;
-
-    &#scene-controls-labels > div:last-child,
-    &#scene-controls-flame-graph > div:last-child {
-      flex-grow: 1;
-    }
   `,
   sceneVariable: css`
     display: flex;
@@ -155,6 +150,10 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
 
     & #dataSource {
       width: ${theme.spacing(32)};
+    }
+
+    &.filters {
+      flex-grow: 1;
     }
   `,
   sceneVariableLabel: css`
