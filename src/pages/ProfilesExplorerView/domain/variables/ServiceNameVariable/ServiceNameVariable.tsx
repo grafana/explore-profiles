@@ -34,7 +34,7 @@ export class ServiceNameVariable extends QueryVariable {
     super({
       key: 'serviceName',
       name: 'serviceName',
-      label: '🚀 Service',
+      label: 'Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
@@ -138,7 +138,8 @@ export class ServiceNameVariable extends QueryVariable {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   iconError: css`
-    color: ${theme.colors.error.text};
+    height: 32px;
     align-self: center;
+    color: ${theme.colors.error.text};
   `,
 });

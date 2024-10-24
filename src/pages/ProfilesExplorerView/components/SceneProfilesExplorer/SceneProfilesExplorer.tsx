@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
 import {
   EmbeddedSceneState,
   getUrlSyncManager,
@@ -399,11 +398,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 }
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = () => ({
   body: css`
     position: relative;
     z-index: 0;
-    margin-top: ${theme.spacing(1)};
     background: transparent;
   `,
 });

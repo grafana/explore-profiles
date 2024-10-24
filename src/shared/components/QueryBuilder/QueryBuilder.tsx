@@ -28,6 +28,7 @@ const getStyles = () => ({
     align-items: flex-end;
     flex-wrap: wrap;
     gap: 4px;
+    width: 100%;
   `,
   controls: css`
     display: flex;

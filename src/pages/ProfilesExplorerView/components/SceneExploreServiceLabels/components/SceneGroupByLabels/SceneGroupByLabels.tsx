@@ -409,5 +409,10 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   sceneControls: css`
     margin-bottom: ${theme.spacing(1)};
+
+    & .quick-filter {
+      flex: 1;
+      min-width: 112px;
+    }
   `,
 });
