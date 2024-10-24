@@ -155,6 +155,11 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
     &.filters {
       flex-grow: 1;
     }
+
+    &.compare-presets {
+      margin-left: auto;
+      text-align: right;
+    }
   `,
   sceneVariableLabel: css`
     font-size: 12px;

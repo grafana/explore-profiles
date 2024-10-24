@@ -1,4 +1,4 @@
-import { dateTime, LoadingState, TimeRange } from '@grafana/data';
+import { DateTime, dateTime, LoadingState, TimeRange } from '@grafana/data';
 import {
   sceneGraph,
   SceneObjectBase,
@@ -140,7 +140,7 @@ export class SceneTimeRangeWithAnnotations
       timeEnd: annotationTimeRange.to.unix() * 1000,
     });
 
-    // tradeoff: this will trigger any $data subscribers even though the data itself hasn't changed
+    // tradeoff: this will notify all the $data subscribers even though the data itself hasn't changed
     $data?.setState({
       data: {
         ...data,
@@ -149,8 +149,16 @@ export class SceneTimeRangeWithAnnotations
     });
   }
 
+  setAnnotationTimeRange(annotationTimeRange: TimeRange, updateTimeseries = false) {
+    this.setState({ annotationTimeRange });
+
+    if (updateTimeseries) {
+      this.updateTimeseriesAnnotation();
+    }
+  }
+
   nullifyAnnotationTimeRange() {
-    this.setState({ annotationTimeRange: TIMERANGE_NIL });
+    this.setAnnotationTimeRange(TIMERANGE_NIL);
   }
 
   getUrlState() {
@@ -177,15 +185,22 @@ export class SceneTimeRangeWithAnnotations
 
     const { annotationTimeRange } = this.state;
 
-    this.setState({
-      annotationTimeRange: evaluateTimeRange(
+    this.setAnnotationTimeRange(
+      this.buildAnnotationTimeRange(
         parseUrlParam(diffFrom) ?? annotationTimeRange.from,
-        parseUrlParam(diffTo) ?? annotationTimeRange.to,
-        this.getTimeZone(),
-        this.state.fiscalYearStartMonth,
-        this.state.UNSAFE_nowDelay
-      ),
-    });
+        parseUrlParam(diffTo) ?? annotationTimeRange.to
+      )
+    );
+  }
+
+  buildAnnotationTimeRange(diffFrom: string | DateTime, diffTo: string | DateTime) {
+    return evaluateTimeRange(
+      diffFrom,
+      diffTo,
+      this.getTimeZone(),
+      this.state.fiscalYearStartMonth,
+      this.state.UNSAFE_nowDelay
+    );
   }
 
   onTimeRangeChange(timeRange: TimeRange): void {
@@ -198,9 +213,7 @@ export class SceneTimeRangeWithAnnotations
 
     // this triggers a timeseries request to the API
     // TODO: caching?
-    this.setState({ annotationTimeRange: timeRange });
-
-    this.updateTimeseriesAnnotation();
+    this.setAnnotationTimeRange(timeRange, true);
   }
 
   onTimeZoneChange(timeZone: string): void {
