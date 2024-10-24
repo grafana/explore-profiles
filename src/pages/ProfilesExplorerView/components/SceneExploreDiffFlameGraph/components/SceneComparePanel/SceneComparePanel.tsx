@@ -209,6 +209,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     });
 
     const timeRangeSub = this.state.$timeRange.subscribeToState((newState, prevState) => {
+      console.log('*** newState, prevState', newState, prevState);
       if (newState.from !== prevState.from || newState.to !== prevState.to) {
         this.updateTitle('');
       }
@@ -233,11 +234,11 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   applyPreset({ from, to, diffFrom, diffTo, label }: Preset) {
-    this.updateTitle(label);
+    this.setDiffRange(diffFrom, diffTo);
 
     this.state.$timeRange.setState(buildTimeRange(from, to));
 
-    this.setDiffRange(diffFrom, diffTo);
+    this.updateTitle(label);
   }
 
   setDiffRange(diffFrom: string, diffTo: string) {
