@@ -34,13 +34,13 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       options: [
         {
           value: '1h ago vs now',
-          label: '1h ago vs now',
+          label: 'Last hour (30m-window)',
           baseline: {
             from: 'now-1h',
             to: 'now',
             diffFrom: 'now-1h',
             diffTo: 'now-30m',
-            label: '1h ago',
+            label: 'last hour',
           },
           comparison: {
             from: 'now-1h',
@@ -52,7 +52,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
         },
         {
           value: '6h ago vs now',
-          label: '6h ago vs now',
+          label: '6h ago vs now (30m-window)',
           baseline: {
             from: 'now-6h',
             to: 'now-5h',
@@ -70,7 +70,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
         },
         {
           value: '24h ago vs now',
-          label: '24h ago vs now',
+          label: '24h ago vs now (30m-window)',
           baseline: {
             from: 'now-24h',
             to: 'now-23h',
