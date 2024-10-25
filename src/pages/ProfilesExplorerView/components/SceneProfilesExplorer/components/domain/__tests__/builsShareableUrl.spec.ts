@@ -18,17 +18,17 @@ describe('builsShareableUrl()', () => {
   });
 
   test.each([
-    ['identity', new URL(BASE_URL), BASE_URL],
+    ['no params', new URL(BASE_URL), `${BASE_URL}&from=1729250533247&to=1729252333247`],
     ['relative from/to', new URL(`${BASE_URL}&from=now-30m&to=now`), `${BASE_URL}&from=1729250533247&to=1729252333247`],
     [
       'relative from-x/to-x',
       new URL(`${BASE_URL}&from-2=now-20m&to-2=now-10m&from-3=now-15m&to-3=now-5m`),
-      `${BASE_URL}&from-2=1729251133247&to-2=1729251733247&from-3=1729251433247&to-3=1729252033247`,
+      `${BASE_URL}&from-2=1729251133247&to-2=1729251733247&from-3=1729251433247&to-3=1729252033247&from=1729250533247&to=1729252333247`,
     ],
     [
       'relative diffFrom-x/diffTo-x',
       new URL(`${BASE_URL}&diffFrom=now-18m&diffTo=now-12m&diffFrom-2=now-7m&diffTo-2=now-3m`),
-      `${BASE_URL}&diffFrom=1729251253247&diffTo=1729251613247&diffFrom-2=1729251913247&diffTo-2=1729252153247`,
+      `${BASE_URL}&diffFrom=1729251253247&diffTo=1729251613247&diffFrom-2=1729251913247&diffTo-2=1729252153247&from=1729250533247&to=1729252333247`,
     ],
     [
       'absolute from/to',
