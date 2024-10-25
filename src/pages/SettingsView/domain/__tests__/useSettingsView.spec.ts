@@ -32,6 +32,18 @@ jest.mock('@shared/domain/url-params/useMaxNodesFromUrl', () => ({
   useMaxNodesFromUrl: () => [, setMaxNodes],
 }));
 
+// useHistory dependency
+jest.mock('react-router-dom', () => ({
+  useHistory: () => ({
+    push: jest.fn(),
+    location: {
+      state: {
+        referrer: 'http://unit.test/pass',
+      },
+    },
+  }),
+}));
+
 // tests
 describe('useSettingsView(plugin)', () => {
   it('returns an object with "data" and "actions" fields', () => {
