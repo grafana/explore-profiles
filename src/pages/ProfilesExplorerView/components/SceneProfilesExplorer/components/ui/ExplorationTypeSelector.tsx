@@ -32,11 +32,13 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
         {options.map((option, i) => {
           const isActive = value === option.value;
           const variant = getButtonVariant(i);
+          const isPrimary = variant === 'primary';
+          const extraClasses = [isActive && 'active', isPrimary && 'primary'];
 
           return (
             <Fragment key={option.value}>
               <Button
-                className={cx(styles.button, isActive && styles.activeButton)}
+                className={cx(styles.button, ...extraClasses)}
                 variant={variant}
                 size="sm"
                 aria-label={option.label}
@@ -54,7 +56,7 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 <div
                   className={
                     activeIndex !== options.length - 1 && i <= activeIndex - 1
-                      ? cx(styles.arrow, styles.active)
+                      ? cx(styles.arrow, 'arrow', ...extraClasses)
                       : styles.arrow
                   }
                 />
@@ -88,6 +90,21 @@ const getStyles = (theme: GrafanaTheme2) => ({
     align-items: center;
     height: 32px;
     line-height: 32px;
+
+    .active {
+      background-color: ${theme.colors.primary.main};
+    }
+
+    & button.primary:not(.active),
+    & .arrow.primary:not(.active) {
+      opacity: 0.7;
+    }
+
+    & button.primary:not(.active):hover,
+    & .arrow.primary:not(.active):hover {
+      opacity: 1;
+      background-color: ${theme.colors.primary.main};
+    }
   `,
   button: css`
     height: 27px;
@@ -98,6 +115,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
       border-color: ${theme.colors.primary.main};
     }
 
+    &.active:hover {
+      cursor: default;
+      background-color: ${theme.colors.primary.main};
+    }
+
     &:nth-last-child(2) {
       margin-left: ${theme.spacing(1)};
     }
@@ -106,18 +128,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
       margin-left: ${theme.spacing(2)};
     }
   `,
-  activeButton: css`
-    &:hover {
-      cursor: default;
-      background-color: ${theme.colors.primary.main};
-    }
-  `,
   arrow: css`
     background-color: ${theme.colors.text.disabled};
     width: 10px;
     height: 2px;
-  `,
-  active: css`
-    background-color: ${theme.colors.primary.main};
   `,
 });
