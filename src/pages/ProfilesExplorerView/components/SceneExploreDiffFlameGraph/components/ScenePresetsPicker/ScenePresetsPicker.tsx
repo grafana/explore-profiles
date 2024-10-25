@@ -33,7 +33,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       value: 'built-in',
       options: [
         {
-          value: '1h ago vs now',
+          value: '1h ago vs now (30m)',
           label: 'Last hour (30m-window)',
           baseline: {
             from: 'now-1h',
@@ -46,6 +46,24 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             from: 'now-1h',
             to: 'now',
             diffFrom: 'now-30m',
+            diffTo: 'now',
+            label: 'now',
+          },
+        },
+        {
+          value: '1h ago vs now (1h)',
+          label: 'Last hour (1h-window)',
+          baseline: {
+            from: 'now-1h',
+            to: 'now',
+            diffFrom: 'now-1h',
+            diffTo: 'now',
+            label: 'last hour',
+          },
+          comparison: {
+            from: 'now-1h',
+            to: 'now',
+            diffFrom: 'now-1h',
             diffTo: 'now',
             label: 'now',
           },
