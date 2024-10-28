@@ -46,7 +46,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             to: 'now',
             diffFrom: 'now-30m',
             diffTo: 'now',
-            label: 'now',
+            label: 'last hour',
           },
         },
         {
@@ -64,7 +64,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             to: 'now',
             diffFrom: 'now-1h',
             diffTo: 'now',
-            label: 'now',
+            label: 'last hour',
           },
         },
         {
@@ -82,7 +82,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             to: 'now',
             diffFrom: 'now-30m',
             diffTo: 'now',
-            label: 'now',
+            label: 'last hour',
           },
         },
         {
@@ -100,7 +100,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             to: 'now',
             diffFrom: 'now-30m',
             diffTo: 'now',
-            label: 'now',
+            label: 'last hour',
           },
         },
       ],
