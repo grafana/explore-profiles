@@ -57,7 +57,7 @@ interface SceneLabelValuesGridState extends EmbeddedSceneState {
   hideNoData: boolean;
 }
 
-const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(800px, 1fr))';
+const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(600px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 export const GRID_AUTO_ROWS = '160px';
 

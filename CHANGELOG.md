@@ -1,3 +1,18 @@
+## [0.1.14](https://github.com/grafana/explore-profiles/compare/v0.1.13...v0.1.14) (2024-10-17)
+
+
+### Bug Fixes
+
+* **Faro:** Filter out events not related to the app ([#225](https://github.com/grafana/explore-profiles/issues/225)) ([57a7c58](https://github.com/grafana/explore-profiles/commit/57a7c581988d8418baa58ec872780e98f4703733))
+* **Header:** Fix sticky header position in Grafana v11.3+ ([#218](https://github.com/grafana/explore-profiles/issues/218)) ([a4f226f](https://github.com/grafana/explore-profiles/commit/a4f226ff44c8b991efe1ab64cf4a4557f2dba903))
+
+
+### Features
+
+* **ServiceNameVariable:** Persist last service selected in localStorage ([#222](https://github.com/grafana/explore-profiles/issues/222)) ([3917660](https://github.com/grafana/explore-profiles/commit/39176600a4c260aa33499635954df5174fc6a54a))
+
+
+
 ## [0.1.13](https://github.com/grafana/explore-profiles/compare/v0.1.12...v0.1.13) (2024-10-08)
 
 

@@ -79,44 +79,39 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
     const { placeholder, searchText, resultsCount } = model.useState();
 
     return (
-      <div className={styles.filter}>
-        <Input
-          type="text"
-          aria-label="Quick filter"
-          placeholder={placeholder}
-          value={searchText}
-          prefix={<Icon name="search" />}
-          suffix={
-            <>
-              {resultsCount !== '' && (
-                <Tag
-                  className={styles.resultsCount}
-                  name={resultsCount}
-                  colorIndex={9}
-                  data-testid="quick-filter-results-count"
-                />
-              )}
-              <IconButton name="times" aria-label="Clear search" onClick={model.clearSearchText} />
-            </>
+      <Input
+        type="text"
+        className="quick-filter"
+        aria-label="Quick filter"
+        placeholder={placeholder}
+        value={searchText}
+        prefix={<Icon name="search" />}
+        suffix={
+          <>
+            {resultsCount !== '' && (
+              <Tag
+                className={styles.resultsCount}
+                name={resultsCount}
+                colorIndex={9}
+                data-testid="quick-filter-results-count"
+              />
+            )}
+            <IconButton name="times" aria-label="Clear search" onClick={model.clearSearchText} />
+          </>
+        }
+        onChange={model.onChange}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === 'Escape') {
+            model.clearSearchText();
           }
-          onChange={model.onChange}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-            if (e.key === 'Escape') {
-              model.clearSearchText();
-            }
-          }}
-          onFocus={model.onFocus}
-        />
-      </div>
+        }}
+        onFocus={model.onFocus}
+      />
     );
   };
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  filter: css`
-    flex: 1;
-    min-width: 112px;
-  `,
   resultsCount: css`
     margin-right: ${theme.spacing(1)};
     border-radius: 11px;

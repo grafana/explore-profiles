@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { IconName } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
-import { reportInteraction } from '@shared/domain/reportInteraction';
+import { InteractionName, reportInteraction } from '@shared/domain/reportInteraction';
 import React, { ReactNode } from 'react';
 
 import { useFetchLlmPluginStatus } from './infrastructure/useFetchLlmPluginStatus';
@@ -10,7 +10,7 @@ type AIButtonProps = {
   children: ReactNode;
   onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
-  interactionName: string;
+  interactionName: InteractionName;
 };
 
 export function AIButton({ children, onClick, disabled, interactionName }: AIButtonProps) {

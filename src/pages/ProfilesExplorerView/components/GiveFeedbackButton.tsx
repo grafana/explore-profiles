@@ -3,6 +3,8 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Badge, Icon, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
+const FEEDBACK_FORM_URL = 'https://grafana.qualtrics.com/jfe/form/SV_6Gav4IUU6jcYfd4';
+
 // borrowed from https://github.com/grafana/explore-logs/blob/main/src/Components/IndexScene/GiveFeedbackButton.tsx
 export const GiveFeedbackButton = () => {
   const styles = useStyles2(getStyles);
@@ -10,7 +12,7 @@ export const GiveFeedbackButton = () => {
   return (
     <div className={styles.wrapper}>
       <a
-        href="https://grafana.qualtrics.com/jfe/form/SV_6Gav4IUU6jcYfd4"
+        href={FEEDBACK_FORM_URL}
         className={styles.feedback}
         title="Share your thoughts about Profiles in Grafana."
         target="_blank"
@@ -19,7 +21,7 @@ export const GiveFeedbackButton = () => {
         <Icon name="comment-alt-message" /> Give feedback
       </a>
       <a
-        href="https://grafana.qualtrics.com/jfe/form/SV_6Gav4IUU6jcYfd4"
+        href={FEEDBACK_FORM_URL}
         className={styles.feedback}
         title="Share your thoughts about Profiles in Grafana."
         target="_blank"
