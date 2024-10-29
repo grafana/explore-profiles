@@ -47,6 +47,7 @@ import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfi
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
+import { IncludeExcludeAction } from './domain/actions/IncludeExcludeAction/IncludeExcludeAction';
 import { EventSelectForCompare } from './domain/events/EventSelectForCompare';
 import { CompareControls } from './ui/CompareControls';
 
@@ -251,8 +252,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       startColorIndex,
       label,
       headerActions: (item) => [
-        new SelectAction({ EventClass: EventIncludeLabelInFilters, item }),
-        new SelectAction({ EventClass: EventExcludeLabelFromFilters, item }),
         new SelectAction({
           EventClass: EventViewServiceFlameGraph,
           item,
@@ -267,6 +266,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
             }" flame graph for "${groupByValue}=${label}"`;
           },
         }),
+        new IncludeExcludeAction({ item }),
         new FavAction({ item }),
       ],
     });

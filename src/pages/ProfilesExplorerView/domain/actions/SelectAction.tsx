@@ -10,7 +10,6 @@ import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { interpolateQueryRunnerVariables } from '../../infrastructure/helpers/interpolateQueryRunnerVariables';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
-import { EventExcludeLabelFromFilters, EventIncludeLabelInFilters } from '../events/EventIncludeLabelInFilters';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
@@ -30,26 +29,6 @@ type EventLookup = {
 };
 
 const Events = new Map<EventContructor, EventLookup>([
-  [
-    EventIncludeLabelInFilters,
-    Object.freeze({
-      label: 'Include',
-      tooltip: ({ label }, model) => {
-        const groupByValue = getSceneVariableValue(model, 'groupBy');
-        return `Include "${groupByValue}=${label}" in the filters`;
-      },
-    }),
-  ],
-  [
-    EventExcludeLabelFromFilters,
-    Object.freeze({
-      label: 'Exclude',
-      tooltip: ({ label }, model) => {
-        const groupByValue = getSceneVariableValue(model, 'groupBy');
-        return `Exclude "${groupByValue}=${label}" from the filters`;
-      },
-    }),
-  ],
   [
     EventExpandPanel,
     Object.freeze({
