@@ -1,6 +1,12 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import {
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectState,
+  VariableDependencyConfig,
+} from '@grafana/scenes';
 import { Button, Modal, Select, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
@@ -26,6 +32,13 @@ export type Preset = {
 };
 
 export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState> {
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['dataSource', 'serviceName'],
+    onReferencedVariableValueChanged: () => {
+      this.reset();
+    },
+  });
+
   static PRESETS = [
     {
       label: 'Built-in presets',
@@ -185,6 +198,10 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   onCloseSelect = () => {
     this.closeSelect();
   };
+
+  reset() {
+    this.setState({ value: null, isSelectOpen: false, isModalOpen: false });
+  }
 
   static Component({ model }: SceneComponentProps<ScenePresetsPicker & { onChange: any }>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
