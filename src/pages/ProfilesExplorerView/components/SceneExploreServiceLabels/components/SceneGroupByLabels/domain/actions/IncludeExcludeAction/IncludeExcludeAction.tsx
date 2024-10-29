@@ -1,18 +1,43 @@
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import React from 'react';
+import { AdHocVariableFilter } from '@grafana/data';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import React, { useMemo } from 'react';
 
-import { EventExcludeLabelFromFilters } from '../../../../../../../domain/events/EventExcludeLabelFromFilters';
-import { EventIncludeLabelInFilters } from '../../../../../../../domain/events/EventIncludeLabelInFilters';
+import { FiltersVariable } from '../../../../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
+import { EventClearLabelFromFilters } from '../../events/EventClearLabelFromFilters';
+import { EventExcludeLabelFromFilters } from '../../events/EventExcludeLabelFromFilters';
+import { EventIncludeLabelInFilters } from '../../events/EventIncludeLabelInFilters';
 import { FilterButtons } from './ui/FilterButtons';
 
-interface IncludeExcludeActionState extends SceneObjectState {
+export interface IncludeExcludeActionState extends SceneObjectState {
   item: GridItemData;
 }
 
+type Status = 'included' | 'excluded' | 'clear';
+
 export class IncludeExcludeAction extends SceneObjectBase<IncludeExcludeActionState> {
-  constructor({ item }: { item: IncludeExcludeActionState['item'] }) {
+  constructor({ item }: IncludeExcludeActionState) {
     super({ item });
+  }
+
+  getStatus(filters: AdHocVariableFilter[]) {
+    let status: Status = 'clear';
+
+    const { key, value } = this.state.item.queryRunnerParams.filters![0];
+
+    filters
+      .filter((f) => f.key === key && (f.operator === '=~' || f.operator === '!~'))
+      .some((f) => {
+        if (!f.value.split('|').includes(value)) {
+          return false;
+        }
+
+        status = f.operator === '=~' ? 'included' : 'excluded';
+
+        return true;
+      });
+
+    return status;
   }
 
   onInclude = () => {
@@ -23,16 +48,20 @@ export class IncludeExcludeAction extends SceneObjectBase<IncludeExcludeActionSt
     this.publishEvent(new EventExcludeLabelFromFilters({ item: this.state.item }), true);
   };
 
-  onClear = () => {};
+  onClear = () => {
+    this.publishEvent(new EventClearLabelFromFilters({ item: this.state.item }), true);
+  };
 
   public static Component = ({ model }: SceneComponentProps<IncludeExcludeAction>) => {
     const { item } = model.useState();
+    const { filters } = (sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable) as FiltersVariable).useState();
+
+    const status = useMemo(() => model.getStatus(filters), [filters, model]);
 
     return (
       <FilterButtons
         label={item.value}
-        isIncluded={false}
-        isExcluded={false}
+        status={status}
         onInclude={model.onInclude}
         onExclude={model.onExclude}
         onClear={model.onClear}

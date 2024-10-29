@@ -14,10 +14,6 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
-import {
-  EventExcludeLabelFromFilters,
-  EventIncludeLabelInFilters,
-} from 'src/pages/ProfilesExplorerView/domain/events/EventIncludeLabelInFilters';
 import { EventViewDiffFlameGraph } from 'src/pages/ProfilesExplorerView/domain/events/EventViewDiffFlameGraph';
 
 import { FavAction } from '../../../../domain/actions/FavAction';
@@ -25,7 +21,11 @@ import { SelectAction } from '../../../../domain/actions/SelectAction';
 import { EventExpandPanel } from '../../../../domain/events/EventExpandPanel';
 import { EventSelectLabel } from '../../../../domain/events/EventSelectLabel';
 import { EventViewServiceFlameGraph } from '../../../../domain/events/EventViewServiceFlameGraph';
-import { excludeFromFilter, includeInFilter } from '../../../../domain/variables/FiltersVariable/filters-ops';
+import {
+  clearLabelValue,
+  excludeLabelValue,
+  includeLabelValue,
+} from '../../../../domain/variables/FiltersVariable/filters-ops';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
@@ -48,6 +48,9 @@ import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/Sc
 import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
 import { IncludeExcludeAction } from './domain/actions/IncludeExcludeAction/IncludeExcludeAction';
+import { EventClearLabelFromFilters } from './domain/events/EventClearLabelFromFilters';
+import { EventExcludeLabelFromFilters } from './domain/events/EventExcludeLabelFromFilters';
+import { EventIncludeLabelInFilters } from './domain/events/EventIncludeLabelInFilters';
 import { EventSelectForCompare } from './domain/events/EventSelectForCompare';
 import { CompareControls } from './ui/CompareControls';
 
@@ -145,8 +148,13 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       this.excludeLabelValueFromFilters(event.payload.item);
     });
 
+    const clearFilterSub = this.subscribeToEvent(EventClearLabelFromFilters, (event) => {
+      this.clearLabelValueFromFilters(event.payload.item);
+    });
+
     return {
       unsubscribe() {
+        clearFilterSub.unsubscribe();
         excludeFilterSub.unsubscribe();
         includeFilterSub.unsubscribe();
         selectForCompareSub.unsubscribe();
@@ -251,24 +259,26 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       key: 'service-label-values-grid',
       startColorIndex,
       label,
-      headerActions: (item) => [
-        new SelectAction({
-          EventClass: EventViewServiceFlameGraph,
-          item,
-          tooltip: (item, model) => {
-            const { queryRunnerParams, label } = item;
-            const profileMetricId =
-              queryRunnerParams.profileMetricId || getSceneVariableValue(model, 'profileMetricId');
-            const groupByValue = getSceneVariableValue(model, 'groupBy');
+      headerActions: (item) => {
+        return [
+          new SelectAction({
+            EventClass: EventViewServiceFlameGraph,
+            item,
+            tooltip: (item, model) => {
+              const { queryRunnerParams, label } = item;
+              const profileMetricId =
+                queryRunnerParams.profileMetricId || getSceneVariableValue(model, 'profileMetricId');
+              const groupByValue = getSceneVariableValue(model, 'groupBy');
 
-            return `View the "${
-              getProfileMetric(profileMetricId as ProfileMetricId).type
-            }" flame graph for "${groupByValue}=${label}"`;
-          },
-        }),
-        new IncludeExcludeAction({ item }),
-        new FavAction({ item }),
-      ],
+              return `View the "${
+                getProfileMetric(profileMetricId as ProfileMetricId).type
+              }" flame graph for "${groupByValue}=${label}"`;
+            },
+          }),
+          new IncludeExcludeAction({ item }),
+          new FavAction({ item }),
+        ];
+      },
     });
   }
 
@@ -285,12 +295,23 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
   includeLabelValueInFilters(item: GridItemData) {
     const [filterToInclude] = item.queryRunnerParams.filters!;
-    includeInFilter(sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable), filterToInclude);
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+
+    filtersVariable.setState({ filters: includeLabelValue(filtersVariable.state.filters, filterToInclude) });
   }
 
   excludeLabelValueFromFilters(item: GridItemData) {
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
     const [filterToExclude] = item.queryRunnerParams.filters!;
-    excludeFromFilter(sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable), filterToExclude);
+
+    filtersVariable.setState({ filters: excludeLabelValue(filtersVariable.state.filters, filterToExclude) });
+  }
+
+  clearLabelValueFromFilters(item: GridItemData) {
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+    const [filterToClear] = item.queryRunnerParams.filters!;
+
+    filtersVariable.setState({ filters: clearLabelValue(filtersVariable.state.filters, filterToClear) });
   }
 
   openExpandedPanelDrawer(item: GridItemData) {

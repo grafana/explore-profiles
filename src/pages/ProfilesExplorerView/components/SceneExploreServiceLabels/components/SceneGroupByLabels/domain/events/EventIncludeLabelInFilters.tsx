@@ -1,6 +1,6 @@
 import { BusEventWithPayload } from '@grafana/data';
 
-import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
+import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 
 export interface EventIncludeLabelInFiltersPayload {
   item: GridItemData;
@@ -12,8 +12,4 @@ export class EventIncludeLabelInFilters extends BusEventWithPayload<EventInclude
 
 export interface EventExcludeLabelFromFiltersPayload {
   item: GridItemData;
-}
-
-export class EventExcludeLabelFromFilters extends BusEventWithPayload<EventExcludeLabelFromFiltersPayload> {
-  public static type = 'exclude-label-from-filters';
 }

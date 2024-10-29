@@ -1,44 +1,45 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
-import React from 'react';
+import React, { memo } from 'react';
 
 type FilterButtonsProps = {
   label: string;
-  isIncluded: boolean;
-  isExcluded: boolean;
+  status: 'included' | 'excluded' | 'clear';
   onInclude: () => void;
   onExclude: () => void;
   onClear: () => void;
 };
 
 // Borrowed from https://github.com/grafana/explore-logs/blob/main/src/Components/FilterButton.tsx
-export const FilterButtons = ({ label, isExcluded, isIncluded, onInclude, onExclude, onClear }: FilterButtonsProps) => {
-  const styles = useStyles2(getStyles, isIncluded, isExcluded);
+const FilterButtonsComponent = ({ label, status, onInclude, onExclude, onClear }: FilterButtonsProps) => {
+  const styles = useStyles2(getStyles, status === 'included', status === 'excluded');
+
+  //TODO: cx(status)
 
   return (
     <div className={styles.container}>
       <Button
-        variant={isIncluded ? 'primary' : 'secondary'}
+        variant={status === 'included' ? 'primary' : 'secondary'}
         fill="outline"
         size="sm"
-        aria-selected={isIncluded}
+        aria-selected={status === 'included'}
         className={styles.includeButton}
-        onClick={isIncluded ? onClear : onInclude}
-        tooltip={`Add "${label}" to the filters`}
+        onClick={status === 'included' ? onClear : onInclude}
+        tooltip={status !== 'included' ? `Include "${label}" in the filters` : `Remove "${label}" from the filters`}
         tooltipPlacement="top"
         data-testid="filter-button-include"
       >
         Include
       </Button>
       <Button
-        variant={isExcluded ? 'primary' : 'secondary'}
+        variant={status === 'excluded' ? 'primary' : 'secondary'}
         fill="outline"
         size="sm"
-        aria-selected={isExcluded}
+        aria-selected={status === 'excluded'}
         className={styles.excludeButton}
-        onClick={isExcluded ? onClear : onExclude}
-        tooltip={`Remove "${label}" from the filters`}
+        onClick={status === 'excluded' ? onClear : onExclude}
+        tooltip={status !== 'excluded' ? `Exclude "${label}" in the filters` : `Remove "${label}" from the filters`}
         tooltipPlacement="top"
         data-testid="filter-button-exclude"
       >
@@ -47,6 +48,8 @@ export const FilterButtons = ({ label, isExcluded, isIncluded, onInclude, onExcl
     </div>
   );
 };
+
+export const FilterButtons = memo(FilterButtonsComponent);
 
 const getStyles = (theme: GrafanaTheme2, isIncluded: boolean, isExcluded: boolean) => {
   return {
