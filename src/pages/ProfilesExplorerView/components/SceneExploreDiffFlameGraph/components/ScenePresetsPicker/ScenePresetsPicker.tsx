@@ -13,6 +13,7 @@ import React from 'react';
 
 import { FEEDBACK_FORM_URL } from '../../../GiveFeedbackButton';
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
+import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
 import { SceneComparePanel } from '../SceneComparePanel/SceneComparePanel';
 
 interface ScenePresetsPickerState extends SceneObjectState {
@@ -45,7 +46,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       value: 'built-in',
       options: [
         {
-          value: '1h ago vs now (30m)',
+          value: 'last hour (30m-window)',
           label: 'Last hour (30m-window)',
           baseline: {
             from: 'now-1h',
@@ -63,7 +64,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           },
         },
         {
-          value: '1h ago vs now (1h)',
+          value: 'last hour (1h-window)',
           label: 'Last hour (1h-window)',
           baseline: {
             from: 'now-1h',
@@ -84,10 +85,10 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           value: '6h ago vs now',
           label: '6h ago vs now (30m-window)',
           baseline: {
-            from: 'now-6h',
-            to: 'now-5h',
-            diffFrom: 'now-360m',
-            diffTo: 'now-330m',
+            from: 'now-375m',
+            to: 'now-315m',
+            diffFrom: 'now-375m',
+            diffTo: 'now-345m',
             label: '6h ago',
           },
           comparison: {
@@ -102,10 +103,10 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           value: '24h ago vs now',
           label: '24h ago vs now (30m-window)',
           baseline: {
-            from: 'now-24h',
-            to: 'now-23h',
-            diffFrom: 'now-1440m',
-            diffTo: 'now-1410m',
+            from: 'now-1455m',
+            to: 'now-1395m',
+            diffFrom: 'now-1455m',
+            diffTo: 'now-1425m',
             label: '24h ago',
           },
           comparison: {
@@ -116,14 +117,18 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             label: 'last hour',
           },
         },
+        {
+          value: 'auto-select',
+          label: 'Auto-select',
+        },
       ],
     },
     {
-      label: 'Custom presets',
+      label: 'My presets',
       value: 'custom',
       options: [
         {
-          label: 'My dummy preset',
+          label: 'Dummy preset saved earlier',
           value: 'dummy',
         },
       ],
@@ -163,6 +168,11 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
 
     if (option.value === 'dummy') {
       this.setState({ value: null, isModalOpen: true });
+      return;
+    }
+
+    if (option.value === 'auto-select') {
+      this.publishEvent(new EventDiffAutoSelect({}), true);
       return;
     }
 
@@ -228,7 +238,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           />
         </div>
         <Modal
-          title="Custom presets"
+          title="Custom user presets"
           isOpen={isModalOpen}
           closeOnEscape={true}
           closeOnBackdropClick={true}
