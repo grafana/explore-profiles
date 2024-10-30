@@ -246,6 +246,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     $diffTimeRange.setAnnotationTimeRange($diffTimeRange.buildAnnotationTimeRange(diffFrom, diffTo), true);
   }
 
+  /**
+   * This function is responsible for automatically selecting half of the time range (from the time picker) that will be used to build the diff flame graph
+   * For the baseline panel, the leftmost part, for the comparison one, the rightmost part.
+   * In the future, we might want to be smarter and provides a way to select (e.g.) the region with the lowest resource consumption on the baseline panel vs
+   * the region with the highest consumption on the comparison panel.
+   */
   autoSelectDiffRange() {
     const { $timeRange, target } = this.state;
     const { from, to } = $timeRange.state.value;
