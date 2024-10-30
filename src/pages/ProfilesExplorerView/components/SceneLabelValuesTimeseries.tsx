@@ -7,10 +7,12 @@ import {
   SceneObjectBase,
   SceneObjectState,
   VizPanel,
+  VizPanelMenu,
   VizPanelState,
 } from '@grafana/scenes';
-import { GraphGradientMode, SortOrder } from '@grafana/schema';
+import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
+import { cloneDeep, merge } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
@@ -71,8 +73,54 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             })
         )
         .setHeaderActions(headerActions(item))
+        .setMenu(
+          new VizPanelMenu({
+            items: [
+              {
+                text: 'Scale',
+                type: 'group',
+                subMenu: [
+                  {
+                    text: 'Logarithmic (2)',
+                    onClick: onClickScale({
+                      type: ScaleDistribution.Log,
+                      log: 2,
+                    }),
+                  },
+                  {
+                    text: 'Linear',
+                    onClick: onClickScale({
+                      type: ScaleDistribution.Linear,
+                    }),
+                  },
+                ],
+              },
+            ],
+          })
+        )
+
         .build(),
     });
+
+    const self = this;
+
+    function onClickScale(scaleDistribution: ScaleDistributionConfig) {
+      return () => {
+        const { body } = self.state;
+
+        body.clearFieldConfigCache();
+
+        body.setState({
+          fieldConfig: merge(cloneDeep(body.state.fieldConfig), {
+            defaults: {
+              custom: {
+                scaleDistribution,
+              },
+            },
+          }),
+        });
+      };
+    }
 
     this.addActivationHandler(this.onActivate.bind(this));
   }
