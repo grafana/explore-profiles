@@ -1,10 +1,10 @@
-import { llms } from '@grafana/experimental';
+import { openai } from '@grafana/llm';
 import { useQuery } from '@tanstack/react-query';
 
 export function useFetchLlmPluginStatus() {
   const { data, isFetching, error } = useQuery({
     queryKey: ['llm'],
-    queryFn: () => llms.openai.enabled(),
+    queryFn: () => openai.enabled(),
   });
 
   if (error) {

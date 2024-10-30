@@ -4,7 +4,7 @@ import React from 'react';
 type InlineBannerProps = {
   severity: AlertVariant;
   title: string;
-  message?: string;
+  message?: string | React.ReactNode;
   errors?: Error[];
 };
 

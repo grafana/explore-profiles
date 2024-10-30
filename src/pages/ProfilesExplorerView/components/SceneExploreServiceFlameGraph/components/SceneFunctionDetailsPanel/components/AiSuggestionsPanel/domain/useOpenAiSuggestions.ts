@@ -1,27 +1,19 @@
-import { llms } from '@grafana/experimental';
+import { openai } from '@grafana/llm';
 import { useCallback, useEffect, useState } from 'react';
 
 import { buildSuggestionPrompts, model, SuggestionPromptInputs } from './buildLlmSuggestionPrompts';
 
-// taken from "@grafana/experimental"
-type Role = 'system' | 'user' | 'assistant' | 'function';
-
-type Message = {
-  role: Role;
-  content: string;
-  name?: string;
-  function_call?: Object;
-};
+type Messages = openai.Message[];
 
 // TODO(@petethepig): this is largely same function as useOpenAiChatCompletions, maybe we should merge them somehow
 export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInputs) {
   const [reply, setReply] = useState('');
   const [replyHasStarted, setReplyHasStarted] = useState(false);
   const [replyHasFinished, setReplyHasFinished] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Messages>([]);
   const [error, setError] = useState<Error | null>(null);
 
-  const sendMessages = useCallback((messagesToSend: Message[]) => {
+  const sendMessages = useCallback((messagesToSend: Messages) => {
     setMessages(messagesToSend);
 
     setError(null);
@@ -30,7 +22,7 @@ export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInp
     setReplyHasStarted(true);
     setReplyHasFinished(false);
 
-    const stream = llms.openai
+    const stream = openai
       .streamChatCompletions({
         model,
         messages: messagesToSend,
@@ -38,7 +30,7 @@ export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInp
       .pipe(
         // Accumulate the stream content into a stream of strings, where each
         // element contains the accumulated message so far.
-        llms.openai.accumulateContent()
+        openai.accumulateContent()
       );
 
     stream.subscribe({
@@ -57,7 +49,7 @@ export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInp
 
   const askFollowupQuestion = useCallback(
     (question: string): void => {
-      const messagesToAdd: Message[] = [
+      const messagesToAdd: Messages = [
         {
           role: 'assistant',
           content: reply,

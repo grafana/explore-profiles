@@ -7,6 +7,7 @@ import React, { memo, ReactNode } from 'react';
 import { Helmet } from 'react-helmet';
 
 import { PluginInfo } from './PluginInfo';
+import { PyroscopeLogo } from './PyroscopeLogo';
 
 type PageTitleProps = {
   title: ReactNode;
@@ -25,7 +26,7 @@ function PageTitleComponent({ title, queryAnalysis }: PageTitleProps) {
       <div className={styles.titleContainer}>
         <Stack justifyContent="space-between">
           <div>
-            <img className={styles.logo} src="public/plugins/grafana-pyroscope-app/img/logo.svg" />
+            <PyroscopeLogo size="large" />
             <h1 className={styles.title} data-testid="page-title">
               {title}
             </h1>
@@ -45,10 +46,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     height: ${theme.spacing(5)};
     line-height: ${theme.spacing(5)};
     margin-bottom: ${theme.spacing(3)};
-  `,
-  logo: css`
-    width: ${theme.spacing(5)};
-    height: ${theme.spacing(5)};
   `,
   title: css`
     font-size: ${theme.typography.h2.fontSize};

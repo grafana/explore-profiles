@@ -10,6 +10,7 @@ import {
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { userStorage } from '@shared/infrastructure/userStorage';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -33,7 +34,7 @@ export class ServiceNameVariable extends QueryVariable {
     super({
       key: 'serviceName',
       name: 'serviceName',
-      label: '🚀 Service',
+      label: 'Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
@@ -45,9 +46,19 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   onActivate() {
-    if (!this.state.value && this.state.options.length) {
-      this.setState({ value: this.state.options[0].value });
+    const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+
+    if (serviceNameFromStorage) {
+      this.setState({ value: serviceNameFromStorage });
     }
+
+    this.subscribeToState((newState, prevState) => {
+      if (newState.value && newState.value !== prevState.value) {
+        const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+        storage.serviceName = newState.value;
+        userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
+      }
+    });
   }
 
   async update() {
@@ -127,7 +138,8 @@ export class ServiceNameVariable extends QueryVariable {
 
 const getStyles = (theme: GrafanaTheme2) => ({
   iconError: css`
-    color: ${theme.colors.error.text};
+    height: 32px;
     align-self: center;
+    color: ${theme.colors.error.text};
   `,
 });

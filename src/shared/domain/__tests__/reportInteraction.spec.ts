@@ -26,9 +26,9 @@ describe('reportInteraction(interactionName, properties)', () => {
       writable: true,
     });
 
-    reportInteraction('unit_test_executed');
+    reportInteraction('g_pyroscope_app_exploration_type_clicked');
 
-    expect(grafanaReportInteraction).toHaveBeenCalledWith('unit_test_executed', {
+    expect(grafanaReportInteraction).toHaveBeenCalledWith('g_pyroscope_app_exploration_type_clicked', {
       page: 'test-page-1',
       version: '1.0.0',
     });
@@ -41,12 +41,12 @@ describe('reportInteraction(interactionName, properties)', () => {
         writable: true,
       });
 
-      reportInteraction('unit_test_executed', { testFramework: 'Jest' });
+      reportInteraction('g_pyroscope_app_exploration_type_clicked', { explorationType: 'unit-tests' });
 
-      expect(grafanaReportInteraction).toHaveBeenCalledWith('unit_test_executed', {
+      expect(grafanaReportInteraction).toHaveBeenCalledWith('g_pyroscope_app_exploration_type_clicked', {
         page: 'test-page-2',
-        testFramework: 'Jest',
         version: '1.0.0',
+        explorationType: 'unit-tests',
       });
     });
   });
