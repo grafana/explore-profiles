@@ -49,7 +49,7 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
       isLoadingCode: isFetching,
       unit: functionDetails.unit,
       githubUrl: fileInfo?.URL ? buildGithubUrlForFunction(fileInfo.URL, functionDetails.startLine) : undefined,
-      lines: lines.map((line) => ({ ...line, line: line.line || '???' })),
+      lines: lines.map((line) => ({ ...line, line: line.line ?? '???' })),
       noCodeAvailable: Boolean(fetchError) || !lines.some((line) => line.line),
     },
     actions: {
