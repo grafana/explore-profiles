@@ -18,14 +18,17 @@ export function AIButton({ children, onClick, disabled, interactionName }: AIBut
   const { isEnabled, error, isFetching } = useFetchLlmPluginStatus();
 
   let icon: IconName = 'ai';
-  let title = '';
+  let tooltip = '';
 
   if (isFetching) {
     icon = 'fa fa-spinner';
-    title = 'Checking the status of the Grafana LLM plugin...';
-  } else if (!isEnabled || error) {
+    tooltip = 'Checking the status of the Grafana LLM plugin...';
+  } else if (error) {
+    icon = 'exclamation-triangle';
+    tooltip = 'Error while checking the status of the Grafana LLM plugin!';
+  } else if (!isEnabled) {
     icon = 'shield-exclamation';
-    title = 'Grafana LLM plugin missing or not configured!';
+    tooltip = 'Grafana LLM plugin missing or not configured! Please check the plugins administration page.';
   }
 
   return (
@@ -35,7 +38,7 @@ export function AIButton({ children, onClick, disabled, interactionName }: AIBut
       fill="text"
       icon={icon}
       disabled={!isEnabled || disabled}
-      tooltip={title}
+      tooltip={tooltip}
       tooltipPlacement="top"
       onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
         reportInteraction(interactionName);
