@@ -1,4 +1,5 @@
 import { AdHocVariableFilter } from '@grafana/data';
+import { isRegexOperator } from '@shared/components/QueryBuilder/domain/helpers/isRegexOperator';
 import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 
 export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocVariableFilter => {
@@ -167,69 +168,101 @@ export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocV
 
 export function includeLabelValue(
   filters: AdHocVariableFilter[],
-  filterToInclude: AdHocVariableFilter
+  filterForInclude: AdHocVariableFilter
 ): AdHocVariableFilter[] {
-  const found = filters.find((f) => f.key === filterToInclude.key);
+  const found = filters.find((f) => f.key === filterForInclude.key);
 
   if (!found) {
-    return [...filters, { ...filterToInclude, operator: '=~' }];
+    return [...filters, { ...filterForInclude, operator: '=~' }];
   }
 
-  if (!['=~', '!~'].includes(found.operator)) {
-    return [...filters.filter((f) => f.key !== filterToInclude.key), { ...filterToInclude, operator: '=~' }];
+  if (!isRegexOperator(found.operator)) {
+    return [...filters.filter((f) => f.key !== filterForInclude.key), { ...filterForInclude, operator: '=~' }];
   }
 
   const foundValues = found.value.split('|');
 
   if (found.operator === '=~') {
-    if (foundValues.includes(filterToInclude.value)) {
+    if (foundValues.includes(filterForInclude.value)) {
       return filters;
     }
 
     return [
-      ...filters.filter((f) => f.key !== filterToInclude.key),
-      { ...found, value: `${found.value}|${filterToInclude.value}` },
+      ...filters.filter((f) => f.key !== filterForInclude.key),
+      { ...found, value: `${found.value}|${filterForInclude.value}` },
     ];
   }
 
   // found.operator is '!~'
-  if (!foundValues.includes(filterToInclude.value)) {
+  if (!foundValues.includes(filterForInclude.value)) {
     return filters;
   }
 
-  const filteredValues = foundValues.filter((v) => v !== filterToInclude.value);
+  const filteredValues = foundValues.filter((v) => v !== filterForInclude.value);
 
   if (filteredValues.length > 0) {
-    return [...filters.filter((f) => f.key !== filterToInclude.key), { ...found, value: filteredValues.join('|') }];
+    return [...filters.filter((f) => f.key !== filterForInclude.key), { ...found, value: filteredValues.join('|') }];
   }
 
-  return [...filters.filter((f) => f.key !== filterToInclude.key)];
+  return [...filters.filter((f) => f.key !== filterForInclude.key)];
 }
 
-// TODO
 export function excludeLabelValue(
   filters: AdHocVariableFilter[],
-  filterToExclude: AdHocVariableFilter
+  filterForExclude: AdHocVariableFilter
 ): AdHocVariableFilter[] {
-  const found = filters.find((f) => f.key === filterToExclude.key);
+  const found = filters.find((f) => f.key === filterForExclude.key);
 
   if (!found) {
-    return [...filters, { ...filterToExclude, operator: '!~' }];
+    return [...filters, { ...filterForExclude, operator: '!~' }];
   }
 
-  return filters;
+  if (!isRegexOperator(found.operator)) {
+    return [...filters.filter((f) => f.key !== filterForExclude.key), { ...filterForExclude, operator: '!~' }];
+  }
+
+  const foundValues = found.value.split('|');
+
+  if (found.operator === '!~') {
+    if (foundValues.includes(filterForExclude.value)) {
+      return filters;
+    }
+
+    return [
+      ...filters.filter((f) => f.key !== filterForExclude.key),
+      { ...found, value: `${found.value}|${filterForExclude.value}` },
+    ];
+  }
+
+  // found.operator is '=~'
+  if (!foundValues.includes(filterForExclude.value)) {
+    return filters;
+  }
+
+  const filteredValues = foundValues.filter((v) => v !== filterForExclude.value);
+
+  if (filteredValues.length > 0) {
+    return [...filters.filter((f) => f.key !== filterForExclude.key), { ...found, value: filteredValues.join('|') }];
+  }
+
+  return [...filters.filter((f) => f.key !== filterForExclude.key)];
 }
 
-// TODO
 export function clearLabelValue(
   filters: AdHocVariableFilter[],
-  filterToClear: AdHocVariableFilter
+  filterForClear: AdHocVariableFilter
 ): AdHocVariableFilter[] {
-  const found = filters.find((f) => f.key === filterToClear.key);
+  const found = filters.find((f) => f.key === filterForClear.key && isRegexOperator(f.operator));
 
   if (!found) {
     return filters;
   }
 
-  return filters;
+  const filteredValues = found.value.split('|').filter((v) => v !== filterForClear.value);
+
+  if (filteredValues.length > 0) {
+    return [...filters.filter((f) => f.key !== filterForClear.key), { ...found, value: filteredValues.join('|') }];
+  }
+
+  return [...filters.filter((f) => f.key !== filterForClear.key)];
 }

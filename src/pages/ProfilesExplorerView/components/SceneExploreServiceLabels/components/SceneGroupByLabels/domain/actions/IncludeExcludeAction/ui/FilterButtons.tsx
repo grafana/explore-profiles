@@ -15,8 +15,6 @@ type FilterButtonsProps = {
 const FilterButtonsComponent = ({ label, status, onInclude, onExclude, onClear }: FilterButtonsProps) => {
   const styles = useStyles2(getStyles, status === 'included', status === 'excluded');
 
-  //TODO: cx(status)
-
   return (
     <div className={styles.container}>
       <Button
