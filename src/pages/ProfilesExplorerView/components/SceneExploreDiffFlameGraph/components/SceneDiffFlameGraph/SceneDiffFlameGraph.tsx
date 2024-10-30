@@ -121,7 +121,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
   onClickAutoSelect = () => {
     reportInteraction('g_pyroscope_app_diff_auto_select_clicked');
 
-    this.publishEvent(new EventDiffAutoSelect({}), true);
+    this.publishEvent(new EventDiffAutoSelect({ wholeRange: false }), true);
   };
 
   onClickChoosePreset = () => {

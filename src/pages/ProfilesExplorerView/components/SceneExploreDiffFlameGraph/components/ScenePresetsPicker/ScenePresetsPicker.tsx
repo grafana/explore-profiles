@@ -118,8 +118,12 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           },
         },
         {
-          value: 'auto-select',
-          label: 'Auto-select',
+          value: 'auto-select-half',
+          label: 'Auto-select (half range)',
+        },
+        {
+          value: 'auto-select-whole',
+          label: 'Auto-select (whole range)',
         },
       ],
     },
@@ -171,8 +175,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       return;
     }
 
-    if (option.value === 'auto-select') {
-      this.publishEvent(new EventDiffAutoSelect({}), true);
+    if (option.value?.startsWith('auto-select-')) {
+      this.publishEvent(new EventDiffAutoSelect({ wholeRange: option.value === 'auto-select-whole' }), true);
       return;
     }
 

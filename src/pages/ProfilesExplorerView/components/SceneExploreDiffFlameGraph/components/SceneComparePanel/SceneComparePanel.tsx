@@ -252,9 +252,14 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
    * In the future, we might want to be smarter and provides a way to select (e.g.) the region with the lowest resource consumption on the baseline panel vs
    * the region with the highest consumption on the comparison panel.
    */
-  autoSelectDiffRange() {
+  autoSelectDiffRange(selectWholeRange: boolean) {
     const { $timeRange, target } = this.state;
     const { from, to } = $timeRange.state.value;
+
+    if (selectWholeRange) {
+      this.setDiffRange(from.toISOString(), to.toISOString());
+      return;
+    }
 
     const diff = to.diff(from);
     const half = Math.round(diff / 2); // TODO: cap the max value?
