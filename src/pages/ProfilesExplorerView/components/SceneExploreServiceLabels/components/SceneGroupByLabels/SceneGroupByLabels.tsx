@@ -259,26 +259,24 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       key: 'service-label-values-grid',
       startColorIndex,
       label,
-      headerActions: (item) => {
-        return [
-          new SelectAction({
-            EventClass: EventViewServiceFlameGraph,
-            item,
-            tooltip: (item, model) => {
-              const { queryRunnerParams, label } = item;
-              const profileMetricId =
-                queryRunnerParams.profileMetricId || getSceneVariableValue(model, 'profileMetricId');
-              const groupByValue = getSceneVariableValue(model, 'groupBy');
+      headerActions: (item) => [
+        new SelectAction({
+          EventClass: EventViewServiceFlameGraph,
+          item,
+          tooltip: (item, model) => {
+            const { queryRunnerParams, label } = item;
+            const profileMetricId =
+              queryRunnerParams.profileMetricId || getSceneVariableValue(model, 'profileMetricId');
+            const groupByValue = getSceneVariableValue(model, 'groupBy');
 
-              return `View the "${
-                getProfileMetric(profileMetricId as ProfileMetricId).type
-              }" flame graph for "${groupByValue}=${label}"`;
-            },
-          }),
-          new IncludeExcludeAction({ item }),
-          new FavAction({ item }),
-        ];
-      },
+            return `View the "${
+              getProfileMetric(profileMetricId as ProfileMetricId).type
+            }" flame graph for "${groupByValue}=${label}"`;
+          },
+        }),
+        new IncludeExcludeAction({ item }),
+        new FavAction({ item }),
+      ],
     });
   }
 
