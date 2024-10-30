@@ -26,7 +26,7 @@ function PageTitleComponent({ title, queryAnalysis }: PageTitleProps) {
       <div className={styles.titleContainer}>
         <Stack justifyContent="space-between">
           <div>
-            <PyroscopeLogo width={40} height={40} />
+            <PyroscopeLogo size="large" />
             <h1 className={styles.title} data-testid="page-title">
               {title}
             </h1>

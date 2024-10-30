@@ -83,7 +83,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     return (
       <>
-        <PyroscopeLogo width={16} height={16} />
+        <PyroscopeLogo size="small" />
         Flame graph for {serviceName} ({profileMetricType})
       </>
     );
