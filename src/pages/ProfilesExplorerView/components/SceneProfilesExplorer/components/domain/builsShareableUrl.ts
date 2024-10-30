@@ -1,5 +1,6 @@
 import { dateMath } from '@grafana/data';
-import { getDefaultTimeRange } from 'src/pages/ProfilesExplorerView/domain/getDefaultTimeRange';
+
+import { getDefaultTimeRange } from '../../../..//domain/buildTimeRange';
 
 export function builsShareableUrl(): URL {
   const shareableUrl = new URL(window.location.toString());
