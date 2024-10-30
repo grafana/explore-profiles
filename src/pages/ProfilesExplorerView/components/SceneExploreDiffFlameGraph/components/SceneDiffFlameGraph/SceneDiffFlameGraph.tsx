@@ -1,8 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Button, Collapse, Spinner, useStyles2 } from '@grafana/ui';
-import DiffViewHowToImg from '@img/diff-view-how-to.gif';
+import { Spinner, useStyles2 } from '@grafana/ui';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -14,7 +13,7 @@ import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
 import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
@@ -25,6 +24,7 @@ import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
 import { EventDiffChoosePreset } from '../../domain/events/EventDiffChoosePreset';
 import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
+import { MissingSelectionsBanner } from './ui/MissingSelectionsBanner';
 
 interface SceneDiffFlameGraphState extends SceneObjectState {
   aiPanel: SceneAiPanel;
@@ -93,7 +93,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const shouldDisplayFlamegraph = Boolean(
       isDiffQueryEnabled && !fetchProfileError && !noProfileDataAvailable && profile
     );
-    const shouldDisplayInfo = !isDiffQueryEnabled;
+    const hasMissingSelections = !isDiffQueryEnabled;
 
     return {
       data: {
@@ -102,7 +102,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
         fetchProfileError,
         noProfileDataAvailable,
         shouldDisplayFlamegraph,
-        shouldDisplayInfo,
+        hasMissingSelections,
         profile: profile as FlamebearerProfile,
         settings,
         fetchSettingsError,
@@ -130,11 +130,11 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     this.publishEvent(new EventDiffChoosePreset({}), true);
   };
 
-  onClickLearn = () => {
+  onOpenLearnHow = () => {
     reportInteraction('g_pyroscope_app_diff_learn_with_mouse_clicked');
   };
 
-  static Component = ({ model }: SceneComponentProps<SceneDiffFlameGraph & { onClickAutoSelect: () => void }>) => {
+  static Component = ({ model }: SceneComponentProps<SceneDiffFlameGraph>) => {
     const styles = useStyles2(getStyles);
 
     const { data } = model.useSceneDiffFlameGraph();
@@ -165,8 +165,6 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
       [data.isLoading, data.title, styles.spinner]
     );
 
-    const [isCollapseOpen, setIsCollapseOpen] = useState(false);
-
     return (
       <div className={styles.flex}>
         <Panel
@@ -184,48 +182,11 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
             </AIButton>
           }
         >
-          {data.shouldDisplayInfo && (
-            <InlineBanner
-              severity="info"
-              title="Select both the baseline and the comparison flame graph ranges to view the diff flame graph"
-              message={
-                <div className={styles.infoMsg}>
-                  <p>How?</p>
-                  <p>
-                    <Button variant="primary" onClick={model.onClickAutoSelect}>
-                      Auto-select
-                    </Button>{' '}
-                    or{' '}
-                    <Button
-                      variant="primary"
-                      fill="text"
-                      className={styles.textButton}
-                      onClick={model.onClickChoosePreset}
-                    >
-                      choose a preset
-                    </Button>
-                  </p>
-                  <p>Alternatively:</p>
-                  <Collapse
-                    label="Click here to learn how to select the flame graph ranges with the mouse"
-                    collapsible
-                    className={styles.collapse}
-                    isOpen={isCollapseOpen}
-                    onToggle={() => setIsCollapseOpen(!isCollapseOpen)}
-                  >
-                    <div className={styles.collapseContent}>
-                      <ol>
-                        <li>Ensure that the &ldquo;Flame graph&rdquo; range selection mode is selected</li>
-                        <li>
-                          Use your mouse to select the desired time ranges on both the baseline and the comparison time
-                          series
-                        </li>
-                      </ol>
-                      <img src={DiffViewHowToImg} alt="How to view the diff flame graph" />
-                    </div>
-                  </Collapse>
-                </div>
-              }
+          {data.hasMissingSelections && (
+            <MissingSelectionsBanner
+              onClickAutoSelect={model.onClickAutoSelect}
+              onClickChoosePreset={model.onClickChoosePreset}
+              onOpenLearnHow={model.onOpenLearnHow}
             />
           )}
 
@@ -286,24 +247,5 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
   aiButton: css`
     margin-top: ${theme.spacing(1)};
-  `,
-  infoMsg: css`
-    padding: ${theme.spacing(2)} 0 0 0;
-  `,
-  textButton: css`
-    padding: 0;
-  `,
-  collapse: css`
-    background: transparent;
-    border: 0;
-  `,
-  collapseContent: css`
-    padding: 0 ${theme.spacing(5)};
-
-    & img {
-      max-width: 100%;
-      width: auto;
-      margin-top: ${theme.spacing(2)};
-    }
   `,
 });
