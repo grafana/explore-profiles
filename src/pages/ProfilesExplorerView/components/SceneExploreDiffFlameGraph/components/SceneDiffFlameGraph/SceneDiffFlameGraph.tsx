@@ -131,7 +131,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
   };
 
   onOpenLearnHow = () => {
-    reportInteraction('g_pyroscope_app_diff_learn_with_mouse_clicked');
+    reportInteraction('g_pyroscope_app_diff_learn_how_clicked');
   };
 
   static Component = ({ model }: SceneComponentProps<SceneDiffFlameGraph>) => {
