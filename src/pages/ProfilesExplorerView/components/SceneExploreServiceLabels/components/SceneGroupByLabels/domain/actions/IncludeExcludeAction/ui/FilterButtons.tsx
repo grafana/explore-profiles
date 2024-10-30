@@ -11,7 +11,7 @@ type FilterButtonsProps = {
   onClear: () => void;
 };
 
-// Borrowed from https://github.com/grafana/explore-logs/blob/main/src/Components/FilterButton.tsx
+// Kindly borrowed and adapted from https://github.com/grafana/explore-logs/blob/main/src/Components/FilterButton.tsx :)
 const FilterButtonsComponent = ({ label, status, onInclude, onExclude, onClear }: FilterButtonsProps) => {
   const styles = useStyles2(getStyles, status === 'included', status === 'excluded');
 

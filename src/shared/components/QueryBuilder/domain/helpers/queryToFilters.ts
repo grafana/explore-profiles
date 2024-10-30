@@ -9,7 +9,7 @@ const parseRawFilters = (rawFilters: string): string[][] => {
 };
 
 const LABELS_REGEX = /.+:[^{]+\{(.+)\}$/;
-export const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+|\{|\}|\?).*/;
+const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+|\{|\}|\?).*/;
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
