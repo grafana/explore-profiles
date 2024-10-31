@@ -9,39 +9,54 @@ import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/type
 import { EventClearLabelFromFilters } from '../../events/EventClearLabelFromFilters';
 import { EventExcludeLabelFromFilters } from '../../events/EventExcludeLabelFromFilters';
 import { EventIncludeLabelInFilters } from '../../events/EventIncludeLabelInFilters';
-import { FilterButtons } from './ui/FilterButtons';
+import { FilterButtons, FilterButtonsProps } from './ui/FilterButtons';
 
 export interface IncludeExcludeActionState extends SceneObjectState {
   item: GridItemData;
 }
-
-type Status = 'included' | 'excluded' | 'clear';
 
 export class IncludeExcludeAction extends SceneObjectBase<IncludeExcludeActionState> {
   constructor({ item }: IncludeExcludeActionState) {
     super({ item });
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   getStatus(filters: AdHocVariableFilter[]) {
-    let status: Status = 'clear';
+    let status: FilterButtonsProps['status'] = 'clear';
+    let disabledStatus: FilterButtonsProps['disabledStatus'];
 
     const { key, value } = this.state.item.queryRunnerParams.filters![0];
 
-    filters
-      .filter((f) => f.key === key)
-      .some((f) => {
-        if (isRegexOperator(f.operator) && f.value.split('|').includes(value)) {
-          status = f.operator === '=~' ? 'included' : 'excluded';
-          return true;
-        } else if (f.value === value) {
-          status = f.operator === '=' ? 'included' : 'excluded';
-          return true;
-        }
+    const found = filters.find((f) => f.key === key);
+    if (!found) {
+      return { status, disabledStatus };
+    }
 
-        return false;
-      });
+    if (isRegexOperator(found.operator) && found.value.split('|').includes(value)) {
+      status = found.operator === '=~' ? 'included' : 'excluded';
+    } else if (found.value === value) {
+      status = found.operator === '=' ? 'included' : 'excluded';
+    }
 
-    return status;
+    return {
+      status,
+      disabledStatus: status === 'clear' ? this.getDisabledStatus(found, value) : undefined,
+    };
+  }
+
+  getDisabledStatus(existingFilter: AdHocVariableFilter, labelValue: string): FilterButtonsProps['disabledStatus'] {
+    switch (existingFilter.operator) {
+      case '=~':
+      case '=':
+        return existingFilter.value !== labelValue ? 'disable-exclude' : undefined;
+
+      case '!~':
+      case '!=':
+        return existingFilter.value !== labelValue ? 'disable-include' : undefined;
+
+      default:
+        return undefined;
+    }
   }
 
   onInclude = () => {
@@ -62,14 +77,15 @@ export class IncludeExcludeAction extends SceneObjectBase<IncludeExcludeActionSt
 
   public static Component = ({ model }: SceneComponentProps<IncludeExcludeAction>) => {
     const { item } = model.useState();
-    const { filters } = (sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable) as FiltersVariable).useState();
 
-    const status = useMemo(() => model.getStatus(filters), [filters, model]);
+    const { filters } = (sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable) as FiltersVariable).useState();
+    const { status, disabledStatus } = useMemo(() => model.getStatus(filters), [filters, model]);
 
     return (
       <FilterButtons
         label={item.value}
         status={status}
+        disabledStatus={disabledStatus}
         onInclude={model.onInclude}
         onExclude={model.onExclude}
         onClear={model.onClear}
