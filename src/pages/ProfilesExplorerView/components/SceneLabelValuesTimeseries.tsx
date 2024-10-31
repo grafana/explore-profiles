@@ -81,7 +81,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
                 type: 'group',
                 subMenu: [
                   {
-                    text: 'Logarithmic (2)',
+                    text: 'Log2',
                     onClick: onClickScale({
                       type: ScaleDistribution.Log,
                       log: 2,
