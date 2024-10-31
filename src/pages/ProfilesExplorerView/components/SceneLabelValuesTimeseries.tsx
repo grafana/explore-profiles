@@ -147,7 +147,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     body.setState({
       menu: this.buildMenu(index),
-      fieldConfig: merge(body.state.fieldConfig, {
+      fieldConfig: merge({}, body.state.fieldConfig, {
         defaults: {
           custom: {
             scaleDistribution,
