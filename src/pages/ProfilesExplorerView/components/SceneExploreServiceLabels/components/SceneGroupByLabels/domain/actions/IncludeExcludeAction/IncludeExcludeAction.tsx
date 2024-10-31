@@ -1,5 +1,6 @@
 import { AdHocVariableFilter } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { isRegexOperator } from '@shared/components/QueryBuilder/domain/helpers/isRegexOperator';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 
@@ -27,15 +28,17 @@ export class IncludeExcludeAction extends SceneObjectBase<IncludeExcludeActionSt
     const { key, value } = this.state.item.queryRunnerParams.filters![0];
 
     filters
-      .filter((f) => f.key === key && (f.operator === '=~' || f.operator === '!~'))
+      .filter((f) => f.key === key)
       .some((f) => {
-        if (!f.value.split('|').includes(value)) {
-          return false;
+        if (isRegexOperator(f.operator) && f.value.split('|').includes(value)) {
+          status = f.operator === '=~' ? 'included' : 'excluded';
+          return true;
+        } else if (f.value === value) {
+          status = f.operator === '=' ? 'included' : 'excluded';
+          return true;
         }
 
-        status = f.operator === '=~' ? 'included' : 'excluded';
-
-        return true;
+        return false;
       });
 
     return status;
