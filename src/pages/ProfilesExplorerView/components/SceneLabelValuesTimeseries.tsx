@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -73,60 +73,16 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             })
         )
         .setHeaderActions(headerActions(item))
-        .setMenu(
-          new VizPanelMenu({
-            items: [
-              {
-                text: 'Scale',
-                type: 'group',
-                subMenu: [
-                  {
-                    text: 'Log2',
-                    onClick: onClickScale({
-                      type: ScaleDistribution.Log,
-                      log: 2,
-                    }),
-                  },
-                  {
-                    text: 'Linear',
-                    onClick: onClickScale({
-                      type: ScaleDistribution.Linear,
-                    }),
-                  },
-                ],
-              },
-            ],
-          })
-        )
-
         .build(),
     });
-
-    const self = this;
-
-    function onClickScale(scaleDistribution: ScaleDistributionConfig) {
-      return () => {
-        const { body } = self.state;
-
-        body.clearFieldConfigCache();
-
-        body.setState({
-          fieldConfig: merge(cloneDeep(body.state.fieldConfig), {
-            defaults: {
-              custom: {
-                scaleDistribution,
-              },
-            },
-          }),
-        });
-      };
-    }
 
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
   onActivate() {
     const { body } = this.state;
+
+    body.setState({ menu: this.buildMenu() });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
@@ -153,6 +109,53 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     return () => {
       sub.unsubscribe();
     };
+  }
+
+  buildMenu(selectedScaleIndex = 0): VizPanelMenu {
+    const scaleSubMenu = [
+      {
+        index: 0,
+        text: 'Linear',
+        scaleDistribution: { type: ScaleDistribution.Linear },
+      },
+      {
+        index: 1,
+        text: 'Log2',
+        scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+      },
+    ].map((option) => ({
+      text: `${selectedScaleIndex === option.index ? '✔ ' : ''}${option.text}`,
+      onClick: () => this.onClickScaleOption(option),
+    }));
+
+    return new VizPanelMenu({
+      items: [
+        {
+          text: 'Scale',
+          type: 'group',
+          subMenu: scaleSubMenu,
+        },
+      ],
+    });
+  }
+
+  onClickScaleOption(option: PanelMenuItem & { index: number; scaleDistribution: ScaleDistributionConfig }) {
+    const { scaleDistribution, text, index } = option;
+    const { body } = this.state;
+
+    body.clearFieldConfigCache();
+
+    body.setState({
+      fieldConfig: merge(cloneDeep(body.state.fieldConfig), {
+        defaults: {
+          custom: {
+            scaleDistribution,
+            axisLabel: scaleDistribution.type !== ScaleDistribution.Linear ? text : '',
+          },
+        },
+      }),
+      menu: this.buildMenu(index),
+    });
   }
 
   getConfig(series: DataFrame[]) {
