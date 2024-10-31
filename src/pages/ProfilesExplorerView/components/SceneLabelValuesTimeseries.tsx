@@ -12,7 +12,7 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
-import { cloneDeep, merge } from 'lodash';
+import { merge } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
@@ -98,7 +98,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       if (series?.length) {
         const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
-        body.setState(config);
+        body.setState(merge(body.state, config));
       }
 
       // we publish the event only after setting the new config so that the subscribers can modify it
@@ -146,7 +146,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     body.clearFieldConfigCache();
 
     body.setState({
-      fieldConfig: merge(cloneDeep(body.state.fieldConfig), {
+      menu: this.buildMenu(index),
+      fieldConfig: merge(body.state.fieldConfig, {
         defaults: {
           custom: {
             scaleDistribution,
@@ -154,7 +155,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           },
         },
       }),
-      menu: this.buildMenu(index),
     });
   }
 
