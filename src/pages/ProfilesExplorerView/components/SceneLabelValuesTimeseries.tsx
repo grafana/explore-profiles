@@ -98,7 +98,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       if (series?.length) {
         const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
-        body.setState(merge(body.state, config));
+        body.setState(merge({}, body.state, config));
       }
 
       // we publish the event only after setting the new config so that the subscribers can modify it
