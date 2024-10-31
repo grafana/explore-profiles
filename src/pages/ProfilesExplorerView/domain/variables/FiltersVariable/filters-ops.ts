@@ -1,5 +1,4 @@
 import { AdHocVariableFilter } from '@grafana/data';
-import { isRegexOperator } from '@shared/components/QueryBuilder/domain/helpers/isRegexOperator';
 import { CompleteFilter, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 
 export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocVariableFilter => {
@@ -18,118 +17,94 @@ export const convertPyroscopeToVariableFilter = (filter: CompleteFilter): AdHocV
   };
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
+function searchForFilter(filters: AdHocVariableFilter[], filterKey: string) {
+  let found: AdHocVariableFilter | undefined;
+
+  const filtersWithoutFound = filters.filter((f) => {
+    if (f.key === filterKey) {
+      found = f;
+      return false;
+    }
+
+    return true;
+  });
+
+  return { found, filtersWithoutFound };
+}
+
+const addToFilters = (filters: AdHocVariableFilter[], filterToAdd: AdHocVariableFilter) => [...filters, filterToAdd];
+
 export function includeLabelValue(
   filters: AdHocVariableFilter[],
   filterForInclude: AdHocVariableFilter
 ): AdHocVariableFilter[] {
-  const found = filters.find((f) => f.key === filterForInclude.key);
+  const { found, filtersWithoutFound } = searchForFilter(filters, filterForInclude.key);
+
   if (!found) {
-    return [...filters, { ...filterForInclude, operator: '=~' }];
+    return addToFilters(filters, { ...filterForInclude, operator: '=~' });
+  }
+
+  if (['!~', '!='].includes(found.operator)) {
+    return addToFilters(filtersWithoutFound, { ...filterForInclude, operator: '=~' });
   }
 
   const foundValues = new Set(found.value.split('|'));
 
-  if (!isRegexOperator(found.operator)) {
-    if (found.operator === '!=') {
-      return found.value === filterForInclude.value
-        ? [...filters.filter((f) => f.key !== filterForInclude.key), { ...filterForInclude, operator: '=~' }]
-        : filters;
-    }
-
-    // found.operator is '='
-    return found.value === filterForInclude.value
-      ? filters
-      : [
-          ...filters.filter((f) => f.key !== filterForInclude.key),
-          {
-            ...filterForInclude,
-            operator: '=~',
-            value: Array.from(foundValues.add(filterForInclude.value)).join('|'),
-          },
-        ];
-  }
-
   if (found.operator === '=~') {
-    foundValues.add(filterForInclude.value);
-
-    return [
-      ...filters.filter((f) => f.key !== filterForInclude.key),
-      { ...found, value: Array.from(foundValues).join('|') },
-    ];
+    return addToFilters(filtersWithoutFound, {
+      ...found,
+      value: Array.from(foundValues.add(filterForInclude.value)).join('|'),
+    });
   }
 
-  // found.operator is '!~'
-  return [...filters.filter((f) => f.key !== filterForInclude.key), { ...filterForInclude, operator: '=~' }];
+  // found.operator is '='
+  return found.value === filterForInclude.value
+    ? filters
+    : addToFilters(filtersWithoutFound, {
+        ...filterForInclude,
+        operator: '=~',
+        value: Array.from(foundValues.add(filterForInclude.value)).join('|'),
+      });
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function excludeLabelValue(
   filters: AdHocVariableFilter[],
   filterForExclude: AdHocVariableFilter
 ): AdHocVariableFilter[] {
-  const found = filters.find((f) => f.key === filterForExclude.key);
+  const { found, filtersWithoutFound } = searchForFilter(filters, filterForExclude.key);
+
   if (!found) {
-    return [...filters, { ...filterForExclude, operator: '!~' }];
+    return addToFilters(filters, { ...filterForExclude, operator: '!~' });
+  }
+
+  if (['=~', '='].includes(found.operator)) {
+    return addToFilters(filtersWithoutFound, { ...filterForExclude, operator: '!~' });
   }
 
   const foundValues = new Set(found.value.split('|'));
 
-  if (!isRegexOperator(found.operator)) {
-    if (found.operator === '=') {
-      return found.value === filterForExclude.value
-        ? [...filters.filter((f) => f.key !== filterForExclude.key)]
-        : filters;
-    }
-
-    // found.operator is '!='
-    return found.value === filterForExclude.value
-      ? filters
-      : [
-          ...filters.filter((f) => f.key !== filterForExclude.key),
-          {
-            ...filterForExclude,
-            operator: '!~',
-            value: Array.from(foundValues.add(filterForExclude.value)).join('|'),
-          },
-        ];
-  }
-
   if (found.operator === '!~') {
-    return [
-      ...filters.filter((f) => f.key !== filterForExclude.key),
-      {
-        ...found,
+    return addToFilters(filtersWithoutFound, {
+      ...found,
+      value: Array.from(foundValues.add(filterForExclude.value)).join('|'),
+    });
+  }
+
+  // found.operator is '!='
+  return found.value === filterForExclude.value
+    ? filters
+    : addToFilters(filtersWithoutFound, {
+        ...filterForExclude,
+        operator: '!~',
         value: Array.from(foundValues.add(filterForExclude.value)).join('|'),
-      },
-    ];
-  }
-
-  // found.operator is '=~'
-  if (!foundValues.has(filterForExclude.value)) {
-    return filters;
-  }
-
-  const filteredValues = found.value.split('|').filter((v) => v !== filterForExclude.value);
-
-  if (filteredValues.length > 0) {
-    return [
-      ...filters.filter((f) => f.key !== filterForExclude.key),
-      {
-        ...found,
-        value: filteredValues.join('|'),
-      },
-    ];
-  }
-
-  return [...filters.filter((f) => f.key !== filterForExclude.key)];
+      });
 }
 
 export function clearLabelValue(
   filters: AdHocVariableFilter[],
   filterForClear: AdHocVariableFilter
 ): AdHocVariableFilter[] {
-  const found = filters.find((f) => f.key === filterForClear.key);
+  const { found, filtersWithoutFound } = searchForFilter(filters, filterForClear.key);
 
   if (!found) {
     return filters;
@@ -138,14 +113,11 @@ export function clearLabelValue(
   const filteredValues = found.value.split('|').filter((v) => v !== filterForClear.value);
 
   if (filteredValues.length > 0) {
-    return [
-      ...filters.filter((f) => f.key !== filterForClear.key),
-      {
-        ...found,
-        value: filteredValues.join('|'),
-      },
-    ];
+    return addToFilters(filtersWithoutFound, {
+      ...found,
+      value: filteredValues.join('|'),
+    });
   }
 
-  return [...filters.filter((f) => f.key !== filterForClear.key)];
+  return [...filtersWithoutFound];
 }

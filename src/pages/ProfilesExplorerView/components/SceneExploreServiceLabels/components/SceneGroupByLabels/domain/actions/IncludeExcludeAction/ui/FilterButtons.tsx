@@ -3,44 +3,29 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
 import React, { memo } from 'react';
 
-export type FilterButtonsProps = {
+type FilterButtonsProps = {
   label: string;
   status: 'included' | 'excluded' | 'clear';
-  disabledStatus?: 'disable-include' | 'disable-exclude';
   onInclude: () => void;
   onExclude: () => void;
   onClear: () => void;
 };
 
-function getStatus({ status, disabledStatus, label, onInclude, onExclude, onClear }: FilterButtonsProps) {
+function getStatus({ status, label, onInclude, onExclude, onClear }: FilterButtonsProps) {
   const isIncludeSelected = status === 'included';
-  const isIncludeDisabled = disabledStatus === 'disable-include';
-
-  let includeTooltip = '';
-
-  if (!isIncludeDisabled) {
-    includeTooltip = !isIncludeSelected ? `Include "${label}" in the filters` : `Clear "${label}" from the filters`;
-  }
+  const includeTooltip = !isIncludeSelected ? `Include "${label}" in the filters` : `Clear "${label}" from the filters`;
 
   const isExcludeSelected = status === 'excluded';
-  const isExcludeDisabled = disabledStatus === 'disable-exclude';
-
-  let excludeTooltip = '';
-
-  if (!isExcludeDisabled) {
-    excludeTooltip = !isExcludeSelected ? `Exclude "${label}" in the filters` : `Clear "${label}" from the filters`;
-  }
+  const excludeTooltip = !isExcludeSelected ? `Exclude "${label}" in the filters` : `Clear "${label}" from the filters`;
 
   return {
     include: {
       isSelected: isIncludeSelected,
-      isDisabled: isIncludeDisabled,
       tooltip: includeTooltip,
       onClick: isIncludeSelected ? onClear : onInclude,
     },
     exclude: {
       isSelected: isExcludeSelected,
-      isDisabled: isExcludeDisabled,
       tooltip: excludeTooltip,
       onClick: isExcludeSelected ? onClear : onExclude,
     },
@@ -59,8 +44,6 @@ const FilterButtonsComponent = (props: FilterButtonsProps) => {
         size="sm"
         fill="outline"
         variant={include.isSelected ? 'primary' : 'secondary'}
-        disabled={include.isDisabled}
-        aria-disabled={include.isDisabled}
         aria-selected={include.isSelected}
         className={cx(styles.includeButton, include.isSelected && 'selected')}
         onClick={include.onClick}
@@ -74,8 +57,6 @@ const FilterButtonsComponent = (props: FilterButtonsProps) => {
         size="sm"
         fill="outline"
         variant={exclude.isSelected ? 'primary' : 'secondary'}
-        disabled={exclude.isDisabled}
-        aria-disabled={exclude.isDisabled}
         aria-selected={exclude.isSelected}
         className={cx(styles.excludeButton, exclude.isSelected && 'selected')}
         onClick={exclude.onClick}
