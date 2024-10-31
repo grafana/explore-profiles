@@ -56,16 +56,28 @@ describe('includeLabelValue(filters, filterForInclude)', () => {
       [{ key: 'vehicle', operator: '!~', value: 'car' }],
     ],
     [
-      'filters with the "=" operator and the same label',
+      'filters with the "=" operator and the same label but different value',
       [{ key: 'vehicle', operator: '=', value: 'car' }],
       FILTER_VEHICLE_IS_BIKE,
-      [{ key: 'vehicle', operator: '=~', value: 'bike' }],
+      [{ key: 'vehicle', operator: '=~', value: 'car|bike' }],
     ],
     [
-      'filters with the the "!=" operator and the same label',
+      'filters with the "=" operator and the same label+value',
+      [{ key: 'vehicle', operator: '=', value: 'bike' }],
+      FILTER_VEHICLE_IS_BIKE,
+      [{ key: 'vehicle', operator: '=', value: 'bike' }],
+    ],
+    [
+      'filters with the the "!=" operator and the same label but different value',
       [{ key: 'vehicle', operator: '!=', value: 'car' }],
       FILTER_VEHICLE_IS_BIKE,
-      [{ key: 'vehicle', operator: '=~', value: 'bike' }],
+      [{ key: 'vehicle', operator: '!=', value: 'car' }],
+    ],
+    [
+      'filters with the the "!=" operator and the same label+value',
+      [{ key: 'vehicle', operator: '!=', value: 'bike' }],
+      FILTER_VEHICLE_IS_BIKE,
+      [],
     ],
   ])('%s', (msg, filters, filterForInclude, expectedFilters) => {
     expect(includeLabelValue(filters, filterForInclude)).toEqual(expectedFilters);
@@ -126,16 +138,28 @@ describe('excludeLabelValue(filters, filterForExclude)', () => {
       [{ key: 'vehicle', operator: '=~', value: 'car' }],
     ],
     [
-      'filters with the "=" operator and the same label',
+      'filters with the "=" operator and the same label but different value',
       [{ key: 'vehicle', operator: '=', value: 'car' }],
       FILTER_VEHICLE_IS_BIKE,
-      [{ key: 'vehicle', operator: '!~', value: 'bike' }],
+      [{ key: 'vehicle', operator: '=', value: 'car' }],
     ],
     [
-      'filters with the the "!=" operator and the same label',
+      'filters with the "=" operator and the same label+value',
+      [{ key: 'vehicle', operator: '=', value: 'bike' }],
+      FILTER_VEHICLE_IS_BIKE,
+      [],
+    ],
+    [
+      'filters with the the "!=" operator and the same label but different value',
       [{ key: 'vehicle', operator: '!=', value: 'car' }],
       FILTER_VEHICLE_IS_BIKE,
-      [{ key: 'vehicle', operator: '!~', value: 'bike' }],
+      [{ key: 'vehicle', operator: '!~', value: 'car|bike' }],
+    ],
+    [
+      'filters with the the "!=" operator and the same label+value',
+      [{ key: 'vehicle', operator: '!=', value: 'bike' }],
+      FILTER_VEHICLE_IS_BIKE,
+      [{ key: 'vehicle', operator: '!=', value: 'bike' }],
     ],
   ])('%s', (msg, filters, filterForInclude, expectedFilters) => {
     expect(excludeLabelValue(filters, filterForInclude)).toEqual(expectedFilters);
@@ -179,6 +203,13 @@ describe('clearLabelValue(filters, filterForClear)', () => {
       [{ key: 'vehicle', operator: '!~', value: 'car|bike' }],
       FILTER_VEHICLE_IS_BIKE,
       [{ key: 'vehicle', operator: '!~', value: 'car' }],
+    ],
+    ['filters with the same label+value and the "=" operator', [FILTER_VEHICLE_IS_BIKE], FILTER_VEHICLE_IS_BIKE, []],
+    [
+      'filters with the same label+value and the "!=" operator',
+      [{ key: 'vehicle', operator: '!=', value: 'bike' }],
+      FILTER_VEHICLE_IS_BIKE,
+      [],
     ],
   ])('%s', (msg, filters, filterForClear, expectedFilters) => {
     expect(clearLabelValue(filters, filterForClear)).toEqual(expectedFilters);
