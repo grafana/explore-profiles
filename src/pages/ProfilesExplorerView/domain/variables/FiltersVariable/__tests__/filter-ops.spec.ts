@@ -41,19 +41,19 @@ describe('includeLabelValue(filters, filterForInclude)', () => {
       'filters with the "not in" operator and the same label but different value',
       [{ key: 'vehicle', operator: '!~', value: 'car' }],
       FILTER_VEHICLE_IS_BIKE,
-      [{ key: 'vehicle', operator: '!~', value: 'car' }],
+      [{ key: 'vehicle', operator: '=~', value: 'bike' }],
     ],
     [
       'filters with the "not in" operator and the same label+value #1',
       [{ key: 'vehicle', operator: '!~', value: 'bike' }],
       FILTER_VEHICLE_IS_BIKE,
-      [], // by design, but maybe we want to add { key: 'vehicle', operator: '=~', value: 'bike' } instead - TBD
+      [{ key: 'vehicle', operator: '=~', value: 'bike' }],
     ],
     [
       'filters with the "not in" operator and the same label+value #2',
       [{ key: 'vehicle', operator: '!~', value: 'car|bike' }],
       FILTER_VEHICLE_IS_BIKE,
-      [{ key: 'vehicle', operator: '!~', value: 'car' }],
+      [{ key: 'vehicle', operator: '=~', value: 'bike' }],
     ],
     [
       'filters with the "=" operator and the same label but different value',
@@ -77,7 +77,7 @@ describe('includeLabelValue(filters, filterForInclude)', () => {
       'filters with the the "!=" operator and the same label+value',
       [{ key: 'vehicle', operator: '!=', value: 'bike' }],
       FILTER_VEHICLE_IS_BIKE,
-      [],
+      [{ key: 'vehicle', operator: '=~', value: 'bike' }],
     ],
   ])('%s', (msg, filters, filterForInclude, expectedFilters) => {
     expect(includeLabelValue(filters, filterForInclude)).toEqual(expectedFilters);

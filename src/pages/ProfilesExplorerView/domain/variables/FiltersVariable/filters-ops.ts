@@ -24,7 +24,6 @@ export function includeLabelValue(
   filterForInclude: AdHocVariableFilter
 ): AdHocVariableFilter[] {
   const found = filters.find((f) => f.key === filterForInclude.key);
-
   if (!found) {
     return [...filters, { ...filterForInclude, operator: '=~' }];
   }
@@ -34,23 +33,21 @@ export function includeLabelValue(
   if (!isRegexOperator(found.operator)) {
     if (found.operator === '!=') {
       return found.value === filterForInclude.value
-        ? [...filters.filter((f) => f.key !== filterForInclude.key)]
+        ? [...filters.filter((f) => f.key !== filterForInclude.key), { ...filterForInclude, operator: '=~' }]
         : filters;
     }
 
     // found.operator is '='
-    if (found.value === filterForInclude.value) {
-      return filters;
-    }
-
-    return [
-      ...filters.filter((f) => f.key !== filterForInclude.key),
-      {
-        ...filterForInclude,
-        operator: '=~',
-        value: Array.from(foundValues.add(filterForInclude.value)).join('|'),
-      },
-    ];
+    return found.value === filterForInclude.value
+      ? filters
+      : [
+          ...filters.filter((f) => f.key !== filterForInclude.key),
+          {
+            ...filterForInclude,
+            operator: '=~',
+            value: Array.from(foundValues.add(filterForInclude.value)).join('|'),
+          },
+        ];
   }
 
   if (found.operator === '=~') {
@@ -63,21 +60,7 @@ export function includeLabelValue(
   }
 
   // found.operator is '!~'
-  if (!foundValues.has(filterForInclude.value)) {
-    return filters;
-  }
-
-  const filteredValues = new Set(foundValues);
-  filteredValues.delete(filterForInclude.value);
-
-  if (filteredValues.size > 0) {
-    return [
-      ...filters.filter((f) => f.key !== filterForInclude.key),
-      { ...found, value: Array.from(filteredValues).join('|') },
-    ];
-  }
-
-  return [...filters.filter((f) => f.key !== filterForInclude.key)];
+  return [...filters.filter((f) => f.key !== filterForInclude.key), { ...filterForInclude, operator: '=~' }];
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -86,7 +69,6 @@ export function excludeLabelValue(
   filterForExclude: AdHocVariableFilter
 ): AdHocVariableFilter[] {
   const found = filters.find((f) => f.key === filterForExclude.key);
-
   if (!found) {
     return [...filters, { ...filterForExclude, operator: '!~' }];
   }
@@ -101,18 +83,16 @@ export function excludeLabelValue(
     }
 
     // found.operator is '!='
-    if (found.value === filterForExclude.value) {
-      return filters;
-    }
-
-    return [
-      ...filters.filter((f) => f.key !== filterForExclude.key),
-      {
-        ...filterForExclude,
-        operator: '!~',
-        value: Array.from(foundValues.add(filterForExclude.value)).join('|'),
-      },
-    ];
+    return found.value === filterForExclude.value
+      ? filters
+      : [
+          ...filters.filter((f) => f.key !== filterForExclude.key),
+          {
+            ...filterForExclude,
+            operator: '!~',
+            value: Array.from(foundValues.add(filterForExclude.value)).join('|'),
+          },
+        ];
   }
 
   if (found.operator === '!~') {
