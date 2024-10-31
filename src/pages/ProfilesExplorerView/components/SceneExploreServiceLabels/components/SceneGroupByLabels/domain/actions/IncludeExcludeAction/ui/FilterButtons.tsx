@@ -1,43 +1,85 @@
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, useStyles2 } from '@grafana/ui';
 import React, { memo } from 'react';
 
-type FilterButtonsProps = {
+export type FilterButtonsProps = {
   label: string;
   status: 'included' | 'excluded' | 'clear';
+  disabledStatus?: 'disable-include' | 'disable-exclude';
   onInclude: () => void;
   onExclude: () => void;
   onClear: () => void;
 };
 
+function getStatus({ status, disabledStatus, label, onInclude, onExclude, onClear }: FilterButtonsProps) {
+  const isIncludeSelected = status === 'included';
+  const isIncludeDisabled = disabledStatus === 'disable-include';
+
+  let includeTooltip = '';
+
+  if (!isIncludeDisabled) {
+    includeTooltip = !isIncludeSelected ? `Include "${label}" in the filters` : `Clear "${label}" from the filters`;
+  }
+
+  const isExcludeSelected = status === 'excluded';
+  const isExcludeDisabled = disabledStatus === 'disable-exclude';
+
+  let excludeTooltip = '';
+
+  if (!isExcludeDisabled) {
+    excludeTooltip = !isExcludeSelected ? `Exclude "${label}" in the filters` : `Clear "${label}" from the filters`;
+  }
+
+  return {
+    include: {
+      isSelected: isIncludeSelected,
+      isDisabled: isIncludeDisabled,
+      tooltip: includeTooltip,
+      onClick: isIncludeSelected ? onClear : onInclude,
+    },
+    exclude: {
+      isSelected: isExcludeSelected,
+      isDisabled: isExcludeDisabled,
+      tooltip: excludeTooltip,
+      onClick: isExcludeSelected ? onClear : onExclude,
+    },
+  };
+}
+
 // Kindly borrowed and adapted from https://github.com/grafana/explore-logs/blob/main/src/Components/FilterButton.tsx :)
-const FilterButtonsComponent = ({ label, status, onInclude, onExclude, onClear }: FilterButtonsProps) => {
-  const styles = useStyles2(getStyles, status === 'included', status === 'excluded');
+const FilterButtonsComponent = (props: FilterButtonsProps) => {
+  const styles = useStyles2(getStyles);
+
+  const { include, exclude } = getStatus(props);
 
   return (
     <div className={styles.container}>
       <Button
-        variant={status === 'included' ? 'primary' : 'secondary'}
-        fill="outline"
         size="sm"
-        aria-selected={status === 'included'}
-        className={styles.includeButton}
-        onClick={status === 'included' ? onClear : onInclude}
-        tooltip={status !== 'included' ? `Include "${label}" in the filters` : `Remove "${label}" from the filters`}
+        fill="outline"
+        variant={include.isSelected ? 'primary' : 'secondary'}
+        disabled={include.isDisabled}
+        aria-disabled={include.isDisabled}
+        aria-selected={include.isSelected}
+        className={cx(styles.includeButton, include.isSelected && 'selected')}
+        onClick={include.onClick}
+        tooltip={include.tooltip}
         tooltipPlacement="top"
         data-testid="filter-button-include"
       >
         Include
       </Button>
       <Button
-        variant={status === 'excluded' ? 'primary' : 'secondary'}
-        fill="outline"
         size="sm"
-        aria-selected={status === 'excluded'}
-        className={styles.excludeButton}
-        onClick={status === 'excluded' ? onClear : onExclude}
-        tooltip={status !== 'excluded' ? `Exclude "${label}" in the filters` : `Remove "${label}" from the filters`}
+        fill="outline"
+        variant={exclude.isSelected ? 'primary' : 'secondary'}
+        disabled={exclude.isDisabled}
+        aria-disabled={exclude.isDisabled}
+        aria-selected={exclude.isSelected}
+        className={cx(styles.excludeButton, exclude.isSelected && 'selected')}
+        onClick={exclude.onClick}
+        tooltip={exclude.tooltip}
         tooltipPlacement="top"
         data-testid="filter-button-exclude"
       >
@@ -49,19 +91,25 @@ const FilterButtonsComponent = ({ label, status, onInclude, onExclude, onClear }
 
 export const FilterButtons = memo(FilterButtonsComponent);
 
-const getStyles = (theme: GrafanaTheme2, isIncluded: boolean, isExcluded: boolean) => {
+const getStyles = (theme: GrafanaTheme2) => {
   return {
     container: css`
       display: flex;
       justify-content: center;
     `,
     includeButton: css`
-      border-radius: 0;
-      border-right: ${isIncluded ? undefined : 'none'};
+      border-radius: ${theme.shape.radius.default} 0 0 ${theme.shape.radius.default};
+
+      &:not(.selected) {
+        border-right: none;
+      }
     `,
     excludeButton: css`
       border-radius: 0 ${theme.shape.radius.default} ${theme.shape.radius.default} 0;
-      border-left: ${isExcluded ? undefined : 'none'};
+
+      &:not(.selected) {
+        border-left: none;
+      }
     `,
   };
 };
