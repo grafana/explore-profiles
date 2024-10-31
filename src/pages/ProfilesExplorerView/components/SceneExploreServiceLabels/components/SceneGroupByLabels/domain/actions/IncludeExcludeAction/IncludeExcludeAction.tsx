@@ -1,5 +1,6 @@
 import { AdHocVariableFilter } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 
 import { FiltersVariable } from '../../../../../../../domain/variables/FiltersVariable/FiltersVariable';
@@ -41,10 +42,14 @@ export class IncludeExcludeAction extends SceneObjectBase<IncludeExcludeActionSt
   }
 
   onInclude = () => {
+    reportInteraction('g_pyroscope_app_include_action_clicked');
+
     this.publishEvent(new EventIncludeLabelInFilters({ item: this.state.item }), true);
   };
 
   onExclude = () => {
+    reportInteraction('g_pyroscope_app_exclude_action_clicked');
+
     this.publishEvent(new EventExcludeLabelFromFilters({ item: this.state.item }), true);
   };
 

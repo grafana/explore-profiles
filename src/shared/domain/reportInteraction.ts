@@ -31,6 +31,8 @@ export type InteractionName =
   | 'g_pyroscope_app_diff_auto_select_clicked'
   | 'g_pyroscope_app_diff_choose_preset_clicked'
   | 'g_pyroscope_app_diff_learn_how_clicked'
+  | 'g_pyroscope_app_include_action_clicked'
+  | 'g_pyroscope_app_exclude_action_clicked'
   | 'g_pyroscope_app_explain_flamegraph_clicked'
   | 'g_pyroscope_app_exploration_type_clicked'
   | 'g_pyroscope_app_export_profile'
