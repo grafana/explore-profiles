@@ -118,8 +118,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           },
         },
         {
-          value: 'auto-select-half',
-          label: 'Auto-select (half range)',
+          value: 'auto-select-25',
+          label: 'Auto-select (25% range)',
         },
         {
           value: 'auto-select-whole',
