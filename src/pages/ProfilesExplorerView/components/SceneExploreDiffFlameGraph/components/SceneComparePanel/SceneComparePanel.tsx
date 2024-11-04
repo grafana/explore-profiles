@@ -47,6 +47,8 @@ import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+
 interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
   filterKey: 'filtersBaseline' | 'filtersComparison';
@@ -262,7 +264,9 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
 
     const diff = to.diff(from);
-    const range = Math.round(diff * 0.25); // ensure that we don't kill the backend when longer periods like 7d
+
+    // ensure that we don't kill the backend when selecting long periods like 7d
+    const range = Math.min(Math.round(diff * 0.25), ONE_DAY_IN_MS);
 
     if (target === CompareTarget.BASELINE) {
       // we have to create a new instance because add() mutates the original one
