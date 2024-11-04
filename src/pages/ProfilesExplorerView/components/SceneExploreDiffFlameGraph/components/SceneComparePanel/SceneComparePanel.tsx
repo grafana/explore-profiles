@@ -47,6 +47,8 @@ import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+
 interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
   filterKey: 'filtersBaseline' | 'filtersComparison';
@@ -262,15 +264,16 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
 
     const diff = to.diff(from);
-    const half = Math.round(diff / 2); // TODO: cap the max value?
 
-    // we have to create a new instance because add() mutates the original one
-    const middle = dateTime(from).add(half).toISOString();
+    // ensure that we don't kill the backend when selecting long periods like 7d
+    const range = Math.min(Math.round(diff * 0.25), ONE_DAY_IN_MS);
 
     if (target === CompareTarget.BASELINE) {
-      this.setDiffRange(from.toISOString(), middle);
+      // we have to create a new instance because add() mutates the original one
+      this.setDiffRange(from.toISOString(), dateTime(from).add(range).toISOString());
     } else {
-      this.setDiffRange(middle, to.toISOString());
+      // we have to create a new instance because subtract() mutates the original one
+      this.setDiffRange(dateTime(to).subtract(range).toISOString(), to.toISOString());
     }
   }
 
