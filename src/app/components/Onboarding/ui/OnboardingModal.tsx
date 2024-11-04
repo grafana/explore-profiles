@@ -161,8 +161,8 @@ export function OnboardingModal() {
                 <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
                 <p className={styles.onboardingPanelDescription}>
                   Use{' '}
-                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
-                    Grafana Agent
+                  <StyledLink href="https://grafana.com/docs/pyroscope/latest/configure-client/grafana-alloy/">
+                    Grafana Alloy
                   </StyledLink>{' '}
                   or{' '}
                   <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
@@ -222,8 +222,8 @@ export function OnboardingModal() {
                 <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
                 <p className={styles.onboardingPanelDescription}>
                   Use{' '}
-                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
-                    Grafana Agent
+                  <StyledLink href="https://grafana.com/docs/pyroscope/latest/configure-client/grafana-alloy/">
+                    Grafana Alloy
                   </StyledLink>{' '}
                   or{' '}
                   <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
