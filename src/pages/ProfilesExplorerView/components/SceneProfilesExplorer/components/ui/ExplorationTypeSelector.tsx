@@ -95,13 +95,16 @@ const getStyles = (theme: GrafanaTheme2) => ({
       background-color: ${theme.colors.primary.main};
     }
 
+    .arrow.primary {
+      background-color: ${theme.colors.primary.main};
+    }
+
     & button.primary:not(.active),
     & .arrow.primary:not(.active) {
       opacity: 0.7;
     }
 
-    & button.primary:not(.active):hover,
-    & .arrow.primary:not(.active):hover {
+    & button.primary:not(.active):hover {
       opacity: 1;
       background-color: ${theme.colors.primary.main};
     }
