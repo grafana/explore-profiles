@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -7,10 +7,12 @@ import {
   SceneObjectBase,
   SceneObjectState,
   VizPanel,
+  VizPanelMenu,
   VizPanelState,
 } from '@grafana/scenes';
-import { GraphGradientMode, SortOrder } from '@grafana/schema';
+import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
+import { merge } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
@@ -76,6 +78,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
+    body.setState({ menu: this.buildMenu() });
+
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
         return;
@@ -90,7 +94,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       if (series?.length) {
         const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
-        body.setState(config);
+        body.setState(merge({}, body.state, config));
       }
 
       // we publish the event only after setting the new config so that the subscribers can modify it
@@ -101,6 +105,53 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     return () => {
       sub.unsubscribe();
     };
+  }
+
+  buildMenu(selectedScaleIndex = 0): VizPanelMenu {
+    const scaleSubMenu = [
+      {
+        index: 0,
+        text: 'Linear',
+        scaleDistribution: { type: ScaleDistribution.Linear },
+      },
+      {
+        index: 1,
+        text: 'Log2',
+        scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+      },
+    ].map((option) => ({
+      text: `${selectedScaleIndex === option.index ? '✔ ' : ''}${option.text}`,
+      onClick: () => this.onClickScaleOption(option),
+    }));
+
+    return new VizPanelMenu({
+      items: [
+        {
+          text: 'Scale',
+          type: 'group',
+          subMenu: scaleSubMenu,
+        },
+      ],
+    });
+  }
+
+  onClickScaleOption(option: PanelMenuItem & { index: number; scaleDistribution: ScaleDistributionConfig }) {
+    const { scaleDistribution, text, index } = option;
+    const { body } = this.state;
+
+    body.clearFieldConfigCache();
+
+    body.setState({
+      menu: this.buildMenu(index),
+      fieldConfig: merge({}, body.state.fieldConfig, {
+        defaults: {
+          custom: {
+            scaleDistribution,
+            axisLabel: scaleDistribution.type !== ScaleDistribution.Linear ? text : '',
+          },
+        },
+      }),
+    });
   }
 
   getConfig(series: DataFrame[]) {

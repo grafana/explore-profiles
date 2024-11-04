@@ -11,6 +11,9 @@ on:
     branches:
       - main
 
+env:
+  BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
@@ -42,6 +45,9 @@ jobs:
 
       - name: Build frontend
         run: yarn build
+
+      - name: Check bundlesize
+        run: yarn run bundlewatch
 
       - name: Compatibility check
         run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime

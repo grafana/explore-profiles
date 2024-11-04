@@ -9,7 +9,6 @@ import React from 'react';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { interpolateQueryRunnerVariables } from '../../infrastructure/helpers/interpolateQueryRunnerVariables';
-import { EventAddLabelToFilters, EventAddLabelToFiltersPayload } from '../events/EventAddLabelToFilters';
 import { EventExpandPanel, EventExpandPanelPayload } from '../events/EventExpandPanel';
 import { EventSelectLabel, EventSelectLabelPayload } from '../events/EventSelectLabel';
 import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '../events/EventViewServiceFlameGraph';
@@ -17,7 +16,6 @@ import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
 
 type EventContructor =
-  | (new (payload: EventAddLabelToFiltersPayload) => EventAddLabelToFilters)
   | (new (payload: EventExpandPanelPayload) => EventExpandPanel)
   | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
   | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
@@ -31,26 +29,6 @@ type EventLookup = {
 };
 
 const Events = new Map<EventContructor, EventLookup>([
-  [
-    EventAddLabelToFilters,
-    Object.freeze({
-      label: 'Add to filters',
-      tooltip: (item, model) => {
-        const groupByValue = getSceneVariableValue(model, 'groupBy');
-
-        if (groupByValue === 'all' && item.queryRunnerParams.groupBy) {
-          if (item.queryRunnerParams.groupBy) {
-            const { label, values } = item.queryRunnerParams.groupBy;
-            return `Add "${label}=${values[0]}" to the filters`;
-          }
-
-          return 'Add this label value to the filters'; // just in case, should not happen
-        }
-
-        return `Add "${groupByValue}=${item.label}" to the filters`;
-      },
-    }),
-  ],
   [
     EventExpandPanel,
     Object.freeze({
