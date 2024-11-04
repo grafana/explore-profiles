@@ -262,15 +262,14 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
 
     const diff = to.diff(from);
-    const half = Math.round(diff / 2); // TODO: cap the max value?
-
-    // we have to create a new instance because add() mutates the original one
-    const middle = dateTime(from).add(half).toISOString();
+    const range = Math.round(diff * 0.25); // ensure that we don't kill the backend when longer periods like 7d
 
     if (target === CompareTarget.BASELINE) {
-      this.setDiffRange(from.toISOString(), middle);
+      // we have to create a new instance because add() mutates the original one
+      this.setDiffRange(from.toISOString(), dateTime(from).add(range).toISOString());
     } else {
-      this.setDiffRange(middle, to.toISOString());
+      // we have to create a new instance because subtract() mutates the original one
+      this.setDiffRange(dateTime(to).subtract(range).toISOString(), to.toISOString());
     }
   }
 
