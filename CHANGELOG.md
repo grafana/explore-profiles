@@ -1,3 +1,34 @@
+## [0.1.15](https://github.com/grafana/explore-profiles/compare/v0.1.14...v0.1.15) (2024-11-05)
+
+
+### Bug Fixes
+
+* **DiffView:** Clicking on "Auto-select" selects a 25% range ([#254](https://github.com/grafana/explore-profiles/issues/254)) ([9b3dd8a](https://github.com/grafana/explore-profiles/commit/9b3dd8a16a961d319fe4e7190f772527d0d9e5e0))
+* **DiffView:** Disable AI button when no selections ([#258](https://github.com/grafana/explore-profiles/issues/258)) ([58e89cb](https://github.com/grafana/explore-profiles/commit/58e89cb20d7bbfe08e5cfcabc00bb8dd6030f581))
+* **DiffView:** Ensure ranges are initialized when landing ([#233](https://github.com/grafana/explore-profiles/issues/233)) ([4f95549](https://github.com/grafana/explore-profiles/commit/4f955491f9bf795aedb9d6aa79e7ba08d5379e7b))
+* **DiffView:** Fix headers wrap ([#259](https://github.com/grafana/explore-profiles/issues/259)) ([6ada58a](https://github.com/grafana/explore-profiles/commit/6ada58afe7f981ed71ec68e9481e29a95633e13a))
+* **DiffView:** Fix incorrect preset label ([#257](https://github.com/grafana/explore-profiles/issues/257)) ([a738694](https://github.com/grafana/explore-profiles/commit/a738694e5f6618f0efce7654852fb1189a2c920d))
+* **ExplorationSelector:** Fix background color ([#255](https://github.com/grafana/explore-profiles/issues/255)) ([46db256](https://github.com/grafana/explore-profiles/commit/46db25677c0f54150f55a8fdfaa051d9ace33ab3))
+* **FunctionDetails:** Correctly render blank lines ([ec3ed5c](https://github.com/grafana/explore-profiles/commit/ec3ed5c915d317c9ae6c15c4f1c00dc12cfaac39))
+* **GitHubIntegration:** Fix "Learn more" href ([#245](https://github.com/grafana/explore-profiles/issues/245)) ([1848159](https://github.com/grafana/explore-profiles/commit/184815953a3fb5c20b6586df59b89b5b948695b6))
+* **LabelValuesGrid:** decrease column size to accommodate small screen resolutions ([#235](https://github.com/grafana/explore-profiles/issues/235)) ([f62b17a](https://github.com/grafana/explore-profiles/commit/f62b17a32f91fe97cc133f93204ae365837fb1e3))
+* **OnboardingModal:** Change Grafana Agent to Grafana Alloy ([#256](https://github.com/grafana/explore-profiles/issues/256)) ([27453ed](https://github.com/grafana/explore-profiles/commit/27453edef4051ea2ae4399b9502f1ed2aa18081c))
+* **SettingsView:** Fix back button after modifying the max nodes setting ([#234](https://github.com/grafana/explore-profiles/issues/234)) ([673b44c](https://github.com/grafana/explore-profiles/commit/673b44cffe5e00378780da40d4d8c94d8289e171))
+* **ShareableUrl:** Fix when the default time range is selected ([#244](https://github.com/grafana/explore-profiles/issues/244)) ([ae6ddeb](https://github.com/grafana/explore-profiles/commit/ae6ddeb842066fb8513a1ebd4c50133bf8a41b69))
+* Small UI fixes ([#248](https://github.com/grafana/explore-profiles/issues/248)) ([ee881fa](https://github.com/grafana/explore-profiles/commit/ee881fa06929fa317299a0e24b6eca4e228cb571))
+* **Timeseries:** Persist scale when data changes ([#251](https://github.com/grafana/explore-profiles/issues/251)) ([8cb6ced](https://github.com/grafana/explore-profiles/commit/8cb6ced4272a826f2a63e921eda2f62ee4d1a18d))
+
+
+### Features
+
+* **AppHeader:** Revamp header ([#230](https://github.com/grafana/explore-profiles/issues/230)) ([f482d7b](https://github.com/grafana/explore-profiles/commit/f482d7b2e4c77c7e88061e7198a85e5fd778c47b))
+* **DiffFlameGraph:** Add "how to" infos ([#228](https://github.com/grafana/explore-profiles/issues/228)) ([494b659](https://github.com/grafana/explore-profiles/commit/494b659eb983231b9971429009b9185c7e5203a3))
+* **DiffView:** Add CTAs and comparison presets ([#231](https://github.com/grafana/explore-profiles/issues/231)) ([e8bbf2e](https://github.com/grafana/explore-profiles/commit/e8bbf2e9e40dfc6e0eec6e4e8aa9ec35917d04d1))
+* **LabelsView:** Include/exclude panel actions ([#210](https://github.com/grafana/explore-profiles/issues/210)) ([2c2d5f5](https://github.com/grafana/explore-profiles/commit/2c2d5f59b54ae2e49cd67dc5c5ea265b21e9a53f))
+* **TimeSeries:** Add menu with scale options ([#249](https://github.com/grafana/explore-profiles/issues/249)) ([06b71d1](https://github.com/grafana/explore-profiles/commit/06b71d16190f9fd081c6f980ca580f58b1a1d2c5))
+
+
+
 ## [0.1.14](https://github.com/grafana/explore-profiles/compare/v0.1.13...v0.1.14) (2024-10-17)
 
 
