@@ -140,7 +140,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const { data } = model.useSceneDiffFlameGraph();
     const sidePanel = useToggleSidePanel();
 
-    const isAiButtonDisabled = data.isLoading || data.shouldDisplayInfo || data.noProfileDataAvailable;
+    const isAiButtonDisabled = data.isLoading || data.hasMissingSelections || data.noProfileDataAvailable;
 
     useEffect(() => {
       if (isAiButtonDisabled) {
