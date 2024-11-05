@@ -334,6 +334,7 @@ const getStyles = (theme: GrafanaTheme2, color: string) => ({
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: ${theme.spacing(2)};
+    flex-wrap: wrap;
 
     & > h6 {
       font-size: 15px;
