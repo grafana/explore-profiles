@@ -13,6 +13,7 @@ import {
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
@@ -145,7 +146,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     ) as HTMLButtonElement;
 
     if (!refreshButton) {
-      console.error('SceneByVariableRepeaterGrid: Refresh button not found! The list of items will never be updated.');
+      logger.error(
+        new Error('SceneByVariableRepeaterGrid: Refresh button not found! The list of items will never be updated.')
+      );
     }
 
     refreshButton?.addEventListener('click', onClickRefresh);

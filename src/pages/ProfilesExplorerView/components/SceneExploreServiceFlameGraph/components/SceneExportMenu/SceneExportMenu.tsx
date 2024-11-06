@@ -49,7 +49,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
         maxNodes: maxNodes || DEFAULT_SETTINGS.maxNodes,
       });
     } catch (error) {
-      displayError(error, ['Error while loading flamebearer profile data!', (error as Error).message]);
+      displayError(error as Error, ['Error while loading flamebearer profile data!', (error as Error).message]);
       return null;
     }
 
@@ -74,7 +74,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
       });
       profile = await new Response(blob.stream().pipeThrough(new CompressionStream('gzip'))).blob();
     } catch (error) {
-      displayError(error, ['Failed to export to pprof!', (error as Error).message]);
+      displayError(error as Error, ['Failed to export to pprof!', (error as Error).message]);
       return null;
     }
 
@@ -153,7 +153,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
         dlLink.click();
         document.body.removeChild(dlLink);
       } catch (error) {
-        displayError(error, ['Failed to export to flamegraph.com!', (error as Error).message]);
+        displayError(error as Error, ['Failed to export to flamegraph.com!', (error as Error).message]);
         return;
       }
     };

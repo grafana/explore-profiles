@@ -1,3 +1,5 @@
+import { logger } from '@shared/infrastructure/tracking/logger';
+
 import { DataSourceProxyClient } from '../../../../../../../infrastructure/series/http/DataSourceProxyClient';
 import { GitSessionCookieManager, gitSessionCookieManager } from './GitSessionCookieManager';
 
@@ -98,8 +100,10 @@ export class PrivateVcsClient extends DataSourceProxyClient {
         }
 
         return this.getCommit(repositoryUrl, gitRef).catch((error) => {
-          console.error('Error while fetching commit from repo "%s" (%s)!', repositoryUrl, gitRef);
-          console.error(error);
+          logger.error(error, {
+            info: `Error while fetching commit from repo "${repositoryUrl}" (${gitRef})!'`,
+          });
+
           return PLACEHOLDER_COMMIT_DATA;
         });
       })

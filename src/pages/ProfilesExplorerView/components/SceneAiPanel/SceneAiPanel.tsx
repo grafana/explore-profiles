@@ -102,7 +102,7 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
       >
         <div className={styles.content}>
           {data.validationError && (
-            <InlineBanner severity="error" title="Validation error!" errors={[data.validationError]} />
+            <InlineBanner severity="error" title="Validation error!" error={data.validationError} />
           )}
 
           {data.fetchError && (
@@ -110,7 +110,7 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
               severity="error"
               title="Error while loading profile data!"
               message="Sorry for any inconvenience, please try again later."
-              errors={[data.fetchError]}
+              error={data.fetchError}
             />
           )}
 

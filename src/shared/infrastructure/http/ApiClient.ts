@@ -1,6 +1,7 @@
 import { DataSourceInstanceSettings, DataSourceJsonData } from '@grafana/data';
 import { config } from '@grafana/runtime';
 
+import { logger } from '../tracking/logger';
 import { userStorage } from '../userStorage';
 import { HttpClient } from './HttpClient';
 
@@ -32,7 +33,7 @@ export class ApiClient extends HttpClient {
       pyroscopeDataSources[0];
 
     if (!defaultDataSource) {
-      console.warn(
+      logger.warn(
         'Cannot find any Pyroscope data source! Please add and configure a Pyroscope data source to your Grafana instance.'
       );
 

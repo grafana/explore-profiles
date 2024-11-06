@@ -1,4 +1,5 @@
 import { sceneGraph, SceneObject, SceneObjectState, VizPanel } from '@grafana/scenes';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import { cloneDeep, merge } from 'lodash';
 
 import { EventTimeseriesDataReceived } from '../../../../domain/events/EventTimeseriesDataReceived';
@@ -12,7 +13,7 @@ export function syncYAxis() {
       const refId = s?.refId;
 
       if (!refId) {
-        console.warn('Missing refId! Cannot sync y-axis on the timeseries.', event.payload.series);
+        logger.warn('Missing refId! Cannot sync y-axis on the timeseries.', event.payload.series);
         return;
       }
 
