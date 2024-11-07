@@ -2,12 +2,13 @@ import { getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk';
 
 import { PYROSCOPE_APP_ID } from '../../../../../constants';
 import { GIT_COMMIT } from '../../../../../version';
-import { initFaro } from '../faro';
+import { initFaro, setFaro } from '../faro';
 
+// Faro dependencies
 jest.mock('@grafana/faro-web-sdk');
-
 jest.mock('@grafana/faro-web-tracing');
 
+// Grafana dependency
 jest.mock('@grafana/runtime', () => ({
   config: {
     bootData: {
@@ -23,35 +24,42 @@ jest.mock('@grafana/runtime', () => ({
   },
 }));
 
-describe('initFaro()', () => {
-  beforeEach(() => {
-    (initializeFaro as jest.Mock).mockReturnValue({});
-    (getWebInstrumentations as jest.Mock).mockReturnValue([]);
+function setup(location: Partial<Location>) {
+  (initializeFaro as jest.Mock).mockReturnValue({});
+  (getWebInstrumentations as jest.Mock).mockReturnValue([]);
+
+  Object.defineProperty(window, 'location', {
+    value: location,
+    writable: true,
   });
 
-  describe('when running in environment where the host is not defined', () => {
-    it('does not initialize Faro', () => {
-      Object.defineProperty(window, 'location', {
-        value: { host: undefined },
-        writable: true,
-      });
+  return {
+    initializeFaro: initializeFaro as jest.Mock,
+  };
+}
+
+describe('initFaro()', () => {
+  afterEach(() => {
+    setFaro(null);
+  });
+
+  describe('when running in environment where the host not defined', () => {
+    test('does not initialize Faro', () => {
+      const { initializeFaro } = setup({ host: undefined });
 
       initFaro();
 
-      expect(initializeFaro as jest.Mock).not.toHaveBeenCalled();
+      expect(initializeFaro).not.toHaveBeenCalled();
     });
   });
 
   describe('when running in an unknown environment', () => {
-    it('does not initialize Faro', () => {
-      Object.defineProperty(window, 'location', {
-        value: { host: 'unknownhost' },
-        writable: true,
-      });
+    test('does not initialize Faro', () => {
+      const { initializeFaro } = setup({ host: 'unknownhost' });
 
       initFaro();
 
-      expect(initializeFaro as jest.Mock).not.toHaveBeenCalled();
+      expect(initializeFaro).not.toHaveBeenCalled();
     });
   });
 
@@ -91,35 +99,47 @@ describe('initFaro()', () => {
         'grafana-pyroscope-prod',
       ],
     ])('initializes Faro for the host "%s"', (host, faroUrl, appName) => {
-      Object.defineProperty(window, 'location', {
-        value: { host },
-        writable: true,
-      });
+      const { initializeFaro } = setup({ host });
 
       initFaro();
 
-      expect((initializeFaro as jest.Mock).mock.lastCall[0].url).toBe(faroUrl);
-      expect((initializeFaro as jest.Mock).mock.lastCall[0].app.name).toBe(appName);
+      expect(initializeFaro).toHaveBeenCalledTimes(1);
+      expect(initializeFaro.mock.lastCall[0].url).toBe(faroUrl);
+      expect(initializeFaro.mock.lastCall[0].app.name).toBe(appName);
     });
 
-    it('initializes the app and user metadata', () => {
-      Object.defineProperty(window, 'location', {
-        value: { host: 'grafana.net' },
-        writable: true,
-      });
+    test('initializes Faro with the proper configuration', () => {
+      const { initializeFaro } = setup({ host: 'grafana.net' });
 
       initFaro();
 
-      const { app, user } = (initializeFaro as jest.Mock).mock.lastCall[0];
+      const { app, user, instrumentations, isolate, beforeSend } = initializeFaro.mock.lastCall[0];
 
-      expect(app).toEqual({
+      expect(app).toStrictEqual({
         name: 'grafana-pyroscope-prod',
         release: 'v0.01-test',
         version: GIT_COMMIT,
         environment: 'prod',
       });
 
-      expect(user).toEqual({ email: 'sixty.four@grafana.com' });
+      expect(user).toStrictEqual({ email: 'sixty.four@grafana.com' });
+
+      expect(instrumentations).toBeInstanceOf(Array);
+      expect(instrumentations.length).toBeGreaterThan(0);
+
+      expect(isolate).toBe(true);
+      expect(beforeSend).toBeInstanceOf(Function);
+    });
+  });
+
+  describe('when called several times', () => {
+    test('initializes Faro only once', () => {
+      const { initializeFaro } = setup({ host: 'grafana.net' });
+
+      initFaro();
+      initFaro();
+
+      expect(initializeFaro).toHaveBeenCalledTimes(1);
     });
   });
 });

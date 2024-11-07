@@ -6,13 +6,16 @@ import { PYROSCOPE_APP_ID } from '../../../../constants';
 import { GIT_COMMIT } from '../../../../version';
 import { getFaroEnvironment } from './getFaroEnvironment';
 
-let faro: Faro | undefined;
+let faro: Faro | null = null;
 
-export function getFaro() {
-  return faro;
-}
+export const getFaro = () => faro;
+export const setFaro = (instance: Faro | null) => (faro = instance);
 
 export function initFaro() {
+  if (getFaro()) {
+    return;
+  }
+
   const faroEnvironment = getFaroEnvironment();
   if (!faroEnvironment) {
     return;
@@ -24,25 +27,27 @@ export function initFaro() {
   const appRelease = apps[PYROSCOPE_APP_ID].version;
   const userEmail = bootData.user.email;
 
-  faro = initializeFaro({
-    url: faroUrl,
-    app: {
-      name: appName,
-      release: appRelease,
-      version: GIT_COMMIT,
-      environment,
-    },
-    user: {
-      email: userEmail,
-    },
-    instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
-    isolate: true,
-    beforeSend: (event) => {
-      if ((event.meta.page?.url ?? '').includes(PYROSCOPE_APP_ID)) {
-        return event;
-      }
+  setFaro(
+    initializeFaro({
+      url: faroUrl,
+      app: {
+        name: appName,
+        release: appRelease,
+        version: GIT_COMMIT,
+        environment,
+      },
+      user: {
+        email: userEmail,
+      },
+      instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
+      isolate: true,
+      beforeSend: (event) => {
+        if ((event.meta.page?.url ?? '').includes(PYROSCOPE_APP_ID)) {
+          return event;
+        }
 
-      return null;
-    },
-  });
+        return null;
+      },
+    })
+  );
 }
