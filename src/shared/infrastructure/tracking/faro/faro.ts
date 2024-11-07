@@ -39,7 +39,12 @@ export function initFaro() {
       user: {
         email: userEmail,
       },
-      instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
+      instrumentations: [
+        ...getWebInstrumentations({
+          captureConsole: false,
+        }),
+        new TracingInstrumentation(),
+      ],
       isolate: true,
       beforeSend: (event) => {
         if ((event.meta.page?.url ?? '').includes(PYROSCOPE_APP_ID)) {
