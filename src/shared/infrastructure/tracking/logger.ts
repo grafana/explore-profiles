@@ -11,6 +11,18 @@ class Logger {
     this.environment = getEnvironment();
   }
 
+  trace(...args: any) {
+    console.trace(...args); // eslint-disable-line no-console
+  }
+
+  debug(...args: any) {
+    console.debug(...args); // eslint-disable-line no-console
+  }
+
+  info(...args: any) {
+    console.info(...args); // eslint-disable-line no-console
+  }
+
   log(...args: any) {
     console.log(...args); // eslint-disable-line no-console
   }
