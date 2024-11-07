@@ -42,5 +42,5 @@ When you use Explore Profiles, your investigations follow these steps.
    - Select both the **Baseline** and **Comparison** checkboxes. Select **Compare** to view your selections in the **Diff flame graph** view.
    - Select both a time range in the baseline graph and in the comparison graph to view the diff flame graph.<br />
      ![Labels view](../images/explore-profiles-labels-compare.png)
-1. Use the **Diif flame graph** view to drill into the code level to pinpoint issues in specific functions, for example.<br />
+1. Use the **Diff flame graph** view to drill into the code level to pinpoint issues in specific functions, for example.<br />
    ![Viewing a flame graph during an investigation](../images/explore-profiles-diff-flamegraph.png)
