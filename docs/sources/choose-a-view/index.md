@@ -26,7 +26,7 @@ Select a view by choosing an **Exploration**: **All services**, **Profile types*
 
 <!-- screenshots need to be updated -->
 
-![Select an Exploration type to begin](../images/explore-profiles-view-bar.png)
+![Select an Exploration type to begin](../images/explore-profiles-exploration-bar.png)
 
 You can refine any selected views by selecting a Profile type, Label, or Flame graph from one of the charts.
 Click and drag on an area of interest to see more detail.

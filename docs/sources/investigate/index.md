@@ -31,7 +31,7 @@ When you use Explore Profiles, your investigations follow these steps.
    - Select **Profiles** to review the profiles for a service.
    - Select **Labels** to view the labels for a service. The Labels view helps you gain an understanding at an aggregated service level.
    - Select **Flame graph** to view the flame graph for a service.<br />
-     ![Select an Exploration type to begin](../images/explore-profiles-view-bar.png)
+     ![Select an Exploration type to begin](../images/explore-profiles-exploration-bar.png)
 1. Optional: Select filters to hone in on the problem areas. Each filter you select is added to the Filters statement at the top of the page. You can select filters in the following ways:
    - Use the filter drop-downs in the Filters bar to add services and operators. Use **Execute** to run the filter.
    - From the Labels view: Select **Add to filters** from one of the areas of interest.
