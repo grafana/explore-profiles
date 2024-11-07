@@ -174,4 +174,6 @@ This lets you compare two different queries that may have different total amount
 
 Similar to a `git diff`, it takes the selected flame graphs and highlights the differences between them.
 
+![Flame graphs](../images/explore-profiles-diff-flamegraph.png)
+
 <!-- from old screenshot of cpu usage profile Red represents an increase in CPU usage from the baseline to the comparison and green represents a decrease. -->
