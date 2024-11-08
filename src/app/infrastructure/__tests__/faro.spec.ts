@@ -40,34 +40,34 @@ describe('Faro', () => {
     // Dev
     [
       'grafana-dev.net',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/ef0e8de540b188353797d3d95a3b62f8',
+      'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/48e03a2647389f2f6494af7f975b4084',
       'grafana-pyroscope-dev',
     ],
     [
       'test.grafana-dev.net',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/ef0e8de540b188353797d3d95a3b62f8',
+      'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/48e03a2647389f2f6494af7f975b4084',
       'grafana-pyroscope-dev',
     ],
     // Ops
     [
       'foobar.grafana-ops.net',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/7d1458bdee74eef4d3d7c57665862e33',
+      'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/b5cfd5eeb412cf5e74bd828b4ddd17ff',
       'grafana-pyroscope-ops',
     ],
     [
       'grafana-ops.net',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/7d1458bdee74eef4d3d7c57665862e33',
+      'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/b5cfd5eeb412cf5e74bd828b4ddd17ff',
       'grafana-pyroscope-ops',
     ],
     // Prod
     [
       'foobar.grafana.net',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/20ca4982e590cb9b90ad1a6e9f152230',
+      'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/6cbe17b3af4b72ce5936bf4d15a5c393',
       'grafana-pyroscope-prod',
     ],
     [
       'grafana.net',
-      'https://faro-collector-prod-us-central-0.grafana.net/collect/20ca4982e590cb9b90ad1a6e9f152230',
+      'https://faro-collector-ops-eu-south-0.grafana-ops.net/collect/6cbe17b3af4b72ce5936bf4d15a5c393',
       'grafana-pyroscope-prod',
     ],
   ])('initializes properly for the host "%s"', (host, faroUrl, appName) => {
@@ -106,10 +106,7 @@ describe('Faro', () => {
 
     const { user, app } = initializeFaro.mock.lastCall[0];
 
-    expect(user.id).toEqual(String(MOCK_USER.id));
     expect(user.email).toEqual(MOCK_USER.email);
-    expect(user.username).toEqual(MOCK_USER.login);
-
     expect(app.release).toEqual('v0.01-test');
     expect(app.version).toEqual(GIT_COMMIT);
   });

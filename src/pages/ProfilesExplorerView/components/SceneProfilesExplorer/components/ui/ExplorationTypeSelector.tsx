@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { Button, Icon, InlineLabel, useStyles2 } from '@grafana/ui';
+import { Button, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { Fragment } from 'react';
 
@@ -26,17 +26,20 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
 
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
-      <InlineLabel width="auto">Exploration</InlineLabel>
+      <div className={styles.label}>Exploration</div>
 
       <div className={styles.breadcrumb}>
         {options.map((option, i) => {
           const isActive = value === option.value;
+          const variant = getButtonVariant(i);
+          const isPrimary = variant === 'primary';
+          const extraClasses = [isActive && 'active', isPrimary && 'primary'];
 
           return (
             <Fragment key={option.value}>
               <Button
-                className={isActive ? cx(styles.button, styles.defaultMouseCursor) : styles.button}
-                variant={getButtonVariant(i)}
+                className={cx(styles.button, ...extraClasses)}
+                variant={variant}
                 size="sm"
                 aria-label={option.label}
                 icon={option.icon as any}
@@ -48,8 +51,16 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
                 {option.label}
               </Button>
 
-              {/* add an arrow only for buttons before "Diff flame graph" and "Favorites" */}
-              {i < options.length - 3 && <Icon name="arrow-right" />}
+              {/* add a connection only for buttons before "Diff flame graph" and "Favorites" */}
+              {i < options.length - 3 && (
+                <div
+                  className={
+                    activeIndex !== options.length - 1 && i <= activeIndex - 1
+                      ? cx(styles.arrow, 'arrow', ...extraClasses)
+                      : styles.arrow
+                  }
+                />
+              )}
             </Fragment>
           );
         })}
@@ -62,21 +73,55 @@ const getStyles = (theme: GrafanaTheme2) => ({
   explorationTypeContainer: css`
     display: flex;
     align-items: center;
+  `,
+  label: css`
+    display: flex;
+    gap: 2px;
+    align-items: center;
+    font-size: 14px;
+    margin-right: ${theme.spacing(1)};
+
     ${theme.breakpoints.down('xxl')} {
-      label {
-        display: none;
-      }
+      display: none;
     }
   `,
   breadcrumb: css`
-    height: 32px;
-    line-height: 32px;
     display: flex;
     align-items: center;
+    height: 32px;
+    line-height: 32px;
+
+    .active {
+      background-color: ${theme.colors.primary.main};
+    }
+
+    .arrow.primary {
+      background-color: ${theme.colors.primary.main};
+    }
+
+    & button.primary:not(.active),
+    & .arrow.primary:not(.active) {
+      opacity: 0.7;
+    }
+
+    & button.primary:not(.active):hover {
+      opacity: 1;
+      background-color: ${theme.colors.primary.main};
+    }
   `,
   button: css`
-    height: 30px;
-    line-height: 30px;
+    height: 27px;
+    line-height: 27px;
+    border-radius: 15px;
+
+    &:hover {
+      border-color: ${theme.colors.primary.main};
+    }
+
+    &.active:hover {
+      cursor: default;
+      background-color: ${theme.colors.primary.main};
+    }
 
     &:nth-last-child(2) {
       margin-left: ${theme.spacing(1)};
@@ -86,9 +131,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
       margin-left: ${theme.spacing(2)};
     }
   `,
-  defaultMouseCursor: css`
-    &:hover {
-      cursor: default;
-    }
+  arrow: css`
+    background-color: ${theme.colors.text.disabled};
+    width: 10px;
+    height: 2px;
   `,
 });

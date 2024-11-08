@@ -1,5 +1,12 @@
 import { css } from '@emotion/css';
-import { dateTimeFormat, FieldMatcherID, getValueFormat, GrafanaTheme2, systemDateFormats } from '@grafana/data';
+import {
+  dateTime,
+  dateTimeFormat,
+  FieldMatcherID,
+  getValueFormat,
+  GrafanaTheme2,
+  systemDateFormats,
+} from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -17,7 +24,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { omit } from 'lodash';
 import React from 'react';
 
-import { getDefaultTimeRange } from '../../../../domain/getDefaultTimeRange';
+import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
@@ -26,6 +33,7 @@ import { PanelType } from '../../../SceneByVariableRepeaterGrid/components/Scene
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
+import { Preset } from '../ScenePresetsPicker/ScenePresetsPicker';
 import {
   SceneTimeRangeWithAnnotations,
   TimeRangeWithAnnotationsMode,
@@ -38,6 +46,8 @@ import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTi
 import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
+
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 interface SceneComparePanelState extends SceneObjectState {
   target: CompareTarget;
@@ -76,7 +86,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       filterKey,
       title,
       color,
-      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...getDefaultTimeRange() }),
+      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...buildTimeRange('now-1h', 'now') }),
       timePicker: new SceneTimePicker({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
@@ -120,18 +130,18 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
           const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
           const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
           const total = `${formattedValue.text}${formattedValue.suffix}`;
-          const [diffFrom, diffTo, timeZone] = SceneComparePanel.getFlameGraphRange(timeseriesPanel);
+          const [diffFrom, diffTo, timeZone] = SceneComparePanel.getDiffRange(timeseriesPanel);
 
           const displayName =
             diffFrom && diffTo
-              ? `${title} total = ${total} / Flame graph range = ${dateTimeFormat(diffFrom, {
+              ? `Total = ${total} / Flame graph range = ${dateTimeFormat(diffFrom, {
                   format: systemDateFormats.fullDate,
                   timeZone,
                 })} → ${dateTimeFormat(diffTo, {
                   format: systemDateFormats.fullDate,
                   timeZone,
                 })}`
-              : `${title} total = ${total}`;
+              : `Total = ${total}`;
 
           return {
             matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
@@ -163,7 +173,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return timeseriesPanel;
   }
 
-  static getFlameGraphRange(
+  static getDiffRange(
     timeseriesPanel: SceneLabelValuesTimeseries
   ): [number | undefined, number | undefined, string | undefined] {
     let diffFrom: number | undefined;
@@ -189,7 +199,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   subscribeToEvents() {
-    return this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
+    const switchSub = this.subscribeToEvent(EventSwitchTimerangeSelectionMode, (event) => {
       // this triggers a timeseries request to the API
       // TODO: caching?
       (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).setState({
@@ -199,6 +209,19 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
             : TimeRangeWithAnnotationsMode.DEFAULT,
       });
     });
+
+    const timeRangeSub = this.state.$timeRange.subscribeToState((newState, prevState) => {
+      if (newState.from !== prevState.from || newState.to !== prevState.to) {
+        this.updateTitle('');
+      }
+    });
+
+    return {
+      unsubscribe() {
+        timeRangeSub.unsubscribe();
+        switchSub.unsubscribe();
+      },
+    };
   }
 
   buildTimeseriesTitle() {
@@ -211,16 +234,77 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).useState();
   }
 
+  applyPreset({ from, to, diffFrom, diffTo, label }: Preset) {
+    this.setDiffRange(diffFrom, diffTo);
+
+    this.state.$timeRange.setState(buildTimeRange(from, to));
+
+    this.updateTitle(label);
+  }
+
+  setDiffRange(diffFrom: string, diffTo: string) {
+    const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
+
+    $diffTimeRange.setAnnotationTimeRange($diffTimeRange.buildAnnotationTimeRange(diffFrom, diffTo), true);
+  }
+
+  /**
+   * This function is responsible for automatically selecting half of the time range (from the time picker) that will be used to build the diff flame graph
+   * For the baseline panel, the leftmost part, for the comparison one, the rightmost part.
+   * In the future, we might want to be smarter and provides a way to select (e.g.) the region with the lowest resource consumption on the baseline panel vs
+   * the region with the highest consumption on the comparison panel.
+   */
+  autoSelectDiffRange(selectWholeRange: boolean) {
+    const { $timeRange, target } = this.state;
+    const { from, to } = $timeRange.state.value;
+
+    if (selectWholeRange) {
+      this.setDiffRange(from.toISOString(), to.toISOString());
+      return;
+    }
+
+    const diff = to.diff(from);
+
+    // ensure that we don't kill the backend when selecting long periods like 7d
+    const range = Math.min(Math.round(diff * 0.25), ONE_DAY_IN_MS);
+
+    if (target === CompareTarget.BASELINE) {
+      // we have to create a new instance because add() mutates the original one
+      this.setDiffRange(from.toISOString(), dateTime(from).add(range).toISOString());
+    } else {
+      // we have to create a new instance because subtract() mutates the original one
+      this.setDiffRange(dateTime(to).subtract(range).toISOString(), to.toISOString());
+    }
+  }
+
+  updateTitle(label = '') {
+    const title = this.state.target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
+    const newTitle = label ? `${title} (${label})` : title;
+
+    this.setState({ title: newTitle });
+  }
+
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
-    const styles = useStyles2(getStyles);
-    const { target, title, timeseriesPanel: timeseries, timePicker, refreshPicker, filterKey } = model.useState();
+    const {
+      target,
+      color,
+      title,
+      timeseriesPanel: timeseries,
+      timePicker,
+      refreshPicker,
+      filterKey,
+    } = model.useState();
+    const styles = useStyles2(getStyles, color);
 
     const filtersVariable = sceneGraph.findByKey(model, filterKey) as FiltersVariable;
 
     return (
       <div className={styles.panel} data-testid={`panel-${target}`}>
         <div className={styles.panelHeader}>
-          <h6>{title}</h6>
+          <h6>
+            <div className={styles.colorCircle} />
+            {title}
+          </h6>
 
           <div className={styles.timePicker}>
             <timePicker.Component model={timePicker} />
@@ -238,7 +322,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   };
 }
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = (theme: GrafanaTheme2, color: string) => ({
   panel: css`
     background-color: ${theme.colors.background.primary};
     padding: ${theme.spacing(1)} ${theme.spacing(1)} 0 ${theme.spacing(1)};
@@ -250,12 +334,22 @@ const getStyles = (theme: GrafanaTheme2) => ({
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: ${theme.spacing(2)};
+    flex-wrap: wrap;
 
     & > h6 {
+      font-size: 15px;
       height: 32px;
       line-height: 32px;
       margin: 0 ${theme.spacing(1)} 0 0;
     }
+  `,
+  colorCircle: css`
+    display: inline-block;
+    background-color: ${color};
+    border-radius: 50%;
+    width: 9px;
+    height: 9px;
+    margin-right: 6px;
   `,
   timePicker: css`
     display: flex;
@@ -271,6 +365,10 @@ const getStyles = (theme: GrafanaTheme2) => ({
 
     & [data-viz-panel-key] > * {
       border: 0 none;
+    }
+
+    & [data-viz-panel-key] [data-testid='uplot-main-div'] {
+      cursor: crosshair;
     }
   `,
 });

@@ -1,13 +1,13 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
+import DecreaseLatency from '@img/decrease-latency.png';
+import HeroImageExploreProfiles from '@img/hero-image-explore-profiles.png';
+import HeroImage from '@img/hero-image.png';
+import ReduceCosts from '@img/reduce-costs.png';
+import ResolveIncidents from '@img/resolve-incidents.png';
 import React from 'react';
 
-import DecreaseLatency from '../../../../img/decrease-latency.png';
-import HeroImageExploreProfiles from '../../../../img/hero-image-explore-profiles.png';
-import HeroImage from '../../../../img/hero-image.png';
-import ReduceCosts from '../../../../img/reduce-costs.png';
-import ResolveIncidents from '../../../../img/resolve-incidents.png';
 import { useOnboardingModal } from '../domain/useOnboardingModal';
 import { StyledLink } from './StyledLink';
 
@@ -161,8 +161,8 @@ export function OnboardingModal() {
                 <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
                 <p className={styles.onboardingPanelDescription}>
                   Use{' '}
-                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
-                    Grafana Agent
+                  <StyledLink href="https://grafana.com/docs/pyroscope/latest/configure-client/grafana-alloy/">
+                    Grafana Alloy
                   </StyledLink>{' '}
                   or{' '}
                   <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">
@@ -222,8 +222,8 @@ export function OnboardingModal() {
                 <h3 className={styles.onboardingPanelHeader}>Add Profiling to Your Application</h3>
                 <p className={styles.onboardingPanelDescription}>
                   Use{' '}
-                  <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/grafana-agent/">
-                    Grafana Agent
+                  <StyledLink href="https://grafana.com/docs/pyroscope/latest/configure-client/grafana-alloy/">
+                    Grafana Alloy
                   </StyledLink>{' '}
                   or{' '}
                   <StyledLink href="https://grafana.com/docs/pyroscope/next/configure-client/language-sdks/">

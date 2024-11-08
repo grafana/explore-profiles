@@ -23,7 +23,10 @@ export const GitHubIntegrationBanner = ({ onDismiss }: GitHubIntegrationBannerPr
         of the running service.
       </p>
       <Icon name="document-info" />{' '}
-      <TextLink href="https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/" external>
+      <TextLink
+        href="https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/"
+        external
+      >
         Learn more
       </TextLink>
     </Alert>

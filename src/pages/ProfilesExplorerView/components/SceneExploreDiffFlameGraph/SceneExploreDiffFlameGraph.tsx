@@ -10,12 +10,16 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/
 import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 import { SceneDiffFlameGraph } from './components/SceneDiffFlameGraph/SceneDiffFlameGraph';
+import { ScenePresetsPicker } from './components/ScenePresetsPicker/ScenePresetsPicker';
 import { syncYAxis } from './domain/behaviours/syncYAxis';
+import { EventDiffAutoSelect } from './domain/events/EventDiffAutoSelect';
+import { EventDiffChoosePreset } from './domain/events/EventDiffChoosePreset';
 
 interface SceneExploreDiffFlameGraphState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
   comparisonPanel: SceneComparePanel;
   body: SceneDiffFlameGraph;
+  presetsPicker: ScenePresetsPicker;
 }
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
@@ -38,6 +42,7 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         syncYAxis(),
       ],
       body: new SceneDiffFlameGraph(),
+      presetsPicker: new ScenePresetsPicker(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -54,10 +59,33 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
+    this.subscribeToEvents();
+
     return () => {
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
       profileMetricVariable.update(true);
     };
+  }
+
+  subscribeToEvents() {
+    this._subs.add(
+      this.subscribeToEvent(EventDiffAutoSelect, (event) => {
+        this.autoSelectDiffRanges(event.payload.wholeRange);
+      })
+    );
+
+    this._subs.add(
+      this.subscribeToEvent(EventDiffChoosePreset, () => {
+        this.state.presetsPicker.openSelect();
+      })
+    );
+  }
+
+  autoSelectDiffRanges(selectWholeRange: boolean) {
+    const { baselinePanel, comparisonPanel } = this.state;
+
+    baselinePanel.autoSelectDiffRange(selectWholeRange);
+    comparisonPanel.autoSelectDiffRange(selectWholeRange);
   }
 
   // see SceneProfilesExplorer
@@ -66,6 +94,7 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
       variables: [
         sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
         sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
+        this.state.presetsPicker,
       ],
       gridControls: [],
     };

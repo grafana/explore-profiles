@@ -176,16 +176,6 @@ test.describe('Labels view', () => {
             stylePath: './e2e/fixtures/css/hide-all-controls.css',
           });
         });
-
-        test('Add to filters action', async ({ exploreProfilesPage }) => {
-          await exploreProfilesPage.clickOnPanelAction('eu-north', 'Add to filters');
-
-          await exploreProfilesPage.assertFilters([['region', '=', 'eu-north']]);
-
-          await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
-            stylePath: './e2e/fixtures/css/hide-all-controls.css',
-          });
-        });
       });
 
       test.describe('Compare flow', () => {

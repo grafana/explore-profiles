@@ -56,6 +56,11 @@ export const getStyles = (theme: GrafanaTheme2) => ({
       background-color: ${theme.colors.background.secondary};
       color: ${theme.colors.text.maxContrast};
       border-radius: 0;
+      border-left: 0;
+
+      &:hover {
+        cursor: pointer !important;
+      }
     }
 
     & > :last-child {
@@ -82,7 +87,6 @@ export const getStyles = (theme: GrafanaTheme2) => ({
   chicletAttribute: css`
     &:hover {
       opacity: 1 !important;
-      cursor: default !important;
     }
   `,
   chicletOperator: css`

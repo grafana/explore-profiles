@@ -4,6 +4,7 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { displayWarning } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -11,6 +12,7 @@ import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
+import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
@@ -18,8 +20,11 @@ import { ProfilesDataSourceVariable } from '../../../../domain/variables/Profile
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { AIButton } from '../../../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../../../SceneAiPanel/SceneAiPanel';
+import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
+import { EventDiffChoosePreset } from '../../domain/events/EventDiffChoosePreset';
 import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
+import { MissingSelectionsBanner } from './ui/MissingSelectionsBanner';
 
 interface SceneDiffFlameGraphState extends SceneObjectState {
   aiPanel: SceneAiPanel;
@@ -38,7 +43,12 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
     const profileMetricType = getProfileMetric(profileMetricId as ProfileMetricId).type;
 
-    return `🔥 Diff flame graph for ${serviceName} (${profileMetricType})`;
+    return (
+      <>
+        <PyroscopeLogo size="small" />
+        Diff flame graph for {serviceName} ({profileMetricType})
+      </>
+    );
   }
 
   useSceneDiffFlameGraph = (): DomainHookReturnValue => {
@@ -83,7 +93,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const shouldDisplayFlamegraph = Boolean(
       isDiffQueryEnabled && !fetchProfileError && !noProfileDataAvailable && profile
     );
-    const shouldDisplayInfo = !isDiffQueryEnabled;
+    const hasMissingSelections = !isDiffQueryEnabled;
 
     return {
       data: {
@@ -92,7 +102,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
         fetchProfileError,
         noProfileDataAvailable,
         shouldDisplayFlamegraph,
-        shouldDisplayInfo,
+        hasMissingSelections,
         profile: profile as FlamebearerProfile,
         settings,
         fetchSettingsError,
@@ -108,13 +118,29 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     };
   };
 
+  onClickAutoSelect = () => {
+    reportInteraction('g_pyroscope_app_diff_auto_select_clicked');
+
+    this.publishEvent(new EventDiffAutoSelect({ wholeRange: false }), true);
+  };
+
+  onClickChoosePreset = () => {
+    reportInteraction('g_pyroscope_app_diff_choose_preset_clicked');
+
+    this.publishEvent(new EventDiffChoosePreset({}), true);
+  };
+
+  onOpenLearnHow = () => {
+    reportInteraction('g_pyroscope_app_diff_learn_how_clicked');
+  };
+
   static Component = ({ model }: SceneComponentProps<SceneDiffFlameGraph>) => {
     const styles = useStyles2(getStyles);
 
     const { data } = model.useSceneDiffFlameGraph();
     const sidePanel = useToggleSidePanel();
 
-    const isAiButtonDisabled = data.isLoading || data.shouldDisplayInfo || data.noProfileDataAvailable;
+    const isAiButtonDisabled = data.isLoading || data.hasMissingSelections || data.noProfileDataAvailable;
 
     useEffect(() => {
       if (isAiButtonDisabled) {
@@ -156,11 +182,11 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
             </AIButton>
           }
         >
-          {data.shouldDisplayInfo && (
-            <InlineBanner
-              severity="info"
-              title=""
-              message="Select both the baseline and the comparison flame graph time ranges to view the diff flame graph."
+          {data.hasMissingSelections && (
+            <MissingSelectionsBanner
+              onClickAutoSelect={model.onClickAutoSelect}
+              onClickChoosePreset={model.onClickChoosePreset}
+              onOpenLearnHow={model.onOpenLearnHow}
             />
           )}
 

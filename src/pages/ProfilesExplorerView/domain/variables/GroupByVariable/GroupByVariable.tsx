@@ -133,7 +133,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
     display: flex;
   `,
   iconError: css`
-    color: ${theme.colors.error.text};
+    height: 32px;
     align-self: center;
+    color: ${theme.colors.error.text};
   `,
 });

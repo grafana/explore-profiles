@@ -20,7 +20,6 @@ import { FiltersVariable } from '../../../../../../domain/variables/FiltersVaria
 import { GroupByVariable } from '../../../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../../../helpers/getSceneVariableValue';
 import { getSeriesLabelFieldName } from '../../../../../../infrastructure/helpers/getSeriesLabelFieldName';
-import { buildTimeSeriesQueryRunner } from '../../../../../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneEmptyState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from '../../../../../SceneByVariableRepeaterGrid/components/SceneErrorState/SceneErrorState';
 import {
@@ -45,6 +44,7 @@ import {
 } from '../../../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuePanel } from './components/SceneLabelValuePanel';
+import { buildLabelValuesGridQueryRunner } from './infrastructure/buildLabelValuesGridQueryRunner';
 
 interface SceneLabelValuesGridState extends EmbeddedSceneState {
   $data: SceneDataProvider;
@@ -57,7 +57,7 @@ interface SceneLabelValuesGridState extends EmbeddedSceneState {
   hideNoData: boolean;
 }
 
-const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(800px, 1fr))';
+const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fit, minmax(600px, 1fr))';
 const GRID_TEMPLATE_ROWS = '1fr';
 export const GRID_AUTO_ROWS = '160px';
 
@@ -84,7 +84,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       items: [],
       isLoading: true,
       $data: new SceneDataTransformer({
-        $data: buildTimeSeriesQueryRunner({ groupBy: { label } }),
+        $data: buildLabelValuesGridQueryRunner({ label }),
         transformations: [addRefId, addStats, sortSeries],
       }),
       hideNoData: false,
@@ -248,7 +248,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     this.setState({
       isLoading: true,
       $data: new SceneDataTransformer({
-        $data: buildTimeSeriesQueryRunner({ groupBy: { label: this.state.label } }),
+        $data: buildLabelValuesGridQueryRunner({ label: this.state.label }),
         transformations: [addRefId, addStats, sortSeries],
       }),
     });

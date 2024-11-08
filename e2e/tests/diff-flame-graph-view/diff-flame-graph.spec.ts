@@ -41,11 +41,6 @@ test.describe('Diff flame graph view', () => {
     await exploreProfilesPage.assertSelectedService('pyroscope');
     await exploreProfilesPage.mouse.move(0, 0); // prevents the time picker tooltip to appear on the screenshot
 
-    const diffFlameGraphPanel = exploreProfilesPage.getByTestId('diff-flame-graph-panel');
-    await expect(diffFlameGraphPanel).toContainText(
-      'Select both the baseline and the comparison flame graph time ranges to view the diff flame graph.'
-    );
-
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
       stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });

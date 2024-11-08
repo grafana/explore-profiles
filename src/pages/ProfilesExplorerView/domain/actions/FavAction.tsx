@@ -76,7 +76,7 @@ export class FavAction extends SceneObjectBase<FavActionState> {
   }
 
   public onClick = () => {
-    reportInteraction('g_pyroscope_app_fav_action_clicked');
+    reportInteraction('g_pyroscope_app_fav_action_clicked', { favAfterClick: !this.state.isFav });
 
     if (!this.state.isFav) {
       FavoritesDataSource.addFavorite(this.buildFavorite());
