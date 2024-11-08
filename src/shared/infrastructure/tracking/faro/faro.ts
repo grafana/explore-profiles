@@ -23,9 +23,11 @@ export function initFaro() {
 
   const { environment, faroUrl, appName } = faroEnvironment;
 
-  const { apps, bootData } = config;
+  const { apps, bootData, buildInfo } = config;
+
   const appRelease = apps[PYROSCOPE_APP_ID].version;
   const userEmail = bootData.user.email;
+  const grafanaVersion = `v${buildInfo.version} (${buildInfo.edition})`;
 
   setFaro(
     initializeFaro({
@@ -35,6 +37,7 @@ export function initFaro() {
         release: appRelease,
         version: GIT_COMMIT,
         environment,
+        namespace: grafanaVersion, // :man_shrug:
       },
       user: {
         email: userEmail,
@@ -48,6 +51,10 @@ export function initFaro() {
       isolate: true,
       beforeSend: (event) => {
         if ((event.meta.page?.url ?? '').includes(PYROSCOPE_APP_ID)) {
+          event.meta.view = {
+            name: new URLSearchParams(event.meta.page?.url).get('explorationType') || '',
+          };
+
           return event;
         }
 

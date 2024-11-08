@@ -11,15 +11,19 @@ jest.mock('@grafana/faro-web-tracing');
 // Grafana dependency
 jest.mock('@grafana/runtime', () => ({
   config: {
+    apps: {
+      [PYROSCOPE_APP_ID]: {
+        version: 'v0.01-test',
+      },
+    },
     bootData: {
       user: {
         email: 'sixty.four@grafana.com',
       },
     },
-    apps: {
-      [PYROSCOPE_APP_ID]: {
-        version: 'v0.01-test',
-      },
+    buildInfo: {
+      version: '11.2.0',
+      edition: 'Enterprise',
     },
   },
 }));
@@ -120,6 +124,7 @@ describe('initFaro()', () => {
         release: 'v0.01-test',
         version: GIT_COMMIT,
         environment: 'prod',
+        namespace: 'v11.2.0 (Enterprise)',
       });
 
       expect(user).toStrictEqual({ email: 'sixty.four@grafana.com' });
