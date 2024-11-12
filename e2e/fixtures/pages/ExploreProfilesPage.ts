@@ -265,7 +265,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   /* Flame graph component */
 
   getExportDataButton() {
-    return this.getByLabel('Export data');
+    return this.getByLabel('Export profile data');
   }
 
   getFlamegraph() {

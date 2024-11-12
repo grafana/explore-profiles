@@ -13,7 +13,7 @@ export function ExportMenu(props: ExportDataProps) {
       <Menu.Item label="json" onClick={actions.downloadJson} />
       {/* no pprof export, as the underlying API only accepts a single query (see PprofApiClient) */}
       {data.shouldDisplayFlamegraphDotCom && (
-        <Menu.Item label="flamegraph.com" onClick={actions.uploadToFlamegraphDotCom} />
+        <Menu.Item label="flamegraph.com (public URL)" onClick={actions.uploadToFlamegraphDotCom} />
       )}
     </Menu>
   );

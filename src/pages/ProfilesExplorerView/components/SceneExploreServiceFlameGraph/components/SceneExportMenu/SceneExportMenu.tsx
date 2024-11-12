@@ -182,12 +182,19 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
             <Menu.Item label="json" onClick={actions.downloadJson} />
             <Menu.Item label="pprof" onClick={actions.downloadPprof} />
             {data.shouldDisplayFlamegraphDotCom && (
-              <Menu.Item label="flamegraph.com" onClick={actions.uploadToFlamegraphDotCom} />
+              <Menu.Item label="flamegraph.com (public URL)" onClick={actions.uploadToFlamegraphDotCom} />
             )}
           </Menu>
         }
       >
-        <Button icon={'download-alt'} size={'sm'} variant={'secondary'} fill={'outline'} aria-label="Export data" />
+        <Button
+          icon="download-alt"
+          size="sm"
+          variant="secondary"
+          fill="outline"
+          aria-label="Export profile data"
+          tooltip="Export profile data"
+        />
       </Dropdown>
     );
   };
