@@ -71,13 +71,13 @@ test.describe('Plugin Settings', () => {
       await exploreProfilesPage.goto(ExplorationType.FlameGraph);
       await exploreProfilesPage.getExportDataButton().click();
 
-      await expect(exploreProfilesPage.getByText('flamegraph.com')).not.toBeVisible();
+      await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
 
       // diff flame graph
       await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
       await exploreProfilesPage.getExportDataButton().click();
 
-      await expect(exploreProfilesPage.getByText('flamegraph.com')).not.toBeVisible();
+      await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
     });
   });
 });
