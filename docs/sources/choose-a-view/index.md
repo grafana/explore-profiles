@@ -183,6 +183,6 @@ Similar to a `git diff`, it takes the selected flame graphs and highlights the d
 The **Favorites** view shows all your favorited visualizations. 
 Clicking on the star (⭐️) at the top-right corner of a visualization saves it as a favorite.
 
-This feature helps you creating an overview of what's important, as well as offering the possibility to quickly jump to the **Flame graph** view or the **Labels** view.
+Using favories, you can create an overview of what's important, as well as jump to the **Flame graph** view or the **Labels** view.
 
 ![Favorites](../images/explore-profiles-favorites.png)
