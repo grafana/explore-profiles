@@ -1,4 +1,4 @@
-import { clearLabelValue, excludeLabelValue, includeLabelValue } from '../filters-ops';
+import { clearLabelValue, excludeLabelValue, includeLabelValue, isFilterValid } from '../filters-ops';
 
 const FILTER_VEHICLE_IS_BIKE = Object.freeze({ key: 'vehicle', operator: '=', value: 'bike' });
 
@@ -213,5 +213,16 @@ describe('clearLabelValue(filters, filterForClear)', () => {
     ],
   ])('%s', (msg, filters, filterForClear, expectedFilters) => {
     expect(clearLabelValue(filters, filterForClear)).toEqual(expectedFilters);
+  });
+});
+
+describe('isFilterValid(filter)', () => {
+  test.each([
+    [{ key: 'cluster', operator: '', value: 'test' }, false],
+    [{ key: 'cluster', operator: '%', value: 'test' }, false],
+    [{ key: 'cluster', operator: '=', value: 'test' }, true],
+    [{ key: 'cluster', operator: 'is-empty', value: 'test' }, true],
+  ])('"%s" → %s', (filter, expectedResult) => {
+    expect(isFilterValid(filter)).toBe(expectedResult);
   });
 });
