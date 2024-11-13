@@ -47,7 +47,7 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
-            <FieldSet label="Export" data-testid="export-settings">
+            {/* <FieldSet label="Export" data-testid="export-settings">
               <InlineFieldRow>
                 <InlineField
                   label="Enable flamegraph.com"
@@ -74,7 +74,7 @@ export function SettingsView() {
                   />
                 </InlineField>
               </InlineFieldRow>
-            </FieldSet>
+            </FieldSet> */}
             <FieldSet label="Function details" data-testid="function-details-settings">
               <InlineFieldRow>
                 <InlineField
