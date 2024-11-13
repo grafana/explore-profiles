@@ -13,7 +13,6 @@ import React from 'react';
 import { SceneMainServiceTimeseries } from '../../components/SceneMainServiceTimeseries';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
-import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -39,10 +38,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
             minHeight: SceneMainServiceTimeseries.MIN_HEIGHT,
             body: new SceneMainServiceTimeseries({
               item,
-              headerActions: (item) => [
-                new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
-                new FavAction({ item }),
-              ],
+              headerActions: (item) => [new SelectAction({ type: 'view-flame-graph', item }), new FavAction({ item })],
             }),
           }),
           new SceneFlexItem({
