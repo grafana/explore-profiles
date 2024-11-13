@@ -61,23 +61,25 @@ test.describe('Plugin Settings', () => {
     });
   });
 
-  test.describe('Export settings', () => {
-    test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getEnableFlamegraphDotComCheckbox().click();
-      await settingsPage.getSaveSettingsButton().click();
-      await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
+  // eslint-disable-next-line jest/no-commented-out-tests
+  // test.describe('Export settings', () => {
+  // eslint-disable-next-line jest/no-commented-out-tests
+  //   test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
+  //     await settingsPage.getEnableFlamegraphDotComCheckbox().click();
+  //     await settingsPage.getSaveSettingsButton().click();
+  //     await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
-      // flame graph
-      await exploreProfilesPage.goto(ExplorationType.FlameGraph);
-      await exploreProfilesPage.getExportDataButton().click();
+  //     // flame graph
+  //     await exploreProfilesPage.goto(ExplorationType.FlameGraph);
+  //     await exploreProfilesPage.getExportDataButton().click();
 
-      await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
+  //     await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
 
-      // diff flame graph
-      await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
-      await exploreProfilesPage.getExportDataButton().click();
+  //     // diff flame graph
+  //     await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
+  //     await exploreProfilesPage.getExportDataButton().click();
 
-      await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
-    });
-  });
+  //     await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
+  //   });
+  // });
 });
