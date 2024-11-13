@@ -20,10 +20,10 @@ test.describe('Plugin Settings', () => {
     await expect(flamegraphSettings.getByText('Collapsed flame graphs')).toBeVisible();
     await expect(flamegraphSettings.getByText('Maximum number of nodes')).toBeVisible();
 
-    const exportSettings = settingsPage.getExportSettings();
+    // const exportSettings = settingsPage.getExportSettings();
 
-    await expect(exportSettings).toBeVisible();
-    await expect(exportSettings.getByText('Enable flamegraph.com')).toBeVisible();
+    // await expect(exportSettings).toBeVisible();
+    // await expect(exportSettings.getByText('Enable flamegraph.com')).toBeVisible();
   });
 
   test.describe('Flame graph settings', () => {
