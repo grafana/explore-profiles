@@ -172,7 +172,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
   };
 
   static Component = ({ model, query, timeRange }: SceneComponentProps<SceneExportMenu> & ExtraProps) => {
-    const { data, actions } = model.useSceneExportMenu({ query, timeRange });
+    const { actions } = model.useSceneExportMenu({ query, timeRange });
 
     return (
       <Dropdown
@@ -181,9 +181,6 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
             <Menu.Item label="png" onClick={actions.downloadPng} />
             <Menu.Item label="json" onClick={actions.downloadJson} />
             <Menu.Item label="pprof" onClick={actions.downloadPprof} />
-            {data.shouldDisplayFlamegraphDotCom && (
-              <Menu.Item label="flamegraph.com" onClick={actions.uploadToFlamegraphDotCom} />
-            )}
           </Menu>
         }
       >

@@ -47,18 +47,6 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
-            <FieldSet label="Export" data-testid="export-settings">
-              <InlineFieldRow>
-                <InlineField label="Enable flamegraph.com" labelWidth={24}>
-                  <InlineSwitch
-                    label="Toggle export to flamegraph.com"
-                    name="export-flamegraph-com"
-                    value={data.enableFlameGraphDotComExport}
-                    onChange={actions.toggleEnableFlameGraphDotComExport}
-                  />
-                </InlineField>
-              </InlineFieldRow>
-            </FieldSet>
             <FieldSet label="Function details" data-testid="function-details-settings">
               <InlineFieldRow>
                 <InlineField
