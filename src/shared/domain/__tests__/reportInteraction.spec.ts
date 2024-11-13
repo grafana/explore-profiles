@@ -20,33 +20,62 @@ describe('reportInteraction(interactionName, properties)', () => {
     window.location = originalLocation;
   });
 
-  it('calls Grafana\'s reportInteraction with a new "page" property', () => {
+  it('calls Grafana\'s reportInteraction with a new "meta" property', () => {
     Object.defineProperty(window, 'location', {
-      value: 'http://localhost:3000/a/grafana-pyroscope-app/test-page-1',
+      value: new URL('http://localhost:3000/a/grafana-pyroscope-app/test-page-1'),
       writable: true,
     });
 
     reportInteraction('g_pyroscope_app_exploration_type_clicked');
 
     expect(grafanaReportInteraction).toHaveBeenCalledWith('g_pyroscope_app_exploration_type_clicked', {
-      page: 'test-page-1',
-      version: '1.0.0',
+      props: undefined,
+      meta: {
+        page: 'test-page-1',
+        appRelease: '1.0.0',
+        appVersion: 'dev',
+      },
+    });
+  });
+  describe('if the current URL corresponds to the "profiles-explorer" page', () => {
+    it('adds a "view" meta', () => {
+      Object.defineProperty(window, 'location', {
+        value: new URL('http://localhost:3000/a/grafana-pyroscope-app/profiles-explorer?explorationType=flame-graph'),
+        writable: true,
+      });
+
+      reportInteraction('g_pyroscope_app_exploration_type_clicked');
+
+      expect(grafanaReportInteraction).toHaveBeenCalledWith('g_pyroscope_app_exploration_type_clicked', {
+        props: undefined,
+        meta: {
+          appRelease: '1.0.0',
+          appVersion: 'dev',
+          page: 'profiles-explorer',
+          view: 'flame-graph',
+        },
+      });
     });
   });
 
   describe('if some extra properties are passed', () => {
     it('calls Grafana\'s reportInteraction with these properties as well as a new "page" property', () => {
       Object.defineProperty(window, 'location', {
-        value: 'http://localhost:3000/a/grafana-pyroscope-app/test-page-2',
+        value: new URL('http://localhost:3000/a/grafana-pyroscope-app/test-page-2'),
         writable: true,
       });
 
       reportInteraction('g_pyroscope_app_exploration_type_clicked', { explorationType: 'unit-tests' });
 
       expect(grafanaReportInteraction).toHaveBeenCalledWith('g_pyroscope_app_exploration_type_clicked', {
-        page: 'test-page-2',
-        version: '1.0.0',
-        explorationType: 'unit-tests',
+        props: {
+          explorationType: 'unit-tests',
+        },
+        meta: {
+          appRelease: '1.0.0',
+          appVersion: 'dev',
+          page: 'test-page-2',
+        },
       });
     });
   });

@@ -3,6 +3,7 @@ import { config, reportInteraction as grafanaReportInteraction } from '@grafana/
 import { PYROSCOPE_APP_ID, ROUTES } from '../../constants';
 import { LayoutType } from '../../pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { PanelType } from '../../pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import { GIT_COMMIT } from '../../version';
 
 // hey future dev: don't forget to add any new value to our features tracking dashboard!
 export type InteractionName =
@@ -43,8 +44,6 @@ type InteractionProperties =
   | { favAfterClick: boolean }
   // g_pyroscope_app_filters_changed
   | { name: string; count: number; operators: string[] }
-  // g_pyroscope_app_group_by_label_clicked
-  | { label: string }
   // g_pyroscope_app_hide_no_data_changed
   | { hideNoData: 'on' | 'off' }
   // g_pyroscope_app_layout_changed
@@ -61,21 +60,25 @@ function getCurrentPage(): string {
   return pathname.split('/').pop() || '';
 }
 
-function getExtraProperties() {
-  const page = getCurrentPage();
-  const version = config.apps[PYROSCOPE_APP_ID].version;
-  const extraProperties: Record<string, any> = { page, version };
+function getMetaProperties() {
+  const meta: Record<string, any> = {
+    // same naming as Faro (see src/shared/infrastructure/tracking/faro/faro.ts)
+    appRelease: config.apps[PYROSCOPE_APP_ID].version,
+    appVersion: GIT_COMMIT,
+    page: getCurrentPage(),
+  };
 
-  if (page === PROFILES_EXPLORER_PAGE_NAME) {
-    extraProperties.explorationType = new URLSearchParams(window.location.search).get('explorationType');
+  if (meta.page === PROFILES_EXPLORER_PAGE_NAME) {
+    // same naming as Faro (see src/shared/infrastructure/tracking/faro/faro.ts)
+    meta.view = new URLSearchParams(window.location.search).get('explorationType') || '';
   }
 
-  return extraProperties;
+  return meta;
 }
 
-export function reportInteraction(interactionName: InteractionName, properties?: InteractionProperties) {
+export function reportInteraction(interactionName: InteractionName, props?: InteractionProperties) {
   grafanaReportInteraction(interactionName, {
-    ...properties,
-    ...getExtraProperties(),
+    props,
+    meta: getMetaProperties(),
   });
 }

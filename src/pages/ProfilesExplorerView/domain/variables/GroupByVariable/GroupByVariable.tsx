@@ -61,7 +61,7 @@ export class GroupByVariable extends QueryVariable {
   };
 
   onChange = (newValue: string) => {
-    reportInteraction('g_pyroscope_app_group_by_label_clicked', { label: newValue });
+    reportInteraction('g_pyroscope_app_group_by_label_clicked');
 
     prepareHistoryEntry();
     this.changeValueTo(newValue);

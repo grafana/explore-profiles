@@ -15,37 +15,41 @@ import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '.
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
 
-type EventContructor =
-  | (new (payload: EventExpandPanelPayload) => EventExpandPanel)
-  | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
-  | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
-  | (new (payload: EventViewServiceLabelsPayload) => EventViewServiceLabels)
-  | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
+type ActionType = 'expand-panel' | 'select-label' | 'view-flame-graph' | 'view-labels' | 'view-profiles';
 
 type EventLookup = {
-  label?: string;
   icon?: IconName;
-  tooltip?: (item: GridItemData, model: SceneObject) => string;
+  label?: string;
+  ariaLabel?: string;
+  tooltip: (item: GridItemData, model: SceneObject) => string;
+  EventConstructor:
+    | (new (payload: EventExpandPanelPayload) => EventExpandPanel)
+    | (new (payload: EventSelectLabelPayload) => EventSelectLabel)
+    | (new (payload: EventViewServiceFlameGraphPayload) => EventViewServiceFlameGraph)
+    | (new (payload: EventViewServiceLabelsPayload) => EventViewServiceLabels)
+    | (new (payload: EventViewServiceProfilesPayload) => EventViewServiceProfiles);
 };
 
-const Events = new Map<EventContructor, EventLookup>([
+const Events = new Map<ActionType, EventLookup>([
   [
-    EventExpandPanel,
+    'expand-panel',
     Object.freeze({
-      icon: 'expand-arrows',
       ariaLabel: 'Expand panel',
+      icon: 'expand-arrows',
       tooltip: () => 'Expand this panel to view all the data for the current filters',
+      EventConstructor: EventExpandPanel,
     }),
   ],
   [
-    EventSelectLabel,
+    'select-label',
     Object.freeze({
       label: 'Select',
       tooltip: ({ queryRunnerParams }) => `View "${queryRunnerParams.groupBy?.label}" values breakdown`,
+      EventConstructor: EventSelectLabel,
     }),
   ],
   [
-    EventViewServiceFlameGraph,
+    'view-flame-graph',
     Object.freeze({
       label: 'Flame graph',
       tooltip: ({ queryRunnerParams }, model) => {
@@ -53,32 +57,36 @@ const Events = new Map<EventContructor, EventLookup>([
         const profileMetricId = queryRunnerParams.profileMetricId || getSceneVariableValue(model, 'profileMetricId');
         return `View the "${getProfileMetric(profileMetricId as ProfileMetricId).type}" flame graph of ${serviceName}`;
       },
+      EventConstructor: EventViewServiceFlameGraph,
     }),
   ],
   [
-    EventViewServiceLabels,
+    'view-labels',
     Object.freeze({
       label: 'Labels',
       tooltip: ({ queryRunnerParams }, model) => {
         const serviceName = queryRunnerParams.serviceName || getSceneVariableValue(model, 'serviceName');
         return `Explore the labels of ${serviceName}`;
       },
+      EventConstructor: EventViewServiceLabels,
     }),
   ],
   [
-    EventViewServiceProfiles,
+    'view-profiles',
     Object.freeze({
       label: 'Profile types',
       tooltip: ({ queryRunnerParams }, model) => {
         const serviceName = queryRunnerParams.serviceName || getSceneVariableValue(model, 'serviceName');
         return `View the profile types of ${serviceName}`;
       },
+      EventConstructor: EventViewServiceProfiles,
     }),
   ],
 ]);
 
 interface SelectActionState extends SceneObjectState {
-  EventClass: EventContructor;
+  type: ActionType;
+  EventConstructor: EventLookup['EventConstructor'];
   item: GridItemData;
   label?: string;
   ariaLabel?: string;
@@ -89,32 +97,32 @@ interface SelectActionState extends SceneObjectState {
 
 export class SelectAction extends SceneObjectBase<SelectActionState> {
   constructor({
-    EventClass,
+    type,
     item,
     tooltip,
     skipVariablesInterpolation,
   }: {
-    EventClass: EventContructor;
+    type: ActionType;
     item: SelectActionState['item'];
     tooltip?: SelectActionState['tooltip'];
     skipVariablesInterpolation?: SelectActionState['skipVariablesInterpolation'];
   }) {
-    const lookup = Events.get(EventClass);
+    const lookup = Events.get(type);
     if (!lookup) {
-      throw new TypeError(`Unknown event class "${EventClass}"!`);
+      throw new TypeError(`Unknown event type="${type}"!`);
     }
 
-    super({ EventClass, item, ...merge({}, lookup, { tooltip, skipVariablesInterpolation }) });
+    super({ type, item, ...merge({}, lookup, { tooltip, skipVariablesInterpolation }) });
   }
 
   public onClick = () => {
-    reportInteraction('g_pyroscope_app_select_action_clicked', { type: this.state.EventClass.name });
+    reportInteraction('g_pyroscope_app_select_action_clicked', { type: this.state.type });
 
     this.publishEvent(this.buildEvent(), true);
   };
 
   buildEvent() {
-    const { EventClass, item, skipVariablesInterpolation } = this.state;
+    const { EventConstructor, item, skipVariablesInterpolation } = this.state;
 
     const completeItem = {
       ...item,
@@ -123,7 +131,7 @@ export class SelectAction extends SceneObjectBase<SelectActionState> {
         : interpolateQueryRunnerVariables(this, item),
     };
 
-    return new EventClass({
+    return new EventConstructor({
       item: completeItem,
     });
   }
