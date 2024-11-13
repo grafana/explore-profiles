@@ -1,7 +1,7 @@
-import { reportInteraction } from '@grafana/runtime';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { uniq } from 'lodash';
 import React from 'react';
 
@@ -43,7 +43,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
   }
 
   onChangeQuery = (query: string, filters: CompleteFilters) => {
-    reportInteraction('g_pyroscope_filters_changed', {
+    reportInteraction('g_pyroscope_app_filters_changed', {
       name: this.state.name,
       count: filters.length,
       operators: uniq(filters.map((f) => f.operator.label)),

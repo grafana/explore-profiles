@@ -1,8 +1,8 @@
 import { TimeRange } from '@grafana/data';
-import { reportInteraction } from '@grafana/runtime';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, Dropdown, Menu } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -89,7 +89,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     const { settings } = useFetchPluginSettings();
 
     const downloadPng = () => {
-      reportInteraction('g_pyroscope_export_profile', { format: 'png' });
+      reportInteraction('g_pyroscope_app_export_profile', { format: 'png' });
 
       const filename = `${getExportFilename(query, timeRange)}.png`;
 
@@ -105,7 +105,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     };
 
     const downloadJson = async () => {
-      reportInteraction('g_pyroscope_export_profile', { format: 'json' });
+      reportInteraction('g_pyroscope_app_export_profile', { format: 'json' });
 
       const profile = await this.fetchFlamebearerProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {
@@ -119,7 +119,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     };
 
     const downloadPprof = async () => {
-      reportInteraction('g_pyroscope_export_profile', { format: 'pprof' });
+      reportInteraction('g_pyroscope_app_export_profile', { format: 'pprof' });
 
       const profile = await this.fetchPprofProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {
@@ -132,7 +132,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     };
 
     const uploadToFlamegraphDotCom = async () => {
-      reportInteraction('g_pyroscope_export_profile', { format: 'flamegraph.com' });
+      reportInteraction('g_pyroscope_app_export_profile', { format: 'flamegraph.com' });
 
       const profile = await this.fetchFlamebearerProfile({ dataSourceUid, query, timeRange, maxNodes });
       if (!profile) {

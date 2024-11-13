@@ -180,7 +180,7 @@ Similar to a `git diff`, it takes the selected flame graphs and highlights the d
 
 ### Favorites
 
-The **Favorites** view shows all your favorited visualizations. 
+The **Favorites** view shows all your favorited visualizations.
 Clicking on the star (⭐️) at the top-right corner of a visualization saves it as a favorite.
 
 Using favories, you can create an overview of what's important, as well as jump to the **Flame graph** view or the **Labels** view.

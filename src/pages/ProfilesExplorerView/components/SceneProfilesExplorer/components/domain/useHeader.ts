@@ -1,6 +1,6 @@
-import { reportInteraction } from '@grafana/runtime';
 import { SceneObject, SceneVariable } from '@grafana/scenes';
 import { displaySuccess } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { logger } from '@shared/infrastructure/tracking/logger';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
