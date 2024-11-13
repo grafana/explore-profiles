@@ -19,11 +19,6 @@ test.describe('Plugin Settings', () => {
     await expect(flamegraphSettings).toBeVisible();
     await expect(flamegraphSettings.getByText('Collapsed flame graphs')).toBeVisible();
     await expect(flamegraphSettings.getByText('Maximum number of nodes')).toBeVisible();
-
-    // const exportSettings = settingsPage.getExportSettings();
-
-    // await expect(exportSettings).toBeVisible();
-    // await expect(exportSettings.getByText('Enable flamegraph.com')).toBeVisible();
   });
 
   test.describe('Flame graph settings', () => {
@@ -60,26 +55,4 @@ test.describe('Plugin Settings', () => {
       });
     });
   });
-
-  // eslint-disable-next-line jest/no-commented-out-tests
-  // test.describe('Export settings', () => {
-  // eslint-disable-next-line jest/no-commented-out-tests
-  //   test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
-  //     await settingsPage.getEnableFlamegraphDotComCheckbox().click();
-  //     await settingsPage.getSaveSettingsButton().click();
-  //     await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
-
-  //     // flame graph
-  //     await exploreProfilesPage.goto(ExplorationType.FlameGraph);
-  //     await exploreProfilesPage.getExportDataButton().click();
-
-  //     await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
-
-  //     // diff flame graph
-  //     await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
-  //     await exploreProfilesPage.getExportDataButton().click();
-
-  //     await expect(exploreProfilesPage.getByText('flamegraph.com (public URL)')).not.toBeVisible();
-  //   });
-  // });
 });

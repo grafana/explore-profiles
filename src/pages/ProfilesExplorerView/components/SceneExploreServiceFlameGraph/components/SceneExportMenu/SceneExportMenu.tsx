@@ -181,9 +181,6 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
             <Menu.Item label="png" onClick={actions.downloadPng} />
             <Menu.Item label="json" onClick={actions.downloadJson} />
             <Menu.Item label="pprof" onClick={actions.downloadPprof} />
-            {/* {data.shouldDisplayFlamegraphDotCom && (
-              <Menu.Item label="flamegraph.com (public URL)" onClick={actions.uploadToFlamegraphDotCom} />
-            )} */}
           </Menu>
         }
       >

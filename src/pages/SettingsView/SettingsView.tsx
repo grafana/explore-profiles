@@ -47,34 +47,6 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
-            {/* <FieldSet label="Export" data-testid="export-settings">
-              <InlineFieldRow>
-                <InlineField
-                  label="Enable flamegraph.com"
-                  labelWidth={24}
-                  tooltip={
-                    <div className={styles.tooltip}>
-                      <p>
-                        When enabled, this option allows users to export profiles to{' '}
-                        <a href="https://flamegraph.com/" target="_blank" rel="noreferrer noopener">
-                          flamegraph.com
-                        </a>{' '}
-                        and share interactive flamegraphs via <em>a public URL</em>.
-                      </p>
-                      <p>Disable this option if data privacy is a concern.</p>
-                    </div>
-                  }
-                  interactive
-                >
-                  <InlineSwitch
-                    label="Toggle export to flamegraph.com"
-                    name="export-flamegraph-com"
-                    value={data.enableFlameGraphDotComExport}
-                    onChange={actions.toggleEnableFlameGraphDotComExport}
-                  />
-                </InlineField>
-              </InlineFieldRow>
-            </FieldSet> */}
             <FieldSet label="Function details" data-testid="function-details-settings">
               <InlineFieldRow>
                 <InlineField
