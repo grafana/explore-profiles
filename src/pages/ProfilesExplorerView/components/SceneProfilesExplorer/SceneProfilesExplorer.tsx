@@ -185,7 +185,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       const { message } = error as Error;
 
       if (!/A runtime data source with uid (.+) has already been registered/.test(message)) {
-        displayError(error, [
+        displayError(error as Error, [
           'Fail to register all the runtime data sources!',
           'The application cannot work as expected, please try reloading the page or if the problem persists, contact your organization admin.',
         ]);

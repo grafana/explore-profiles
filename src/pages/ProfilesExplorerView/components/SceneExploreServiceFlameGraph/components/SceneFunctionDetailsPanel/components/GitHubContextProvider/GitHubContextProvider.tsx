@@ -45,8 +45,8 @@ export function GitHubContextProvider({ dataSourceUid, children }: GitHubContext
   const login = useCallback(async () => {
     try {
       await githubLogin(vcsClient, privateVcsClient, sessionCookie, externalWindow, setExternalWindow);
-    } catch (e) {
-      displayError(e, ['Failed to login to GitHub', (e as Error).message]);
+    } catch (error) {
+      displayError(error as Error, ['Failed to login to GitHub', (error as Error).message]);
     }
   }, [vcsClient, privateVcsClient, sessionCookie, externalWindow]);
 

@@ -7,6 +7,7 @@
     "plugin:@tanstack/eslint-plugin-query/recommended"
   ],
   "rules": {
+    "no-console": ["error", { "allow": [""] }],
     "no-unused-vars": "error",
     "jest/expect-expect": "error",
     "jest/valid-title": "off",

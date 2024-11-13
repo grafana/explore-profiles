@@ -191,11 +191,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
           )}
 
           {data.fetchProfileError && (
-            <InlineBanner
-              severity="error"
-              title="Error while loading profile data!"
-              errors={[data.fetchProfileError]}
-            />
+            <InlineBanner severity="error" title="Error while loading profile data!" error={data.fetchProfileError} />
           )}
 
           {data.noProfileDataAvailable && (

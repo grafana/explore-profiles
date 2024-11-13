@@ -1,27 +1,28 @@
 import { Alert, AlertVariant } from '@grafana/ui';
+import { ErrorContext, logger } from '@shared/infrastructure/tracking/logger';
 import React from 'react';
 
 type InlineBannerProps = {
   severity: AlertVariant;
   title: string;
   message?: string | React.ReactNode;
-  errors?: Error[];
+  error?: Error;
+  errorContext?: ErrorContext;
 };
 
-export function InlineBanner({ severity, title, message, errors }: InlineBannerProps) {
-  if (errors) {
-    console.error(title);
-    console.error(errors);
+export function InlineBanner({ severity, title, message, error, errorContext }: InlineBannerProps) {
+  if (error) {
+    logger.error(error, errorContext);
   }
 
   return (
     <Alert title={title} severity={severity}>
-      {errors?.map((e) => (
+      {error && (
         <>
-          {e.message}
+          {error.message}
           <br />
         </>
-      ))}
+      )}
       {message}
     </Alert>
   );

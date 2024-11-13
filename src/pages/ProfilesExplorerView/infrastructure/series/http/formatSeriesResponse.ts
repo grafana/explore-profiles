@@ -1,4 +1,5 @@
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { logger } from '@shared/infrastructure/tracking/logger';
 
 import { PyroscopeSeries } from './SeriesApiClient';
 
@@ -30,7 +31,7 @@ export function formatSeriesResponse(data: { labelsSet: Array<{ labels: Labels }
   const profileMetrics: PyroscopeSeries['profileMetrics'] = new Map();
 
   if (!data.labelsSet) {
-    console.warn('Pyroscope SeriesApiClient: no data received!');
+    logger.warn('Pyroscope SeriesApiClient: no data received!');
     return { services, profileMetrics };
   }
 
@@ -38,7 +39,7 @@ export function formatSeriesResponse(data: { labelsSet: Array<{ labels: Labels }
     const [serviceName, profileMetricId] = findServiceNameAndProfileMetricId(labels);
 
     if (!serviceName || !profileMetricId) {
-      console.warn(
+      logger.warn(
         'Pyroscope ServicesApiClient: "service_name" and/or "__profile_type__" are missing in the labels received!',
         labels
       );

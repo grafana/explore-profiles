@@ -1,4 +1,5 @@
 import { displayError } from '@shared/domain/displayStatus';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import React from 'react';
 
 import { VcsClient } from '../../../infrastructure/VcsClient';
@@ -24,10 +25,10 @@ export async function githubLogin(
     try {
       await privateVcsClient.refresh();
       return;
-    } catch (e) {
+    } catch (error) {
       // This error isn't fatal and we can recover from it by restarting the
       // oauth login flow.
-      console.error('failed to refresh GitHub user token', e);
+      logger.error(error as Error, { info: 'Failed to refresh GitHub user token' });
 
       // Failed to refresh the token. Delete the old token and enter the
       // follow login flow to get a completely new token.
@@ -39,7 +40,7 @@ export async function githubLogin(
   try {
     const clientId = await vcsClient.githubApp();
     setExternalWindow(openLoginPopup(clientId, nonce));
-  } catch (e) {
-    displayError(e, ['Failed to start login flow.', (e as Error).message]);
+  } catch (error) {
+    displayError(error as Error, ['Failed to start login flow.', (error as Error).message]);
   }
 }

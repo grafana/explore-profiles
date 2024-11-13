@@ -49,7 +49,7 @@ export function usePollGitHubPopup({
           }
         }
       } catch (error) {
-        displayError(error, ['Error while login in with GitHub!', (error as Error).message]);
+        displayError(error as Error, ['Error while login in with GitHub!', (error as Error).message]);
         externalWindow.close();
         setExternalWindow(null);
         return;

@@ -10,6 +10,7 @@ import {
 import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import pLimit from 'p-limit';
 
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
@@ -85,7 +86,7 @@ export class LabelsDataSource extends RuntimeDataSource {
     const { dataSourceUid, serviceName, profileMetricId, query, from, to } = this.getParams(options);
 
     if (!serviceName || !profileMetricId) {
-      console.warn(
+      logger.warn(
         'LabelsDataSource: either serviceName="%s" and/or profileMetricId="%s" is empty! Discarding request.',
         serviceName,
         profileMetricId

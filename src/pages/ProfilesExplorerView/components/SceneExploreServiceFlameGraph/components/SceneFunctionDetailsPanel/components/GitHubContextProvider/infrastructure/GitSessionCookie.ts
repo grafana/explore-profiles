@@ -1,3 +1,5 @@
+import { logger } from '@shared/infrastructure/tracking/logger';
+
 /** The maximum Unix ms timestamp that can be stored in a JS Date object. */
 const MAX_UNIX_TS_MS = 8640000000000000;
 
@@ -42,8 +44,8 @@ export class GitSessionCookie {
     let decoded;
     try {
       decoded = atob(value);
-    } catch (e) {
-      console.error('failed to base64 decode GitSession value', e);
+    } catch (error) {
+      logger.error(error as Error, { info: 'Failed to base64 decode GitSession value' });
       return undefined;
     }
 

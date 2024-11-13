@@ -1,6 +1,7 @@
 import { reportInteraction } from '@grafana/runtime';
 import { SceneObject, SceneVariable } from '@grafana/scenes';
 import { displaySuccess } from '@shared/domain/displayStatus';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { PLUGIN_BASE_URL, ROUTES } from 'src/constants';
@@ -18,8 +19,7 @@ async function onClickShareLink() {
 
     displaySuccess(['Link copied to clipboard!']);
   } catch (error) {
-    console.error('Error while creating the shareable link!');
-    console.error(error);
+    logger.error(error as Error, { info: 'Error while creating the shareable link!' });
   }
 }
 
