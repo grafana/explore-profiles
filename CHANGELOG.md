@@ -1,3 +1,20 @@
+## [0.1.16](https://github.com/grafana/explore-profiles/compare/v0.1.15...v0.1.16) (2024-11-14)
+
+
+### Bug Fixes
+
+* **QueryBuilder:** Prevent invalid filters to be used after parsing ([#276](https://github.com/grafana/explore-profiles/issues/276)) ([e6cac6e](https://github.com/grafana/explore-profiles/commit/e6cac6ed097a1ce0609d4fc83400de2303f33fec))
+* **Tracking:** Ensure select action type is tracked ([#278](https://github.com/grafana/explore-profiles/issues/278)) ([9527644](https://github.com/grafana/explore-profiles/commit/952764487d676408ce05b741902ada9ad3571b8b))
+* **Tracking:** Use custom reporter ([#277](https://github.com/grafana/explore-profiles/issues/277)) ([dfbb3a6](https://github.com/grafana/explore-profiles/commit/dfbb3a6a6c8f177d9ecf66a52fbb2b7794ea686f))
+
+
+### Features
+
+* **Export:** Clarify that export to flamegraph.com option will create a public URL ([#275](https://github.com/grafana/explore-profiles/issues/275)) ([c5a0962](https://github.com/grafana/explore-profiles/commit/c5a0962bdf4cd19d9427515384e9c106b9dedd07))
+* **Export:** Disable export to flame graph.com ([#280](https://github.com/grafana/explore-profiles/issues/280)) ([e631055](https://github.com/grafana/explore-profiles/commit/e63105522393c096feceb3f0a66cd9e1e0934a56))
+
+
+
 ## [0.1.15](https://github.com/grafana/explore-profiles/compare/v0.1.14...v0.1.15) (2024-11-05)
 
 
