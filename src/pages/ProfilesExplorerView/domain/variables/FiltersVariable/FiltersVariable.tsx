@@ -1,13 +1,13 @@
-import { reportInteraction } from '@grafana/runtime';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { uniq } from 'lodash';
 import React from 'react';
 
 import { useBuildPyroscopeQuery } from '../../useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
-import { convertPyroscopeToVariableFilter } from './filters-ops';
+import { convertPyroscopeToVariableFilter, isFilterValid } from './filters-ops';
 
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
@@ -20,6 +20,9 @@ export class FiltersVariable extends AdHocFiltersVariable {
       filters: FiltersVariable.DEFAULT_VALUE,
       expressionBuilder: (filters) =>
         filters
+          // after parsing the URL search parameters the filters might end up having an invalid operator, which in turn, will
+          // generate an invalid query that will make the API requests fail - we prevent this to happen by sanitizing the filters here
+          .filter(isFilterValid)
           .map(({ key, operator, value }) =>
             operator === OperatorKind['is-empty'] ? `${key}=""` : `${key}${operator}"${value}"`
           )
@@ -43,7 +46,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
   }
 
   onChangeQuery = (query: string, filters: CompleteFilters) => {
-    reportInteraction('g_pyroscope_filters_changed', {
+    reportInteraction('g_pyroscope_app_filters_changed', {
       name: this.state.name,
       count: filters.length,
       operators: uniq(filters.map((f) => f.operator.label)),

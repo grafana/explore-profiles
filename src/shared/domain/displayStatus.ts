@@ -1,9 +1,11 @@
 import { AppEvents } from '@grafana/data';
 import { getAppEvents } from '@grafana/runtime';
+import { logger } from '@shared/infrastructure/tracking/logger';
 
-export function displayError(error: unknown, msgs: string[]) {
-  console.error(msgs);
-  console.error(error);
+export function displayError(error: Error, msgs: string[]) {
+  const context = msgs.reduce((acc, msg, i) => ({ ...acc, [`info${i + 1}`]: msg }), { handheldBy: 'displayError' });
+
+  logger.error(error, context);
 
   getAppEvents().publish({
     type: AppEvents.alertError.name,
@@ -12,7 +14,7 @@ export function displayError(error: unknown, msgs: string[]) {
 }
 
 export function displayWarning(msgs: string[]) {
-  console.warn(msgs);
+  logger.warn(msgs);
 
   getAppEvents().publish({
     type: AppEvents.alertWarning.name,

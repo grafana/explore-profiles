@@ -6,7 +6,6 @@ import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
-import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -25,10 +24,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       key: 'explore-service-flame-graph',
       mainTimeseries: new SceneMainServiceTimeseries({
         item,
-        headerActions: (item) => [
-          new SelectAction({ EventClass: EventViewServiceLabels, item }),
-          new FavAction({ item }),
-        ],
+        headerActions: (item) => [new SelectAction({ type: 'view-labels', item }), new FavAction({ item })],
       }),
       body: new SceneFlameGraph(),
     });

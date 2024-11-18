@@ -1,6 +1,8 @@
 import { GitSessionCookie } from '../GitSessionCookie';
 import { GitSessionCookieManager } from '../GitSessionCookieManager';
 
+jest.mock('@shared/infrastructure/tracking/logger');
+
 describe('GitSessionCookieManager', () => {
   let manager: GitSessionCookieManager;
   beforeEach(() => {

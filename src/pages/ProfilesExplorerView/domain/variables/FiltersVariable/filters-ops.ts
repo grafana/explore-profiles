@@ -121,3 +121,5 @@ export function clearLabelValue(
 
   return [...filtersWithoutFound];
 }
+
+export const isFilterValid = (filter: AdHocVariableFilter) => filter.operator in OperatorKind;

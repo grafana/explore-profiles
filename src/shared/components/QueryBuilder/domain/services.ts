@@ -1,22 +1,22 @@
+import { logger } from '@shared/infrastructure/tracking/logger';
+
 import { labelsRepository } from '../../../infrastructure/labels/labelsRepository';
 import { operatorsRepository } from '../infrastructure/operatorsRepository';
 import { filtersToQuery } from './helpers/filtersToQuery';
 import { getLastFilter } from './helpers/getLastFilter';
 import { isPrivateLabel } from './helpers/isPrivateLabel';
-import { logger } from './helpers/logger';
 import { FilterKind, Filters, QueryBuilderContext, QueryBuilderEvent, Suggestions } from './types';
 
 type ServiceFn<TContext, TEvent> = (context: TContext, event: TEvent) => Promise<Suggestions | Error>;
 type Services<TContext, TEvent> = Record<string, ServiceFn<TContext, TEvent>>;
 
-function handleError(error: unknown, message: string) {
+function handleError(error: Error, info: string) {
   const isAbortError = error instanceof DOMException && error.name === 'AbortError';
   if (isAbortError) {
     return [];
   }
 
-  logger.error(message);
-  logger.error(error);
+  logger.error(error, { info });
   throw error;
 }
 
@@ -41,14 +41,14 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
 
       return [...publicLabels, ...privateLabels];
     } catch (error) {
-      return handleError(error, 'Error while fetching labels!');
+      return handleError(error as Error, 'Error while fetching labels!');
     }
   },
   fetchOperators: async () => {
     try {
       return await operatorsRepository.list();
     } catch (error) {
-      return handleError(error, 'Error while fetching operators!');
+      return handleError(error as Error, 'Error while fetching operators!');
     }
   },
   // TODO: refactor indeed
@@ -90,7 +90,7 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
 
       return await labelsRepository.listLabelValues({ label: labelId, query, from, to });
     } catch (error) {
-      return handleError(error, 'Error while fetching label values!');
+      return handleError(error as Error, 'Error while fetching label values!');
     }
   },
 };
