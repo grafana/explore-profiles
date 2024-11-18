@@ -20,7 +20,6 @@ import { FavAction } from '../../../../domain/actions/FavAction';
 import { SelectAction } from '../../../../domain/actions/SelectAction';
 import { EventExpandPanel } from '../../../../domain/events/EventExpandPanel';
 import { EventSelectLabel } from '../../../../domain/events/EventSelectLabel';
-import { EventViewServiceFlameGraph } from '../../../../domain/events/EventViewServiceFlameGraph';
 import {
   clearLabelValue,
   excludeLabelValue,
@@ -227,8 +226,8 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         };
       },
       headerActions: (item) => [
-        new SelectAction({ EventClass: EventSelectLabel, item }),
-        new SelectAction({ EventClass: EventExpandPanel, item }),
+        new SelectAction({ type: 'select-label', item }),
+        new SelectAction({ type: 'expand-panel', item }),
         new FavAction({ item }),
       ],
     });
@@ -261,7 +260,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       label,
       headerActions: (item) => [
         new SelectAction({
-          EventClass: EventViewServiceFlameGraph,
+          type: 'view-flame-graph',
           item,
           tooltip: (item, model) => {
             const { queryRunnerParams, label } = item;
@@ -317,7 +316,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
     const title = `${serviceName} · ${getProfileMetricLabel(profileMetricId)} · ${item.label}`;
 
-    const headerActions = () => [new SelectAction({ EventClass: EventSelectLabel, item }), new FavAction({ item })];
+    const headerActions = () => [new SelectAction({ type: 'select-label', item }), new FavAction({ item })];
 
     this.state.drawer.open({
       title,

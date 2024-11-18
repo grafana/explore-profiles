@@ -46,7 +46,7 @@ export function AiSuggestionsPanel({ suggestionPromptInputs }: AiSuggestionsPane
           <InlineBanner
             severity="error"
             title="Failed to generate content using OpenAI!"
-            errors={[data.llmError]}
+            error={data.llmError}
             message="Sorry for any inconvenience, please try again later or if the problem persists, contact your organization admin."
           />
         )}

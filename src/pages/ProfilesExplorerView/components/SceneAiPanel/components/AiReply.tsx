@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { useStyles2 } from '@grafana/ui';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import Markdown from 'markdown-to-jsx';
 import React, { ReactNode } from 'react';
 
@@ -21,7 +22,7 @@ const onClickSearchTerm = (event: any) => {
   const searchInputElement = document.querySelector('[placeholder^="Search"]');
 
   if (searchInputElement === null) {
-    console.error('Cannot find search input element!');
+    logger.error(new Error('Cannot find search input element!'));
     return;
   }
 

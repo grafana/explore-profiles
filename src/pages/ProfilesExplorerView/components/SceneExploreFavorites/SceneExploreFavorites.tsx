@@ -13,8 +13,6 @@ import { SceneDrawer } from '../../components/SceneDrawer';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventExpandPanel } from '../../domain/events/EventExpandPanel';
-import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { FavoriteVariable } from '../../domain/variables/FavoriteVariable';
 import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -48,14 +46,14 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
         sortItemsFn: (a, b) => a.label.localeCompare(b.label),
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [
-            new SelectAction({ EventClass: EventViewServiceLabels, item, skipVariablesInterpolation: true }),
-            new SelectAction({ EventClass: EventViewServiceFlameGraph, item, skipVariablesInterpolation: true }),
+            new SelectAction({ type: 'view-labels', item, skipVariablesInterpolation: true }),
+            new SelectAction({ type: 'view-flame-graph', item, skipVariablesInterpolation: true }),
           ];
 
           if (item.queryRunnerParams.groupBy) {
             actions.push(
               new SelectAction({
-                EventClass: EventExpandPanel,
+                type: 'expand-panel',
                 item,
                 tooltip: () => 'Expand panel to view all the data',
                 skipVariablesInterpolation: true,
@@ -102,8 +100,8 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
 
   openExpandedPanelDrawer(item: GridItemData) {
     const headerActions = () => [
-      new SelectAction({ EventClass: EventViewServiceLabels, item }),
-      new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+      new SelectAction({ type: 'view-labels', item }),
+      new SelectAction({ type: 'view-flame-graph', item }),
     ];
 
     this.state.drawer.open({

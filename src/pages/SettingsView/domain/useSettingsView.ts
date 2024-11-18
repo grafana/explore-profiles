@@ -59,7 +59,7 @@ export function useSettingsView() {
 
           displaySuccess(['Plugin settings successfully saved!']);
         } catch (error) {
-          displayError(error, [
+          displayError(error as Error, [
             'Error while saving the plugin settings!',
             'Please try again later, sorry for the inconvenience.',
           ]);

@@ -14,7 +14,14 @@ function ExportDataComponent(props: ExportDataProps) {
 
   return (
     <Dropdown overlay={<ExportMenu profile={profile} enableFlameGraphDotComExport={enableFlameGraphDotComExport} />}>
-      <Button icon={'download-alt'} size={'sm'} variant={'secondary'} fill={'outline'} aria-label="Export data" />
+      <Button
+        icon="download-alt"
+        size="sm"
+        variant="secondary"
+        fill="outline"
+        aria-label="Export profile data"
+        tooltip="Export profile data"
+      />
     </Dropdown>
   );
 }

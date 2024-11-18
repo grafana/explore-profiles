@@ -10,8 +10,6 @@ import React from 'react';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
-import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
-import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -48,8 +46,8 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
           panelType: PanelType.TIMESERIES,
         }),
         headerActions: (item) => [
-          new SelectAction({ EventClass: EventViewServiceLabels, item }),
-          new SelectAction({ EventClass: EventViewServiceFlameGraph, item }),
+          new SelectAction({ type: 'view-labels', item }),
+          new SelectAction({ type: 'view-flame-graph', item }),
           new FavAction({ item }),
         ],
       }),

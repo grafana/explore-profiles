@@ -26,7 +26,7 @@ Select a view by choosing an **Exploration**: **All services**, **Profile types*
 
 <!-- screenshots need to be updated -->
 
-![Select an Exploration type to begin](../images/explore-profiles-view-bar.png)
+![Select an Exploration type to begin](../images/explore-profiles-exploration-bar.png)
 
 You can refine any selected views by selecting a Profile type, Label, or Flame graph from one of the charts.
 Click and drag on an area of interest to see more detail.
@@ -174,4 +174,15 @@ This lets you compare two different queries that may have different total amount
 
 Similar to a `git diff`, it takes the selected flame graphs and highlights the differences between them.
 
+![Diff flame graph](../images/explore-profiles-diff-flamegraph.png)
+
 <!-- from old screenshot of cpu usage profile Red represents an increase in CPU usage from the baseline to the comparison and green represents a decrease. -->
+
+### Favorites
+
+The **Favorites** view shows all your favorited visualizations.
+Clicking on the star (⭐️) at the top-right corner of a visualization saves it as a favorite.
+
+Using favories, you can create an overview of what's important, as well as jump to the **Flame graph** view or the **Labels** view.
+
+![Favorites](../images/explore-profiles-favorites.png)

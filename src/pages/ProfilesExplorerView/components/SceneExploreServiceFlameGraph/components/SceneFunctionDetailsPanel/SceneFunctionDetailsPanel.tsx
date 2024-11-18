@@ -134,7 +134,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
             <InlineBanner
               severity="error"
               title="Error while fetching function details!"
-              errors={[data.fetchFunctionDetailsError]}
+              error={data.fetchFunctionDetailsError}
             />
           )}
 

@@ -1,3 +1,5 @@
+import { logger } from '@shared/infrastructure/tracking/logger';
+
 import plugin from '../../plugin.json';
 
 class UserStorage {
@@ -21,8 +23,7 @@ class UserStorage {
     try {
       return JSON.parse(this.#storage.getItem(itemName) as string);
     } catch (error) {
-      console.error(`Error parsing JSON for storage item "${itemName}"!`);
-      console.error(error);
+      logger.error(error as Error, { info: `Error parsing JSON for storage item "${itemName}"!` });
       return null;
     }
   }
@@ -31,8 +32,7 @@ class UserStorage {
     try {
       this.#storage.setItem(itemName, JSON.stringify(value));
     } catch (error) {
-      console.error(`Error setting storage item "${itemName}"!`);
-      console.error(error);
+      logger.error(error as Error, { info: `Error setting storage item "${itemName}"!` });
     }
   }
 }

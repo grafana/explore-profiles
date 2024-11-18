@@ -12,6 +12,7 @@ import {
   VizPanelState,
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
@@ -161,7 +162,9 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     ) as HTMLButtonElement;
 
     if (!refreshButton) {
-      console.error('SceneByVariableRepeaterGrid: Refresh button not found! The list of items will never be updated.');
+      logger.error(
+        new Error('SceneByVariableRepeaterGrid: Refresh button not found! The list of items will never be updated.')
+      );
     }
 
     refreshButton?.addEventListener('click', onClickRefresh);

@@ -36,7 +36,12 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
     const filename = `${customExportName}.json`;
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(profile))}`;
 
-    saveAs(dataStr, filename);
+    try {
+      saveAs(dataStr, filename);
+    } catch (error) {
+      displayError(error as Error, ['Failed to export to JSON!', (error as Error).message]);
+      return;
+    }
   };
 
   const uploadToFlamegraphDotCom = async () => {
@@ -49,7 +54,7 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
     try {
       response = await flamegraphDotComApiClient.upload(customExportName, profile);
     } catch (error) {
-      displayError(error, ['Failed to export to flamegraph.com!', (error as Error).message]);
+      displayError(error as Error, ['Failed to export to flamegraph.com!', (error as Error).message]);
       return;
     }
 

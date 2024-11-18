@@ -43,7 +43,7 @@ export function useUploadFile() {
         setProfileData(DEFAULT_PROFILE_DATA);
 
         if (!adHocProfileClient.isAbortError(error)) {
-          displayError(error, ['Error while uploading profile!', (error as Error).message]);
+          displayError(error as Error, ['Error while uploading profile!', (error as Error).message]);
         }
       }
 
@@ -80,7 +80,7 @@ export function useUploadFile() {
         }));
       } catch (error) {
         if (!adHocProfileClient.isAbortError(error)) {
-          displayError(error, ['Error while fetching profile!', (error as Error).message]);
+          displayError(error as Error, ['Error while fetching profile!', (error as Error).message]);
         }
       }
 

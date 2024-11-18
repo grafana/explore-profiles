@@ -47,30 +47,18 @@ export function SettingsView() {
                 </InlineField>
               </InlineFieldRow>
             </FieldSet>
-            <FieldSet label="Export" data-testid="export-settings">
-              <InlineFieldRow>
-                <InlineField label="Enable flamegraph.com" labelWidth={24}>
-                  <InlineSwitch
-                    label="Toggle export to flamegraph.com"
-                    name="export-flamegraph-com"
-                    value={data.enableFlameGraphDotComExport}
-                    onChange={actions.toggleEnableFlameGraphDotComExport}
-                  />
-                </InlineField>
-              </InlineFieldRow>
-            </FieldSet>
             <FieldSet label="Function details" data-testid="function-details-settings">
               <InlineFieldRow>
                 <InlineField
                   label="Enable function details"
                   labelWidth={24}
                   tooltip={
-                    <>
-                      <div>
+                    <div className={styles.tooltip}>
+                      <p>
                         The function details feature enables mapping of resource usage to lines of source code. If the
                         GitHub integration is configured, then the source code will be downloaded from GitHub.
-                      </div>
-                      <div>
+                      </p>
+                      <p>
                         <a
                           href="https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/"
                           target="_blank"
@@ -78,8 +66,8 @@ export function SettingsView() {
                         >
                           Learn more
                         </a>
-                      </div>
-                    </>
+                      </p>
+                    </div>
                   }
                   interactive
                 >
@@ -123,5 +111,19 @@ const getStyles = (theme: GrafanaTheme2) => ({
   buttons: css`
     display: flex;
     gap: ${theme.spacing(1)};
+  `,
+  tooltip: css`
+    p {
+      margin: ${theme.spacing(1)};
+    }
+
+    a {
+      color: ${theme.colors.text.link};
+    }
+
+    em {
+      font-style: normal;
+      font-weight: ${theme.typography.fontWeightBold};
+    }
   `,
 });
