@@ -60,9 +60,9 @@
   "extensions": {
     "addedLinks": [
       {
-        "title": "Explore Profiles",
+        "title": "Open in Explore Profiles",
         "description": "Try our new queryless experience for profiles",
-        "targets": ["grafana/query/query-to-app-plugin"]
+        "targets": ["grafana/explore/toolbar/action"]
       }
     ]
   }
