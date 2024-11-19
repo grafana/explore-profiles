@@ -49,7 +49,7 @@ export class ServiceNameVariable extends QueryVariable {
   onActivate() {
     const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
 
-    if (serviceNameFromStorage) {
+    if (serviceNameFromStorage && !this.state.value) {
       this.setState({ value: serviceNameFromStorage });
     }
 
