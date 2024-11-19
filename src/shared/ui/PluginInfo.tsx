@@ -14,18 +14,24 @@ const { buildInfo: grafanaBuildInfo } = config;
 function InfoMenuHeader() {
   const styles = useStyles2(getStyles);
 
-  const {
-    meta: {
-      info: { version, updated },
-    },
-  } = usePluginContext();
+  const context = usePluginContext();
 
-  return (
-    <div className={styles.menuHeader}>
-      <h5>🔥 Explore profiles v{version}</h5>
-      <div className={styles.subTitle}>Last update: {updated}</div>
-    </div>
-  );
+  if (context) {
+    const {
+      meta: {
+        info: { version, updated },
+      },
+    } = context;
+
+    return (
+      <div className={styles.menuHeader}>
+        <h5>🔥 Explore profiles v{version}</h5>
+        <div className={styles.subTitle}>Last update: {updated}</div>
+      </div>
+    );
+  }
+
+  return undefined;
 }
 
 function InfoMenu() {

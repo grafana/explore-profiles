@@ -13,13 +13,13 @@ export function Routes() {
 
   return (
     <Switch>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)}>
         <ProfilesExplorerView />
       </Route>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)} exact>
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)}>
         <AdHocView />
       </Route>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SETTINGS)} exact>
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SETTINGS)}>
         <SettingsView />
       </Route>
       {/* Default Route */}
