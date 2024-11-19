@@ -1,3 +1,12 @@
+## [0.1.17](https://github.com/grafana/explore-profiles/compare/v0.1.16...v0.1.17) (2024-11-19)
+
+
+### Bug Fixes
+
+* **ServiceDropdown:** Retrieve last used service name only if it's not provided in the URL ([#284](https://github.com/grafana/explore-profiles/issues/284)) ([28ca16e](https://github.com/grafana/explore-profiles/commit/28ca16ea5cd1340019278756fd9cfa7f583df268))
+
+
+
 ## [0.1.16](https://github.com/grafana/explore-profiles/compare/v0.1.15...v0.1.16) (2024-11-14)
 
 
