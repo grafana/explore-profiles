@@ -6,7 +6,6 @@ import { initFaro, setFaro } from '../faro';
 
 // Faro dependencies
 jest.mock('@grafana/faro-web-sdk');
-jest.mock('@grafana/faro-web-tracing');
 
 // Grafana dependency
 jest.mock('@grafana/runtime', () => ({
@@ -30,7 +29,7 @@ jest.mock('@grafana/runtime', () => ({
 
 function setup(location: Partial<Location>) {
   (initializeFaro as jest.Mock).mockReturnValue({});
-  (getWebInstrumentations as jest.Mock).mockReturnValue([]);
+  (getWebInstrumentations as jest.Mock).mockReturnValue([{}]);
 
   Object.defineProperty(window, 'location', {
     value: location,
@@ -129,8 +128,11 @@ describe('initFaro()', () => {
 
       expect(user).toStrictEqual({ email: 'sixty.four@grafana.com' });
 
+      expect(getWebInstrumentations).toHaveBeenCalledWith({
+        captureConsole: false,
+      });
       expect(instrumentations).toBeInstanceOf(Array);
-      expect(instrumentations.length).toBeGreaterThan(0);
+      expect(instrumentations.length).toBe(1);
 
       expect(isolate).toBe(true);
       expect(beforeSend).toBeInstanceOf(Function);
