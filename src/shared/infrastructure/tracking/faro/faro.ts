@@ -1,5 +1,4 @@
 import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk';
-import { TracingInstrumentation } from '@grafana/faro-web-tracing';
 import { config } from '@grafana/runtime';
 
 import { PYROSCOPE_APP_ID } from '../../../../constants';
@@ -46,7 +45,6 @@ export function initFaro() {
         ...getWebInstrumentations({
           captureConsole: false,
         }),
-        new TracingInstrumentation(),
       ],
       isolate: true,
       beforeSend: (event) => {
