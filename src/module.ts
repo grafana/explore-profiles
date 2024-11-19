@@ -46,32 +46,21 @@ export const plugin = new AppPlugin<AppPluginSettings>()
     description: 'Try our new queryless experience for profiles',
     path: '/a/grafana-pyroscope-app/profiles-explorer',
     configure(context: PluginExtensionExploreContext | undefined) {
-      if (!context || !context.targets || !context.timeRange) {
-        return undefined;
-      }
-
-      if (context.targets.length > 1) {
+      if (!context || !context.targets || !context.timeRange || context.targets.length > 1) {
         return undefined;
       }
 
       const firstQuery = context.targets[0];
 
-      if (!firstQuery.datasource) {
-        return undefined;
+      if (firstQuery.datasource && firstQuery.datasource.type === 'grafana-pyroscope-datasource') {
+        return {
+          path: buildURL({
+            pyroscopeQuery: firstQuery as GrafanaPyroscopeDataQuery,
+            timeRange: context.timeRange,
+          }),
+        };
       }
-
-      if (firstQuery.datasource.type !== 'grafana-pyroscope-datasource') {
-        return undefined;
-      }
-
-      const path = buildURL({
-        pyroscopeQuery: firstQuery as GrafanaPyroscopeDataQuery,
-        timeRange: context.timeRange,
-      });
-
-      return {
-        path: path,
-      };
+      return undefined;
     },
   })
   .setRootPage(App);
