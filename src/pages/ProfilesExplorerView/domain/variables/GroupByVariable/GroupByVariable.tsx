@@ -5,7 +5,6 @@ import { Field, Icon, RefreshPicker, Spinner, Tooltip, useStyles2 } from '@grafa
 import { noOp } from '@shared/domain/noOp';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { logger } from '@shared/infrastructure/tracking/logger';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -94,8 +93,6 @@ export class GroupByVariable extends QueryVariable {
     }
 
     if (error) {
-      logger.error(error, { info: 'Error while loading "groupBy" variable values!' });
-
       return (
         <Field label="Group by labels">
           <div className={styles.groupByErrorContainer}>

@@ -73,6 +73,49 @@ export class LabelsDataSource extends RuntimeDataSource {
     };
   }
 
+  async fetchLabels(dataSourceUid: string, query: string, from: number, to: number, variableName?: string) {
+    labelsRepository.setApiClient(new LabelsApiClient({ dataSourceUid }));
+
+    try {
+      return (await labelsRepository.listLabels({ query, from, to })).filter(({ value }) => !isPrivateLabel(value));
+    } catch (error) {
+      logger.error(error as Error, {
+        info: 'Error while loading Pyroscope label names!',
+        variableName: variableName || '',
+      });
+
+      throw error;
+    }
+  }
+
+  async fetchLabelValues(query: string, from: number, to: number, labelName: string, variableName?: string) {
+    let values;
+
+    try {
+      values = await labelsRepository.listLabelValues({ query, from, to, label: labelName });
+    } catch (error) {
+      logger.error(error as Error, {
+        info: 'Error while loading Pyroscope label values!',
+        variableName: variableName || '',
+      });
+    }
+
+    const count = values ? values.length : -1;
+
+    return {
+      // TODO: check if there's a better way
+      value: JSON.stringify({
+        value: labelName,
+        groupBy: {
+          label: labelName,
+          values,
+        },
+      }),
+      text: `${labelName} (${count > -1 ? count : '?'})`,
+      count,
+    };
+  }
+
   async metricFindQuery(_: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
     const sceneObject = options.scopedVars?.__sceneObject?.value as GroupByVariable;
 
@@ -94,31 +137,10 @@ export class LabelsDataSource extends RuntimeDataSource {
       return [];
     }
 
-    labelsRepository.setApiClient(new LabelsApiClient({ dataSourceUid }));
-
-    const labels = (await labelsRepository.listLabels({ query, from, to })).filter(
-      ({ value }) => !isPrivateLabel(value)
-    );
+    const labels = await this.fetchLabels(dataSourceUid, query, from, to, options.variable?.name);
 
     const labelsWithValuesAndCount = await Promise.all(
-      labels.map(({ value }) =>
-        limit(async () => {
-          const values = await labelsRepository.listLabelValues({ query, from, to, label: value });
-          const count = values.length;
-          return {
-            // TODO: check if there's a better way
-            value: JSON.stringify({
-              value,
-              groupBy: {
-                label: value,
-                values,
-              },
-            }),
-            text: `${value} (${count})`,
-            count,
-          };
-        })
-      )
+      labels.map(({ value }) => limit(() => this.fetchLabelValues(query, from, to, value, options.variable?.name)))
     );
 
     const sortedLabels = labelsWithValuesAndCount
