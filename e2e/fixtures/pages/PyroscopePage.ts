@@ -81,6 +81,10 @@ export class PyroscopePage {
     return this.page.waitForRequest(urlOrPredicate, options);
   }
 
+  waitForResponse(urlOrPredicate, options?) {
+    return this.page.waitForResponse(urlOrPredicate, options);
+  }
+
   waitForTimeout(timeout: number) {
     return this.page.waitForTimeout(timeout);
   }
