@@ -108,7 +108,7 @@ export class LabelsDataSource extends RuntimeDataSource {
         value: labelName,
         groupBy: {
           label: labelName,
-          values,
+          values: values || [],
         },
       }),
       text: `${labelName} (${count > -1 ? count : '?'})`,
