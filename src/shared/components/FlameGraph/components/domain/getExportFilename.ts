@@ -1,5 +1,6 @@
 import { dateTimeParse, TimeRange } from '@grafana/data';
-import { CompareTarget } from 'src/pages/ProfilesExplorerView/components/SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
+
+import { CompareTarget } from '../../../../../pages/ProfilesExplorerView/components/SceneExploreDiffFlameGraph/domain/types';
 
 type DateParts = {
   year: string;

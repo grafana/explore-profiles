@@ -7,13 +7,15 @@ import React from 'react';
 
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
-import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
+import { EventEnableSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventEnableSyncTimeRanges';
+import { EventSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventSyncTimeRanges';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 import { SceneDiffFlameGraph } from './components/SceneDiffFlameGraph/SceneDiffFlameGraph';
 import { ScenePresetsPicker } from './components/ScenePresetsPicker/ScenePresetsPicker';
 import { syncYAxis } from './domain/behaviours/syncYAxis';
 import { EventDiffAutoSelect } from './domain/events/EventDiffAutoSelect';
 import { EventDiffChoosePreset } from './domain/events/EventDiffChoosePreset';
+import { CompareTarget } from './domain/types';
 
 interface SceneExploreDiffFlameGraphState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
@@ -77,6 +79,51 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     this._subs.add(
       this.subscribeToEvent(EventDiffChoosePreset, () => {
         this.state.presetsPicker.openSelect();
+      })
+    );
+
+    this._subs.add(
+      this.subscribeToEvent(EventEnableSyncTimeRanges, (event) => {
+        const { enable } = event.payload;
+        const { baselinePanel, comparisonPanel } = this.state;
+
+        comparisonPanel.toggleTimeRangeSync(enable);
+        baselinePanel.toggleTimeRangeSync(enable);
+
+        this.state.presetsPicker.toggle(enable);
+      })
+    );
+
+    this._subs.add(
+      // eslint-disable-next-line sonarjs/cognitive-complexity
+      this.subscribeToEvent(EventSyncTimeRanges, (event) => {
+        const { source, timeRange, annotationTimeRange } = event.payload;
+
+        const { baselinePanel, comparisonPanel } = this.state;
+
+        if (timeRange) {
+          if (source === CompareTarget.BASELINE) {
+            comparisonPanel.setTimeRange(timeRange);
+            return;
+          }
+
+          if (source === CompareTarget.COMPARISON) {
+            baselinePanel.setTimeRange(timeRange);
+          }
+
+          return;
+        }
+
+        if (annotationTimeRange) {
+          if (source === CompareTarget.BASELINE) {
+            comparisonPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
+            return;
+          }
+
+          if (source === CompareTarget.COMPARISON) {
+            baselinePanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
+          }
+        }
       })
     );
   }

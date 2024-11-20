@@ -12,8 +12,8 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 import { FEEDBACK_FORM_URL } from '../../../GiveFeedbackButton';
-import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
+import { CompareTarget } from '../../domain/types';
 import { SceneComparePanel } from '../SceneComparePanel/SceneComparePanel';
 
 interface ScenePresetsPickerState extends SceneObjectState {
@@ -21,6 +21,7 @@ interface ScenePresetsPickerState extends SceneObjectState {
   label: string;
   isModalOpen: boolean;
   isSelectOpen: boolean;
+  isDisabled: boolean;
   value: string | null;
 }
 
@@ -146,6 +147,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       value: null,
       isModalOpen: false,
       isSelectOpen: false,
+      isDisabled: false,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -217,15 +219,20 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     this.setState({ value: null, isSelectOpen: false, isModalOpen: false });
   }
 
+  toggle(isDisabled: boolean) {
+    this.setState({ isDisabled });
+  }
+
   static Component({ model }: SceneComponentProps<ScenePresetsPicker & { onChange: any }>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
-    const { value, isSelectOpen, isModalOpen } = model.useState();
+    const { value, isSelectOpen, isModalOpen, isDisabled } = model.useState();
 
     return (
       <>
         <div className={styles.presetsContainer}>
           <Select
             className={styles.select}
+            disabled={isDisabled}
             placeholder="Choose a preset"
             value={value}
             options={ScenePresetsPicker.PRESETS}
@@ -234,6 +241,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             onOpenMenu={model.onOpenSelect}
             onCloseMenu={model.onCloseSelect}
           />
+
           <Button
             icon="save"
             variant="secondary"
