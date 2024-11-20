@@ -77,7 +77,7 @@ export class LabelsDataSource extends RuntimeDataSource {
     labelsRepository.setApiClient(new LabelsApiClient({ dataSourceUid }));
 
     try {
-      return (await labelsRepository.listLabels({ query, from, to })).filter(({ value }) => !isPrivateLabel(value));
+      return await labelsRepository.listLabels({ query, from, to });
     } catch (error) {
       logger.error(error as Error, {
         info: 'Error while loading Pyroscope label names!',
@@ -140,7 +140,9 @@ export class LabelsDataSource extends RuntimeDataSource {
     const labels = await this.fetchLabels(dataSourceUid, query, from, to, options.variable?.name);
 
     const labelsWithValuesAndCount = await Promise.all(
-      labels.map(({ value }) => limit(() => this.fetchLabelValues(query, from, to, value, options.variable?.name)))
+      labels
+        .filter(({ value }) => !isPrivateLabel(value))
+        .map(({ value }) => limit(() => this.fetchLabelValues(query, from, to, value, options.variable?.name)))
     );
 
     const sortedLabels = labelsWithValuesAndCount
