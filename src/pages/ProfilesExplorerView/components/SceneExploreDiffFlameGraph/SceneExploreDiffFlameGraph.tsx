@@ -105,8 +105,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
 
         comparisonPanel.toggleTimeRangeSync(enable);
         baselinePanel.toggleTimeRangeSync(enable);
-
-        this.state.presetsPicker.toggle(enable);
       })
     );
 
