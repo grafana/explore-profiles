@@ -269,7 +269,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const { from, to } = this.state.$timeRange.state.value;
 
     if (!from.isSame(newTimeRange.value.from) || !to.isSame(newTimeRange.value.to)) {
-      this.state.$timeRange.setState(newTimeRange);
+      this.state.$timeRange.setState({ from: newTimeRange.from, to: newTimeRange.to, value: newTimeRange.value });
     }
   }
 
