@@ -79,7 +79,11 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   subscribeToEvents() {
     this._subs.add(
       this.subscribeToEvent(EventDiffAutoSelect, (event) => {
-        this.autoSelectDiffRanges(event.payload.wholeRange);
+        const selectWholeRange = event.payload.wholeRange;
+        const { baselinePanel, comparisonPanel } = this.state;
+
+        baselinePanel.autoSelectDiffRange(selectWholeRange);
+        comparisonPanel.autoSelectDiffRange(selectWholeRange);
       })
     );
 
@@ -125,13 +129,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     if (annotationTimeRange) {
       targetPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
     }
-  }
-
-  autoSelectDiffRanges(selectWholeRange: boolean) {
-    const { baselinePanel, comparisonPanel } = this.state;
-
-    baselinePanel.autoSelectDiffRange(selectWholeRange);
-    comparisonPanel.autoSelectDiffRange(selectWholeRange);
   }
 
   // see SceneProfilesExplorer
