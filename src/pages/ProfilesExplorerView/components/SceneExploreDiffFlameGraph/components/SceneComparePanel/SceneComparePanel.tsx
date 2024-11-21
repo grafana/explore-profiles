@@ -45,6 +45,7 @@ import {
 } from './domain/actions/SwitchTimeRangeSelectionModeAction';
 import { EventEnableSyncTimeRanges } from './domain/events/EventEnableSyncTimeRanges';
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
+import { EventSyncRefresh } from './domain/events/EventSyncRefresh';
 import { EventSyncTimeRanges } from './domain/events/EventSyncTimeRanges';
 import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
@@ -341,6 +342,14 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     this.setState({ timeRangeSyncEnabled });
   }
 
+  onClickRefresh = () => {
+    this.publishEvent(new EventSyncRefresh({ source: this.state.target }), true);
+  };
+
+  refreshTimeseries() {
+    this.state.$timeRange.onRefresh();
+  }
+
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
     const {
       target,
@@ -367,7 +376,11 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
           <div className={styles.timeControls}>
             <timePicker.Component model={timePicker} />
-            <refreshPicker.Component model={refreshPicker} />
+
+            <div onClick={model.onClickRefresh}>
+              <refreshPicker.Component model={refreshPicker} />
+            </div>
+
             <IconButton
               className={cx(styles.syncButton, timeRangeSyncEnabled && 'active')}
               name="link"

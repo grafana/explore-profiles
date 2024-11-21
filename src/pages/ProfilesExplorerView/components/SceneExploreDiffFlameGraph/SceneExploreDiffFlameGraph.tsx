@@ -15,6 +15,7 @@ import React from 'react';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { EventEnableSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventEnableSyncTimeRanges';
+import { EventSyncRefresh } from './components/SceneComparePanel/domain/events/EventSyncRefresh';
 import { EventSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventSyncTimeRanges';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 import { SceneDiffFlameGraph } from './components/SceneDiffFlameGraph/SceneDiffFlameGraph';
@@ -115,6 +116,16 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
 
         this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
+      })
+    );
+
+    this._subs.add(
+      this.subscribeToEvent(EventSyncRefresh, (event) => {
+        const { source } = event.payload;
+        const { baselinePanel, comparisonPanel } = this.state;
+        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
+
+        targetPanel.refreshTimeseries();
       })
     );
   }
