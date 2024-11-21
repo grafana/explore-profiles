@@ -5,7 +5,6 @@ import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { logger } from '@shared/infrastructure/tracking/logger';
 import { nanoid } from 'nanoid';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
@@ -121,8 +120,6 @@ export class ProfileMetricVariable extends QueryVariable {
     }, [options]);
 
     if (error) {
-      logger.error(error, { info: 'Error while loading "profileMetricId" variable values!' });
-
       return (
         <Tooltip theme="error" content={error.toString()}>
           <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />
