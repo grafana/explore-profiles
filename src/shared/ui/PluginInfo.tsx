@@ -5,6 +5,7 @@ import { Dropdown, IconButton, Menu, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { GIT_COMMIT } from '../../version';
+import { PyroscopeLogo } from './PyroscopeLogo';
 
 const pluginCommitSha: string = GIT_COMMIT;
 const pluginCommitURL = `https://github.com/grafana/explore-profiles/commit/${pluginCommitSha}`;
@@ -22,7 +23,10 @@ function InfoMenuHeader() {
 
   return (
     <div className={styles.menuHeader}>
-      <h5>🔥 Explore profiles v{version}</h5>
+      <h5>
+        <PyroscopeLogo size="small" />
+        Explore profiles v{version}
+      </h5>
       <div className={styles.subTitle}>Last update: {updated}</div>
     </div>
   );
