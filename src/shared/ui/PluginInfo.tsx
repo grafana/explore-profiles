@@ -18,7 +18,7 @@ function InfoMenuHeader() {
     meta: {
       info: { version, updated },
     },
-  } = usePluginContext();
+  } = usePluginContext() || { meta: { info: { version: '?.?.?', updated: '?' } } };
 
   return (
     <div className={styles.menuHeader}>
