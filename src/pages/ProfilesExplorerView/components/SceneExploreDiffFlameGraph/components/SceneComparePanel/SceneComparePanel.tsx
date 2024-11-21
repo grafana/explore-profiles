@@ -319,9 +319,18 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onClickTimeRangeSync = () => {
-    const { target, timeRangeSyncEnabled } = this.state;
+    const { target, timeRangeSyncEnabled, $timeRange, timeseriesPanel } = this.state;
+    const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
-    this.publishEvent(new EventEnableSyncTimeRanges({ source: target, enable: !timeRangeSyncEnabled }), true);
+    this.publishEvent(
+      new EventEnableSyncTimeRanges({
+        source: target,
+        enable: !timeRangeSyncEnabled,
+        timeRange: $timeRange.state,
+        annotationTimeRange: $annotationTimeRange.state.annotationTimeRange,
+      }),
+      true
+    );
   };
 
   toggleTimeRangeSync(timeRangeSyncEnabled: boolean) {

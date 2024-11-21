@@ -1,7 +1,14 @@
 import { css } from '@emotion/css';
-import { DashboardCursorSync, GrafanaTheme2 } from '@grafana/data';
+import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
-import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import {
+  behaviors,
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneTimeRangeState,
+} from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -84,8 +91,13 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
 
     this._subs.add(
       this.subscribeToEvent(EventEnableSyncTimeRanges, (event) => {
-        const { enable } = event.payload;
+        const { source, enable, timeRange, annotationTimeRange } = event.payload;
         const { baselinePanel, comparisonPanel } = this.state;
+        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
+
+        if (enable) {
+          this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
+        }
 
         comparisonPanel.toggleTimeRangeSync(enable);
         baselinePanel.toggleTimeRangeSync(enable);
@@ -100,13 +112,19 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         const { baselinePanel, comparisonPanel } = this.state;
         const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
 
-        if (timeRange) {
-          targetPanel.setTimeRange(timeRange);
-        } else if (annotationTimeRange) {
-          targetPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
-        }
+        this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
       })
     );
+  }
+
+  syncTimeRanges(targetPanel: SceneComparePanel, timeRange?: SceneTimeRangeState, annotationTimeRange?: TimeRange) {
+    if (timeRange) {
+      targetPanel.setTimeRange(timeRange);
+    }
+
+    if (annotationTimeRange) {
+      targetPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
+    }
   }
 
   autoSelectDiffRanges(selectWholeRange: boolean) {

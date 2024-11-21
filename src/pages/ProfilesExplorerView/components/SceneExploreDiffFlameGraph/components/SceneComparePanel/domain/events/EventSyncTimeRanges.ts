@@ -5,8 +5,8 @@ import { CompareTarget } from '../../../../domain/types';
 
 interface EventSyncTimeRangesPayload {
   source: CompareTarget;
-  annotationTimeRange?: TimeRange;
   timeRange?: SceneTimeRangeState;
+  annotationTimeRange?: TimeRange;
 }
 
 export class EventSyncTimeRanges extends BusEventWithPayload<EventSyncTimeRangesPayload> {
