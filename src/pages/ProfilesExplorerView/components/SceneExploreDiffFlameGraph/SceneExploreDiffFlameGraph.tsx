@@ -95,34 +95,15 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     );
 
     this._subs.add(
-      // eslint-disable-next-line sonarjs/cognitive-complexity
       this.subscribeToEvent(EventSyncTimeRanges, (event) => {
         const { source, timeRange, annotationTimeRange } = event.payload;
-
         const { baselinePanel, comparisonPanel } = this.state;
+        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
 
         if (timeRange) {
-          if (source === CompareTarget.BASELINE) {
-            comparisonPanel.setTimeRange(timeRange);
-            return;
-          }
-
-          if (source === CompareTarget.COMPARISON) {
-            baselinePanel.setTimeRange(timeRange);
-          }
-
-          return;
-        }
-
-        if (annotationTimeRange) {
-          if (source === CompareTarget.BASELINE) {
-            comparisonPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
-            return;
-          }
-
-          if (source === CompareTarget.COMPARISON) {
-            baselinePanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
-          }
+          targetPanel.setTimeRange(timeRange);
+        } else if (annotationTimeRange) {
+          targetPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
         }
       })
     );
