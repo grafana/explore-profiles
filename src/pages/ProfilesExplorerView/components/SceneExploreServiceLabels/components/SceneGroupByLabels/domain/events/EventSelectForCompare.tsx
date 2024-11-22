@@ -1,7 +1,7 @@
 import { BusEventWithPayload } from '@grafana/data';
 
 import { GridItemData } from '../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { CompareTarget } from '../../components/SceneLabelValuesGrid/domain/types';
+import { CompareTarget } from '../../../../../SceneExploreDiffFlameGraph/domain/types';
 
 interface EventSelectForComparePayload {
   compareTarget: CompareTarget;

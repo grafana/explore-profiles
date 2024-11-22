@@ -1,19 +1,29 @@
 import { css } from '@emotion/css';
-import { DashboardCursorSync, GrafanaTheme2 } from '@grafana/data';
+import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
-import { behaviors, SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import {
+  behaviors,
+  SceneComponentProps,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneTimeRangeState,
+} from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
-import { CompareTarget } from '../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
+import { EventEnableSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventEnableSyncTimeRanges';
+import { EventSyncRefresh } from './components/SceneComparePanel/domain/events/EventSyncRefresh';
+import { EventSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventSyncTimeRanges';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
 import { SceneDiffFlameGraph } from './components/SceneDiffFlameGraph/SceneDiffFlameGraph';
 import { ScenePresetsPicker } from './components/ScenePresetsPicker/ScenePresetsPicker';
 import { syncYAxis } from './domain/behaviours/syncYAxis';
 import { EventDiffAutoSelect } from './domain/events/EventDiffAutoSelect';
 import { EventDiffChoosePreset } from './domain/events/EventDiffChoosePreset';
+import { CompareTarget } from './domain/types';
 
 interface SceneExploreDiffFlameGraphState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
@@ -70,7 +80,11 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   subscribeToEvents() {
     this._subs.add(
       this.subscribeToEvent(EventDiffAutoSelect, (event) => {
-        this.autoSelectDiffRanges(event.payload.wholeRange);
+        const selectWholeRange = event.payload.wholeRange;
+        const { baselinePanel, comparisonPanel } = this.state;
+
+        baselinePanel.autoSelectDiffRange(selectWholeRange);
+        comparisonPanel.autoSelectDiffRange(selectWholeRange);
       })
     );
 
@@ -79,13 +93,51 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         this.state.presetsPicker.openSelect();
       })
     );
+
+    this._subs.add(
+      this.subscribeToEvent(EventEnableSyncTimeRanges, (event) => {
+        const { source, enable, timeRange, annotationTimeRange } = event.payload;
+        const { baselinePanel, comparisonPanel } = this.state;
+        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
+
+        if (enable) {
+          this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
+        }
+
+        comparisonPanel.toggleTimeRangeSync(enable);
+        baselinePanel.toggleTimeRangeSync(enable);
+      })
+    );
+
+    this._subs.add(
+      this.subscribeToEvent(EventSyncTimeRanges, (event) => {
+        const { source, timeRange, annotationTimeRange } = event.payload;
+        const { baselinePanel, comparisonPanel } = this.state;
+        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
+
+        this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
+      })
+    );
+
+    this._subs.add(
+      this.subscribeToEvent(EventSyncRefresh, (event) => {
+        const { source } = event.payload;
+        const { baselinePanel, comparisonPanel } = this.state;
+        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
+
+        targetPanel.refreshTimeseries();
+      })
+    );
   }
 
-  autoSelectDiffRanges(selectWholeRange: boolean) {
-    const { baselinePanel, comparisonPanel } = this.state;
+  syncTimeRanges(targetPanel: SceneComparePanel, timeRange?: SceneTimeRangeState, annotationTimeRange?: TimeRange) {
+    if (timeRange) {
+      targetPanel.setTimeRange(timeRange);
+    }
 
-    baselinePanel.autoSelectDiffRange(selectWholeRange);
-    comparisonPanel.autoSelectDiffRange(selectWholeRange);
+    if (annotationTimeRange) {
+      targetPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
+    }
   }
 
   // see SceneProfilesExplorer

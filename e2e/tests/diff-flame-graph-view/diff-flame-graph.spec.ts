@@ -1,5 +1,6 @@
 import { ExplorationType, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS } from '../../config/constants';
 import { expect, test } from '../../fixtures';
+import { ExploreProfilesPage } from '../../fixtures/pages/ExploreProfilesPage';
 
 test.describe('Diff flame graph view', () => {
   test.beforeEach(async ({ exploreProfilesPage }) => {
@@ -183,6 +184,74 @@ test.describe('Diff flame graph view', () => {
       await exploreProfilesPage.switchComparisonSelectionMode('comparison', 'Flame graph');
 
       await exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 });
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+  });
+
+  test.describe('Sync time ranges', () => {
+    async function waitForApiResponses(exploreProfilesPage: ExploreProfilesPage) {
+      let queriesCount = 0;
+
+      return exploreProfilesPage.waitForResponse((response) => {
+        const url = response.url();
+
+        if (
+          url.includes('/proxy/uid/grafanacloud-profiles-local-a/pyroscope/render-diff') ||
+          url.includes('/api/ds/query?ds_type=grafana-pyroscope-datasource')
+        ) {
+          queriesCount += 1;
+        }
+
+        return queriesCount >= 3;
+      });
+    }
+
+    test('Toggling', async ({ exploreProfilesPage }) => {
+      const baselinePanel = exploreProfilesPage.getComparisonPanel('baseline');
+      const comparisonPanel = exploreProfilesPage.getComparisonPanel('comparison');
+
+      await baselinePanel.getByRole('button', { name: /^sync time ranges/i }).click();
+
+      expect(baselinePanel.getByRole('button', { name: /^unsync time ranges/i })).toBeInViewport();
+      expect(comparisonPanel.getByRole('button', { name: /^unsync time ranges/i })).toBeInViewport();
+
+      await comparisonPanel.getByRole('button', { name: /sync time ranges/i }).click();
+
+      expect(baselinePanel.getByRole('button', { name: /^sync time ranges/i })).toBeInViewport();
+      expect(comparisonPanel.getByRole('button', { name: /^sync time ranges/i })).toBeInViewport();
+    });
+
+    test('Syncing flame graph range selection', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage
+        .getComparisonPanel('baseline')
+        .getByRole('button', { name: /^sync time ranges/i })
+        .click();
+
+      await Promise.all([
+        exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 }),
+        waitForApiResponses(exploreProfilesPage),
+      ]);
+
+      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+        stylePath: './e2e/fixtures/css/hide-all-controls.css',
+      });
+    });
+
+    test('Syncing time picker range selection', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage
+        .getComparisonPanel('comparison')
+        .getByRole('button', { name: /^sync time ranges/i })
+        .click();
+
+      await exploreProfilesPage.switchComparisonSelectionMode('baseline', 'Time picker');
+
+      await Promise.all([
+        exploreProfilesPage.clickAndDragOnComparisonPanel('baseline', { x: 470, y: 200 }, { x: 510, y: 200 }),
+        waitForApiResponses(exploreProfilesPage),
+      ]);
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',

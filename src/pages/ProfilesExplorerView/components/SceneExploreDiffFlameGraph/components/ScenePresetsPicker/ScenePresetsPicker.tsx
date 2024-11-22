@@ -12,8 +12,8 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 import { FEEDBACK_FORM_URL } from '../../../GiveFeedbackButton';
-import { CompareTarget } from '../../../SceneExploreServiceLabels/components/SceneGroupByLabels/components/SceneLabelValuesGrid/domain/types';
 import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
+import { CompareTarget } from '../../domain/types';
 import { SceneComparePanel } from '../SceneComparePanel/SceneComparePanel';
 
 interface ScenePresetsPickerState extends SceneObjectState {
@@ -181,7 +181,10 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     }
 
     [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
-      sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel).applyPreset(option[compareTarget]);
+      const panel = sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel);
+
+      panel.toggleTimeRangeSync(false);
+      panel.applyPreset(option[compareTarget]);
     });
 
     this.setState({ value: option.value });
@@ -234,6 +237,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
             onOpenMenu={model.onOpenSelect}
             onCloseMenu={model.onCloseSelect}
           />
+
           <Button
             icon="save"
             variant="secondary"

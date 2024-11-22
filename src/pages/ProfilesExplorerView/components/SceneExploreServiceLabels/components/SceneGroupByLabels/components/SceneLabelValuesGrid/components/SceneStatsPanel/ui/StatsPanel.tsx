@@ -5,7 +5,7 @@ import React, { useMemo } from 'react';
 
 import { GridItemData } from '../../../../../../../../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { getColorByIndex } from '../../../../../../../../../helpers/getColorByIndex';
-import { CompareTarget } from '../../../domain/types';
+import { CompareTarget } from '../../../../../../../../SceneExploreDiffFlameGraph/domain/types';
 import { ItemStats } from '../SceneStatsPanel';
 import { CompareAction } from './CompareAction';
 

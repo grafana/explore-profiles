@@ -3,7 +3,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Checkbox, Tooltip, useStyles2 } from '@grafana/ui';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { CompareTarget } from '../../../domain/types';
+import { CompareTarget } from '../../../../../../../../SceneExploreDiffFlameGraph/domain/types';
 
 type CompareActionProps = {
   option: {
