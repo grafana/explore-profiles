@@ -21,6 +21,7 @@ import {
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
+import { SceneTimePickerWithoutSync } from '@shared/components/SceneTimePickerWithoutSync/SceneTimePickerWithoutSync';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { omit } from 'lodash';
 import React from 'react';
@@ -84,7 +85,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const title = target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
     const color =
       target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString();
-
     super({
       key: `${target}-panel`,
       target,
@@ -92,7 +92,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       title,
       color,
       $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...buildTimeRange('now-1h', 'now') }),
-      timePicker: new SceneTimePicker({ isOnCanvas: true }),
+      timePicker: new SceneTimePickerWithoutSync({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
       timeRangeSyncEnabled: false,
