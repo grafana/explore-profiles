@@ -3,20 +3,25 @@ import {
   PanelBuilders,
   SceneComponentProps,
   SceneDataProvider,
+  SceneDataQuery,
   SceneDataTransformer,
+  sceneGraph,
   SceneObjectBase,
   SceneObjectState,
+  SceneQueryRunner,
   VizPanel,
   VizPanelMenu,
   VizPanelState,
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { merge } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
+import { getExploreUrl } from '../helpers/getExploreUrl';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
@@ -131,9 +136,18 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     return new VizPanelMenu({
       items: [
         {
-          text: 'Scale',
+          text: 'Scale type',
           type: 'group',
           subMenu: scaleSubMenu,
+        },
+        {
+          type: 'divider',
+          text: '',
+        },
+        {
+          iconClassName: 'compass',
+          text: 'Open in Explore',
+          onClick: () => this.onClickExplore(),
         },
       ],
     });
@@ -142,6 +156,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onClickScaleOption(option: PanelMenuItem & { index: number; scaleDistribution: ScaleDistributionConfig }) {
     const { scaleDistribution, text, index } = option;
     const { body } = this.state;
+
+    reportInteraction('g_pyroscope_app_timeseries_scale_change', { scale: scaleDistribution.type });
 
     body.clearFieldConfigCache();
 
@@ -156,6 +172,30 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         },
       }),
     });
+  }
+
+  onClickExplore() {
+    reportInteraction('g_pyroscope_app_open_in_explore');
+
+    const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
+    const nonInterpolatedQuery = queryRunner?.state.queries[0];
+
+    const query = Object.entries(nonInterpolatedQuery)
+      .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
+      .reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value,
+        }),
+        {}
+      ) as SceneDataQuery;
+
+    const datasource = sceneGraph.interpolate(this, '${dataSource}');
+    const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
+
+    const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
+
+    window.open(exploreUrl, '_blank');
   }
 
   getConfig(series: DataFrame[]) {
