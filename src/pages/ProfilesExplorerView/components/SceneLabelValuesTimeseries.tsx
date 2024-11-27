@@ -1,4 +1,5 @@
 import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
+import { usePluginLinks } from '@grafana/runtime';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -15,16 +16,22 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
+import PyroscopeLogo from '@img/logo.svg';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { parseQuery } from '@shared/domain/url-params/parseQuery';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import { merge } from 'lodash';
+import { nanoid } from 'nanoid';
 import React from 'react';
 
+import { INVESTIGATIONS_APP_ID, INVESTIGATIONS_EXTENSTION_POINT_ID_ID } from '../../../constants';
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getExploreUrl } from '../helpers/getExploreUrl';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
+import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
@@ -116,6 +123,21 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
+  getInterpolatedQuery() {
+    const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
+    const nonInterpolatedQuery = queryRunner?.state.queries[0];
+
+    return Object.entries(nonInterpolatedQuery)
+      .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
+      .reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value,
+        }),
+        {}
+      ) as SceneDataQuery;
+  }
+
   buildMenu(selectedScaleIndex = 0): VizPanelMenu {
     const scaleSubMenu = [
       {
@@ -149,6 +171,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           text: 'Open in Explore',
           onClick: () => this.onClickExplore(),
         },
+        {
+          iconClassName: 'plus-square',
+          text: 'Add to investigation',
+          onClick: () => this.onClickAddToInvestigation(),
+        },
       ],
     });
   }
@@ -177,25 +204,20 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onClickExplore() {
     reportInteraction('g_pyroscope_app_open_in_explore');
 
-    const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
-    const nonInterpolatedQuery = queryRunner?.state.queries[0];
-
-    const query = Object.entries(nonInterpolatedQuery)
-      .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
-      .reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: value,
-        }),
-        {}
-      ) as SceneDataQuery;
-
-    const datasource = sceneGraph.interpolate(this, '${dataSource}');
     const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
+    const query = this.getInterpolatedQuery();
+    const datasource = sceneGraph.interpolate(this, '${dataSource}');
 
     const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
 
     window.open(exploreUrl, '_blank');
+  }
+
+  onClickAddToInvestigation() {
+    // see useSetInvestigationLink() below
+    logger.warn(
+      `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
+    );
   }
 
   getConfig(series: DataFrame[]) {
@@ -310,8 +332,61 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     this.state.body.setState({ title: newTitle });
   }
 
+  useSetInvestigationLink() {
+    const context = this.useInvestigationPluginLinkContext();
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const pluginLinks = usePluginLinks({
+      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID_ID,
+      context,
+    });
+
+    const [link] = pluginLinks.links.filter((link) => link.pluginId === INVESTIGATIONS_APP_ID);
+
+    this.onClickAddToInvestigation = link?.onClick
+      ? () => {
+          link.onClick!();
+        }
+      : () => {
+          logger.warn(
+            `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
+          );
+        };
+  }
+
+  useInvestigationPluginLinkContext() {
+    // TODO: memoize the context returned, this will require to create a new
+    // useInterpolatedQuery() hook to recompute it whenever the variables change
+    const query = this.getInterpolatedQuery();
+
+    const { serviceId, profileMetricId, labels } = parseQuery(`${query.profileTypeId}${query.labelSelector}`);
+    const titleParts = [serviceId, getProfileMetricLabel(profileMetricId)];
+
+    if (query.groupBy.length) {
+      titleParts.push(query.groupBy[0]);
+    }
+
+    if (labels.length) {
+      titleParts.push(labels.join(', '));
+    }
+
+    return {
+      id: nanoid(),
+      origin: 'Explore Profiles',
+      url: window.location.href,
+      logoPath: PyroscopeLogo,
+      title: titleParts.join(' · '),
+      type: 'timeseries',
+      timeRange: { ...sceneGraph.getTimeRange(this).state.value },
+      queries: [query],
+      datasource: sceneGraph.interpolate(this, '${dataSource}'),
+    };
+  }
+
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
     const { body } = model.useState();
+
+    model.useSetInvestigationLink();
 
     return <body.Component model={body} />;
   }
