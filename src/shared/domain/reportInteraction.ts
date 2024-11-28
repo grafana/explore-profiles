@@ -32,7 +32,7 @@ export type InteractionName =
   | 'g_pyroscope_app_select_action_clicked'
   | 'g_pyroscope_app_service_name_selected'
   | 'g_pyroscope_app_share_link_clicked'
-  | 'g_pyroscope_app_timeseries_scale_change'
+  | 'g_pyroscope_app_timeseries_scale_changed'
   | 'g_pyroscope_app_user_settings_clicked';
 
 type InteractionProperties =

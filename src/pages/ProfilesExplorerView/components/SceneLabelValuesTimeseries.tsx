@@ -183,8 +183,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onClickScaleOption(option: PanelMenuItem & { index: number; scaleDistribution: ScaleDistributionConfig }) {
     const { scaleDistribution, text, index } = option;
     const { body } = this.state;
+    reportInteraction('g_pyroscope_app_timeseries_scale_changed', { scale: scaleDistribution.type });
 
-    reportInteraction('g_pyroscope_app_timeseries_scale_change', { scale: scaleDistribution.type });
 
     body.clearFieldConfigCache();
 
