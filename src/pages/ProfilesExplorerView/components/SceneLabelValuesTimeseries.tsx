@@ -362,7 +362,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { serviceId, profileMetricId, labels } = parseQuery(`${query.profileTypeId}${query.labelSelector}`);
     const titleParts = [serviceId, getProfileMetricLabel(profileMetricId)];
 
-    if (query.groupBy.length) {
+    if (query.groupBy?.length) {
       titleParts.push(query.groupBy[0]);
     }
 
