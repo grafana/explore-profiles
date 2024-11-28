@@ -20,7 +20,7 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { merge } from 'lodash';
 import { nanoid } from 'nanoid';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import {
@@ -34,7 +34,7 @@ import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabe
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
-import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { buildTimeSeriesQueryRunner, TimeSeriesQuery } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
   addStats,
@@ -127,7 +127,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   getInterpolatedQuery() {
     const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
-    const nonInterpolatedQuery = queryRunner?.state.queries[0];
+    const nonInterpolatedQuery = queryRunner?.state.queries[0] as SceneDataQuery;
 
     return Object.entries(nonInterpolatedQuery)
       .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
@@ -137,7 +137,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           [key]: value,
         }),
         {}
-      ) as SceneDataQuery;
+      ) as TimeSeriesQuery;
   }
 
   onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
@@ -290,40 +290,49 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     this.state.body.setState({ title: newTitle });
   }
 
-  getInvestigationPluginLinkContext() {
-    const query = this.getInterpolatedQuery();
+  useGetInvestigationPluginLinkContext() {
+    const { refId, queryType, profileTypeId, labelSelector, groupBy } = this.getInterpolatedQuery();
 
-    const { serviceId, profileMetricId, labels } = parseQuery(`${query.profileTypeId}${query.labelSelector}`);
-    const titleParts = [serviceId, getProfileMetricLabel(profileMetricId)];
+    const parsedQuery = parseQuery(`${profileTypeId}${labelSelector}`);
+    const titleParts = [parsedQuery.serviceId, getProfileMetricLabel(parsedQuery.profileMetricId)];
 
-    if (query.groupBy?.length) {
-      titleParts.push(query.groupBy[0]);
+    if (groupBy?.length) {
+      titleParts.push(groupBy[0]);
     }
 
-    if (labels.length) {
-      titleParts.push(labels.join(', '));
+    if (parsedQuery.labels.length) {
+      titleParts.push(parsedQuery.labels.join(', '));
     }
 
-    return {
-      id: nanoid(),
-      origin: 'Explore Profiles',
-      url: window.location.href,
-      logoPath: PyroscopeLogo,
-      title: titleParts.join(' · '),
-      type: 'timeseries',
-      timeRange: { ...sceneGraph.getTimeRange(this).state.value },
-      queries: [query],
-      datasource: sceneGraph.interpolate(this, '${dataSource}'),
-    };
+    const title = titleParts.join(' · ');
+    const datasource = sceneGraph.interpolate(this, '${dataSource}');
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useMemo(() => {
+      return {
+        id: nanoid(),
+        origin: 'Explore Profiles',
+        url: window.location.href,
+        logoPath: PyroscopeLogo,
+        title,
+        type: 'timeseries',
+        timeRange: { ...sceneGraph.getTimeRange(this).state.value },
+        queries: [{ refId, queryType, profileTypeId, labelSelector, groupBy }],
+        datasource,
+      };
+    }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, title]);
   }
 
   useBuildMenu() {
     const { scaleType } = this.state;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
+    const context = this.useGetInvestigationPluginLinkContext();
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     const link = useGetPluginExtensionLink({
       extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
-      context: this.getInvestigationPluginLinkContext(),
+      context,
       pluginId: INVESTIGATIONS_APP_ID,
     });
 
@@ -371,7 +380,12 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       return new VizPanelMenu({ items });
     }, [link, scaleType]);
 
-    this.state.body.setState({ menu });
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      // wrapped in a useEffect to prevent issues when clicking on the "add to investigation" link
+      // ("Cannot update a component while rendering a different component")
+      this.state.body.setState({ menu });
+    }, [menu]);
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
