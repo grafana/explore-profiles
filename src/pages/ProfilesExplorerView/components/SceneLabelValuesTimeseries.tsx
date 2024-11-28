@@ -1,5 +1,4 @@
 import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
-import { usePluginLinks } from '@grafana/runtime';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -19,13 +18,16 @@ import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafan
 import PyroscopeLogo from '@img/logo.svg';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { parseQuery } from '@shared/domain/url-params/parseQuery';
-import { logger } from '@shared/infrastructure/tracking/logger';
 import { merge } from 'lodash';
 import { nanoid } from 'nanoid';
 import React, { useMemo } from 'react';
 
-import { INVESTIGATIONS_APP_ID, INVESTIGATIONS_EXTENSTION_POINT_ID } from '../../../constants';
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
+import {
+  INVESTIGATIONS_APP_ID,
+  INVESTIGATIONS_EXTENSTION_POINT_ID,
+  useGetPluginExtensionLink,
+} from '../domain/useGetPluginExtensionLink';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getExploreUrl } from '../helpers/getExploreUrl';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
@@ -288,7 +290,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     this.state.body.setState({ title: newTitle });
   }
 
-  useInvestigationPluginLinkContext() {
+  getInvestigationPluginLinkContext() {
     const query = this.getInterpolatedQuery();
 
     const { serviceId, profileMetricId, labels } = parseQuery(`${query.profileTypeId}${query.labelSelector}`);
@@ -315,32 +317,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
-  useAddToInvestigationLink() {
-    const context = this.useInvestigationPluginLinkContext();
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const pluginLinks = usePluginLinks({
-      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
-      context,
-    });
-
-    const [link] = pluginLinks.links.filter((link) => link.pluginId === INVESTIGATIONS_APP_ID);
-
-    if (!link?.onClick) {
-      logger.warn(
-        `No valid plugin link found for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
-      );
-
-      return null;
-    }
-
-    return link;
-  }
-
   useBuildMenu() {
     const { scaleType } = this.state;
 
-    const link = this.useAddToInvestigationLink();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const link = useGetPluginExtensionLink({
+      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
+      context: this.getInvestigationPluginLinkContext(),
+      pluginId: INVESTIGATIONS_APP_ID,
+    });
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const menu: VizPanelMenu = useMemo(() => {
