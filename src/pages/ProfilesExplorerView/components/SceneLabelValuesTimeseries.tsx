@@ -22,7 +22,7 @@ import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { logger } from '@shared/infrastructure/tracking/logger';
 import { merge } from 'lodash';
 import { nanoid } from 'nanoid';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { INVESTIGATIONS_APP_ID, INVESTIGATIONS_EXTENSTION_POINT_ID } from '../../../constants';
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
@@ -48,6 +48,7 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   displayAllValues: boolean;
   legendPlacement: VizLegendOptions['placement'];
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
+  scaleType: ScaleDistribution;
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
@@ -72,6 +73,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       headerActions,
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
+      scaleType: ScaleDistribution.Linear,
       overrides,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
@@ -93,8 +95,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   onActivate() {
     const { body } = this.state;
-
-    body.setState({ menu: this.buildMenu() });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
@@ -138,58 +138,21 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       ) as SceneDataQuery;
   }
 
-  buildMenu(selectedScaleIndex = 0): VizPanelMenu {
-    const scaleSubMenu = [
-      {
-        index: 0,
-        text: 'Linear',
-        scaleDistribution: { type: ScaleDistribution.Linear },
-      },
-      {
-        index: 1,
-        text: 'Log2',
-        scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-      },
-    ].map((option) => ({
-      text: `${selectedScaleIndex === option.index ? '✔ ' : ''}${option.text}`,
-      onClick: () => this.onClickScaleOption(option),
-    }));
+  onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
+    const { scaleType: currentScaleType, body } = this.state;
+    const { scaleDistribution, text } = option;
 
-    return new VizPanelMenu({
-      items: [
-        {
-          text: 'Scale type',
-          type: 'group',
-          subMenu: scaleSubMenu,
-        },
-        {
-          type: 'divider',
-          text: '',
-        },
-        {
-          iconClassName: 'compass',
-          text: 'Open in Explore',
-          onClick: () => this.onClickExplore(),
-        },
-        {
-          iconClassName: 'plus-square',
-          text: 'Add to investigation',
-          onClick: () => this.onClickAddToInvestigation(),
-        },
-      ],
-    });
-  }
+    if (currentScaleType === scaleDistribution.type) {
+      return;
+    }
 
-  onClickScaleOption(option: PanelMenuItem & { index: number; scaleDistribution: ScaleDistributionConfig }) {
-    const { scaleDistribution, text, index } = option;
-    const { body } = this.state;
     reportInteraction('g_pyroscope_app_timeseries_scale_changed', { scale: scaleDistribution.type });
 
+    this.setState({ scaleType: scaleDistribution.type });
 
     body.clearFieldConfigCache();
 
     body.setState({
-      menu: this.buildMenu(index),
       fieldConfig: merge({}, body.state.fieldConfig, {
         defaults: {
           custom: {
@@ -211,13 +174,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
 
     window.open(exploreUrl, '_blank');
-  }
-
-  onClickAddToInvestigation() {
-    // see useSetInvestigationLink() below
-    logger.warn(
-      `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
-    );
   }
 
   getConfig(series: DataFrame[]) {
@@ -332,31 +288,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     this.state.body.setState({ title: newTitle });
   }
 
-  useSetInvestigationLink() {
-    const context = this.useInvestigationPluginLinkContext();
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const pluginLinks = usePluginLinks({
-      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
-      context,
-    });
-
-    const [link] = pluginLinks.links.filter((link) => link.pluginId === INVESTIGATIONS_APP_ID);
-
-    this.onClickAddToInvestigation = link?.onClick
-      ? () => {
-          link.onClick!();
-        }
-      : () => {
-          logger.warn(
-            `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
-          );
-        };
-  }
-
   useInvestigationPluginLinkContext() {
-    // TODO: memoize the context returned, this will require to create a new
-    // useInterpolatedQuery() hook to recompute it whenever the variables change
     const query = this.getInterpolatedQuery();
 
     const { serviceId, profileMetricId, labels } = parseQuery(`${query.profileTypeId}${query.labelSelector}`);
@@ -383,10 +315,84 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
+  useAddToInvestigationLink() {
+    const context = this.useInvestigationPluginLinkContext();
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const pluginLinks = usePluginLinks({
+      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
+      context,
+    });
+
+    const [link] = pluginLinks.links.filter((link) => link.pluginId === INVESTIGATIONS_APP_ID);
+
+    if (!link?.onClick) {
+      logger.warn(
+        `No valid plugin link found for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
+      );
+
+      return null;
+    }
+
+    return link;
+  }
+
+  useBuildMenu() {
+    const { scaleType } = this.state;
+
+    const link = this.useAddToInvestigationLink();
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const menu: VizPanelMenu = useMemo(() => {
+      const items: PanelMenuItem[] = [
+        {
+          text: 'Scale type',
+          type: 'group',
+          subMenu: [
+            {
+              text: 'Linear',
+              scaleDistribution: { type: ScaleDistribution.Linear },
+            },
+            {
+              text: 'Log2',
+              scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+            },
+          ].map((option) => ({
+            text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
+            onClick: () => this.onClickScaleOption(option),
+          })),
+        },
+        {
+          type: 'divider',
+          text: '',
+        },
+        {
+          iconClassName: 'compass',
+          text: 'Open in Explore',
+          onClick: () => this.onClickExplore(),
+        },
+      ];
+
+      if (link) {
+        items.push({
+          iconClassName: 'plus-square',
+          text: 'Add to investigation',
+          onClick: () => {
+            link.onClick!();
+          },
+        });
+      }
+
+      return new VizPanelMenu({ items });
+    }, [link, scaleType]);
+
+    this.state.body.setState({ menu });
+  }
+
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
     const { body } = model.useState();
 
-    model.useSetInvestigationLink();
+    model.useBuildMenu();
 
     return <body.Component model={body} />;
   }
