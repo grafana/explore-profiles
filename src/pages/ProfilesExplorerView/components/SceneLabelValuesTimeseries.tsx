@@ -24,7 +24,7 @@ import { merge } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
 
-import { INVESTIGATIONS_APP_ID, INVESTIGATIONS_EXTENSTION_POINT_ID_ID } from '../../../constants';
+import { INVESTIGATIONS_APP_ID, INVESTIGATIONS_EXTENSTION_POINT_ID } from '../../../constants';
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getExploreUrl } from '../helpers/getExploreUrl';
@@ -216,7 +216,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onClickAddToInvestigation() {
     // see useSetInvestigationLink() below
     logger.warn(
-      `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
+      `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
     );
   }
 
@@ -337,7 +337,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const pluginLinks = usePluginLinks({
-      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID_ID,
+      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
       context,
     });
 
@@ -349,7 +349,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         }
       : () => {
           logger.warn(
-            `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
+            `No plugin link set for extension point "${INVESTIGATIONS_EXTENSTION_POINT_ID}" and plugin id="${INVESTIGATIONS_APP_ID}"!`
           );
         };
   }

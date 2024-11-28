@@ -10,5 +10,5 @@ export enum ROUTES {
   SETTINGS = '/settings',
 }
 
-export const INVESTIGATIONS_EXTENSTION_POINT_ID_ID = 'grafana-pyroscope-app/exploration/v1';
+export const INVESTIGATIONS_EXTENSTION_POINT_ID = 'grafana-pyroscope-app/exploration/v1';
 export const INVESTIGATIONS_APP_ID = 'grafana-explorations-app';
