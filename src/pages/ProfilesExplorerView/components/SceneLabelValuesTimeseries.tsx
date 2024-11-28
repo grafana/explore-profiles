@@ -1,4 +1,11 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
+import {
+  DataFrame,
+  FieldMatcherID,
+  getValueFormat,
+  LoadingState,
+  PanelMenuItem,
+  PluginExtensionLink,
+} from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -96,7 +103,9 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   onActivate() {
-    const { body } = this.state;
+    const { body, scaleType } = this.state;
+
+    body.setState({ menu: new VizPanelMenu({ items: this.buildMenuItems(scaleType) }) });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
@@ -306,6 +315,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     const title = titleParts.join(' · ');
     const datasource = sceneGraph.interpolate(this, '${dataSource}');
+    const timeRange = sceneGraph.getTimeRange(this).state.value;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useMemo(() => {
@@ -316,15 +326,59 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         logoPath: PyroscopeLogo,
         title,
         type: 'timeseries',
-        timeRange: { ...sceneGraph.getTimeRange(this).state.value },
+        timeRange: { ...timeRange },
         queries: [{ refId, queryType, profileTypeId, labelSelector, groupBy }],
         datasource,
       };
-    }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, title]);
+    }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
   }
 
-  useBuildMenu() {
-    const { scaleType } = this.state;
+  buildMenuItems(selectedScaleType: ScaleDistribution, addToInvestigationLink?: PluginExtensionLink) {
+    const menuItems: PanelMenuItem[] = [
+      {
+        text: 'Scale type',
+        type: 'group',
+        subMenu: [
+          {
+            text: 'Linear',
+            scaleDistribution: { type: ScaleDistribution.Linear },
+          },
+          {
+            text: 'Log2',
+            scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+          },
+        ].map((option) => ({
+          text: `${selectedScaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
+          onClick: () => this.onClickScaleOption(option),
+        })),
+      },
+      {
+        type: 'divider',
+        text: '',
+      },
+      {
+        iconClassName: 'compass',
+        text: 'Open in Explore',
+        onClick: () => this.onClickExplore(),
+      },
+    ];
+
+    if (addToInvestigationLink) {
+      menuItems.push({
+        iconClassName: 'plus-square',
+        text: 'Add to investigation',
+        onClick: () => {
+          addToInvestigationLink.onClick!();
+        },
+      });
+    }
+
+    return menuItems;
+  }
+
+  useUpdateMenuItems() {
+    const { body, scaleType } = this.state;
+    const { menu } = body.state;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     const context = this.useGetInvestigationPluginLinkContext();
@@ -337,61 +391,17 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     });
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const menu: VizPanelMenu = useMemo(() => {
-      const items: PanelMenuItem[] = [
-        {
-          text: 'Scale type',
-          type: 'group',
-          subMenu: [
-            {
-              text: 'Linear',
-              scaleDistribution: { type: ScaleDistribution.Linear },
-            },
-            {
-              text: 'Log2',
-              scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-            },
-          ].map((option) => ({
-            text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
-            onClick: () => this.onClickScaleOption(option),
-          })),
-        },
-        {
-          type: 'divider',
-          text: '',
-        },
-        {
-          iconClassName: 'compass',
-          text: 'Open in Explore',
-          onClick: () => this.onClickExplore(),
-        },
-      ];
-
-      if (link) {
-        items.push({
-          iconClassName: 'plus-square',
-          text: 'Add to investigation',
-          onClick: () => {
-            link.onClick!();
-          },
-        });
-      }
-
-      return new VizPanelMenu({ items });
-    }, [link, scaleType]);
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
       // wrapped in a useEffect to prevent issues when clicking on the "add to investigation" link
       // ("Cannot update a component while rendering a different component")
-      this.state.body.setState({ menu });
-    }, [menu]);
+      menu?.setItems(this.buildMenuItems(scaleType, link));
+    }, [menu, link, scaleType]);
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
     const { body } = model.useState();
 
-    model.useBuildMenu();
+    model.useUpdateMenuItems();
 
     return <body.Component model={body} />;
   }
