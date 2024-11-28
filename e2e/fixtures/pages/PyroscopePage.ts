@@ -19,6 +19,7 @@ export class PyroscopePage {
 
     await this.page.goto(url);
     await this.page.locator('.pyroscope-app').waitFor();
+    await expect(this.getByRole('alert', { name: /fatal error/i })).not.toBeVisible();
   }
 
   locator(selector: string, options?: Record<string, unknown>) {
