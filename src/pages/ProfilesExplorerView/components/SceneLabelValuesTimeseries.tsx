@@ -202,7 +202,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   onClickExplore() {
-    reportInteraction('g_pyroscope_app_open_in_explore');
+    reportInteraction('g_pyroscope_app_open_in_explore_clicked');
 
     const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
     const query = this.getInterpolatedQuery();

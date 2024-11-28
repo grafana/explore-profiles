@@ -24,7 +24,7 @@ export type InteractionName =
   | 'g_pyroscope_app_hide_no_data_changed'
   | 'g_pyroscope_app_include_action_clicked'
   | 'g_pyroscope_app_layout_changed'
-  | 'g_pyroscope_app_open_in_explore'
+  | 'g_pyroscope_app_open_in_explore_clicked'
   | 'g_pyroscope_app_optimize_code_clicked'
   | 'g_pyroscope_app_panel_type_changed'
   | 'g_pyroscope_app_profile_metric_selected'
