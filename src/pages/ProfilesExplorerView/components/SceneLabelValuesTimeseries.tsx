@@ -333,7 +333,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
   }
 
-  buildMenuItems(selectedScaleType: ScaleDistribution, addToInvestigationLink?: PluginExtensionLink) {
+  buildMenuItems(selectedScaleType: ScaleDistribution, addToInvestigationLink?: PluginExtensionLink): PanelMenuItem[] {
     const menuItems: PanelMenuItem[] = [
       {
         text: 'Scale type',
@@ -392,7 +392,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     useEffect(() => {
-      // wrapped in a useEffect to prevent issues when clicking on the "add to investigation" link
+      // wrapped in a useEffect to prevent a warning when clicking on the "Add to investigation" link
       // ("Cannot update a component while rendering a different component")
       menu?.setItems(this.buildMenuItems(scaleType, link));
     }, [menu, link, scaleType]);
