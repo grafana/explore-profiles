@@ -50,6 +50,17 @@ import {
 } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
+const SCALE_TYPES = [
+  {
+    text: 'Linear',
+    scaleDistribution: { type: ScaleDistribution.Linear },
+  },
+  {
+    text: 'Log2',
+    scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+  },
+];
+
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
   headerActions: (item: GridItemData) => VizPanelState['headerActions'];
@@ -57,7 +68,6 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   displayAllValues: boolean;
   legendPlacement: VizLegendOptions['placement'];
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
-  scaleType: ScaleDistribution;
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
@@ -82,7 +92,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       headerActions,
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
-      scaleType: ScaleDistribution.Linear,
       overrides,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
@@ -103,9 +112,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   onActivate() {
-    const { body, scaleType } = this.state;
+    const { body } = this.state;
 
-    body.setState({ menu: new VizPanelMenu({ items: this.buildMenuItems(scaleType) }) });
+    body.setState({
+      menu: new VizPanelMenu({ items: this.buildMenuItems({ scaleType: ScaleDistribution.Linear }) }),
+    });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
@@ -134,32 +145,66 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
-  getInterpolatedQuery() {
-    const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
-    const nonInterpolatedQuery = queryRunner?.state.queries[0] as SceneDataQuery;
+  buildMenuItems({
+    scaleType,
+    link: addToInvestigationLink,
+  }: {
+    scaleType?: ScaleDistribution;
+    link?: PluginExtensionLink;
+  }): PanelMenuItem[] {
+    const existingItems = this.state.body.state.menu?.state.items;
+    let selectedScaleType = scaleType;
 
-    return Object.entries(nonInterpolatedQuery)
-      .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
-      .reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: value,
-        }),
-        {}
-      ) as TimeSeriesQuery;
+    if (!selectedScaleType) {
+      // ugly but working
+      const selectedScaleIndex = existingItems?.[0].subMenu?.findIndex((i) => i.text[0] === '✔') as number;
+      selectedScaleType = SCALE_TYPES[selectedScaleIndex]?.scaleDistribution?.type;
+    }
+
+    const menuItems: PanelMenuItem[] = [
+      {
+        text: 'Scale type',
+        type: 'group',
+        subMenu: SCALE_TYPES.map((option) => ({
+          text: `${selectedScaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
+          onClick: () => this.onClickScaleOption(option),
+        })),
+      },
+      {
+        type: 'divider',
+        text: '',
+      },
+      {
+        iconClassName: 'compass',
+        text: 'Open in Explore',
+        onClick: () => this.onClickExplore(),
+      },
+    ];
+
+    if (addToInvestigationLink) {
+      menuItems.push({
+        iconClassName: 'plus-square',
+        text: 'Add to investigation',
+        onClick: () => {
+          addToInvestigationLink.onClick!();
+        },
+      });
+    } else {
+      const existingAddToInvestigationItem = existingItems?.find((i) => i.text === 'Add to investigation');
+
+      if (existingAddToInvestigationItem) {
+        menuItems.push({ ...existingAddToInvestigationItem });
+      }
+    }
+
+    return menuItems;
   }
 
   onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
-    const { scaleType: currentScaleType, body } = this.state;
     const { scaleDistribution, text } = option;
-
-    if (currentScaleType === scaleDistribution.type) {
-      return;
-    }
+    const { body } = this.state;
 
     reportInteraction('g_pyroscope_app_timeseries_scale_changed', { scale: scaleDistribution.type });
-
-    this.setState({ scaleType: scaleDistribution.type });
 
     body.clearFieldConfigCache();
 
@@ -173,6 +218,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         },
       }),
     });
+
+    body.state.menu?.setItems(this.buildMenuItems({ scaleType: scaleDistribution.type }));
   }
 
   onClickExplore() {
@@ -185,6 +232,21 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
 
     window.open(exploreUrl, '_blank');
+  }
+
+  getInterpolatedQuery() {
+    const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
+    const nonInterpolatedQuery = queryRunner?.state.queries[0] as SceneDataQuery;
+
+    return Object.entries(nonInterpolatedQuery)
+      .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
+      .reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value,
+        }),
+        {}
+      ) as TimeSeriesQuery;
   }
 
   getConfig(series: DataFrame[]) {
@@ -333,51 +395,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
   }
 
-  buildMenuItems(selectedScaleType: ScaleDistribution, addToInvestigationLink?: PluginExtensionLink): PanelMenuItem[] {
-    const menuItems: PanelMenuItem[] = [
-      {
-        text: 'Scale type',
-        type: 'group',
-        subMenu: [
-          {
-            text: 'Linear',
-            scaleDistribution: { type: ScaleDistribution.Linear },
-          },
-          {
-            text: 'Log2',
-            scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-          },
-        ].map((option) => ({
-          text: `${selectedScaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
-          onClick: () => this.onClickScaleOption(option),
-        })),
-      },
-      {
-        type: 'divider',
-        text: '',
-      },
-      {
-        iconClassName: 'compass',
-        text: 'Open in Explore',
-        onClick: () => this.onClickExplore(),
-      },
-    ];
-
-    if (addToInvestigationLink) {
-      menuItems.push({
-        iconClassName: 'plus-square',
-        text: 'Add to investigation',
-        onClick: () => {
-          addToInvestigationLink.onClick!();
-        },
-      });
-    }
-
-    return menuItems;
-  }
-
   useUpdateMenuItems() {
-    const { body, scaleType } = this.state;
+    const { body } = this.state;
     const { menu } = body.state;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -394,8 +413,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     useEffect(() => {
       // wrapped in a useEffect to prevent a warning when clicking on the "Add to investigation" link
       // ("Cannot update a component while rendering a different component")
-      menu?.setItems(this.buildMenuItems(scaleType, link));
-    }, [menu, link, scaleType]);
+      menu?.setItems(this.buildMenuItems({ link }));
+    }, [menu, link]);
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
