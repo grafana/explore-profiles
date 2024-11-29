@@ -8,6 +8,7 @@ import {
   TimeRange,
 } from '@grafana/data';
 import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
+import { logger } from '@shared/infrastructure/tracking/logger';
 
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../pyroscope-data-sources';
 import { formatSeriesToProfileMetrics } from './formatSeriesToProfileMetrics';
@@ -21,10 +22,19 @@ export class SeriesDataSource extends RuntimeDataSource {
     super(PYROSCOPE_SERIES_DATA_SOURCE.type, PYROSCOPE_SERIES_DATA_SOURCE.uid);
   }
 
-  async fetchSeries(dataSourceUid: string, timeRange: TimeRange) {
-    const seriesApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, SeriesApiClient);
-    seriesRepository.setApiClient(seriesApiClient);
-    return seriesRepository.list({ timeRange });
+  async fetchSeries(dataSourceUid: string, timeRange: TimeRange, variableName?: string) {
+    seriesRepository.setApiClient(DataSourceProxyClientBuilder.build(dataSourceUid, SeriesApiClient));
+
+    try {
+      return await seriesRepository.list({ timeRange });
+    } catch (error) {
+      logger.error(error as Error, {
+        info: 'Error while loading Pyroscope series!',
+        variableName: variableName || '',
+      });
+
+      throw error;
+    }
   }
 
   async query(): Promise<DataQueryResponse> {
@@ -54,7 +64,7 @@ export class SeriesDataSource extends RuntimeDataSource {
     const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
     const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
 
-    const pyroscopeSeries = await this.fetchSeries(dataSourceUid, options.range as TimeRange);
+    const pyroscopeSeries = await this.fetchSeries(dataSourceUid, options.range as TimeRange, options.variable?.name);
 
     switch (query) {
       // queries that depend only on the selected data source

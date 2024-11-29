@@ -4,8 +4,8 @@ import { Button, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { useMemo } from 'react';
 
+import { CompareTarget } from '../../../../SceneExploreDiffFlameGraph/domain/types';
 import { SceneStatsPanel } from '../components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
-import { CompareTarget } from '../components/SceneLabelValuesGrid/domain/types';
 import { SceneGroupByLabelsState } from '../SceneGroupByLabels';
 
 type CompareButtonProps = {

@@ -10,7 +10,6 @@ import {
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { logger } from '@shared/infrastructure/tracking/logger';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
@@ -107,8 +106,6 @@ export class ServiceNameVariable extends QueryVariable {
     );
 
     if (error) {
-      logger.error(error, { info: 'Error while loading "serviceName" variable values!' });
-
       return (
         <Tooltip theme="error" content={error.toString()}>
           <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />

@@ -42,9 +42,9 @@ import { SceneQuickFilter } from '../../../SceneByVariableRepeaterGrid/component
 import { SceneByVariableRepeaterGrid } from '../../../SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneDrawer } from '../../../SceneDrawer';
+import { CompareTarget } from '../../../SceneExploreDiffFlameGraph/domain/types';
 import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
-import { CompareTarget } from './components/SceneLabelValuesGrid/domain/types';
 import { SceneLabelValuesGrid } from './components/SceneLabelValuesGrid/SceneLabelValuesGrid';
 import { IncludeExcludeAction } from './domain/actions/IncludeExcludeAction/IncludeExcludeAction';
 import { EventClearLabelFromFilters } from './domain/events/EventClearLabelFromFilters';
