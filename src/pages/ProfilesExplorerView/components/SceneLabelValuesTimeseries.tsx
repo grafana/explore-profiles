@@ -25,7 +25,7 @@ import { getExploreUrl } from '../helpers/getExploreUrl';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { buildTimeSeriesQueryRunner, TimeSeriesQuery } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
   addStats,
@@ -87,7 +87,9 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
-    body.setState({ menu: this.buildMenu() });
+    body.setState({
+      menu: new VizPanelMenu({ items: this.buildMenuItems() }),
+    });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
@@ -116,53 +118,46 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
-  buildMenu(selectedScaleIndex = 0): VizPanelMenu {
-    const scaleSubMenu = [
+  buildMenuItems(scaleType = ScaleDistribution.Linear): PanelMenuItem[] {
+    return [
       {
-        index: 0,
-        text: 'Linear',
-        scaleDistribution: { type: ScaleDistribution.Linear },
+        text: 'Scale type',
+        type: 'group',
+        subMenu: [
+          {
+            text: 'Linear',
+            scaleDistribution: { type: ScaleDistribution.Linear },
+          },
+          {
+            text: 'Log2',
+            scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+          },
+        ].map((option) => ({
+          text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
+          onClick: () => this.onClickScaleOption(option),
+        })),
       },
       {
-        index: 1,
-        text: 'Log2',
-        scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+        type: 'divider',
+        text: '',
       },
-    ].map((option) => ({
-      text: `${selectedScaleIndex === option.index ? '✔ ' : ''}${option.text}`,
-      onClick: () => this.onClickScaleOption(option),
-    }));
-
-    return new VizPanelMenu({
-      items: [
-        {
-          text: 'Scale type',
-          type: 'group',
-          subMenu: scaleSubMenu,
-        },
-        {
-          type: 'divider',
-          text: '',
-        },
-        {
-          iconClassName: 'compass',
-          text: 'Open in Explore',
-          onClick: () => this.onClickExplore(),
-        },
-      ],
-    });
+      {
+        iconClassName: 'compass',
+        text: 'Open in Explore',
+        onClick: () => this.onClickExplore(),
+      },
+    ];
   }
 
-  onClickScaleOption(option: PanelMenuItem & { index: number; scaleDistribution: ScaleDistributionConfig }) {
-    const { scaleDistribution, text, index } = option;
+  onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
+    const { scaleDistribution, text } = option;
     const { body } = this.state;
 
-    reportInteraction('g_pyroscope_app_timeseries_scale_change', { scale: scaleDistribution.type });
+    reportInteraction('g_pyroscope_app_timeseries_scale_changed', { scale: scaleDistribution.type });
 
     body.clearFieldConfigCache();
 
     body.setState({
-      menu: this.buildMenu(index),
       fieldConfig: merge({}, body.state.fieldConfig, {
         defaults: {
           custom: {
@@ -172,15 +167,27 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         },
       }),
     });
+
+    body.state.menu?.setItems(this.buildMenuItems(scaleDistribution.type));
   }
 
   onClickExplore() {
-    reportInteraction('g_pyroscope_app_open_in_explore');
+    reportInteraction('g_pyroscope_app_open_in_explore_clicked');
 
+    const query = this.getInterpolatedQuery();
+    const datasource = sceneGraph.interpolate(this, '${dataSource}');
+    const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
+
+    const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
+
+    window.open(exploreUrl, '_blank');
+  }
+
+  getInterpolatedQuery() {
     const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
-    const nonInterpolatedQuery = queryRunner?.state.queries[0];
+    const nonInterpolatedQuery = queryRunner?.state.queries[0] as SceneDataQuery;
 
-    const query = Object.entries(nonInterpolatedQuery)
+    return Object.entries(nonInterpolatedQuery)
       .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
       .reduce(
         (acc, [key, value]) => ({
@@ -188,14 +195,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           [key]: value,
         }),
         {}
-      ) as SceneDataQuery;
-
-    const datasource = sceneGraph.interpolate(this, '${dataSource}');
-    const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
-
-    const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
-
-    window.open(exploreUrl, '_blank');
+      ) as TimeSeriesQuery;
   }
 
   getConfig(series: DataFrame[]) {
