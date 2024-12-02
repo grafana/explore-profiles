@@ -1,4 +1,5 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PluginExtensionLink } from '@grafana/data';
+import { usePluginLinks } from '@grafana/runtime';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -16,8 +17,11 @@ import {
 import { GraphGradientMode, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { parseQuery } from '@shared/domain/url-params/parseQuery';
+import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import { merge } from 'lodash';
-import React from 'react';
+import { nanoid } from 'nanoid';
+import React, { useMemo } from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
 import { getColorByIndex } from '../helpers/getColorByIndex';
@@ -25,6 +29,7 @@ import { getExploreUrl } from '../helpers/getExploreUrl';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
+import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { buildTimeSeriesQueryRunner, TimeSeriesQuery } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
@@ -45,6 +50,8 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
+  static Component = SceneLabelValuesTimeseriesRenderer;
+
   private readonly timeSeriesPanelMenuScales: TimeSeriesPanelMenuScales;
 
   constructor({
@@ -92,6 +99,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  setExplorationsLink(link: PluginExtensionLink | undefined) {
+    this.timeSeriesPanelMenuScales.setExplorationsLink(link);
   }
 
   onActivate() {
@@ -266,10 +277,56 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   updateTitle(newTitle: string) {
     this.state.body.setState({ title: newTitle });
   }
+}
 
-  static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
-    const { body } = model.useState();
+function SceneLabelValuesTimeseriesRenderer({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
+  const { body } = model.useState();
 
-    return <body.Component model={body} />;
+  useInvestigationsLink(model);
+  return <body.Component model={body} />;
+}
+
+function useInvestigationsLink(model: SceneLabelValuesTimeseries) {
+  const investigationsContext = useGetInvestigationPluginLinkContext(model);
+
+  const pluginLinks = usePluginLinks({
+    extensionPointId: 'grafana-pyroscope-app/exploration/v1',
+    context: investigationsContext,
+  });
+
+  const [link] = pluginLinks.links.filter((link) => link.pluginId === 'grafana-explorations-app');
+  model.setExplorationsLink(link);
+}
+
+function useGetInvestigationPluginLinkContext(model: SceneLabelValuesTimeseries) {
+  const { refId, queryType, profileTypeId, labelSelector, groupBy } = model.getInterpolatedQuery();
+
+  const parsedQuery = parseQuery(`${profileTypeId}${labelSelector}`);
+  const titleParts = [parsedQuery.serviceId, getProfileMetricLabel(parsedQuery.profileMetricId)];
+
+  if (groupBy?.length) {
+    titleParts.push(groupBy[0]);
   }
+
+  if (parsedQuery.labels.length) {
+    titleParts.push(parsedQuery.labels.join(', '));
+  }
+
+  const title = titleParts.join(' · ');
+  const datasource = sceneGraph.interpolate(model, '${dataSource}');
+  const timeRange = sceneGraph.getTimeRange(model).state.value;
+
+  return useMemo(() => {
+    return {
+      id: nanoid(),
+      origin: 'Explore Profiles',
+      url: window.location.href,
+      logoPath: PyroscopeLogo,
+      title,
+      type: 'timeseries',
+      timeRange: { ...timeRange },
+      queries: [{ refId, queryType, profileTypeId, labelSelector, groupBy }],
+      datasource,
+    };
+  }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
 }

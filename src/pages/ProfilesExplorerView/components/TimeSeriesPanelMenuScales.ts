@@ -1,4 +1,4 @@
-import { PanelMenuItem } from '@grafana/data';
+import { PanelMenuItem, PluginExtensionLink } from '@grafana/data';
 import { SceneObjectBase, SceneObjectState, VizPanel, VizPanelMenu } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
 import { merge } from 'lodash';
@@ -12,6 +12,7 @@ export class TimeSeriesPanelMenuScales extends SceneObjectBase<TimeSeriesPanelMe
   private selectedScale: ScaleDistribution;
   private menu?: VizPanelMenu;
   private panel?: VizPanel;
+  private explorationsLink: PluginExtensionLink | undefined;
 
   constructor(state: TimeSeriesPanelMenuScalesState) {
     super(state);
@@ -88,6 +89,21 @@ export class TimeSeriesPanelMenuScales extends SceneObjectBase<TimeSeriesPanelMe
       },
     ];
 
+    if (this.explorationsLink) {
+      items.push({
+        iconClassName: 'plus-square',
+        text: 'Add to investigation',
+        onClick: () => {
+          this.explorationsLink?.onClick?.();
+        },
+      });
+    }
+
     this.menu.setItems(items);
+  }
+
+  setExplorationsLink(link: PluginExtensionLink | undefined) {
+    this.explorationsLink = link;
+    this._refreshItems();
   }
 }
