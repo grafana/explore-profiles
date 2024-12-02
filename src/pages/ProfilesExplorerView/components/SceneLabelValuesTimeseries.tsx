@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -13,7 +13,7 @@ import {
   VizPanelMenu,
   VizPanelState,
 } from '@grafana/scenes';
-import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
+import { GraphGradientMode, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { merge } from 'lodash';
@@ -33,6 +33,7 @@ import {
   sortSeries,
 } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+import { TimeSeriesPanelMenuScales } from './TimeSeriesPanelMenuScales';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
@@ -44,6 +45,8 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
+  private readonly timeSeriesPanelMenuScales: TimeSeriesPanelMenuScales;
+
   constructor({
     item,
     headerActions,
@@ -81,6 +84,13 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         .build(),
     });
 
+    this.timeSeriesPanelMenuScales = new TimeSeriesPanelMenuScales({
+      onClickExplore: () => this.onClickExplore(),
+      onScaleChanged: (scaleType) => {
+        reportInteraction('g_pyroscope_app_timeseries_scale_changed', { scale: scaleType });
+      },
+    });
+
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
@@ -88,7 +98,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { body } = this.state;
 
     body.setState({
-      menu: new VizPanelMenu({ items: this.buildMenuItems() }),
+      menu: new VizPanelMenu({ $behaviors: [this.timeSeriesPanelMenuScales] }),
     });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
@@ -116,59 +126,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     return () => {
       sub.unsubscribe();
     };
-  }
-
-  buildMenuItems(scaleType = ScaleDistribution.Linear): PanelMenuItem[] {
-    return [
-      {
-        text: 'Scale type',
-        type: 'group',
-        subMenu: [
-          {
-            text: 'Linear',
-            scaleDistribution: { type: ScaleDistribution.Linear },
-          },
-          {
-            text: 'Log2',
-            scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-          },
-        ].map((option) => ({
-          text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
-          onClick: () => this.onClickScaleOption(option),
-        })),
-      },
-      {
-        type: 'divider',
-        text: '',
-      },
-      {
-        iconClassName: 'compass',
-        text: 'Open in Explore',
-        onClick: () => this.onClickExplore(),
-      },
-    ];
-  }
-
-  onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
-    const { scaleDistribution, text } = option;
-    const { body } = this.state;
-
-    reportInteraction('g_pyroscope_app_timeseries_scale_changed', { scale: scaleDistribution.type });
-
-    body.clearFieldConfigCache();
-
-    body.setState({
-      fieldConfig: merge({}, body.state.fieldConfig, {
-        defaults: {
-          custom: {
-            scaleDistribution,
-            axisLabel: scaleDistribution.type !== ScaleDistribution.Linear ? text : '',
-          },
-        },
-      }),
-    });
-
-    body.state.menu?.setItems(this.buildMenuItems(scaleDistribution.type));
   }
 
   onClickExplore() {
