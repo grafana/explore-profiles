@@ -1,4 +1,11 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
+import {
+  DataFrame,
+  FieldMatcherID,
+  getValueFormat,
+  LoadingState,
+  PanelMenuItem,
+  PluginExtensionLink,
+} from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -15,16 +22,25 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
+import PyroscopeLogo from '@img/logo.svg';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { merge } from 'lodash';
-import React from 'react';
+import { nanoid } from 'nanoid';
+import React, { useEffect, useMemo } from 'react';
 
 import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
+import {
+  INVESTIGATIONS_APP_ID,
+  INVESTIGATIONS_EXTENSTION_POINT_ID,
+  useGetPluginExtensionLink,
+} from '../domain/useGetPluginExtensionLink';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getExploreUrl } from '../helpers/getExploreUrl';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
+import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { buildTimeSeriesQueryRunner, TimeSeriesQuery } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
@@ -33,6 +49,17 @@ import {
   sortSeries,
 } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+
+const SCALE_TYPES = [
+  {
+    text: 'Linear',
+    scaleDistribution: { type: ScaleDistribution.Linear },
+  },
+  {
+    text: 'Log2',
+    scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+  },
+];
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
@@ -88,7 +115,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { body } = this.state;
 
     body.setState({
-      menu: new VizPanelMenu({ items: this.buildMenuItems() }),
+      menu: new VizPanelMenu({ items: this.buildMenuItems({ scaleType: ScaleDistribution.Linear }) }),
     });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
@@ -118,22 +145,28 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     };
   }
 
-  buildMenuItems(scaleType = ScaleDistribution.Linear): PanelMenuItem[] {
-    return [
+  buildMenuItems({
+    scaleType,
+    link: addToInvestigationLink,
+  }: {
+    scaleType?: ScaleDistribution;
+    link?: PluginExtensionLink;
+  }): PanelMenuItem[] {
+    const existingItems = this.state.body.state.menu?.state.items;
+    let selectedScaleType = scaleType;
+
+    if (!selectedScaleType) {
+      // ugly but working
+      const selectedScaleIndex = existingItems?.[0].subMenu?.findIndex((i) => i.text[0] === '✔') as number;
+      selectedScaleType = SCALE_TYPES[selectedScaleIndex]?.scaleDistribution?.type;
+    }
+
+    const menuItems: PanelMenuItem[] = [
       {
         text: 'Scale type',
         type: 'group',
-        subMenu: [
-          {
-            text: 'Linear',
-            scaleDistribution: { type: ScaleDistribution.Linear },
-          },
-          {
-            text: 'Log2',
-            scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-          },
-        ].map((option) => ({
-          text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
+        subMenu: SCALE_TYPES.map((option) => ({
+          text: `${selectedScaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
           onClick: () => this.onClickScaleOption(option),
         })),
       },
@@ -147,6 +180,24 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         onClick: () => this.onClickExplore(),
       },
     ];
+
+    if (addToInvestigationLink) {
+      menuItems.push({
+        iconClassName: 'plus-square',
+        text: 'Add to investigation',
+        onClick: () => {
+          addToInvestigationLink.onClick!();
+        },
+      });
+    } else {
+      const existingAddToInvestigationItem = existingItems?.find((i) => i.text === 'Add to investigation');
+
+      if (existingAddToInvestigationItem) {
+        menuItems.push({ ...existingAddToInvestigationItem });
+      }
+    }
+
+    return menuItems;
   }
 
   onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
@@ -168,15 +219,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       }),
     });
 
-    body.state.menu?.setItems(this.buildMenuItems(scaleDistribution.type));
+    body.state.menu?.setItems(this.buildMenuItems({ scaleType: scaleDistribution.type }));
   }
 
   onClickExplore() {
     reportInteraction('g_pyroscope_app_open_in_explore_clicked');
 
+    const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
     const query = this.getInterpolatedQuery();
     const datasource = sceneGraph.interpolate(this, '${dataSource}');
-    const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
 
     const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
 
@@ -310,8 +361,66 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     this.state.body.setState({ title: newTitle });
   }
 
+  useGetInvestigationPluginLinkContext() {
+    const { refId, queryType, profileTypeId, labelSelector, groupBy } = this.getInterpolatedQuery();
+
+    const parsedQuery = parseQuery(`${profileTypeId}${labelSelector}`);
+    const titleParts = [parsedQuery.serviceId, getProfileMetricLabel(parsedQuery.profileMetricId)];
+
+    if (groupBy?.length) {
+      titleParts.push(groupBy[0]);
+    }
+
+    if (parsedQuery.labels.length) {
+      titleParts.push(parsedQuery.labels.join(', '));
+    }
+
+    const title = titleParts.join(' · ');
+    const datasource = sceneGraph.interpolate(this, '${dataSource}');
+    const timeRange = sceneGraph.getTimeRange(this).state.value;
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useMemo(() => {
+      return {
+        id: nanoid(),
+        origin: 'Explore Profiles',
+        url: window.location.href,
+        logoPath: PyroscopeLogo,
+        title,
+        type: 'timeseries',
+        timeRange: { ...timeRange },
+        queries: [{ refId, queryType, profileTypeId, labelSelector, groupBy }],
+        datasource,
+      };
+    }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
+  }
+
+  useUpdateMenuItems() {
+    const { body } = this.state;
+    const { menu } = body.state;
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const context = this.useGetInvestigationPluginLinkContext();
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const link = useGetPluginExtensionLink({
+      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
+      context,
+      pluginId: INVESTIGATIONS_APP_ID,
+    });
+
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useEffect(() => {
+      // wrapped in a useEffect to prevent a warning when clicking on the "Add to investigation" link
+      // ("Cannot update a component while rendering a different component")
+      menu?.setItems(this.buildMenuItems({ link }));
+    }, [menu, link]);
+  }
+
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
     const { body } = model.useState();
+
+    model.useUpdateMenuItems();
 
     return <body.Component model={body} />;
   }
