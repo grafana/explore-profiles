@@ -1,5 +1,6 @@
 // this file is used only to capture changes in Drone pipelines during migration to GitHub (https://github.com/grafana/explore-profiles/issues/293)
-// when you change this file please run: drone jsonnet --source .drone.migration.jsonnet --stdout > drone_migration.yaml
+// when you change this file please run:
+// drone jsonnet --source .drone.migration.jsonnet --format --stdout > drone_migration.yaml
 // this file is based on the one from grafana/phlare
 
 local dockerGoImage = 'golang:1.20.4';
