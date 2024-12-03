@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
 import { MultiSelect, useStyles2 } from '@grafana/ui';
+import { localeCompare } from '@shared/domain/localeCompare';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { Suggestion, Suggestions } from '../../domain/types';
@@ -17,7 +18,7 @@ const placeSelectedValuesFirst = (values: Suggestions) => (a: Suggestion, b: Sug
   const bIsSelected = values.some((v) => v.value === b.value);
 
   if (aIsSelected && bIsSelected) {
-    return a.value.localeCompare(b.value);
+    return localeCompare(a.value, b.value);
   }
 
   if (bIsSelected) {

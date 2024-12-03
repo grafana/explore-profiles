@@ -1,3 +1,5 @@
+import { localeCompare } from '@shared/domain/localeCompare';
+
 import { FavAction } from '../../..//domain/actions/FavAction';
 import { FavoritesDataSource } from '../../../infrastructure/favorites/FavoritesDataSource';
 import { GridItemData } from '../types/GridItemData';
@@ -7,7 +9,7 @@ export const sortFavGridItems: (a: GridItemData, b: GridItemData) => number = fu
   const bIsFav = FavoritesDataSource.exists(FavAction.buildFavorite(b));
 
   if (aIsFav && bIsFav) {
-    return a.label.localeCompare(b.label);
+    return localeCompare(a.label, b.label);
   }
 
   if (bIsFav) {

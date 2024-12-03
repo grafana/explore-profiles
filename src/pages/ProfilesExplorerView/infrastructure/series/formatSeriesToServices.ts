@@ -1,4 +1,5 @@
 import { MetricFindValue } from '@grafana/data';
+import { localeCompare } from '@shared/domain/localeCompare';
 
 import { PyroscopeSeries } from './http/SeriesApiClient';
 
@@ -7,7 +8,7 @@ export function formatSeriesToServices(pyroscopeSeries: PyroscopeSeries, profile
     const servicesSet = pyroscopeSeries.profileMetrics.get(profileMetricId) || new Set();
 
     return Array.from(servicesSet)
-      .sort((a, b) => a.localeCompare(b))
+      .sort(localeCompare)
       .map((serviceName) => ({
         text: serviceName,
         value: serviceName,
@@ -15,7 +16,7 @@ export function formatSeriesToServices(pyroscopeSeries: PyroscopeSeries, profile
   }
 
   return Array.from(pyroscopeSeries.services.keys())
-    .sort((a, b) => a.localeCompare(b))
+    .sort(localeCompare)
     .map((serviceName) => ({
       text: serviceName,
       value: serviceName,

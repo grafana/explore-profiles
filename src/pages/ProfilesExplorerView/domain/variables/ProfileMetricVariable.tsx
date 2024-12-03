@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
+import { localeCompare } from '@shared/domain/localeCompare';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -99,7 +100,7 @@ export class ProfileMetricVariable extends QueryVariable {
       optionsMap.set(group, nameSpaceServices);
     }
 
-    return Array.from(optionsMap.values()).sort((a, b) => b.label.localeCompare(a.label));
+    return Array.from(optionsMap.values()).sort((a, b) => localeCompare(b.label, a.label));
   }
 
   onSelect = (newValue: string) => {
