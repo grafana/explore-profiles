@@ -178,10 +178,11 @@ jobs:
           service_account: github-plugin-ci-workflows@grafanalabs-workload-identity.iam.gserviceaccount.com
 
       - id: 'upload-to-gcs'
-        name: 'Upload assets to latest'
-        uses: 'google-github-actions/upload-cloud-storage@v1'
+        name: 'Upload assets to GCS'
+        uses: google-github-actions/upload-cloud-storage@v2.2.1
         with:
           path: ./
           destination: 'integration-artifacts/grafana-pyroscope-app/commits/'
           glob: '*.zip'
           parent: false
+          process_gcloudignore: false
