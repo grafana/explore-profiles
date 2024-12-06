@@ -171,7 +171,7 @@ jobs:
         with:
           vault_instance: ops
           common_secrets: |
-            GCP_UPLOAD_ARTIFACTS_KEY=grafana/integration-artifacts-uploader-service-account:'credentials.json'
+            GCP_UPLOAD_ARTIFACTS_KEY=infra/data/ci/drone-plugins:'credentials.json'
 
       - name: Login to Google Cloud
         uses: google-github-actions/auth@v2.1.7
