@@ -170,3 +170,18 @@ jobs:
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}
           zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
+
+      - name: Login to Google Cloud
+        uses: google-github-actions/auth@v2.1.7
+        with:
+          workload_identity_provider: "projects/304398677251/locations/global/workloadIdentityPools/github/providers/github-provider"
+          service_account: github-plugin-ci-workflows@grafanalabs-workload-identity.iam.gserviceaccount.com
+
+      - id: 'upload-to-gcs'
+        name: 'Upload assets to latest'
+        uses: 'google-github-actions/upload-cloud-storage@v1'
+        with:
+          path: ./
+          destination: 'grafana-pyroscope-app/commits/'
+          glob: '*.zip'
+          parent: false
