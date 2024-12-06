@@ -114,6 +114,7 @@ jobs:
 
   package:
     name: Sign and package
+    needs: [ frontend ]
     runs-on: ubuntu-latest
     steps:
       # Required to correctly auth to GCS
