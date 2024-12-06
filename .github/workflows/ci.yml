@@ -144,11 +144,6 @@ jobs:
           name: build-frontend
           path: dist
 
-      - name: Debug paths
-        run: |
-          ls -al
-          ls -al dist
-
       - name: Get plugin metadata
         id: metadata
         run: |
@@ -176,6 +171,10 @@ jobs:
         with:
           workload_identity_provider: "projects/304398677251/locations/global/workloadIdentityPools/github/providers/github-provider"
           service_account: github-plugin-ci-workflows@grafanalabs-workload-identity.iam.gserviceaccount.com
+
+      - name: Debug paths
+        run: |
+          ls -al
 
       - id: 'upload-to-gcs'
         name: 'Upload assets to GCS'
