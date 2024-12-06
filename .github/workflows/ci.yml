@@ -14,6 +14,10 @@ on:
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
