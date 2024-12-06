@@ -141,8 +141,13 @@ jobs:
       - name: Prepare - Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: build-frontend
+          name: build-frontend
           path: dist
+
+      - name: Debug paths
+        run: |
+          ls -al
+          ls -al dist
 
       - name: Get plugin metadata
         id: metadata
@@ -158,7 +163,7 @@ jobs:
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
 
       - name: Debug
-        run: echo package_id=${{ steps.metadata.outputs.archive_name }}, plugin_id=${{ steps.metadata.outputs.plugin_id }}
+        run: echo archive_name=${{ steps.metadata.outputs.archive_name }}, plugin_id=${{ steps.metadata.outputs.plugin_id }}
 
       - name: Package plugin
         id: package-plugin
