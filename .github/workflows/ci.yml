@@ -111,3 +111,51 @@ jobs:
             e2e/test-reports
             e2e/test-results
           retention-days: 15
+
+  package:
+    name: Sign and package
+    runs-on: ubuntu-latest
+    steps:
+      # Required to correctly auth to GCS
+      - name: Prepare - GCS
+        uses: actions/checkout@v4
+
+      - name: Prepare - Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: build-frontend
+          path: dist
+
+      - name: Prepare - Credentials
+        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        with:
+          vault_instance: ops
+          common_secrets: |
+            SIGN_PLUGIN_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
+
+      - name: Get plugin metadata
+        id: metadata
+        run: |
+          sudo apt-get install jq
+          
+          export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
+          export GRAFANA_PLUGIN_VERSION=$(cat dist/plugin.json | jq -r .info.version)
+          export SHA=${{ github.event.pull_request.head.sha || github.sha }}
+          export HASH=$(echo $SHA | cut -c1-7)
+          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${GRAFANA_PLUGIN_VERSION}-${HASH}
+          echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
+          echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
+
+      - name: Debug
+        run: echo package_id=${{ steps.metadata.outputs.archive_name }}, plugin_id=${{ steps.metadata.outputs.plugin_id }}
+
+      - name: Sign plugin
+        run: yarn sign
+        env:
+          GRAFANA_ACCESS_POLICY_TOKEN: ${{ env.SIGN_PLUGIN_ACCESS_POLICY_TOKEN }}
+
+      - name: Package plugin
+        id: package-plugin
+        run: |
+          mv dist ${{ steps.metadata.outputs.plugin_id }}
+          zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
