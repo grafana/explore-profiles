@@ -21,28 +21,15 @@ local pipeline(name, steps=[], services=[]) = {
   steps: [step('runner identification', ['echo $DRONE_RUNNER_NAME'], 'alpine')] + steps,
   trigger+: {
     ref+: [
-      'refs/heads/main',
-      'refs/pull/**',
       'refs/tags/v*.*.*',
       'refs/tags/weekly-f*',
     ],
   },
 };
 
-local mainOnly = {
+local releaseOnly = {
   when: {
     ref+: [
-      'refs/heads/main',
-      'refs/pull/2/head',
-    ],
-  },
-};
-
-local mainOrReleaseOnly = {
-  when: {
-    ref+: [
-      'refs/heads/main',
-      'refs/pull/2/head',
       'refs/tags/v*.*.*',
       'refs/tags/weekly-f*',
     ],
@@ -192,7 +179,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       depends_on: [
         'build frontend packages',
       ],
-    } + mainOrReleaseOnly,
+    } + releaseOnly,
 
     step('publish zip to GCS', [], image='plugins/gcs') + {
       depends_on: [
@@ -221,34 +208,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         },
       },
     } + releaseOnly,
-
-    step('publish zip to GCS with latest-dev', [], image='plugins/gcs') + {
-      depends_on: [
-        'package and sign',
-      ],
-      settings: {
-        acl: 'allUsers:READER',
-        source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
-        target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-edge.zip',
-        token: {
-          from_secret: 'gcs_service_account_key',
-        },
-      },
-    } + mainOnly,
-
-    step('publish zip to GCS with dev-tag', [], image='plugins/gcs') + {
-      depends_on: [
-        'package and sign',
-      ],
-      settings: {
-        acl: 'allUsers:READER',
-        source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
-        target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_COMMIT}.zip',
-        token: {
-          from_secret: 'gcs_service_account_key',
-        },
-      },
-    } + mainOnly,
 
     step('publish zip to GCS with latest', [], image='plugins/gcs') + {
       depends_on: [
@@ -308,21 +267,6 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       ],
     } + releaseOnly,
   ]),
-
-  pipeline('deploy dev', [
-    generateTagsStep(),
-    deployStep('dev'),
-  ]) + {
-    image_pull_secrets: ['gcr_reader'],
-    depends_on: [
-      'build packages',
-    ],
-    trigger+: {
-      ref: [
-        'refs/heads/main',
-      ],
-    },
-  },
 
   pipeline('weekly deploy ops', [
     generateTagsStep(),
