@@ -182,6 +182,6 @@ jobs:
         uses: 'google-github-actions/upload-cloud-storage@v1'
         with:
           path: ./
-          destination: 'grafana-pyroscope-app/commits/'
+          destination: 'integration-artifacts/grafana-pyroscope-app/commits/'
           glob: '*.zip'
           parent: false
