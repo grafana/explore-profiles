@@ -56,6 +56,19 @@ jobs:
       - name: Compatibility check
         run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
 
+      - name: Setup plugin signing
+        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        with:
+          vault_instance: ops
+          common_secrets: |
+            SIGN_PLUGIN_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
+
+      # create MANIFEST in dist
+      - name: Sign plugin
+        run: yarn sign
+        env:
+          GRAFANA_ACCESS_POLICY_TOKEN: ${{ env.SIGN_PLUGIN_ACCESS_POLICY_TOKEN }}
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -117,7 +130,7 @@ jobs:
           retention-days: 15
 
   package:
-    name: Sign and package
+    name: Package signed plugin
     needs: [ frontend ]
     runs-on: ubuntu-latest
     steps:
@@ -130,13 +143,6 @@ jobs:
         with:
           pattern: build-frontend
           path: dist
-
-      - name: Prepare - Credentials
-        uses: grafana/shared-workflows/actions/get-vault-secrets@main
-        with:
-          vault_instance: ops
-          common_secrets: |
-            SIGN_PLUGIN_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
 
       - name: Get plugin metadata
         id: metadata
@@ -153,11 +159,6 @@ jobs:
 
       - name: Debug
         run: echo package_id=${{ steps.metadata.outputs.archive_name }}, plugin_id=${{ steps.metadata.outputs.plugin_id }}
-
-      - name: Sign plugin
-        run: yarn sign
-        env:
-          GRAFANA_ACCESS_POLICY_TOKEN: ${{ env.SIGN_PLUGIN_ACCESS_POLICY_TOKEN }}
 
       - name: Package plugin
         id: package-plugin
