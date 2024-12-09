@@ -183,13 +183,14 @@ jobs:
 
       - id: 'upload-to-gcs'
         name: 'Upload assets to GCS'
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
+        uses: grafana/shared-workflows/actions/push-to-gcs@main
         with:
+          environment: prod
           path: ./
-          destination: 'integration-artifacts/grafana-pyroscope-app/test/'
+          bucket: 'grafana-pyroscope-app'
+          bucket_path: 'test'
           glob: '*.zip'
           parent: false
-          process_gcloudignore: false
 
   deploy-to-dev:
     name: Deploy PR to dev (dry run)
