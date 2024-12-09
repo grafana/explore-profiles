@@ -133,6 +133,8 @@ jobs:
     name: Package signed plugin
     needs: [ frontend ]
     runs-on: ubuntu-latest
+    outputs:
+      package_id: ${{ steps.metadata.outputs.package_id }}
     steps:
       # Required to correctly auth to GCS
       - name: Prepare - GCS
@@ -155,6 +157,7 @@ jobs:
           export HASH=$(echo $SHA | cut -c1-7)
           export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${GRAFANA_PLUGIN_VERSION}-${HASH}
           echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
+          echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
 
       - name: Debug
@@ -171,7 +174,7 @@ jobs:
         with:
           vault_instance: ops
           common_secrets: |
-            GCP_UPLOAD_ARTIFACTS_KEY=grafana-com-iap/gcp_iap_service_account_key_ops:'credentials.json'
+            GCP_UPLOAD_ARTIFACTS_KEY=grafana/integration-artifacts-uploader-service-account:'credentials.json'
 
       - name: Login to Google Cloud
         uses: google-github-actions/auth@v2.1.7
@@ -183,7 +186,16 @@ jobs:
         uses: google-github-actions/upload-cloud-storage@v2.2.1
         with:
           path: ./
-          destination: 'grafana-pyroscope-app/test/'
+          destination: 'integration-artifacts/grafana-pyroscope-app/test/'
           glob: '*.zip'
           parent: false
           process_gcloudignore: false
+
+  deploy-to-dev:
+    name: Deploy PR to dev (dry run)
+    needs: [ package ]
+    runs-on: ubuntu-latest
+    environment: pull-requests
+    steps:
+      - name: Publish to dev
+        run: echo [[Test message]] Package ${{ needs.package.outputs.package_id }} deployed to dev
