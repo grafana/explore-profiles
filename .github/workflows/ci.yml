@@ -14,6 +14,10 @@ on:
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
@@ -51,6 +55,19 @@ jobs:
 
       - name: Compatibility check
         run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
+
+      - name: Setup plugin signing
+        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        with:
+          vault_instance: ops
+          common_secrets: |
+            SIGN_PLUGIN_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
+
+      # create MANIFEST in dist
+      - name: Sign plugin
+        run: yarn sign
+        env:
+          GRAFANA_ACCESS_POLICY_TOKEN: ${{ env.SIGN_PLUGIN_ACCESS_POLICY_TOKEN }}
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -111,3 +128,76 @@ jobs:
             e2e/test-reports
             e2e/test-results
           retention-days: 15
+
+  package:
+    name: Package signed plugin
+    needs: [ frontend ]
+    runs-on: ubuntu-latest
+    outputs:
+      package_id: ${{ steps.metadata.outputs.package_id }}
+    steps:
+      # Required to correctly auth to GCS
+      - name: Prepare - GCS
+        uses: actions/checkout@v4
+
+      - name: Prepare - Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-frontend
+          path: dist
+
+      - name: Get plugin metadata
+        id: metadata
+        run: |
+          sudo apt-get install jq
+          
+          export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
+          export GRAFANA_PLUGIN_VERSION=$(cat dist/plugin.json | jq -r .info.version)
+          export SHA=${{ github.event.pull_request.head.sha || github.sha }}
+          export HASH=$(echo $SHA | cut -c1-7)
+          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${GRAFANA_PLUGIN_VERSION}-${HASH}
+          echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
+          echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
+          echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
+
+      - name: Debug
+        run: echo archive_name=${{ steps.metadata.outputs.archive_name }}, plugin_id=${{ steps.metadata.outputs.plugin_id }}
+
+      - name: Package plugin
+        id: package-plugin
+        run: |
+          mv dist ${{ steps.metadata.outputs.plugin_id }}
+          zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
+
+      - name: Setup GSC upload
+        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        with:
+          vault_instance: ops
+          common_secrets: |
+            GCP_UPLOAD_ARTIFACTS_KEY=grafana/integration-artifacts-uploader-service-account:'credentials.json'
+
+      - id: login-to-gcs
+        name: Login to GCS
+        uses: grafana/shared-workflows/actions/login-to-gcs@main
+        with:
+          environment: prod
+
+      - id: 'upload-to-gcs'
+        name: 'Upload assets to GCS'
+        uses: grafana/shared-workflows/actions/push-to-gcs@main
+        with:
+          environment: prod
+          path: ./
+          bucket: 'grafana-pyroscope-app'
+          bucket_path: 'test'
+          glob: '*.zip'
+          parent: false
+
+  deploy-to-dev:
+    name: Deploy PR to dev (dry run)
+    needs: [ package ]
+    runs-on: ubuntu-latest
+    environment: pull-requests
+    steps:
+      - name: Publish to dev
+        run: echo [[Test message]] Package ${{ needs.package.outputs.package_id }} deployed to dev
