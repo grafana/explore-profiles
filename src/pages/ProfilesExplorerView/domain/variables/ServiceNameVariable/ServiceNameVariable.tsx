@@ -11,6 +11,7 @@ import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { userStorage } from '@shared/infrastructure/userStorage';
+import { nanoid } from 'nanoid';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -117,8 +118,8 @@ export class ServiceNameVariable extends QueryVariable {
       <Cascader
         // we add a key to ensure that the Cascader selects the initial value properly when landing on the page
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
-        // (e.g. in SceneExploreServiceProfileTypes)
-        key={String(loading) + String(value)}
+        // (e.g. in SceneExploreServiceProfileTypes, also when clicking on an Investigation link, it ensures the value is properly updated)
+        key={nanoid(5)}
         aria-label="Services list"
         width={32}
         separator="/"
