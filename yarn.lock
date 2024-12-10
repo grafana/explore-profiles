@@ -10116,15 +10116,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:^5.0.9":
-  version: 5.0.9
-  resolution: "nanoid@npm:5.0.9"
-  bin:
-    nanoid: bin/nanoid.js
-  checksum: 10/8a3f9104f81095e3e4785f58caae47a05755599824b8611b9730cbf73db706b664f100e6189f8303f08764f144d499613d8e4a39e83125c53f4b4986d6576621
-  languageName: node
-  linkType: hard
-
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -11066,7 +11057,6 @@ __metadata:
     knip: "npm:^5.32.0"
     lint-staged: "npm:^15.0.2"
     markdown-to-jsx: "npm:^7.3.2"
-    nanoid: "npm:^5.0.9"
     p-limit: "npm:^6.1.0"
     prettier: "npm:^2.5.0"
     prettier-package-json: "npm:^2.8.0"
