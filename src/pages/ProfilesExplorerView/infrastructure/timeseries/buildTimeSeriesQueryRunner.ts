@@ -3,6 +3,14 @@ import { SceneQueryRunner } from '@grafana/scenes';
 import { PYROSCOPE_DATA_SOURCE } from '../pyroscope-data-sources';
 import { TimeSeriesQueryRunnerParams } from './TimeSeriesQueryRunnerParams';
 
+export type TimeSeriesQuery = {
+  refId: string;
+  queryType: 'metrics';
+  profileTypeId: string;
+  labelSelector: string;
+  groupBy: string[];
+};
+
 export function buildTimeSeriesQueryRunner(
   { serviceName, profileMetricId, groupBy, filters }: TimeSeriesQueryRunnerParams,
   limit?: number

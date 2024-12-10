@@ -2,10 +2,10 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
+import { localeCompare } from '@shared/domain/localeCompare';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { logger } from '@shared/infrastructure/tracking/logger';
 import { nanoid } from 'nanoid';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
@@ -100,7 +100,7 @@ export class ProfileMetricVariable extends QueryVariable {
       optionsMap.set(group, nameSpaceServices);
     }
 
-    return Array.from(optionsMap.values()).sort((a, b) => b.label.localeCompare(a.label));
+    return Array.from(optionsMap.values()).sort((a, b) => localeCompare(b.label, a.label));
   }
 
   onSelect = (newValue: string) => {
@@ -121,8 +121,6 @@ export class ProfileMetricVariable extends QueryVariable {
     }, [options]);
 
     if (error) {
-      logger.error(error, { info: 'Error while loading "profileMetricId" variable values!' });
-
       return (
         <Tooltip theme="error" content={error.toString()}>
           <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />

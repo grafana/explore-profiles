@@ -5,9 +5,9 @@ import { getSceneVariableValue } from 'src/pages/ProfilesExplorerView/helpers/ge
 import { getProfileMetricLabel } from 'src/pages/ProfilesExplorerView/infrastructure/series/helpers/getProfileMetricLabel';
 
 import { GridItemData } from '../../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
+import { CompareTarget } from '../../../../../../../SceneExploreDiffFlameGraph/domain/types';
 import { EventSelectForCompare } from '../../../../domain/events/EventSelectForCompare';
 import { SceneGroupByLabels } from '../../../../SceneGroupByLabels';
-import { CompareTarget } from '../../domain/types';
 import { StatsPanel } from './ui/StatsPanel';
 
 export type ItemStats = {

@@ -21,7 +21,7 @@ jest.mock('@grafana/runtime', () => ({
       },
     },
     buildInfo: {
-      version: '11.2.0',
+      version: '11.3.0',
       edition: 'Enterprise',
     },
   },
@@ -123,7 +123,7 @@ describe('initFaro()', () => {
         release: 'v0.01-test',
         version: GIT_COMMIT,
         environment: 'prod',
-        namespace: 'v11.2.0 (Enterprise)',
+        namespace: 'v11.3.0 (Enterprise)',
       });
 
       expect(user).toStrictEqual({ email: 'sixty.four@grafana.com' });

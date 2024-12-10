@@ -24,6 +24,7 @@ export type InteractionName =
   | 'g_pyroscope_app_hide_no_data_changed'
   | 'g_pyroscope_app_include_action_clicked'
   | 'g_pyroscope_app_layout_changed'
+  | 'g_pyroscope_app_open_in_explore_clicked'
   | 'g_pyroscope_app_optimize_code_clicked'
   | 'g_pyroscope_app_panel_type_changed'
   | 'g_pyroscope_app_profile_metric_selected'
@@ -31,6 +32,7 @@ export type InteractionName =
   | 'g_pyroscope_app_select_action_clicked'
   | 'g_pyroscope_app_service_name_selected'
   | 'g_pyroscope_app_share_link_clicked'
+  | 'g_pyroscope_app_timeseries_scale_changed'
   | 'g_pyroscope_app_user_settings_clicked';
 
 type InteractionProperties =
@@ -51,7 +53,9 @@ type InteractionProperties =
   // g_pyroscope_app_panel_type_changed
   | { panelType: PanelType }
   // g_pyroscope_app_select_action_clicked
-  | { type: string };
+  | { type: string }
+  // g_pyroscope_app_timeseries_scale_change
+  | { scale: string };
 
 const PROFILES_EXPLORER_PAGE_NAME = ROUTES.PROFILES_EXPLORER_VIEW.slice(1);
 
