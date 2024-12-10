@@ -297,6 +297,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const { $timeRange, target } = this.state;
     const { from, to } = $timeRange.state.value;
 
+    this.updateTitle('');
+
     if (selectWholeRange) {
       this.setDiffRange(from.toISOString(), to.toISOString());
       return;

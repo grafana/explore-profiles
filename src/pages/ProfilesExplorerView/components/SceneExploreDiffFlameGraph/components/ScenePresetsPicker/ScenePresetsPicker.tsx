@@ -176,6 +176,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     }
 
     if (option.value?.startsWith('auto-select-')) {
+      this.setState({ value: null });
+
       this.publishEvent(new EventDiffAutoSelect({ wholeRange: option.value === 'auto-select-whole' }), true);
       return;
     }
