@@ -5,6 +5,7 @@ import {
   SceneObjectBase,
   SceneVariableSet,
 } from '@grafana/scenes';
+import { localeCompare } from '@shared/domain/localeCompare';
 import React from 'react';
 
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
@@ -43,7 +44,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
             panelType,
           };
         },
-        sortItemsFn: (a, b) => a.label.localeCompare(b.label),
+        sortItemsFn: (a, b) => localeCompare(a.label, b.label),
         headerActions: (item) => {
           const actions: Array<SelectAction | FavAction> = [
             new SelectAction({ type: 'view-labels', item, skipVariablesInterpolation: true }),
