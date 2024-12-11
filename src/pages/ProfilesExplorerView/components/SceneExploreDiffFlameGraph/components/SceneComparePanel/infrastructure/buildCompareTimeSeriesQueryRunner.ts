@@ -1,12 +1,14 @@
 import { SceneQueryRunner } from '@grafana/scenes';
-import { PYROSCOPE_DATA_SOURCE } from 'src/pages/ProfilesExplorerView/infrastructure/pyroscope-data-sources';
+
+import { PYROSCOPE_DATA_SOURCE } from '../../../../../infrastructure/pyroscope-data-sources';
+import { withPreventInvalidQuery } from '../../../../../infrastructure/withPreventInvalidQuery';
 
 export function buildCompareTimeSeriesQueryRunner({
   filterKey,
 }: {
   filterKey: 'filtersBaseline' | 'filtersComparison';
 }) {
-  return new SceneQueryRunner({
+  const queryRunner = new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [
       {
@@ -17,4 +19,6 @@ export function buildCompareTimeSeriesQueryRunner({
       },
     ],
   });
+
+  return withPreventInvalidQuery(queryRunner);
 }
