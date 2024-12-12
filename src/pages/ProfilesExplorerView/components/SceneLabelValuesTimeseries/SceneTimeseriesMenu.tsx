@@ -81,13 +81,13 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
     if (addToInvestigationLink) {
       menuItems.push({
         iconClassName: 'plus-square',
-        text: 'Add to investigation',
+        text: 'Add to investigation (beta)',
         onClick: () => {
           addToInvestigationLink.onClick!();
         },
       });
     } else {
-      const existingAddToInvestigationItem = items?.find((i) => i.text === 'Add to investigation');
+      const existingAddToInvestigationItem = items?.find((i) => i.text.includes('Add to investigation'));
 
       if (existingAddToInvestigationItem) {
         menuItems.push({ ...existingAddToInvestigationItem });
