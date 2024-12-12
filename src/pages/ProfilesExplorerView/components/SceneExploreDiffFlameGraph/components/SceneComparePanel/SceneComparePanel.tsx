@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import {
+  AdHocVariableFilter,
   dateTime,
   dateTimeFormat,
   FieldMatcherID,
@@ -77,14 +78,19 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   constructor({
     target,
     useAncestorTimeRange,
+    clearDiffRange,
+    filters,
   }: {
     target: SceneComparePanelState['target'];
     useAncestorTimeRange: boolean;
+    clearDiffRange: boolean;
+    filters: AdHocVariableFilter[];
   }) {
     const filterKey = target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison';
     const title = target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
     const color =
       target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString();
+
     super({
       key: `${target}-panel`,
       target,
@@ -98,14 +104,24 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       timeRangeSyncEnabled: false,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, useAncestorTimeRange));
+    this.addActivationHandler(this.onActivate.bind(this, useAncestorTimeRange, clearDiffRange, filters));
   }
 
-  onActivate(useAncestorTimeRange: boolean) {
-    const { $timeRange, timeseriesPanel } = this.state;
+  onActivate(useAncestorTimeRange: boolean, clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
+    const { $timeRange, timeseriesPanel, filterKey } = this.state;
+
+    if (clearDiffRange) {
+      this.setDiffRange(null);
+    }
 
     if (useAncestorTimeRange) {
       $timeRange.setState(omit(this.getAncestorTimeRange().state, 'key'));
+    }
+
+    if (filters.length) {
+      const filtersVariable = sceneGraph.findByKey(this, filterKey) as FiltersVariable;
+
+      filtersVariable.setState({ filters });
     }
 
     timeseriesPanel.updateTitle(this.buildTimeseriesTitle());
@@ -259,7 +275,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   applyPreset({ from, to, diffFrom, diffTo, label }: Preset) {
-    this.setDiffRange(diffFrom, diffTo);
+    this.setDiffRange({ from: diffFrom, to: diffTo });
 
     this.setTimeRange(buildTimeRange(from, to));
 
@@ -274,10 +290,16 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
   }
 
-  setDiffRange(diffFrom: string, diffTo: string) {
+  setDiffRange(options: { from: string; to: string } | null) {
     const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
+
+    if (options === null) {
+      $diffTimeRange.nullifyAnnotationTimeRange();
+      return;
+    }
+
     const { annotationTimeRange } = $diffTimeRange.state;
-    const newAnnotationTimeRange = $diffTimeRange.buildAnnotationTimeRange(diffFrom, diffTo);
+    const newAnnotationTimeRange = $diffTimeRange.buildAnnotationTimeRange(options.from, options.to);
 
     if (
       !annotationTimeRange.from.isSame(newAnnotationTimeRange.from) ||
@@ -298,7 +320,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const { from, to } = $timeRange.state.value;
 
     if (selectWholeRange) {
-      this.setDiffRange(from.toISOString(), to.toISOString());
+      this.setDiffRange({ from: from.toISOString(), to: to.toISOString() });
       return;
     }
 
@@ -309,10 +331,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
     if (target === CompareTarget.BASELINE) {
       // we have to create a new instance because add() mutates the original one
-      this.setDiffRange(from.toISOString(), dateTime(from).add(range).toISOString());
+      this.setDiffRange({ from: from.toISOString(), to: dateTime(from).add(range).toISOString() });
     } else {
       // we have to create a new instance because subtract() mutates the original one
-      this.setDiffRange(dateTime(to).subtract(range).toISOString(), to.toISOString());
+      this.setDiffRange({ from: dateTime(to).subtract(range).toISOString(), to: to.toISOString() });
     }
   }
 

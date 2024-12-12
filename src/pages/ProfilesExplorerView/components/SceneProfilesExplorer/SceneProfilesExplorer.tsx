@@ -217,11 +217,18 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       });
     });
 
-    const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, () => {
+    const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, (event) => {
+      const { useAncestorTimeRange, clearDiffRange, baselineFilters, comparisonFilters } = event.payload;
+
       this.setExplorationType({
         type: ExplorationType.DIFF_FLAME_GRAPH,
         comesFromUserAction: true,
-        preserveCurrentTimeRange: true,
+        bodySceneOptions: {
+          useAncestorTimeRange,
+          clearDiffRange,
+          baselineFilters,
+          comparisonFilters,
+        },
       });
     });
 
@@ -237,14 +244,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   setExplorationType({
     type,
-    item,
     comesFromUserAction,
-    preserveCurrentTimeRange,
+    item,
+    bodySceneOptions,
   }: {
     type: ExplorationType;
-    item?: GridItemData;
     comesFromUserAction?: boolean;
-    preserveCurrentTimeRange?: boolean;
+    item?: GridItemData;
+    bodySceneOptions?: Record<string, any>;
   }) {
     if (comesFromUserAction) {
       prepareHistoryEntry();
@@ -253,7 +260,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.setState({
       explorationType: type,
-      body: this.buildBodyScene(type, item, preserveCurrentTimeRange),
+      body: this.buildBodyScene(type, item, bodySceneOptions),
     });
   }
 
@@ -275,7 +282,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
   }
 
-  buildBodyScene(explorationType: ExplorationType, item?: GridItemData, preserveCurrentTimeRange?: boolean) {
+  buildBodyScene(explorationType: ExplorationType, item?: GridItemData, bodySceneOptions?: Record<string, any>) {
     let primary;
 
     switch (explorationType) {
@@ -292,7 +299,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.DIFF_FLAME_GRAPH:
-        primary = new SceneExploreDiffFlameGraph({ useAncestorTimeRange: Boolean(preserveCurrentTimeRange) });
+        primary = new SceneExploreDiffFlameGraph(bodySceneOptions || {});
         break;
 
       case ExplorationType.FAVORITES:
