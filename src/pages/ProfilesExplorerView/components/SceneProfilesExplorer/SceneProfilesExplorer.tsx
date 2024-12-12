@@ -44,7 +44,6 @@ import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/S
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneTimeRangeWithAnnotations } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/components/SceneTimeRangeWithAnnotations';
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
@@ -222,6 +221,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       this.setExplorationType({
         type: ExplorationType.DIFF_FLAME_GRAPH,
         comesFromUserAction: true,
+        preserveCurrentTimeRange: true,
       });
     });
 
@@ -237,12 +237,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   setExplorationType({
     type,
-    comesFromUserAction,
     item,
+    comesFromUserAction,
+    preserveCurrentTimeRange,
   }: {
     type: ExplorationType;
-    comesFromUserAction?: boolean;
     item?: GridItemData;
+    comesFromUserAction?: boolean;
+    preserveCurrentTimeRange?: boolean;
   }) {
     if (comesFromUserAction) {
       prepareHistoryEntry();
@@ -251,7 +253,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.setState({
       explorationType: type,
-      body: this.buildBodyScene(type, item, comesFromUserAction),
+      body: this.buildBodyScene(type, item, preserveCurrentTimeRange),
     });
   }
 
@@ -261,6 +263,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
 
     // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"
+    // if not, they will be added to the queries without any notice on the UI
     if (
       ![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH, ExplorationType.DIFF_FLAME_GRAPH].includes(
         nextExplorationType as ExplorationType
@@ -270,47 +273,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         filters: FiltersVariable.DEFAULT_VALUE,
       });
     }
-
-    // apply filters when entering "Diff flame graph"
-    if (nextExplorationType === ExplorationType.DIFF_FLAME_GRAPH) {
-      const [filtersVariable, baselineFiltersVariable, comparisonFiltersVariable] = [
-        'filters',
-        'filtersBaseline',
-        'filtersComparison',
-      ].map((filterKey) => sceneGraph.findByKey(this, filterKey)) as FiltersVariable[];
-
-      const existingFilters = filtersVariable.state.filters;
-
-      if (existingFilters.length) {
-        baselineFiltersVariable.setState({ filters: existingFilters });
-        comparisonFiltersVariable.setState({ filters: existingFilters });
-      }
-    }
-
-    // clear baseline/comparison filters and time ranges when leaving "Diff flame graph"
-    if (
-      nextExplorationType !== ExplorationType.DIFF_FLAME_GRAPH &&
-      this.state.explorationType === ExplorationType.DIFF_FLAME_GRAPH
-    ) {
-      ['filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
-        sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable).setState({
-          filters: FiltersVariable.DEFAULT_VALUE,
-        });
-      });
-
-      const { from, to, value } = this.state.$timeRange.state;
-
-      ['baseline-panel-timerange', 'comparison-panel-timerange'].forEach((timeRangeKey) => {
-        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRange).setState({ from, to, value });
-      });
-
-      ['baseline-annotation-timerange', 'comparison-annotation-timerange'].forEach((timeRangeKey) => {
-        sceneGraph.findByKeyAndType(this, timeRangeKey, SceneTimeRangeWithAnnotations).nullifyAnnotationTimeRange();
-      });
-    }
   }
 
-  buildBodyScene(explorationType: ExplorationType, item?: GridItemData, comesFromUserAction?: boolean) {
+  buildBodyScene(explorationType: ExplorationType, item?: GridItemData, preserveCurrentTimeRange?: boolean) {
     let primary;
 
     switch (explorationType) {
@@ -327,7 +292,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.DIFF_FLAME_GRAPH:
-        primary = new SceneExploreDiffFlameGraph({ useAncestorTimeRange: Boolean(comesFromUserAction) });
+        primary = new SceneExploreDiffFlameGraph({ useAncestorTimeRange: Boolean(preserveCurrentTimeRange) });
         break;
 
       case ExplorationType.FAVORITES:
