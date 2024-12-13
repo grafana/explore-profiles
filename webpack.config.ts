@@ -16,14 +16,8 @@ const config = async (env): Promise<Configuration> => {
 
   const swcLoaderJsc = (swcLoader?.use as any).options.jsc;
 
-  // required
-  swcLoaderJsc.baseUrl = path.join(process.cwd(), 'src');
-
   // Decorators are only used in src/shared/components/FlameGraph/components/infrastructure/PprofRequest.ts
   swcLoaderJsc.parser.decorators = true;
-
-  // Don't minified React component names in devtools
-  // swcLoaderJsc.keepClassNames = env.development;
 
   // Customize CopyWebpackPlugin
   // to prevent JSON files used in tests to appear in the build artefacts
@@ -40,8 +34,7 @@ const config = async (env): Promise<Configuration> => {
 
   jsonPattern.filter = (filepath) => !filepath.includes('__tests__');
 
-  // Final config
-  return merge(baseConfig, {
+  const finalConfig = merge(baseConfig, {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json'],
       alias: {
@@ -63,6 +56,8 @@ const config = async (env): Promise<Configuration> => {
       ],
     },
   });
+
+  return finalConfig;
 };
 
 export default config;

@@ -1,9 +1,10 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { Button, FieldSet, Form, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
+import { Button, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
+import { useForm } from 'react-hook-form';
 
 import { useSettingsView } from './domain/useSettingsView';
 
@@ -18,80 +19,74 @@ export function SettingsView() {
     ]);
   }
 
+  const { handleSubmit } = useForm();
+
   return (
     <>
       <PageTitle title="Profiles settings" />
-      <Form className={styles.settingsForm} onSubmit={actions.saveSettings}>
-        {() => (
-          <>
-            <FieldSet label="Flame graph" data-testid="flamegraph-settings">
-              <InlineFieldRow>
-                <InlineField label="Collapsed flame graphs" labelWidth={24}>
-                  <InlineSwitch
-                    label="Toggle collapsed flame graphs"
-                    name="collapsed-flamegraphs"
-                    value={data.collapsedFlamegraphs}
-                    onChange={actions.toggleCollapsedFlamegraphs}
-                  />
-                </InlineField>
-              </InlineFieldRow>
-              <InlineFieldRow>
-                <InlineField label="Maximum number of nodes" tooltip="" labelWidth={24}>
-                  <Input
-                    name="max-nodes"
-                    type="number"
-                    min="1"
-                    value={data.maxNodes}
-                    onChange={actions.updateMaxNodes}
-                  />
-                </InlineField>
-              </InlineFieldRow>
-            </FieldSet>
-            <FieldSet label="Function details" data-testid="function-details-settings">
-              <InlineFieldRow>
-                <InlineField
-                  label="Enable function details"
-                  labelWidth={24}
-                  tooltip={
-                    <div className={styles.tooltip}>
-                      <p>
-                        The function details feature enables mapping of resource usage to lines of source code. If the
-                        GitHub integration is configured, then the source code will be downloaded from GitHub.
-                      </p>
-                      <p>
-                        <a
-                          href="https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/"
-                          target="_blank"
-                          rel="noreferrer noopener"
-                        >
-                          Learn more
-                        </a>
-                      </p>
-                    </div>
-                  }
-                  interactive
-                >
-                  <InlineSwitch
-                    label="Toggle function details"
-                    name="function-details-feature"
-                    value={data.enableFunctionDetails}
-                    onChange={actions.toggleEnableFunctionDetails}
-                  />
-                </InlineField>
-              </InlineFieldRow>
-            </FieldSet>
+      <form className={styles.settingsForm} onSubmit={handleSubmit(actions.saveSettings)}>
+        <>
+          <FieldSet label="Flame graph" data-testid="flamegraph-settings">
+            <InlineFieldRow>
+              <InlineField label="Collapsed flame graphs" labelWidth={24}>
+                <InlineSwitch
+                  label="Toggle collapsed flame graphs"
+                  name="collapsed-flamegraphs"
+                  value={data.collapsedFlamegraphs}
+                  onChange={actions.toggleCollapsedFlamegraphs}
+                />
+              </InlineField>
+            </InlineFieldRow>
+            <InlineFieldRow>
+              <InlineField label="Maximum number of nodes" tooltip="" labelWidth={24}>
+                <Input name="max-nodes" type="number" min="1" value={data.maxNodes} onChange={actions.updateMaxNodes} />
+              </InlineField>
+            </InlineFieldRow>
+          </FieldSet>
+          <FieldSet label="Function details" data-testid="function-details-settings">
+            <InlineFieldRow>
+              <InlineField
+                label="Enable function details"
+                labelWidth={24}
+                tooltip={
+                  <div className={styles.tooltip}>
+                    <p>
+                      The function details feature enables mapping of resource usage to lines of source code. If the
+                      GitHub integration is configured, then the source code will be downloaded from GitHub.
+                    </p>
+                    <p>
+                      <a
+                        href="https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/"
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        Learn more
+                      </a>
+                    </p>
+                  </div>
+                }
+                interactive
+              >
+                <InlineSwitch
+                  label="Toggle function details"
+                  name="function-details-feature"
+                  value={data.enableFunctionDetails}
+                  onChange={actions.toggleEnableFunctionDetails}
+                />
+              </InlineField>
+            </InlineFieldRow>
+          </FieldSet>
 
-            <div className={styles.buttons}>
-              <Button variant="primary" type="submit">
-                Save settings
-              </Button>
-              <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Explore Profiles">
-                Back to Explore Profiles
-              </Button>
-            </div>
-          </>
-        )}
-      </Form>
+          <div className={styles.buttons}>
+            <Button variant="primary" type="submit">
+              Save settings
+            </Button>
+            <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Explore Profiles">
+              Back to Explore Profiles
+            </Button>
+          </div>
+        </>
+      </form>
     </>
   );
 }
