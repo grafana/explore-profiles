@@ -365,29 +365,30 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     this.setState({ compare: new Map() });
   }
 
-  updateCompareFilters() {
-    const { compare } = this.state;
-    const baselineItem = compare.get(CompareTarget.BASELINE);
-    const comparisonItem = compare.get(CompareTarget.COMPARISON);
-
-    const baselineQueryRunnerParams = interpolateQueryRunnerVariables(this, baselineItem as GridItemData);
-    const comparisonQueryRunnerParams = interpolateQueryRunnerVariables(this, comparisonItem as GridItemData);
-
-    sceneGraph.findByKeyAndType(this, 'filtersBaseline', FiltersVariable).setState({
-      filters: baselineQueryRunnerParams.filters,
-    });
-
-    sceneGraph.findByKeyAndType(this, 'filtersComparison', FiltersVariable).setState({
-      filters: comparisonQueryRunnerParams.filters,
-    });
-  }
-
   onClickCompareButton = () => {
     reportInteraction('g_pyroscope_app_compare_link_clicked');
 
-    this.updateCompareFilters();
+    const { compare } = this.state;
 
-    this.publishEvent(new EventViewDiffFlameGraph({}), true);
+    const { filters: baselineFilters } = interpolateQueryRunnerVariables(
+      this,
+      compare.get(CompareTarget.BASELINE) as GridItemData
+    );
+
+    const { filters: comparisonFilters } = interpolateQueryRunnerVariables(
+      this,
+      compare.get(CompareTarget.COMPARISON) as GridItemData
+    );
+
+    this.publishEvent(
+      new EventViewDiffFlameGraph({
+        useAncestorTimeRange: true,
+        clearDiffRange: true,
+        baselineFilters,
+        comparisonFilters,
+      }),
+      true
+    );
   };
 
   onClickClearCompareButton = () => {
