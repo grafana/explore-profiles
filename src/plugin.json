@@ -58,6 +58,11 @@
     }
   ],
   "extensions": {
+    "extensionPoints": [
+      {
+        "id": "grafana-pyroscope-app/exploration/v1"
+      }
+    ],
     "addedLinks": [
       {
         "title": "Open in Explore Profiles",

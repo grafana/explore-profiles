@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -15,19 +15,20 @@ import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafan
 import { merge } from 'lodash';
 import React from 'react';
 
-import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
-import { getColorByIndex } from '../helpers/getColorByIndex';
-import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
-import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
-import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
+import { getSeriesStatsValue } from '../../infrastructure/helpers/getSeriesStatsValue';
+import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
+import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import {
   addRefId,
   addStats,
   limitNumberOfSeries,
   sortSeries,
-} from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
-import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
@@ -73,6 +74,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             })
         )
         .setHeaderActions(headerActions(item))
+        .setMenu(new SceneTimeseriesMenu({}) as unknown as VizPanelMenu)
         .build(),
     });
 
@@ -81,8 +83,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   onActivate() {
     const { body } = this.state;
-
-    body.setState({ menu: this.buildMenu() });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
@@ -109,53 +109,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     return () => {
       sub.unsubscribe();
     };
-  }
-
-  buildMenu(selectedScaleIndex = 0): VizPanelMenu {
-    const scaleSubMenu = [
-      {
-        index: 0,
-        text: 'Linear',
-        scaleDistribution: { type: ScaleDistribution.Linear },
-      },
-      {
-        index: 1,
-        text: 'Log2',
-        scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-      },
-    ].map((option) => ({
-      text: `${selectedScaleIndex === option.index ? '✔ ' : ''}${option.text}`,
-      onClick: () => this.onClickScaleOption(option),
-    }));
-
-    return new VizPanelMenu({
-      items: [
-        {
-          text: 'Scale',
-          type: 'group',
-          subMenu: scaleSubMenu,
-        },
-      ],
-    });
-  }
-
-  onClickScaleOption(option: PanelMenuItem & { index: number; scaleDistribution: ScaleDistributionConfig }) {
-    const { scaleDistribution, text, index } = option;
-    const { body } = this.state;
-
-    body.clearFieldConfigCache();
-
-    body.setState({
-      menu: this.buildMenu(index),
-      fieldConfig: merge({}, body.state.fieldConfig, {
-        defaults: {
-          custom: {
-            scaleDistribution,
-            axisLabel: scaleDistribution.type !== ScaleDistribution.Linear ? text : '',
-          },
-        },
-      }),
-    });
   }
 
   getConfig(series: DataFrame[]) {
@@ -268,6 +221,23 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   updateTitle(newTitle: string) {
     this.state.body.setState({ title: newTitle });
+  }
+
+  changeScale(scaleDistribution: ScaleDistributionConfig, axisLabel: string) {
+    const { body } = this.state;
+
+    body.clearFieldConfigCache();
+
+    body.setState({
+      fieldConfig: merge({}, body.state.fieldConfig, {
+        defaults: {
+          custom: {
+            scaleDistribution,
+            axisLabel: scaleDistribution.type !== ScaleDistribution.Linear ? axisLabel : '',
+          },
+        },
+      }),
+    });
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {

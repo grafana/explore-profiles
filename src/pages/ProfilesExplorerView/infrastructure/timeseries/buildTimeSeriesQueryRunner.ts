@@ -1,7 +1,16 @@
 import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from '../pyroscope-data-sources';
+import { withPreventInvalidQuery } from '../withPreventInvalidQuery';
 import { TimeSeriesQueryRunnerParams } from './TimeSeriesQueryRunnerParams';
+
+export type TimeSeriesQuery = {
+  refId: string;
+  queryType: 'metrics';
+  profileTypeId: string;
+  labelSelector: string;
+  groupBy: string[];
+};
 
 export function buildTimeSeriesQueryRunner({
   serviceName,
@@ -14,7 +23,7 @@ export function buildTimeSeriesQueryRunner({
 
   const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
 
-  return new SceneQueryRunner({
+  const queryRunner = new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [
       {
@@ -26,4 +35,6 @@ export function buildTimeSeriesQueryRunner({
       },
     ],
   });
+
+  return withPreventInvalidQuery(queryRunner);
 }
