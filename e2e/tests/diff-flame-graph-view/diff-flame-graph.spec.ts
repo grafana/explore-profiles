@@ -119,11 +119,7 @@ test.describe('Diff flame graph view', () => {
     test('Baseline time picker', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.selectService('pyroscope'); // clears the flame graph ranges
 
-      await exploreProfilesPage.selectComparisonTimeRange(
-        'baseline',
-        '2024-03-13T19:21:00.000Z',
-        '2024-03-13T19:34:00.000Z'
-      );
+      await exploreProfilesPage.selectComparisonTimeRange('baseline', '2024-03-13 19:21', '2024-03-13 19:34');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
@@ -157,11 +153,7 @@ test.describe('Diff flame graph view', () => {
     test('Comparison time picker', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.selectService('pyroscope'); // clears the flame graph ranges
 
-      await exploreProfilesPage.selectComparisonTimeRange(
-        'comparison',
-        '2024-03-13T19:37:00.000Z',
-        '2024-03-13T19:41:00.000Z'
-      );
+      await exploreProfilesPage.selectComparisonTimeRange('comparison', '2024-03-13 19:37', '2024-03-13 19:41');
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
@@ -225,10 +217,7 @@ test.describe('Diff flame graph view', () => {
     });
 
     test('Syncing flame graph range selection', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage
-        .getComparisonPanel('baseline')
-        .getByRole('button', { name: /^sync time ranges/i })
-        .click();
+      await exploreProfilesPage.clickOnSyncTimerangesButton('baseline');
 
       await Promise.all([
         exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 }),
@@ -241,11 +230,7 @@ test.describe('Diff flame graph view', () => {
     });
 
     test('Syncing time picker range selection', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage
-        .getComparisonPanel('comparison')
-        .getByRole('button', { name: /^sync time ranges/i })
-        .click();
-
+      await exploreProfilesPage.clickOnSyncTimerangesButton('comparison');
       await exploreProfilesPage.switchComparisonSelectionMode('baseline', 'Time picker');
 
       await Promise.all([

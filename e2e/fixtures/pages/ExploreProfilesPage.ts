@@ -342,8 +342,8 @@ export class ExploreProfilesPage extends PyroscopePage {
 
     const overlay = this.getByTestId('data-testid TimePicker Overlay Content');
 
-    await overlay.getByTestId('data-testid Time Range from field').fill(from);
     await overlay.getByTestId('data-testid Time Range to field').fill(to);
+    await overlay.getByTestId('data-testid Time Range from field').fill(from);
 
     await overlay.getByTestId('data-testid TimePicker submit button').click();
   }
@@ -360,5 +360,11 @@ export class ExploreProfilesPage extends PyroscopePage {
 
     await panel.hover({ position: coordsTo });
     await this.mouse.up();
+  }
+
+  clickOnSyncTimerangesButton(target: 'baseline' | 'comparison') {
+    return this.getComparisonPanel(target)
+      .getByRole('button', { name: /^sync time ranges/i })
+      .click();
   }
 }
