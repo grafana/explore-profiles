@@ -154,8 +154,7 @@ jobs:
           export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
           export GRAFANA_PLUGIN_VERSION=$(cat dist/plugin.json | jq -r .info.version)
           export SHA=${{ github.event.pull_request.head.sha || github.sha }}
-          export HASH=$(echo $SHA | cut -c1-7)
-          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${GRAFANA_PLUGIN_VERSION}-${HASH}
+          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${GRAFANA_PLUGIN_VERSION}-${SHA}
           echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
           echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
@@ -169,29 +168,11 @@ jobs:
           mv dist ${{ steps.metadata.outputs.plugin_id }}
           zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
 
-      - name: Setup GSC upload
-        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+      - id: Login to GCS
+        uses: 'google-github-actions/auth@v2'
         with:
-          vault_instance: ops
-          common_secrets: |
-            GCP_UPLOAD_ARTIFACTS_KEY=grafana/integration-artifacts-uploader-service-account:'credentials.json'
-
-      - id: login-to-gcs
-        name: Login to GCS
-        uses: grafana/shared-workflows/actions/login-to-gcs@main
-        with:
-          environment: prod
-
-      - id: 'upload-to-gcs'
-        name: 'Upload assets to GCS'
-        uses: grafana/shared-workflows/actions/push-to-gcs@main
-        with:
-          environment: prod
-          path: ./
-          bucket: 'grafana-pyroscope-app'
-          bucket_path: 'test'
-          glob: '*.zip'
-          parent: false
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
 
   deploy-to-dev:
     name: Deploy PR to dev (dry run)
