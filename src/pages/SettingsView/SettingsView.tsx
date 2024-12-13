@@ -4,7 +4,6 @@ import { Button, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, use
 import { displayError } from '@shared/domain/displayStatus';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
-import { useForm } from 'react-hook-form';
 
 import { useSettingsView } from './domain/useSettingsView';
 
@@ -19,12 +18,15 @@ export function SettingsView() {
     ]);
   }
 
-  const { handleSubmit } = useForm();
+  function onSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    actions.saveSettings();
+  }
 
   return (
     <>
       <PageTitle title="Profiles settings" />
-      <form className={styles.settingsForm} onSubmit={handleSubmit(actions.saveSettings)}>
+      <form className={styles.settingsForm} onSubmit={onSubmit}>
         <>
           <FieldSet label="Flame graph" data-testid="flamegraph-settings">
             <InlineFieldRow>
