@@ -22,7 +22,7 @@ test.describe('All services view', () => {
   });
 
   test.describe('Main refresh button', () => {
-    test('To presrve the user context, the panels in grid remains in placeuntil "Refresh" is clicked', async ({
+    test('To preserve the user context, the panels in grid remain in place until "Refresh" is clicked', async ({
       exploreProfilesPage,
     }) => {
       await expect(exploreProfilesPage.getPanels()).toHaveCount(3);
