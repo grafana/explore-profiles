@@ -163,12 +163,11 @@ jobs:
         run: echo archive_name=${{ steps.metadata.outputs.archive_name }}, plugin_id=${{ steps.metadata.outputs.plugin_id }}
 
       - name: Package plugin
-        id: package-plugin
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}
           zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
 
-      - id: Login to GCS
+      - name: Login to GCS
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
