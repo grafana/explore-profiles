@@ -32,7 +32,11 @@ function buildURL(props: URLParamsBuilderProps) {
     timeRangeParam = `&from=${timeRange.from}&to=${timeRange.to}`;
   }
 
-  return `/a/grafana-pyroscope-app/profiles-explorer?${datasourceParam}${serviceNameParam}${profileTypeParam}${timeRangeParam}${explorationTypeParam}`;
+  const base = '/a/grafana-pyroscope-app/profiles-explorer?';
+  const params = new URLSearchParams(
+    `${datasourceParam}${serviceNameParam}${profileTypeParam}${timeRangeParam}${explorationTypeParam}`
+  ).toString();
+  return `${base}${params}`;
 }
 
 export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtensionExploreContext> = {
