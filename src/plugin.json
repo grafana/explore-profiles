@@ -55,5 +55,12 @@
       "addToNav": true,
       "defaultNav": false
     }
-  ]
+  ],
+  "extensions": {
+    "extensionPoints": [
+      {
+        "id": "grafana-pyroscope-app/exploration/v1"
+      }
+    ]
+  }
 }
