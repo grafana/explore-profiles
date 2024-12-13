@@ -105,7 +105,7 @@ test.describe('Flame graph view', () => {
 
   test.describe('Panel actions', () => {
     test('Labels action', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnPanelAction('Total nanoseconds of CPU time consumed', 'Labels');
+      await exploreProfilesPage.clickOnPanelAction('CPU time consumed', 'Labels');
 
       await exploreProfilesPage.asserSelectedExplorationType('Labels');
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
@@ -117,7 +117,7 @@ test.describe('Flame graph view', () => {
     });
 
     test('Favorite action', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnPanelAction('Total nanoseconds of CPU time consumed', 'Favorite');
+      await exploreProfilesPage.clickOnPanelAction('CPU time consumed', 'Favorite');
 
       await exploreProfilesPage.selectExplorationType('Favorites');
 

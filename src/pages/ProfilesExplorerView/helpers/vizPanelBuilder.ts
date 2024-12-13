@@ -1,7 +1,7 @@
 import { PanelType } from '../components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneLabelValuesBarGauge } from '../components/SceneLabelValuesBarGauge';
 import { SceneLabelValuesHistogram } from '../components/SceneLabelValuesHistogram';
-import { SceneLabelValuesTimeseries } from '../components/SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../components/SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 
 export function vizPanelBuilder(panelType: PanelType, options: any) {
   switch (panelType) {

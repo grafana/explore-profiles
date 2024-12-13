@@ -2,6 +2,7 @@ import { SceneQueryRunner } from '@grafana/scenes';
 
 import { PYROSCOPE_DATA_SOURCE } from '../pyroscope-data-sources';
 import { TimeSeriesQueryRunnerParams } from '../timeseries/TimeSeriesQueryRunnerParams';
+import { withPreventInvalidQuery } from '../withPreventInvalidQuery';
 
 type FlameGraphQueryRunnerParams = TimeSeriesQueryRunnerParams & {
   maxNodes?: number;
@@ -13,7 +14,7 @@ export function buildFlameGraphQueryRunner({ filters, maxNodes }: FlameGraphQuer
 
   const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
 
-  return new SceneQueryRunner({
+  const queryRunner = new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
     queries: [
       {
@@ -25,4 +26,6 @@ export function buildFlameGraphQueryRunner({ filters, maxNodes }: FlameGraphQuer
       },
     ],
   });
+
+  return withPreventInvalidQuery(queryRunner);
 }
