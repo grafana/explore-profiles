@@ -33,7 +33,7 @@ import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSerie
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { PanelType } from '../../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
-import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { CompareTarget } from '../../domain/types';
 import { Preset } from '../ScenePresetsPicker/ScenePresetsPicker';
 import {

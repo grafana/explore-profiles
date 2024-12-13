@@ -23,7 +23,7 @@ import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
 import { SceneLabelValuesHistogram } from '../SceneLabelValuesHistogram';
-import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
 import { LayoutType, SceneLayoutSwitcher, SceneLayoutSwitcherState } from './components/SceneLayoutSwitcher';
