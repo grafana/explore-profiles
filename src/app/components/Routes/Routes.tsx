@@ -7,11 +7,6 @@ import { ProfilesExplorerView } from '../../../pages/ProfilesExplorerView/Profil
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
 import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
 
-// const PageOne = React.lazy(() => import('../../pages/PageOne'));
-// const PageTwo = React.lazy(() => import('../../pages/PageTwo'));
-// const PageThree = React.lazy(() => import('../../pages/PageThree'));
-// const PageFour = React.lazy(() => import('../../pages/PageFour'));
-
 export function Routes() {
   useNavigationLinksUpdate();
 
