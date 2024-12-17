@@ -1,5 +1,4 @@
 {
-  "root": true,
   "plugins": ["jest", "sonarjs", "@tanstack/query"],
   "extends": [
     "./.config/.eslintrc",
