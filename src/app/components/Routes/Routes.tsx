@@ -1,6 +1,6 @@
 import { prefixRouteWithPluginBaseUrl } from '@shared/domain/prefixRouteWithPluginBaseUrl';
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Routes as ReactRouterRoutes, Route } from 'react-router-dom';
 
 import { ROUTES } from '../../../constants';
 import { AdHocView } from '../../../pages/AdHocView/AdHocView';
@@ -12,20 +12,12 @@ export function Routes() {
   useNavigationLinksUpdate();
 
   return (
-    <Switch>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} exact>
-        <ProfilesExplorerView />
-      </Route>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)} exact>
-        <AdHocView />
-      </Route>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SETTINGS)} exact>
-        <SettingsView />
-      </Route>
+    <ReactRouterRoutes>
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} element={<ProfilesExplorerView />} />
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)} element={<AdHocView />} />
+      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SETTINGS)} element={<SettingsView />} />
       {/* Default Route */}
-      <Route>
-        <Redirect to={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} />
-      </Route>
-    </Switch>
+      <Route path={prefixRouteWithPluginBaseUrl('/*')} element={<ProfilesExplorerView />} />
+    </ReactRouterRoutes>
   );
 }
