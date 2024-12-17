@@ -21,7 +21,7 @@ jest.mock('@grafana/runtime', () => ({
       },
     },
     buildInfo: {
-      version: '11.3.0',
+      version: '11.3.2',
       edition: 'Enterprise',
     },
   },

@@ -2,12 +2,15 @@
 import * as path from 'path';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import type { Configuration, RuleSetRule } from 'webpack';
+import LiveReloadPlugin from 'webpack-livereload-plugin';
 import { merge } from 'webpack-merge';
 
 import grafanaConfig from './.config/webpack/webpack.config';
 
 const config = async (env): Promise<Configuration> => {
   const baseConfig = (await grafanaConfig(env)) as any;
+
+  /* MODULES */
 
   // Customize swc-loader
   const swcLoader = baseConfig.module.rules.find((rule: { use: { loader: string } }) => {
@@ -19,20 +22,24 @@ const config = async (env): Promise<Configuration> => {
   // Decorators are only used in src/shared/components/FlameGraph/components/infrastructure/PprofRequest.ts
   swcLoaderJsc.parser.decorators = true;
 
-  // Customize CopyWebpackPlugin
-  // to prevent JSON files used in tests to appear in the build artefacts
-  // among them, there might be (e.g.) some "plugin.json" files used that the platform would try to load
-  const copyPlugin = baseConfig.plugins.find((p) => p instanceof CopyWebpackPlugin);
-  if (!copyPlugin) {
-    throw 'Webpack CopyPlugin not found! Please check .config/webpack/webpack.config.ts and adjust this configuration.';
-  }
+  /* PLUGINS */
 
-  const jsonPattern = copyPlugin.patterns.find(({ from }) => from === '**/*.json');
+  // Disable Live reload
+  baseConfig.plugins = baseConfig.plugins.filter((p) => !(p instanceof LiveReloadPlugin));
+
+  // Customize CopyWebpackPlugin to prevent JSON files used in tests to appear in the build artefacts.
+  // Among them, there might be (e.g.) some "plugin.json" files used that the platform would try to load.
+  const jsonPattern = baseConfig.plugins
+    .find((p) => p instanceof CopyWebpackPlugin)
+    .patterns.find(({ from }) => from === '**/*.json');
+
   if (!jsonPattern) {
     throw 'Cannot find a JSON entry in the Webpack CopyPlugin! Please check .config/webpack/webpack.config.ts and adjust this configuration.';
   }
 
   jsonPattern.filter = (filepath) => !filepath.includes('__tests__');
+
+  /* FINAL CONFIG */
 
   const finalConfig = merge(baseConfig, {
     resolve: {

@@ -1,4 +1,3 @@
-import { prefixRouteWithPluginBaseUrl } from '@shared/domain/prefixRouteWithPluginBaseUrl';
 import React from 'react';
 import { Routes as ReactRouterRoutes, Route } from 'react-router-dom';
 
@@ -8,16 +7,21 @@ import { ProfilesExplorerView } from '../../../pages/ProfilesExplorerView/Profil
 import { SettingsView } from '../../../pages/SettingsView/SettingsView';
 import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
 
+// const PageOne = React.lazy(() => import('../../pages/PageOne'));
+// const PageTwo = React.lazy(() => import('../../pages/PageTwo'));
+// const PageThree = React.lazy(() => import('../../pages/PageThree'));
+// const PageFour = React.lazy(() => import('../../pages/PageFour'));
+
 export function Routes() {
   useNavigationLinksUpdate();
 
   return (
     <ReactRouterRoutes>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} element={<ProfilesExplorerView />} />
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)} element={<AdHocView />} />
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SETTINGS)} element={<SettingsView />} />
+      <Route path={ROUTES.PROFILES_EXPLORER_VIEW} element={<ProfilesExplorerView />} />
+      <Route path={ROUTES.ADHOC_VIEW} element={<AdHocView />} />
+      <Route path={ROUTES.SETTINGS} element={<SettingsView />} />
       {/* Default Route */}
-      <Route path={prefixRouteWithPluginBaseUrl('/*')} element={<ProfilesExplorerView />} />
+      <Route path="/*" element={<ProfilesExplorerView />} />
     </ReactRouterRoutes>
   );
 }
