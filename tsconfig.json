@@ -8,8 +8,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "paths": {
-      "@shared/*": ["./src/shared/*"],
-      "react": ["./node_modules/@types/react"]
+      "@shared/*": ["./src/shared/*"]
     }
   }
 }

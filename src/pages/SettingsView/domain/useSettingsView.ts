@@ -3,7 +3,7 @@ import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl
 import { DEFAULT_SETTINGS, PluginSettings } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { PLUGIN_BASE_URL, ROUTES } from '../../../constants';
 
@@ -12,8 +12,10 @@ export function useSettingsView() {
   const [maxNodesFromUrl, setMaxNodes] = useMaxNodesFromUrl();
   const [currentSettings, setCurrentSettings] = useState<PluginSettings>(settings ?? DEFAULT_SETTINGS);
 
-  const history = useHistory();
-  const referrerRef = useRef(history.location.state?.referrer);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const referrerRef = useRef(location.state?.referrer);
 
   useEffect(() => {
     if (settings) {
@@ -67,7 +69,7 @@ export function useSettingsView() {
       },
       goBack() {
         if (!referrerRef.current) {
-          history.push(`${PLUGIN_BASE_URL}${ROUTES.PROFILES_EXPLORER_VIEW}`);
+          navigate(`${PLUGIN_BASE_URL}${ROUTES.PROFILES_EXPLORER_VIEW}`);
           return;
         }
 
@@ -78,7 +80,7 @@ export function useSettingsView() {
           backUrl.searchParams.set('maxNodes', String(maxNodesFromUrl));
         }
 
-        history.push(`${backUrl.pathname}${backUrl.search}`);
+        navigate(`${backUrl.pathname}${backUrl.search}`);
       },
     },
   };

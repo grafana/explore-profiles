@@ -3,7 +3,7 @@ import { displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { logger } from '@shared/infrastructure/tracking/logger';
 import { useCallback } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { PLUGIN_BASE_URL, ROUTES } from 'src/constants';
 
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
@@ -44,7 +44,7 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
 
   const dataSourceUid = dataSourceVariable.useState().value as string;
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   return {
     data: {
@@ -63,8 +63,8 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
       onClickUserSettings: useCallback(() => {
         reportInteraction('g_pyroscope_app_user_settings_clicked');
 
-        history.push(`${PLUGIN_BASE_URL}${ROUTES.SETTINGS}`, { referrer: window.location.href });
-      }, [history]),
+        navigate(`${PLUGIN_BASE_URL}${ROUTES.SETTINGS}`, { state: { referrer: window.location.href } });
+      }, [navigate]),
     },
   };
 }
