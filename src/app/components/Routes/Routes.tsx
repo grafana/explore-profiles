@@ -2,9 +2,9 @@ import React from 'react';
 import { Routes as ReactRouterRoutes, Route } from 'react-router-dom';
 
 import { ROUTES } from '../../../constants';
+import ProfilesExplorerView from '../../../pages/ProfilesExplorerView/ProfilesExplorerView';
 import { useNavigationLinksUpdate } from './domain/useNavigationLinksUpdate';
 
-const ProfilesExplorerView = React.lazy(() => import('../../../pages/ProfilesExplorerView/ProfilesExplorerView'));
 const AdHocView = React.lazy(() => import('../../../pages/AdHocView/AdHocView'));
 const SettingsView = React.lazy(() => import('../../../pages/SettingsView/SettingsView'));
 
