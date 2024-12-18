@@ -7,7 +7,7 @@ import React from 'react';
 
 import { useSettingsView } from './domain/useSettingsView';
 
-export function SettingsView() {
+export default function SettingsView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useSettingsView();
 
