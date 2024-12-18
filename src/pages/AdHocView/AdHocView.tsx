@@ -3,7 +3,7 @@ import React from 'react';
 
 import { AdHocTabs } from './ui/AdHocTabs';
 
-export default function AdHocView() {
+export function AdHocView() {
   return (
     <>
       <PageTitle title="Ad hoc view" />
