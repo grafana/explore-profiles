@@ -1,4 +1,3 @@
-import { prefixRouteWithPluginBaseUrl } from '@shared/domain/prefixRouteWithPluginBaseUrl';
 import React from 'react';
 import { Routes as ReactRouterRoutes, Route } from 'react-router-dom';
 
@@ -14,9 +13,9 @@ export function Routes() {
 
   return (
     <ReactRouterRoutes>
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.PROFILES_EXPLORER_VIEW)} element={<ProfilesExplorerView />} />
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.ADHOC_VIEW)} element={<AdHocView />} />
-      <Route path={prefixRouteWithPluginBaseUrl(ROUTES.SETTINGS)} element={<SettingsView />} />
+      <Route path={ROUTES.PROFILES_EXPLORER_VIEW} element={<ProfilesExplorerView />} />
+      <Route path={ROUTES.ADHOC_VIEW} element={<AdHocView />} />
+      <Route path={ROUTES.SETTINGS} element={<SettingsView />} />
       {/* Default Route */}
       <Route path="/*" element={<ProfilesExplorerView />} />
     </ReactRouterRoutes>
