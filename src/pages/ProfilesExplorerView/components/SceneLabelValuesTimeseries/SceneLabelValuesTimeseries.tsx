@@ -1,33 +1,29 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState, PanelMenuItem } from '@grafana/data';
+import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
   SceneDataProvider,
-  SceneDataQuery,
   SceneDataTransformer,
-  sceneGraph,
   SceneObjectBase,
   SceneObjectState,
-  SceneQueryRunner,
   VizPanel,
   VizPanelMenu,
   VizPanelState,
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
-import { reportInteraction } from '@shared/domain/reportInteraction';
 import { merge } from 'lodash';
 import React from 'react';
 
-import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDataReceived';
-import { getColorByIndex } from '../helpers/getColorByIndex';
-import { getExploreUrl } from '../helpers/getExploreUrl';
-import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
-import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
-import { LabelsDataSource } from '../infrastructure/labels/LabelsDataSource';
-import { buildTimeSeriesQueryRunner, TimeSeriesQuery } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import { addRefId, addStats } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
-import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
+import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
+import { getSeriesStatsValue } from '../../infrastructure/helpers/getSeriesStatsValue';
+import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
+import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   item: GridItemData;
@@ -74,6 +70,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             })
         )
         .setHeaderActions(headerActions(item))
+        .setMenu(new SceneTimeseriesMenu({}) as unknown as VizPanelMenu)
         .build(),
     });
 
@@ -82,10 +79,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   onActivate() {
     const { body } = this.state;
-
-    body.setState({
-      menu: new VizPanelMenu({ items: this.buildMenuItems() }),
-    });
 
     const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
       if (newState.data?.state !== LoadingState.Done) {
@@ -112,86 +105,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     return () => {
       sub.unsubscribe();
     };
-  }
-
-  buildMenuItems(scaleType = ScaleDistribution.Linear): PanelMenuItem[] {
-    return [
-      {
-        text: 'Scale type',
-        type: 'group',
-        subMenu: [
-          {
-            text: 'Linear',
-            scaleDistribution: { type: ScaleDistribution.Linear },
-          },
-          {
-            text: 'Log2',
-            scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-          },
-        ].map((option) => ({
-          text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
-          onClick: () => this.onClickScaleOption(option),
-        })),
-      },
-      {
-        type: 'divider',
-        text: '',
-      },
-      {
-        iconClassName: 'compass',
-        text: 'Open in Explore',
-        onClick: () => this.onClickExplore(),
-      },
-    ];
-  }
-
-  onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
-    const { scaleDistribution, text } = option;
-    const { body } = this.state;
-
-    reportInteraction('g_pyroscope_app_timeseries_scale_changed', { scale: scaleDistribution.type });
-
-    body.clearFieldConfigCache();
-
-    body.setState({
-      fieldConfig: merge({}, body.state.fieldConfig, {
-        defaults: {
-          custom: {
-            scaleDistribution,
-            axisLabel: scaleDistribution.type !== ScaleDistribution.Linear ? text : '',
-          },
-        },
-      }),
-    });
-
-    body.state.menu?.setItems(this.buildMenuItems(scaleDistribution.type));
-  }
-
-  onClickExplore() {
-    reportInteraction('g_pyroscope_app_open_in_explore_clicked');
-
-    const query = this.getInterpolatedQuery();
-    const datasource = sceneGraph.interpolate(this, '${dataSource}');
-    const rawTimeRange = sceneGraph.getTimeRange(this).state.value.raw;
-
-    const exploreUrl = getExploreUrl(rawTimeRange, query, datasource);
-
-    window.open(exploreUrl, '_blank');
-  }
-
-  getInterpolatedQuery() {
-    const queryRunner = this.state.body.state.$data?.state.$data as SceneQueryRunner;
-    const nonInterpolatedQuery = queryRunner?.state.queries[0] as SceneDataQuery;
-
-    return Object.entries(nonInterpolatedQuery)
-      .map(([key, value]) => [key, typeof value === 'string' ? sceneGraph.interpolate(this, value) : value])
-      .reduce(
-        (acc, [key, value]) => ({
-          ...acc,
-          [key]: value,
-        }),
-        {}
-      ) as TimeSeriesQuery;
   }
 
   getConfig(series: DataFrame[]) {
@@ -306,6 +219,23 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   updateTitle(newTitle: string) {
     this.state.body.setState({ title: newTitle });
+  }
+
+  changeScale(scaleDistribution: ScaleDistributionConfig, axisLabel: string) {
+    const { body } = this.state;
+
+    body.clearFieldConfigCache();
+
+    body.setState({
+      fieldConfig: merge({}, body.state.fieldConfig, {
+        defaults: {
+          custom: {
+            scaleDistribution,
+            axisLabel: scaleDistribution.type !== ScaleDistribution.Linear ? axisLabel : '',
+          },
+        },
+      }),
+    });
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {

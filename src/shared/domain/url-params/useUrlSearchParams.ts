@@ -1,7 +1,7 @@
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export function useUrlSearchParams() {
-  const history = useHistory();
+  const navigate = useNavigate();
   const location = useLocation();
 
   return {
@@ -13,7 +13,7 @@ export function useUrlSearchParams() {
         newSearchParams.set(key, value);
       }
 
-      history.replace({ search: newSearchParams.toString() });
+      navigate({ search: newSearchParams.toString() }, { replace: true });
     },
   };
 }

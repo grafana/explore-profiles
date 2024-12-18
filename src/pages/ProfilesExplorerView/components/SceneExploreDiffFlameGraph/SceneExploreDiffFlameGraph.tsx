@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
+import { AdHocVariableFilter, DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
 import {
   behaviors,
@@ -33,16 +33,30 @@ interface SceneExploreDiffFlameGraphState extends SceneObjectState {
 }
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
-  constructor({ useAncestorTimeRange }: { useAncestorTimeRange: boolean }) {
+  constructor({
+    useAncestorTimeRange,
+    clearDiffRange,
+    baselineFilters,
+    comparisonFilters,
+  }: {
+    useAncestorTimeRange?: boolean;
+    clearDiffRange?: boolean;
+    baselineFilters?: AdHocVariableFilter[];
+    comparisonFilters?: AdHocVariableFilter[];
+  }) {
     super({
       key: 'explore-diff-flame-graph',
       baselinePanel: new SceneComparePanel({
         target: CompareTarget.BASELINE,
-        useAncestorTimeRange,
+        useAncestorTimeRange: Boolean(useAncestorTimeRange),
+        clearDiffRange: Boolean(clearDiffRange),
+        filters: baselineFilters || [],
       }),
       comparisonPanel: new SceneComparePanel({
         target: CompareTarget.COMPARISON,
-        useAncestorTimeRange,
+        useAncestorTimeRange: Boolean(useAncestorTimeRange),
+        clearDiffRange: Boolean(clearDiffRange),
+        filters: comparisonFilters || [],
       }),
       $behaviors: [
         new behaviors.CursorSync({
@@ -136,7 +150,10 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     }
 
     if (annotationTimeRange) {
-      targetPanel.setDiffRange(annotationTimeRange.from.toISOString(), annotationTimeRange.to.toISOString());
+      targetPanel.setDiffRange({
+        from: annotationTimeRange.from.toISOString(),
+        to: annotationTimeRange.to.toISOString(),
+      });
     }
   }
 

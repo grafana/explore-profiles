@@ -5,6 +5,7 @@
   "id": "grafana-pyroscope-app",
   "autoEnabled": true,
   "backend": false,
+  "preload": true,
   "dependencies": {
     "grafanaDependency": ">=11.4.0",
     "plugins": []
@@ -55,5 +56,19 @@
       "addToNav": true,
       "defaultNav": false
     }
-  ]
+  ],
+  "extensions": {
+    "extensionPoints": [
+      {
+        "id": "grafana-pyroscope-app/exploration/v1"
+      }
+    ],
+    "addedLinks": [
+      {
+        "title": "Open in Explore Profiles",
+        "description": "Try our new queryless experience for profiles",
+        "targets": ["grafana/explore/toolbar/action"]
+      }
+    ]
+  }
 }
