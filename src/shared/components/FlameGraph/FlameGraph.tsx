@@ -1,8 +1,8 @@
 import { createTheme } from '@grafana/data';
-import { FlameGraph as GrafanaFlameGraph, Props } from '@grafana/flamegraph';
 import { useTheme2 } from '@grafana/ui';
 import React, { memo, useMemo } from 'react';
 
+import { FlameGraph as GrafanaFlameGraph, Props } from '../../../tmp/grafana-flamegraph/src/';
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
 import { ExportData } from './components/ExportData';
 import { flamebearerToDataFrameDTO } from './domain/flamebearerToDataFrameDTO';
@@ -46,6 +46,7 @@ function FlameGraphComponent({
       vertical={vertical}
       getTheme={getTheme as any}
       getExtraContextMenuButtons={getExtraContextMenuButtons}
+      keepFocusOnDataChange
     />
   );
 }

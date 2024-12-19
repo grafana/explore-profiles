@@ -1,10 +1,10 @@
 import { IconName } from '@grafana/data';
-import { Props as FlameGraphProps } from '@grafana/flamegraph';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { useCallback, useState } from 'react';
 
+import { Props as FlameGraphProps } from '../../../../../../../tmp/grafana-flamegraph/src';
 import { useGitHubContext } from '../components/GitHubContextProvider/useGitHubContext';
 import { buildStackTrace } from './buildStackTrace';
 

@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "no-unused-vars": "off",
+    "react/react-in-jsx-scope": "off",
+    "@grafana/no-border-radius-literal": "off",
+    "sonarjs/cognitive-complexity": "off",
+    "sonarjs/no-collapsible-if": "off"
+  }
+}
