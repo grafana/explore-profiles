@@ -1,6 +1,5 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
-import { FlameGraph } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
@@ -14,6 +13,7 @@ import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
+import { FlameGraph } from '../../../../tmp/grafana-flamegraph/src/';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
@@ -201,6 +201,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                 timeRange={data.export.timeRange}
               />
             }
+            keepFocusOnDataChange
           />
         </Panel>
 
