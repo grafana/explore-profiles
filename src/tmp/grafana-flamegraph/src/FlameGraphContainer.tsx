@@ -144,8 +144,8 @@ const FlameGraphContainer = ({
   useEffect(() => {
     if (!keepFocusOnDataChange) {
       resetFocus();
+      resetSandwich();
     }
-    resetSandwich();
   }, [data, keepFocusOnDataChange, resetFocus]);
 
   const onSymbolClick = useCallback(
