@@ -8,7 +8,7 @@ keywords:
   - flame graphs
 refs:
   flame-graphs:
-    - pattern: /docs/pyroscope/
+    - pattern: /docs/explore-profiles/
       destination: https://grafana.com/docs/explore-profiles/<EXPLORE_PROFILES_VERSION>/concepts/flame-graphs/
 ---
 
