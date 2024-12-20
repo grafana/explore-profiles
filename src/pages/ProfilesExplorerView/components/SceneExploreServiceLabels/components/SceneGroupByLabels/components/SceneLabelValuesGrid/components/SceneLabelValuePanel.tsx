@@ -7,7 +7,7 @@ import React from 'react';
 import { EventTimeseriesDataReceived } from '../../../../../../../domain/events/EventTimeseriesDataReceived';
 import { getSeriesStatsValue } from '../../../../../../../infrastructure/helpers/getSeriesStatsValue';
 import { GridItemData } from '../../../../../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries';
+import { SceneLabelValuesTimeseries } from '../../../../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { GRID_AUTO_ROWS } from '../SceneLabelValuesGrid';
 import { SceneStatsPanel } from './SceneStatsPanel/SceneStatsPanel';
 

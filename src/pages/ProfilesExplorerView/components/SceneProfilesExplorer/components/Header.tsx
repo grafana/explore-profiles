@@ -19,7 +19,7 @@ export type HeaderProps = {
 };
 
 export function Header(props: HeaderProps) {
-  const chromeHeaderHeight = useChromeHeaderHeight();
+  const chromeHeaderHeight = useChromeHeaderHeight?.();
   const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0);
 
   const { data, actions } = useHeader(props);

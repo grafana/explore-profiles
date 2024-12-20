@@ -34,14 +34,12 @@ jest.mock('@shared/domain/url-params/useMaxNodesFromUrl', () => ({
 
 // useHistory dependency
 jest.mock('react-router-dom', () => ({
-  useHistory: () => ({
-    push: jest.fn(),
-    location: {
-      state: {
-        referrer: 'http://unit.test/pass',
-      },
+  useLocation: () => ({
+    state: {
+      referrer: 'http://unit.test/pass',
     },
   }),
+  useNavigate: () => jest.fn(),
 }));
 
 // tests
