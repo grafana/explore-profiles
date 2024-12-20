@@ -2,7 +2,7 @@
 title: Flame graphs
 menuTitle: Flame graphs
 description: Learn about flame graphs to help visualize performance data.
-weight: 33
+weight: 400
 keywords:
   - Flame graphs
 ---

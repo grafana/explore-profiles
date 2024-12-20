@@ -2,7 +2,7 @@
 title: What is profiling?
 menuTitle: What is profiling?
 description: Discover the types of profiling and how to apply each profiling method.
-weight: 33
+weight: 100
 keywords:
   - Pyroscope
   - Profiling
