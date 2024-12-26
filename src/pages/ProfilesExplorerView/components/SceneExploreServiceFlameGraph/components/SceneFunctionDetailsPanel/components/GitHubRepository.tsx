@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { Icon, LinkButton, Spinner, useStyles2 } from '@grafana/ui';
+import { Button, Icon, Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { useGitHubContext } from './GitHubContextProvider/useGitHubContext';
@@ -45,9 +45,15 @@ export const GitHubRepository = ({ enableIntegration, repository }: GitHubReposi
   // enableIntegration=true, isLoginInProgress=false
   if (!isLoggedIn) {
     return (
-      <LinkButton icon="github" variant="primary" onClick={login}>
+      <Button
+        icon="github"
+        variant="primary"
+        onClick={login}
+        tooltip={`Once connected, the "${repository.name}" repository will only be accessible from this browser session.`}
+        tooltipPlacement="top"
+      >
         Connect to {repository.name}
-      </LinkButton>
+      </Button>
     );
   }
 
