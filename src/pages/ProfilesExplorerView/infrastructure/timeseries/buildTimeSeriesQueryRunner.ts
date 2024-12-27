@@ -12,12 +12,10 @@ export type TimeSeriesQuery = {
   groupBy: string[];
 };
 
-export function buildTimeSeriesQueryRunner({
-  serviceName,
-  profileMetricId,
-  groupBy,
-  filters,
-}: TimeSeriesQueryRunnerParams) {
+export function buildTimeSeriesQueryRunner(
+  { serviceName, profileMetricId, groupBy, filters }: TimeSeriesQueryRunnerParams,
+  limit?: number
+) {
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: serviceName || '$serviceName' });
 
@@ -32,6 +30,7 @@ export function buildTimeSeriesQueryRunner({
         profileTypeId: profileMetricId || '$profileMetricId',
         labelSelector: `{${selector},$filters}`,
         groupBy: groupBy?.label ? [groupBy.label] : [],
+        limit,
       },
     ],
   });

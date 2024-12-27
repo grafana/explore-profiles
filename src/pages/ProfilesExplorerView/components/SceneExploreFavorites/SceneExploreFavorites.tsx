@@ -56,7 +56,7 @@ export class SceneExploreFavorites extends SceneObjectBase<SceneExploreFavorites
               new SelectAction({
                 type: 'expand-panel',
                 item,
-                tooltip: () => 'Expand this panel to view all the data',
+                tooltip: () => 'Expand panel to view all the data',
                 skipVariablesInterpolation: true,
               })
             );
