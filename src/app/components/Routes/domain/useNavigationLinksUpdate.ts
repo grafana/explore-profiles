@@ -1,12 +1,11 @@
-import { History } from 'history';
 import { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
 
 import plugin from '../../../../plugin.json';
 
 const NAVIGATION_ROUTES = plugin.includes.map(({ path }) => path.replace('%PLUGIN_ID%', plugin.id));
 
-const interceptClick = (history: History) => (event: Event) => {
+const interceptClick = (navigate: NavigateFunction) => (event: Event) => {
   const link = (event.target as HTMLElement).closest('[aria-label="Navigation"] a') as HTMLAnchorElement;
   if (!link) {
     return;
@@ -18,24 +17,27 @@ const interceptClick = (history: History) => (event: Event) => {
     return;
   }
 
-  history.replace({
-    pathname,
-    search: new URLSearchParams(window.location.search).toString(),
-  });
+  navigate(
+    {
+      pathname,
+      search: new URLSearchParams(window.location.search).toString(),
+    },
+    { replace: true }
+  );
 
   event.preventDefault();
 };
 
 export function useNavigationLinksUpdate() {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const onClick = interceptClick(history);
+    const onClick = interceptClick(navigate);
 
     document.body.addEventListener('click', onClick, true);
 
     return () => {
       document.body.removeEventListener('click', onClick, true);
     };
-  }, [history]);
+  }, [navigate]);
 }
