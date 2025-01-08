@@ -36,7 +36,7 @@ To learn more, refer to [AI-powered insights for continuous profiling: introduci
 
 ## Flame graph AI compliments human interpretation
 
-Flame graph AI's strength lies not just in analysis but more importantly in filling the gaps by augmenting and enhancing user experience.
+Flame graph AI analyzes a flame graph and provides a plain English interpretation of the flame graph.
 
 It only takes using a flame graph successfully once to really move from the beginner to advanced interpretation.
 From a product standpoint, one challenge has been building a user-experience that can span from beginner to expert and still be useful for both.
@@ -61,7 +61,7 @@ To use Flame graph AI, you must have:
 - Configured a [Grafana Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) that has profiling data
 
 - Enabled the [LLM plugin](https://grafana.com/docs/grafana-cloud/alerting-and-irm/machine-learning/configure/llm-plugin/) for your Grafana instance
-- Optional: Activated the [Explore Profiles](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app for your Grafana instance
+- Activated the [Explore Profiles](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app for your Grafana instance
 
 ### Use Flame graph AI
 
@@ -76,7 +76,7 @@ To use Flame graph AI when viewing a flame graph:
 
 The **Diff flame graph** view facilitates side-by-side comparison of profiles either based on different label sets, different time periods, or both. This feature is extremely valuable for understanding the impact of changes or differences between do distinct queries of your application.
 
-The **Diff flame graphw** view is an extension of **Comparison view**, crucial for more easily visually showing the differences between two profiling datasets.
+The **Diff flame graph** view is an extension of **Comparison view**, crucial for more easily visually showing the differences between two profiling datasets.
 Similar to a `git diff`, the comparison takes the flame graphs from the comparison view and highlights the differences between the two flame graphs.
 
 You can use Flame graph AI to interpret the diff view.
