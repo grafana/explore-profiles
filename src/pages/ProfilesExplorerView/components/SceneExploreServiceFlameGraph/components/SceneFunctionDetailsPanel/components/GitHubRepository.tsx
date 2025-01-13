@@ -49,7 +49,7 @@ export const GitHubRepository = ({ enableIntegration, repository }: GitHubReposi
         icon="github"
         variant="primary"
         onClick={login}
-        tooltip={`Once connected, the "${repository.name}" repository will only be accessible from this browser session.`}
+        tooltip="Once connected, the GitHub code will be accessible only from this browser session."
         tooltipPlacement="top"
       >
         Connect to {repository.name}
