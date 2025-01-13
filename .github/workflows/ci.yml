@@ -153,11 +153,11 @@ jobs:
           sudo apt-get install jq
           
           export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
-          export GRAFANA_PLUGIN_VERSION=$(cat dist/plugin.json | jq -r .info.version)
           export SHA=${{ github.event.pull_request.head.sha || github.sha }}
-          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${GRAFANA_PLUGIN_VERSION}-${SHA}
+          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${SHA}
           echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
           echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
+          echo "sha=${SHA}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
 
       - name: Debug
@@ -188,4 +188,14 @@ jobs:
     environment: pull-requests
     steps:
       - name: Publish to dev
-        run: echo [[Test message]] Package ${{ needs.package.outputs.package_id }} deployed to dev
+        run: echo Deploying ${{ needs.package.outputs.sha }} deployed to dev
+#      - name: Deploy to dev
+#        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
+#        with:
+#          instance: "ops"
+#          namespace: "phlare-cd"
+#          workflow_template: "deploy-plugin-dev"
+#          parameters: |
+#            plugintag=${{ needs.package.outputs.sha }}
+#          extra_args: "--name deploy-plugin-dev-${{ needs.package.outputs.sha }} --dry-run"
+#          log_level: "debug"
