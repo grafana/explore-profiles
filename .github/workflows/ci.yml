@@ -179,7 +179,7 @@ jobs:
         uses: 'google-github-actions/upload-cloud-storage@v1'
         with:
           path: ./
-          destination: 'grafana-pyroscope-app/test'
+          destination: 'grafana-pyroscope-app/releases'
           glob: '*.zip'
 
   deploy-to-dev:
@@ -190,13 +190,13 @@ jobs:
     steps:
       - name: Publish to dev
         run: echo Deploying ${{ needs.package.outputs.sha }} to dev
-#      - name: Deploy to dev
-#        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
-#        with:
-#          instance: "ops"
-#          namespace: "phlare-cd"
-#          workflow_template: "deploy-plugin-dev"
-#          parameters: |
-#            plugintag=${{ needs.package.outputs.sha }}
-#          extra_args: "--name deploy-plugin-dev-${{ needs.package.outputs.sha }} --dry-run"
-#          log_level: "debug"
+      - name: Deploy to dev
+        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
+        with:
+          instance: "ops"
+          namespace: "phlare-cd"
+          workflow_template: "deploy-plugin-dev"
+          parameters: |
+            plugintag=${{ needs.package.outputs.sha }}
+          extra_args: "--name deploy-plugin-dev-${{ needs.package.outputs.sha }} --dry-run"
+          log_level: "debug"
