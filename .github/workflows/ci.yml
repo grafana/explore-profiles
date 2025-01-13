@@ -136,6 +136,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       package_id: ${{ steps.metadata.outputs.package_id }}
+      sha: ${{ steps.metadata.outputs.sha }}
     steps:
       # Required to correctly auth to GCS
       - name: Prepare - GCS
@@ -188,7 +189,7 @@ jobs:
     environment: pull-requests
     steps:
       - name: Publish to dev
-        run: echo Deploying ${{ needs.package.outputs.sha }} deployed to dev
+        run: echo Deploying ${{ needs.package.outputs.sha }} to dev
 #      - name: Deploy to dev
 #        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
 #        with:
