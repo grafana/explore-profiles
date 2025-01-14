@@ -129,6 +129,15 @@ jobs:
             e2e/test-results
           retention-days: 15
 
+  envtest:
+    name: Test skipping environment
+    needs: [ frontend ]
+    environment: ${{ github.event_name == 'pull_request' && 'pull-requests' || null }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Event name
+        run: echo Event name ${{ github.event_name }}
+
   package:
     name: Package signed plugin
     needs: [ frontend ]
@@ -184,7 +193,7 @@ jobs:
           predefinedAcl: publicRead
 
   deploy-to-dev:
-    name: Deploy PR to dev (dry run)
+    name: Deploy to dev
     needs: [ package ]
     runs-on: ubuntu-latest
     environment: pull-requests
