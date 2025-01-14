@@ -181,6 +181,7 @@ jobs:
           path: ./
           destination: 'grafana-pyroscope-app/releases'
           glob: '*.zip'
+          predefinedAcl: publicRead
 
   deploy-to-dev:
     name: Deploy PR to dev (dry run)
