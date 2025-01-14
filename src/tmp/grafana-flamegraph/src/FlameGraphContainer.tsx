@@ -142,11 +142,37 @@ const FlameGraphContainer = ({
   }
 
   useEffect(() => {
-    if (!keepFocusOnDataChange) {
-      resetFocus();
-      resetSandwich();
+    if (keepFocusOnDataChange && dataContainer && focusedItemData) {
+      const item = dataContainer.getNodesWithLabel(focusedItemData.label)?.[0];
+
+      if (item) {
+        setFocusedItemData({ ...focusedItemData, item });
+
+        const levels = dataContainer.getLevels();
+        const totalViewTicks = levels.length ? levels[0][0].value : 0;
+        setRangeMin(item.start / totalViewTicks);
+        setRangeMax((item.start + item.value) / totalViewTicks);
+      } else {
+        setFocusedItemData({
+          ...focusedItemData,
+          item: {
+            start: 0,
+            value: 0,
+            itemIndexes: [],
+            children: [],
+            level: 0,
+          },
+        });
+        setRangeMin(0);
+        setRangeMax(1);
+      }
+
+      return;
     }
-  }, [data, keepFocusOnDataChange, resetFocus]);
+
+    resetFocus();
+    resetSandwich();
+  }, [dataContainer, focusedItemData, keepFocusOnDataChange, resetFocus]);
 
   const onSymbolClick = useCallback(
     (symbol: string) => {
