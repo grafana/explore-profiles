@@ -137,42 +137,42 @@ const FlameGraphContainer = ({
     setRangeMax(1);
   }, [setFocusedItemData, setRangeMax, setRangeMin]);
 
-  function resetSandwich() {
+  const resetSandwich = useCallback(() => {
     setSandwichItem(undefined);
-  }
+  }, [setSandwichItem]);
 
   useEffect(() => {
-    if (keepFocusOnDataChange && dataContainer && focusedItemData) {
-      const item = dataContainer.getNodesWithLabel(focusedItemData.label)?.[0];
-
-      if (item) {
-        setFocusedItemData({ ...focusedItemData, item });
-
-        const levels = dataContainer.getLevels();
-        const totalViewTicks = levels.length ? levels[0][0].value : 0;
-        setRangeMin(item.start / totalViewTicks);
-        setRangeMax((item.start + item.value) / totalViewTicks);
-      } else {
-        setFocusedItemData({
-          ...focusedItemData,
-          item: {
-            start: 0,
-            value: 0,
-            itemIndexes: [],
-            children: [],
-            level: 0,
-          },
-        });
-        setRangeMin(0);
-        setRangeMax(1);
-      }
-
+    if (!keepFocusOnDataChange || !dataContainer || !focusedItemData) {
+      resetFocus();
+      resetSandwich();
       return;
     }
 
-    resetFocus();
-    resetSandwich();
-  }, [dataContainer, focusedItemData, keepFocusOnDataChange, resetFocus]);
+    const item = dataContainer.getNodesWithLabel(focusedItemData.label)?.[0];
+
+    if (item) {
+      setFocusedItemData({ ...focusedItemData, item });
+
+      const levels = dataContainer.getLevels();
+      const totalViewTicks = levels.length ? levels[0][0].value : 0;
+      setRangeMin(item.start / totalViewTicks);
+      setRangeMax((item.start + item.value) / totalViewTicks);
+    } else {
+      setFocusedItemData({
+        ...focusedItemData,
+        item: {
+          start: 0,
+          value: 0,
+          itemIndexes: [],
+          children: [],
+          level: 0,
+        },
+      });
+
+      setRangeMin(0);
+      setRangeMax(1);
+    }
+  }, [dataContainer, keepFocusOnDataChange]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSymbolClick = useCallback(
     (symbol: string) => {
