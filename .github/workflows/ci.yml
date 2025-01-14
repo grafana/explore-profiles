@@ -189,7 +189,7 @@ jobs:
     environment: pull-requests
     steps:
       - name: Publish to dev
-        run: echo Deploying ${{ needs.package.outputs.sha }} to dev (${{ needs.package.outputs.package_id }})
+        run: echo Deploying ${{ needs.package.outputs.sha }} to dev
       - name: Deploy to dev
         uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
         with:
