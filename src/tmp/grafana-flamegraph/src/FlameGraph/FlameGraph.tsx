@@ -130,7 +130,7 @@ const FlameGraph = ({
     search,
     selectedView,
   };
-  const canvas = levelsCallers ? (
+  const canvas = levelsCallers?.length ? (
     <>
       <div className={styles.sandwichCanvasWrapper}>
         <div className={styles.sandwichMarker}>
