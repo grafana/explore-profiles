@@ -57,6 +57,7 @@ jobs:
       - name: Compatibility check
         run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
 
+      # The plugin is signed here so it's possible to use the artifact produced by the job directly
       - name: Setup plugin signing
         uses: grafana/shared-workflows/actions/get-vault-secrets@main
         with:
@@ -131,7 +132,9 @@ jobs:
           retention-days: 15
 
   package:
-    # Plugin is signed in frontend job. This step creates a zip and pushes it to the bucket
+    # This step creates a zip file with the plugin and pushes it to the bucket.
+    # Frontend artifacts have 1 day retention. This step needs to be run within 24 hours after frontend job finished.
+    # Plugin is already signed in frontend job so if you need to use to locally you can just download the artifact
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
     # to push the package automatically without approval
     name: Package signed plugin
