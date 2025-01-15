@@ -129,10 +129,19 @@ jobs:
             e2e/test-results
           retention-days: 15
 
-  envtest:
-    name: Test skipping environment
+  envtest1:
+    name: Test skipping GCS environment
     needs: [ frontend ]
-    environment: ${{ github.event_name == 'pull_request' && 'pull-requests' || null }}
+    environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Event name
+        run: echo Event name ${{ github.event_name }}
+
+  envtest2:
+    name: Test skipping Dev environment
+    needs: [ frontend ]
+    environment: ${{ github.event_name == 'push' && 'dev-no-approval' || 'gcs' }}
     runs-on: ubuntu-latest
     steps:
       - name: Event name
