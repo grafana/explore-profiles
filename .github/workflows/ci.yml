@@ -129,28 +129,10 @@ jobs:
             e2e/test-results
           retention-days: 15
 
-  envtest1:
-    name: Test skipping GCS environment
-    needs: [ frontend ]
-    environment: ${{ github.event_name != 'push' && 'gcs-no-approval' || 'gcs' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Event name
-        run: echo Event name ${{ github.event_name }}
-
-  envtest2:
-    name: Test skipping Dev environment
-    needs: [ frontend ]
-    environment: ${{ github.event_name != 'push' && 'dev-no-approval' || 'dev' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Event name
-        run: echo Event name ${{ github.event_name }}
-
   package:
     name: Package signed plugin
     needs: [ frontend ]
-    environment: pull-requests
+    environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
     runs-on: ubuntu-latest
     outputs:
       package_id: ${{ steps.metadata.outputs.package_id }}
@@ -205,7 +187,7 @@ jobs:
     name: Deploy to dev
     needs: [ package ]
     runs-on: ubuntu-latest
-    environment: pull-requests
+    environment: ${{ github.event_name == 'push' && 'dev-no-approval' || 'dev' }}
     steps:
       - name: Publish to dev
         run: echo Deploying ${{ needs.package.outputs.sha }} to dev
