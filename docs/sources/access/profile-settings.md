@@ -17,15 +17,16 @@ The **Profiles settings** page lets you modify flame graph, export, and function
 
 ![The Profiles Settings page](/media/docs/explore-profiles/explore-profiles-settings.png)
 
-| Features                    | Options        | Explanation                                                                                                                                                                                                                                               |
-| --------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Collapsed flame graph**   | Default: Off   | When this feature is active, you can collapse flame graphs to minimize their screen space.                                                                                                                                                                |
-| **Maximum number of nodes** | Default: 16384 | This number controls the maximum number of nodes, which controls the depth of the flame graph. The higher the number, the more nodes are used in the flame graph. The flame graphs appear longer.                                                         |
+| Features                    | Options        | Explanation                                                                                                                                                                                       |
+| --------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Collapsed flame graph**   | Default: Off   | When this feature is active, you can collapse flame graphs to minimize their screen space.                                                                                                        |
+| **Maximum number of nodes** | Default: 16384 | This number controls the maximum number of nodes, which controls the depth of the flame graph. The higher the number, the more nodes are used in the flame graph. The flame graphs appear longer. |
+
 <!-- Commenting out flamegraph.com
 | **Enable flamegraph.com**   | Default: On    | Adds a `flamegraph.com` export option to the **Export flame graph** menu. Flame graphs uploaded to `flamegraph.com` have a publicly accessible URL. Deactivate this option if data privacy is a concern.                                                  |
 -->
-| **Enable function details** | Default: On    | Enables mapping of resource usage to lines of source code. If the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/) is configured, then the source code is downloaded from GitHub. |
 
+| **Enable function details** | Default: On | Enables mapping of resource usage to lines of source code. If the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/) is configured, then the source code is downloaded from GitHub. |
 
 ## Modify settings
 

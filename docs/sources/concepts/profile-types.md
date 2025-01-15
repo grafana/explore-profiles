@@ -33,4 +33,3 @@ For information on auto-instrumentation and supported language SDKs, refer to [C
 
 [//]: # 'Shared content for profile type explanations.'
 [//]: # 'This content is located in /pyroscope/docs/sources/shared/intro/profile-types-descriptions.md'
-
