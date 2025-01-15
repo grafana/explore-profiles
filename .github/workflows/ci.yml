@@ -14,6 +14,7 @@ on:
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
 
+# Required to create OIDC/JWT token required to use shared actions
 permissions:
   contents: read
   id-token: write
