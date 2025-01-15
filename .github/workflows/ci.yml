@@ -132,7 +132,7 @@ jobs:
   envtest1:
     name: Test skipping GCS environment
     needs: [ frontend ]
-    environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
+    environment: ${{ github.event_name != 'push' && 'gcs-no-approval' || 'gcs' }}
     runs-on: ubuntu-latest
     steps:
       - name: Event name
@@ -141,7 +141,7 @@ jobs:
   envtest2:
     name: Test skipping Dev environment
     needs: [ frontend ]
-    environment: ${{ github.event_name == 'push' && 'dev-no-approval' || 'dev' }}
+    environment: ${{ github.event_name != 'push' && 'dev-no-approval' || 'dev' }}
     runs-on: ubuntu-latest
     steps:
       - name: Event name
