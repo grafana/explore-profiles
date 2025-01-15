@@ -55,6 +55,14 @@
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false
+    },
+    {
+      "type": "page",
+      "name": "Exported metrics",
+      "path": "/a/%PLUGIN_ID%/exported-metrics",
+      "role": "Viewer",
+      "addToNav": true,
+      "defaultNav": false
     }
   ],
   "extensions": {
