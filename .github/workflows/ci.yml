@@ -130,6 +130,9 @@ jobs:
           retention-days: 15
 
   package:
+    # Plugin is signed in frontend job. This step creates a zip and pushes it to the bucket
+    # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
+    # to push the package automatically without approval
     name: Package signed plugin
     needs: [ frontend ]
     environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
@@ -161,9 +164,6 @@ jobs:
           echo "sha=${SHA}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
 
-      - name: Debug
-        run: echo archive_name=${{ steps.metadata.outputs.archive_name }}, plugin_id=${{ steps.metadata.outputs.plugin_id }}
-
       - name: Package plugin
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}
@@ -184,6 +184,7 @@ jobs:
           predefinedAcl: publicRead
 
   deploy-to-dev:
+    # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
     name: Deploy to dev
     needs: [ package ]
     runs-on: ubuntu-latest
