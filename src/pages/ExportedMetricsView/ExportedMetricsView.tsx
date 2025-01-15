@@ -24,7 +24,7 @@ export function ExportedMetricsView() {
       <PageTitle title="Exported metrics" />
 
       <ul className={styles.list}>
-        {data.metrics.map((metric, i) => (
+        {data.metrics.map((metric: any, i: number) => (
           <li key={i}>
             <MetricCard
               key={i}

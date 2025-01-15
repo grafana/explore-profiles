@@ -1,4 +1,6 @@
-export function useExportedMetricsView() {
+import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+
+export function useExportedMetricsView(): DomainHookReturnValue {
   return {
     data: {
       metrics: [

@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
-import { FlameGraph } from '@grafana/flamegraph';
+import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
@@ -21,6 +21,7 @@ import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sourc
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
+import { useExportedMetricsMenu } from './components/SceneExportMetricsMenu/SceneExportMetricsMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 
@@ -153,6 +154,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { data, actions } = model.useSceneFlameGraph();
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
+    const exportMetricsMenu = useExportedMetricsMenu();
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -171,6 +173,18 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       ),
       [data.isLoading, data.title, styles.spinner]
     );
+
+    // Any is necessary because the type of clickedItemData is not exported by
+    // the flamegraph package.
+    const extraContextMenuButtons: FlameGraphProps['getExtraContextMenuButtons'] = (
+      clickedItemData: any,
+      data: Record<string, any>
+    ) => {
+      const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+      const metricsButtons = exportMetricsMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+
+      return [...ghButtons, ...metricsButtons];
+    };
 
     return (
       <div className={styles.flex}>
@@ -193,7 +207,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             data={data.profileData as any}
             disableCollapsing={!data.settings?.collapsedFlamegraphs}
             getTheme={actions.getTheme as any}
-            getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
+            getExtraContextMenuButtons={extraContextMenuButtons}
             extraHeaderElements={
               <data.export.menu.Component
                 model={data.export.menu}
