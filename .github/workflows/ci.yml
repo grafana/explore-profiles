@@ -141,7 +141,7 @@ jobs:
   envtest2:
     name: Test skipping Dev environment
     needs: [ frontend ]
-    environment: ${{ github.event_name == 'push' && 'dev-no-approval' || 'gcs' }}
+    environment: ${{ github.event_name == 'push' && 'dev-no-approval' || 'dev' }}
     runs-on: ubuntu-latest
     steps:
       - name: Event name
