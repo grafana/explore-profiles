@@ -40,23 +40,25 @@ const FlameGraphMetadata = memo(
 
     if (sandwichedLabel) {
       parts.push(
-        <span key={'sandwich'}>
-          <Icon size={'sm'} name={'angle-right'} />
-          <div className={styles.metadataPill}>
-            <Icon size={'sm'} name={'gf-show-context'} />{' '}
-            <span className={styles.metadataPillName}>
-              {sandwichedLabel.substring(sandwichedLabel.lastIndexOf('/') + 1)}
-            </span>
-            <IconButton
-              className={styles.pillCloseButton}
-              name={'times'}
-              size={'sm'}
-              onClick={onSandwichPillClick}
-              tooltip={'Remove sandwich view'}
-              aria-label={'Remove sandwich view'}
-            />
+        <Tooltip key={'sandwich'} content={sandwichedLabel} placement="top">
+          <div>
+            <Icon size={'sm'} name={'angle-right'} />
+            <div className={styles.metadataPill}>
+              <Icon size={'sm'} name={'gf-show-context'} />{' '}
+              <span className={styles.metadataPillName}>
+                {sandwichedLabel.substring(sandwichedLabel.lastIndexOf('/') + 1)}
+              </span>
+              <IconButton
+                className={styles.pillCloseButton}
+                name={'times'}
+                size={'sm'}
+                onClick={onSandwichPillClick}
+                tooltip={'Remove sandwich view'}
+                aria-label={'Remove sandwich view'}
+              />
+            </div>
           </div>
-        </span>
+        </Tooltip>
       );
     }
 
