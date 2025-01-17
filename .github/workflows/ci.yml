@@ -132,12 +132,12 @@ jobs:
           retention-days: 15
 
   package:
-    # This step creates a zip file with the plugin and pushes it to the bucket.
+    # This step creates a zip file with the plugin and publishes it to Google Cloud Storage bucket.
     # Frontend artifacts have 1 day retention. This step needs to be run within 24 hours after frontend job finished.
     # Plugin is already signed in frontend job so if you need to use to locally you can just download the artifact
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
     # to push the package automatically without approval
-    name: Package signed plugin
+    name: Package and publish plugin
     needs: [ frontend ]
     environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
     runs-on: ubuntu-latest
@@ -168,6 +168,7 @@ jobs:
           echo "sha=${SHA}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
 
+      # Create zip file with name following conventions [plugin-id]-[sha].zip
       - name: Package plugin
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}
@@ -179,7 +180,7 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
 
-      - name: Upload to GCS
+      - name: Publish to GCS
         uses: 'google-github-actions/upload-cloud-storage@v1'
         with:
           path: ./
