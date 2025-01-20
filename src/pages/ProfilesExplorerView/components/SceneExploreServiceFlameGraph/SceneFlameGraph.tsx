@@ -201,6 +201,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                 timeRange={data.export.timeRange}
               />
             }
+            keepFocusOnDataChange
           />
         </Panel>
 
