@@ -12,11 +12,17 @@ services:
     ports:
       - 3000:3000/tcp
     volumes:
+      - ./grafana.ini:/etc/grafana/grafana.ini
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
+      # TODO(simonswine): DO NOT MERGE, this should be a regular app dependency instaed, but first https://github.com/grafana/grafana-collector-app/pull/639 needs to merge.
+      - ../grafana-collector-app/dist:/var/lib/grafana/plugins/grafana-collector-app
+
     environment:
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
+      AGM_API_KEY: $AGM_API_KEY
+      FLEET_API_KEY: $FLEET_API_KEY
 
   qdrant:
     image: qdrant/qdrant

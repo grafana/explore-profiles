@@ -676,6 +676,103 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@buf/googleapis_googleapis.bufbuild_es@npm:2.2.3-20220908150232-8d7204855ec1.1":
+  version: 2.2.3-20220908150232-8d7204855ec1.1
+  resolution: "@buf/googleapis_googleapis.bufbuild_es@npm:2.2.3-20220908150232-8d7204855ec1.1"
+  peerDependencies:
+    "@bufbuild/protobuf": ^2.2.3
+  checksum: 10/ba83a4ad777a16ef78e593b8f79a798c7441ddf1dcfff8f5dd990690b38b4cfb3798ead1e7e43a9506a68cf508dd6071d8d3d12f22fc3cc83cb78af61ca0ccca
+  languageName: node
+  linkType: hard
+
+"@buf/googleapis_googleapis.connectrpc_query-es@npm:2.0.1-20220908150232-8d7204855ec1.1":
+  version: 2.0.1-20220908150232-8d7204855ec1.1
+  resolution: "@buf/googleapis_googleapis.connectrpc_query-es@npm:2.0.1-20220908150232-8d7204855ec1.1"
+  dependencies:
+    "@buf/googleapis_googleapis.bufbuild_es": "npm:2.2.3-20220908150232-8d7204855ec1.1"
+  peerDependencies:
+    "@bufbuild/protobuf": ^2.2.3
+    "@connectrpc/connect-query": ^2.0.1
+  checksum: 10/c487fb91cc10e572880c31911a8603dfa24d46bbdf3bec1f0f8bf19adfe223de515f4ee5b85406281bf696cae3346e06b801738da829aa7a3406cfe4e44adefa
+  languageName: node
+  linkType: hard
+
+"@buf/pyroscope_api.bufbuild_es@npm:2.2.3-20250124153826-9ae1034efb3f.1":
+  version: 2.2.3-20250124153826-9ae1034efb3f.1
+  resolution: "@buf/pyroscope_api.bufbuild_es@npm:2.2.3-20250124153826-9ae1034efb3f.1"
+  dependencies:
+    "@buf/googleapis_googleapis.bufbuild_es": "npm:2.2.3-20220908150232-8d7204855ec1.1"
+  peerDependencies:
+    "@bufbuild/protobuf": ^2.2.3
+  checksum: 10/98e7f361cd329fcfd9a31783f6e26dd59b25dd7289354946896cd21e0c71608da4d33fa274fd33cb2e72f9727196ef8f388e847102bb6f1448f58f1340ee471a
+  languageName: node
+  linkType: hard
+
+"@buf/pyroscope_api.connectrpc_query-es@npm:2.0.1-20250124153826-9ae1034efb3f.1":
+  version: 2.0.1-20250124153826-9ae1034efb3f.1
+  resolution: "@buf/pyroscope_api.connectrpc_query-es@npm:2.0.1-20250124153826-9ae1034efb3f.1"
+  dependencies:
+    "@buf/googleapis_googleapis.connectrpc_query-es": "npm:2.0.1-20220908150232-8d7204855ec1.1"
+    "@buf/pyroscope_api.bufbuild_es": "npm:2.2.3-20250124153826-9ae1034efb3f.1"
+  peerDependencies:
+    "@bufbuild/protobuf": ^2.2.3
+    "@connectrpc/connect-query": ^2.0.1
+  checksum: 10/7f69396268841119cfd417d6f445babc0e7edec575e856b7f6d89dc82d0116924537b2273f57b504d09c7ec7868f528ee11ebd880de342722ba4c33db00f6c43
+  languageName: node
+  linkType: hard
+
+"@bufbuild/protobuf@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "@bufbuild/protobuf@npm:2.2.3"
+  checksum: 10/30bf3ac56338159dadaa87dce5372d19ff50dc32d06293bdf655e35ebc1766435b485714d3b73a3b7070ce29f58891a9e2b0f453a2d7deef583797b4a420273c
+  languageName: node
+  linkType: hard
+
+"@connectrpc/connect-query-core@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@connectrpc/connect-query-core@npm:2.0.1"
+  peerDependencies:
+    "@bufbuild/protobuf": 2.x
+    "@connectrpc/connect": ^2.0.0
+    "@tanstack/query-core": 5.x
+  checksum: 10/d8642e66fac0aac10713018e8eec9e1ba20fa91093145842aba34a51a36602ad652d1a7317cbe0de12d37fe0c594a664cba4bfdf4d9daf1ecf539284e9b2cd10
+  languageName: node
+  linkType: hard
+
+"@connectrpc/connect-query@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@connectrpc/connect-query@npm:2.0.1"
+  dependencies:
+    "@connectrpc/connect-query-core": "npm:^2.0.1"
+  peerDependencies:
+    "@bufbuild/protobuf": 2.x
+    "@connectrpc/connect": ^2.0.0
+    "@tanstack/react-query": 5.x
+    react: ^18 || ^19
+    react-dom: ^18 || ^19
+  checksum: 10/4648aa37b7d40aa202b6057ca5067dae3f9a77d12868f0043883518e40a85a678f03e227e66253830f8bb81d40f3899b0d9c4a05a28adeb131b4638754599dbf
+  languageName: node
+  linkType: hard
+
+"@connectrpc/connect-web@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@connectrpc/connect-web@npm:2.0.1"
+  peerDependencies:
+    "@bufbuild/protobuf": ^2.2.0
+    "@connectrpc/connect": 2.0.1
+  checksum: 10/d975e104a989b8aa6dbab75f5294b41636dc8d4594d6b5219316acf2c1185a7074327f3a7b49763a4d37edb46befd670f94e573162df5c93e3dcc9109d01309e
+  languageName: node
+  linkType: hard
+
+"@connectrpc/connect@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@connectrpc/connect@npm:2.0.1"
+  peerDependencies:
+    "@bufbuild/protobuf": ^2.2.0
+  checksum: 10/6e1093e6d890af10c8497acfed3ad27e60dacc7f41511ff5824bac6f2b00bd4a6ede07d261ce8097bff314a1e0aebd27e1e01eb2fb83cfbdaafd273c8ae75ae3
+  languageName: node
+  linkType: hard
+
 "@conventional-changelog/git-client@npm:^1.0.0":
   version: 1.0.1
   resolution: "@conventional-changelog/git-client@npm:1.0.1"
@@ -12036,6 +12133,11 @@ __metadata:
   resolution: "pyroscope-app-plugin@workspace:."
   dependencies:
     "@babel/core": "npm:^7.21.4"
+    "@buf/pyroscope_api.connectrpc_query-es": "npm:2.0.1-20250124153826-9ae1034efb3f.1"
+    "@bufbuild/protobuf": "npm:^2.2.3"
+    "@connectrpc/connect": "npm:^2.0.1"
+    "@connectrpc/connect-query": "npm:^2.0.1"
+    "@connectrpc/connect-web": "npm:^2.0.1"
     "@emotion/css": "npm:11.10.6"
     "@grafana/data": "npm:11.3.2"
     "@grafana/e2e-selectors": "npm:^10.0.0"

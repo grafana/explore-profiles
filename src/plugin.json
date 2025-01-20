@@ -8,7 +8,10 @@
   "preload": true,
   "dependencies": {
     "grafanaDependency": ">=11.3.2",
-    "plugins": []
+    "plugins": [],
+    "extensions": {
+      "exposedComponents": ["grafana-collector-app/deploy-integration/v1"]
+    }
   },
   "info": {
     "keywords": ["app", "pyroscope", "profiling", "explore", "profiles", "performance"],
