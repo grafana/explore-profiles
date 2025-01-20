@@ -48,6 +48,11 @@ jobs:
         with:
           title: Unit test coverage
 
+      # Before building make sure we have the sha of the commit
+      # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
+      - name: Update version.ts
+        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';" > src/version.ts
+
       - name: Build frontend
         run: yarn build
 
