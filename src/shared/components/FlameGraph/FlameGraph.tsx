@@ -46,6 +46,7 @@ function FlameGraphComponent({
       vertical={vertical}
       getTheme={getTheme as any}
       getExtraContextMenuButtons={getExtraContextMenuButtons}
+      keepFocusOnDataChange
     />
   );
 }
