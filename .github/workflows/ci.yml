@@ -34,6 +34,12 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - name: Update version.ts (debug)
+        run: echo "export const GIT_COMMIT = \'${{ github.event.pull_request.head.sha || github.sha }}\';"
+
+      - name: Update version.ts
+        run: echo "export const GIT_COMMIT = \'${{ github.event.pull_request.head.sha || github.sha }}\';" > src/version.ts
+
       # lint
       - name: Check TS types
         run: yarn typecheck
