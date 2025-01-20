@@ -143,7 +143,7 @@ jobs:
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
     # to push the package automatically without approval
     name: Package and publish plugin
-    needs: [ frontend ]
+    needs: [frontend]
     environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
     runs-on: ubuntu-latest
     outputs:
@@ -164,7 +164,7 @@ jobs:
         id: metadata
         run: |
           sudo apt-get install jq
-          
+
           export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
           export SHA=${{ github.event.pull_request.head.sha || github.sha }}
           export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${SHA}
@@ -196,7 +196,7 @@ jobs:
   deploy-to-dev:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
     name: Deploy to dev
-    needs: [ package ]
+    needs: [package]
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'push' && 'dev-no-approval' || 'dev' }}
     steps:
@@ -205,10 +205,10 @@ jobs:
       - name: Deploy to dev
         uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
         with:
-          instance: "ops"
-          namespace: "phlare-cd"
-          workflow_template: "deploy-plugin-dev"
+          instance: 'ops'
+          namespace: 'phlare-cd'
+          workflow_template: 'deploy-plugin-dev'
           parameters: |
             plugintag=${{ needs.package.outputs.sha }}
-          extra_args: "--name deploy-plugin-dev-${{ needs.package.outputs.sha }}"
-          log_level: "debug"
+          extra_args: '--name deploy-plugin-dev-${{ needs.package.outputs.sha }}'
+          log_level: 'debug'
