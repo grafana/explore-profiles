@@ -56,8 +56,8 @@ You can use Flame graph AI in Grafana **Explore** > **Profiles** and the Explore
 
 ### Before you begin
 
-Flame graph AI is available only when using Explore Profiles. 
- 
+Flame graph AI is available only when using Explore Profiles.
+
 To use Flame graph AI, you must have:
 
 - Configured a [Grafana Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) that has profiling data
