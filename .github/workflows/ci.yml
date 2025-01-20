@@ -34,12 +34,6 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Update version.ts (debug)
-        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';"
-
-      - name: Update version.ts
-        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';" > src/version.ts
-
       # lint
       - name: Check TS types
         run: yarn typecheck
@@ -53,6 +47,11 @@ jobs:
         uses: MishaKav/jest-coverage-comment@v1.0.25
         with:
           title: Unit test coverage
+
+      # Before building make sure we have the sha of the commit
+      # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
+      - name: Update version.ts
+        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';" > src/version.ts
 
       - name: Build frontend
         run: yarn build
