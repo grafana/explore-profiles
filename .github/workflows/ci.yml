@@ -227,7 +227,7 @@ jobs:
         with:
           zips: '["https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ needs.package.outputs.sha }}.zip"]'
           environment: dev
-          scopes: any
+          scopes: universal
           gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
           gcloud-auth-token: ${{ steps.gcloud.outputs.auth_token }}
 
