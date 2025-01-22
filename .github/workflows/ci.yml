@@ -199,7 +199,7 @@ jobs:
     needs: [package]
     uses: grafana/explore-profiles/.github/workflows/deploy-to-catalog.yml@ifrost/publish-to-catalog
     with:
-      - version: ${{ needs.package.outputs.sha }}
+      version: ${{ needs.package.outputs.sha }}
 
   deploy-to-dev:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
