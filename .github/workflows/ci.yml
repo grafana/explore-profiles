@@ -216,7 +216,7 @@ jobs:
         with:
           plugin-id: grafana-pyroscope-app
           environment: dev
-          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN }}
+          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
           gcloud-auth-token: ${{ steps.gcloud.outputs.id_token }}
 
   deploy-to-dev:
