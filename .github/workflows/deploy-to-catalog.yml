@@ -1,15 +1,17 @@
-name: Deploy to catalog
-
 on:
   workflow_call:
     inputs:
-      version:
+      plugin_url:
         required: true
         type: string
+      env:
+        required: true
+        type: string
+        description: 'dev', 'ops' or 'prod'
 
 jobs:
   deploy-to-dev-catalog:
-    name: Deploy to dev catalog
+    name: Deploy to ${{ inputs.env }} catalog
     runs-on: ubuntu-latest
     steps:
       # Required for publishing to catalog to retrieve the name of the repository
@@ -28,13 +30,13 @@ jobs:
         with:
           vault_instance: ops
           common_secrets: |
-            GCOM_PUBLISH_TOKEN_DEV=plugins/gcom-publish-token:dev
+            GCOM_PUBLISH_TOKEN=plugins/gcom-publish-token:${{ inputs.env }}
 
       - name: Publish to catalog
         uses: grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
         with:
           zips: '["https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ inputs.version }}.zip"]'
-          environment: dev
+          environment: ${{ inputs.env }}
           scopes: universal
-          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
+          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN }}
           gcloud-auth-token: ${{ steps.gcloud.outputs.auth_token }}

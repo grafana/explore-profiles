@@ -195,12 +195,13 @@ jobs:
           predefinedAcl: publicRead
 
   deploy-to-dev-catalog:
-    name: Deploy to dev catalog
+    name: Deploy to catalog
     needs: [package]
     uses: grafana/explore-profiles/.github/workflows/deploy-to-catalog.yml@ifrost/publish-to-catalog
     secrets: inherit
     with:
       version: ${{ needs.package.outputs.sha }}
+      environment: dev
 
   deploy-to-dev:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
