@@ -178,6 +178,7 @@ jobs:
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}
           zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
+          md5sum -b ${{ steps.metadata.outputs.archive_name }} | awk '{ print $1 }' > ${{ steps.metadata.outputs.archive_name }}.md5
 
       - name: Login to GCS
         uses: 'google-github-actions/auth@v2'
@@ -190,7 +191,7 @@ jobs:
         with:
           path: ./
           destination: 'grafana-pyroscope-app/releases'
-          glob: '*.zip'
+          glob: '*.{zip,md5}'
           predefinedAcl: publicRead
 
   deploy-to-dev-catalog:
