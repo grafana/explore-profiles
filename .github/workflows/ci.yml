@@ -199,7 +199,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Login to GCS
-        id: gcs-login
+        id: gcloud
         uses: 'google-github-actions/auth@v2'
         with:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
@@ -211,6 +211,13 @@ jobs:
           vault_instance: ops
           common_secrets: |
             GCOM_PUBLISH_TOKEN_DEV=plugins/gcom-publish-token:dev
+      - name: Check and create stub
+        uses: grafana/plugin-ci-workflows/actions/plugins/publish/check-and-create-stub@main
+        with:
+          plugin-id: grafana-pyroscope-app
+          environment: dev
+          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN }}
+          gcloud-auth-token: ${{ steps.gcloud.outputs.id_token }}
 
   deploy-to-dev:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
