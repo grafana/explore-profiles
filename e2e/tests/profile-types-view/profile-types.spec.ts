@@ -91,9 +91,9 @@ test.describe('Profile types view', () => {
   });
 
   test('Settings button', async ({ exploreProfilesPage }) => {
-    await exploreProfilesPage.getByLabel('View/edit user settings').click();
+    await exploreProfilesPage.getByLabel('View/edit tenant settings').click();
 
-    await expect(exploreProfilesPage.getByTestId('page-title')).toHaveText('Profiles settings');
+    await expect(exploreProfilesPage.getByTestId('page-title')).toHaveText('Profiles settings (tenant)');
 
     await exploreProfilesPage.getByLabel('Back to Explore Profiles').click();
 
