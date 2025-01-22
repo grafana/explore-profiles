@@ -1,4 +1,6 @@
 import { config, reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
+import { ScaleDistribution } from '@grafana/schema';
+import { ActionType } from 'xstate';
 
 import { PYROSCOPE_APP_ID, ROUTES } from '../../constants';
 import { LayoutType } from '../../pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -48,12 +50,12 @@ export type Interactions = {
   g_pyroscope_app_profile_metric_selected: {};
   g_pyroscope_app_quick_filter_focused: {};
   g_pyroscope_app_select_action_clicked: {
-    type: string;
+    type: ActionType;
   };
   g_pyroscope_app_service_name_selected: {};
   g_pyroscope_app_share_link_clicked: {};
   g_pyroscope_app_timeseries_scale_changed: {
-    scale: string;
+    scale: ScaleDistribution;
   };
   g_pyroscope_app_user_settings_clicked: {};
 };
