@@ -1,0 +1,12 @@
+on:
+  workflow_call:
+    inputs:
+      test:
+        type: string
+
+jobs:
+  test:
+    name: Job test = ${{ inputs.test }}
+    steps:
+      - name: Step test = ${{ inputs.test }}
+        run: echo test = ${{ inputs.test }}

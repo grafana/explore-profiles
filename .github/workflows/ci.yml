@@ -83,6 +83,15 @@ jobs:
           path: dist
           retention-days: 1
 
+  test:
+    name: ${{ matrix.message }}
+    uses: grafana/explore-profiles/.github/workflows/test.yml@ifrost/publish-to-catalog
+    strategy:
+      matrix:
+        message: [foo, bar, xyzzy]
+    with:
+      test: ${{ matrix.message }}
+
   end-to-end:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -195,7 +204,6 @@ jobs:
           predefinedAcl: publicRead
 
   deploy-to-dev-catalog:
-    name: Deploy to catalog
     needs: [package]
     uses: grafana/explore-profiles/.github/workflows/deploy-to-catalog.yml@ifrost/publish-to-catalog
     secrets: inherit
