@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      plugin_url:
+      version:
         required: true
         type: string
       environment:
