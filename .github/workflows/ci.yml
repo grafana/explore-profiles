@@ -197,7 +197,7 @@ jobs:
   deploy-to-dev-catalog:
     name: Deploy to dev catalog
     needs: [package]
-    uses: grafana/explore-profiles/.github/workflows/deploy-to-catalog.yml@publish-to-catalog
+    uses: grafana/explore-profiles/.github/workflows/deploy-to-catalog.yml@ifrost/publish-to-catalog
     with:
       - version: ${{ needs.package.outputs.sha }}
 
