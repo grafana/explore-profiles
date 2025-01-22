@@ -1,15 +1,14 @@
 import {
-  MultiValueVariableState,
   SceneComponentProps,
   SceneObjectBase,
   SceneObjectState,
-  SceneVariableState,
   VariableDependencyConfig,
   VizPanelState,
 } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
+import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { PanelType } from './SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
@@ -29,12 +28,12 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     variableNames: ['profileMetricId', 'groupBy'],
     onReferencedVariableValueChanged: (variable) => {
       if (variable.state.name === 'profileMetricId') {
-        this.onProfileMetricChanged();
+        this.onProfileMetricIdChanged();
         return;
       }
 
       if (variable.state.name === 'groupBy') {
-        this.onGroupByValueChanged(variable.state);
+        this.onGroupByChanged(variable as GroupByVariable);
       }
     },
   });
@@ -78,31 +77,20 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     return description || getProfileMetricLabel(profileMetricId);
   }
 
-  onProfileMetricChanged() {
+  onProfileMetricIdChanged() {
     this.resetTimeseries();
   }
 
-  onGroupByValueChanged(groupByVariableState: SceneVariableState) {
-    const { value, options: rawOptions } = groupByVariableState as MultiValueVariableState;
-
-    if (value === 'all') {
+  onGroupByChanged(groupByVariable: GroupByVariable) {
+    if (groupByVariable.state.value === 'all') {
       this.resetTimeseries();
       return;
     }
 
-    const options = rawOptions.filter((o) => o.value !== 'all').map((o) => JSON.parse(o.value as string));
-    const index = options
-      // See LabelsDataSource.ts
-      .findIndex((o) => o.value === value);
-    const startColorIndex = index > -1 ? index : 0;
-
-    const groupBy = {
-      label: value as string,
-      values: options.find((o) => o.value === value)?.groupBy.values.map((v: any) => v.value) || [],
-    };
+    const { index, value, groupBy } = groupByVariable.findCurrentOption();
 
     (this.state.body as SceneLabelValuesTimeseries).updateItem({
-      index: startColorIndex,
+      index,
       label: `${this.buildTitle()}, grouped by ${value}`,
       queryRunnerParams: { groupBy },
     });

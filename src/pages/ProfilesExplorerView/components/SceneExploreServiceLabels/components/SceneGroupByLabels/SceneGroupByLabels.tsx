@@ -1,13 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import {
-  MultiValueVariableState,
-  SceneComponentProps,
-  sceneGraph,
-  SceneObject,
-  SceneObjectBase,
-  SceneObjectState,
-} from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObject, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Stack, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -78,7 +71,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       this.initVariablesAndControls(item);
     }
 
-    this.renderBody(groupByVariable.state);
+    this.renderBody(groupByVariable);
 
     const groupBySub = this.subscribeToGroupByChange();
     const panelEventsSub = this.subscribeToPanelEvents();
@@ -114,7 +107,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       if (newState.value !== prevState?.value) {
         quickFilter.clearSearchText();
 
-        this.renderBody(newState);
+        this.renderBody(groupByVariable);
       }
     });
   }
@@ -164,16 +157,16 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     );
   }
 
-  renderBody(groupByVariableState: MultiValueVariableState) {
+  renderBody(groupByVariable: GroupByVariable) {
     this.state.panelTypeChangeSub?.unsubscribe();
 
-    if (groupByVariableState.value === 'all') {
+    if (groupByVariable.state.value === 'all') {
       // we have to resubscribe every time because the subscription is removed every time the ScenePanelTypeSwitcher UI component is unmounted
       this.setState({ panelTypeChangeSub: this.subscribeToPanelTypeChange() });
 
       this.switchToLabelNamesGrid();
     } else {
-      this.switchToLabelValuesGrid(groupByVariableState);
+      this.switchToLabelValuesGrid(groupByVariable);
     }
   }
 
@@ -222,23 +215,17 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     });
   }
 
-  switchToLabelValuesGrid(groupByVariableState: MultiValueVariableState) {
+  switchToLabelValuesGrid(groupByVariable: GroupByVariable) {
     sceneGraph
       .findByKeyAndType(this, 'quick-filter', SceneQuickFilter)
       .setPlaceholder('Search label values (comma-separated regexes are supported)');
 
     this.clearCompare();
 
-    const { value, options } = groupByVariableState;
-
-    const index = options
-      .filter((o) => o.value !== 'all')
-      // See LabelsDataSource.ts
-      .findIndex((o) => JSON.parse(o.value as string).value === value);
-    const startColorIndex = index > -1 ? index : 0;
+    const { index, value } = groupByVariable.findCurrentOption();
 
     this.setState({
-      body: this.buildSceneLabelValuesGrid(value as string, startColorIndex),
+      body: this.buildSceneLabelValuesGrid(value, index),
     });
   }
 
