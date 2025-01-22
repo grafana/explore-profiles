@@ -1,7 +1,9 @@
 import {
+  MultiValueVariableState,
   SceneComponentProps,
   SceneObjectBase,
   SceneObjectState,
+  SceneVariableState,
   VariableDependencyConfig,
   VizPanelState,
 } from '@grafana/scenes';
@@ -21,12 +23,19 @@ interface SceneMainServiceTimeseriesState extends SceneObjectState {
 }
 
 export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainServiceTimeseriesState> {
-  static MIN_HEIGHT = 200;
+  static MIN_HEIGHT = 240;
 
   protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['profileMetricId'],
-    onReferencedVariableValueChanged: () => {
-      this.state.body?.updateTitle(this.buildTitle());
+    variableNames: ['profileMetricId', 'groupBy'],
+    onReferencedVariableValueChanged: (variable) => {
+      if (variable.state.name === 'profileMetricId') {
+        this.onProfileMetricChanged();
+        return;
+      }
+
+      if (variable.state.name === 'groupBy') {
+        this.onGroupByValueChanged(variable.state);
+      }
     },
   });
 
@@ -52,15 +61,11 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     this.setState({
       body: new SceneLabelValuesTimeseries({
         item: {
-          // we should test with users first but...
-          // ...uncomment to preserve the color of the item that was clicked (coming from "All services", "Favorites", etc.)
-          // index: item ? item.index : 0,
           index: 0,
           value: '',
+          queryRunnerParams: {}, // the missing values will be interpolated
           label: this.buildTitle(),
           panelType: PanelType.TIMESERIES,
-          // let actions interpolate the missing values
-          queryRunnerParams: {},
         },
         headerActions,
       }),
@@ -71,6 +76,44 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
     const { description } = getProfileMetric(profileMetricId as ProfileMetricId);
     return description || getProfileMetricLabel(profileMetricId);
+  }
+
+  onProfileMetricChanged() {
+    this.resetTimeseries();
+  }
+
+  onGroupByValueChanged(groupByVariableState: SceneVariableState) {
+    const { value, options: rawOptions } = groupByVariableState as MultiValueVariableState;
+
+    if (value === 'all') {
+      this.resetTimeseries();
+      return;
+    }
+
+    const options = rawOptions.filter((o) => o.value !== 'all').map((o) => JSON.parse(o.value as string));
+    const index = options
+      // See LabelsDataSource.ts
+      .findIndex((o) => o.value === value);
+    const startColorIndex = index > -1 ? index : 0;
+
+    const groupBy = {
+      label: value as string,
+      values: options.find((o) => o.value === value)?.groupBy.values.map((v: any) => v.value) || [],
+    };
+
+    (this.state.body as SceneLabelValuesTimeseries).updateItem({
+      index: startColorIndex,
+      label: `${this.buildTitle()}, grouped by ${value}`,
+      queryRunnerParams: { groupBy },
+    });
+  }
+
+  resetTimeseries() {
+    (this.state.body as SceneLabelValuesTimeseries).updateItem({
+      index: 0,
+      label: this.buildTitle(),
+      queryRunnerParams: { groupBy: undefined },
+    });
   }
 
   static Component({ model }: SceneComponentProps<SceneMainServiceTimeseries>) {

@@ -71,7 +71,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
     onReferencedVariableValueChanged: () => {
-      this.state.timeseriesPanel.updateTitle(this.buildTimeseriesTitle());
+      this.state.timeseriesPanel.updateItem({ label: this.buildTimeseriesTitle() });
     },
   });
 
@@ -124,7 +124,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       filtersVariable.setState({ filters });
     }
 
-    timeseriesPanel.updateTitle(this.buildTimeseriesTitle());
+    timeseriesPanel.updateItem({ label: this.buildTimeseriesTitle() });
 
     const eventSub = this.subscribeToEvents();
 
