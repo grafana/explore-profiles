@@ -178,7 +178,7 @@ jobs:
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}
           zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
-          md5sum ${{ steps.metadata.outputs.archive_name }} | cut -f1 -d' ' | tr -d '\n' > ${{ steps.metadata.outputs.archive_name }}.md5
+          md5sum -b ${{ steps.metadata.outputs.archive_name }} | awk '{ print $1 }' > ${{ steps.metadata.outputs.archive_name }}.md5
 
       - name: Login to GCS
         uses: 'google-github-actions/auth@v2'
@@ -223,7 +223,7 @@ jobs:
       - name: Publish to catalog
         uses: grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
         with:
-          zips: '["https://storage.cloud.google.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ needs.package.outputs.sha }}.zip"]'
+          zips: '["https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ needs.package.outputs.sha }}.zip"]'
           environment: dev
           scopes: any
           gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
