@@ -199,6 +199,8 @@ jobs:
     needs: [package]
     runs-on: ubuntu-latest
     steps:
+      # Required for publishing to catalog to retrieve the name of the repository
+      - uses: actions/checkout@v4
       - name: Login to GCS
         id: gcloud
         uses: 'google-github-actions/auth@v2'
