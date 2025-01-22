@@ -1,0 +1,54 @@
+name: Deploy to catalog
+
+on:
+  workflow_call:
+    inputs:
+      - version:
+          required: true
+          type: string
+jobs:
+  deploy-to-dev-catalog:
+    name: Deploy to dev catalog
+    runs-on: ubuntu-latest
+    steps:
+      # Required for publishing to catalog to retrieve the name of the repository
+      - uses: actions/checkout@v4
+
+      - name: Login to GCS
+        id: gcloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
+
+      - name: Login to GCS
+        id: gcloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
+
+      - name: Get secrets from Vault
+        id: get-secrets
+        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        with:
+          vault_instance: ops
+          common_secrets: |
+            GCOM_PUBLISH_TOKEN_DEV=plugins/gcom-publish-token:dev
+
+      - name: Check and create stub
+        uses: grafana/plugin-ci-workflows/actions/plugins/publish/check-and-create-stub@main
+        with:
+          plugin-id: grafana-pyroscope-app
+          environment: dev
+          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
+          gcloud-auth-token: ${{ steps.gcloud.outputs.auth_token }}
+
+      - name: Publish to catalog
+        uses: grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
+        with:
+          zips: '["https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ inputs.version }}.zip"]'
+          environment: dev
+          scopes: universal
+          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
+          gcloud-auth-token: ${{ steps.gcloud.outputs.auth_token }}
