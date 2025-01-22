@@ -7,7 +7,7 @@ on:
       environment:
         required: true
         type: string
-        description: 'dev', 'ops' or 'prod'
+        description: dev, ops or prod
 
 jobs:
   deploy-to-dev-catalog:
