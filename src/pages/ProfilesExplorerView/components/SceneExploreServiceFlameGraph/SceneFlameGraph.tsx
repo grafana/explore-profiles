@@ -20,8 +20,8 @@ import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/bui
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
-import { useCreateMetricsMenu, useToggleExportMetricModal } from '../SceneExportMetricModal/MenuOption';
-import { SceneCreateMetricModal } from '../SceneExportMetricModal/SceneCreateMetricModal';
+import { useCreateMetricsMenu, useToggleExportMetricModal } from '../SceneCreateMetricModal/MenuOption';
+import { SceneCreateMetricModal } from '../SceneCreateMetricModal/SceneCreateMetricModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
@@ -32,7 +32,7 @@ interface SceneFlameGraphState extends SceneObjectState {
   exportMenu: SceneExportMenu;
   aiPanel: SceneAiPanel;
   functionDetailsPanel: SceneFunctionDetailsPanel;
-  exportMetricsModal: SceneCreateMetricModal;
+  createMetricModal: SceneCreateMetricModal;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -49,7 +49,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       exportMenu: new SceneExportMenu(),
       aiPanel: new SceneAiPanel(),
       functionDetailsPanel: new SceneFunctionDetailsPanel(),
-      exportMetricsModal: new SceneCreateMetricModal(),
+      createMetricModal: new SceneCreateMetricModal(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -99,7 +99,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, exportMetricsModal } = this.useState();
+    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createMetricModal } = this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -145,7 +145,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           timeRange: lastTimeRange,
         },
         metrics: {
-          modal: exportMetricsModal,
+          modal: createMetricModal,
         },
       },
       actions: {
