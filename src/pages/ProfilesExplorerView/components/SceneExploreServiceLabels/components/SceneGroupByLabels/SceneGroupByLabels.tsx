@@ -18,7 +18,6 @@ import { EventViewDiffFlameGraph } from 'src/pages/ProfilesExplorerView/domain/e
 
 import { FavAction } from '../../../../domain/actions/FavAction';
 import { SelectAction } from '../../../../domain/actions/SelectAction';
-import { EventExpandPanel } from '../../../../domain/events/EventExpandPanel';
 import { EventSelectLabel } from '../../../../domain/events/EventSelectLabel';
 import {
   clearLabelValue,
@@ -28,9 +27,7 @@ import {
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../../../domain/variables/GroupByVariable/GroupByVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
-import { vizPanelBuilder } from '../../../../helpers/vizPanelBuilder';
 import { interpolateQueryRunnerVariables } from '../../../../infrastructure/helpers/interpolateQueryRunnerVariables';
-import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { SceneLayoutSwitcher } from '../../../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
 import { SceneNoDataSwitcher } from '../../../SceneByVariableRepeaterGrid/components/SceneNoDataSwitcher';
 import {
@@ -41,7 +38,6 @@ import {
 import { SceneQuickFilter } from '../../../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { SceneByVariableRepeaterGrid } from '../../../SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { GridItemData } from '../../../SceneByVariableRepeaterGrid/types/GridItemData';
-import { SceneDrawer } from '../../../SceneDrawer';
 import { CompareTarget } from '../../../SceneExploreDiffFlameGraph/domain/types';
 import { SceneProfilesExplorer } from '../../../SceneProfilesExplorer/SceneProfilesExplorer';
 import { SceneStatsPanel } from './components/SceneLabelValuesGrid/components/SceneStatsPanel/SceneStatsPanel';
@@ -55,7 +51,6 @@ import { CompareControls } from './ui/CompareControls';
 
 export interface SceneGroupByLabelsState extends SceneObjectState {
   body?: SceneObject;
-  drawer: SceneDrawer;
   compare: Map<CompareTarget, GridItemData>;
   panelTypeChangeSub?: Unsubscribable;
 }
@@ -65,7 +60,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     super({
       key: 'group-by-labels',
       body: undefined,
-      drawer: new SceneDrawer(),
       compare: new Map(),
       panelTypeChangeSub: undefined,
     });
@@ -130,10 +124,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
       this.selectLabel(event.payload.item);
     });
 
-    const expandPanelSub = this.subscribeToEvent(EventExpandPanel, async (event) => {
-      this.openExpandedPanelDrawer(event.payload.item);
-    });
-
     const selectForCompareSub = this.subscribeToEvent(EventSelectForCompare, (event) => {
       const { compareTarget, item } = event.payload;
       this.selectForCompare(compareTarget, item);
@@ -157,7 +147,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         excludeFilterSub.unsubscribe();
         includeFilterSub.unsubscribe();
         selectForCompareSub.unsubscribe();
-        expandPanelSub.unsubscribe();
         selectLabelSub.unsubscribe();
       },
     };
@@ -285,9 +274,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     prepareHistoryEntry();
     groupByVariable.changeValueTo(labelValue);
-
-    // the event may be published from an expanded panel in the drawer
-    this.state.drawer.close();
   }
 
   includeLabelValueInFilters(item: GridItemData) {
@@ -309,24 +295,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
     const [filterToClear] = item.queryRunnerParams.filters!;
 
     filtersVariable.setState({ filters: clearLabelValue(filtersVariable.state.filters, filterToClear) });
-  }
-
-  openExpandedPanelDrawer(item: GridItemData) {
-    const serviceName = getSceneVariableValue(this, 'serviceName');
-    const profileMetricId = getSceneVariableValue(this, 'profileMetricId');
-    const title = `${serviceName} · ${getProfileMetricLabel(profileMetricId)} · ${item.label}`;
-
-    const headerActions = () => [new SelectAction({ type: 'select-label', item }), new FavAction({ item })];
-
-    this.state.drawer.open({
-      title,
-      body: vizPanelBuilder(item.panelType, {
-        displayAllValues: true,
-        legendPlacement: 'right',
-        item,
-        headerActions,
-      }),
-    });
   }
 
   selectForCompare(compareTarget: CompareTarget, item: GridItemData) {
@@ -399,7 +367,7 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
   static Component = ({ model }: SceneComponentProps<SceneGroupByLabels>) => {
     const styles = useStyles2(getStyles);
 
-    const { body, drawer, compare } = model.useState();
+    const { body, compare } = model.useState();
 
     const groupByVariable = sceneGraph.findByKeyAndType(model, 'groupBy', GroupByVariable);
     const { value: groupByVariableValue } = groupByVariable.useState();
@@ -437,7 +405,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
         </div>
 
         {body && <body.Component model={body} />}
-        {<drawer.Component model={drawer} />}
       </div>
     );
   };
