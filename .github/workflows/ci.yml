@@ -195,7 +195,8 @@ jobs:
 
   deploy-to-dev-catalog:
     name: Deploy to dev catalog
-    needs: [package]
+    #    needs: [package]
+    runs-on: ubuntu-latest
     steps:
       - name: Login to GCS
         id: gcs-login
