@@ -20,8 +20,9 @@ import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/bui
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
+import { useCreateMetricsMenu, useToggleExportMetricModal } from '../SceneExportMetricModal/MenuOption';
+import { SceneCreateMetricModal } from '../SceneExportMetricModal/SceneCreateMetricModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
-import { useExportedMetricsMenu } from './components/SceneExportMetricsMenu/SceneExportMetricsMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 
@@ -31,6 +32,7 @@ interface SceneFlameGraphState extends SceneObjectState {
   exportMenu: SceneExportMenu;
   aiPanel: SceneAiPanel;
   functionDetailsPanel: SceneFunctionDetailsPanel;
+  exportMetricsModal: SceneCreateMetricModal;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -47,6 +49,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       exportMenu: new SceneExportMenu(),
       aiPanel: new SceneAiPanel(),
       functionDetailsPanel: new SceneFunctionDetailsPanel(),
+      exportMetricsModal: new SceneCreateMetricModal(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -96,7 +99,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel } = this.useState();
+    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, exportMetricsModal } = this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -141,6 +144,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           panel: functionDetailsPanel,
           timeRange: lastTimeRange,
         },
+        metrics: {
+          modal: exportMetricsModal,
+        },
       },
       actions: {
         getTheme,
@@ -154,7 +160,8 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { data, actions } = model.useSceneFlameGraph();
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
-    const exportMetricsMenu = useExportedMetricsMenu();
+    const metricsModal = useToggleExportMetricModal();
+    const metricsMenu = useCreateMetricsMenu(metricsModal.open);
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -181,7 +188,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       data: Record<string, any>
     ) => {
       const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
-      const metricsButtons = exportMetricsMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+      const metricsButtons = metricsMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
 
       return [...ghButtons, ...metricsButtons];
     };
@@ -230,6 +237,15 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             onClose={sidePanel.close}
           />
         )}
+
+        <data.metrics.modal.Component
+          model={data.metrics.modal}
+          isModalOpen={metricsModal.isModalOpen}
+          onDismiss={metricsModal.close}
+          onSave={() => {
+            metricsModal.close();
+          }}
+        />
       </div>
     );
   };

@@ -5,23 +5,23 @@ import { displayError } from '@shared/domain/displayStatus';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { useExportedMetricsView } from './domain/useExportedMetricsView';
+import { useCreatedMetricsView } from './domain/useCreatedMetricsView';
 import { MetricCard } from './ui/MetricCard';
 
 export function ExportedMetricsView() {
   const styles = useStyles2(getStyles);
-  const { data } = useExportedMetricsView();
+  const { data } = useCreatedMetricsView();
 
   if (data.fetchError) {
     displayError(data.fetchError, [
-      'Error while retrieving the exported metrics!',
+      'Error while retrieving created metrics!',
       'Please try to reload the page, sorry for the inconvenience.',
     ]);
   }
 
   return (
     <>
-      <PageTitle title="Exported metrics" />
+      <PageTitle title="Created metrics" />
 
       <ul className={styles.list}>
         {data.metrics.map((metric: any, i: number) => (

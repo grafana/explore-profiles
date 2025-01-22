@@ -1,6 +1,9 @@
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 
-export function useExportedMetricsView(): DomainHookReturnValue {
+export function useCreatedMetricsView(): DomainHookReturnValue {
+  // TODO: Ultimately this will fetch the configurations from the backend. This
+  // will include the readonly configs.
+
   return {
     data: {
       metrics: [
