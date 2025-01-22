@@ -6,12 +6,6 @@ on:
       version:
         required: true
         type: string
-      workload_identity_provider:
-        required: true
-        type: string
-      service_account:
-        required: true
-        type: string
 
 jobs:
   deploy-to-dev-catalog:
@@ -25,8 +19,8 @@ jobs:
         id: gcloud
         uses: 'google-github-actions/auth@v2'
         with:
-          workload_identity_provider: ${{ inputs.workload_identity_provider }}
-          service_account: ${{ inputs.service_account }}
+          workload_identity_provider: ${{ secrets.workload_identity_provider }}
+          service_account: ${{ secrets.service_account }}
 
       - name: Get secrets from Vault
         id: get-secrets
