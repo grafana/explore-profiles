@@ -195,7 +195,7 @@ jobs:
 
   deploy-to-dev-catalog:
     name: Deploy to dev catalog
-    #    needs: [package]
+    needs: [package]
     runs-on: ubuntu-latest
     steps:
       - name: Login to GCS
@@ -216,6 +216,15 @@ jobs:
         with:
           plugin-id: grafana-pyroscope-app
           environment: dev
+          gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
+          gcloud-auth-token: ${{ steps.gcloud.outputs.auth_token }}
+
+      - name: Publish to catalog
+        uses: grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
+        with:
+          zips: '["https://storage.cloud.google.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ needs.package.outputs.sha }}.zip"]'
+          environment: dev
+          scopes: any
           gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN_DEV }}
           gcloud-auth-token: ${{ steps.gcloud.outputs.auth_token }}
 
