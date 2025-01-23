@@ -1,5 +1,5 @@
 # Package build-frontend artifact and send it to GCS
-Name: Package to GCS
+name: Package to GCS
 
 on:
   workflow_call:

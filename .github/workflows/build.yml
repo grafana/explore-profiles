@@ -1,5 +1,5 @@
 # Build current branch (or provided ref) with specific version tag and create build-frontend artifact
-Name: Build and test frontend
+name: Build and test frontend
 
 on:
   workflow_call:
