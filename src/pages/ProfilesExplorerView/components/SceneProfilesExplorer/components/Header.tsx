@@ -49,7 +49,7 @@ export function Header(props: HeaderProps) {
           )}
 
           <div className={styles.appMiscButtons}>
-            <IconButton name="cog" tooltip="View/edit user settings" onClick={actions.onClickUserSettings} />
+            <IconButton name="cog" tooltip="View/edit tenant settings" onClick={actions.onClickUserSettings} />
 
             <IconButton
               name="share-alt"
