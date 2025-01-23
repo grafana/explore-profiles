@@ -17,6 +17,7 @@ env:
 # Required to create OIDC/JWT token required to use shared actions
 permissions:
   contents: read
+  pull-requests: write
   id-token: write
 
 jobs:
@@ -44,7 +45,7 @@ jobs:
         run: yarn test:ci
 
       - name: Report test coverage
-        uses: MishaKav/jest-coverage-comment@v1.0.25
+        uses: MishaKav/jest-coverage-comment@v1.0.27
         with:
           title: Unit test coverage
 
