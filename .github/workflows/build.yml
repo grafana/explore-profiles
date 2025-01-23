@@ -1,0 +1,140 @@
+# Build current branch (or provided ref) with specific version tag and create build-frontend artifact
+Name: Build and test frontend
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+        description: commit sha or tag that will be used as a suffix for the artifact name
+      ref:
+        required: false
+        type: string
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "version = ${{ inputs.version }}"
+      - run: echo "ref = ${{ inputs.ref }}"
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      # lint
+      - name: Check TS types
+        run: yarn typecheck
+      - name: Lint
+        run: yarn lint
+
+      - name: Unit tests
+        run: yarn test:ci
+
+      - name: Report test coverage
+        uses: MishaKav/jest-coverage-comment@v1.0.25
+        with:
+          title: Unit test coverage
+
+      # Before building make sure we update the version so it's easy to identify it
+      # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
+      - name: Update version.ts
+        run: echo "export const GIT_COMMIT = '${{ inputs.version }}';" > src/version.ts
+
+      - name: Build frontend
+        run: yarn build
+
+      - name: Check bundlesize
+        run: yarn run bundlewatch
+
+      - name: Compatibility check
+        run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
+
+      # The plugin is signed here so it's possible to use the artifact produced by the job directly
+      - name: Setup plugin signing
+        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        with:
+          vault_instance: ops
+          common_secrets: |
+            SIGN_PLUGIN_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
+
+      # create MANIFEST in dist
+      - name: Sign plugin
+        run: yarn sign
+        env:
+          GRAFANA_ACCESS_POLICY_TOKEN: ${{ env.SIGN_PLUGIN_ACCESS_POLICY_TOKEN }}
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-frontend
+          path: dist
+          retention-days: 1
+
+  end-to-end:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [frontend]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: build-*
+          merge-multiple: true
+          path: dist
+
+      # E2E tests
+      # switch to "npm run" in order to prevent "Usage Error: Couldn't find the node_modules state file - running an install might help (findPackageLocation)" when using yarn
+      - name: Start Grafana server
+        run: npm run e2e:ci:server:up
+
+      - name: Prepare e2e tests
+        run: npm run e2e:ci:prepare
+
+      # commented to save time during the build (building this action takes ~30s)
+      # the next step "Prepare e2e test" takes ~20s, which gives us the time needed
+      # uncomment it if you experience flakiness
+      # - uses: cygnetdigital/wait_for_response@v2.0.0
+      #   with:
+      #     url: 'http://localhost:3000/a/grafana-pyroscope-app/single'
+      #     responseCode: '200'
+      #     timeout: 20000
+      #     interval: 500
+
+      - name: Launch e2e tests
+        run: npm run e2e:ci
+
+      - name: Stop Grafana server
+        run: npm run e2e:ci:server:down
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-reports-and-results
+          path: |
+            e2e/test-reports
+            e2e/test-results
+          retention-days: 15

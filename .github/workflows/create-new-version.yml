@@ -15,7 +15,12 @@ on:
 
 jobs:
   create-new-version:
+    # Required to push the tag
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,12 +38,40 @@ jobs:
         run: yarn install --immutable
 
       - name: Create version & update CHANGELOG
+        id: tag
         env:
           DB_FE_CI_BOT_EMAIL: ${{ secrets.DB_FE_CI_BOT_EMAIL }}
         run: |
           git config --global user.email "$DB_FE_CI_BOT_EMAIL"
           git config --global user.name "Databases Frontend CI Bot"
-          npm version ${{ inputs.version }}
+          VERSION=$(npm version ${{ inputs.version })
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Push
         run: git push origin main --tags
+#  build:
+#    needs: [create-new-version]
+#    uses: grafana/explore-profiles/.github/workflows/build.yml@ifrost/publish-to-catalog
+#    with:
+#      version: ${{ needs.create-new-version.outputs.version }}
+#      ref: ${{ needs.create-new-version.outputs.version }}
+#
+#  package:
+#    needs: [create-new-version, build]
+#    uses: grafana/explore-profiles/.github/workflows/package.yml@ifrost/publish-to-catalog
+#    secrets: inherit
+#    with:
+#      version: ${{ needs.create-new-version.outputs.version }}
+#      requires_approval: true
+#
+#  deploy:
+#    needs: [create-new-version, package]
+#    uses: grafana/explore-profiles/.github/workflows/cd.yml@ifrost/publish-to-catalog
+#    secrets: inherit
+#    strategy:
+#      matrix:
+#        #        environment: [dev, ops, prod]
+#        environment: [dev]
+#    with:
+#      version: ${{ needs.create-new-version.outputs.version }}
+#      environment: ${{ matrix.environment }}

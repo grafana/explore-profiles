@@ -1,3 +1,5 @@
+Name: Deploy
+
 on:
   workflow_call:
     inputs:
@@ -8,9 +10,20 @@ on:
         required: true
         type: string
         description: dev, ops or prod
+      requires_approval:
+        required: true
+        type: boolean
+        description: can bypass ap
 
 jobs:
-  deploy-to-dev-catalog:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "version = ${{ inputs.version }}"
+      - run: echo "environment = ${{ inputs.environment }}"
+      - run: echo "github_environment = ${{ inputs.github_environment }}"
+
+  deploy-to-catalog:
     name: Deploy to ${{ inputs.environment }} catalog
     runs-on: ubuntu-latest
     steps:
@@ -40,3 +53,20 @@ jobs:
           scopes: universal
           gcom-publish-token: ${{ env.GCOM_PUBLISH_TOKEN }}
           gcloud-auth-token: ${{ steps.gcloud.outputs.auth_token }}
+
+  deploy-to-cloud:
+    # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
+    name: Deploy to ${{ inputs.environment }} wave
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.github_environment }}
+    steps:
+      - name: Deploying ${{ inputs.version }} to ${{ inputs.environment }}
+        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
+        with:
+          instance: 'ops'
+          namespace: 'phlare-cd'
+          workflow_template: 'deploy-plugin-${{ inputs.environment }}'
+          parameters: |
+            plugintag= ${{ inputs.version }}
+          extra_args: '--name deploy-plugin-${{ inputs.environment }}-${{ inputs.version }} --dry-run --output json'
+          log_level: 'debug'
