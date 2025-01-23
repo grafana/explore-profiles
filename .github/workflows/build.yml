@@ -45,7 +45,7 @@ jobs:
         run: yarn test:ci
 
       - name: Report test coverage
-        uses: MishaKav/jest-coverage-comment@v1.0.25
+        uses: MishaKav/jest-coverage-comment@v1.0.27
         with:
           title: Unit test coverage
 
