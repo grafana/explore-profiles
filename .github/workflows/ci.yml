@@ -144,7 +144,7 @@ jobs:
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
     # to push the package automatically without approval
     name: Package and publish plugin
-    needs: [frontend]
+    needs: [end-to-end]
     environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
     runs-on: ubuntu-latest
     outputs:
