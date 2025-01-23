@@ -16,7 +16,8 @@ env:
 
 # Required to create OIDC/JWT token required to use shared actions
 permissions:
-  contents: write
+  contents: read
+  issues: write
   id-token: write
 
 jobs:
