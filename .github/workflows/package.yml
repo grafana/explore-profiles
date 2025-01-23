@@ -25,7 +25,7 @@ jobs:
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
     # to push the package automatically without approval
     name: Package and publish plugin
-    environment: ${{ inputs.requires_approval && 'gcs-no-approval' || 'gcs' }}
+    environment: ${{ inputs.requires_approval && 'gcs' || 'gcs-no-approval' }}
     runs-on: ubuntu-latest
     outputs:
       package_id: ${{ steps.metadata.outputs.package_id }}
