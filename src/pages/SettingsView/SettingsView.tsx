@@ -25,7 +25,7 @@ export default function SettingsView() {
 
   return (
     <>
-      <PageTitle title="Profiles settings" />
+      <PageTitle title="Profiles settings (tenant)" />
       <form className={styles.settingsForm} onSubmit={onSubmit}>
         <>
           <FieldSet label="Flame graph" data-testid="flamegraph-settings">
