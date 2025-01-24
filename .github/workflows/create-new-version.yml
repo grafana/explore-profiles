@@ -80,6 +80,30 @@ jobs:
       version: ${{ needs.create-new-version.outputs.version }}
       github_environment: gcs-no-approval
 
+  create-github-release:
+    needs: [create-new-version, package]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with:
+          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
+          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
+          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+      - name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-package
+          path: package
+      - name: Create Github release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
+        with:
+          prerelease: false
+          generate_release_notes: false
+          files: package/*
+          tag_name: ${{ needs.create-new-version.outputs.version }}
+          token: ${{ steps.get_installation_token.outputs.token }}
+
   deploy:
     needs: [create-new-version, package]
     uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/manual-release-workflow
