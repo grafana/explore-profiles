@@ -258,6 +258,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       const queryRunner = body.state.$data?.state.$data as SceneQueryRunner;
 
+      // this allows us not to have to subscribe to the data provider changes as we do in onActivate() above
       queryRunner?.setState({ queries });
       queryRunner?.runQueries();
     }

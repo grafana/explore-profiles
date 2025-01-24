@@ -32,70 +32,93 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
   constructor({
     item,
     headerActions,
+    supportGroupBy,
   }: {
     item?: GridItemData;
     headerActions: SceneMainServiceTimeseriesState['headerActions'];
+    supportGroupBy?: boolean;
   }) {
     super({
       headerActions,
       body: undefined,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, item));
+    this.addActivationHandler(this.onActivate.bind(this, item, supportGroupBy));
   }
 
-  onActivate(item?: GridItemData) {
-    this.setState({ body: this.buildTimeseries(item) });
-
-    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
-
-    const groupBySub = groupByVariable.subscribeToState((newState, prevState) => {
-      if (newState.loading || !newState.options.length) {
-        return;
-      }
-
-      if (prevState.loading) {
-        this.onGroupByChanged(groupByVariable);
-        return;
-      }
-
-      if (newState.value !== prevState.value) {
-        this.onGroupByChanged(groupByVariable);
-      }
+  onActivate(item?: GridItemData, supportGroupBy?: boolean) {
+    this.setState({
+      body: this.buildTimeseries(item, supportGroupBy),
     });
 
     const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
 
-    const profileMetricSub = profileMetricVariable.subscribeToState((newState, prevState) => {
-      if (newState.value !== prevState.value) {
-        this.onProfileMetricIdChanged();
-      }
-    });
+    this._subs.add(
+      profileMetricVariable.subscribeToState((newState, prevState) => {
+        if (newState.value !== prevState.value) {
+          this.onProfileMetricIdChanged();
+        }
+      })
+    );
 
-    return () => {
-      profileMetricSub.unsubscribe();
-      groupBySub.unsubscribe();
-    };
+    if (supportGroupBy) {
+      this.subscribeToGroupByStateChanges(item);
+    }
   }
 
-  buildTimeseries(item?: GridItemData) {
+  subscribeToGroupByStateChanges(item?: GridItemData) {
+    const groupByVariable = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable);
+
+    this._subs.add(
+      groupByVariable.subscribeToState((newState, prevState) => {
+        if (newState.loading || !newState.options.length) {
+          return;
+        }
+
+        // First load:
+        // here we check for the item to prevent two queries to occur when coming from (e.g) favorites and
+        // selecting an item with a different profile metric than the current ProfileMetricVariable value
+        if (!item && prevState.loading) {
+          this.onGroupByChanged(groupByVariable);
+          return;
+        }
+
+        if (newState.value !== prevState.value) {
+          this.onGroupByChanged(groupByVariable);
+        }
+      })
+    );
+  }
+
+  buildTimeseries(item?: GridItemData, supportGroupBy?: boolean) {
     const { headerActions } = this.state;
 
+    const timeseriesItem = {
+      index: 0,
+      value: '',
+      queryRunnerParams: {},
+      label: this.buildTitle(),
+      panelType: PanelType.TIMESERIES,
+      ...item,
+    };
+
+    if (!supportGroupBy) {
+      delete timeseriesItem.queryRunnerParams.groupBy;
+    }
+
+    if (!timeseriesItem.queryRunnerParams.groupBy) {
+      timeseriesItem.index = 0;
+    }
+
     return new SceneLabelValuesTimeseries({
-      item: {
-        value: '',
-        queryRunnerParams: {},
-        label: this.buildTitle(),
-        panelType: PanelType.TIMESERIES,
-        ...item,
-        index: 0,
-      },
-      data: !item
-        ? new SceneDataTransformer({
-            $data: new SceneQueryRunner({ datasource: PYROSCOPE_DATA_SOURCE, queries: [] }),
-            transformations: [addRefId, addStats],
-          })
-        : undefined,
+      item: timeseriesItem,
+      data:
+        !item && supportGroupBy
+          ? new SceneDataTransformer({
+              $data: new SceneQueryRunner({ datasource: PYROSCOPE_DATA_SOURCE, queries: [] }),
+              transformations: [addRefId, addStats],
+            })
+          : undefined,
       headerActions,
     });
   }

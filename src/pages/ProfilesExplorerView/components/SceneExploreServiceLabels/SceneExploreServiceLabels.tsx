@@ -60,6 +60,7 @@ export class SceneExploreServiceLabels extends SceneObjectBase<SceneExploreServi
                     ]
                   : [new SelectAction({ type: 'view-flame-graph', item }), new FavAction({ item })];
               },
+              supportGroupBy: true,
             }),
           }),
           new SceneFlexItem({
