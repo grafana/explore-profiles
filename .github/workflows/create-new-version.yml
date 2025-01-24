@@ -75,10 +75,10 @@ jobs:
   package:
     needs: [create-new-version, build]
     uses: grafana/explore-profiles/.github/workflows/package.yml@ifrost/manual-release-workflow
-    environment: gcs-no-approval
     secrets: inherit
     with:
       version: ${{ needs.create-new-version.outputs.version }}
+      github_environment: gcs-no-approval
 
   deploy:
     needs: [create-new-version, package]
@@ -86,9 +86,7 @@ jobs:
     secrets: inherit
     strategy:
       matrix:
-        #        environment: [dev, ops, prod]
-        environment: [dev]
-    environment: ${{ matrix.environment }}
+        environment: [dev, ops, prod]
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       environment: ${{ matrix.environment }}

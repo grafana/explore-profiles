@@ -16,7 +16,6 @@ permissions:
 jobs:
   deploy:
     uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/manual-release-workflow
-    environment: ${{ matrix.environment }}
     secrets: inherit
     strategy:
       matrix:

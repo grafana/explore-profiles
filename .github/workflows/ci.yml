@@ -28,15 +28,14 @@ jobs:
 
   package:
     needs: [build]
-    environment: ${{ github.event_name != 'push' && 'gcs' || 'gcs-no-approval' }}
     uses: grafana/explore-profiles/.github/workflows/package.yml@ifrost/manual-release-workflow
     secrets: inherit
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
+      github_environment: ${{ github.event_name != 'push' && 'gcs' || 'gcs-no-approval' }}
 
   deploy:
     needs: [package]
-    environment: dev
     uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/manual-release-workflow
     secrets: inherit
     with:

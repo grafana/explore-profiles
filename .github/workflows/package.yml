@@ -7,6 +7,9 @@ on:
       version:
         required: true
         type: string
+      github_environment:
+        required: true
+        type: string
 
 jobs:
   debug:
@@ -22,6 +25,7 @@ jobs:
     # to push the package automatically without approval
     name: Package and publish plugin
     runs-on: ubuntu-latest
+    environment: ${{ inputs.github_environment }}
     steps:
       # Required to correctly auth to GCS
       - name: Prepare - GCS

@@ -21,6 +21,7 @@ jobs:
   deploy-to-catalog:
     name: Deploy to ${{ inputs.environment }} catalog
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       # Required for publishing to catalog to retrieve the name of the repository
       - uses: actions/checkout@v4
@@ -52,6 +53,7 @@ jobs:
   deploy-to-cloud:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
     name: Deploy to ${{ inputs.environment }} wave
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
       - name: Deploying ${{ inputs.version }} to ${{ inputs.environment }}
