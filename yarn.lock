@@ -2268,9 +2268,9 @@ __metadata:
   linkType: hard
 
 "@leeoniya/ufuzzy@npm:^1.0.14":
-  version: 1.0.17
-  resolution: "@leeoniya/ufuzzy@npm:1.0.17"
-  checksum: 10/8d4decc209dddae3b90908837f6064634e1d79af889fcfc799890e5598289238a348fabdff3a13a4efe22d1adf163334e746423324314a720fb4969b1b483769
+  version: 1.0.18
+  resolution: "@leeoniya/ufuzzy@npm:1.0.18"
+  checksum: 10/3d7e160a3a21cdcdf0c0b78893340b3231b905ab4787e63d39068ee0ad75cc71ae99572c2117cd3466e3d32bfe0290b97d4ccda9e522f7998b24a04c2c466a31
   languageName: node
   linkType: hard
 

@@ -1,11 +1,22 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
-import { IconButton, Stack, TagList, useStyles2 } from '@grafana/ui';
+import { applyFieldOverrides, arrayToDataFrame, DataFrame, FieldType, GrafanaTheme2 } from '@grafana/data';
+import { TableCellHeight } from '@grafana/schema';
+import {
+  Icon,
+  IconButton,
+  Stack,
+  Table,
+  TableCellDisplayMode,
+  TableCustomCellOptions,
+  TagList,
+  useStyles2,
+  useTheme2,
+} from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { useCreatedMetricsView } from './domain/useCreatedMetricsView';
+import { Metric, useCreatedMetricsView } from './domain/useCreatedMetricsView';
 
 export function MetricsView() {
   const styles = useStyles2(getStyles);
@@ -19,128 +30,123 @@ export function MetricsView() {
     ]);
   }
 
-  const renderQuery = (query: string) => {
-    const matchers = query
-      .replace(/^\{(.*)\}$/, '$1')
-      .split(',')
-      .map((matcher) => {
-        const matches = matcher.trim().match(/^(\S+)\s*(=|!=|=~|!~)\s*"(\S+)"$/);
-        if (!matches) {
-          return null;
-        }
-
-        const [, key, op, value] = matches;
-        return `${key} ${op} ${value}`;
-      })
-      .filter((matcher) => matcher !== null);
-
-    if (matchers.length === 0) {
-      return <></>;
-    }
-    return (
-      <TagList
-        className={styles.colLabelsTags}
-        getColorIndex={() => 9} // A hack to find a nice gray color.
-        tags={matchers}
-      />
-    );
-  };
+  const theme = useTheme2();
+  const dataFrame = buildDataFrame(metrics, theme, styles);
 
   return (
     <>
       <PageTitle title="Created metrics" />
-
-      <Stack direction="column">
-        <div className={styles.headerRow}>
-          <Stack direction="row" gap={2}>
-            <div className={styles.colName}>Name</div>
-            <div className={styles.colProfileType}>Profile type</div>
-            <div className={styles.colLabels}>Labels</div>
-            <div className={styles.colQuery}>Query matchers</div>
-            <div className={styles.colDataSource}>Data source</div>
-            <div className={styles.colActions}>Actions</div>
-          </Stack>
-        </div>
-
-        {metrics.map((metric, i) => (
-          <div className={i % 2 === 0 ? styles.accentRow : styles.row} key={i}>
-            <Stack direction="row" key={i} gap={2}>
-              <div className={styles.colName}>{metric.name}</div>
-              <div className={styles.colProfileType}>{metric.profileType}</div>
-              <TagList className={styles.colLabelsTags} tags={metric.labels.length > 0 ? metric.labels : ['All']} />
-              <div className={styles.colQuery}>{renderQuery(metric.filter)}</div>
-              <div className={styles.colDataSource}>{metric.dataSource}</div>
-              <div className={styles.colActions}>
-                <IconButton name="trash-alt" variant="destructive" tooltip="Delete metric" onClick={() => {}} />
-              </div>
-            </Stack>
-          </div>
-        ))}
-      </Stack>
+      <Table
+        data={dataFrame}
+        width={2000}
+        height={500}
+        columnMinWidth={130}
+        cellHeight={TableCellHeight.Auto}
+        resizable={false}
+      />
     </>
   );
 }
 
-const getStyles = (theme: GrafanaTheme2) => {
-  const row = css`
-    padding: ${theme.spacing(1)};
-  `;
+const getStyles = () => ({
+  tagList: css`
+    flex-direction: row;
+    justify-content: start;
+  `,
+});
 
-  const col = css`
-    align-self: center;
-  `;
+function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any): DataFrame {
+  const df = arrayToDataFrame(
+    metrics.map((m) => ({
+      Name: m.name,
+      'Profile Type': m.profileType,
+    }))
+  );
 
-  return {
-    row,
-    headerRow: css`
-      ${row};
-      background-color: ${theme.colors.background.secondary};
-      font-weight: ${theme.typography.fontWeightBold};
-      font-size: ${theme.typography.h5.fontSize};
-    `,
-    accentRow: css`
-      ${row};
-      background-color: ${theme.colors.background.primary};
-    `,
-    colName: css`
-      ${col};
-      flex: 0 0 20%;
-    `,
-    colProfileType: css`
-      ${col};
-      flex: 0 0 10%;
-    `,
-    colLabels: css`
-      ${col};
-      flex: 0 0 25%;
-    `,
-    colLabelsTags: css`
-      ${col};
-      flex: 0 0 25%;
-      justify-content: flex-start;
-      align-items: start;
-    `,
-    colQuery: css`
-      ${col};
-      flex: 0 0 25%;
-    `,
-    colDataSource: css`
-      ${col};
-      flex: 0 0 10%;
-    `,
-    colActions: css`
-      ${col};
-      flex: 0 0 auto;
-      align-self: center;
-      margin-left: auto;
-    `,
-    matcherBox: css`
-      font-family: ${theme.typography.fontFamilyMonospace};
-      font-size: ${theme.typography.bodySmall.fontSize};
-      border: 1px solid ${theme.colors.border.strong};
-      border-radius: ${theme.spacing(0.5)};
-      padding: ${theme.spacing(0.5)};
-      background-color: ${theme.colors.background.secondary};
-    `,
+  const dataSourceOptions: TableCustomCellOptions = {
+    type: TableCellDisplayMode.Custom,
+    cellComponent: (props) => {
+      const dataSource = metrics[props.rowIndex]?.dataSource ?? '';
+      return (
+        <Stack direction="row" alignItems="center">
+          {/* note(bryanhuhta): This color is taken from the Prometheus svg from grafana.com */}
+          <Icon name="gf-prometheus" color="#DA4E31" />
+          <span>{dataSource}</span>
+        </Stack>
+      );
+    },
   };
-};
+
+  const labelOptions: TableCustomCellOptions = {
+    type: TableCellDisplayMode.Custom,
+    cellComponent: (props) => {
+      const labels = metrics[props.rowIndex]?.labels?.filter((label: string) => !label.match(/^__\S+__$/));
+
+      if (!labels || labels.length === 0) {
+        return <span>All</span>;
+      }
+
+      return <TagList className={styles.tagList} displayMax={3} tags={labels} />;
+    },
+  };
+
+  const actionOptions: TableCustomCellOptions = {
+    type: TableCellDisplayMode.Custom,
+    cellComponent: (props) => {
+      const name = props.frame.fields.find((f) => f.name === 'Name')?.values[props.rowIndex];
+      const label = name ? `Delete ${name}` : 'Delete metric';
+
+      return (
+        <IconButton name="trash-alt" variant="destructive" aria-label={label} tooltip={label} onClick={() => {}} />
+      );
+    },
+  };
+
+  df.fields = [
+    ...df.fields,
+    {
+      name: 'Data Source',
+      type: FieldType.other,
+      values: [],
+      config: {
+        custom: {
+          cellOptions: dataSourceOptions,
+        },
+      },
+    },
+    {
+      name: 'Labels',
+      type: FieldType.other,
+      values: [],
+      config: {
+        custom: {
+          cellOptions: labelOptions,
+        },
+      },
+    },
+    {
+      name: 'Actions',
+      type: FieldType.other,
+      values: [],
+      config: {
+        custom: {
+          cellOptions: actionOptions,
+          align: 'right',
+        },
+      },
+    },
+  ];
+
+  // note(bryanhuhta): This is necessary to get the table body to render
+  // properly. We don't actually use it to perform any overrides.
+  const [dataFrameWithOverrides] = applyFieldOverrides({
+    data: [df],
+    theme: theme,
+    replaceVariables: (value) => value,
+    fieldConfig: {
+      defaults: {},
+      overrides: [],
+    },
+  });
+  return dataFrameWithOverrides;
+}

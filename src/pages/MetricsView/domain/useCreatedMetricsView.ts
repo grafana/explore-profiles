@@ -12,21 +12,21 @@ export function useCreatedMetricsView() {
 
   const metrics: Metric[] = [
     {
-      name: 'Rideshare CPU',
+      name: 'pyroscope_rideshare_cpu',
       profileType: 'process_cpu/cpu',
       labels: ['service_name', 'vehicle'],
       filter: '{__profile_type__ = "process::cpu::cpu_nanoseconds", service_name = "rideshare"}',
       dataSource: 'ops-cortex',
     },
     {
-      name: 'All CPU',
+      name: 'pyroscope_all_cpu',
       profileType: 'process_cpu/cpu',
       labels: [],
       filter: '{__profile_type__ = "process::cpu::cpu_nanoseconds"}',
       dataSource: 'ops-cortex',
     },
     {
-      name: 'profiles-dev-002/query-frontend',
+      name: 'pyroscope_profiles_dev_002_query_frontend_alloc_objects',
       profileType: 'memory/alloc_objects',
       labels: [
         '__name__',
