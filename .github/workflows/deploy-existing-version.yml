@@ -1,4 +1,4 @@
-name: Create new version (package.json & CHANGELOG)
+name: Deploy existing version
 
 on:
   workflow_dispatch:
