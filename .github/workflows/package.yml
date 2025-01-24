@@ -7,16 +7,12 @@ on:
       version:
         required: true
         type: string
-      requires_approval:
-        required: true
-        type: boolean
 
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
       - run: echo "version = ${{ inputs.version }}"
-      - run: echo "requires_approval = ${{ inputs.requires_approval }}"
 
   package:
     # This step creates a zip file with the plugin and publishes it to Google Cloud Storage bucket.
@@ -25,10 +21,7 @@ jobs:
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
     # to push the package automatically without approval
     name: Package and publish plugin
-    environment: ${{ inputs.requires_approval && 'gcs' || 'gcs-no-approval' }}
     runs-on: ubuntu-latest
-    outputs:
-      package_id: ${{ steps.metadata.outputs.package_id }}
     steps:
       # Required to correctly auth to GCS
       - name: Prepare - GCS
@@ -51,7 +44,10 @@ jobs:
           echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
 
-      # Create zip file with name following conventions [plugin-id]-[sha].zip
+      # Create zip file with name following convention [plugin-id]-[version].zip
+      # and md5 following [plugin-id]-[version].zip.md5 convention
+      # used by grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
+      # to publish the artifact to Plugins Catalog
       - name: Package plugin
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}

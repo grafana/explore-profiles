@@ -13,6 +13,12 @@ on:
           - minor
           - major
 
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
 jobs:
   create-new-version:
     # Required to push the tag
@@ -49,29 +55,31 @@ jobs:
 
       - name: Push
         run: git push origin main --tags
-#  build:
-#    needs: [create-new-version]
-#    uses: grafana/explore-profiles/.github/workflows/build.yml@ifrost/publish-to-catalog
-#    with:
-#      version: ${{ needs.create-new-version.outputs.version }}
-#      ref: ${{ needs.create-new-version.outputs.version }}
-#
-#  package:
-#    needs: [create-new-version, build]
-#    uses: grafana/explore-profiles/.github/workflows/package.yml@ifrost/publish-to-catalog
-#    secrets: inherit
-#    with:
-#      version: ${{ needs.create-new-version.outputs.version }}
-#      requires_approval: true
-#
-#  deploy:
-#    needs: [create-new-version, package]
-#    uses: grafana/explore-profiles/.github/workflows/cd.yml@ifrost/publish-to-catalog
-#    secrets: inherit
-#    strategy:
-#      matrix:
-#        #        environment: [dev, ops, prod]
-#        environment: [dev]
-#    with:
-#      version: ${{ needs.create-new-version.outputs.version }}
-#      environment: ${{ matrix.environment }}
+
+  build:
+    needs: [create-new-version]
+    uses: grafana/explore-profiles/.github/workflows/build.yml@ifrost/manual-release-workflow
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      ref: ${{ needs.create-new-version.outputs.version }}
+
+  package:
+    needs: [create-new-version, build]
+    uses: grafana/explore-profiles/.github/workflows/package.yml@ifrost/manual-release-workflow
+    environment: gcs-no-approval
+    secrets: inherit
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+
+  deploy:
+    needs: [create-new-version, package]
+    uses: grafana/explore-profiles/.github/workflows/cd.yml@ifrost/manual-release-workflow
+    secrets: inherit
+    strategy:
+      matrix:
+        #        environment: [dev, ops, prod]
+        environment: [dev]
+    environment: ${{ matrix.environment }}
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: ${{ matrix.environment }}

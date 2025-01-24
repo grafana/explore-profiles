@@ -10,10 +10,6 @@ on:
         required: true
         type: string
         description: dev, ops or prod
-      requires_approval:
-        required: true
-        type: boolean
-        description: can bypass ap
 
 jobs:
   debug:
@@ -21,7 +17,6 @@ jobs:
     steps:
       - run: echo "version = ${{ inputs.version }}"
       - run: echo "environment = ${{ inputs.environment }}"
-      - run: echo "github_environment = ${{ inputs.github_environment }}"
 
   deploy-to-catalog:
     name: Deploy to ${{ inputs.environment }} catalog
@@ -58,7 +53,6 @@ jobs:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
     name: Deploy to ${{ inputs.environment }} wave
     runs-on: ubuntu-latest
-    environment: ${{ inputs.github_environment }}
     steps:
       - name: Deploying ${{ inputs.version }} to ${{ inputs.environment }}
         uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
