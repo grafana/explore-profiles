@@ -73,7 +73,7 @@ jobs:
 
   deploy:
     needs: [create-new-version, package]
-    uses: grafana/explore-profiles/.github/workflows/cd.yml@ifrost/manual-release-workflow
+    uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/manual-release-workflow
     secrets: inherit
     strategy:
       matrix:

@@ -1,0 +1,26 @@
+name: Create new version (package.json & CHANGELOG)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version prefixed with v, e.g. v1.0.8'
+        type: string
+
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  deploy:
+    uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/manual-release-workflow
+    environment: ${{ matrix.environment }}
+    secrets: inherit
+    strategy:
+      matrix:
+        environment: [dev, ops, prod]
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: ${{ matrix.environment }}

@@ -62,5 +62,5 @@ jobs:
           workflow_template: 'deploy-plugin-${{ inputs.environment }}'
           parameters: |
             plugintag= ${{ inputs.version }}
-          extra_args: '--name deploy-plugin-${{ inputs.environment }}-${{ inputs.version }} --dry-run --output json'
+          extra_args: '--name deploy-plugin-${{ inputs.environment }}-${{ inputs.version }}'
           log_level: 'debug'
