@@ -85,8 +85,6 @@ jobs:
           retention-days: 1
 
   end-to-end:
-    # Temporarily disable for testing
-    if: false
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [frontend]
