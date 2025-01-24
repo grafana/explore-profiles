@@ -58,8 +58,8 @@
     },
     {
       "type": "page",
-      "name": "Exported metrics",
-      "path": "/a/%PLUGIN_ID%/exported-metrics",
+      "name": "Metrics",
+      "path": "/a/%PLUGIN_ID%/metrics",
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false

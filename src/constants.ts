@@ -8,5 +8,5 @@ export enum ROUTES {
   PROFILES_EXPLORER_VIEW = '/profiles-explorer',
   ADHOC_VIEW = '/ad-hoc',
   SETTINGS = '/settings',
-  EXPORTED_METRICS_VIEW = '/exported-metrics',
+  METRICS_VIEW = '/metrics',
 }

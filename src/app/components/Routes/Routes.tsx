@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes as ReactRouterRoutes, Route } from 'react-router-dom';
-import { ExportedMetricsView } from 'src/pages/ExportedMetricsView/ExportedMetricsView';
+import { MetricsView } from 'src/pages/MetricsView/MetricsView';
 
 import { ROUTES } from '../../../constants';
 import { AdHocView } from '../../../pages/AdHocView/AdHocView';
@@ -16,7 +16,7 @@ export function Routes() {
       <Route path={ROUTES.PROFILES_EXPLORER_VIEW} element={<ProfilesExplorerView />} />
       <Route path={ROUTES.ADHOC_VIEW} element={<AdHocView />} />
       <Route path={ROUTES.SETTINGS} element={<SettingsView />} />
-      <Route path={ROUTES.EXPORTED_METRICS_VIEW} element={<ExportedMetricsView />} />
+      <Route path={ROUTES.METRICS_VIEW} element={<MetricsView />} />
       {/* Default Route */}
       <Route path="/*" element={<ProfilesExplorerView />} />
     </ReactRouterRoutes>
