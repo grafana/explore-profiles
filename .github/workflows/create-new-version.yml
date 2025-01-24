@@ -43,6 +43,13 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with:
+          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
+          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
+          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+
       - name: Create version & update CHANGELOG
         id: tag
         env:
@@ -50,6 +57,8 @@ jobs:
         run: |
           git config --global user.email "$DB_FE_CI_BOT_EMAIL"
           git config --global user.name "Databases Frontend CI Bot"
+          git config --global url.https://x-access-token:${{ steps.get_installation_token.outputs.token }}@github.com/${{ github.repository }}
+
           VERSION=$(npm version ${{ inputs.version })
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
