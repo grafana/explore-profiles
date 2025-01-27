@@ -19,11 +19,19 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with:
+          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
+          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
+          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+
       - uses: actions/checkout@v4
         with:
           ref: 'main'
           fetch-depth: 0
           fetch-tags: true
+          token: ${{ steps.get_installation_token.outputs.token }}
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
@@ -33,13 +41,6 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --immutable
-
-      - uses: tibdex/github-app-token@v1
-        id: get_installation_token
-        with:
-          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
-          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
-          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
 
       - name: Create version & update CHANGELOG
         env:
