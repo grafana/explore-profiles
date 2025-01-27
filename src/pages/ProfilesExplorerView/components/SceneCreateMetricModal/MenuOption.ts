@@ -15,7 +15,7 @@ export function useCreateMetricsMenu(setModalOpen: () => void): DomainHookReturn
 
       return [
         {
-          label: 'Export metric',
+          label: 'Create metric',
           icon: 'download-alt' as IconName,
           onClick: setModalOpen,
         },
