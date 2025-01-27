@@ -3,7 +3,7 @@ import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/da
 import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
-import { displayWarning } from '@shared/domain/displayStatus';
+import { displaySuccess, displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -244,6 +244,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           onDismiss={metricsModal.close}
           onCreate={() => {
             metricsModal.close();
+            displaySuccess(['Metric created successfully!']);
           }}
         />
       </div>
