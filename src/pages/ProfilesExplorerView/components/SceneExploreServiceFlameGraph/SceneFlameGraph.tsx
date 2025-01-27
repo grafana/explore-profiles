@@ -242,7 +242,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           model={data.metrics.modal}
           isModalOpen={metricsModal.isModalOpen}
           onDismiss={metricsModal.close}
-          onSave={() => {
+          onCreate={() => {
             metricsModal.close();
           }}
         />

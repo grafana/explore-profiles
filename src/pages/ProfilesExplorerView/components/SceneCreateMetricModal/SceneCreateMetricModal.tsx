@@ -22,11 +22,11 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     model,
     isModalOpen,
     onDismiss,
-    onSave,
+    onCreate,
   }: SceneComponentProps<SceneCreateMetricModal> & {
     isModalOpen: () => boolean;
     onDismiss: () => void;
-    onSave: () => void;
+    onCreate: () => void;
   }) => {
     // eslint-disable-next-line no-unused-vars
     const styles = useStyles2(getStyles);
@@ -124,7 +124,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
           <Button variant="secondary" fill="outline" onClick={onDismiss}>
             Cancel
           </Button>
-          <Button onClick={onSave}>Save</Button>
+          <Button onClick={onCreate}>Create</Button>
         </Modal.ButtonRow>
       </Modal>
     );
