@@ -47,8 +47,7 @@ jobs:
         run: |
           git config --global user.email "$DB_FE_CI_BOT_EMAIL"
           git config --global user.name "Databases Frontend CI Bot"
-          git config --global url."https://x-access-token:${{ steps.get_installation_token.outputs.token }}@github.com/${{ github.repository }}"
-
+          git config --global url.https://${{ steps.get_installation_token.outputs.token }}@github.com/.insteadOf https://github.com/
           npm version ${{ inputs.version }}
 
       - name: Push
