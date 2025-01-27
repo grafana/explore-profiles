@@ -1,3 +1,12 @@
+## [0.1.19](https://github.com/grafana/explore-profiles/compare/v0.1.18...v0.1.19) (2025-01-27)
+
+
+### Bug Fixes
+
+* **DiffFlameGraph:** Always disable time ranges sync before applying a preset ([#355](https://github.com/grafana/explore-profiles/issues/355)) ([272a98b](https://github.com/grafana/explore-profiles/commit/272a98bc13ffe7e93673c41ab1795b12ae2fbb3e))
+
+
+
 ## [0.1.18](https://github.com/grafana/explore-profiles/compare/v0.1.17...v0.1.18) (2025-01-23)
 
 
