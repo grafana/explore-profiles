@@ -97,6 +97,9 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         const selectWholeRange = event.payload.wholeRange;
         const { baselinePanel, comparisonPanel } = this.state;
 
+        baselinePanel.toggleTimeRangeSync(false);
+        comparisonPanel.toggleTimeRangeSync(false);
+
         baselinePanel.autoSelectDiffRange(selectWholeRange);
         comparisonPanel.autoSelectDiffRange(selectWholeRange);
       })
