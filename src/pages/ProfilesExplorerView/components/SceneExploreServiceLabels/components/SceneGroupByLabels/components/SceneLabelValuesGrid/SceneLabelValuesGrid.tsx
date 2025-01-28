@@ -417,7 +417,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       children: [
         new SceneCSSGridItem({
           body: new SceneErrorState({
-            message: error.toString(),
+            message: error.message || error.toString(),
           }),
         }),
       ],
