@@ -22,7 +22,7 @@ export type Location = {
   line: Line[];
 };
 
-type Line = {
+export type Line = {
   functionId: string;
   line: string;
 };

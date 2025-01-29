@@ -27,6 +27,7 @@ function buildJsonPprof(fnName: string, location: Location[]): PprofProfile {
     function: [
       { id: '1', name: '3', systemName: '3', filename: '9', startLine: '6' },
       { id: '2', name: '4', systemName: '4', filename: '10', startLine: '37' },
+      { id: '3', name: '11', systemName: '11', filename: '12', startLine: '1337' },
     ],
     mapping: [
       {
@@ -98,6 +99,8 @@ function buildJsonPprof(fnName: string, location: Location[]): PprofProfile {
       'cpu',
       '/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go',
       '/pyroscope/pkg/util/http.go',
+      'iAmALittleInlinedFunction',
+      '/little/func.go',
     ],
     defaultSampleType: '',
   });
@@ -127,6 +130,39 @@ describe('convertPprofToFunctionDetails(fnName, profile)', () => {
       const result = convertPprofToFunctionDetails(
         fnName,
         buildJsonPprof(fnName, [{ id: '1', mappingId: '1', line: [{ functionId: '1', line: '42' }] }])
+      );
+
+      expect(result).toEqual([
+        {
+          name: fnName,
+          version: {
+            git_ref: 'main',
+            repository: 'github.com/grafana/pyroscope',
+          },
+          startLine: 6,
+          fileName: '/opt/homebrew/Cellar/go/1.21.1/libexec/src/net/http/server.go',
+          callSites: expect.any(Map),
+          unit: 'nanoseconds',
+          commit: PLACEHOLDER_COMMIT_DATA,
+        },
+      ]);
+    });
+
+    it('returns function details of function that has inlined another: name, version, startLine, fileName, callSites, unit, commit', () => {
+      const fnName = 'net/http.HandlerFunc.ServeHTTP';
+
+      const result = convertPprofToFunctionDetails(
+        fnName,
+        buildJsonPprof(fnName, [
+          {
+            id: '1',
+            mappingId: '1',
+            line: [
+              { functionId: '3', line: '1339' },
+              { functionId: '1', line: '42' },
+            ],
+          },
+        ])
       );
 
       expect(result).toEqual([
@@ -384,7 +420,7 @@ describe('convertPprofToFunctionDetails(fnName, profile)', () => {
               [134, { cum: 1650000000, flat: 1650000000, line: 134 }],
               [120, { cum: 560000000, flat: 0, line: 120 }],
               [137, { cum: 820000000, flat: 820000000, line: 137 }],
-              [142, { cum: 400000000, flat: 10000000, line: 142 }],
+              [142, { cum: 430000000, flat: 10000000, line: 142 }],
               [149, { cum: 70000000, flat: 70000000, line: 149 }],
               [132, { cum: 340000000, flat: 340000000, line: 132 }],
               [121, { cum: 370000000, flat: 0, line: 121 }],
