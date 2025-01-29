@@ -1,4 +1,4 @@
-import { Function, Location, Mapping, PprofProfile, Sample } from '@shared/types/PprofProfile';
+import { Function, Line, Location, Mapping, PprofProfile, Sample } from '@shared/types/PprofProfile';
 
 import { PLACEHOLDER_COMMIT_DATA } from '../components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { CallSiteProps, FunctionDetails } from './types/FunctionDetails';
@@ -21,6 +21,33 @@ const buildDetails = (profile: PprofProfile, func: Function, mapping?: Mapping) 
   };
 };
 
+// sums up the value for a particular callsite
+function addCallSiteValue(details: FunctionDetails, line: Line, value: number, index: number): FunctionDetails {
+  const lineNumber = Number(line.line);
+  const callSite = details.callSites.get(lineNumber) || {
+    line: Number(line.line),
+    flat: 0,
+    cum: 0,
+  };
+
+  // if the function we're interested in is at the leaf node (index=0), we have its flat value...
+  const flat = index === 0 ? value : 0; // value of the location itself
+
+  // ...if not, that's its cum value
+  // locations above the leaf node don't contribute to the sample value (their self is 0)
+  // this is what the API returns
+  const cum = value; // value of the location plus all its descendants
+
+  callSite.flat += flat;
+  callSite.cum += cum;
+
+  details.callSites.set(lineNumber, callSite);
+
+  return details;
+}
+
+// This reimplements functionality simliar to the upstream project:
+// https://github.com/google/pprof/blob/997b0b79cac0f8c2f2566c506212de67a6edc5ff/internal/report/source.go#L318
 function convertSample(
   fnName: string,
   profile: PprofProfile,
@@ -38,46 +65,27 @@ function convertSample(
       return;
     }
 
-    const func = functions.get(location.line[0].functionId);
-    if (!func) {
-      return;
-    }
+    location.line.forEach((line) => {
+      const func = functions.get(line.functionId);
+      if (!func) {
+        return;
+      }
 
-    if (profile.stringTable[Number(func.name)] !== fnName) {
-      return;
-    }
+      if (profile.stringTable[Number(func.name)] !== fnName) {
+        return;
+      }
 
-    // https://github.com/google/pprof/blob/main/doc/README.md#details
-    if (locationIdSet.has(locationId)) {
-      return;
-    }
+      // https://github.com/google/pprof/blob/main/doc/README.md#details
+      if (locationIdSet.has(locationId)) {
+        return;
+      }
 
-    locationIdSet.add(locationId);
+      locationIdSet.add(locationId);
 
-    const details = versions.get(location.mappingId) || buildDetails(profile, func, mappings.get(location.mappingId));
+      const details = versions.get(location.mappingId) || buildDetails(profile, func, mappings.get(location.mappingId));
 
-    const lineNumber = Number(location.line[0].line);
-
-    const callSite = details.callSites.get(lineNumber) || {
-      line: Number(location.line[0].line),
-      flat: 0,
-      cum: 0,
-    };
-
-    // if the function we're interested in is at the leaf node (index=0), we have its flat value...
-    const flat = index === 0 ? Number(sample.value[0]) : 0; // value of the location itself
-
-    // ...if not, that's its cum value
-    // locations above the leaf node don't contribute to the sample value (their self is 0)
-    // this is what the API returns
-    const cum = Number(sample.value[0]); // value of the location plus all its descendants
-
-    callSite.flat += flat;
-    callSite.cum += cum;
-
-    details.callSites.set(lineNumber, callSite);
-
-    versions.set(location.mappingId, details);
+      versions.set(location.mappingId, addCallSiteValue(details, line, Number(sample.value[0]), index));
+    });
   });
 }
 

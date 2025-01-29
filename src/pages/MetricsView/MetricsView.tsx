@@ -21,7 +21,7 @@ import { useMetricsView } from './domain/useMetricsView';
 
 type DeleteFn = (metric: Metric) => Promise<void>;
 
-export function MetricsView() {
+export default function MetricsView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useMetricsView();
   const { metrics } = data;

@@ -7,7 +7,7 @@ import React from 'react';
 
 import { useSettingsView } from './domain/useSettingsView';
 
-export function SettingsView() {
+export default function SettingsView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useSettingsView();
 
@@ -25,7 +25,7 @@ export function SettingsView() {
 
   return (
     <>
-      <PageTitle title="Profiles settings" />
+      <PageTitle title="Profiles settings (tenant)" />
       <form className={styles.settingsForm} onSubmit={onSubmit}>
         <>
           <FieldSet label="Flame graph" data-testid="flamegraph-settings">
