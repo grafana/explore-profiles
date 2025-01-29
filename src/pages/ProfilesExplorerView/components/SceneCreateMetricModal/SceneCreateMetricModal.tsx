@@ -60,14 +60,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     const serviceName = serviceNameVariable.state.value;
 
     const filtersVariable = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable);
-    const filters = [
-      {
-        key: 'service_name',
-        operator: '=',
-        value: serviceName,
-      },
-      ...filtersVariable.state.filters,
-    ];
+    const filters = filtersVariable.state.filters;
     const filterQuery = filters.map((filter) => `${filter.key}${filter.operator}"${filter.value}"`).join(', ');
 
     useEffect(() => {
@@ -99,6 +92,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
               name,
               serviceName: serviceName.toString(),
               profileType: profileMetric.type,
+              matcher: filterQuery,
               prometheusDataSource: dataSourceName,
               labels,
             });
