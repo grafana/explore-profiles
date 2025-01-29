@@ -7,7 +7,7 @@
   "backend": false,
   "preload": true,
   "dependencies": {
-    "grafanaDependency": ">=11.4.0",
+    "grafanaDependency": ">=11.5.0",
     "plugins": []
   },
   "info": {

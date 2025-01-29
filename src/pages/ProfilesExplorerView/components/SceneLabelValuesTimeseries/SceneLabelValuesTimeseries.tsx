@@ -157,7 +157,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     }
 
     if (groupBy!.values.length > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES) {
-      return `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of a maximum of ${
+      return `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of ~${
         groupBy!.values.length
       } series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`;
     }
