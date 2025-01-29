@@ -69,8 +69,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             new SceneDataTransformer({
               $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
               transformations: displayAllValues
-                ? [addRefId, addStats, sortSeries]
-                : [addRefId, addStats, sortSeries, limitNumberOfSeries],
+                ? [addRefId, addStats, sortSeries('allValuesSum')]
+                : [addRefId, addStats, sortSeries('allValuesSum'), limitNumberOfSeries],
             })
         )
         .setHeaderActions(headerActions(item))
@@ -198,9 +198,12 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
       if (series.length === 1) {
         const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
-        const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
+        const allValuesSumFormatted = getValueFormat(metricField.config.unit)(allValuesSum);
 
-        displayName = `total ${displayName} = ${formattedValue.text}${formattedValue.suffix}`;
+        const maxValue = getSeriesStatsValue(s, 'maxValue') || 0;
+        const maxValueFormatted = getValueFormat(metricField.config.unit)(maxValue);
+
+        displayName = `total ${displayName} = ${allValuesSumFormatted.text}${allValuesSumFormatted.suffix} / max = ${maxValueFormatted.text}${maxValueFormatted.suffix}`;
       }
 
       return {

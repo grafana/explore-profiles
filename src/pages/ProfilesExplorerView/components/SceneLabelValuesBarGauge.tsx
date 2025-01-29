@@ -38,7 +38,7 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
         .setData(
           new SceneDataTransformer({
             $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-            transformations: [addRefId, addStats, sortSeries],
+            transformations: [addRefId, addStats, sortSeries('allValuesSum')],
           })
         )
         .setHeaderActions(headerActions(item))

@@ -86,7 +86,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       isLoading: true,
       $data: new SceneDataTransformer({
         $data: buildLabelValuesGridQueryRunner({ label }),
-        transformations: [addRefId, addStats, sortSeries],
+        transformations: [addRefId, addStats, sortSeries('allValuesSum')],
       }),
       hideNoData: false,
       headerActions,
@@ -252,7 +252,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       isLoading: true,
       $data: new SceneDataTransformer({
         $data: buildLabelValuesGridQueryRunner({ label: this.state.label }),
-        transformations: [addRefId, addStats, sortSeries],
+        transformations: [addRefId, addStats, sortSeries('allValuesSum')],
       }),
     });
 
