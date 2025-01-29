@@ -145,8 +145,7 @@
         event:
           - tag
         ref:
-          - refs/tags/v*.*.*
-          - refs/tags/weekly-f*
+          - refs/heads/main
   trigger:
     ref:
       - refs/tags/v*.*.*
