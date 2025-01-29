@@ -17,11 +17,13 @@ import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { useCreatedMetricsView } from './domain/useCreatedMetricsView';
+import { useMetricsView } from './domain/useMetricsView';
+
+type DeleteFn = (metric: Metric) => Promise<void>;
 
 export function MetricsView() {
   const styles = useStyles2(getStyles);
-  const { data } = useCreatedMetricsView();
+  const { data, actions } = useMetricsView();
   const { metrics } = data;
 
   if (data.fetchError) {
@@ -32,7 +34,7 @@ export function MetricsView() {
   }
 
   const theme = useTheme2();
-  const dataFrame = metrics !== undefined ? buildDataFrame(metrics, theme, styles) : null;
+  const dataFrame = metrics !== undefined ? buildDataFrame(metrics, theme, styles, actions.removeMetric) : null;
 
   return (
     <>
@@ -58,7 +60,7 @@ const getStyles = () => ({
   `,
 });
 
-function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any): DataFrame {
+function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any, onDelete: DeleteFn): DataFrame {
   const df = arrayToDataFrame(
     metrics.map((m) => ({
       Name: m.name,
@@ -99,8 +101,15 @@ function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any): D
       const name = props.frame.fields.find((f) => f.name === 'Name')?.values[props.rowIndex];
       const label = name ? `Delete ${name}` : 'Delete metric';
 
+      // todo(bryan): Make this a confirmation modal.
       return (
-        <IconButton name="trash-alt" variant="destructive" aria-label={label} tooltip={label} onClick={() => {}} />
+        <IconButton
+          name="trash-alt"
+          variant="destructive"
+          aria-label={label}
+          tooltip={label}
+          onClick={() => onDelete(metrics[props.rowIndex])}
+        />
       );
     },
   };

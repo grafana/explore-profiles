@@ -2,8 +2,8 @@ import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { useFetchMetrics } from '@shared/infrastructure/metrics/useFetchMetrics';
 
-export function useCreateMetric() {
-  const { metrics, error: fetchError, mutate } = useFetchMetrics();
+export function useMetricsView() {
+  const { metrics, error: fetchError, remove } = useFetchMetrics();
 
   return {
     data: {
@@ -11,12 +11,12 @@ export function useCreateMetric() {
       fetchError,
     },
     actions: {
-      async save(metric: Metric) {
+      async removeMetric(metric: Metric) {
         try {
-          await mutate(metric);
-          displaySuccess([`Metric ${metric.name} created successfully!`]);
+          await remove(metric);
+          displaySuccess([`Metric ${metric.name} deleted!`]);
         } catch (e) {
-          displayError(e as Error, [`Failed to save metric ${metric.name}.`]);
+          displayError(e as Error, [`Failed to delete metric ${metric.name}.`]);
         }
       },
     },

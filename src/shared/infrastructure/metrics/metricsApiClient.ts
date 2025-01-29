@@ -39,6 +39,17 @@ class MetricsApiClient extends ApiClient {
       .then((response) => response.json());
   }
 
+  async remove(metric: Metric): Promise<void> {
+    return super
+      .fetch('/settings.v1.SettingsService/Delete', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: this.withPrefix(metric.name),
+        }),
+      })
+      .then((response) => response.json());
+  }
+
   private withPrefix(name: string): string {
     return `${MetricsApiClient.METRIC_SETTING_PREFIX}${name}`;
   }

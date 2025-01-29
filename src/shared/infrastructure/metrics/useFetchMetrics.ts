@@ -12,6 +12,7 @@ type FetchResponse = {
   error: Error | null;
   metrics?: Metric[];
   mutate: (newMetric: Metric) => Promise<void>;
+  remove: (metric: Metric) => Promise<void>;
 };
 
 export function useFetchMetrics({ enabled }: FetchParams = {}): FetchResponse {
@@ -26,10 +27,16 @@ export function useFetchMetrics({ enabled }: FetchParams = {}): FetchResponse {
     networkMode: 'always',
   });
 
+  const { mutateAsync: remove } = useMutation({
+    mutationFn: (metric: Metric) => metricsApiClient.remove(metric),
+    networkMode: 'always',
+  });
+
   return {
     isFetching,
     error: metricsApiClient.isAbortError(error) ? null : error,
     metrics: data,
     mutate,
+    remove,
   };
 }

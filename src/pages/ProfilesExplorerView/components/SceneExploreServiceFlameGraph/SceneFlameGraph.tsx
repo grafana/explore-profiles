@@ -21,13 +21,13 @@ import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/bui
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
-import { useCreateMetricModal } from '../SceneCreateMetricModal/domain/MenuOption';
 import { useCreateMetric } from '../SceneCreateMetricModal/domain/useCreateMetricModal';
 import { useCreateMetricsMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
 import { SceneCreateMetricModal } from '../SceneCreateMetricModal/SceneCreateMetricModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
+import { useCreateMetricModal } from './domain/useCreateMetricModal';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
