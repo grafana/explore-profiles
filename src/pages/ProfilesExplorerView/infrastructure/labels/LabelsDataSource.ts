@@ -88,7 +88,14 @@ export class LabelsDataSource extends RuntimeDataSource {
     }
   }
 
-  async fetchLabelValues(query: string, from: number, to: number, labelName: string, variableName?: string) {
+  async fetchLabelValues(
+    index: number,
+    query: string,
+    from: number,
+    to: number,
+    labelName: string,
+    variableName?: string
+  ) {
     let values;
 
     try {
@@ -103,14 +110,13 @@ export class LabelsDataSource extends RuntimeDataSource {
     const count = values ? values.length : -1;
 
     return {
-      // TODO: check if there's a better way
-      value: JSON.stringify({
+      value: {
         value: labelName,
         groupBy: {
           label: labelName,
           values: values || [],
         },
-      }),
+      },
       text: `${labelName} (${count > -1 ? count : '?'})`,
       count,
     };
@@ -142,12 +148,20 @@ export class LabelsDataSource extends RuntimeDataSource {
     const labelsWithValuesAndCount = await Promise.all(
       labels
         .filter(({ value }) => !isPrivateLabel(value))
-        .map(({ value }) => limit(() => this.fetchLabelValues(query, from, to, value, options.variable?.name)))
+        .map(({ value }, index) =>
+          limit(() => this.fetchLabelValues(index, query, from, to, value, options.variable?.name))
+        )
     );
 
     const sortedLabels = labelsWithValuesAndCount
       .sort((a, b) => b.count - a.count)
-      .map(({ value, text }) => ({ value, text }));
+      .map(({ value, text }, index) => {
+        return {
+          // TODO: check if there's a better way
+          value: JSON.stringify({ ...value, index }),
+          text,
+        };
+      });
 
     return [
       // we do this here because GroupByVariable may set its default value to the 1st element automatically

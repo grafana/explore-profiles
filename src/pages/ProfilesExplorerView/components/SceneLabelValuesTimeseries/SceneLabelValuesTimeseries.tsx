@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -6,27 +6,23 @@ import {
   SceneDataTransformer,
   SceneObjectBase,
   SceneObjectState,
+  SceneQueryRunner,
   VizPanel,
   VizPanelMenu,
   VizPanelState,
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
-import { merge } from 'lodash';
+import { isEqual, merge } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
-import { getSeriesStatsValue } from '../../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import {
-  addRefId,
-  addStats,
-  limitNumberOfSeries,
-  sortSeries,
-} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
@@ -52,7 +48,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
     displayAllValues?: SceneLabelValuesTimeseriesState['displayAllValues'];
     legendPlacement?: SceneLabelValuesTimeseriesState['legendPlacement'];
-    data?: SceneDataProvider;
+    data?: SceneDataTransformer;
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
   }) {
     super({
@@ -67,10 +63,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         .setData(
           data ||
             new SceneDataTransformer({
-              $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-              transformations: displayAllValues
-                ? [addRefId, addStats, sortSeries]
-                : [addRefId, addStats, sortSeries, limitNumberOfSeries],
+              $data: buildTimeSeriesQueryRunner(
+                item.queryRunnerParams,
+                displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+              ),
+              transformations: [addRefId, addStats],
             })
         )
         .setHeaderActions(headerActions(item))
@@ -118,13 +115,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     if (item.queryRunnerParams.groupBy?.label) {
       title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
-
-      const totalSeriesCount = getSeriesStatsValue(series[0], 'totalSeriesCount') || 0;
-      const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
-
-      description = hasTooManySeries
-        ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
-        : undefined;
+      description = this.buildDescription(item.queryRunnerParams.groupBy!);
     }
 
     return {
@@ -153,6 +144,25 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         overrides: this.getOverrides(series),
       },
     };
+  }
+
+  buildDescription(groupBy: GridItemData['queryRunnerParams']['groupBy']) {
+    if (!groupBy) {
+      return '';
+    }
+
+    // this case is for favorites: they are stored in localStorage without the `values` array
+    if (!groupBy!.values) {
+      return `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} series to preserve readability. To view all the series, click on the expand icon on this panel.`;
+    }
+
+    if (groupBy!.values.length > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES) {
+      return `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of ~${
+        groupBy!.values.length
+      } series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`;
+    }
+
+    return '';
   }
 
   getAllValuesConfig(series: DataFrame[]) {
@@ -197,10 +207,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
 
       if (series.length === 1) {
-        const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
-        const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
-
-        displayName = `total ${displayName} = ${formattedValue.text}${formattedValue.suffix}`;
+        displayName = formatSingleSeriesDisplayName(displayName, s);
       }
 
       return {
@@ -219,8 +226,46 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     });
   }
 
-  updateTitle(newTitle: string) {
-    this.state.body.setState({ title: newTitle });
+  updateItem(partialItem: Partial<GridItemData>) {
+    const { item, headerActions, body } = this.state;
+    const updatedItem = merge({}, item, partialItem);
+
+    if (partialItem.queryRunnerParams?.hasOwnProperty('groupBy')) {
+      if (partialItem.queryRunnerParams.groupBy === undefined) {
+        delete updatedItem.queryRunnerParams.groupBy;
+      } else {
+        // we completely replace groupBy because merge() above concatenates groupBy.values
+        updatedItem.queryRunnerParams.groupBy = partialItem.queryRunnerParams.groupBy;
+      }
+    }
+
+    if (
+      partialItem.queryRunnerParams?.hasOwnProperty('filters') &&
+      partialItem.queryRunnerParams.filters === undefined
+    ) {
+      delete updatedItem.queryRunnerParams.filters;
+    }
+
+    this.setState({ item: updatedItem });
+
+    body.setState({
+      title: partialItem.label,
+      description: this.buildDescription(updatedItem.queryRunnerParams.groupBy),
+      headerActions: headerActions(updatedItem),
+    });
+
+    if (!isEqual(item.queryRunnerParams, updatedItem.queryRunnerParams)) {
+      const { queries } = buildTimeSeriesQueryRunner(
+        updatedItem.queryRunnerParams,
+        LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+      ).state;
+
+      const queryRunner = body.state.$data?.state.$data as SceneQueryRunner;
+
+      // this allows us not to have to subscribe to the data provider changes as we do in onActivate() above
+      queryRunner?.setState({ queries });
+      queryRunner?.runQueries();
+    }
   }
 
   changeScale(scaleDistribution: ScaleDistributionConfig, axisLabel: string) {

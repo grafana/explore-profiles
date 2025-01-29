@@ -1,0 +1,75 @@
+# Package build-frontend artifact and send it to GCS
+name: Package to GCS
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      github_environment:
+        required: true
+        type: string
+
+jobs:
+  package:
+    # This step creates a zip file with the plugin and publishes it to Google Cloud Storage bucket.
+    # Frontend artifacts have 1 day retention. This step needs to be run within 24 hours after frontend job finished.
+    # Plugin is already signed in frontend job so if you need to use to locally you can just download the artifact
+    # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
+    # to push the package automatically without approval
+    name: Upload to GCS
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.github_environment }}
+    steps:
+      # Required to correctly auth to GCS
+      - name: Prepare - GCS
+        uses: actions/checkout@v4
+
+      - name: Prepare - Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-frontend
+          path: dist
+
+      - name: Get plugin metadata
+        id: metadata
+        run: |
+          sudo apt-get install jq
+
+          export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
+          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${{ inputs.version }}
+          echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
+          echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
+          echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
+
+      # Create zip file with name following convention [plugin-id]-[version].zip
+      # and md5 following [plugin-id]-[version].zip.md5 convention
+      # used by grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
+      # to publish the artifact to Plugins Catalog
+      - name: Package plugin
+        run: |
+          mv dist ${{ steps.metadata.outputs.plugin_id }}
+          zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
+          md5sum -b ${{ steps.metadata.outputs.archive_name }} | awk '{ print $1 }' > ${{ steps.metadata.outputs.archive_name }}.md5
+
+      - name: Login to GCS
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
+
+      - name: Upload to GCS
+        uses: 'google-github-actions/upload-cloud-storage@v1'
+        with:
+          path: ./
+          destination: 'grafana-pyroscope-app/releases'
+          glob: '*.{zip,md5}'
+          predefinedAcl: publicRead
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-package
+          path: ${{ steps.metadata.outputs.archive_name }}
+          retention-days: 1

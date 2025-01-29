@@ -1,3 +1,70 @@
+## [0.1.20](https://github.com/grafana/explore-profiles/compare/v0.1.19...v0.1.20) (2025-02-06)
+
+
+### Bug Fixes
+
+* **Filters:** Ensure filters are always cleared when changing the data source or the service ([#374](https://github.com/grafana/explore-profiles/issues/374)) ([1c7b6c3](https://github.com/grafana/explore-profiles/commit/1c7b6c3f537b9ff0bc9060bac5f0e2c240ba00c8))
+* **FunctionDetailsPanel:** Fix start ellipsis for file names containing non-alpha chars ([#373](https://github.com/grafana/explore-profiles/issues/373)) ([f79a1b7](https://github.com/grafana/explore-profiles/commit/f79a1b7628d8dd0bfd478122a0296dd2a1c72948))
+* **GitHubIntegration:** Handle function details for inlining ([#347](https://github.com/grafana/explore-profiles/issues/347)) ([5e28b3c](https://github.com/grafana/explore-profiles/commit/5e28b3c0e571f254915d08e0a166a66d33ff240b))
+* **Grid:** Fix error message display ([#359](https://github.com/grafana/explore-profiles/issues/359)) ([1ca4ff2](https://github.com/grafana/explore-profiles/commit/1ca4ff2795cfa8118ec9e0d12dcad4b04d336534))
+* **Settings:** Prevent warning to be displayed when no settings is returned by the Settings API ([#384](https://github.com/grafana/explore-profiles/issues/384)) ([cdce58a](https://github.com/grafana/explore-profiles/commit/cdce58a48bad24be1cf64ed81658bbcd0afca521))
+
+
+### Features
+
+* **AdHocView:** Remove Grafana menu item to the Ad Hoc view ([#385](https://github.com/grafana/explore-profiles/issues/385)) ([5c265fb](https://github.com/grafana/explore-profiles/commit/5c265fb4b5273083b6150aad46d32a6f44027fda))
+* **LabelsView:** Add maxima visualizations ([#361](https://github.com/grafana/explore-profiles/issues/361)) ([25095c6](https://github.com/grafana/explore-profiles/commit/25095c6882d17ba6d88e7f5f861d5560e112a930))
+* **LabelsView:** update main time series when a "group by" label is selected ([#341](https://github.com/grafana/explore-profiles/issues/341)) ([775b37d](https://github.com/grafana/explore-profiles/commit/775b37dc6ef9433b3f5674f56869a37a16892871))
+
+
+### Performance Improvements
+
+* **Series:** Limit the number of series request by breakdown charts ([#219](https://github.com/grafana/explore-profiles/issues/219)) ([8e1161d](https://github.com/grafana/explore-profiles/commit/8e1161df84283eecadc8aa9da55e46eb401a1e8c))
+
+
+
+## [0.1.19](https://github.com/grafana/explore-profiles/compare/v0.1.18...v0.1.19) (2025-01-27)
+
+
+### Bug Fixes
+
+* **DiffFlameGraph:** Always disable time ranges sync before applying a preset ([#355](https://github.com/grafana/explore-profiles/issues/355)) ([272a98b](https://github.com/grafana/explore-profiles/commit/272a98bc13ffe7e93673c41ab1795b12ae2fbb3e))
+
+
+
+## [0.1.18](https://github.com/grafana/explore-profiles/compare/v0.1.17...v0.1.18) (2025-01-23)
+
+
+### Bug Fixes
+
+* **DiffFlameGraphView:** Clear preset option when applying auto-select ([#313](https://github.com/grafana/explore-profiles/issues/313)) ([b0f4001](https://github.com/grafana/explore-profiles/commit/b0f400163378136b1d1a8485877e1fc596b1d222))
+* **DiffFlameGraphView:** Preserve context after leaving/re-entering the view ([#319](https://github.com/grafana/explore-profiles/issues/319)) ([367ddab](https://github.com/grafana/explore-profiles/commit/367ddabe175c6a942b3ec2371d01a3013de1cccc))
+* **Header:** Prevent crash if useChromeHeaderHeight is not available (for Grafana < 11.3) ([#312](https://github.com/grafana/explore-profiles/issues/312)) ([c638416](https://github.com/grafana/explore-profiles/commit/c6384162e1c3dc5f068dd814ad5431e23efb8537))
+* **QueryRunners:** Prevent invalid queries to run ([#316](https://github.com/grafana/explore-profiles/issues/316)) ([5f5046c](https://github.com/grafana/explore-profiles/commit/5f5046cb82705c7ddeb2e80934becf3f8b887918))
+
+
+### Features
+
+* Add investigations support ([#301](https://github.com/grafana/explore-profiles/issues/301)) ([7f95852](https://github.com/grafana/explore-profiles/commit/7f958526d6af6d494a3f1095a89404d4fcacca10))
+* Add query link extension ([#220](https://github.com/grafana/explore-profiles/issues/220)) ([62720ad](https://github.com/grafana/explore-profiles/commit/62720ad1cbd1346c772a521c133988d043851f55))
+* **DiffView:** Time ranges sync ([#288](https://github.com/grafana/explore-profiles/issues/288)) ([45cea14](https://github.com/grafana/explore-profiles/commit/45cea14eef9fbde49f4474051a5833a1be623d2a))
+* **FlameGraph:** Keep items focused when data changes ([#336](https://github.com/grafana/explore-profiles/issues/336)) ([d8ff887](https://github.com/grafana/explore-profiles/commit/d8ff887d0b9207c02a3a7563e845dab7df0b94d5))
+* **GitHubIntegration:** Add info tooltip on connect button ([#328](https://github.com/grafana/explore-profiles/issues/328)) ([a929ddd](https://github.com/grafana/explore-profiles/commit/a929ddd56ea983ad5b5210c3e276afc778d7cdba))
+* **Timeseries:** Add open in Explore menu item ([#300](https://github.com/grafana/explore-profiles/issues/300)) ([a9b0891](https://github.com/grafana/explore-profiles/commit/a9b0891aa2bc3666b57b2b9ab06e1b704dde8e85))
+* Upgrade Grafana to v11.3.0 ([#287](https://github.com/grafana/explore-profiles/issues/287)) ([595a1cc](https://github.com/grafana/explore-profiles/commit/595a1cca4a83f84341c258f823a2cd2b61659268))
+
+
+### Performance Improvements
+
+* Lazy load page components ([#324](https://github.com/grafana/explore-profiles/issues/324)) ([c0ffd33](https://github.com/grafana/explore-profiles/commit/c0ffd33b3f1c2b6d9ae960429ebf23d1436bdde3))
+
+
+### Reverts
+
+* Revert "refactor(*): Lazy load page components (#322)" (#323) ([362e02b](https://github.com/grafana/explore-profiles/commit/362e02b6a8356dd9366259a56d4d1c56b3b522a0)), closes [#322](https://github.com/grafana/explore-profiles/issues/322) [#323](https://github.com/grafana/explore-profiles/issues/323)
+
+
+
 ## [0.1.17](https://github.com/grafana/explore-profiles/compare/v0.1.16...v0.1.17) (2024-11-19)
 
 

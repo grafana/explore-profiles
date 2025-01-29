@@ -21,66 +21,19 @@ local pipeline(name, steps=[], services=[]) = {
   steps: [step('runner identification', ['echo $DRONE_RUNNER_NAME'], 'alpine')] + steps,
   trigger+: {
     ref+: [
-      'refs/heads/main',
-      'refs/pull/**',
-      'refs/tags/v*.*.*',
       'refs/tags/weekly-f*',
     ],
   },
 };
 
-local mainOnly = {
+local weeklyReleaseOnly = {
   when: {
     ref+: [
-      'refs/heads/main',
-      'refs/pull/2/head',
-    ],
-  },
-};
-
-local mainOrReleaseOnly = {
-  when: {
-    ref+: [
-      'refs/heads/main',
-      'refs/pull/2/head',
-      'refs/tags/v*.*.*',
       'refs/tags/weekly-f*',
     ],
   },
 };
 
-local releaseOnly = {
-  when: {
-    event: ['tag'],
-    ref+: [
-      'refs/tags/v*.*.*',
-      'refs/tags/weekly-f*',
-    ],
-  },
-};
-
-local nonReleaseOnly = {
-  when: {
-    event: {
-      exclude: ['tag'],
-    },
-  },
-};
-
-
-local cronOnly = {
-  when: {
-    event: ['cron'],
-  },
-};
-
-local prOnly = {
-  when: {
-    event: {
-      include: ['pull_request'],
-    },
-  },
-};
 // promoteOnly triggers pipelines only on promotion. Various deployment steps
 // are tagged with this, so that we can optionally tell Drone to
 // deploy to different environments by promoting a build.
@@ -122,7 +75,7 @@ local uploadStep = function(platform)
         from_secret: 'gcs_service_account_key',
       },
     },
-  } + releaseOnly;
+  } + weeklyReleaseOnly;
 
 
 // NB: Former deployStep() replaced by argo-workflows api call using argo-cli container
@@ -192,7 +145,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
       depends_on: [
         'build frontend packages',
       ],
-    } + mainOrReleaseOnly,
+    } + weeklyReleaseOnly,
 
     step('publish zip to GCS', [], image='plugins/gcs') + {
       depends_on: [
@@ -206,7 +159,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
           from_secret: 'gcs_service_account_key',
         },
       },
-    } + releaseOnly,
+    } + weeklyReleaseOnly,
 
     step('publish zip to GCS with commit SHA', [], image='plugins/gcs') + {
       depends_on: [
@@ -220,35 +173,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
           from_secret: 'gcs_service_account_key',
         },
       },
-    } + releaseOnly,
-
-    step('publish zip to GCS with latest-dev', [], image='plugins/gcs') + {
-      depends_on: [
-        'package and sign',
-      ],
-      settings: {
-        acl: 'allUsers:READER',
-        source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
-        target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-edge.zip',
-        token: {
-          from_secret: 'gcs_service_account_key',
-        },
-      },
-    } + mainOnly,
-
-    step('publish zip to GCS with dev-tag', [], image='plugins/gcs') + {
-      depends_on: [
-        'package and sign',
-      ],
-      settings: {
-        acl: 'allUsers:READER',
-        source: 'grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip',
-        target: 'grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_COMMIT}.zip',
-        token: {
-          from_secret: 'gcs_service_account_key',
-        },
-      },
-    } + mainOnly,
+    } + weeklyReleaseOnly,
 
     step('publish zip to GCS with latest', [], image='plugins/gcs') + {
       depends_on: [
@@ -262,7 +187,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
           from_secret: 'gcs_service_account_key',
         },
       },
-    } + releaseOnly,
+    } + weeklyReleaseOnly,
 
     step('publish zip to GCS with tag', [], image='plugins/gcs') + {
       depends_on: [
@@ -277,7 +202,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
           from_secret: 'gcs_service_account_key',
         },
       },
-    } + releaseOnly,
+    } + weeklyReleaseOnly,
     step('publish release to Github', [], image='plugins/github-release') + {
       settings: {
         api_key: {
@@ -290,39 +215,8 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         'generate tags',
         'package and sign',
       ],
-    } + releaseOnly,
-
-    step('publish to grafana.com', [
-      'apt update',
-      'apt install -y curl',
-      './scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}',
-    ], image=dockerGrafanaPluginCIImage) + {
-      environment: {
-        GCOM_TOKEN: {
-          from_secret: 'gcom_publish_token',
-        },
-      },
-      depends_on: [
-        'generate tags',
-        'package and sign',
-      ],
-    } + releaseOnly,
+    } + weeklyReleaseOnly,
   ]),
-
-  pipeline('deploy dev', [
-    generateTagsStep(),
-    deployStep('dev'),
-  ]) + {
-    image_pull_secrets: ['gcr_reader'],
-    depends_on: [
-      'build packages',
-    ],
-    trigger+: {
-      ref: [
-        'refs/heads/main',
-      ],
-    },
-  },
 
   pipeline('weekly deploy ops', [
     generateTagsStep(),

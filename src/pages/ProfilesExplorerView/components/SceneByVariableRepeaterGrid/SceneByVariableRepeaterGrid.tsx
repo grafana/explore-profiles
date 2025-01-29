@@ -23,6 +23,7 @@ import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
 import { SceneLabelValuesBarGauge } from '../SceneLabelValuesBarGauge';
 import { SceneLabelValuesHistogram } from '../SceneLabelValuesHistogram';
+import { SceneLabelValuesTable } from '../SceneLabelValuesTable';
 import { SceneLabelValuesTimeseries } from '../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { SceneEmptyState } from './components/SceneEmptyState/SceneEmptyState';
 import { SceneErrorState } from './components/SceneErrorState/SceneErrorState';
@@ -311,7 +312,9 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
-  setupHideNoData(vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge | SceneLabelValuesHistogram) {
+  setupHideNoData(
+    vizPanel: SceneLabelValuesTimeseries | SceneLabelValuesBarGauge | SceneLabelValuesHistogram | SceneLabelValuesTable
+  ) {
     const sub = vizPanel.subscribeToEvent(EventTimeseriesDataReceived, (event) => {
       if (event.payload.series?.length) {
         return;
@@ -380,7 +383,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       children: [
         new SceneCSSGridItem({
           body: new SceneErrorState({
-            message: error.toString(),
+            message: error.message || error.toString(),
           }),
         }),
       ],

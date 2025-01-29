@@ -14,100 +14,38 @@ on:
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
 
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
 jobs:
-  frontend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  build:
+    name: Build and test
+    uses: ./.github/workflows/build.yml
+    with:
+      version: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
+  package:
+    name: Package
+    needs: [build]
+    uses: ./.github/workflows/package.yml
+    secrets: inherit
+    with:
+      version: ${{ github.event.pull_request.head.sha || github.sha }}
+      github_environment: ${{ github.event_name != 'push' && 'gcs' || 'gcs-no-approval' }}
 
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      # lint
-      - name: Check TS types
-        run: yarn typecheck
-      - name: Lint
-        run: yarn lint
-
-      - name: Unit tests
-        run: yarn test:ci
-
-      - name: Report test coverage
-        uses: MishaKav/jest-coverage-comment@v1.0.25
-        with:
-          title: Unit test coverage
-
-      - name: Build frontend
-        run: yarn build
-
-      - name: Check bundlesize
-        run: yarn run bundlewatch
-
-      - name: Compatibility check
-        run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: build-frontend
-          path: dist
-          retention-days: 1
-
-  end-to-end:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [frontend]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: build-*
-          merge-multiple: true
-          path: dist
-
-      # E2E tests
-      # switch to "npm run" in order to prevent "Usage Error: Couldn't find the node_modules state file - running an install might help (findPackageLocation)" when using yarn
-      - name: Start Grafana server
-        run: npm run e2e:ci:server:up
-
-      - name: Prepare e2e tests
-        run: npm run e2e:ci:prepare
-
-      # commented to save time during the build (building this action takes ~30s)
-      # the next step "Prepare e2e test" takes ~20s, which gives us the time needed
-      # uncomment it if you experience flakiness
-      # - uses: cygnetdigital/wait_for_response@v2.0.0
-      #   with:
-      #     url: 'http://localhost:3000/a/grafana-pyroscope-app/single'
-      #     responseCode: '200'
-      #     timeout: 20000
-      #     interval: 500
-
-      - name: Launch e2e tests
-        run: npm run e2e:ci
-
-      - name: Stop Grafana server
-        run: npm run e2e:ci:server:down
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: e2e-test-reports-and-results
-          path: |
-            e2e/test-reports
-            e2e/test-results
-          retention-days: 15
+  deploy-main-to-dev-and-ops:
+    name: Deploy
+    needs: [package]
+    uses: ./.github/workflows/deploy.yml
+    # Make deployments available only from main
+    if: github.event_name == 'push'
+    secrets: inherit
+    strategy:
+      matrix:
+        environment: [dev, ops]
+    with:
+      version: ${{ github.event.pull_request.head.sha || github.sha }}
+      environment: ${{ matrix.environment }}

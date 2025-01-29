@@ -39,9 +39,6 @@
       name: package and sign
       when:
         ref:
-          - refs/heads/main
-          - refs/pull/2/head
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -55,10 +52,7 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -72,41 +66,8 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
-    - commands: []
-      depends_on:
-        - package and sign
-      image: plugins/gcs
-      name: publish zip to GCS with latest-dev
-      settings:
-        acl: allUsers:READER
-        source: grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip
-        target: grafana-pyroscope-app/releases/grafana-pyroscope-app-edge.zip
-        token:
-          from_secret: gcs_service_account_key
-      when:
-        ref:
-          - refs/heads/main
-          - refs/pull/2/head
-    - commands: []
-      depends_on:
-        - package and sign
-      image: plugins/gcs
-      name: publish zip to GCS with dev-tag
-      settings:
-        acl: allUsers:READER
-        source: grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip
-        target: grafana-pyroscope-app/releases/grafana-pyroscope-app-${DRONE_COMMIT}.zip
-        token:
-          from_secret: gcs_service_account_key
-      when:
-        ref:
-          - refs/heads/main
-          - refs/pull/2/head
     - commands: []
       depends_on:
         - package and sign
@@ -119,10 +80,7 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -137,10 +95,7 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -154,70 +109,11 @@
         files: grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip
         title: ${DRONE_TAG}
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
-          - refs/tags/weekly-f*
-    - commands:
-        - apt update
-        - apt install -y curl
-        - ./scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}
-      depends_on:
-        - generate tags
-        - package and sign
-      environment:
-        GCOM_TOKEN:
-          from_secret: gcom_publish_token
-      image: grafana/grafana-plugin-ci-e2e:latest
-      name: publish to grafana.com
-      when:
-        event:
-          - tag
-        ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
   trigger:
     ref:
-      - refs/heads/main
-      - refs/pull/**
-      - refs/tags/v*.*.*
       - refs/tags/weekly-f*
-  type: docker
-- depends_on:
-    - build packages
-  image_pull_secrets:
-    - gcr_reader
-  kind: pipeline
-  name: deploy dev
-  services: []
-  steps:
-    - commands:
-        - echo $DRONE_RUNNER_NAME
-      image: alpine
-      name: runner identification
-    - commands:
-        - git fetch origin --tags
-        - git status --porcelain --untracked-files=no
-        - git diff --no-ext-diff --quiet
-      depends_on: []
-      image: golang:1.20.4
-      name: generate tags
-    - depends_on:
-        - generate tags
-      image: us.gcr.io/kubernetes-dev/drone/plugins/argo-cli
-      name: launch deploy-plugin-dev workflow
-      settings:
-        add_ci_labels: true
-        command: submit --from workflowtemplate/deploy-plugin-dev --name deploy-plugin-dev-${DRONE_COMMIT}
-          --parameter plugintag=${DRONE_COMMIT}
-        log_level: debug
-        namespace: phlare-cd
-        token:
-          from_secret: argo_token
-  trigger:
-    ref:
-      - refs/heads/main
   type: docker
 - depends_on:
     - build packages
