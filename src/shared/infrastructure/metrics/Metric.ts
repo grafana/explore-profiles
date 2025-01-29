@@ -1,8 +1,9 @@
 export type Metric = {
   version: number;
   name: string;
-  profileType: string;
   serviceName: string;
+  profileType: string;
+  matcher: string;
   labels: string[];
   prometheusDataSource: string;
 };

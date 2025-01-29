@@ -13,10 +13,11 @@ import {
   useTheme2,
 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
+import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { Metric, useCreatedMetricsView } from './domain/useCreatedMetricsView';
+import { useCreatedMetricsView } from './domain/useCreatedMetricsView';
 
 export function MetricsView() {
   const styles = useStyles2(getStyles);
@@ -31,19 +32,21 @@ export function MetricsView() {
   }
 
   const theme = useTheme2();
-  const dataFrame = buildDataFrame(metrics, theme, styles);
+  const dataFrame = metrics !== undefined ? buildDataFrame(metrics, theme, styles) : null;
 
   return (
     <>
       <PageTitle title="Created metrics" />
-      <Table
-        data={dataFrame}
-        width={2000}
-        height={500}
-        columnMinWidth={130}
-        cellHeight={TableCellHeight.Auto}
-        resizable={false}
-      />
+      {dataFrame && (
+        <Table
+          data={dataFrame}
+          width={2000}
+          height={500}
+          columnMinWidth={130}
+          cellHeight={TableCellHeight.Auto}
+          resizable={false}
+        />
+      )}
     </>
   );
 }
@@ -66,7 +69,7 @@ function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any): D
   const dataSourceOptions: TableCustomCellOptions = {
     type: TableCellDisplayMode.Custom,
     cellComponent: (props) => {
-      const dataSource = metrics[props.rowIndex]?.dataSource ?? '';
+      const dataSource = metrics[props.rowIndex]?.prometheusDataSource ?? '';
       return (
         <Stack direction="row" alignItems="center">
           {/* note(bryanhuhta): This color is taken from the Prometheus svg from grafana.com */}
