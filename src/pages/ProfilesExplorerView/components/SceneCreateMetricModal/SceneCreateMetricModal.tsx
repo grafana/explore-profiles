@@ -48,7 +48,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     const fieldWidth = 65;
 
     // TODO(bryan) replace this with real data sources.
-    const dataSourceName = 'ops-cortex';
+    const dataSourceName = 'dummy-data-source';
 
     const [values, setValues] = useState<Array<SelectableValue<string>>>([]);
     const [options, setOptions] = useState<string[]>([]);
