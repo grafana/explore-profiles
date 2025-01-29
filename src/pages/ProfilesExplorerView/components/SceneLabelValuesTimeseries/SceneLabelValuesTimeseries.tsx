@@ -121,7 +121,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       if (!item.queryRunnerParams.groupBy.values) {
         description = `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} series to preserve readability. To view all the series, click on the expand icon on this panel.`;
       } else if (item.queryRunnerParams.groupBy.values.length > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES) {
-        description = `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of a maximum of ${totalSeriesCountFromItem} series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`;
+        description = `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of ~${totalSeriesCountFromItem} series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`;
       }
     }
 
