@@ -1,7 +1,7 @@
 import { IconName } from '@grafana/data';
 import { Props as FlameGraphProps } from '@grafana/flamegraph';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 export function useCreateMetricsMenu(setModalOpen: () => void): DomainHookReturnValue {
   const getExtraFlameGraphMenuItems: FlameGraphProps['getExtraContextMenuButtons'] = useCallback(
@@ -29,21 +29,5 @@ export function useCreateMetricsMenu(setModalOpen: () => void): DomainHookReturn
     actions: {
       getExtraFlameGraphMenuItems,
     },
-  };
-}
-
-type ToggleModal = {
-  isModalOpen: () => boolean;
-  open: () => void;
-  close: () => void;
-};
-
-export function useToggleExportMetricModal(): ToggleModal {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  return {
-    isModalOpen: () => isModalOpen,
-    open: () => setIsModalOpen(true),
-    close: () => setIsModalOpen(false),
   };
 }

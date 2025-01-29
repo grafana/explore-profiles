@@ -3,7 +3,7 @@ import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/da
 import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
-import { displaySuccess, displayWarning } from '@shared/domain/displayStatus';
+import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -14,13 +14,16 @@ import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
+import { Metric } from '../../../../shared/infrastructure/metrics/Metric';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
-import { useCreateMetricsMenu, useToggleExportMetricModal } from '../SceneCreateMetricModal/MenuOption';
+import { useCreateMetricModal } from '../SceneCreateMetricModal/domain/MenuOption';
+import { useCreateMetric } from '../SceneCreateMetricModal/domain/useCreateMetricModal';
+import { useCreateMetricsMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
 import { SceneCreateMetricModal } from '../SceneCreateMetricModal/SceneCreateMetricModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
@@ -160,7 +163,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { data, actions } = model.useSceneFlameGraph();
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
-    const metricsModal = useToggleExportMetricModal();
+
+    const { actions: metricsActions } = useCreateMetric();
+    const metricsModal = useCreateMetricModal();
     const metricsMenu = useCreateMetricsMenu(metricsModal.open);
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
@@ -242,9 +247,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           model={data.metrics.modal}
           isModalOpen={metricsModal.isModalOpen}
           onDismiss={metricsModal.close}
-          onCreate={() => {
+          onCreate={(metric: Metric) => {
+            metricsActions.save(metric);
             metricsModal.close();
-            displaySuccess(['Metric created successfully!']);
           }}
         />
       </div>

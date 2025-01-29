@@ -1,10 +1,24 @@
+import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Button, Icon, InlineField, InlineFieldRow, Input, Modal, MultiSelect, useStyles2 } from '@grafana/ui';
+import {
+  Button,
+  Divider,
+  Icon,
+  InlineField,
+  InlineFieldRow,
+  Input,
+  Modal,
+  MultiSelect,
+  Stack,
+  Text,
+  useStyles2,
+} from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useEffect, useState } from 'react';
 
+import { Metric } from '../../../../shared/infrastructure/metrics/Metric';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -26,7 +40,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
   }: SceneComponentProps<SceneCreateMetricModal> & {
     isModalOpen: () => boolean;
     onDismiss: () => void;
-    onCreate: () => void;
+    onCreate: (metric: Metric) => Promise<void>;
   }) => {
     // eslint-disable-next-line no-unused-vars
     const styles = useStyles2(getStyles);
@@ -35,7 +49,6 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
 
     // TODO(bryan) replace this with real data sources.
     const dataSourceName = 'ops-cortex';
-    const dataSourceUid = 'ops-cortex-uid';
 
     const [values, setValues] = useState<Array<SelectableValue<string>>>([]);
     const [options, setOptions] = useState<string[]>([]);
@@ -44,12 +57,14 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     const profileMetric = getProfileMetric(profileMetricVariable.state.value as ProfileMetricId);
 
     const serviceNameVariable = sceneGraph.findByKeyAndType(model, 'serviceName', ServiceNameVariable);
+    const serviceName = serviceNameVariable.state.value;
+
     const filtersVariable = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable);
     const filters = [
       {
         key: 'service_name',
         operator: '=',
-        value: serviceNameVariable.state.value,
+        value: serviceName,
       },
       ...filtersVariable.state.filters,
     ];
@@ -70,43 +85,64 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
 
     return (
       <Modal title="Create metric" isOpen={isModalOpen()} onDismiss={onDismiss}>
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+
+            const nameInput = e.currentTarget.elements.namedItem('metric_name') as HTMLInputElement;
+            const name = nameInput.value;
+
+            const labels = values.map((v) => v?.value).filter((v) => v !== undefined && v !== null);
+
+            onCreate({
+              version: 1,
+              name,
+              serviceName: serviceName.toString(),
+              profileType: profileMetric.type,
+              prometheusDataSource: dataSourceName,
+              labels,
+            });
+          }}
+        >
           <>
             <InlineFieldRow>
-              <InlineField label="Metric name" labelWidth={labelWidth}>
-                <Input width={fieldWidth} placeholder="Name" required />
+              <InlineField className={styles.readonlyRow} label="Profile type" labelWidth={labelWidth} disabled>
+                <div className={styles.readonlyText}>{`${profileMetric.group}/${profileMetric.type}`}</div>
               </InlineField>
             </InlineFieldRow>
 
             <InlineFieldRow>
-              <InlineField label="Profile type" labelWidth={labelWidth}>
-                <Input width={fieldWidth} value={`${profileMetric.group}/${profileMetric.type}`} required readOnly />
+              <InlineField className={styles.readonlyRow} label="Service name" labelWidth={labelWidth} disabled>
+                <div className={styles.readonlyText}>
+                  <Text>{`${serviceName}`}</Text>
+                </div>
               </InlineField>
             </InlineFieldRow>
 
             <InlineFieldRow>
-              <InlineField label="Filter" labelWidth={labelWidth}>
-                <Input width={fieldWidth} value={`{${filterQuery}}`} required readOnly />
+              <InlineField className={styles.readonlyRow} label="Data source" labelWidth={labelWidth} disabled>
+                <div className={styles.readonlyText}>
+                  <Stack direction="row" alignItems="center" justifyContent="flex-start">
+                    {/* note(bryanhuhta): This color is taken from the Prometheus svg from grafana.com */}
+                    <Icon name="gf-prometheus" color="#DA4E31" />
+                    <span>{dataSourceName}</span>
+                  </Stack>
+                </div>
+              </InlineField>
+            </InlineFieldRow>
+
+            <Divider />
+
+            <InlineFieldRow>
+              <InlineField htmlFor="metric_name" label="Metric name" labelWidth={labelWidth}>
+                <Input id="metric_name" width={fieldWidth} placeholder="Name" required />
               </InlineField>
             </InlineFieldRow>
 
             <InlineFieldRow>
-              <InlineField label="Data source" labelWidth={labelWidth}>
-                <Input
-                  width={fieldWidth}
-                  value={dataSourceName}
-                  prefix={<Icon name={'gf-prometheus'} />}
-                  required
-                  readOnly
-                  disabled
-                />
-              </InlineField>
-            </InlineFieldRow>
-            <input value={dataSourceUid} required readOnly hidden />
-
-            <InlineFieldRow>
-              <InlineField label="Included labels" labelWidth={labelWidth}>
+              <InlineField htmlFor="metric_labels" label="Included labels" labelWidth={labelWidth}>
                 <MultiSelect
+                  id="metric_labels"
                   options={options.map((opt) => ({ label: opt, value: opt }))}
                   value={values}
                   onChange={setValues}
@@ -118,18 +154,28 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
               </InlineField>
             </InlineFieldRow>
           </>
-        </form>
 
-        <Modal.ButtonRow>
-          <Button variant="secondary" fill="outline" onClick={onDismiss}>
-            Cancel
-          </Button>
-          <Button onClick={onCreate}>Create</Button>
-        </Modal.ButtonRow>
+          <Modal.ButtonRow>
+            <Button variant="secondary" fill="outline" onClick={onDismiss}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              Create
+            </Button>
+          </Modal.ButtonRow>
+        </form>
       </Modal>
     );
   };
 }
 
 // eslint-disable-next-line no-unused-vars
-const getStyles = (theme: GrafanaTheme2) => ({});
+const getStyles = (theme: GrafanaTheme2) => ({
+  readonlyRow: css`
+    align-items: center;
+  `,
+
+  readonlyText: css`
+    padding-left: ${theme.spacing(1)};
+  `,
+});
