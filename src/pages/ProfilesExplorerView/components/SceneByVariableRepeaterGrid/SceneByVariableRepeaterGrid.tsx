@@ -380,7 +380,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       children: [
         new SceneCSSGridItem({
           body: new SceneErrorState({
-            message: error.toString(),
+            message: error.message || error.toString(),
           }),
         }),
       ],
