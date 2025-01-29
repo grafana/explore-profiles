@@ -1,0 +1,32 @@
+name: Deploy existing version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version prefixed with v, e.g. v1.0.8 or a commit sha'
+        type: string
+
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  verify:
+    name: Verify ${{ inputs.version }} exists
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version }}
+
+  deploy:
+    uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/modify-dev-flow
+    secrets: inherit
+    strategy:
+      matrix:
+        environment: [dev, ops, prod]
+    with:
+      version: ${{ inputs.version }}
+      environment: ${{ matrix.environment }}

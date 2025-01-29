@@ -143,7 +143,7 @@ jobs:
     # Plugin is already signed in frontend job so if you need to use to locally you can just download the artifact
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
     # to push the package automatically without approval
-    name: Package and publish plugin
+    name: Upload to GCS
     needs: [end-to-end]
     environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
     runs-on: ubuntu-latest
@@ -186,7 +186,7 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
 
-      - name: Publish to GCS
+      - name: Upload to GCS
         uses: 'google-github-actions/upload-cloud-storage@v1'
         with:
           path: ./
@@ -194,22 +194,15 @@ jobs:
           glob: '*.zip'
           predefinedAcl: publicRead
 
-  deploy-to-dev:
-    # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
-    name: Deploy to dev
-    needs: [package]
-    runs-on: ubuntu-latest
-    environment: ${{ github.event_name == 'push' && 'dev-no-approval' || 'dev' }}
-    steps:
-      - name: Publish to dev
-        run: echo Deploying ${{ needs.package.outputs.sha }} to dev
-      - name: Deploy to dev
-        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
-        with:
-          instance: 'ops'
-          namespace: 'phlare-cd'
-          workflow_template: 'deploy-plugin-dev'
-          parameters: |
-            plugintag=${{ needs.package.outputs.sha }}
-          extra_args: '--name deploy-plugin-dev-${{ needs.package.outputs.sha }}'
-          log_level: 'debug'
+  deploy-main-to-dev-and-ops:
+    name: Deploy to dev / ops
+    uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/modify-dev-flow
+    # TODO: testing temporarily with pull_requests + dry run in deploy.yml
+    if: github.event_name == 'pull_request'
+    secrets: inherit
+    strategy:
+      matrix:
+        environment: [dev, ops]
+    with:
+      version: ${{ needs.package.outputs.sha }}
+      environment: ${{ matrix.environment }}
