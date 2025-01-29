@@ -196,6 +196,7 @@ jobs:
 
   deploy-main-to-dev-and-ops:
     name: Deploy to dev / ops
+    needs: [package]
     uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/modify-dev-flow
     # TODO: testing temporarily with pull_requests + dry run in deploy.yml
     if: github.event_name == 'pull_request'

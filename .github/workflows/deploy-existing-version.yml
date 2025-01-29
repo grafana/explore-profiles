@@ -23,6 +23,7 @@ jobs:
 
   deploy:
     uses: grafana/explore-profiles/.github/workflows/deploy.yml@ifrost/modify-dev-flow
+    needs: [verify]
     secrets: inherit
     strategy:
       matrix:
