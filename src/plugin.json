@@ -7,7 +7,7 @@
   "backend": false,
   "preload": true,
   "dependencies": {
-    "grafanaDependency": ">=11.3.2",
+    "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
       "exposedComponents": ["grafana-collector-app/deploy-integration/v1"]
