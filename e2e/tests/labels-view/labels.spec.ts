@@ -219,6 +219,43 @@ test.describe('Labels view', () => {
           });
         });
       });
+
+      test.describe('Actions that resets the main timeseries', () => {
+        const filter = ['vehicle', '=', 'scooter'];
+
+        test.beforeEach(async ({ exploreProfilesPage }) => {
+          await exploreProfilesPage.addFilter(filter);
+          await exploreProfilesPage.assertFilters([filter]);
+        });
+
+        test('Profile type selector', async ({ exploreProfilesPage }) => {
+          await exploreProfilesPage.selectProfileType('process_cpu/samples');
+          await exploreProfilesPage.assertSelectedProfileType('process_cpu/samples');
+          await exploreProfilesPage.assertNoSpinner();
+
+          await exploreProfilesPage.assertFilters([filter]);
+
+          await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+            stylePath: './e2e/fixtures/css/hide-all-controls.css',
+          });
+        });
+
+        test('Service selector', async ({ exploreProfilesPage }) => {
+          await exploreProfilesPage.selectProfileType('process_cpu/samples');
+          await exploreProfilesPage.assertSelectedProfileType('process_cpu/samples');
+
+          await exploreProfilesPage.selectService('pyroscope');
+          await exploreProfilesPage.assertSelectedService('pyroscope');
+
+          await exploreProfilesPage.assertNoSpinner();
+
+          await exploreProfilesPage.assertFilters([]);
+
+          await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+            stylePath: './e2e/fixtures/css/hide-all-controls.css',
+          });
+        });
+      });
     });
   });
 
