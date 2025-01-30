@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version prefixed with v, e.g. v1.0.8 or a commit sha'
+        description: 'GIT ref (commit SHA or tag, e.g. v1.0.8)'
         type: string
 
 # Required to create OIDC/JWT token required to use shared actions
