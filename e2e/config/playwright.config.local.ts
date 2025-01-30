@@ -19,6 +19,7 @@ const projects = shouldAuthenticate
         testDir: path.join(process.cwd(), 'e2e', 'tests'),
         use: {
           ...devices['Desktop Chrome'],
+          viewport: CHROMIUM_VIEWPORT,
           storageState: AUTH_FILE, // Use prepared auth state.
           failOnUncaughtExceptions,
         },
@@ -29,6 +30,7 @@ const projects = shouldAuthenticate
         name: 'chromium',
         use: {
           ...devices['Desktop Chrome'],
+          viewport: CHROMIUM_VIEWPORT,
           failOnUncaughtExceptions,
         },
       },
