@@ -237,7 +237,7 @@ test.describe('Labels view', () => {
   test('Panel type switcher', async ({ exploreProfilesPage }) => {
     await exploreProfilesPage.assertNoSpinner();
 
-    for (const panelType of ['Totals', 'Histograms']) {
+    for (const panelType of ['Totals', 'Maxima', 'Histograms']) {
       await exploreProfilesPage.selectPanelType(panelType);
 
       await expect(exploreProfilesPage.getGroupByContainer()).toHaveScreenshot({
