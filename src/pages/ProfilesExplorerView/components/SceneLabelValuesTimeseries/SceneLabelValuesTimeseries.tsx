@@ -21,12 +21,7 @@ import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesL
 import { getSeriesStatsValue } from '../../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import {
-  addRefId,
-  addStats,
-  limitNumberOfSeries,
-  sortSeries,
-} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
@@ -67,10 +62,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         .setData(
           data ||
             new SceneDataTransformer({
-              $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-              transformations: displayAllValues
-                ? [addRefId, addStats, sortSeries]
-                : [addRefId, addStats, sortSeries, limitNumberOfSeries],
+              $data: buildTimeSeriesQueryRunner(
+                item.queryRunnerParams,
+                displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+              ),
+              transformations: [addRefId, addStats],
             })
         )
         .setHeaderActions(headerActions(item))
@@ -119,12 +115,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     if (item.queryRunnerParams.groupBy?.label) {
       title = series.length > 1 ? `${item.label} (${series.length})` : item.label;
 
-      const totalSeriesCount = getSeriesStatsValue(series[0], 'totalSeriesCount') || 0;
-      const hasTooManySeries = totalSeriesCount > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES;
+      const totalSeriesCountFromItem = item.queryRunnerParams.groupBy.values?.length;
 
-      description = hasTooManySeries
-        ? `The number of series on this panel has been reduced from ${totalSeriesCount} to ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} to preserve readability. To view all the data, click on the expand icon on this panel.`
-        : undefined;
+      // when an item is favorited, it is stored in localStorage without the `values` array
+      if (!item.queryRunnerParams.groupBy.values) {
+        description = `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} series to preserve readability. To view all the series, click on the expand icon on this panel.`;
+      } else if (item.queryRunnerParams.groupBy.values.length > LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES) {
+        description = `Showing only ${LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES} out of ~${totalSeriesCountFromItem} series to preserve readability. To view all the series for the current filters, click on the expand icon on this panel.`;
+      }
     }
 
     return {
