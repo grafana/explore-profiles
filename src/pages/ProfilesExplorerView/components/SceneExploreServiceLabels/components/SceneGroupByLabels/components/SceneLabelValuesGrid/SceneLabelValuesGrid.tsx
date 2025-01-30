@@ -306,7 +306,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     }
 
     if (loadingState === LoadingState.Error) {
-      // TODO: check
+      // TODO: check if we need https://github.com/grafana/grafana/blob/d7f7cd1e61eac1e0103e0ca1e2122264aa831ffd/public/app/plugins/datasource/azuremonitor/utils/messageFromError.ts#L30
       this.renderErrorState(errors?.[0] as Error);
       return;
     }
@@ -413,7 +413,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       children: [
         new SceneCSSGridItem({
           body: new SceneErrorState({
-            message: error.toString(),
+            message: error.message || error.toString(),
           }),
         }),
       ],
