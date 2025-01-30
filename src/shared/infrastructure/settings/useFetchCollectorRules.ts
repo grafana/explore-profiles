@@ -20,9 +20,6 @@ type FetchResponse = {
   mutateDelete: (rule: DeleteCollectionRuleRequest) => Promise<DeleteCollectionRuleResponse>;
 };
 
-/**
- * Fetches the plugin settings and, if none/only some have been stored previously, returns adequate default values for the rest of the application
- */
 export function useFetchCollectorRules({}: FetchParams = {}): FetchResponse {
   const { isFetching, error, data } = useQuery(CollectionRulesService.method.listCollectionRules, {});
 
@@ -39,8 +36,10 @@ export function useFetchCollectorRules({}: FetchParams = {}): FetchResponse {
     [data]
   );
 
+  // TODO: rename upsert
   const { mutateAsync: mutate } = useMutation(CollectionRulesService.method.upsertCollectionRule, {});
 
+  // TODO: rename delete
   const { mutateAsync: mutateDelete } = useMutation(CollectionRulesService.method.deleteCollectionRule, {});
 
   return {

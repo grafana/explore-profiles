@@ -7,6 +7,7 @@ import {
   UpsertCollectionRuleRequest,
 } from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
+// TODO: do they have to be in @shared? by which other parts of the app will they be used?
 import { CollectorRule, CollectorRulesState } from '@shared/infrastructure/settings/CollectorRules';
 import { useFetchCollectorRules } from '@shared/infrastructure/settings/useFetchCollectorRules';
 import { useEffect, useState } from 'react';
@@ -32,13 +33,15 @@ export interface CollectorRulesActions {
 export function getRule(s: CollectorRulesState, ruleName: string): CollectorRule | undefined {
   return s.data.find((rule) => rule.rule.name === ruleName);
 }
-export function useCollectorRulesView() {
+
+export function useCollectorSettings() {
   const { rules, isFetching, error: fetchError, mutate, mutateDelete } = useFetchCollectorRules();
 
   const [currentState, setCurrentState] = useState<CollectorRulesState>({
     data: rules ?? [],
   } as CollectorRulesState);
 
+  // TODO: useMemo, because it's not a side effect
   useEffect(() => {
     if (rules) {
       setCurrentState({

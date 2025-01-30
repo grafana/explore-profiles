@@ -20,11 +20,11 @@ import {
 } from '@grafana/ui';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import { CollectorSelectionMode } from '../../extensions/IntegrationExtension';
-import { AddServiceModal } from './AddServiceModal';
-import { DeleteRuleModal } from './DeleteRuleModal';
-import { DeployIntegration } from './DeployIntegration';
-import { CollectorRulesController, getRule } from './domain/useCollectorRulesView';
+import { CollectorSelectionMode } from '../../../../../extensions/IntegrationExtension';
+import { AddServiceModal } from '../../../AddServiceModal';
+import { DeleteRuleModal } from '../../../DeleteRuleModal';
+import { DeployIntegration } from '../../../DeployIntegration';
+import { CollectorRulesController, getRule } from '../domain/useCollectorSettings';
 
 type ServiceCell = { original: ServiceData };
 type ServiceCellProps = { row: ServiceCell };
@@ -47,10 +47,8 @@ type CollectorRuleProps = {
 
 const deployNeedsSave = 'In order to deploy the rule using fleet management, save the rule first.';
 
-/**
- * Displays an onboarding dialog instructing how to push data only when data is not present
- */
 export function CollectorRuleView({ ruleName, controller, collapsed }: CollectorRuleProps) {
+  // TODO: create a new domain hook to encapsulate all the logic
   const { data, actions } = controller;
 
   const [filter, setFilter] = useState<string>('');
@@ -254,6 +252,7 @@ export function CollectorRuleView({ ruleName, controller, collapsed }: Collector
 
 function getStyles(theme: GrafanaTheme2) {
   return {
+    // TODO: consistency, use tagged template css`...`
     ct: css({}),
     collectorRule: css({}),
     collectorRuleField: css({

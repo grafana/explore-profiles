@@ -2,7 +2,7 @@ import { CollectorRules } from '@shared/infrastructure/settings/CollectorRules';
 import { useFetchCollectorRules } from '@shared/infrastructure/settings/useFetchCollectorRules';
 import { act, renderHook } from '@testing-library/react';
 
-import { useCollectorRulesView } from '../useCollectorRulesView';
+import { useCollectorSettings } from '../useCollectorSettings';
 
 // appEvents dependency
 const appEvents = {
@@ -38,7 +38,7 @@ jest.mock('@shared/infrastructure/settings/useFetchCollectorRules', () => ({
 const mockRules = useFetchCollectorRules as jest.Mock;
 
 // tests
-describe('useCollectorRulesView()', () => {
+describe('useCollectorSettings()', () => {
   describe('without rules stored', () => {
     beforeEach(() => {
       mockRules.mockReturnValue({
@@ -47,7 +47,7 @@ describe('useCollectorRulesView()', () => {
       });
     });
     it('returns an object with "data" and "actions" fields', () => {
-      const { result } = renderHook(() => useCollectorRulesView());
+      const { result } = renderHook(() => useCollectorSettings());
 
       expect(result.current.data).toEqual({ data: [] });
       expect(result.current.fetchError).toEqual(null);
@@ -56,7 +56,7 @@ describe('useCollectorRulesView()', () => {
 
     describe('actions.addRule()', () => {
       it('adds the expected rule with defaults', () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { data, actions } = result.current;
 
@@ -88,7 +88,7 @@ describe('useCollectorRulesView()', () => {
       });
     });
     it('returns the existing rule', () => {
-      const { result } = renderHook(() => useCollectorRulesView());
+      const { result } = renderHook(() => useCollectorSettings());
 
       expect(result.current.data.data.length).toEqual(1);
       expect(result.current.fetchError).toEqual(null);
@@ -107,7 +107,7 @@ describe('useCollectorRulesView()', () => {
     });
     describe('actions.updateServiceEnabled()', () => {
       it('adds new enabled service', () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { actions } = result.current;
 
@@ -123,7 +123,7 @@ describe('useCollectorRulesView()', () => {
         ]);
       });
       it('updates existing services', () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { actions } = result.current;
 
@@ -141,7 +141,7 @@ describe('useCollectorRulesView()', () => {
     });
     describe('actions.updateEBPFCollectionEnabled()', () => {
       it('it enables ebpf', () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { actions } = result.current;
 
@@ -153,7 +153,7 @@ describe('useCollectorRulesView()', () => {
         expect(result.current.data.data[0].rule.ebpf).toEqual({ enabled: true });
       });
       it('it disables ebpf', () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { actions } = result.current;
 
@@ -167,7 +167,7 @@ describe('useCollectorRulesView()', () => {
     });
     describe('actions.updateJavaCollectionEnabled()', () => {
       it('it enables java', () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { actions } = result.current;
 
@@ -179,7 +179,7 @@ describe('useCollectorRulesView()', () => {
         expect(result.current.data.data[0].rule.java).toEqual({ enabled: true });
       });
       it('it disables java', () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { actions } = result.current;
 
@@ -210,7 +210,7 @@ describe('useCollectorRulesView()', () => {
         });
       });
       it('it saves a modified rule', async () => {
-        const { result } = renderHook(() => useCollectorRulesView());
+        const { result } = renderHook(() => useCollectorSettings());
 
         const { actions } = result.current;
 

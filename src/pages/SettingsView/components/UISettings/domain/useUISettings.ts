@@ -5,9 +5,9 @@ import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetch
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { PLUGIN_BASE_URL, ROUTES } from '../../../constants';
+import { PLUGIN_BASE_URL, ROUTES } from '../../../../../constants';
 
-export function useSettingsView() {
+export function useUISettings() {
   const { settings, error: fetchError, mutate } = useFetchPluginSettings();
   const [maxNodesFromUrl, setMaxNodes] = useMaxNodesFromUrl();
   const [currentSettings, setCurrentSettings] = useState<PluginSettings>(settings ?? DEFAULT_SETTINGS);
