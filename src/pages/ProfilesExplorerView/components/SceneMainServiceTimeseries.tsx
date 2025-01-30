@@ -52,6 +52,16 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       body: this.buildTimeseries(item, supportGroupBy),
     });
 
+    const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
+
+    this._subs.add(
+      serviceNameVariable.subscribeToState((newState, prevState) => {
+        if (newState.value !== prevState.value) {
+          this.resetTimeseries(true);
+        }
+      })
+    );
+
     const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
 
     this._subs.add(
@@ -139,7 +149,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     });
   }
 
-  resetTimeseries() {
+  resetTimeseries(resetFilters = false) {
     const { value: serviceName } = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable).state;
     const { value: profileMetricId } = sceneGraph.findByKeyAndType(
       this,
@@ -147,7 +157,9 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       ProfileMetricVariable
     ).state;
 
-    sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({ filters: [] });
+    if (resetFilters) {
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({ filters: [] });
+    }
 
     (this.state.body as SceneLabelValuesTimeseries)?.updateItem({
       index: 0,
@@ -156,7 +168,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         serviceName: serviceName as string,
         profileMetricId: profileMetricId as string,
         groupBy: undefined,
-        filters: undefined,
+        filters: resetFilters ? undefined : [],
       },
     });
   }
