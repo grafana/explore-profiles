@@ -2,9 +2,6 @@ import { DataFrame } from '@grafana/data';
 import { merge } from 'lodash';
 import { map, Observable } from 'rxjs';
 
-import { getSeriesStatsValue } from '../../../infrastructure/helpers/getSeriesStatsValue';
-import { LabelsDataSource } from '../../../infrastructure/labels/LabelsDataSource';
-
 export type StatName = 'totalSeriesCount' | 'allValuesSum' | 'maxValue';
 
 // General note: because (e.g.) SceneLabelValuesTimeseries sets the data provider in its constructor, data can come as undefined, hence all the optional chaining operators
@@ -53,18 +50,3 @@ export const addStats = () => (source: Observable<DataFrame[]>) =>
       });
     })
   );
-
-// depends on the "addStats" transformation above to work properly
-export const sortSeries = (statName: StatName) => () => (source: Observable<DataFrame[]>) =>
-  source.pipe(
-    map((data: DataFrame[]) =>
-      data?.sort((d1, d2) => {
-        const v1 = getSeriesStatsValue(d1, statName) || 0;
-        const v2 = getSeriesStatsValue(d2, statName) || 0;
-        return v2 - v1;
-      })
-    )
-  );
-
-export const limitNumberOfSeries = () => (source: Observable<DataFrame[]>) =>
-  source.pipe(map((data: DataFrame[]) => data?.slice(0, LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES)));

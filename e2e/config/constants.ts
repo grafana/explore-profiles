@@ -22,6 +22,8 @@ function getEnvVars(): EnvVars {
 
 export const ENV_VARS = getEnvVars();
 
+export const CHROMIUM_VIEWPORT = { width: 1920, height: 1080 };
+
 export const AUTH_FILE = path.join(process.cwd(), 'e2e', 'auth', 'user.json');
 
 /* Explore Profiles */

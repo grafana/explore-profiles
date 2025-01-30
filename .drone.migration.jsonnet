@@ -46,6 +46,15 @@ local releaseOnly = {
   },
 };
 
+local releaseOnMainOnly = {
+  when: {
+    event: ['tag'],
+    ref: [
+      'refs/heads/main',
+    ],
+  },
+};
+
 local nonReleaseOnly = {
   when: {
     event: {
@@ -265,7 +274,7 @@ local generateTagsStep(depends_on=[]) = step('generate tags', [
         'generate tags',
         'package and sign',
       ],
-    } + releaseOnly,
+    } + releaseOnMainOnly,
   ]),
 
   pipeline('weekly deploy ops', [
