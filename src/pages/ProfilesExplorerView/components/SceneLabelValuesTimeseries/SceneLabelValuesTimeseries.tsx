@@ -242,6 +242,13 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       }
     }
 
+    if (
+      partialItem.queryRunnerParams?.hasOwnProperty('filters') &&
+      partialItem.queryRunnerParams.filters === undefined
+    ) {
+      delete updatedItem.queryRunnerParams.filters;
+    }
+
     this.setState({ item: updatedItem });
 
     body.setState({

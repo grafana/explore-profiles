@@ -10,6 +10,7 @@ import {
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
+import { FiltersVariable } from '../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -56,7 +57,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     this._subs.add(
       profileMetricVariable.subscribeToState((newState, prevState) => {
         if (newState.value !== prevState.value) {
-          this.onProfileMetricIdChanged();
+          this.resetTimeseries();
         }
       })
     );
@@ -138,10 +139,6 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     });
   }
 
-  onProfileMetricIdChanged() {
-    this.resetTimeseries();
-  }
-
   resetTimeseries() {
     const { value: serviceName } = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable).state;
     const { value: profileMetricId } = sceneGraph.findByKeyAndType(
@@ -150,6 +147,8 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       ProfileMetricVariable
     ).state;
 
+    sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({ filters: [] });
+
     (this.state.body as SceneLabelValuesTimeseries)?.updateItem({
       index: 0,
       label: this.buildTitle(),
@@ -157,6 +156,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         serviceName: serviceName as string,
         profileMetricId: profileMetricId as string,
         groupBy: undefined,
+        filters: undefined,
       },
     });
   }
