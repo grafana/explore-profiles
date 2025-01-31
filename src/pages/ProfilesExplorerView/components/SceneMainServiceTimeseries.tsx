@@ -94,9 +94,9 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     return new SceneLabelValuesTimeseries({
       item: timeseriesItem,
       headerActions,
-      // we pass data to prevent rendering a timeseries without groupBy for a second then with groupBy
+      // we pass data to prevent rendering a timeseries without groupBy for a second then with groupBy (when group is in the URL)
       data:
-        !item && supportGroupBy
+        !item && supportGroupBy && sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).state.value !== 'all'
           ? new SceneDataTransformer({
               $data: new SceneQueryRunner({ datasource: PYROSCOPE_DATA_SOURCE, queries: [] }),
               transformations: [addRefId, addStats],
@@ -176,7 +176,9 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     }
 
     (this.state.body as SceneLabelValuesTimeseries)?.updateItem({
+      index: 0,
       label: this.buildTitle(),
+      queryRunnerParams: { groupBy: undefined },
     });
   }
 
