@@ -1,12 +1,4 @@
-import {
-  SceneComponentProps,
-  SceneDataTransformer,
-  sceneGraph,
-  SceneObjectBase,
-  SceneObjectState,
-  SceneQueryRunner,
-  VizPanelState,
-} from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, VizPanelState } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
@@ -15,10 +7,8 @@ import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVari
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
-import { PYROSCOPE_DATA_SOURCE } from '../infrastructure/pyroscope-data-sources';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { PanelType } from './SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
-import { addRefId, addStats } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 
@@ -48,10 +38,56 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
   }
 
   onActivate(item?: GridItemData, supportGroupBy?: boolean) {
-    this.setState({
-      body: this.buildTimeseries(item, supportGroupBy),
-    });
+    if (item) {
+      this.initVariables(item);
+    }
 
+    this.setState({ body: this.buildTimeseries(item, supportGroupBy) });
+
+    this.initSubscribers(item, supportGroupBy);
+  }
+
+  initVariables(item: GridItemData) {
+    const { serviceName, profileMetricId, filters } = item.queryRunnerParams;
+
+    if (serviceName) {
+      const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
+      serviceNameVariable.changeValueTo(serviceName);
+    }
+
+    if (profileMetricId) {
+      const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
+      profileMetricVariable.changeValueTo(profileMetricId);
+    }
+
+    if (filters) {
+      const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+      filtersVariable.setState({ filters });
+    }
+  }
+
+  buildTimeseries(item?: GridItemData, supportGroupBy?: boolean) {
+    const { headerActions } = this.state;
+
+    const timeseriesItem: GridItemData = {
+      index: 0,
+      value: '',
+      queryRunnerParams: {}, // let interpolation happen
+      label: this.buildTitle(),
+      panelType: PanelType.TIMESERIES,
+    };
+
+    if (item && supportGroupBy) {
+      timeseriesItem.queryRunnerParams.groupBy = item.queryRunnerParams.groupBy;
+    }
+
+    return new SceneLabelValuesTimeseries({
+      item: timeseriesItem,
+      headerActions,
+    });
+  }
+
+  initSubscribers(item?: GridItemData, supportGroupBy?: boolean) {
     const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
 
     this._subs.add(
@@ -99,39 +135,6 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         }
       })
     );
-  }
-
-  buildTimeseries(item?: GridItemData, supportGroupBy?: boolean) {
-    const { headerActions } = this.state;
-
-    const timeseriesItem = {
-      index: 0,
-      value: '',
-      queryRunnerParams: {},
-      label: this.buildTitle(),
-      panelType: PanelType.TIMESERIES,
-      ...item,
-    };
-
-    if (!supportGroupBy) {
-      delete timeseriesItem.queryRunnerParams.groupBy;
-    }
-
-    if (!timeseriesItem.queryRunnerParams.groupBy) {
-      timeseriesItem.index = 0;
-    }
-
-    return new SceneLabelValuesTimeseries({
-      item: timeseriesItem,
-      data:
-        !item && supportGroupBy
-          ? new SceneDataTransformer({
-              $data: new SceneQueryRunner({ datasource: PYROSCOPE_DATA_SOURCE, queries: [] }),
-              transformations: [addRefId, addStats],
-            })
-          : undefined,
-      headerActions,
-    });
   }
 
   onGroupByChanged(groupByVariable: GroupByVariable) {
