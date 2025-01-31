@@ -89,10 +89,6 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
 
     if (item && supportGroupBy) {
       timeseriesItem.queryRunnerParams.groupBy = item.queryRunnerParams.groupBy;
-
-      if (item.queryRunnerParams.groupBy) {
-        timeseriesItem.index = item.index;
-      }
     }
 
     return new SceneLabelValuesTimeseries({
