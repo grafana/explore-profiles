@@ -48,7 +48,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
     displayAllValues?: SceneLabelValuesTimeseriesState['displayAllValues'];
     legendPlacement?: SceneLabelValuesTimeseriesState['legendPlacement'];
-    data?: SceneDataProvider;
+    data?: SceneDataTransformer;
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
   }) {
     super({

@@ -5,6 +5,7 @@ import {
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
+  VariableDependencyConfig,
   VizPanelState,
 } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -30,6 +31,13 @@ interface SceneMainServiceTimeseriesState extends SceneObjectState {
 export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainServiceTimeseriesState> {
   static MIN_HEIGHT = 240;
 
+  protected _variableDependency = new VariableDependencyConfig(this, {
+    variableNames: ['serviceName', 'profileMetricId'],
+    onReferencedVariableValueChanged: (variable) => {
+      this.resetTimeseries(variable.state.name === 'serviceName');
+    },
+  });
+
   constructor({
     item,
     headerActions,
@@ -54,7 +62,9 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
 
     this.setState({ body: this.buildTimeseries(item, supportGroupBy) });
 
-    this.initSubscribers(item, supportGroupBy);
+    if (supportGroupBy) {
+      this.subscribeToGroupByStateChanges(item);
+    }
   }
 
   initVariables(item: GridItemData) {
@@ -91,44 +101,22 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       timeseriesItem.queryRunnerParams.groupBy = item.queryRunnerParams.groupBy;
     }
 
+    const groupBy = sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).state.value;
+
     return new SceneLabelValuesTimeseries({
       item: timeseriesItem,
       headerActions,
-      // we pass data to prevent rendering a timeseries without groupBy for a second then with groupBy (when groupBy is in the URL)
+      // we pass data for the scenarios where we land on the page from a shared link
+      // we do this to prevent rendering a timeseries without groupBy for a second then with groupBy
+      // and also to directly render something when there's no groupBy in the URL
       data:
-        !item && supportGroupBy && sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).state.value !== 'all'
+        !item && supportGroupBy && groupBy && groupBy !== 'all'
           ? new SceneDataTransformer({
               $data: new SceneQueryRunner({ datasource: PYROSCOPE_DATA_SOURCE, queries: [] }),
               transformations: [addRefId, addStats],
             })
           : undefined,
     });
-  }
-
-  initSubscribers(item?: GridItemData, supportGroupBy?: boolean) {
-    const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
-
-    this._subs.add(
-      serviceNameVariable.subscribeToState((newState, prevState) => {
-        if (newState.value !== prevState.value) {
-          this.resetTimeseries(true);
-        }
-      })
-    );
-
-    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
-
-    this._subs.add(
-      profileMetricVariable.subscribeToState((newState, prevState) => {
-        if (newState.value !== prevState.value) {
-          this.resetTimeseries();
-        }
-      })
-    );
-
-    if (supportGroupBy) {
-      this.subscribeToGroupByStateChanges(item);
-    }
   }
 
   subscribeToGroupByStateChanges(item?: GridItemData) {
