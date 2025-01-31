@@ -94,7 +94,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     return new SceneLabelValuesTimeseries({
       item: timeseriesItem,
       headerActions,
-      // we pass data to prevent rendering a timeseries without groupBy for a second then with groupBy (when group is in the URL)
+      // we pass data to prevent rendering a timeseries without groupBy for a second then with groupBy (when groupBy is in the URL)
       data:
         !item && supportGroupBy && sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).state.value !== 'all'
           ? new SceneDataTransformer({
