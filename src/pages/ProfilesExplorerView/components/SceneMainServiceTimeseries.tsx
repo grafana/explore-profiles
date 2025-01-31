@@ -1,4 +1,12 @@
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, VizPanelState } from '@grafana/scenes';
+import {
+  SceneComponentProps,
+  SceneDataTransformer,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneQueryRunner,
+  VizPanelState,
+} from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
@@ -7,8 +15,10 @@ import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVari
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
+import { PYROSCOPE_DATA_SOURCE } from '../infrastructure/pyroscope-data-sources';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { PanelType } from './SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
+import { addRefId, addStats } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 
@@ -79,11 +89,23 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
 
     if (item && supportGroupBy) {
       timeseriesItem.queryRunnerParams.groupBy = item.queryRunnerParams.groupBy;
+
+      if (item.queryRunnerParams.groupBy) {
+        timeseriesItem.index = item.index;
+      }
     }
 
     return new SceneLabelValuesTimeseries({
       item: timeseriesItem,
       headerActions,
+      // we pass data to prevent rendering a timeseries without groupBy for a second then with groupBy
+      data:
+        !item && supportGroupBy
+          ? new SceneDataTransformer({
+              $data: new SceneQueryRunner({ datasource: PYROSCOPE_DATA_SOURCE, queries: [] }),
+              transformations: [addRefId, addStats],
+            })
+          : undefined,
     });
   }
 
@@ -153,26 +175,12 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
   }
 
   resetTimeseries(resetFilters = false) {
-    const { value: serviceName } = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable).state;
-    const { value: profileMetricId } = sceneGraph.findByKeyAndType(
-      this,
-      'profileMetricId',
-      ProfileMetricVariable
-    ).state;
-
     if (resetFilters) {
       sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({ filters: [] });
     }
 
     (this.state.body as SceneLabelValuesTimeseries)?.updateItem({
-      index: 0,
       label: this.buildTitle(),
-      queryRunnerParams: {
-        serviceName: serviceName as string,
-        profileMetricId: profileMetricId as string,
-        groupBy: undefined,
-        filters: resetFilters ? undefined : [],
-      },
     });
   }
 
