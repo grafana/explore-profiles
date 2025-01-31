@@ -23,6 +23,7 @@ export interface CollectorRulesActions {
   addRule: (ruleName: string) => void;
   getRule: (ruleName: string) => CollectorRule | undefined;
   saveRule: (ruleName: string) => Promise<void>;
+  saveRuleN: (rule: UpsertCollectionRuleRequest) => Promise<void>;
   deleteRule: (ruleName: string) => Promise<void>;
   updateServiceEnabled: (ruleName: string, serviceName: string, enabled: boolean) => void;
   removeService: (ruleName: string, serviceName: string) => void;
@@ -88,26 +89,40 @@ export function useCollectorSettings() {
           return;
         }
 
+        await this.saveRuleN({
+          name: rule.rule.name,
+          ebpf: rule.rule.ebpf,
+          java: rule.rule.java,
+          services: rule.rule.services,
+        } as UpsertCollectionRuleRequest);
+      },
+      async saveRuleN(rule: UpsertCollectionRuleRequest) {
         try {
-          const res = await mutate({
-            name: rule.rule.name,
-            ebpf: rule.rule.ebpf,
-            java: rule.rule.java,
-            services: rule.rule.services,
-          } as UpsertCollectionRuleRequest);
+          const newRule = await mutate(rule);
+
+          const exists = currentState.data.find((r) => r.rule.name === rule.name) !== undefined;
+
+          if (!exists) {
+            setCurrentState({
+              ...currentState,
+              data: currentState.data.concat([
+                {
+                  modified: false,
+                  rule: newRule,
+                },
+              ]),
+            });
+
+            return;
+          }
 
           setCurrentState({
             ...currentState,
             data: currentState.data.map((r) =>
-              r.rule.name === ruleName
+              r.rule.name === rule.name
                 ? {
-                    ...rule,
-                    rule: {
-                      ...rule.rule,
-                      lastUpdated: res.lastUpdated,
-                      configuration: res.configuration,
-                      generation: res.generation,
-                    },
+                    ...r,
+                    rule: newRule,
                     modified: false,
                   }
                 : r
@@ -117,7 +132,7 @@ export function useCollectorSettings() {
           displaySuccess(['Rule successfully saved!']);
         } catch (error) {
           displayError(error as Error, [
-            'Error while saving the collecor rule!',
+            'Error while saving the collector rule!',
             'Please try again later, sorry for the inconvenience.',
           ]);
         }

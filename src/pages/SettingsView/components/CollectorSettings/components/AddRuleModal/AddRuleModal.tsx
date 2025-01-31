@@ -1,19 +1,18 @@
 // a modal for adding a new rule
-import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
-import { Button, Field, FieldSet, Input, Modal, useStyles2 } from '@grafana/ui';
+import { UpsertCollectionRuleRequest } from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
+import { Button, Modal } from '@grafana/ui';
 import React from 'react';
 
+import { EditRule } from '../EditRule/EditRule';
 import { useAddRuleModal } from './domain/useAddRuleModal';
 
 export type AddRuleModalProps = {
-  onAddRule(name: string): void;
+  saveRule(rule: UpsertCollectionRuleRequest): void;
 };
 
 const RULE_NAME_ERROR_MESSAGE = 'Please enter a valid rule name. It can contain lowercase letters, digits or hyphens.';
 
 export function AddRuleModal(props: AddRuleModalProps) {
-  const styles = useStyles2(getStyles);
   const { data, actions } = useAddRuleModal(props);
 
   return (
@@ -30,22 +29,7 @@ export function AddRuleModal(props: AddRuleModalProps) {
         onDismiss={actions.dismissModal}
       >
         <form onSubmit={actions.addRule}>
-          <FieldSet className={styles.modalBody}>
-            <Field
-              label="Rule name"
-              required
-              invalid={data.name && data.isNameInvalid}
-              error={data.name && data.isNameInvalid ? RULE_NAME_ERROR_MESSAGE : undefined}
-            >
-              <Input
-                name="ruleName"
-                type="text"
-                placeholder="Must be lowercase, can contain digits or hyphens"
-                onChange={actions.updateName}
-                autoFocus
-              />
-            </Field>
-          </FieldSet>
+          <EditRule isModal={true} saveRule={props.saveRule} />
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={data.dismissModal}>
               Cancel
@@ -58,19 +42,4 @@ export function AddRuleModal(props: AddRuleModalProps) {
       </Modal>
     </>
   );
-}
-
-function getStyles(theme: GrafanaTheme2) {
-  return {
-    modalBody: css`
-      display: flex;
-      flex-direction: column;
-      gap: theme.spacing(2);
-    `,
-    iconError: css`
-      height: 32px;
-      align-self: center;
-      color: ${theme.colors.error.text};
-    `,
-  };
 }

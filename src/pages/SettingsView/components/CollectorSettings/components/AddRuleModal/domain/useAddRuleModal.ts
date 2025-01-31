@@ -6,7 +6,7 @@ import { AddRuleModalProps } from '../AddRuleModal';
 
 const validateRuleName = (name: string): boolean => /^[a-z0-9\-]+$/.test(name);
 
-export function useAddRuleModal({ onAddRule }: AddRuleModalProps): DomainHookReturnValue {
+export function useAddRuleModal({}: AddRuleModalProps): DomainHookReturnValue {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isNameInvalid, setIsNameInvalid] = useState(false);
   const [name, setName] = useState('');
@@ -39,7 +39,6 @@ export function useAddRuleModal({ onAddRule }: AddRuleModalProps): DomainHookRet
       }, 250),
       addRule() {
         if (name && !isNameInvalid) {
-          onAddRule(name);
           closeModal();
         }
       },

@@ -37,7 +37,7 @@ export function CollectorSettings() {
           {!isFetching && !data.data.length && <>No rules found.</>}
         </div>
 
-        <AddRuleModal onAddRule={addNewRule} />
+        <AddRuleModal saveRule={controller.actions.saveRuleN} />
       </div>
 
       {/* TODO: data is part of controller, pass only the props that are needed + move some logic from useCollectorSettings() to a new domain hook in RulesList or below */}

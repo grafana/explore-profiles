@@ -29,12 +29,6 @@ import { CollectorRulesController, getRule } from '../domain/useCollectorSetting
 type ServiceCell = { original: ServiceData };
 type ServiceCellProps = { row: ServiceCell };
 
-function filterServices(services: ServiceData[], filter: string): ServiceData[] {
-  return services.filter((service) => {
-    return service.name?.toLowerCase().includes(filter?.toLocaleLowerCase());
-  });
-}
-
 function formatDate(unixMill: bigint): string {
   return unixMill > 0 ? dateTimeFormatTimeAgo(new Date(Number(unixMill))) : 'N/A';
 }
@@ -51,8 +45,6 @@ export function CollectorRuleView({ ruleName, controller, collapsed }: Collector
   // TODO: create a new domain hook to encapsulate all the logic
   const { data, actions } = controller;
 
-  const [filter, setFilter] = useState<string>('');
-
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const [showSettings, setShowSettings] = useState<boolean>(!collapsed);
@@ -68,8 +60,6 @@ export function CollectorRuleView({ ruleName, controller, collapsed }: Collector
       ...r,
     };
   }, [data, ruleName]);
-
-  const filteredData = useMemo(() => filterServices(rule.rule.services, filter), [filter, rule]);
 
   // when settings are modified, collapse the deploy section
   useEffect(() => {
@@ -145,41 +135,7 @@ export function CollectorRuleView({ ruleName, controller, collapsed }: Collector
       <Card.Heading>{ruleName}</Card.Heading>
       <Card.Description>
         <Collapse isOpen={showSettings} onToggle={() => setShowSettings(!showSettings)} label="Configure rule">
-          <Stack grow={1} direction={'column'}>
-            <Field
-              label="eBPF Collection"
-              description="Enable Profile collection using eBPF profiler."
-              className={styles.collectorRuleField}
-            >
-              <Checkbox name="ebpf-collection" onChange={onEBPFCollectionChange} value={rule.rule.ebpf?.enabled} />
-            </Field>
-            <Field
-              label="Java Collection"
-              description="Enable Profile collection using Java process attachment."
-              className={styles.collectorRuleField}
-            >
-              <Checkbox name="java-collection" onChange={onJavaCollectionChange} value={rule.rule.java?.enabled} />
-            </Field>
-            <Stack gap={2} alignItems="flex-end" justifyContent="end">
-              <div className={styles.search}>
-                <Input
-                  onChange={(ev: React.FormEvent<HTMLInputElement>) => setFilter(ev.currentTarget.value)}
-                  prefix={<Icon name="search" />}
-                  placeholder="Search by service name"
-                  aria-label="Search services"
-                />
-                <AddServiceModal onServiceAdd={onServiceAdd} />
-              </div>
-            </Stack>
-            <Stack gap={2}>
-              <InteractiveTable<ServiceData>
-                data={filteredData}
-                pageSize={100}
-                getRowId={(service: ServiceData) => service.name}
-                columns={columns}
-              />
-            </Stack>
-          </Stack>
+          <Stack grow={1} direction={'column'}></Stack>
         </Collapse>
         <Collapse
           label={
