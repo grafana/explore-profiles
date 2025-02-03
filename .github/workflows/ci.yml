@@ -204,7 +204,7 @@ jobs:
   deploy-main-to-dev-and-ops:
     name: Deploy to dev / ops
     needs: [package]
-    uses: grafana/explore-profiles/.github/workflows/deploy.yml
+    uses: grafana/explore-profiles/.github/workflows/deploy.yml@main
     # Make
     if: github.event_name == 'push'
     secrets: inherit
