@@ -22,7 +22,7 @@ jobs:
           ref: ${{ inputs.version }}
 
   deploy:
-    uses: grafana/explore-profiles/.github/workflows/deploy.yml@main
+    uses: ./.github/workflows/deploy.yml
     needs: [verify]
     secrets: inherit
     strategy:
