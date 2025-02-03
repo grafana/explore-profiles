@@ -160,7 +160,7 @@ const getStyles = () => ({
   // couldn't find a better way just by configuring the table panel :man_shrug:
   container: css`
     [data-testid='data-testid table body'] [role='row']:first-child {
-      color: ${getColorByIndex(4)};
+      color: ${getColorByIndex(3)};
       font-weight: 500;
     }
   `,
