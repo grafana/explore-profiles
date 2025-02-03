@@ -38,7 +38,7 @@ jobs:
     name: Deploy to dev / ops
     needs: [package]
     uses: ./.github/workflows/deploy.yml
-    # Make
+    # Make deployments available only from main
     if: github.event_name == 'push'
     secrets: inherit
     strategy:
