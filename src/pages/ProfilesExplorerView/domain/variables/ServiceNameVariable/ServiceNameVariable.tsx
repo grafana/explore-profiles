@@ -1,12 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
-import {
-  MultiValueVariable,
-  QueryVariable,
-  SceneComponentProps,
-  sceneGraph,
-  VariableValueOption,
-} from '@grafana/scenes';
+import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -58,6 +52,8 @@ export class ServiceNameVariable extends QueryVariable {
         const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
         storage.serviceName = newState.value;
         userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
+
+        FiltersVariable.resetAll(this);
       }
     });
   }
@@ -87,14 +83,8 @@ export class ServiceNameVariable extends QueryVariable {
     if (!this.state.skipUrlSync) {
       prepareHistoryEntry();
     }
-    this.changeValueTo(newValue);
 
-    // manually reset filters - we should listen to the variables changes but it leads to unwanted behaviour
-    // (filters set in the URL search parameters are resetted when the user lands on the page)
-    ['filters', 'filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
-      const filtersVariable = sceneGraph.findByKeyAndType(this, filterKey, FiltersVariable);
-      filtersVariable.setState({ filters: [] });
-    });
+    this.changeValueTo(newValue);
   };
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable & { selectNewValue?: any }>) => {

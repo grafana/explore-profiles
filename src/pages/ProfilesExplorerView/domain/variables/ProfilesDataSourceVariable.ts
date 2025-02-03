@@ -2,6 +2,8 @@ import { DataSourceVariable } from '@grafana/scenes';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { userStorage } from '@shared/infrastructure/userStorage';
 
+import { FiltersVariable } from './FiltersVariable/FiltersVariable';
+
 export class ProfilesDataSourceVariable extends DataSourceVariable {
   constructor() {
     super({
@@ -25,6 +27,8 @@ export class ProfilesDataSourceVariable extends DataSourceVariable {
         const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
         storage.dataSource = newState.value;
         userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
+
+        FiltersVariable.resetAll(this);
       }
     });
   }

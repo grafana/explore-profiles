@@ -160,7 +160,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
 
   resetTimeseries(resetFilters = false) {
     if (resetFilters) {
-      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({ filters: [] });
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).reset();
     }
 
     (this.state.body as SceneLabelValuesTimeseries)?.updateItem({

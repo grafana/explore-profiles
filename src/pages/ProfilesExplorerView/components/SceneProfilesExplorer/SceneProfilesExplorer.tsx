@@ -276,9 +276,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         nextExplorationType as ExplorationType
       )
     ) {
-      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).setState({
-        filters: FiltersVariable.DEFAULT_VALUE,
-      });
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).reset();
     }
   }
 
