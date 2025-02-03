@@ -171,7 +171,8 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                 {data.functionDetails.fileName ? (
                   <>
                     <Tooltip content={data.functionDetails.fileName} placement="top">
-                      <span className={styles.textValue}>{formatFileName(data.functionDetails.fileName)}</span>
+                      {/* adding LRM to prevent ellipsis with RTL to fail when the file name starts with non-alpha chars (e.g. "$")  */}
+                      <span className={styles.textValue}>&lrm;{formatFileName(data.functionDetails.fileName)}</span>
                     </Tooltip>
                     <IconButton
                       name="clipboard-alt"
