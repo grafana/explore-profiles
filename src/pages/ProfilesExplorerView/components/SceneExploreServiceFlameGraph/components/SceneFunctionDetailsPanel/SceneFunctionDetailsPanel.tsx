@@ -267,9 +267,10 @@ const getStyles = (theme: GrafanaTheme2) => ({
     }
   `,
   textValue: css`
+    // hack to have the ellipsis appear at the start of the string
+    direction: rtl;
     text-overflow: ellipsis;
     overflow: hidden;
-    direction: rtl;
     white-space: nowrap;
   `,
 });
