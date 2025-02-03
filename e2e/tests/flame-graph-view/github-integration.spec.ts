@@ -18,7 +18,8 @@ test.describe('Flame graph view', () => {
     const nodePosition = { x: 30, y: 30 };
     const functionName = 'github.com/grafana/dskit/services.(*BasicService).main';
     const startLine = '153';
-    const file = 'github.com/grafana/dskit@v0.0.0-20231221015914-de83901bf4d6/services/basic_service.go';
+    // see ellipsis hack in SceneFunctionDetailsPanel.tsx
+    const fileName = '‎github.com/grafana/dskit@v0.0.0-20231221015914-de83901bf4d6/services/basic_service.go';
 
     test('When clicking on a flame graph node and then "Function details", it opens a details panel', async ({
       exploreProfilesPage,
@@ -61,7 +62,7 @@ test.describe('Flame graph view', () => {
 
       const filePathRow = detailsPanel.getByTestId('row-file-path');
       await expect(filePathRow.getByText('File')).toBeVisible();
-      await expect(filePathRow.locator('span')).toHaveText(file);
+      await expect(filePathRow.locator('span')).toHaveText(fileName);
 
       const repositoryRow = detailsPanel.getByTestId('row-repository');
       await expect(repositoryRow.getByText('Repository')).toBeVisible();
