@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+        description: dev, ops or prod
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "version = ${{ inputs.version }}"
+      - run: echo "environment = ${{ inputs.environment }}"
+
+  deploy-to-cloud:
+    # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
+    name: Deploy to ${{ inputs.environment }} wave
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploying ${{ inputs.version }} to ${{ inputs.environment }}
+        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
+        with:
+          instance: 'ops'
+          namespace: 'phlare-cd'
+          workflow_template: 'deploy-plugin-${{ inputs.environment }}'
+          parameters: |
+            plugintag= ${{ inputs.version }}
+          extra_args: '--name deploy-plugin-${{ inputs.environment }}-${{ inputs.version }}'
+          log_level: 'debug'
