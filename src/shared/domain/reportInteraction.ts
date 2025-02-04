@@ -9,6 +9,12 @@ import { GIT_COMMIT } from '../../version';
 
 // hey future dev: don't forget to add any new value to our features tracking dashboard!
 export type Interactions = {
+  g_pyroscope_app_ad_hoc_file_dropped: {
+    fileType: string;
+  };
+  g_pyroscope_app_ad_hoc_file_removed: {};
+  g_pyroscope_app_ad_hoc_profile_metric_selected: {};
+  g_pyroscope_app_ad_hoc_profile: {};
   g_pyroscope_app_compare_link_clicked: {};
   g_pyroscope_app_diff_auto_select_clicked: {};
   g_pyroscope_app_diff_choose_preset_clicked: {};
