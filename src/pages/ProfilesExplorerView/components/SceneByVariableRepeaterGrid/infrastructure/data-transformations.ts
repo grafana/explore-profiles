@@ -2,8 +2,6 @@ import { DataFrame } from '@grafana/data';
 import { merge } from 'lodash';
 import { map, Observable } from 'rxjs';
 
-export type StatName = 'totalSeriesCount' | 'allValuesSum' | 'maxValue';
-
 // General note: because (e.g.) SceneLabelValuesTimeseries sets the data provider in its constructor, data can come as undefined, hence all the optional chaining operators
 // in the transformers below
 
