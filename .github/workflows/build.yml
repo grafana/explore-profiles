@@ -11,7 +11,7 @@ on:
       ref:
         required: false
         type: string
-        description: commit sha or tag that will be checked out
+        description: commit sha or tag that will be checked out (use it if an existing tag needs to be checked-out)
 
 jobs:
   frontend:
