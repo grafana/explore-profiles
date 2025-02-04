@@ -146,6 +146,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   onActivate() {
+    const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
 
     if (!this.state.explorationType) {
@@ -156,6 +157,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     return () => {
       eventsSub.unsubscribe();
+      varSub.unsubscribe();
     };
   }
 
@@ -190,6 +192,31 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         ]);
       }
     }
+  }
+
+  subscribeToVariableChanges() {
+    const dataSourceSub = sceneGraph
+      .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
+      .subscribeToState((newState, prevState) => {
+        if (newState.value && newState.value !== prevState.value) {
+          FiltersVariable.resetAll(this);
+        }
+      });
+
+    const serviceNameSub = sceneGraph
+      .findByKeyAndType(this, 'serviceName', ServiceNameVariable)
+      .subscribeToState((newState, prevState) => {
+        if (newState.value && newState.value !== prevState.value) {
+          FiltersVariable.resetAll(this);
+        }
+      });
+
+    return {
+      unsubscribe() {
+        serviceNameSub.unsubscribe();
+        dataSourceSub.unsubscribe();
+      },
+    };
   }
 
   subscribeToEvents() {

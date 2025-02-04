@@ -10,7 +10,6 @@ import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../../infrastructure/pyroscope-data-sources';
-import { FiltersVariable } from '../FiltersVariable/FiltersVariable';
 import { buildServiceNameCascaderOptions } from './domain/useBuildServiceNameOptions';
 
 type ServiceNameVariableState = {
@@ -52,8 +51,6 @@ export class ServiceNameVariable extends QueryVariable {
         const storage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
         storage.serviceName = newState.value;
         userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
-
-        FiltersVariable.resetAll(this);
       }
     });
   }
