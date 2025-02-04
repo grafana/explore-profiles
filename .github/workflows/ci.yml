@@ -22,11 +22,13 @@ permissions:
 
 jobs:
   build:
+    name: Build and test
     uses: ./.github/workflows/build.yml
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
 
   package:
+    name: Package
     needs: [build]
     uses: ./.github/workflows/package.yml
     secrets: inherit
