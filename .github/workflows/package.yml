@@ -12,11 +12,6 @@ on:
         type: string
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "version = ${{ inputs.version }}"
-
   package:
     # This step creates a zip file with the plugin and publishes it to Google Cloud Storage bucket.
     # Frontend artifacts have 1 day retention. This step needs to be run within 24 hours after frontend job finished.
@@ -64,7 +59,7 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
 
-      - name: Publish to GCS
+      - name: Upload to GCS
         uses: 'google-github-actions/upload-cloud-storage@v1'
         with:
           path: ./

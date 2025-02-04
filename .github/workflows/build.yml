@@ -11,15 +11,11 @@ on:
       ref:
         required: false
         type: string
+        description: commit sha or tag that will be checked out
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "version = ${{ inputs.version }}"
-      - run: echo "ref = ${{ inputs.ref }}"
-
   frontend:
+    name: Frontend build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

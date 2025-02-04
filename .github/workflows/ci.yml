@@ -35,7 +35,7 @@ jobs:
       github_environment: ${{ github.event_name != 'push' && 'gcs' || 'gcs-no-approval' }}
 
   deploy-main-to-dev-and-ops:
-    name: Deploy to dev / ops
+    name: Deploy
     needs: [package]
     uses: ./.github/workflows/deploy.yml
     # Make deployments available only from main
