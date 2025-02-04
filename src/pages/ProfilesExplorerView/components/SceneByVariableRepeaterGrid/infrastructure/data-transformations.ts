@@ -13,10 +13,19 @@ export const addStats = () => (source: Observable<DataFrame[]>) =>
     map((data: DataFrame[]) => {
       const totalSeriesCount = data?.length;
 
+      // TODO: in case of a groupBy query, find a way to always add a rank to each label value (based on allValuesSum) so that we can use it as startColorIndex to
+      // always display each series consistently in the same color regardless of it's timseries, bar gauges with sums, or tables with maxima
       return data?.map((d) => {
+        let maxValue = Number.NEGATIVE_INFINITY;
+
         const allValuesSum = d.fields
           ?.find((field) => field.type === 'number')
-          ?.values.reduce((acc: number, value: number) => acc + value, 0);
+          ?.values.reduce((acc: number, value: number) => {
+            if (value > maxValue) {
+              maxValue = value;
+            }
+            return acc + value;
+          }, 0);
 
         return merge(d, {
           meta: {
@@ -28,6 +37,10 @@ export const addStats = () => (source: Observable<DataFrame[]>) =>
               {
                 displayName: 'allValuesSum',
                 value: allValuesSum,
+              },
+              {
+                displayName: 'maxValue',
+                value: maxValue,
               },
             ],
           },

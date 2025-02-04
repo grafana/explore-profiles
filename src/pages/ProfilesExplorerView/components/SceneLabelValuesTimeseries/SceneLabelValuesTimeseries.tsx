@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, getValueFormat, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -17,9 +17,9 @@ import { isEqual, merge } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
-import { getSeriesStatsValue } from '../../infrastructure/helpers/getSeriesStatsValue';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
@@ -207,10 +207,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
 
       if (series.length === 1) {
-        const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
-        const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
-
-        displayName = `total ${displayName} = ${formattedValue.text}${formattedValue.suffix}`;
+        displayName = formatSingleSeriesDisplayName(displayName, s);
       }
 
       return {
