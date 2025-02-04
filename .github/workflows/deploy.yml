@@ -31,6 +31,6 @@ jobs:
           namespace: 'phlare-cd'
           workflow_template: 'deploy-plugin-${{ inputs.environment }}'
           parameters: |
-            plugintag= ${{ inputs.version }}
+            plugintag=${{ inputs.version }}
           extra_args: '--name deploy-plugin-${{ inputs.environment }}-${{ inputs.version }}'
           log_level: 'debug'
