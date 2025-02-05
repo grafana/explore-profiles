@@ -56,11 +56,14 @@ jobs:
         id: tag
         env:
           DB_FE_CI_BOT_EMAIL: ${{ secrets.DB_FE_CI_BOT_EMAIL }}
+        # Note: We don't get the version with VERSION=$(npm version ${{ inputs.version }})
+        # because npm version runs standard changelog that outputs additional text we cannot include in version
         run: |
           git config --global user.email "$DB_FE_CI_BOT_EMAIL"
           git config --global user.name "Databases Frontend CI Bot"
           git config --global url.https://${{ steps.get_installation_token.outputs.token }}@github.com/.insteadOf https://github.com/
-          VERSION=$(npm version ${{ inputs.version }})
+          npm version ${{ inputs.version }}
+          VERSION=$(git describe --tags --abbrev=0)
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Push
@@ -94,6 +97,7 @@ jobs:
           app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
           installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
           private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+      # We need to fetch the tag to get the CHANGELOG
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.create-new-version.outputs.version }}
@@ -105,7 +109,7 @@ jobs:
         with:
           name: build-package
           path: package
-      - name: Get changelog
+      - name: Get last changelog entry
         run: awk '/^## / {s++} s == 1 {print}' CHANGELOG.md > release_notes.md
       - name: Create Github release
         uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
