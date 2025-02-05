@@ -65,6 +65,7 @@ jobs:
           npm version ${{ inputs.version }}
           VERSION=$(git describe --tags --abbrev=0)
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version: $VERSION" >> $GITHUB_STEP_SUMMARY
 
       - name: Push
         run: git push origin main --tags
