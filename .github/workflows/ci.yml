@@ -21,196 +21,31 @@ permissions:
   id-token: write
 
 jobs:
-  frontend:
-    name: Frontend build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      # lint
-      - name: Check TS types
-        run: yarn typecheck
-      - name: Lint
-        run: yarn lint
-
-      - name: Unit tests
-        run: yarn test:ci
-
-      - name: Report test coverage
-        uses: MishaKav/jest-coverage-comment@v1.0.27
-        with:
-          title: Unit test coverage
-
-      # Before building make sure we have the sha of the commit
-      # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
-      - name: Update version.ts
-        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';" > src/version.ts
-
-      - name: Build frontend
-        run: yarn build
-
-      - name: Check bundlesize
-        run: yarn run bundlewatch
-
-      - name: Compatibility check
-        run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
-
-      # The plugin is signed here so it's possible to use the artifact produced by the job directly
-      # Forks are not allowed to get is signed so we skip this step (and job to upload the artifact)
-      # See also https://github.com/grafana/explore-profiles/issues/366)
-      - name: Setup plugin signing
-        if: ${{ !github.event.pull_request.head.repo.fork }}
-        uses: grafana/shared-workflows/actions/get-vault-secrets@main
-        with:
-          vault_instance: ops
-          common_secrets: |
-            SIGN_PLUGIN_ACCESS_POLICY_TOKEN=plugins/sign-plugin-access-policy-token:token
-
-      # create MANIFEST in dist
-      - name: Sign plugin
-        if: ${{ !github.event.pull_request.head.repo.fork }}
-        run: yarn sign
-        env:
-          GRAFANA_ACCESS_POLICY_TOKEN: ${{ env.SIGN_PLUGIN_ACCESS_POLICY_TOKEN }}
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: build-frontend
-          path: dist
-          retention-days: 1
-
-  end-to-end:
-    name: E2E tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [frontend]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: build-*
-          merge-multiple: true
-          path: dist
-
-      # E2E tests
-      # switch to "npm run" in order to prevent "Usage Error: Couldn't find the node_modules state file - running an install might help (findPackageLocation)" when using yarn
-      - name: Start Grafana server
-        run: npm run e2e:ci:server:up
-
-      - name: Prepare e2e tests
-        run: npm run e2e:ci:prepare
-
-      # commented to save time during the build (building this action takes ~30s)
-      # the next step "Prepare e2e test" takes ~20s, which gives us the time needed
-      # uncomment it if you experience flakiness
-      # - uses: cygnetdigital/wait_for_response@v2.0.0
-      #   with:
-      #     url: 'http://localhost:3000/a/grafana-pyroscope-app/single'
-      #     responseCode: '200'
-      #     timeout: 20000
-      #     interval: 500
-
-      - name: Launch e2e tests
-        run: npm run e2e:ci
-
-      - name: Stop Grafana server
-        run: npm run e2e:ci:server:down
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: e2e-test-reports-and-results
-          path: |
-            e2e/test-reports
-            e2e/test-results
-          retention-days: 15
+  build:
+    name: Build and test
+    uses: ./.github/workflows/build.yml
+    with:
+      version: ${{ github.event.pull_request.head.sha || github.sha }}
 
   package:
-    # This step creates a zip file with the plugin and publishes it to Google Cloud Storage bucket.
-    # Frontend artifacts have 1 day retention. This step needs to be run within 24 hours after frontend job finished.
-    # Plugin is already signed in frontend job so if you need to use to locally you can just download the artifact
-    # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
-    # to push the package automatically without approval
-    name: Upload to GCS
-    needs: [end-to-end]
-    if: ${{ !github.event.pull_request.head.repo.fork }}
-    environment: ${{ github.event_name == 'push' && 'gcs-no-approval' || 'gcs' }}
-    runs-on: ubuntu-latest
-    outputs:
-      package_id: ${{ steps.metadata.outputs.package_id }}
-      sha: ${{ steps.metadata.outputs.sha }}
-    steps:
-      # Required to correctly auth to GCS
-      - name: Prepare - GCS
-        uses: actions/checkout@v4
-
-      - name: Prepare - Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-frontend
-          path: dist
-
-      - name: Get plugin metadata
-        id: metadata
-        run: |
-          sudo apt-get install jq
-
-          export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
-          export SHA=${{ github.event.pull_request.head.sha || github.sha }}
-          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${SHA}
-          echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
-          echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
-          echo "sha=${SHA}" >> $GITHUB_OUTPUT
-          echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
-
-      # Create zip file with name following conventions [plugin-id]-[sha].zip
-      - name: Package plugin
-        run: |
-          mv dist ${{ steps.metadata.outputs.plugin_id }}
-          zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
-
-      - name: Login to GCS
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
-
-      - name: Upload to GCS
-        uses: 'google-github-actions/upload-cloud-storage@v1'
-        with:
-          path: ./
-          destination: 'grafana-pyroscope-app/releases'
-          glob: '*.zip'
-          predefinedAcl: publicRead
+    name: Package
+    needs: [build]
+    uses: ./.github/workflows/package.yml
+    secrets: inherit
+    with:
+      version: ${{ github.event.pull_request.head.sha || github.sha }}
+      github_environment: ${{ github.event_name != 'push' && 'gcs' || 'gcs-no-approval' }}
 
   deploy-main-to-dev-and-ops:
-    name: Deploy to dev / ops
+    name: Deploy
     needs: [package]
     uses: ./.github/workflows/deploy.yml
-    # Make
+    # Make deployments available only from main
     if: github.event_name == 'push'
     secrets: inherit
     strategy:
       matrix:
         environment: [dev, ops]
     with:
-      version: ${{ needs.package.outputs.sha }}
+      version: ${{ github.event.pull_request.head.sha || github.sha }}
       environment: ${{ matrix.environment }}
