@@ -68,14 +68,14 @@ jobs:
 
   build:
     needs: [create-new-version]
-    uses: grafana/explore-profiles/.github/workflows/build.yml@ifrost/manual-release-workflow
+    uses: ./explore-profiles/.github/workflows/build.yml
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       ref: ${{ needs.create-new-version.outputs.version }}
 
   package:
     needs: [create-new-version, build]
-    uses: grafana/explore-profiles/.github/workflows/package.yml@ifrost/manual-release-workflow
+    uses: ./explore-profiles/.github/workflows/package.yml
     secrets: inherit
     with:
       version: ${{ needs.create-new-version.outputs.version }}
