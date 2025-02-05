@@ -74,14 +74,14 @@ jobs:
 
   build:
     needs: [create-new-version]
-    uses: ./explore-profiles/.github/workflows/build.yml
+    uses: ./.github/workflows/build.yml
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       ref: ${{ needs.create-new-version.outputs.version }}
 
   package:
     needs: [create-new-version, build]
-    uses: ./explore-profiles/.github/workflows/package.yml
+    uses: ./.github/workflows/package.yml
     secrets: inherit
     with:
       version: ${{ needs.create-new-version.outputs.version }}
@@ -135,7 +135,7 @@ jobs:
 
   deploy-to-cloud:
     needs: [create-new-version, package]
-    uses: ./explore-profiles/.github/workflows/deploy.yml
+    uses: ./.github/workflows/deploy.yml
     secrets: inherit
     strategy:
       matrix:
