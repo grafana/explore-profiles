@@ -91,7 +91,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
               version: 1,
               name,
               serviceName: serviceName.toString(),
-              profileType: profileMetric.type,
+              profileType: profileMetric.id,
               matcher: filterQuery,
               prometheusDataSource: dataSourceName,
               labels,
