@@ -30,6 +30,7 @@ jobs:
       version: ${{ steps.tag.outputs.version }}
     steps:
       # We need to use GitHub App instead of just passing the token in order to have CLA singed by the committer.
+      # To run correctly it needs to be used before the checkout
       - uses: tibdex/github-app-token@v1
         id: get_installation_token
         with:
@@ -125,9 +126,9 @@ jobs:
           token: ${{ steps.get_installation_token.outputs.token }}
           body_path: release_notes.md
 
-  deploy-to-prod-catalog:
+  update-prod-catalog:
     needs: [create-new-version, package]
-    uses: ./explore-profiles/.github/workflows/deploy-to-catalog.yml
+    uses: ./.github/workflows/update-plugins-catalog.yml
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       environment: prod

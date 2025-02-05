@@ -12,12 +12,12 @@ on:
         description: dev, ops or prod
 
 jobs:
-  deploy-to-catalog:
-    name: Deploy to ${{ inputs.environment }} catalog
+  update-catalog:
+    name: Update ${{ inputs.environment }} Plugins Catalog to ${{ inputs.environment }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     steps:
-      # Required for publishing to catalog to retrieve the name of the repository
+      # Required for updating the catalog to retrieve the name of the repository
       - uses: actions/checkout@v4
 
       - name: Login to GCS
@@ -35,7 +35,7 @@ jobs:
           common_secrets: |
             GCOM_PUBLISH_TOKEN=plugins/gcom-publish-token:${{ inputs.environment }}
 
-      - name: Publish to catalog
+      - name: Update catalog
         uses: grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
         with:
           zips: '["https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ inputs.version }}.zip"]'
