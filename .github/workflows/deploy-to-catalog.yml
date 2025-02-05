@@ -16,6 +16,7 @@ permissions:
 jobs:
   verify:
     name: Verify ${{ inputs.version }} exists
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
