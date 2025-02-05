@@ -129,7 +129,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
 
             <InlineFieldRow>
               <InlineField htmlFor="metric_name" label="Metric name" labelWidth={labelWidth}>
-                <Input id="metric_name" width={fieldWidth} placeholder="Name" required />
+                <Input id="metric_name" width={fieldWidth} placeholder="Name" required autoFocus />
               </InlineField>
             </InlineFieldRow>
 
