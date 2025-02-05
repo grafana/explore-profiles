@@ -6,7 +6,6 @@ on:
       version:
         description: 'Version'
         required: true
-        default: 'minor'
         type: choice
         options:
           - patch
