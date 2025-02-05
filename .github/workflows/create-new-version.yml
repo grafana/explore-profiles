@@ -60,7 +60,7 @@ jobs:
           git config --global user.email "$DB_FE_CI_BOT_EMAIL"
           git config --global user.name "Databases Frontend CI Bot"
           git config --global url.https://${{ steps.get_installation_token.outputs.token }}@github.com/.insteadOf https://github.com/
-          VERSION=$(npm version ${{ inputs.version })
+          VERSION=$(npm version ${{ inputs.version }})
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Push
@@ -84,6 +84,9 @@ jobs:
   create-github-release:
     needs: [create-new-version, package]
     runs-on: ubuntu-latest
+    # Required to created a release
+    permissions:
+      contents: write
     steps:
       - uses: tibdex/github-app-token@v1
         id: get_installation_token
@@ -91,6 +94,12 @@ jobs:
           app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
           installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
           private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.create-new-version.outputs.version }}
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ steps.get_installation_token.outputs.token }}
       - name: Get artifact
         uses: actions/download-artifact@v4
         with:
