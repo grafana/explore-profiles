@@ -1,4 +1,4 @@
-name: Deploy
+name: Update Plugins catalog
 
 on:
   workflow_call:
