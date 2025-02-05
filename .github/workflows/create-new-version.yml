@@ -29,6 +29,7 @@ jobs:
     outputs:
       version: ${{ steps.tag.outputs.version }}
     steps:
+      # We need to use GitHub App instead of just passing the token in order to have CLA singed by the committer.
       - uses: tibdex/github-app-token@v1
         id: get_installation_token
         with:
@@ -92,6 +93,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
+      # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
       - uses: tibdex/github-app-token@v1
         id: get_installation_token
         with:
