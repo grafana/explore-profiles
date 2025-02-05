@@ -40,21 +40,19 @@ jobs:
     uses: ./.github/workflows/update-plugins-catalog.yml
     needs: [package]
     secrets: inherit
-    environment: needs-approval
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
       environment: dev
-
-  deploy-main-to-dev-and-ops:
-    name: Deploy
-    needs: [package]
-    uses: ./.github/workflows/deploy.yml
-    # Make deployments available only from main
-    if: github.event_name == 'push'
-    secrets: inherit
-    strategy:
-      matrix:
-        environment: [dev, ops]
-    with:
-      version: ${{ github.event.pull_request.head.sha || github.sha }}
-      environment: ${{ matrix.environment }}
+#  deploy-main-to-dev-and-ops:
+#    name: Deploy
+#    needs: [package]
+#    uses: ./.github/workflows/deploy.yml
+#    # Make deployments available only from main
+#    if: github.event_name == 'push'
+#    secrets: inherit
+#    strategy:
+#      matrix:
+#        environment: [dev, ops]
+#    with:
+#      version: ${{ github.event.pull_request.head.sha || github.sha }}
+#      environment: ${{ matrix.environment }}
