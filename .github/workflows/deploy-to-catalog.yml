@@ -1,11 +1,19 @@
 name: Test publishing a version to a catalog (DEV)
 
 on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'GIT ref (commit SHA or tag, e.g. v1.0.8)'
-        type: string
+  pull_request:
+    paths-ignore:
+      - docs/*
+      - docs/sources/**
+    branches:
+      - ifrost/manual-release
+
+#on:
+#  workflow_dispatch:
+#    inputs:
+#      version:
+#        description: 'GIT ref (commit SHA or tag, e.g. v1.0.8)'
+#        type: string
 
 # Required to create OIDC/JWT token required to use shared actions
 permissions:
@@ -20,11 +28,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.version }}
-
-  deploy:
-    uses: ./.github/workflows/update-plugins-catalog.yml
-    needs: [verify]
-    secrets: inherit
-    with:
-      version: ${{ inputs.version }}
-      environment: dev
+#  deploy:
+#    uses: ./.github/workflows/update-plugins-catalog.yml
+#    needs: [verify]
+#    secrets: inherit
+#    with:
+#      version: ${{ inputs.version }}
+#      environment: dev
