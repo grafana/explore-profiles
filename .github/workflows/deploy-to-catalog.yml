@@ -6,7 +6,7 @@ on:
       - docs/*
       - docs/sources/**
     branches:
-      - ifrost/manual-release
+      - main
 
 #on:
 #  workflow_dispatch:
