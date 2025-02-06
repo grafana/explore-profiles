@@ -51,7 +51,7 @@ export default function MetricsView() {
           width={width}
           height={500}
           columnMinWidth={130}
-          cellHeight={TableCellHeight.Auto}
+          cellHeight={TableCellHeight.Lg}
           resizable={false}
           initialSortBy={[{ displayName: 'Name' }]}
         />
