@@ -9,11 +9,13 @@ import {
   TableCellDisplayMode,
   TableCustomCellOptions,
   TagList,
+  Text,
   useStyles2,
   useTheme2,
 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { Metric } from '@shared/infrastructure/metrics/Metric';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
@@ -33,8 +35,12 @@ export default function MetricsView() {
     ]);
   }
 
+  // This is a bit of a hack to calculate the max width of the table since the
+  // Table api requires a fixed width value. Here we subtract a fixed amount
+  // from the window width to account for the sidebar.
+  const width = window.innerWidth - 400;
   const theme = useTheme2();
-  const dataFrame = metrics !== undefined ? buildDataFrame(metrics, theme, styles, actions.removeMetric) : null;
+  const dataFrame = metrics !== undefined ? buildDataFrame(metrics, theme, width, styles, actions.removeMetric) : null;
 
   return (
     <>
@@ -42,11 +48,12 @@ export default function MetricsView() {
       {dataFrame && (
         <Table
           data={dataFrame}
-          width={2000}
+          width={width}
           height={500}
           columnMinWidth={130}
           cellHeight={TableCellHeight.Auto}
           resizable={false}
+          initialSortBy={[{ displayName: 'Name' }]}
         />
       )}
     </>
@@ -60,12 +67,23 @@ const getStyles = () => ({
   `,
 });
 
-function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any, onDelete: DeleteFn): DataFrame {
+function buildDataFrame(
+  metrics: Metric[],
+  theme: GrafanaTheme2,
+  tableWidth: number,
+  styles: Record<string, any>,
+  onDelete: DeleteFn
+): DataFrame {
   const df = arrayToDataFrame(
-    metrics.map((m) => ({
-      Name: m.name,
-      'Profile Type': m.profileType,
-    }))
+    metrics.map((m) => {
+      const profileType = getProfileMetric(m.profileType as ProfileMetricId);
+
+      return {
+        Name: m.name,
+        'Service Name': m.serviceName,
+        'Profile Type': `${profileType.group}/${profileType.type}`,
+      };
+    })
   );
 
   const dataSourceOptions: TableCustomCellOptions = {
@@ -85,13 +103,18 @@ function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any, on
   const labelOptions: TableCustomCellOptions = {
     type: TableCellDisplayMode.Custom,
     cellComponent: (props) => {
+      // Exclude hidden labels.
       const labels = metrics[props.rowIndex]?.labels?.filter((label: string) => !label.match(/^__\S+__$/));
 
       if (!labels || labels.length === 0) {
-        return <span>All</span>;
+        return (
+          <Text element="span" color="secondary">
+            None
+          </Text>
+        );
       }
 
-      return <TagList className={styles.tagList} displayMax={3} tags={labels} />;
+      return <TagList className={styles.tagList} displayMax={4} tags={labels} />;
     },
   };
 
@@ -148,6 +171,30 @@ function buildDataFrame(metrics: Metric[], theme: GrafanaTheme2, styles: any, on
       },
     },
   ];
+
+  const colWidthPercentages = [
+    0.2, // Name
+    0.1, // Service name
+    0.2, // Profile type
+    0.1, // Data source
+    0.25, // Labels
+    0.05, // Actions
+  ];
+
+  // Remap all the column widths.
+  df.fields = df.fields.map((f, i) => {
+    const width = tableWidth * colWidthPercentages[i];
+    return {
+      ...f,
+      config: {
+        ...f.config,
+        custom: {
+          ...f.config.custom,
+          width,
+        },
+      },
+    };
+  });
 
   // note(bryanhuhta): This is necessary to get the table body to render
   // properly. We don't actually use it to perform any overrides.
