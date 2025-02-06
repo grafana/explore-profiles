@@ -63,7 +63,7 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
       onClickAdHoc: useCallback(() => {
         reportInteraction('g_pyroscope_app_upload_ad_hoc_clicked');
 
-        navigate(`${PLUGIN_BASE_URL}${ROUTES.ADHOC_VIEW}`, { state: { referrer: window.location.href } });
+        navigate(`${PLUGIN_BASE_URL}${ROUTES.ADHOC}`, { state: { referrer: window.location.href } });
       }, [navigate]),
       onClickUserSettings: useCallback(() => {
         reportInteraction('g_pyroscope_app_user_settings_clicked');
