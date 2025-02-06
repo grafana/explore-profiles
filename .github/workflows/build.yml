@@ -12,6 +12,9 @@ on:
         required: false
         type: string
         description: commit sha or tag that will be checked out (use it if an existing tag needs to be checked-out)
+      e2e:
+        required: true
+        type: boolean
 
 jobs:
   frontend:
@@ -89,6 +92,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: [frontend]
+    if: ${{ inputs.e2e == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
