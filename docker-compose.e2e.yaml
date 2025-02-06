@@ -14,7 +14,6 @@ services:
       - ./samples/dashboards:/var/lib/grafana/dashboards
     environment:
       GF_INSTALL_PLUGINS: grafana-llm-app
-      GF_PLUGINS_PREINSTALL_DISABLED: true
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
 
