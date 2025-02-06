@@ -38,10 +38,7 @@
       image: node:20-bullseye
       name: package and sign
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -55,10 +52,7 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -72,10 +66,7 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -89,10 +80,7 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -107,10 +95,7 @@
         token:
           from_secret: gcs_service_account_key
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
     - commands: []
       depends_on:
@@ -124,31 +109,10 @@
         files: grafana-pyroscope-app-${DRONE_BUILD_NUMBER}.zip
         title: ${DRONE_TAG}
       when:
-        event:
-          - tag
         ref:
-          - refs/tags/v*.*.*
           - refs/tags/weekly-f*
-    - commands:
-        - apt update
-        - apt install -y curl
-        - ./scripts/publish-plugin ${DRONE_BUILD_NUMBER} ${DRONE_TAG}
-      depends_on:
-        - generate tags
-        - package and sign
-      environment:
-        GCOM_TOKEN:
-          from_secret: gcom_publish_token
-      image: grafana/grafana-plugin-ci-e2e:latest
-      name: publish to grafana.com
-      when:
-        event:
-          - tag
-        ref:
-          - refs/heads/main
   trigger:
     ref:
-      - refs/tags/v*.*.*
       - refs/tags/weekly-f*
   type: docker
 - depends_on:
