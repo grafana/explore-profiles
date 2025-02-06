@@ -8,6 +8,7 @@ on:
         type: string
       environment:
         required: true
+        description: 'Environment to deploy to'
         type: choice
         options:
           - dev
