@@ -63,6 +63,7 @@ export type Interactions = {
   g_pyroscope_app_timeseries_scale_changed: {
     scale: ScaleDistribution;
   };
+  g_pyroscope_app_upload_ad_hoc_clicked: {};
   g_pyroscope_app_user_settings_clicked: {};
 };
 

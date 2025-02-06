@@ -47,14 +47,6 @@
       "role": "Viewer",
       "addToNav": true,
       "defaultNav": false
-    },
-    {
-      "type": "page",
-      "name": "Ad hoc view",
-      "path": "/a/%PLUGIN_ID%/ad-hoc",
-      "role": "Viewer",
-      "addToNav": true,
-      "defaultNav": false
     }
   ],
   "extensions": {
