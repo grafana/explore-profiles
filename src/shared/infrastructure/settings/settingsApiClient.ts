@@ -13,14 +13,10 @@ class SettingsApiClient extends ApiClient {
       .fetch('/settings.v1.SettingsService/Get', { method: 'POST', body: JSON.stringify({}) })
       .then((response) => response.json())
       .then((json: ApiResponse) => {
-        if (!json.settings) {
-          return {};
-        }
-
-        const setting = json.settings.find(({ name }) => name === SettingsApiClient.PLUGIN_SETTING_NAME);
+        const setting = json.settings?.find(({ name }) => name === SettingsApiClient.PLUGIN_SETTING_NAME);
 
         if (!setting) {
-          throw new Error('Setting not found!');
+          return {};
         }
 
         return JSON.parse(setting.value);
