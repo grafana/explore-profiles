@@ -8,7 +8,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
 
 import { Onboarding } from './components/Onboarding/Onboarding';
-import { Routes } from './components/Routes/Routes';
+import { Routes } from './Routes';
 import { ErrorPage } from './ui/ErrorPage';
 
 initFaro();

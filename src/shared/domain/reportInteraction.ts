@@ -63,10 +63,11 @@ export type Interactions = {
   g_pyroscope_app_timeseries_scale_changed: {
     scale: ScaleDistribution;
   };
+  g_pyroscope_app_upload_ad_hoc_clicked: {};
   g_pyroscope_app_user_settings_clicked: {};
 };
 
-const PROFILES_EXPLORER_PAGE_NAME = ROUTES.PROFILES_EXPLORER_VIEW.slice(1);
+const PROFILES_EXPLORER_PAGE_NAME = ROUTES.EXPLORE.slice(1);
 
 function getCurrentPage(): string {
   const { pathname } = new URL(window.location.toString());
