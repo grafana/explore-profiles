@@ -15,13 +15,23 @@ import {
   useStyles2,
 } from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
+import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useEffect, useState } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
-import { Metric } from '../../../../shared/infrastructure/metrics/Metric';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
+
+interface MetricForm {
+  metricName: string;
+  labels: Array<SelectableValue<string>>;
+  serviceName: string;
+  profileType: string;
+  prometheusDataSource: string;
+  matcher: string;
+}
 
 interface SceneCreateMetricModalState extends SceneObjectState {}
 
@@ -42,15 +52,30 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     onDismiss: () => void;
     onCreate: (metric: Metric) => Promise<void>;
   }) => {
-    // eslint-disable-next-line no-unused-vars
     const styles = useStyles2(getStyles);
+
+    const {
+      register,
+      handleSubmit,
+      control,
+      formState: { errors },
+    } = useForm<MetricForm>();
+    const onSubmit: SubmitHandler<MetricForm> = (data) =>
+      onCreate({
+        version: 1,
+        name: data.metricName,
+        serviceName: data.serviceName,
+        profileType: data.profileType,
+        matcher: data.matcher,
+        labels: data.labels.map((label) => label.value ?? ''),
+        prometheusDataSource: data.prometheusDataSource,
+      });
+
     const labelWidth = 20;
     const fieldWidth = 65;
 
     // TODO(bryan) replace this with real data sources.
     const dataSourceName = 'dummy-data-source';
-
-    const [values, setValues] = useState<Array<SelectableValue<string>>>([]);
     const [options, setOptions] = useState<string[]>([]);
 
     const profileMetricVariable = sceneGraph.findByKeyAndType(model, 'profileMetricId', ProfileMetricVariable);
@@ -78,32 +103,59 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
 
     return (
       <Modal title="Create metric" isOpen={isModalOpen()} onDismiss={onDismiss}>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-
-            const nameInput = e.currentTarget.elements.namedItem('metric_name') as HTMLInputElement;
-            const name = nameInput.value;
-
-            const labels = values.map((v) => v?.value).filter((v) => v !== undefined && v !== null);
-
-            onCreate({
-              version: 1,
-              name,
-              serviceName: serviceName.toString(),
-              profileType: profileMetric.id,
-              matcher: filterQuery,
-              prometheusDataSource: dataSourceName,
-              labels,
-            });
-          }}
-        >
+        <form onSubmit={handleSubmit(onSubmit)}>
           <>
             <InlineFieldRow>
-              <InlineField className={styles.readonlyRow} label="Profile type" labelWidth={labelWidth} disabled>
-                <div className={styles.readonlyText}>{`${profileMetric.group}/${profileMetric.type}`}</div>
+              <InlineField
+                htmlFor="metricName"
+                label="Metric name"
+                labelWidth={labelWidth}
+                invalid={!!errors.metricName}
+                error={errors.metricName?.message}
+              >
+                <Input
+                  width={fieldWidth}
+                  placeholder="Metric name"
+                  required
+                  autoFocus
+                  {...register('metricName', {
+                    required: 'Metric name is required.',
+                    // This pattern was pulled from here: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
+                    pattern: {
+                      value: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
+                      message: 'Invalid metric name, must be a valid Prometheus metric name.',
+                    },
+                  })}
+                />
               </InlineField>
             </InlineFieldRow>
+
+            <InlineFieldRow>
+              <InlineField
+                htmlFor="labels"
+                label="Included labels"
+                labelWidth={labelWidth}
+                invalid={!!errors.labels}
+                error={errors.labels?.message}
+              >
+                <Controller
+                  name="labels"
+                  control={control}
+                  render={({ field }) => (
+                    <MultiSelect
+                      {...field}
+                      options={options.map((opt) => ({ label: opt, value: opt }))}
+                      toggleAllOptions={{
+                        enabled: true,
+                      }}
+                      width={fieldWidth}
+                    />
+                  )}
+                />
+              </InlineField>
+            </InlineFieldRow>
+
+            <Divider />
 
             <InlineFieldRow>
               <InlineField className={styles.readonlyRow} label="Service name" labelWidth={labelWidth} disabled>
@@ -112,6 +164,14 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
                 </div>
               </InlineField>
             </InlineFieldRow>
+            <input type="text" value={serviceName.toString()} hidden {...register('serviceName')} />
+
+            <InlineFieldRow>
+              <InlineField className={styles.readonlyRow} label="Profile type" labelWidth={labelWidth} disabled>
+                <div className={styles.readonlyText}>{`${profileMetric.group}/${profileMetric.type}`}</div>
+              </InlineField>
+            </InlineFieldRow>
+            <input type="text" value={profileMetric.id} hidden {...register('profileType')} />
 
             <InlineFieldRow>
               <InlineField className={styles.readonlyRow} label="Data source" labelWidth={labelWidth} disabled>
@@ -124,29 +184,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
                 </div>
               </InlineField>
             </InlineFieldRow>
-
-            <Divider />
-
-            <InlineFieldRow>
-              <InlineField htmlFor="metric_name" label="Metric name" labelWidth={labelWidth}>
-                <Input id="metric_name" width={fieldWidth} placeholder="Name" required autoFocus />
-              </InlineField>
-            </InlineFieldRow>
-
-            <InlineFieldRow>
-              <InlineField htmlFor="metric_labels" label="Included labels" labelWidth={labelWidth}>
-                <MultiSelect
-                  id="metric_labels"
-                  options={options.map((opt) => ({ label: opt, value: opt }))}
-                  value={values}
-                  onChange={setValues}
-                  toggleAllOptions={{
-                    enabled: true,
-                  }}
-                  width={fieldWidth}
-                />
-              </InlineField>
-            </InlineFieldRow>
+            <input type="text" value={dataSourceName} hidden {...register('prometheusDataSource')} />
           </>
 
           <Modal.ButtonRow>
