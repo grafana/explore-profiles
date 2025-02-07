@@ -14,7 +14,7 @@ export function Routes() {
       <Route path={`${ROUTES.EXPLORE}/*`} element={<ProfilesExplorerView />} />
       <Route path={`${ROUTES.ADHOC}/*`} element={<AdHocView />} />
       <Route path={`${ROUTES.SETTINGS}/*`} element={<SettingsView />} />
-      <Route path={ROUTES.METRICS} element={<MetricsView />} />
+      <Route path={`${ROUTES.METRICS}/*`} element={<MetricsView />} />
       {/* Default Route */}
       <Route path="/*" element={<ProfilesExplorerView />} />
     </ReactRouterRoutes>

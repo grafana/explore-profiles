@@ -47,14 +47,6 @@
       "action": "datasources:explore",
       "addToNav": true,
       "defaultNav": true
-    },
-    {
-      "type": "page",
-      "name": "Metrics",
-      "path": "/a/%PLUGIN_ID%/metrics",
-      "role": "Viewer",
-      "addToNav": true,
-      "defaultNav": false
     }
   ],
   "extensions": {
