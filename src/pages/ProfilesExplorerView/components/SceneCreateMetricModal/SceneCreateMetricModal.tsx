@@ -115,7 +115,9 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
               >
                 <Input
                   width={fieldWidth}
-                  placeholder="Metric name"
+                  placeholder={`pyroscope_metric_${profileMetric.type}_${serviceName
+                    .toString()
+                    .replace(/[^a-zA-Z0-9_]/g, '_')}`}
                   required
                   autoFocus
                   {...register('metricName', {
@@ -123,7 +125,8 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
                     // This pattern was pulled from here: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
                     pattern: {
                       value: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
-                      message: 'Invalid metric name, must be a valid Prometheus metric name.',
+                      message:
+                        'Must contain only alphanumeric characters or underscores. The first character must not be a number.',
                     },
                   })}
                 />
