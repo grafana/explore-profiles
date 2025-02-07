@@ -1,4 +1,4 @@
-name: Release exiting tag
+name: Release existing tag
 
 on:
   workflow_dispatch:
