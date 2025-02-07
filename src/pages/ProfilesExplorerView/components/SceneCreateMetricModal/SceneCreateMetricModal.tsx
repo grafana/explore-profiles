@@ -149,6 +149,8 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
                         enabled: true,
                       }}
                       width={fieldWidth}
+                      closeMenuOnSelect={false}
+                      hideSelectedOptions={false}
                     />
                   )}
                 />
