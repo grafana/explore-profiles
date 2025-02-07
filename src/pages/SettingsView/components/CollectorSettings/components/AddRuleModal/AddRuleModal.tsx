@@ -7,10 +7,9 @@ import { EditRule } from '../EditRule/EditRule';
 import { useAddRuleModal } from './domain/useAddRuleModal';
 
 export type AddRuleModalProps = {
-  saveRule(rule: UpsertCollectionRuleRequest): void;
+  saveRule(rule: UpsertCollectionRuleRequest): Promise<void>;
+  existingRuleNames: string[];
 };
-
-const RULE_NAME_ERROR_MESSAGE = 'Please enter a valid rule name. It can contain lowercase letters, digits or hyphens.';
 
 export function AddRuleModal(props: AddRuleModalProps) {
   const { data, actions } = useAddRuleModal(props);
@@ -26,19 +25,15 @@ export function AddRuleModal(props: AddRuleModalProps) {
         isOpen={data.isModalOpen}
         closeOnEscape={true}
         closeOnBackdropClick={true}
-        onDismiss={actions.dismissModal}
+        onDismiss={actions.onDismiss}
       >
-        <form onSubmit={actions.addRule}>
-          <EditRule isModal={true} saveRule={props.saveRule} />
-          <Modal.ButtonRow>
-            <Button variant="secondary" fill="outline" onClick={data.dismissModal}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!data.name || data.isNameInvalid}>
-              Add
-            </Button>
-          </Modal.ButtonRow>
-        </form>
+        <EditRule
+          onSubmit={actions.onDismiss}
+          onDismiss={actions.onDismiss}
+          isModal={true}
+          saveRule={props.saveRule}
+          existingRuleNames={props.existingRuleNames}
+        />
       </Modal>
     </>
   );

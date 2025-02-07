@@ -10,37 +10,35 @@ import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 // TODO: do they have to be in @shared? by which other parts of the app will they be used?
 import { CollectorRule, CollectorRulesState } from '@shared/infrastructure/settings/CollectorRules';
 import { useFetchCollectorRules } from '@shared/infrastructure/settings/useFetchCollectorRules';
-import { useEffect, useState } from 'react';
-
-export interface CollectorRulesController {
-  actions: CollectorRulesActions;
-  data: CollectorRulesState;
-  isFetching: boolean;
-  fetchError: Error | null;
-}
-
-export interface CollectorRulesActions {
-  addRule: (ruleName: string) => void;
-  getRule: (ruleName: string) => CollectorRule | undefined;
-  saveRule: (ruleName: string) => Promise<void>;
-  saveRuleN: (rule: UpsertCollectionRuleRequest) => Promise<void>;
-  deleteRule: (ruleName: string) => Promise<void>;
-  updateServiceEnabled: (ruleName: string, serviceName: string, enabled: boolean) => void;
-  removeService: (ruleName: string, serviceName: string) => void;
-  updateJavaCollectionEnabled: (ruleName: string, enabled: boolean) => void;
-  updateEBPFCollectionEnabled: (ruleName: string, enabled: boolean) => void;
-}
+import { DomainHookReturnValueTyped as DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+import { useEffect, useMemo, useState } from 'react';
 
 export function getRule(s: CollectorRulesState, ruleName: string): CollectorRule | undefined {
   return s.data.find((rule) => rule.rule.name === ruleName);
 }
 
-export function useCollectorSettings() {
+export function useCollectorSettings(): DomainHookReturnValue<
+  {
+    rules: GetCollectionRuleResponse[];
+    existingRuleNames: string[];
+    isFetching: boolean;
+    fetchError: Error | null;
+  },
+  {
+    addRule(ruleName: string): void;
+    getRule(ruleName: string): CollectorRule | undefined;
+    saveRuleN(rule: UpsertCollectionRuleRequest): Promise<void>;
+    saveRule(ruleName: string): Promise<void>;
+    deleteRule(ruleName: string): Promise<void>;
+  }
+> {
   const { rules, isFetching, error: fetchError, mutate, mutateDelete } = useFetchCollectorRules();
 
   const [currentState, setCurrentState] = useState<CollectorRulesState>({
     data: rules ?? [],
   } as CollectorRulesState);
+
+  const existingRuleNames = useMemo(() => currentState.data.map((r) => r.rule.name), [currentState.data]);
 
   // TODO: useMemo, because it's not a side effect
   useEffect(() => {
@@ -52,9 +50,12 @@ export function useCollectorSettings() {
   }, [rules]);
 
   return {
-    isFetching,
-    fetchError,
-    data: { ...currentState },
+    data: {
+      rules: currentState.data.map((r) => r.rule) as GetCollectionRuleResponse[],
+      existingRuleNames: existingRuleNames as string[],
+      isFetching,
+      fetchError,
+    },
     actions: {
       getRule(ruleName: string) {
         return getRule(currentState, ruleName);
@@ -162,59 +163,6 @@ export function useCollectorSettings() {
           ]);
         }
       },
-      updateServiceEnabled(ruleName: string, serviceName: string, enabled: boolean) {
-        const rule = this.getRule(ruleName);
-        if (!rule) {
-          return;
-        }
-        const service = rule.rule.services.find((service) => service.name === serviceName);
-        if (!service) {
-          rule.rule.services.push({ name: serviceName, enabled } as ServiceData);
-        } else {
-          service.enabled = enabled;
-        }
-        rule.modified = true;
-        setCurrentState({
-          ...currentState,
-          data: currentState.data.map((r) => (r.rule.name === ruleName ? rule : r)),
-        });
-      },
-      removeService(ruleName: string, serviceName: string) {
-        const rule = this.getRule(ruleName);
-        if (!rule) {
-          return;
-        }
-        rule.rule.services = rule.rule.services.filter((service) => service.name !== serviceName);
-        rule.modified = true;
-        setCurrentState({
-          ...currentState,
-          data: currentState.data.map((r) => (r.rule.name === ruleName ? rule : r)),
-        });
-      },
-      updateEBPFCollectionEnabled(ruleName: string, enabled: boolean) {
-        const rule = this.getRule(ruleName);
-        if (!rule) {
-          return;
-        }
-        rule.rule.ebpf = { ...(rule.rule.ebpf || ({} as EBPFSettings)), enabled: enabled };
-        rule.modified = true;
-        setCurrentState({
-          ...currentState,
-          data: currentState.data.map((r) => (r.rule.name === ruleName ? rule : r)),
-        });
-      },
-      updateJavaCollectionEnabled(ruleName: string, enabled: boolean) {
-        const rule = this.getRule(ruleName);
-        if (!rule) {
-          return;
-        }
-        rule.rule.java = { ...(rule.rule.java || ({} as JavaSettings)), enabled: enabled };
-        rule.modified = true;
-        setCurrentState({
-          ...currentState,
-          data: currentState.data.map((r) => (r.rule.name === ruleName ? rule : r)),
-        });
-      },
-    } as CollectorRulesActions,
-  } as CollectorRulesController;
+    },
+  };
 }

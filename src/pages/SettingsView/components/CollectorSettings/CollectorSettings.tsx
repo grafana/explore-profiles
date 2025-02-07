@@ -10,20 +10,14 @@ import { RulesList } from './ui/RulesList';
 
 export function CollectorSettings() {
   const styles = useStyles2(getStyles);
-  const controller = useCollectorSettings();
-
-  const { isFetching, data, fetchError } = controller;
+  const { data, actions } = useCollectorSettings();
 
   // TODO: move to useCollectorSettings
   const [ruleUncollapsed, setRuleUncollapsed] = useState<string | undefined>(undefined);
   // TODO: move to useCollectorSettings
-  const addNewRule = (ruleName: string) => {
-    setRuleUncollapsed(ruleName);
-    controller.actions.addRule(ruleName);
-  };
 
-  if (fetchError) {
-    displayError(fetchError, [
+  if (data.fetchError) {
+    displayError(data.fetchError, [
       'Error while retrieving the collector rules!',
       'Please try to reload the page, sorry for the inconvenience.',
     ]);
@@ -33,15 +27,22 @@ export function CollectorSettings() {
     <>
       <div className={styles.controls}>
         <div>
-          {isFetching && <Spinner inline />}
-          {!isFetching && !data.data.length && <>No rules found.</>}
+          {data.isFetching && <Spinner inline />}
+          {!data.isFetching && !data.rules.length && <>No rules found.</>}
         </div>
 
-        <AddRuleModal saveRule={controller.actions.saveRuleN} />
+        <AddRuleModal saveRule={actions.saveRuleN} existingRuleNames={data.existingRuleNames} />
       </div>
 
       {/* TODO: data is part of controller, pass only the props that are needed + move some logic from useCollectorSettings() to a new domain hook in RulesList or below */}
-      {!isFetching && <RulesList controller={controller} data={data} ruleUncollapsed={ruleUncollapsed} />}
+      {!data.isFetching && data.rules && (
+        <RulesList
+          saveRule={actions.saveRuleN}
+          deleteRule={actions.deleteRule}
+          rules={data.rules}
+          ruleUncollapsed={ruleUncollapsed}
+        />
+      )}
     </>
   );
 }
