@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version (with v prefix, e.g. v0.1.20)'
+        description: 'Git tag identifying the version including the "v" prefix (e.g. v0.1.20)'
         required: true
         type: string
 
