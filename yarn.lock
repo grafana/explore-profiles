@@ -2412,14 +2412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@leeoniya/ufuzzy@npm:1.0.18":
-  version: 1.0.18
-  resolution: "@leeoniya/ufuzzy@npm:1.0.18"
-  checksum: 10/3d7e160a3a21cdcdf0c0b78893340b3231b905ab4787e63d39068ee0ad75cc71ae99572c2117cd3466e3d32bfe0290b97d4ccda9e522f7998b24a04c2c466a31
-  languageName: node
-  linkType: hard
-
-"@leeoniya/ufuzzy@npm:^1.0.14":
+"@leeoniya/ufuzzy@npm:1.0.18, @leeoniya/ufuzzy@npm:^1.0.14":
   version: 1.0.18
   resolution: "@leeoniya/ufuzzy@npm:1.0.18"
   checksum: 10/3d7e160a3a21cdcdf0c0b78893340b3231b905ab4787e63d39068ee0ad75cc71ae99572c2117cd3466e3d32bfe0290b97d4ccda9e522f7998b24a04c2c466a31
