@@ -1,4 +1,4 @@
-name: Cut new version
+name: Cut new release
 
 on:
   workflow_dispatch:
