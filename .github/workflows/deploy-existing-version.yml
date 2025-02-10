@@ -1,4 +1,4 @@
-name: Deploy existing version
+name: Deploy existing version to Cloud only
 
 on:
   workflow_dispatch:
