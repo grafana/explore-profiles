@@ -63,3 +63,32 @@ export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtens
     return undefined;
   },
 };
+
+export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<PluginExtensionExploreContext> = {
+  targets: ['grafana/traceview/details'],
+  title: 'Open in Explore Profiles',
+  icon: 'fire',
+  description: 'Try our new queryless experience for profiles',
+  path: '/a/grafana-pyroscope-app/profiles-explorer',
+  configure(context: PluginExtensionExploreContext | undefined) {
+    // eslint-disable-next-line no-console
+    console.log('hello from explore profiles');
+    // TODO: Retrieve the correct context i.e. the spanSelector from the trace view
+
+    // if (!context || !context.targets || !context.timeRange || context.targets.length > 1) {
+    //   return undefined;
+    // }
+
+    const firstQuery = context!.targets[0];
+
+    if (firstQuery.datasource && firstQuery.datasource.type === 'grafana-pyroscope-datasource') {
+      return {
+        path: buildURL({
+          pyroscopeQuery: firstQuery as GrafanaPyroscopeDataQuery,
+          timeRange: context!.timeRange,
+        }),
+      };
+    }
+    return undefined;
+  },
+};
