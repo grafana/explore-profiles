@@ -25,7 +25,6 @@ jobs:
     name: Build and test
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ github.event.pull_request.head.sha || github.sha }}
       e2e: true
 
   package:

@@ -4,10 +4,6 @@ name: Build and test frontend
 on:
   workflow_call:
     inputs:
-      version:
-        required: true
-        type: string
-        description: commit sha or tag that will be used as a suffix for the artifact name
       ref:
         required: false
         type: string

@@ -75,7 +75,6 @@ jobs:
     needs: [create-new-version]
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ needs.create-new-version.outputs.version }}
       ref: ${{ needs.create-new-version.outputs.version }}
       e2e: false
 
