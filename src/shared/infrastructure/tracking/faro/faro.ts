@@ -1,7 +1,7 @@
 import { Faro, getWebInstrumentations, initializeFaro } from '@grafana/faro-web-sdk';
 import { config } from '@grafana/runtime';
 
-import { PYROSCOPE_APP_ID } from '../../../../constants';
+import { PLUGIN_BASE_URL, PYROSCOPE_APP_ID } from '../../../../constants';
 import { GIT_COMMIT } from '../../../../version';
 import { getFaroEnvironment } from './getFaroEnvironment';
 
@@ -48,7 +48,7 @@ export function initFaro() {
       ],
       isolate: true,
       beforeSend: (event) => {
-        if ((event.meta.page?.url ?? '').includes(PYROSCOPE_APP_ID)) {
+        if ((event.meta.page?.url ?? '').includes(PLUGIN_BASE_URL)) {
           event.meta.view = {
             name: new URLSearchParams(event.meta.page?.url).get('explorationType') || '',
           };
