@@ -20,6 +20,7 @@ jobs:
     with:
       version: ${{ inputs.version }}
       ref: ${{ inputs.version }}
+      e2e: false
 
   package:
     needs: [build]
