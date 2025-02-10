@@ -51,7 +51,7 @@ jobs:
       # Before building make sure we update the version so it's easy to identify it
       # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
       - name: Update version.ts
-        run: echo "export const GIT_COMMIT = '${{ inputs.version }}';" > src/version.ts
+        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';" > src/version.ts
 
       - name: Build frontend
         run: yarn build
