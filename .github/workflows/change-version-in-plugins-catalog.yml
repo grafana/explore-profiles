@@ -1,4 +1,4 @@
-name: Change version in Plugins Catalog (DEV)
+name: Add a new version to Plugins Catalog
 
 on:
   workflow_dispatch:

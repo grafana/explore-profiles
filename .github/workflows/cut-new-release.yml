@@ -88,6 +88,7 @@ jobs:
       github_environment: gcs-no-approval
 
   create-github-release:
+    name: Create GitHub release
     needs: [create-new-version, package]
     runs-on: ubuntu-latest
     # Required to created a release
@@ -127,8 +128,10 @@ jobs:
           body_path: release_notes.md
 
   update-prod-catalog:
+    name: Update Prod Plugins Catalog
     needs: [create-new-version, create-github-release]
     uses: ./.github/workflows/update-plugins-catalog.yml
+    secrets: inherit
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       environment: prod
