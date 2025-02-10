@@ -7,14 +7,11 @@ import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useEffect, useState } from 'react';
 import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form';
-import {
-  ReadonlyChicletList,
-  ReadonlyFilter,
-} from 'src/pages/ProfilesExplorerView/components/SceneCreateMetricModal/components/ReadonlyChiclet';
 
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
+import { ReadonlyChicletList, ReadonlyFilter } from './components/ReadonlyChiclet';
 
 interface MetricForm {
   metricName: string;
