@@ -70,14 +70,14 @@ jobs:
           body_path: release_notes.md
 
   update-prod-catalog:
-    needs: [package]
+    needs: [create-github-release]
     uses: ./.github/workflows/update-plugins-catalog.yml
     with:
       version: ${{ inputs.version }}
       environment: prod
 
   deploy-to-cloud:
-    needs: [package]
+    needs: [update-prod-catalog]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     strategy:

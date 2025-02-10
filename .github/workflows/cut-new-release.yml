@@ -127,14 +127,14 @@ jobs:
           body_path: release_notes.md
 
   update-prod-catalog:
-    needs: [create-new-version, package]
+    needs: [create-new-version, create-github-release]
     uses: ./.github/workflows/update-plugins-catalog.yml
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       environment: prod
 
   deploy-to-cloud:
-    needs: [create-new-version, package]
+    needs: [create-new-version, update-prod-catalog]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     strategy:
