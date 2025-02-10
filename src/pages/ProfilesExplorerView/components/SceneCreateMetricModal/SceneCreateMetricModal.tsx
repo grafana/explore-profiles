@@ -1,24 +1,16 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import {
-  Button,
-  Divider,
-  Icon,
-  InlineField,
-  InlineFieldRow,
-  Input,
-  Modal,
-  MultiSelect,
-  Stack,
-  Text,
-  useStyles2,
-} from '@grafana/ui';
+import { Button, Divider, Field, Icon, Input, Modal, MultiSelect, Stack, useStyles2 } from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React, { useEffect, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form';
+import {
+  ReadonlyChicletList,
+  ReadonlyFilter,
+} from 'src/pages/ProfilesExplorerView/components/SceneCreateMetricModal/components/ReadonlyChiclet';
 
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -71,9 +63,6 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
         prometheusDataSource: data.prometheusDataSource,
       });
 
-    const labelWidth = 20;
-    const fieldWidth = 65;
-
     // TODO(bryan) replace this with real data sources.
     const dataSourceName = 'dummy-data-source';
     const [options, setOptions] = useState<string[]>([]);
@@ -87,6 +76,12 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     const filtersVariable = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable);
     const filters = filtersVariable.state.filters;
     const filterQuery = filters.map((filter) => `${filter.key}${filter.operator}"${filter.value}"`).join(', ');
+    const chicletFilters: ReadonlyFilter[] = filters.map((filter, idx) => ({
+      id: String(idx),
+      attribute: filter.key,
+      operator: filter.operator,
+      value: filter.value,
+    }));
 
     useEffect(() => {
       const timeRange = sceneGraph.getTimeRange(model).state.value;
@@ -104,93 +99,74 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     return (
       <Modal title="Create metric" isOpen={isModalOpen()} onDismiss={onDismiss}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <>
-            <InlineFieldRow>
-              <InlineField
-                htmlFor="metricName"
-                label="Metric name"
-                labelWidth={labelWidth}
-                invalid={!!errors.metricName}
-                error={errors.metricName?.message}
-              >
-                <Input
-                  width={fieldWidth}
-                  placeholder={`pyroscope_metric_${profileMetric.type}_${serviceName
-                    .toString()
-                    .replace(/[^a-zA-Z0-9_]/g, '_')}`}
-                  required
-                  autoFocus
-                  {...register('metricName', {
-                    required: 'Metric name is required.',
-                    // This pattern was pulled from here: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
-                    pattern: {
-                      value: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
-                      message:
-                        'Must contain only alphanumeric characters or underscores. The first character must not be a number.',
-                    },
-                  })}
+          <Field
+            label="Metric name"
+            description="The name of the Prometheus metric"
+            error={MetricNameErrorComponent(errors.metricName)}
+            invalid={!!errors.metricName}
+          >
+            <Input
+              placeholder={`pyroscope_metric_${profileMetric.type}_${serviceName
+                .toString()
+                .replace(/[^a-zA-Z0-9_]/g, '_')}`}
+              required
+              autoFocus
+              {...register('metricName', {
+                required: 'Metric name is required.',
+                // This pattern was pulled from here: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
+                pattern: {
+                  value: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
+                  message: 'Invalid metric name.',
+                },
+              })}
+            />
+          </Field>
+
+          <Field label="Additional labels" description="Additional profiling labels to forward to the metric">
+            <Controller
+              name="labels"
+              control={control}
+              render={({ field }) => (
+                <MultiSelect
+                  {...field}
+                  options={options.map((opt) => ({ label: opt, value: opt }))}
+                  toggleAllOptions={{
+                    enabled: true,
+                  }}
+                  closeMenuOnSelect={false}
+                  hideSelectedOptions={false}
                 />
-              </InlineField>
-            </InlineFieldRow>
+              )}
+            />
+          </Field>
 
-            <InlineFieldRow>
-              <InlineField
-                htmlFor="labels"
-                label="Included labels"
-                labelWidth={labelWidth}
-                invalid={!!errors.labels}
-                error={errors.labels?.message}
-              >
-                <Controller
-                  name="labels"
-                  control={control}
-                  render={({ field }) => (
-                    <MultiSelect
-                      {...field}
-                      options={options.map((opt) => ({ label: opt, value: opt }))}
-                      toggleAllOptions={{
-                        enabled: true,
-                      }}
-                      width={fieldWidth}
-                      closeMenuOnSelect={false}
-                      hideSelectedOptions={false}
-                    />
-                  )}
-                />
-              </InlineField>
-            </InlineFieldRow>
+          <Divider />
 
-            <Divider />
+          <Field label="Service name">
+            <div className={styles.readonlyValue}>{`${serviceName}`}</div>
+          </Field>
+          <input type="text" value={serviceName.toString()} hidden {...register('serviceName')} />
 
-            <InlineFieldRow>
-              <InlineField className={styles.readonlyRow} label="Service name" labelWidth={labelWidth} disabled>
-                <div className={styles.readonlyText}>
-                  <Text>{`${serviceName}`}</Text>
-                </div>
-              </InlineField>
-            </InlineFieldRow>
-            <input type="text" value={serviceName.toString()} hidden {...register('serviceName')} />
+          <Field label="Profile type">
+            <div className={styles.readonlyValue}>{`${profileMetric.group}/${profileMetric.type}`}</div>
+          </Field>
+          <input type="text" value={profileMetric.id} hidden {...register('profileType')} />
 
-            <InlineFieldRow>
-              <InlineField className={styles.readonlyRow} label="Profile type" labelWidth={labelWidth} disabled>
-                <div className={styles.readonlyText}>{`${profileMetric.group}/${profileMetric.type}`}</div>
-              </InlineField>
-            </InlineFieldRow>
-            <input type="text" value={profileMetric.id} hidden {...register('profileType')} />
+          <Field label="Data source" description="Prometheus data source">
+            <div className={styles.readonlyValue}>
+              <Stack direction="row" alignItems="center" justifyContent="flex-start">
+                {/* note(bryanhuhta): This color is taken from the Prometheus svg from grafana.com */}
+                <Icon name="gf-prometheus" color="#DA4E31" />
+                <span>{dataSourceName}</span>
+              </Stack>
+            </div>
+          </Field>
 
-            <InlineFieldRow>
-              <InlineField className={styles.readonlyRow} label="Data source" labelWidth={labelWidth} disabled>
-                <div className={styles.readonlyText}>
-                  <Stack direction="row" alignItems="center" justifyContent="flex-start">
-                    {/* note(bryanhuhta): This color is taken from the Prometheus svg from grafana.com */}
-                    <Icon name="gf-prometheus" color="#DA4E31" />
-                    <span>{dataSourceName}</span>
-                  </Stack>
-                </div>
-              </InlineField>
-            </InlineFieldRow>
-            <input type="text" value={dataSourceName} hidden {...register('prometheusDataSource')} />
-          </>
+          <Field label="Filters" description="Additional filters used to refine the scope of the metric">
+            <div className={styles.readonlyValue}>
+              <ReadonlyChicletList filters={chicletFilters} />
+            </div>
+          </Field>
 
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={onDismiss}>
@@ -206,13 +182,40 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
   };
 }
 
+const MetricNameErrorComponent = (error: FieldError | undefined) => {
+  const styles = useStyles2(getStyles);
+
+  if (error === undefined || error.message === undefined) {
+    return undefined;
+  }
+
+  if (error.type === 'pattern') {
+    return (
+      <div>
+        <span>Metric name is invalid, it must have the following properties:</span>
+        <ul className={styles.errorList}>
+          <li>Only contain alphanumeric characters or underscores</li>
+          <li>Must not begin with a number</li>
+        </ul>
+      </div>
+    );
+  }
+
+  return <div>{error.message}</div>;
+};
+
 // eslint-disable-next-line no-unused-vars
 const getStyles = (theme: GrafanaTheme2) => ({
   readonlyRow: css`
     align-items: center;
+    max-width: 100%;
   `,
 
-  readonlyText: css`
-    padding-left: ${theme.spacing(1)};
+  readonlyValue: css`
+    max-width: 100%;
+  `,
+
+  errorList: css`
+    padding-left: ${theme.spacing(2)};
   `,
 });
