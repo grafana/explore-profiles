@@ -10,6 +10,11 @@ on:
       - docs/sources/**
     branches:
       - main
+    # Ignore all tags explicitly as tags are build with create-new-version.yml
+    # This is to avoid deploying multiple versions to dev at the same time (one coming from
+    # create-new-version.yml and the other coming from changes in main when version is bumped)
+    tags-ignore:
+      - '**'
 
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
