@@ -18,7 +18,6 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ inputs.version }}
       ref: ${{ inputs.version }}
       e2e: false
 

@@ -4,10 +4,6 @@ name: Build and test frontend
 on:
   workflow_call:
     inputs:
-      version:
-        required: true
-        type: string
-        description: commit sha or tag that will be used as a suffix for the artifact name
       ref:
         required: false
         type: string
@@ -51,7 +47,7 @@ jobs:
       # Before building make sure we update the version so it's easy to identify it
       # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
       - name: Update version.ts
-        run: echo "export const GIT_COMMIT = '${{ inputs.version }}';" > src/version.ts
+        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';" > src/version.ts
 
       - name: Build frontend
         run: yarn build
