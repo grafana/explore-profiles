@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
+import { usePageInitialized } from '@shared/infrastructure/tracking/usePageInitialized';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
@@ -22,6 +23,8 @@ export default function SettingsView() {
     event.preventDefault();
     actions.saveSettings();
   }
+
+  usePageInitialized('settings');
 
   return (
     <>
