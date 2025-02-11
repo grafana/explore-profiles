@@ -44,10 +44,19 @@ jobs:
         with:
           title: Unit test coverage
 
+      - name: Get current commit SHA
+        id: get_sha
+        run: echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
       # Before building make sure we update the version so it's easy to identify it
       # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
+      # We need to get correct sha in the stop above in cases when we are building a tag as github.ref
+      # would point to a commit of main when the "Cut new release" workflow was called (i.e. before tagging)
+      # For PR however we need to use github.event.pull_request.head.sha because env.commit_sha would point
+      # to a commit for merge with main commit (branch is synced with main to check for conflicts)
+      # see also https://github.com/orgs/community/discussions/25318
       - name: Update version.ts
-        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || github.sha }}';" > src/version.ts
+        run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || env.commit_sha }}';" > src/version.ts
 
       - name: Build frontend
         run: yarn build
