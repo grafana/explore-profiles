@@ -21,13 +21,9 @@ permissions:
   id-token: write
 
 jobs:
-  init:
-    runs-on: ubuntu-latest
-    if: ${{ github.actor != 'Databases Frontend CI Bot' }}
-
   build:
     name: Build and test
-    needs: [init]
+    if: ${{ github.actor != 'Databases Frontend CI Bot' }}
     uses: ./.github/workflows/build.yml
     with:
       e2e: true
