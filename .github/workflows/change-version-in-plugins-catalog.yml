@@ -1,0 +1,39 @@
+name: Add a new version to Plugins Catalog
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'GIT ref (commit SHA or tag, e.g. v1.0.8)'
+        type: string
+      environment:
+        required: true
+        description: 'Environment to deploy to'
+        type: choice
+        options:
+          - dev
+          - ops
+          - prod
+
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  verify:
+    name: Verify ${{ inputs.version }} exists
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version }}
+
+  deploy:
+    uses: ./.github/workflows/update-plugins-catalog.yml
+    needs: [verify]
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
+      environment: ${{ inputs.environment }}

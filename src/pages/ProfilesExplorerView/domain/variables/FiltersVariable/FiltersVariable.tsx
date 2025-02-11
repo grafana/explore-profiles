@@ -1,4 +1,4 @@
-import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
+import { AdHocFiltersVariable, SceneComponentProps, sceneGraph, SceneObject } from '@grafana/scenes';
 import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -32,12 +32,22 @@ export class FiltersVariable extends AdHocFiltersVariable {
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
+  reset() {
+    this.setState({ filters: FiltersVariable.DEFAULT_VALUE });
+  }
+
+  static resetAll(sceneObject: SceneObject) {
+    ['filters', 'filtersBaseline', 'filtersComparison'].forEach((filterKey) => {
+      sceneGraph.findByKeyAndType(sceneObject, filterKey, FiltersVariable).reset();
+    });
+  }
+
   onActivate() {
     // VariableDependencyConfig does not work :man_shrug: (never called)
     const dataSourceSub = sceneGraph
       .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
       .subscribeToState(() => {
-        this.setState({ filters: [] });
+        this.reset();
       });
 
     return () => {

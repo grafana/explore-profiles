@@ -69,7 +69,7 @@ export function useUISettings() {
       },
       goBack() {
         if (!referrerRef.current) {
-          navigate(`${PLUGIN_BASE_URL}${ROUTES.PROFILES_EXPLORER_VIEW}`);
+          navigate(`${PLUGIN_BASE_URL}${ROUTES.EXPLORE}`);
           return;
         }
 

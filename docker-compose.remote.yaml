@@ -18,6 +18,8 @@ services:
       - ../grafana-collector-app/dist:/var/lib/grafana/plugins/grafana-collector-app
 
     environment:
+    # prevents a Grafana startup error in case a newer plugin version (set in package.json) is used compared to the latest one published in the catalog
+      GF_PLUGINS_PREINSTALL_DISABLED: true
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID

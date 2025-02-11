@@ -1,3 +1,28 @@
+## [0.1.20](https://github.com/grafana/explore-profiles/compare/v0.1.19...v0.1.20) (2025-02-06)
+
+
+### Bug Fixes
+
+* **Filters:** Ensure filters are always cleared when changing the data source or the service ([#374](https://github.com/grafana/explore-profiles/issues/374)) ([1c7b6c3](https://github.com/grafana/explore-profiles/commit/1c7b6c3f537b9ff0bc9060bac5f0e2c240ba00c8))
+* **FunctionDetailsPanel:** Fix start ellipsis for file names containing non-alpha chars ([#373](https://github.com/grafana/explore-profiles/issues/373)) ([f79a1b7](https://github.com/grafana/explore-profiles/commit/f79a1b7628d8dd0bfd478122a0296dd2a1c72948))
+* **GitHubIntegration:** Handle function details for inlining ([#347](https://github.com/grafana/explore-profiles/issues/347)) ([5e28b3c](https://github.com/grafana/explore-profiles/commit/5e28b3c0e571f254915d08e0a166a66d33ff240b))
+* **Grid:** Fix error message display ([#359](https://github.com/grafana/explore-profiles/issues/359)) ([1ca4ff2](https://github.com/grafana/explore-profiles/commit/1ca4ff2795cfa8118ec9e0d12dcad4b04d336534))
+* **Settings:** Prevent warning to be displayed when no settings is returned by the Settings API ([#384](https://github.com/grafana/explore-profiles/issues/384)) ([cdce58a](https://github.com/grafana/explore-profiles/commit/cdce58a48bad24be1cf64ed81658bbcd0afca521))
+
+
+### Features
+
+* **AdHocView:** Remove Grafana menu item to the Ad Hoc view ([#385](https://github.com/grafana/explore-profiles/issues/385)) ([5c265fb](https://github.com/grafana/explore-profiles/commit/5c265fb4b5273083b6150aad46d32a6f44027fda))
+* **LabelsView:** Add maxima visualizations ([#361](https://github.com/grafana/explore-profiles/issues/361)) ([25095c6](https://github.com/grafana/explore-profiles/commit/25095c6882d17ba6d88e7f5f861d5560e112a930))
+* **LabelsView:** update main time series when a "group by" label is selected ([#341](https://github.com/grafana/explore-profiles/issues/341)) ([775b37d](https://github.com/grafana/explore-profiles/commit/775b37dc6ef9433b3f5674f56869a37a16892871))
+
+
+### Performance Improvements
+
+* **Series:** Limit the number of series request by breakdown charts ([#219](https://github.com/grafana/explore-profiles/issues/219)) ([8e1161d](https://github.com/grafana/explore-profiles/commit/8e1161df84283eecadc8aa9da55e46eb401a1e8c))
+
+
+
 ## [0.1.19](https://github.com/grafana/explore-profiles/compare/v0.1.18...v0.1.19) (2025-01-27)
 
 

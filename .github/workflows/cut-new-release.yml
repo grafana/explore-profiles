@@ -1,0 +1,147 @@
+name: Cut new release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  create-new-version:
+    name: Tag new version (with changelog)
+    # Required to push the tag
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.tag.outputs.version }}
+    steps:
+      # We need to use GitHub App instead of just passing the token in order to have CLA singed by the committer.
+      # To run correctly it needs to be used before the checkout
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with:
+          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
+          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
+          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: 'main'
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ steps.get_installation_token.outputs.token }}
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Create version & update CHANGELOG
+        id: tag
+        env:
+          DB_FE_CI_BOT_EMAIL: ${{ secrets.DB_FE_CI_BOT_EMAIL }}
+        # Note: We don't get the version with VERSION=$(npm version ${{ inputs.version }})
+        # because npm version runs standard changelog that outputs additional text we cannot include in version
+        run: |
+          git config --global user.email "$DB_FE_CI_BOT_EMAIL"
+          git config --global user.name "Databases Frontend CI Bot"
+          git config --global url.https://${{ steps.get_installation_token.outputs.token }}@github.com/.insteadOf https://github.com/
+          npm version ${{ inputs.version }}
+          VERSION=$(git describe --tags --abbrev=0)
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version: $VERSION" >> $GITHUB_STEP_SUMMARY
+
+      - name: Push
+        run: git push origin main --tags
+
+  build:
+    needs: [create-new-version]
+    uses: ./.github/workflows/build.yml
+    with:
+      ref: ${{ needs.create-new-version.outputs.version }}
+      e2e: false
+
+  package:
+    needs: [create-new-version, build]
+    uses: ./.github/workflows/package.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      github_environment: gcs-no-approval
+
+  create-github-release:
+    name: Create GitHub release
+    needs: [create-new-version, package]
+    runs-on: ubuntu-latest
+    # Required to created a release
+    permissions:
+      contents: write
+    steps:
+      # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
+      # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with:
+          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
+          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
+          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+      # We need to fetch the tag to get the CHANGELOG
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.create-new-version.outputs.version }}
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ steps.get_installation_token.outputs.token }}
+      - name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-package
+          path: package
+      - name: Get last changelog entry
+        run: awk '/^## / {s++} s == 1 {print}' CHANGELOG.md > release_notes.md
+      - name: Create Github release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
+        with:
+          prerelease: false
+          generate_release_notes: false
+          files: package/*
+          tag_name: ${{ needs.create-new-version.outputs.version }}
+          token: ${{ steps.get_installation_token.outputs.token }}
+          body_path: release_notes.md
+
+  update-prod-catalog:
+    name: Update Prod Plugins Catalog
+    needs: [create-new-version, create-github-release]
+    uses: ./.github/workflows/update-plugins-catalog.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: prod
+
+  deploy-to-cloud:
+    needs: [create-new-version, update-prod-catalog]
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    strategy:
+      matrix:
+        environment: [dev, ops, prod]
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: ${{ matrix.environment }}

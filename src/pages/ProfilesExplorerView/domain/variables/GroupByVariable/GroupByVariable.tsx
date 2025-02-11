@@ -7,9 +7,17 @@ import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
+import { GridItemData } from 'src/pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/types/GridItemData';
 
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../../../infrastructure/pyroscope-data-sources';
 import { GroupBySelector } from './GroupBySelector';
+
+export type OptionWithIndex = VariableValueOption & {
+  index: number;
+  value: string;
+  label: string;
+  groupBy: GridItemData['queryRunnerParams']['groupBy'];
+};
 
 export class GroupByVariable extends QueryVariable {
   static DEFAULT_VALUE = 'all';
@@ -65,6 +73,32 @@ export class GroupByVariable extends QueryVariable {
     prepareHistoryEntry();
     this.changeValueTo(newValue);
   };
+
+  findCurrentOption(): OptionWithIndex {
+    const { value } = this.state;
+
+    // See LabelsDataSource.ts
+    const option = this.state.options
+      .filter((o) => o.value !== 'all')
+      .find((o) => JSON.parse(o.value as string).value === value);
+
+    if (option) {
+      const parsedValue = JSON.parse(option.value as string);
+      return {
+        index: parsedValue.index,
+        value: parsedValue.value,
+        label: parsedValue.value,
+        groupBy: parsedValue.groupBy,
+      };
+    }
+
+    return {
+      index: 0,
+      value: value as string,
+      label: value as string,
+      groupBy: undefined,
+    };
+  }
 
   static Component = ({ model }: SceneComponentProps<MultiValueVariable & { update?: any; onChange?: any }>) => {
     const styles = useStyles2(getStyles);

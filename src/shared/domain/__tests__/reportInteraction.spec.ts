@@ -40,7 +40,7 @@ describe('reportInteraction(interactionName, properties)', () => {
   describe('if the current URL corresponds to the "profiles-explorer" page', () => {
     it('adds a "view" meta', () => {
       Object.defineProperty(window, 'location', {
-        value: new URL('http://localhost:3000/a/grafana-pyroscope-app/profiles-explorer?explorationType=flame-graph'),
+        value: new URL('http://localhost:3000/a/grafana-pyroscope-app/explore?explorationType=flame-graph'),
         writable: true,
       });
 
@@ -51,7 +51,7 @@ describe('reportInteraction(interactionName, properties)', () => {
         meta: {
           appRelease: '1.0.0',
           appVersion: 'dev',
-          page: 'profiles-explorer',
+          page: 'explore',
           view: 'flame-graph',
         },
       });
