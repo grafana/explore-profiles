@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploying ${{ inputs.version }} to ${{ inputs.environment }}
-        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
+        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.1.0
         with:
           instance: 'ops'
           namespace: 'phlare-cd'
