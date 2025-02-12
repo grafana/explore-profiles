@@ -1,13 +1,9 @@
-import {
-  GetCollectionRuleResponse,
-  UpsertCollectionRuleRequest,
-} from '@shared/pyroscope-api/settings/v1/setting_pb';
 import { css } from '@emotion/css';
 import { dateTimeFormatTimeAgo, GrafanaTheme2 } from '@grafana/data';
 import { Alert, Card, Collapse, IconButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
+import { GetCollectionRuleResponse, UpsertCollectionRuleRequest } from '@shared/pyroscope-api/settings/v1/setting_pb';
 import React from 'react';
 
-import { CollectorSelectionMode } from '../../../../../../extensions/IntegrationExtension';
 import { DeleteRuleModal } from '../../../../DeleteRuleModal';
 import { DeployIntegration } from '../../../../DeployIntegration';
 import { EditRule } from '../EditRule/EditRule';
@@ -65,10 +61,8 @@ export function ViewRule(props: ViewRuleProps) {
             {data.isModified && <Alert title={deployNeedsSave} />}
             {!data.isModified && (
               <DeployIntegration
-                collectorSelectionMode={CollectorSelectionMode.MatchCollectors}
                 name={`pyroscope-collection-${data.rule.name}`}
                 configuration={data.rule.configuration}
-                version="v1"
               />
             )}
           </Stack>

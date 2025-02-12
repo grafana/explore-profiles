@@ -2,27 +2,23 @@ import { usePluginComponent } from '@grafana/runtime';
 import { Alert, LoadingPlaceholder } from '@grafana/ui';
 import React, { FC } from 'react';
 
-import { CollectorSelectionMode } from '../../extensions/IntegrationExtension';
+import { DeployPipelinesExtensionProps } from '../../extensions/DeployPipelinesExtension';
 
 export const DeployIntegration: FC<{
   name: string;
-  version: string;
   configuration: string;
-  collectorSelectionMode?: CollectorSelectionMode;
-}> = ({ name, collectorSelectionMode, version, configuration }) => {
-  const { component: DeployIntegrationComponent, isLoading } = usePluginComponent<{
-    code: Array<{ block: string; platform: string }>;
-    name: String;
-    version: string;
-    collectorSelectionMode?: CollectorSelectionMode;
-  }>('grafana-collector-app/deploy-integration/v1');
+}> = ({ name, configuration }) => {
+  const { component: DeployIntegrationComponent, isLoading } = usePluginComponent<DeployPipelinesExtensionProps>(
+    'grafana-collector-app/deploy-pipelines/v1'
+  );
 
   const showLoadingBar = false;
 
-  const code = [
+  const pipelines = [
     {
       block: configuration,
-      platform: 'linux',
+      // must be a valid pipeline name
+      name: name.replaceAll(' ', '_').replaceAll('-', '_').replaceAll('.', '_'),
     },
   ];
 
@@ -31,17 +27,20 @@ export const DeployIntegration: FC<{
   } else if (DeployIntegrationComponent) {
     return (
       <DeployIntegrationComponent
-        code={code}
-        name={name}
-        collectorSelectionMode={collectorSelectionMode}
-        version={version}
+        labels={{
+          deploy: 'Apply configuration',
+          update: 'Update configuration',
+          upToDate: 'Configuration is up to date',
+          success: 'Configuration successfully saved',
+        }}
+        pipelines={pipelines}
       />
     );
   }
 
   return (
     <Alert title="" severity="warning">
-      Deploy integration UI is not available. Please check if you run the latest Grafana on this instance.
+      Deploy configuration UI is not available. Please check if you run the latest Grafana on this instance.
     </Alert>
   );
 };
