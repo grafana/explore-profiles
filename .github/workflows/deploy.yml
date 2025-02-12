@@ -12,12 +12,6 @@ on:
         description: dev, ops or prod
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "version = ${{ inputs.version }}"
-      - run: echo "environment = ${{ inputs.environment }}"
-
   deploy-to-cloud:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
     name: Deploy to ${{ inputs.environment }} wave

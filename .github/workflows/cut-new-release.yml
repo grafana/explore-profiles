@@ -1,4 +1,4 @@
-name: Cut new release
+name: 🚀 Cut new release and deploy
 
 on:
   workflow_dispatch:
