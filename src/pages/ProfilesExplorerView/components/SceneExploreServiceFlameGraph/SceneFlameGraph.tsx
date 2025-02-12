@@ -9,6 +9,7 @@ import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
 import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
@@ -113,7 +114,14 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     }, [maxNodes]);
 
     const $dataState = $data.useState();
-    const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
+    const loadingState = $dataState?.data?.state;
+
+    const fetchProfileError =
+      loadingState === LoadingState.Error
+        ? ($dataState?.data?.errors?.[0] as Error) || new Error('Unknown error!')
+        : null;
+
+    const isFetchingProfileData = loadingState === LoadingState.Loading;
     const profileData = $dataState?.data?.series?.[0];
     const hasProfileData = Number(profileData?.length) > 1;
 
@@ -126,6 +134,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         isFetchingProfileData,
         hasProfileData,
         profileData,
+        fetchProfileError,
         settings,
         export: {
           menu: exportMenu,
@@ -189,20 +198,26 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             </AIButton>
           }
         >
-          <FlameGraph
-            data={data.profileData as any}
-            disableCollapsing={!data.settings?.collapsedFlamegraphs}
-            getTheme={actions.getTheme as any}
-            getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
-            extraHeaderElements={
-              <data.export.menu.Component
-                model={data.export.menu}
-                query={data.export.query}
-                timeRange={data.export.timeRange}
-              />
-            }
-            keepFocusOnDataChange
-          />
+          {data.fetchProfileError && (
+            <InlineBanner severity="error" title="Error while loading profile data!" error={data.fetchProfileError} />
+          )}
+
+          {!data.fetchProfileError && (
+            <FlameGraph
+              data={data.profileData as any}
+              disableCollapsing={!data.settings?.collapsedFlamegraphs}
+              getTheme={actions.getTheme as any}
+              getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
+              extraHeaderElements={
+                <data.export.menu.Component
+                  model={data.export.menu}
+                  query={data.export.query}
+                  timeRange={data.export.timeRange}
+                />
+              }
+              keepFocusOnDataChange
+            />
+          )}
         </Panel>
 
         {sidePanel.isOpen('ai') && (
