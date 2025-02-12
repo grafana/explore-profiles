@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
-import { FlameGraph } from '@grafana/flamegraph';
+import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
@@ -14,15 +14,20 @@ import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
+import { Metric } from '../../../../shared/infrastructure/metrics/Metric';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
+import { useCreateMetric } from '../SceneCreateMetricModal/domain/useCreateMetricModal';
+import { useCreateMetricsMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
+import { SceneCreateMetricModal } from '../SceneCreateMetricModal/SceneCreateMetricModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
+import { useCreateMetricModal } from './domain/useCreateMetricModal';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
@@ -30,6 +35,7 @@ interface SceneFlameGraphState extends SceneObjectState {
   exportMenu: SceneExportMenu;
   aiPanel: SceneAiPanel;
   functionDetailsPanel: SceneFunctionDetailsPanel;
+  createMetricModal: SceneCreateMetricModal;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -46,6 +52,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       exportMenu: new SceneExportMenu(),
       aiPanel: new SceneAiPanel(),
       functionDetailsPanel: new SceneFunctionDetailsPanel(),
+      createMetricModal: new SceneCreateMetricModal(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -95,7 +102,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel } = this.useState();
+    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createMetricModal } = this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -140,6 +147,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           panel: functionDetailsPanel,
           timeRange: lastTimeRange,
         },
+        metrics: {
+          modal: createMetricModal,
+        },
       },
       actions: {
         getTheme,
@@ -153,6 +163,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { data, actions } = model.useSceneFlameGraph();
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
+
+    const { actions: metricsActions } = useCreateMetric();
+    const metricsModal = useCreateMetricModal();
+    const metricsMenu = useCreateMetricsMenu(metricsModal.open);
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -171,6 +185,18 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       ),
       [data.isLoading, data.title, styles.spinner]
     );
+
+    // Any is necessary because the type of clickedItemData is not exported by
+    // the flamegraph package.
+    const extraContextMenuButtons: FlameGraphProps['getExtraContextMenuButtons'] = (
+      clickedItemData: any,
+      data: Record<string, any>
+    ) => {
+      const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+      const metricsButtons = metricsMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+
+      return [...ghButtons, ...metricsButtons];
+    };
 
     return (
       <div className={styles.flex}>
@@ -193,7 +219,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             data={data.profileData as any}
             disableCollapsing={!data.settings?.collapsedFlamegraphs}
             getTheme={actions.getTheme as any}
-            getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
+            getExtraContextMenuButtons={extraContextMenuButtons}
             extraHeaderElements={
               <data.export.menu.Component
                 model={data.export.menu}
@@ -217,6 +243,16 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             onClose={sidePanel.close}
           />
         )}
+
+        <data.metrics.modal.Component
+          model={data.metrics.modal}
+          isModalOpen={metricsModal.isModalOpen}
+          onDismiss={metricsModal.close}
+          onCreate={(metric: Metric) => {
+            metricsActions.save(metric);
+            metricsModal.close();
+          }}
+        />
       </div>
     );
   };

@@ -8,4 +8,5 @@ export enum ROUTES {
   EXPLORE = '/explore',
   ADHOC = '/ad-hoc',
   SETTINGS = '/settings',
+  METRICS = '/metrics',
 }

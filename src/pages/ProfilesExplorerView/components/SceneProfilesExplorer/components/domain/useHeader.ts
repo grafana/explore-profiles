@@ -60,6 +60,11 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
     actions: {
       onChangeExplorationType,
       onClickShareLink,
+      onClickMetrics: useCallback(() => {
+        reportInteraction('g_pyroscope_app_open_metrics_list');
+
+        navigate(`${PLUGIN_BASE_URL}${ROUTES.METRICS}`, { state: { referrer: window.location.href } });
+      }, [navigate]),
       onClickAdHoc: useCallback(() => {
         reportInteraction('g_pyroscope_app_upload_ad_hoc_clicked');
 
