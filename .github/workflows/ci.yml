@@ -23,7 +23,7 @@ permissions:
 jobs:
   build:
     name: Build and test
-    if: ${{ github.actor != 'Databases Frontend CI Bot' }}
+    if: github.actor != 'databases-frontend-ci-bot[bot]'
     uses: ./.github/workflows/build.yml
     with:
       e2e: true
