@@ -19,7 +19,6 @@ import { useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React from 'react';
 
@@ -372,13 +371,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     };
   };
 
-  static Component = ({ model }: SceneComponentProps<SceneProfilesExplorer>) => {
-    const styles = useStyles2(getStyles);
+  static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
+    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
 
     const { data, actions } = model.useProfilesExplorer();
     const { explorationType, controls, body, $variables, dataSourceUid } = data;
-
-    useReportPageInitialized('explore');
 
     return (
       <GitHubContextProvider dataSourceUid={dataSourceUid}>
@@ -395,7 +392,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         </div>
       </GitHubContextProvider>
     );
-  };
+  }
 }
 
 const getStyles = () => ({
