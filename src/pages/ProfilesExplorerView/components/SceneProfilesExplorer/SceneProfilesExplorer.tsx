@@ -19,7 +19,7 @@ import { useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { usePageInitialized } from '@shared/infrastructure/tracking/usePageInitialized';
+import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React from 'react';
 
@@ -378,7 +378,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { data, actions } = model.useProfilesExplorer();
     const { explorationType, controls, body, $variables, dataSourceUid } = data;
 
-    usePageInitialized('explore');
+    useReportPageInitialized('explore');
 
     return (
       <GitHubContextProvider dataSourceUid={dataSourceUid}>

@@ -1,11 +1,11 @@
-import { usePageInitialized } from '@shared/infrastructure/tracking/usePageInitialized';
+import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
 import { AdHocTabs } from './ui/AdHocTabs';
 
 export default function AdHocView() {
-  usePageInitialized('ad_hoc');
+  useReportPageInitialized('ad_hoc');
   return (
     <>
       <PageTitle title="Ad hoc view" />
