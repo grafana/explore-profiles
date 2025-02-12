@@ -21,6 +21,12 @@ permissions:
   id-token: write
 
 jobs:
+  debug:
+    name: Debug
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Actor ${{ github.actor }}, triggering actor ${{ github.triggering_actor }}"
+
   build:
     name: Build and test
     if: ${{ github.actor != 'Databases Frontend CI Bot' }}
