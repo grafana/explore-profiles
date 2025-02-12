@@ -50,8 +50,6 @@ cards:
 
 # Explore Profiles
 
-{{< docs/public-preview product="Explore Profiles" >}}
-
 Profiling is a technique used in software development to measure and analyze the runtime behavior of a program.
 By profiling a program, developers can identify which parts of the program consume the most resources, such as CPU time, memory, or I/O operations.
 You can use this information to optimize the program, making it run faster or use fewer resources.
