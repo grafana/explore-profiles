@@ -75,20 +75,20 @@ jobs:
     needs: [create-new-version]
     uses: ./.github/workflows/build.yml
     with:
-      ref: ${{ jobs.create-new-version.outputs.version }}
+      ref: ${{ needs.create-new-version.outputs.version }}
       e2e: false
 
   upload:
-    needs: [build]
+    needs: [create-new-version, build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
-      version: ${{ jobs.create-new-version.outputs.version }}
+      version: ${{ needs.create-new-version.outputs.version }}
       github_environment: gcs-no-approval
 
   create-github-release:
     name: Create GitHub release
-    needs: [upload]
+    needs: [create-new-version, upload]
     runs-on: ubuntu-latest
     # Required to created a release
     permissions:
@@ -105,7 +105,7 @@ jobs:
       # We need to fetch the tag to get the CHANGELOG
       - uses: actions/checkout@v4
         with:
-          ref: ${{ jobs.create-new-version.outputs.version }}
+          ref: ${{ needs.create-new-version.outputs.version }}
           fetch-depth: 0
           fetch-tags: true
           token: ${{ steps.get_installation_token.outputs.token }}
@@ -122,39 +122,39 @@ jobs:
           prerelease: false
           generate_release_notes: false
           files: build/*
-          tag_name: ${{ jobs.create-new-version.outputs.version }}
+          tag_name: ${{ needs.create-new-version.outputs.version }}
           token: ${{ steps.get_installation_token.outputs.token }}
           body_path: release_notes.md
 
   deploy-to-dev:
     uses: ./.github/workflows/deploy.yml
-    needs: [create-github-release]
+    needs: [create-new-version, create-github-release]
     secrets: inherit
     with:
-      version: ${{ jobs.create-new-version.outputs.version }}
+      version: ${{ needs.create-new-version.outputs.version }}
       environment: dev
 
   deploy-to-ops:
     uses: ./.github/workflows/deploy.yml
-    needs: [deploy-to-dev]
+    needs: [create-new-version, deploy-to-dev]
     secrets: inherit
     with:
-      version: ${{ jobs.create-new-version.outputs.version }}
+      version: ${{ needs.create-new-version.outputs.version }}
       environment: ops
 
   update-prod-catalog:
     name: Update Prod Plugins Catalog
-    needs: [deploy-to-ops]
+    needs: [create-new-version, deploy-to-ops]
     uses: ./.github/workflows/update-plugins-catalog.yml
     secrets: inherit
     with:
-      version: ${{ jobs.create-new-version.outputs.version }}
+      version: ${{ needs.create-new-version.outputs.version }}
       environment: prod
 
   deploy-to-prod:
     uses: ./.github/workflows/deploy.yml
-    needs: [update-prod-catalog]
+    needs: [create-new-version, update-prod-catalog]
     secrets: inherit
     with:
-      version: ${{ jobs.create-new-version.outputs.version }}
+      version: ${{ needs.create-new-version.outputs.version }}
       environment: prod
