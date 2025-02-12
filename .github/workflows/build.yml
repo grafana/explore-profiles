@@ -36,6 +36,9 @@ jobs:
       - name: Lint
         run: yarn lint
 
+      - name: Validate Pyroscope API client is commited
+        run: yarn run generate:pyroscope-api && git diff --quiet src/shared/pyroscope-api
+
       - name: Unit tests
         run: yarn test:ci
 

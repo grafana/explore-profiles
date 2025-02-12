@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-app-plugin",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "description": "Grafana Pyroscope app plugin (profiles)",
   "license": "AGPL-3.0-only",
   "author": "Grafana",
@@ -19,6 +19,7 @@
     "e2e:local:server": "docker compose down --remove-orphans && docker compose -f docker-compose.e2e.yaml up --build --abort-on-container-exit",
     "e2e:local:watch": "yarn e2e:local --ui",
     "format:fix": "prettier --write .",
+    "generate:pyroscope-api": "npx @bufbuild/buf generate",
     "postinstall": "husky install",
     "knip": "knip",
     "lint": "eslint --cache --ignore-path ./.gitignore --ext .js,.jsx,.ts,.tsx .",
@@ -35,7 +36,6 @@
     "version": "standard-changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "@buf/pyroscope_api.connectrpc_query-es": "2.0.1-20250124153826-9ae1034efb3f.1",
     "@bufbuild/protobuf": "^2.2.3",
     "@connectrpc/connect": "^2.0.1",
     "@connectrpc/connect-query": "^2.0.1",
@@ -70,6 +70,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
+    "@bufbuild/buf": "^1.50.0",
+    "@bufbuild/protoc-gen-es": "^2.2.3",
+    "@connectrpc/protoc-gen-connect-query": "^2.0.1",
     "@grafana/e2e-selectors": "^10.0.0",
     "@grafana/eslint-config": "^8.0.0",
     "@grafana/tsconfig": "^2.0.0",
