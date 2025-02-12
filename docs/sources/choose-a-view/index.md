@@ -18,8 +18,6 @@ This matches the hierarchy of the [profiling data](../concepts/).
 
 After you choose a view, you can [Investigate trends and spikes](../investigate/).
 
-{{< docs/public-preview product="Explore Profiles" >}}
-
 ## Select a view
 
 Select a view by choosing an **Exploration**: **All services**, **Profile types**, **Labels**, **Flame graph**, or **Diff flame graph**.
