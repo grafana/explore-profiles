@@ -2,8 +2,9 @@ import {
   GetCollectionRuleResponse,
   UpsertCollectionRuleRequest,
 } from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
-import { dateTimeFormatTimeAgo } from '@grafana/data';
-import { Alert, Card, Collapse, IconButton, Stack, Tooltip } from '@grafana/ui';
+import { css } from '@emotion/css';
+import { dateTimeFormatTimeAgo, GrafanaTheme2 } from '@grafana/data';
+import { Alert, Card, Collapse, IconButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { CollectorSelectionMode } from '../../../../../../extensions/IntegrationExtension';
@@ -20,41 +21,49 @@ export type ViewRuleProps = {
   deleteRule(ruleName: string): Promise<void>;
   saveRule(rule: UpsertCollectionRuleRequest): Promise<void>;
   rule: GetCollectionRuleResponse;
-  collapsed: boolean;
-  modified: boolean;
 };
 
 const deployNeedsSave = 'In order to deploy the rule using fleet management, save the rule first.';
 
 export function ViewRule(props: ViewRuleProps) {
   const { data, actions } = useViewRule(props);
+  const styles = useStyles2(getStyles);
 
   return (
     <Card>
       <Card.Heading>{data.rule.name}</Card.Heading>
       <Card.Description>
-        <Collapse isOpen={data.showConfig} onToggle={() => actions.toggleShowConfig()} label="Configure rule">
+        <Collapse
+          label="Configure rule"
+          collapsible
+          isOpen={data.showConfig}
+          onToggle={() => actions.toggleShowConfig()}
+          className={styles.step}
+        >
           <EditRule
-            onSubmit={actions.onSubmit}
-            onDismiss={actions.onDismiss}
-            onModify={actions.onModify}
+            onSubmit={actions.onConfigDone}
+            onDeploy={actions.onConfigDone}
             existingRule={data.existingRule}
             saveRule={props.saveRule}
+            isModified={data.isModified}
+            setIsModified={actions.setIsModified}
           />
           <Stack grow={1} direction={'column'}></Stack>
         </Collapse>
         <Collapse
           label={
-            <Tooltip content={data.modified ? deployNeedsSave : 'Deploy the rule using fleet management'}>
+            <Tooltip content={data.isModified ? deployNeedsSave : 'Deploy the rule using fleet management'}>
               <span>Deploy rule</span>
             </Tooltip>
           }
+          collapsible
           isOpen={data.showDeploy}
-          onToggle={actions.toggleShowDeploy}
+          onToggle={() => actions.toggleShowDeploy()}
+          className={styles.step}
         >
           <Stack grow={1} direction={'column'}>
-            {data.modified && <Alert title={deployNeedsSave} />}
-            {!data.modified && (
+            {data.isModified && <Alert title={deployNeedsSave} />}
+            {!data.isModified && (
               <DeployIntegration
                 collectorSelectionMode={CollectorSelectionMode.MatchCollectors}
                 name={`pyroscope-collection-${data.rule.name}`}
@@ -83,4 +92,26 @@ export function ViewRule(props: ViewRuleProps) {
       </Card.SecondaryActions>
     </Card>
   );
+}
+
+function getStyles(theme: GrafanaTheme2) {
+  return {
+    step: css({
+      backgroundColor: theme.colors.background.secondary,
+      padding: theme.spacing(1.5),
+      marginBottom: theme.spacing(3),
+      '> button:first-child': {
+        padding: 0,
+        '> div:first-child': {
+          paddingTop: theme.spacing(0.25),
+          '> svg': {
+            margin: theme.spacing(0.25, 1, 0, 0),
+          },
+        },
+      },
+      '> div': {
+        padding: 0,
+      },
+    }),
+  };
 }

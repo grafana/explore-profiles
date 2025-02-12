@@ -1,12 +1,23 @@
 import { QuerierService } from '@buf/pyroscope_api.bufbuild_es/querier/v1/querier_pb';
 import { useQuery } from '@connectrpc/connect-query';
-import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+import { CascaderOption } from '@grafana/ui';
+import { DomainHookReturnValueTyped } from '@shared/types/DomainHookReturnValue';
 import { useEffect, useMemo, useState } from 'react';
 
 import { buildServiceNameCascaderOptions } from '../../../../../../ProfilesExplorerView/domain/variables/ServiceNameVariable/domain/useBuildServiceNameOptions';
 import { AddServiceProps } from '../AddService';
 
-export function useAddService({ onServiceAdd, existingServiceNames }: AddServiceProps): DomainHookReturnValue {
+export function useAddService({ onServiceAdd, existingServiceNames }: AddServiceProps): DomainHookReturnValueTyped<
+  {
+    isFetching: boolean;
+    error: Error | null;
+    cascaderOptions: CascaderOption[];
+  },
+  {
+    addAllServices(): void;
+    addService(serviceName: string): void;
+  }
+> {
   const now = useMemo(() => Date.now(), []);
 
   const { isFetching, error, data } = useQuery(QuerierService.method.labelValues, {

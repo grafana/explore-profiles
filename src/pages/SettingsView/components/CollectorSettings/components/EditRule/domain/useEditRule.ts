@@ -30,9 +30,22 @@ function newRule(): UpsertCollectionRuleRequest {
   } as UpsertCollectionRuleRequest;
 }
 
+function cloneOrNewRule(existing?: UpsertCollectionRuleRequest): UpsertCollectionRuleRequest {
+  if (existing === undefined) {
+    return newRule();
+  }
+
+  return {
+    ...existing,
+    services: [...existing.services],
+  } as UpsertCollectionRuleRequest;
+}
+
 export function useEditRule({
   existingRule,
   existingRuleNames,
+  isModified,
+  setIsModified,
   saveRule,
   onSubmit,
 }: EditRuleProps): DomainHookReturnValue<
@@ -47,18 +60,18 @@ export function useEditRule({
   },
   {
     updateName(event: React.ChangeEvent<HTMLInputElement>): void;
+    updateFilter(event: React.ChangeEvent<HTMLInputElement>): void;
     updateEbpfEnabled(event: React.ChangeEvent<HTMLInputElement>): void;
     updateJavaEnabled(event: React.ChangeEvent<HTMLInputElement>): void;
     addService(name: string, enabled: boolean): void;
     removeService(name: string): void;
+    handleReset(): void;
     handleSubmit(event: React.FormEvent<HTMLFormElement>): void;
   }
 > {
-  const [isModified, setIsModified] = useState(false);
-
   const [nameErrors, setNameErrors] = useState<string[]>([]);
 
-  const [rule, setRule] = useState<UpsertCollectionRuleRequest>(existingRule || newRule());
+  const [rule, setRule] = useState<UpsertCollectionRuleRequest>(cloneOrNewRule(existingRule));
 
   const [filter, setFilter] = useState<string>('');
 
@@ -72,7 +85,7 @@ export function useEditRule({
     data: {
       filteredServices,
       serviceNames,
-      isModified,
+      isModified: isModified ?? false,
       isNewRule,
       nameErrors,
       nameDescription: RULE_NAME_DESCRIPTION,
@@ -80,8 +93,7 @@ export function useEditRule({
     },
     actions: {
       updateName: debounce((event: React.ChangeEvent<HTMLInputElement>) => {
-        // TODO: check if name is already existing
-        setIsModified(true);
+        setIsModified?.(true);
         const newName = event.target.value;
         setRule({
           ...rule,
@@ -100,8 +112,12 @@ export function useEditRule({
         }
         setNameErrors(newNameErrors);
       }, 250),
-      updateEbpfEnabled: (event: React.ChangeEvent<HTMLInputElement>) => {
-        setIsModified(true);
+      updateFilter: debounce((event: React.ChangeEvent<HTMLInputElement>) => {
+        const newFilter = event.target.value;
+        setFilter(newFilter);
+      }, 250),
+      updateEbpfEnabled(event: React.ChangeEvent<HTMLInputElement>) {
+        setIsModified?.(true);
         setRule({
           ...rule,
           ebpf: {
@@ -110,8 +126,8 @@ export function useEditRule({
           } as EBPFSettings,
         });
       },
-      updateJavaEnabled: (event: React.ChangeEvent<HTMLInputElement>) => {
-        setIsModified(true);
+      updateJavaEnabled(event: React.ChangeEvent<HTMLInputElement>) {
+        setIsModified?.(true);
         setRule({
           ...rule,
           java: {
@@ -120,24 +136,29 @@ export function useEditRule({
           } as JavaSettings,
         });
       },
-      addService: (name: string, enabled: boolean) => {
-        const service = rule.services.find((service) => service.name === name);
-        if (!service) {
-          rule.services.push({ name: name, enabled } as ServiceData);
+      addService(name: string, enabled: boolean) {
+        const newService = { name, enabled } as ServiceData;
+        const serviceIdx = rule.services.findIndex((service) => service.name === name);
+        if (serviceIdx === -1) {
+          rule.services.push(newService);
         } else {
-          service.enabled = enabled;
+          rule.services[serviceIdx] = newService;
         }
-        setIsModified(true);
+        setIsModified?.(true);
         setRule({
           ...rule,
         });
       },
-      removeService: (name: string) => {
-        setIsModified(true);
+      removeService(name: string) {
+        setIsModified?.(true);
         setRule({
           ...rule,
           services: rule.services.filter((service) => service.name !== name),
         });
+      },
+      handleReset() {
+        setRule(cloneOrNewRule(existingRule));
+        setIsModified?.(false);
       },
       handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -148,6 +169,7 @@ export function useEditRule({
         }
 
         saveRule(rule);
+        setIsModified?.(false);
         onSubmit?.();
       },
     },

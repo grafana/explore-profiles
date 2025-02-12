@@ -25,10 +25,11 @@ export type EditRuleProps = {
   saveRule(rule: UpsertCollectionRuleRequest): Promise<void>;
   existingRule?: UpsertCollectionRuleRequest;
   existingRuleNames?: string[]; // required for validating that rule is unique
+  setIsModified?(modified: boolean): void;
+  isModified?: boolean;
   onDismiss?(): void;
   onSubmit?(): void;
-  onModify?(): void;
-  isModal?: boolean;
+  onDeploy?(): void;
 };
 
 type ServiceCell = { original: ServiceData };
@@ -87,8 +88,8 @@ export function EditRule(props: EditRuleProps) {
               invalid={data.rule.name.length > 0 && data.nameErrors.length > 0}
               error={
                 data.rule.name &&
-                data.nameErrors.map((e) => (
-                  <span>
+                data.nameErrors.map((e, idx) => (
+                  <span key={idx}>
                     {e}
                     <br />
                   </span>
@@ -123,17 +124,33 @@ export function EditRule(props: EditRuleProps) {
             />
           </Stack>
         </FieldSet>
-        {props.isModal && (
+        {data.isNewRule && (
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={props.onDismiss}>
               Cancel
             </Button>
-            <Button type="submit" disabled={data.rule.name.length == 0 || data.nameErrors.length > 0}>
+            <Button type="submit" disabled={data.rule.name.length === 0 || data.nameErrors.length > 0}>
               {data.isNewRule ? 'Add' : 'Save'}
             </Button>
           </Modal.ButtonRow>
         )}
-        {!props.isModal && <h2>TODO</h2> /* Have  Reset / Save / Deploy buttons here */}
+        {!data.isNewRule && (
+          <Stack gap={2} alignItems="flex-end" justifyContent="end">
+            <Button variant="secondary" disabled={!data.isModified} onClick={actions.handleReset}>
+              Reset
+            </Button>
+            {data.isModified && (
+              <Button variant="primary" type="submit">
+                Save
+              </Button>
+            )}
+            {!data.isModified && (
+              <Button variant="primary" onClick={() => props.onDeploy?.()}>
+                Deploy
+              </Button>
+            )}
+          </Stack>
+        )}
       </>
     </form>
   );

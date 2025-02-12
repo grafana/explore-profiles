@@ -30,7 +30,6 @@ export function AddRuleModal(props: AddRuleModalProps) {
         <EditRule
           onSubmit={actions.onDismiss}
           onDismiss={actions.onDismiss}
-          isModal={true}
           saveRule={props.saveRule}
           existingRuleNames={props.existingRuleNames}
         />

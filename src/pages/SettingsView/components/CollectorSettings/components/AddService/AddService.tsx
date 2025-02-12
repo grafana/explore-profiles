@@ -39,12 +39,7 @@ export function AddService(props: AddServiceProps) {
             changeOnSelect={false}
             onSelect={actions.addService}
           />
-          <Button
-            icon={'plus'}
-            variant="secondary"
-            disabled={props.existingServiceNames.length === 0}
-            onClick={actions.addAllServices}
-          >
+          <Button icon={'plus'} variant="secondary" disabled={data.isFetching} onClick={actions.addAllServices}>
             Add all services
           </Button>
         </>

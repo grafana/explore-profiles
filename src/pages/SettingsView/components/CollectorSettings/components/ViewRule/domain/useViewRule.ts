@@ -9,27 +9,25 @@ import { ViewRuleProps } from '../ViewRule';
 
 export function useViewRule({ rule }: ViewRuleProps): DomainHookReturnValue<
   {
-    modified: boolean;
+    isModified: boolean;
     showConfig: boolean;
     showDeploy: boolean;
     rule: GetCollectionRuleResponse;
     existingRule: UpsertCollectionRuleRequest;
   },
   {
-    onSubmit(): void;
-    onDismiss(): void;
-    onDeploy(): void;
-    onModify(): void;
+    onConfigDone(): void;
     toggleShowConfig(): void;
     toggleShowDeploy(): void;
+    setIsModified(isModified: boolean): void;
   }
 > {
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [showDeploy, setShowDeploy] = useState<boolean>(false);
-  const [modified, setModified] = useState<boolean>(false);
+  const [isModified, setIsModified] = useState<boolean>(false);
   return {
     data: {
-      modified,
+      isModified,
       showConfig,
       showDeploy,
       rule,
@@ -42,11 +40,9 @@ export function useViewRule({ rule }: ViewRuleProps): DomainHookReturnValue<
       } as UpsertCollectionRuleRequest,
     },
     actions: {
-      onSubmit() {},
-      onDismiss() {},
-      onDeploy() {},
-      onModify() {
-        setModified(true);
+      onConfigDone() {
+        setShowConfig(false);
+        setShowDeploy(true);
       },
       toggleShowConfig() {
         setShowConfig(!showConfig);
@@ -54,6 +50,7 @@ export function useViewRule({ rule }: ViewRuleProps): DomainHookReturnValue<
       toggleShowDeploy() {
         setShowDeploy(!showDeploy);
       },
+      setIsModified,
     },
   };
 }
