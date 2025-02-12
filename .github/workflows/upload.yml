@@ -1,5 +1,5 @@
-# Package build-frontend artifact and send it to GCS
-name: Package to GCS
+# Upload build-frontend artifact and send it to GCS
+name: Upload to GCS
 
 on:
   workflow_call:
@@ -12,13 +12,13 @@ on:
         type: string
 
 jobs:
-  package:
+  upload:
     # This step creates a zip file with the plugin and publishes it to Google Cloud Storage bucket.
     # Frontend artifacts have 1 day retention. This step needs to be run within 24 hours after frontend job finished.
     # Plugin is already signed in frontend job so if you need to use to locally you can just download the artifact
     # When pushed to main it uses "gcs-no-approval" environment which can be triggered only from main
-    # to push the package automatically without approval
-    name: Upload to GCS
+    # to push the build automatically without approval
+    name: Zip and upload
     runs-on: ubuntu-latest
     environment: ${{ inputs.github_environment }}
     steps:
@@ -47,7 +47,7 @@ jobs:
       # and md5 following [plugin-id]-[version].zip.md5 convention
       # used by grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
       # to publish the artifact to Plugins Catalog
-      - name: Package plugin
+      - name: Upload plugin
         run: |
           mv dist ${{ steps.metadata.outputs.plugin_id }}
           zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
@@ -70,6 +70,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: build-package
+          name: build-upload
           path: ${{ steps.metadata.outputs.archive_name }}
           retention-days: 1
