@@ -1,3 +1,12 @@
+## [0.1.21](https://github.com/grafana/explore-profiles/compare/v0.1.20...v0.1.21) (2025-02-12)
+
+
+### Bug Fixes
+
+* **Faro:** Narrow down frontend logging to plugin URL ([#395](https://github.com/grafana/explore-profiles/issues/395)) ([8d011ce](https://github.com/grafana/explore-profiles/commit/8d011cedab660fe23b0711b303ef3fe450b78614))
+
+
+
 ## [0.1.20](https://github.com/grafana/explore-profiles/compare/v0.1.19...v0.1.20) (2025-02-06)
 
 
