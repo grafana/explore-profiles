@@ -23,15 +23,15 @@ permissions:
 jobs:
   build:
     name: Build and test
+    if: github.actor != 'databases-frontend-ci-bot[bot]'
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ github.event.pull_request.head.sha || github.sha }}
       e2e: true
 
-  package:
-    name: Package
+  upload:
+    name: Upload
     needs: [build]
-    uses: ./.github/workflows/package.yml
+    uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -39,7 +39,7 @@ jobs:
 
   deploy-main-to-dev-and-ops:
     name: Deploy
-    needs: [package]
+    needs: [upload]
     uses: ./.github/workflows/deploy.yml
     # Make deployments available only from main
     if: github.event_name == 'push'

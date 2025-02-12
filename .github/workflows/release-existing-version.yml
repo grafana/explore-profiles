@@ -18,13 +18,12 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ inputs.version }}
       ref: ${{ inputs.version }}
       e2e: false
 
-  package:
+  upload:
     needs: [build]
-    uses: ./.github/workflows/package.yml
+    uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
       version: ${{ inputs.version }}
@@ -32,7 +31,7 @@ jobs:
 
   create-github-release:
     name: Create GitHub release
-    needs: [package]
+    needs: [upload]
     runs-on: ubuntu-latest
     # Required to created a release
     permissions:
@@ -56,8 +55,8 @@ jobs:
       - name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-package
-          path: package
+          name: build-upload
+          path: build
       - name: Get last changelog entry
         run: awk '/^## / {s++} s == 1 {print}' CHANGELOG.md > release_notes.md
       - name: Create Github release
@@ -65,7 +64,7 @@ jobs:
         with:
           prerelease: false
           generate_release_notes: false
-          files: package/*
+          files: build/*
           tag_name: ${{ inputs.version }}
           token: ${{ steps.get_installation_token.outputs.token }}
           body_path: release_notes.md
