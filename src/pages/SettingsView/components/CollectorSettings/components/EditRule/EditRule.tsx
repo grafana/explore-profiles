@@ -1,5 +1,5 @@
 // a component to edit rule parameters
-import { ServiceData, UpsertCollectionRuleRequest } from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
+import { ServiceData, UpsertCollectionRuleRequest } from '@shared/pyroscope-api/settings/v1/setting_pb';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import {

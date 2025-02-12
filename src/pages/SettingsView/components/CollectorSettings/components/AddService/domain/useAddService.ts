@@ -1,4 +1,4 @@
-import { QuerierService } from '@buf/pyroscope_api.bufbuild_es/querier/v1/querier_pb';
+import { QuerierService } from '@shared/pyroscope-api/querier/v1/querier_pb';
 import { useQuery } from '@connectrpc/connect-query';
 import { CascaderOption } from '@grafana/ui';
 import { DomainHookReturnValueTyped } from '@shared/types/DomainHookReturnValue';

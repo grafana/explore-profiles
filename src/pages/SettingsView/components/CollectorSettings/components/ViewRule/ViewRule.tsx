@@ -1,7 +1,7 @@
 import {
   GetCollectionRuleResponse,
   UpsertCollectionRuleRequest,
-} from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
+} from '@shared/pyroscope-api/settings/v1/setting_pb';
 import { css } from '@emotion/css';
 import { dateTimeFormatTimeAgo, GrafanaTheme2 } from '@grafana/data';
 import { Alert, Card, Collapse, IconButton, Stack, Tooltip, useStyles2 } from '@grafana/ui';

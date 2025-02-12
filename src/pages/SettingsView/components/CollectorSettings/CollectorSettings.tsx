@@ -1,4 +1,4 @@
-import { GetCollectionRuleResponse } from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
+import { GetCollectionRuleResponse } from '@shared/pyroscope-api/settings/v1/setting_pb';
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Spinner, useStyles2 } from '@grafana/ui';

@@ -3,7 +3,7 @@ import {
   JavaSettings,
   ServiceData,
   UpsertCollectionRuleRequest,
-} from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
+} from '@shared/pyroscope-api/settings/v1/setting_pb';
 import { DomainHookReturnValueTyped as DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { debounce } from 'lodash';
 import { useMemo, useState } from 'react';

@@ -1,5 +1,5 @@
 // a modal for adding a new rule
-import { UpsertCollectionRuleRequest } from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
+import { UpsertCollectionRuleRequest } from '@shared/pyroscope-api/settings/v1/setting_pb';
 import { Button, Modal } from '@grafana/ui';
 import React from 'react';
 

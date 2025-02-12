@@ -1,7 +1,7 @@
 import {
   GetCollectionRuleResponse,
   UpsertCollectionRuleRequest,
-} from '@buf/pyroscope_api.bufbuild_es/settings/v1/setting_pb';
+} from '@shared/pyroscope-api/settings/v1/setting_pb';
 import { act, renderHook } from '@testing-library/react';
 
 import { useCollectorSettings } from '../useCollectorSettings';
