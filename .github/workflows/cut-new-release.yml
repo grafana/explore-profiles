@@ -126,22 +126,35 @@ jobs:
           token: ${{ steps.get_installation_token.outputs.token }}
           body_path: release_notes.md
 
+  deploy-to-dev:
+    uses: ./.github/workflows/deploy.yml
+    needs: [create-new-version, create-github-release]
+    secrets: inherit
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: dev
+
+  deploy-to-ops:
+    uses: ./.github/workflows/deploy.yml
+    needs: [create-new-version, deploy-to-dev]
+    secrets: inherit
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: ops
+
   update-prod-catalog:
     name: Update Prod Plugins Catalog
-    needs: [create-new-version, create-github-release]
+    needs: [create-new-version, deploy-to-ops]
     uses: ./.github/workflows/update-plugins-catalog.yml
     secrets: inherit
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       environment: prod
 
-  deploy-to-cloud:
-    needs: [create-new-version, update-prod-catalog]
+  deploy-to-prod:
     uses: ./.github/workflows/deploy.yml
+    needs: [create-new-version, update-prod-catalog]
     secrets: inherit
-    strategy:
-      matrix:
-        environment: [dev, ops, prod]
     with:
       version: ${{ needs.create-new-version.outputs.version }}
-      environment: ${{ matrix.environment }}
+      environment: prod
