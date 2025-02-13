@@ -1,3 +1,17 @@
+## [0.1.22](https://github.com/grafana/explore-profiles/compare/v0.1.21...v0.1.22) (2025-02-13)
+
+
+### Bug Fixes
+
+* **FlameGraph:** Always render an error message when loading fails ([#407](https://github.com/grafana/explore-profiles/issues/407)) ([c531bf2](https://github.com/grafana/explore-profiles/commit/c531bf2296ac75da8938ce6af1ec1660dd6e7b73))
+
+
+### Features
+
+* **Tracking:** Add page view tracking ([#408](https://github.com/grafana/explore-profiles/issues/408)) ([cf5b786](https://github.com/grafana/explore-profiles/commit/cf5b786ada6e211af2385192b9f8059906f935f5))
+
+
+
 ## [0.1.21](https://github.com/grafana/explore-profiles/compare/v0.1.20...v0.1.21) (2025-02-12)
 
 
