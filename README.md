@@ -10,7 +10,7 @@ Explore Profiles is distributed as a Grafana Plugin. You can find it in the offi
 
 All Grafana instances come with Explore Profiles plugin preinstalled.
 
-## Getting Started
+## Get started
 
 1. In the main navigation bar, click on Explore > Profiles.
 2. You’ll land in the **All services** overview that shows time series and CPU utilization visualizations for all the services in your selected Pyroscope instance.
