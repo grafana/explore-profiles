@@ -12,7 +12,7 @@ Key features include:
 
 > **Note:** Explore Profiles is presently undergoing active development and is offered in a preview state. Subsequent updates are likely to incorporate significant changes that may impact existing functionality.
 
-![Exlore Profiles main screen](https://grafana.com/media/docs/explore-profiles/explore-profiles-homescreen.png)
+![Exlore Profiles main screen](https://grafana.com/media/docs/explore-profiles/explore-profiles-homescreen-latest.png)
 
 ## Before you begin
 
