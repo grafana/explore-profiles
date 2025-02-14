@@ -1,3 +1,12 @@
+# [1.0.0](https://github.com/grafana/explore-profiles/compare/v0.1.23...v1.0.0) (2025-02-14)
+
+
+### Features
+
+* **App:** Changes for GA ([#398](https://github.com/grafana/explore-profiles/issues/398)) ([71ed3f8](https://github.com/grafana/explore-profiles/commit/71ed3f8d312317474ffec674d056968f3fefad64))
+
+
+
 ## [0.1.23](https://github.com/grafana/explore-profiles/compare/v0.1.22...v0.1.23) (2025-02-14)
 
 
