@@ -10,7 +10,7 @@
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
-      "exposedComponents": ["grafana-collector-app/deploy-integration/v1"]
+      "exposedComponents": ["grafana-collector-app/deploy-pipelines/v1"]
     }
   },
   "info": {
