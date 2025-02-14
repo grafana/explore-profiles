@@ -11,8 +11,6 @@ weight: 400
 
 # Determine your use case
 
-{{< docs/public-preview product="Explore Profiles" >}}
-
 When you start investigating, you may either know what's wrong (for example, you know the affected service or that there’s too much CPU usage), or you may want identify resource hotspots so you can address them.
 
 This can lead you to two different starting points:
