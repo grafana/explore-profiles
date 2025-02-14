@@ -11,3 +11,6 @@ e2e/test-results
 
 # the PprofRequest class uses decorators - FIXME or don't use them
 PprofRequest*.ts
+
+# ignore the generated pyroscope-api
+src/shared/pyroscope-api/
