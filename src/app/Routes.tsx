@@ -1,7 +1,7 @@
 import React from 'react';
-import { Routes as ReactRouterRoutes, Route } from 'react-router-dom';
+import { Navigate, Routes as ReactRouterRoutes, Route } from 'react-router-dom';
 
-import { ROUTES } from '../constants';
+import { PLUGIN_BASE_URL, ROUTES } from '../constants';
 import AdHocView from '../pages/AdHocView/AdHocView';
 import ProfilesExplorerView from '../pages/ProfilesExplorerView/ProfilesExplorerView';
 import SettingsView from '../pages/SettingsView/SettingsView';
@@ -13,7 +13,7 @@ export function Routes() {
       <Route path={ROUTES.ADHOC} element={<AdHocView />} />
       <Route path={ROUTES.SETTINGS} element={<SettingsView />} />
       {/* Default Route */}
-      <Route path="/*" element={<ProfilesExplorerView />} />
+      <Route path="/*" element={<Navigate to={`${PLUGIN_BASE_URL}${ROUTES.EXPLORE}`} replace />} />
     </ReactRouterRoutes>
   );
 }
