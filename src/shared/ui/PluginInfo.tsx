@@ -25,7 +25,7 @@ function InfoMenuHeader() {
     <div className={styles.menuHeader}>
       <h5>
         <PyroscopeLogo size="small" />
-        Explore profiles v{version}
+        Grafana Profiles Drilldown v{version}
       </h5>
       <div className={styles.subTitle}>Last update: {updated}</div>
     </div>

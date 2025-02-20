@@ -2,7 +2,7 @@
 description: Learn about concepts basic to profiling.
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/concepts/
 keywords:
-  - Explore Profiles
+  - Grafana Profiles Drilldown
   - Concepts
 title: Concepts
 menuTitle: Concepts
@@ -67,7 +67,7 @@ Labels help identify parts of profiling data. For example, labels identify Kuber
 
 This feature is crucial for identifying performance anomalies and understanding the behavior of different application segments under various conditions.
 
-![Labels view in Explore Profiles](../images/explore-profiles-labels.png)
+![Labels view in Grafana Profiles Drilldown](../images/explore-profiles-labels.png)
 
 ## Flame graphs
 

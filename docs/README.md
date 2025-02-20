@@ -1,8 +1,8 @@
-# Explore Profiles documentation
+Grafana Profiles Drilldown documentation
 
-This directory contains the source code for the Explore Profiles documentation.
+This directory contains the source code for the Grafana Profiles Drilldown documentation.
 
-Some key things to know about the Explore Profiles documentation source:
+Some key things to know about the Grafana Profiles Drilldown documentation source:
 
 - The docs are written in markdown, specifically the CommonMark flavor of markdown.
 - The Grafana docs team uses [Hugo](https://gohugo.io/) to generate the documentation.
@@ -12,7 +12,7 @@ The docs team has created a [Writers' Toolkit](https://grafana.com/docs/writers-
 
 ## Contributing
 
-The Explore Profiles documentation is written using the CommonMark flavor of markdown, including some extended features. For more information about markdown, you can see the [CommonMark specification](https://spec.commonmark.org/), and a [quick reference guide](https://commonmark.org/help/) for CommonMark.
+The Grafana Profiles Drilldown documentation is written using the CommonMark flavor of markdown, including some extended features. For more information about markdown, you can see the [CommonMark specification](https://spec.commonmark.org/), and a [quick reference guide](https://commonmark.org/help/) for CommonMark.
 
 If you have a GitHub account and you're just making a small fix, for example fixing a typo or updating an example, you can edit the topic in GitHub.
 

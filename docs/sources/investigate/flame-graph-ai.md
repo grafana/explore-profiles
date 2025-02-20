@@ -52,18 +52,18 @@ Refer to the [AI-powered flame graph interpreter](https://pyroscope.io/blog/ai-p
 
 Flame graph AI uses the LLM plugin for Grafana to provide the large-language model using OpenAI API.
 
-You can use Flame graph AI in Grafana **Explore** > **Profiles** and the Explore Profiles app, nested underneath **Explore** > **Profiles** > **Explore profiles**.
+You can use Flame graph AI in Grafana **Drilldown** > **Profiles** and the Grafana Profiles Drilldown app.
 
 ### Before you begin
 
-Flame graph AI is available only when using Explore Profiles.
+Flame graph AI is available only when using Grafana Profiles Drilldown.
 
 To use Flame graph AI, you must have:
 
 - Configured a [Grafana Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) that has profiling data
 
 - Enabled the [LLM plugin](https://grafana.com/docs/grafana-cloud/alerting-and-irm/machine-learning/configure/llm-plugin/) for your Grafana instance
-- Activated the [Explore Profiles](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app for your Grafana instance
+- Activated the [Grafana Profiles Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app for your Grafana instance
 
 ### Use Flame graph AI
 

@@ -110,7 +110,7 @@ export function OnboardingModal() {
     <div data-testid="onboarding-modal">
       <div className={styles.hero} data-testid="hero">
         <div className={styles.heroTitles}>
-          <h1 className={styles.title}>Welcome to {data.isCloud ? 'Grafana Cloud Profiles' : 'Explore Profiles'}</h1>
+          <h1 className={styles.title}>Welcome to Grafana Profiles Drilldown</h1>
           <h2 className={styles.subtitle}>
             Optimize infrastructure spend, simplify debugging, and enhance application performance
           </h2>

@@ -41,7 +41,7 @@ function buildURL(props: URLParamsBuilderProps) {
 
 export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtensionExploreContext> = {
   targets: [PluginExtensionPoints.ExploreToolbarAction],
-  title: 'Open in Explore Profiles',
+  title: 'Open in Grafana Profiles Drilldown',
   icon: 'fire',
   description: 'Try our new queryless experience for profiles',
   path: '/a/grafana-pyroscope-app/profiles-explorer',

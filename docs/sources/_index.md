@@ -1,22 +1,22 @@
 ---
 cascade:
-  FULL_PRODUCT_NAME: Grafana Explore Profiles
-  PRODUCT_NAME: Explore Profiles
+  FULL_PRODUCT_NAME: Grafana Profiles Drilldown
+  PRODUCT_NAME: Grafana Profiles Drilldown
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/
-description: Learn how to use Explore Profiles to understand and troubleshoot
+description: Learn how to use Grafana Profiles Drilldown to understand and troubleshoot
   your applications and services.
 keywords:
-  - Explore Profiles
+  - Profiles Drilldown
   - Profiles
-title: Explore Profiles
-menuTitle: Explore Profiles
+title: Grafana Profiles Drilldown
+menuTitle: Grafana Profiles Drilldown
 weight: 100
 hero:
-  title: Explore Profiles
+  title: Grafana Profiles Drilldown
   level: 1
   width: 100
   height: 100
-  description: Use Explore Profiles to investigate and identify issues using profiling data.
+  description: Use Grafana Profiles Drilldown to investigate and identify issues using profiling data.
 cards:
   title_class: pt-0 lh-1
   items:
@@ -48,14 +48,14 @@ cards:
 
 <!-- Use this for the product name {{< param "PRODUCT_NAME" >}} -->
 
-# Explore Profiles
+# Grafana Profiles Drilldown
 
 Profiling is a technique used in software development to measure and analyze the runtime behavior of a program.
 By profiling a program, developers can identify which parts of the program consume the most resources, such as CPU time, memory, or I/O operations.
 You can use this information to optimize the program, making it run faster or use fewer resources.
 
-Explore Profiles provides an intuitive interface for exploring your profile data.
-Using Explore Profiles, you can:
+Grafana Profiles Drilldown provides an intuitive interface for exploring your profile data.
+Using Grafana Profiles Drilldown, you can:
 
 - View high-level service performance: Get a high-level view of all of your services and how they're functioning
 - Optimize processes: Identify processes or services that you can optimize for better performance
