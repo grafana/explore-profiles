@@ -1,22 +1,22 @@
 ---
-description: Learn how to get started with Grafana Profiles Drilldown
+description: Learn how to get started with Explore Profiles
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/get-started/
 keywords:
-  - Grafana Profiles Drilldown
+  - Explore Profiles
   - Concepts
-title: Get started with Grafana Profiles Drilldown
+title: Get started with Explore Profiles
 menuTitle: Get started
 weight: 300
 ---
 
-# Get started with Grafana Profiles Drilldown
+# Get started with Explore Profiles
 
 Profiles can help you identify errors in your apps and services.
 Using this information, you can optimize and streamline your apps.
 
 Your investigation begins with the big picture and then drills down using profile types, labels, and flame graphs to explore your data. To learn more, refer to [Concepts](../concepts/).
 
-To learn more about Grafana Profiles Drilldown, read [The new, queryless UI for Grafana Pyroscope: Introducing Explore Profiles](https://grafana.com/blog/2024/07/18/the-new-queryless-ui-for-grafana-pyroscope-introducing-explore-profiles/).
+To learn more about Explore Profiles, read [The new, queryless UI for Grafana Pyroscope: Introducing Explore Profiles](https://grafana.com/blog/2024/07/18/the-new-queryless-ui-for-grafana-pyroscope-introducing-explore-profiles/).
 
 <!-- Needs to be updated - {{< youtube id="_8SbNN5DRmQ" >}} -->
 
@@ -26,15 +26,15 @@ Expand your observability journey and learn about [Explore Traces](https://grafa
 
 ## Before you begin
 
-To use Grafana Profiles Drilldown with Grafana Cloud, you need:
+To use Explore Profiles with Grafana Cloud, you need:
 
 - A Grafana Cloud account
 - A Grafana stack in Grafana Cloud with a configured Hosted profiles or Pyroscope data source
 
-To use Grafana Profiles Drilldown with Grafana open source, you need:
+To use Explore Profiles with Grafana open source, you need:
 
 - Your own Grafana instance
-- Install [Grafana Profiles Drilldown plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
+- Install [Explore Profiles plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
 
 ## Explore your profile data
 

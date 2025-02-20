@@ -2,7 +2,7 @@
 description: Determine your use case to begin your investigation
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/determine-use-case/
 keywords:
-  - Grafana Profiles Drilldown
+  - Profiles Drilldown
   - Use case
 title: Determine your use case
 menuTitle: Determine your use case
@@ -29,7 +29,7 @@ For more information, refer to [Profiling types](../concepts/#profile-types/) fo
 Refer to [Understand profile types](https://grafana.com/docs/pyroscope/latest/view-and-analyze-profile-data/profiling-types/) to learn about profile types and instrumentation methods.
 
 After you’ve identified the problem process or service, you can filter and explore using labels and flame graphs to view lower levels.
-With capabilities like the [Flame graph AI interpreter](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/) or the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/), Grafana Profiles Drilldown helps you locate the root cause and how to address it.
+With capabilities like the [Flame graph AI interpreter](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/) or the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/), Profiles Drilldown helps you locate the root cause and how to address it.
 
 ## Use case 1: Investigate an issue
 

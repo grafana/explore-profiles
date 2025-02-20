@@ -1,5 +1,5 @@
 ---
-description: Configure available settings for Grafana Profiles Drilldown.
+description: Configure available settings for Profiles Drilldown.
 keywords:
   - pyroscope
   - continuous profiling
@@ -13,9 +13,9 @@ aliases:
 
 # Profiles settings
 
-The **Profiles settings** page lets you modify flame graph, export, and function details options used for Profiles and Profiles Drilldown.
+The **Profiles settings** page lets you modify flame graph, export, and function details options used for Profiles and Grafana Profiles Drilldown.
 
-![The Profiles Settings page](../images/explore-profiles-settings.png)
+![The Profiles Settings page](/media/docs/explore-profiles/explore-profiles-settings-2.png)
 
 | Features                    | Options        | Explanation                                                                                                                                                                                                                                               |
 | --------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -32,7 +32,7 @@ The **Profiles settings** page lets you modify flame graph, export, and function
 To change the settings for Profiles Drilldown:
 
 1. Sign in to your Grafana instance.
-1. Select **Explore** > **Profiles** in the left navigation.
+1. Select **Drilldown** > **Profiles** in the left navigation.
 1. Select the **Settings** (gear) icon in the right corner.
    ![Access the Settings by selecting the gear icon](/media/docs/explore-profiles/explore-profiles-settings-icon.png)
 1. Change any options as desired.
