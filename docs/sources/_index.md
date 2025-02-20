@@ -1,7 +1,7 @@
 ---
 cascade:
   FULL_PRODUCT_NAME: Grafana Profiles Drilldown
-  PRODUCT_NAME: Grafana Profiles Drilldown
+  PRODUCT_NAME: Profiles Drilldown
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/
 description: Learn how to use Grafana Profiles Drilldown to understand and troubleshoot
   your applications and services.
@@ -9,10 +9,10 @@ keywords:
   - Profiles Drilldown
   - Profiles
 title: Grafana Profiles Drilldown
-menuTitle: Grafana Profiles Drilldown
+menuTitle: Profiles Drilldown
 weight: 100
 hero:
-  title: Grafana Profiles Drilldown
+  title: Profiles Drilldown
   level: 1
   width: 100
   height: 100
@@ -48,14 +48,14 @@ cards:
 
 <!-- Use this for the product name {{< param "PRODUCT_NAME" >}} -->
 
-# Grafana Profiles Drilldown
+# Profiles Drilldown
 
 Profiling is a technique used in software development to measure and analyze the runtime behavior of a program.
 By profiling a program, developers can identify which parts of the program consume the most resources, such as CPU time, memory, or I/O operations.
 You can use this information to optimize the program, making it run faster or use fewer resources.
 
-Grafana Profiles Drilldown provides an intuitive interface for exploring your profile data.
-Using Grafana Profiles Drilldown, you can:
+Profiles Drilldown provides an intuitive interface for exploring your profile data.
+Using Profiles Drilldown, you can:
 
 - View high-level service performance: Get a high-level view of all of your services and how they're functioning
 - Optimize processes: Identify processes or services that you can optimize for better performance

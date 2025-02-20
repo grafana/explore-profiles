@@ -135,7 +135,7 @@ Determining which view to use frames the rest of your investigation.
 
 ### All services view
 
-The **All services** view is the default view when you first open Grafana Profiles Drilldown.
+The **All services** view is the default view when you first open Profiles Drilldown.
 
 ![The All services view](../images/explore-profiles-homescreen.png)
 

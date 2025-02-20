@@ -76,7 +76,7 @@ For more information, refer to the [Flame graph AI](https://grafana.com/docs/gra
 
 For developing in this repo, requirements are generally managed by lint rules and pre-commit hooks. However, for other things, like code organization, please follow the pattern established by the rest of the repo.
 
-In case of doubt, have a look at ["Grafana Profiles Drilldown frontend architecture"](./CODE-ARCHITECTURE.md)
+In case of doubt, have a look at ["Profiles Drilldown frontend architecture"](./CODE-ARCHITECTURE.md)
 
 ### Lint and format your code
 

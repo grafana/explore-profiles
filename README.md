@@ -4,13 +4,13 @@ Grafana Profiles Drilldown is a native Grafana application designed to integrate
 
 ![Grafana Profiles Drilldown flame graph](./docs/sources/images/explore-profiles-flamegraph.png)
 
-## Install Grafana Profiles Drilldown
+## Install Profiles Drilldown
 
-Grafana Profiles Drilldown is distributed as a Grafana Plugin. You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-pyroscope-app/).
+Profiles Drilldown is distributed as a Grafana Plugin. You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-pyroscope-app/).
 
 ### Install in [Grafana Cloud](https://grafana.com/products/cloud/)
 
-All Grafana instances come with Grafana Profiles Drilldown plugin preinstalled.
+All Grafana instances come with Profiles Drilldown plugin preinstalled.
 
 ## Get started
 
@@ -26,10 +26,10 @@ All Grafana instances come with Grafana Profiles Drilldown plugin preinstalled.
 6. Select the profile type you would like to explore by selecting **Flame graph** on any time series visualization.
 7. View the flame graph.
 
-For more information, refer to the Grafana Profiles Drilldown documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/).
+For more information, refer to the Profiles Drilldown documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/).
 
 To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/explore-profiles/blob/main/docs/README.md).
-The Grafana Profiles Drilldown documentation source files are in docs/sources.
+The Profiles Drilldown documentation source files are in docs/sources.
 
 ### Development / Contributing
 

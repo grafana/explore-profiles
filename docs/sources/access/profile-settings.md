@@ -13,7 +13,7 @@ aliases:
 
 # Profiles settings
 
-The **Profiles settings** page lets you modify flame graph, export, and function details options used for Profiles and [Grafana Profiles Drilldown]().
+The **Profiles settings** page lets you modify flame graph, export, and function details options used for Profiles and Profiles Drilldown.
 
 ![The Profiles Settings page](../images/explore-profiles-settings.png)
 
@@ -29,7 +29,7 @@ The **Profiles settings** page lets you modify flame graph, export, and function
 
 ## Modify settings
 
-To change the settings for Grafana Profiles Drilldown:
+To change the settings for Profiles Drilldown:
 
 1. Sign in to your Grafana instance.
 1. Select **Explore** > **Profiles** in the left navigation.
