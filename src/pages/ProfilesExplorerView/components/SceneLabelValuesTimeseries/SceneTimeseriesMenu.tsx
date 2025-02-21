@@ -162,7 +162,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
     return useMemo(() => {
       return {
         id: nanoid(),
-        origin: 'Explore Profiles',
+        origin: 'Grafana Profiles Drilldown',
         url: window.location.href,
         logoPath: PyroscopeLogo,
         title,

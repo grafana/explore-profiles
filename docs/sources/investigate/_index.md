@@ -2,7 +2,7 @@
 description: Investigate trends and spikes to identify issues.
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/investigate/
 keywords:
-  - Explore Profiles
+  - Profiles Drilldown
   - Concepts
 title: Investigate trends and spikes
 menuTitle: Investigate trends and spikes
@@ -11,7 +11,7 @@ weight: 600
 
 # Investigate trends and spikes
 
-Explore Profiles provides powerful tools that help you identify and analyze problems in your applications and services.
+Grafana Profiles Drilldown provides powerful tools that help you identify and analyze problems in your applications and services.
 
 Using these steps, you can use the profile data to investigate issues.
 
@@ -19,7 +19,7 @@ Using these steps, you can use the profile data to investigate issues.
 
 ## Explore your profile data
 
-When you use Explore Profiles, your investigations follow these steps.
+When you use Profiles Drilldown, your investigations follow these steps.
 
 1. Verify your data source in the **Data source** drop-down.
 1. Choose an **Exploration** type. **All services** is selected by default. Learn about the [available views](../choose-a-view/).<br />

@@ -2,7 +2,6 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import DecreaseLatency from '@img/decrease-latency.png';
-import HeroImageExploreProfiles from '@img/hero-image-explore-profiles.png';
 import HeroImage from '@img/hero-image.png';
 import ReduceCosts from '@img/reduce-costs.png';
 import ResolveIncidents from '@img/resolve-incidents.png';
@@ -110,13 +109,13 @@ export function OnboardingModal() {
     <div data-testid="onboarding-modal">
       <div className={styles.hero} data-testid="hero">
         <div className={styles.heroTitles}>
-          <h1 className={styles.title}>Welcome to {data.isCloud ? 'Grafana Cloud Profiles' : 'Explore Profiles'}</h1>
+          <h1 className={styles.title}>Welcome to Grafana Profiles Drilldown</h1>
           <h2 className={styles.subtitle}>
             Optimize infrastructure spend, simplify debugging, and enhance application performance
           </h2>
           {/* <Button>Continue to Pyroscope</Button> */}
         </div>
-        <img src={data.isCloud ? HeroImage : HeroImageExploreProfiles} className={styles.heroImage}></img>
+        <img src={HeroImage} className={styles.heroImage}></img>
       </div>
 
       <div data-testid="what-you-can-do">
