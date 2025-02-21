@@ -52,7 +52,7 @@
   "extensions": {
     "extensionPoints": [
       {
-        "id": "grafana-pyroscope-app/exploration/v1"
+        "id": "grafana-pyroscope-app/investigation/v1"
       }
     ],
     "addedLinks": [
