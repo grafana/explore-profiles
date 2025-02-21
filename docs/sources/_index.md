@@ -56,7 +56,6 @@ You can use this information to optimize the program, making it run faster or us
 
 {{< docs/shared source="grafana" lookup="plugins/rename-note.md" version="<GRAFANA_VERSION>" >}}
 
-
 Grafana Profiles Drilldown provides an intuitive interface for exploring your profile data.
 Using Profiles Drilldown, you can:
 
