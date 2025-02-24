@@ -226,6 +226,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     });
   }
 
+  getPanel() {
+    return this.state.body;
+  }
+
   updateItem(partialItem: Partial<GridItemData>) {
     const { item, headerActions, body } = this.state;
     const updatedItem = merge({}, item, partialItem);
