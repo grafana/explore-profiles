@@ -6,6 +6,7 @@ import {
   SceneObjectState,
   SceneQueryRunner,
   VariableDependencyConfig,
+  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -15,6 +16,7 @@ import { FiltersVariable } from '../domain/variables/FiltersVariable/FiltersVari
 import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
+import { createAnnotationFrame } from '../helpers/annotationCollector';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { PYROSCOPE_DATA_SOURCE } from '../infrastructure/pyroscope-data-sources';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
@@ -65,6 +67,8 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     if (supportGroupBy) {
       this.subscribeToGroupByStateChanges(item);
     }
+
+    this.subscribeToTimeseriesChanges();
   }
 
   initVariables(item: GridItemData) {
@@ -141,6 +145,32 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         }
       })
     );
+  }
+
+  subscribeToTimeseriesChanges() {
+    this._subs.add(
+      this.getTimeseries()?.subscribeToState(() => {
+        const { $data } = this.getTimeseries()!.state;
+
+        const data = $data?.state.data;
+        if (!data) {
+          return;
+        }
+
+        const annotationFrame = createAnnotationFrame(data);
+
+        $data?.setState({
+          data: {
+            ...data,
+            annotations: [annotationFrame],
+          },
+        });
+      })
+    );
+  }
+
+  protected getTimeseries(): VizPanel | undefined {
+    return this.state.body?.getPanel();
   }
 
   onGroupByChanged(groupByVariable: GroupByVariable) {
