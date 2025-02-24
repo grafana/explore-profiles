@@ -29,7 +29,7 @@ jobs:
       e2e: true
 
   upload:
-    name: Upload
+    name: Upload to GCS
     needs: [build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
