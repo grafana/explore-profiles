@@ -1,3 +1,4 @@
+import { LoadingState } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -149,22 +150,29 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
 
   subscribeToTimeseriesChanges() {
     this._subs.add(
-      this.getTimeseries()?.subscribeToState(() => {
-        const { $data } = this.getTimeseries()!.state;
-
-        const data = $data?.state.data;
-        if (!data) {
+      this.getTimeseries()?.state.$data?.subscribeToState((newState, prevState) => {
+        if (!newState.data || newState.data.state !== LoadingState.Done) {
           return;
         }
 
-        const annotationFrame = createAnnotationFrame(data);
+        // add annotation for the first time
+        if (!newState.data.annotations?.length && !prevState.data?.annotations?.length) {
+          const { $data } = this.getTimeseries()!.state;
+          const annotationFrame = createAnnotationFrame(newState.data);
 
-        $data?.setState({
-          data: {
-            ...data,
-            annotations: [annotationFrame],
-          },
-        });
+          $data?.setState({
+            data: {
+              ...newState.data,
+              annotations: [annotationFrame],
+            },
+          });
+          return;
+        }
+
+        // ensure we retain the previous annotations, if they exist
+        if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
+          newState.data.annotations = prevState.data.annotations;
+        }
       })
     );
   }
