@@ -59,7 +59,7 @@
       {
         "title": "Open in Grafana Profiles Drilldown",
         "description": "Try our new queryless experience for profiles",
-        "targets": ["grafana/explore/toolbar/action"]
+        "targets": ["grafana/explore/toolbar/action", "grafana/traceview/details"]
       }
     ]
   }
