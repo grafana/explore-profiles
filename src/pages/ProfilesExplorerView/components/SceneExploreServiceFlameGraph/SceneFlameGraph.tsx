@@ -5,6 +5,7 @@ import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunne
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
+import { useSpanSelectorFromUrl } from '@shared/domain/url-params/useSpanSelectorFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -23,6 +24,7 @@ import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
+import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
@@ -94,6 +96,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
     const [maxNodes] = useMaxNodesFromUrl();
+    const [spanSelector] = useSpanSelectorFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
     const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel } = this.useState();
 
@@ -107,10 +110,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     useEffect(() => {
       if (maxNodes) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes }),
+          $data: buildFlameGraphQueryRunner({ maxNodes, spanSelector }),
         });
       }
-    }, [maxNodes]);
+    }, [maxNodes, spanSelector]);
 
     const $dataState = $data.useState();
     const isFetchingProfileData = $dataState?.data?.state === LoadingState.Loading;
@@ -126,6 +129,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         isFetchingProfileData,
         hasProfileData,
         profileData,
+        spanSelector,
         settings,
         export: {
           menu: exportMenu,
@@ -180,13 +184,16 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           title={panelTitle}
           isLoading={data.isLoading}
           headerActions={
-            <AIButton
-              disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
-              onClick={() => sidePanel.open('ai')}
-              interactionName="g_pyroscope_app_explain_flamegraph_clicked"
-            >
-              Explain Flame Graph
-            </AIButton>
+            <>
+              {data.spanSelector && <SpanSelectorLabel />}
+              <AIButton
+                disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
+                onClick={() => sidePanel.open('ai')}
+                interactionName="g_pyroscope_app_explain_flamegraph_clicked"
+              >
+                Explain Flame Graph
+              </AIButton>
+            </>
           }
         >
           <FlameGraph

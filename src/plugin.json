@@ -57,9 +57,9 @@
     ],
     "addedLinks": [
       {
-        "title": "Open in Explore Profiles",
+        "title": "Open in Profiles Drilldown",
         "description": "Try our new queryless experience for profiles",
-        "targets": ["grafana/traceview/details"]
+        "targets": ["grafana/explore/toolbar/action", "grafana/traceview/details"]
       }
     ]
   }

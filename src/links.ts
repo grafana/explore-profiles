@@ -10,18 +10,24 @@ export type PluginExtensionExploreContext = {
 type URLParamsBuilderProps = {
   pyroscopeQuery: GrafanaPyroscopeDataQuery;
   timeRange?: RawTimeRange;
+  explorationType?: string;
 };
 
 function buildURL(props: URLParamsBuilderProps) {
   const { timeRange, pyroscopeQuery } = props;
 
   let timeRangeParam = '';
+  let spanSelectorParam = '';
   let explorationType = 'all';
 
   let serviceName = props.pyroscopeQuery.labelSelector?.match(/service_name="([^"]+)"/)?.[1];
 
   if (serviceName) {
     explorationType = 'labels';
+  }
+
+  if (props.explorationType) {
+    explorationType = props.explorationType;
   }
 
   const datasourceParam = `var-dataSource=${pyroscopeQuery.datasource?.uid}`;
@@ -31,17 +37,20 @@ function buildURL(props: URLParamsBuilderProps) {
   if (timeRange) {
     timeRangeParam = `&from=${timeRange.from}&to=${timeRange.to}`;
   }
+  if (pyroscopeQuery.spanSelector) {
+    spanSelectorParam = `&spanSelector=${pyroscopeQuery.spanSelector}`;
+  }
 
   const base = '/a/grafana-pyroscope-app/profiles-explorer?';
   const params = new URLSearchParams(
-    `${datasourceParam}${serviceNameParam}${profileTypeParam}${timeRangeParam}${explorationTypeParam}`
+    `${datasourceParam}${serviceNameParam}${profileTypeParam}${timeRangeParam}${explorationTypeParam}${spanSelectorParam}`
   ).toString();
   return `${base}${params}`;
 }
 
 export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtensionExploreContext> = {
   targets: [PluginExtensionPoints.ExploreToolbarAction],
-  title: 'Open in Explore Profiles',
+  title: 'Open in Profiles Drilldown',
   icon: 'fire',
   description: 'Try our new queryless experience for profiles',
   path: '/a/grafana-pyroscope-app/profiles-explorer',
@@ -64,30 +73,37 @@ export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtens
   },
 };
 
-export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<PluginExtensionExploreContext> = {
+export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<any> = {
   targets: ['grafana/traceview/details'],
-  title: 'Open in Explore Profiles',
-  icon: 'fire',
+  title: 'Open in Profiles Drilldown',
   description: 'Try our new queryless experience for profiles',
   path: '/a/grafana-pyroscope-app/profiles-explorer',
-  configure(context: PluginExtensionExploreContext | undefined) {
-    // eslint-disable-next-line no-console
-    console.log('hello from explore profiles');
-    // TODO: Retrieve the correct context i.e. the spanSelector from the trace view
+  onClick: (_, { context }) => {
+    if (!context || !context.serviceName || !context.spanSelector || !context.profileTypeId || !context.timeRange) {
+      return;
+    }
 
-    // if (!context || !context.targets || !context.timeRange || context.targets.length > 1) {
-    //   return undefined;
-    // }
+    const serviceName = context.serviceName;
+    const spanSelector = context.spanSelector;
+    const profileTypeId = context.profileTypeId;
+    const timeRange = context.timeRange;
 
-    const firstQuery = context!.targets[0];
+    const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+      refId: 'span-flamegraph-profiles-drilldown-refId',
+      labelSelector: `service_name="${serviceName}"`,
+      profileTypeId,
+      spanSelector,
+      datasource: context.targets[0].datasource,
+      groupBy: ['service_name'],
+    };
 
-    if (firstQuery.datasource && firstQuery.datasource.type === 'grafana-pyroscope-datasource') {
-      return {
-        path: buildURL({
-          pyroscopeQuery: firstQuery as GrafanaPyroscopeDataQuery,
-          timeRange: context!.timeRange,
-        }),
-      };
+    if (pyroscopeQuery.datasource && pyroscopeQuery.datasource.type === 'grafana-pyroscope-datasource') {
+      const path = buildURL({
+        pyroscopeQuery: pyroscopeQuery,
+        timeRange,
+        explorationType: 'flame-graph',
+      });
+      window.open(path, '_blank', 'noopener,noreferrer');
     }
     return undefined;
   },
