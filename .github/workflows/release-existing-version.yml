@@ -1,0 +1,90 @@
+name: Release existing version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Git tag identifying the version including the "v" prefix (e.g. v0.1.20)'
+        required: true
+        type: string
+
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      ref: ${{ inputs.version }}
+      e2e: false
+
+  upload:
+    needs: [build]
+    uses: ./.github/workflows/upload.yml
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
+      github_environment: gcs-no-approval
+
+  create-github-release:
+    name: Create GitHub release
+    needs: [upload]
+    runs-on: ubuntu-latest
+    # Required to created a release
+    permissions:
+      contents: write
+    steps:
+      # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
+      # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
+      - uses: tibdex/github-app-token@v1
+        id: get_installation_token
+        with:
+          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
+          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
+          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+      # We need to fetch the tag to get the CHANGELOG
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.version }}
+          fetch-depth: 0
+          fetch-tags: true
+          token: ${{ steps.get_installation_token.outputs.token }}
+      - name: Get artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-upload
+          path: build
+      - name: Get last changelog entry
+        run: awk '/^## / {s++} s == 1 {print}' CHANGELOG.md > release_notes.md
+      - name: Create Github release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
+        with:
+          prerelease: false
+          generate_release_notes: false
+          files: build/*
+          tag_name: ${{ inputs.version }}
+          token: ${{ steps.get_installation_token.outputs.token }}
+          body_path: release_notes.md
+
+  update-prod-catalog:
+    name: Update Prod Plugins Catalog
+    needs: [create-github-release]
+    uses: ./.github/workflows/update-plugins-catalog.yml
+    secrets: inherit
+    with:
+      version: ${{ inputs.version }}
+      environment: prod
+
+  deploy-to-cloud:
+    needs: [update-prod-catalog]
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit
+    strategy:
+      matrix:
+        environment: [dev, ops, prod]
+    with:
+      version: ${{ inputs.version }}
+      environment: ${{ matrix.environment }}

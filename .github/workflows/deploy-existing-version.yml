@@ -1,4 +1,4 @@
-name: Deploy existing version
+name: 🚀 Deploy existing version
 
 on:
   workflow_dispatch:
@@ -6,6 +6,14 @@ on:
       version:
         description: 'GIT ref (commit SHA or tag, e.g. v1.0.8)'
         type: string
+      environment:
+        required: true
+        description: 'Environment to deploy to'
+        type: choice
+        options:
+          - dev
+          - ops
+          - prod
 
 # Required to create OIDC/JWT token required to use shared actions
 permissions:
@@ -26,9 +34,6 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     needs: [verify]
     secrets: inherit
-    strategy:
-      matrix:
-        environment: [dev, ops, prod]
     with:
       version: ${{ inputs.version }}
-      environment: ${{ matrix.environment }}
+      environment: ${{ inputs.environment }}

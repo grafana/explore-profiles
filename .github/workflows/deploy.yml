@@ -12,25 +12,26 @@ on:
         description: dev, ops or prod
 
 jobs:
-  debug:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "version = ${{ inputs.version }}"
-      - run: echo "environment = ${{ inputs.environment }}"
-
   deploy-to-cloud:
     # This triggers Argo workflow that will perform deployment to wave. Pushes to main will trigger deployment automatically
     name: Deploy to ${{ inputs.environment }} wave
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
+      # Argo workflow names can be max 63 characters long so we truncate sha/version to max 10 characters
+      - name: Truncate version/sha
+        id: truncate
+        env:
+          VERSION: ${{ inputs.version }}
+        run: echo "short_version=${VERSION::10}" >> "$GITHUB_OUTPUT"
+
       - name: Deploying ${{ inputs.version }} to ${{ inputs.environment }}
-        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.0.0
+        uses: grafana/shared-workflows/actions/trigger-argo-workflow@trigger-argo-workflow-v1.1.0
         with:
           instance: 'ops'
           namespace: 'phlare-cd'
           workflow_template: 'deploy-plugin-${{ inputs.environment }}'
           parameters: |
             plugintag=${{ inputs.version }}
-          extra_args: '--name deploy-plugin-${{ inputs.environment }}-${{ inputs.version }}'
+          extra_args: '--name deploy-plugin-${{ inputs.environment }}-${{ steps.truncate.outputs.short_version }}-${{ github.run_id }}-${{ github.run_attempt }}'
           log_level: 'debug'

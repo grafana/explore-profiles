@@ -41,7 +41,7 @@ function buildURL(props: URLParamsBuilderProps) {
     spanSelectorParam = `&spanSelector=${pyroscopeQuery.spanSelector}`;
   }
 
-  const base = '/a/grafana-pyroscope-app/profiles-explorer?';
+  const base = '/a/grafana-pyroscope-app/explore?';
   const params = new URLSearchParams(
     `${datasourceParam}${serviceNameParam}${profileTypeParam}${timeRangeParam}${explorationTypeParam}${spanSelectorParam}`
   ).toString();
@@ -50,10 +50,10 @@ function buildURL(props: URLParamsBuilderProps) {
 
 export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtensionExploreContext> = {
   targets: [PluginExtensionPoints.ExploreToolbarAction],
-  title: 'Open in Profiles Drilldown',
+  title: 'Open in Grafana Profiles Drilldown',
   icon: 'fire',
   description: 'Try our new queryless experience for profiles',
-  path: '/a/grafana-pyroscope-app/profiles-explorer',
+  path: '/a/grafana-pyroscope-app/explore',
   configure(context: PluginExtensionExploreContext | undefined) {
     if (!context || !context.targets || !context.timeRange || context.targets.length > 1) {
       return undefined;
@@ -75,9 +75,9 @@ export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtens
 
 export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<any> = {
   targets: ['grafana/traceview/details'],
-  title: 'Open in Profiles Drilldown',
+  title: 'Open in Grafana Profiles Drilldown',
   description: 'Try our new queryless experience for profiles',
-  path: '/a/grafana-pyroscope-app/profiles-explorer',
+  path: '/a/grafana-pyroscope-app/explore',
   onClick: (_, { context }) => {
     if (!context || !context.serviceName || !context.spanSelector || !context.profileTypeId || !context.timeRange) {
       return;

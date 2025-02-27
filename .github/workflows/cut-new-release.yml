@@ -1,4 +1,4 @@
-name: Create new version (package.json & CHANGELOG)
+name: 🚀 Cut new release and deploy
 
 on:
   workflow_dispatch:
@@ -75,19 +75,20 @@ jobs:
     needs: [create-new-version]
     uses: ./.github/workflows/build.yml
     with:
-      version: ${{ needs.create-new-version.outputs.version }}
       ref: ${{ needs.create-new-version.outputs.version }}
+      e2e: false
 
-  package:
+  upload:
     needs: [create-new-version, build]
-    uses: ./.github/workflows/package.yml
+    uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       github_environment: gcs-no-approval
 
   create-github-release:
-    needs: [create-new-version, package]
+    name: Create GitHub release
+    needs: [create-new-version, upload]
     runs-on: ubuntu-latest
     # Required to created a release
     permissions:
@@ -111,34 +112,49 @@ jobs:
       - name: Get artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-package
-          path: package
+          name: build-upload
+          path: build
       - name: Get last changelog entry
-        run: awk '/^## / {s++} s == 1 {print}' CHANGELOG.md > release_notes.md
+        run: awk '/^(#+ \[)/ {s++} s == 1 {print}' CHANGELOG.md > release_notes.md
       - name: Create Github release
         uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda # v2.2.1
         with:
           prerelease: false
           generate_release_notes: false
-          files: package/*
+          files: build/*
           tag_name: ${{ needs.create-new-version.outputs.version }}
           token: ${{ steps.get_installation_token.outputs.token }}
           body_path: release_notes.md
 
+  deploy-to-dev:
+    uses: ./.github/workflows/deploy.yml
+    needs: [create-new-version, create-github-release]
+    secrets: inherit
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: dev
+
+  deploy-to-ops:
+    uses: ./.github/workflows/deploy.yml
+    needs: [create-new-version, deploy-to-dev]
+    secrets: inherit
+    with:
+      version: ${{ needs.create-new-version.outputs.version }}
+      environment: ops
+
   update-prod-catalog:
-    needs: [create-new-version, package]
+    name: Update Prod Plugins Catalog
+    needs: [create-new-version, deploy-to-ops]
     uses: ./.github/workflows/update-plugins-catalog.yml
+    secrets: inherit
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       environment: prod
 
-  deploy-to-cloud:
-    needs: [create-new-version, package]
+  deploy-to-prod:
     uses: ./.github/workflows/deploy.yml
+    needs: [create-new-version, update-prod-catalog]
     secrets: inherit
-    strategy:
-      matrix:
-        environment: [dev, ops, prod]
     with:
       version: ${{ needs.create-new-version.outputs.version }}
-      environment: ${{ matrix.environment }}
+      environment: prod

@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
   "type": "app",
-  "name": "Explore Profiles",
+  "name": "Grafana Profiles Drilldown",
   "id": "grafana-pyroscope-app",
   "autoEnabled": true,
   "backend": false,
@@ -11,7 +11,7 @@
     "plugins": []
   },
   "info": {
-    "keywords": ["app", "pyroscope", "profiling", "explore", "profiles", "performance"],
+    "keywords": ["app", "pyroscope", "profiling", "explore", "profiles", "performance", "drilldown"],
     "description": "Continuous profiling service powered by Grafana Pyroscope",
     "author": {
       "name": "Grafana"
@@ -52,12 +52,12 @@
   "extensions": {
     "extensionPoints": [
       {
-        "id": "grafana-pyroscope-app/exploration/v1"
+        "id": "grafana-pyroscope-app/investigation/v1"
       }
     ],
     "addedLinks": [
       {
-        "title": "Open in Profiles Drilldown",
+        "title": "Open in Grafana Profiles Drilldown",
         "description": "Try our new queryless experience for profiles",
         "targets": ["grafana/explore/toolbar/action", "grafana/traceview/details"]
       }
