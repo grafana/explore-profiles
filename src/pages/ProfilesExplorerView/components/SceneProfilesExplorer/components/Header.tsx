@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { useChromeHeaderHeight } from '@grafana/runtime';
+import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
 import { Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -31,6 +31,11 @@ export function Header(props: HeaderProps) {
   const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
     data;
 
+  type InsightsLauncherProps = {};
+  const { component: InsightsLauncher } = usePluginComponent<InsightsLauncherProps>(
+    'grafana-insights-app/insights-launcher/v1'
+  );
+
   return (
     <div className={styles.header} data-testid="allControls">
       <GiveFeedbackButton />
@@ -45,6 +50,8 @@ export function Header(props: HeaderProps) {
         </div>
 
         <div className={styles.appControlsRight}>
+          {InsightsLauncher && <InsightsLauncher />}
+
           {timePickerControl && (
             <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
           )}
