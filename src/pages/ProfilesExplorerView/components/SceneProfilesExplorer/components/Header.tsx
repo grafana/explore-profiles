@@ -31,7 +31,9 @@ export function Header(props: HeaderProps) {
   const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
     data;
 
-  type InsightsLauncherProps = {};
+  type InsightsLauncherProps = {
+    dataSourceUid: string;
+  };
   const { component: InsightsLauncher } = usePluginComponent<InsightsLauncherProps>(
     'grafana-insights-app/insights-launcher/v1'
   );
@@ -50,7 +52,7 @@ export function Header(props: HeaderProps) {
         </div>
 
         <div className={styles.appControlsRight}>
-          {InsightsLauncher && <InsightsLauncher />}
+          {InsightsLauncher && <InsightsLauncher dataSourceUid={dataSourceVariable.getValueText()} />}
 
           {timePickerControl && (
             <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
