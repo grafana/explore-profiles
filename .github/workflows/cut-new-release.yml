@@ -72,6 +72,7 @@ jobs:
         run: git push origin main --tags
 
   build:
+    name: Build and test
     needs: [create-new-version]
     uses: ./.github/workflows/build.yml
     with:
@@ -79,6 +80,7 @@ jobs:
       e2e: false
 
   upload:
+    name: Upload to GCS
     needs: [create-new-version, build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
@@ -127,6 +129,7 @@ jobs:
           body_path: release_notes.md
 
   deploy-to-dev:
+    name: Deploy (dev)
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, create-github-release]
     secrets: inherit
@@ -135,6 +138,7 @@ jobs:
       environment: dev
 
   deploy-to-ops:
+    name: Deploy (ops)
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, deploy-to-dev]
     secrets: inherit
@@ -152,6 +156,7 @@ jobs:
       environment: prod
 
   deploy-to-prod:
+    name: Deploy (prod)
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, update-prod-catalog]
     secrets: inherit
