@@ -9,8 +9,6 @@
     "noUnusedParameters": false,
     "paths": {
       "@shared/*": ["./src/shared/*"]
-    },
-    "esModuleInterop": true,
-    "jsx": "react"
+    }
   }
 }

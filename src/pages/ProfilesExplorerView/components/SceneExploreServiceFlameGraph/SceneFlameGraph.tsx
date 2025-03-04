@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
 import { FlameGraph } from '@grafana/flamegraph';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
@@ -17,6 +17,8 @@ import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
+import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
+import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
@@ -166,6 +168,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const { data, actions } = model.useSceneFlameGraph();
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
+    const [spanSelector, setSpanSelector] = useSpanSelectorFromUrl();
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -174,6 +177,38 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         sidePanel.close();
       }
     }, [isAiButtonDisabled, sidePanel]);
+
+    // Remove span selector when dependencies change
+    const serviceName = getSceneVariableValue(model, 'serviceName');
+    const profileMetricId = getSceneVariableValue(model, 'profileMetricId');
+    const datasource = sceneGraph.findByKeyAndType(model, 'dataSource', ProfilesDataSourceVariable).useState().value;
+    const filters = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable).useState().filters;
+    const prevValues = React.useRef({
+      datasource,
+      service: serviceName,
+      profileType: profileMetricId,
+      filters: JSON.stringify(filters),
+    });
+
+    useEffect(() => {
+      const isInitialLoad = !datasource && !serviceName && !profileMetricId && !filters?.length;
+      const hasDependenciesChanged =
+        datasource !== prevValues.current.datasource ||
+        serviceName !== prevValues.current.service ||
+        profileMetricId !== prevValues.current.profileType ||
+        JSON.stringify(filters) !== prevValues.current.filters;
+
+      if (!isInitialLoad && hasDependenciesChanged && spanSelector) {
+        setSpanSelector('');
+      }
+
+      prevValues.current = {
+        datasource,
+        service: serviceName,
+        profileType: profileMetricId,
+        filters: JSON.stringify(filters),
+      };
+    }, [datasource, serviceName, profileMetricId, filters, spanSelector, setSpanSelector]);
 
     const panelTitle = useMemo(
       () => (
