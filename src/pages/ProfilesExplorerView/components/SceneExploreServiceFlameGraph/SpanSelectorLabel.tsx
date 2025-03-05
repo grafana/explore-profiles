@@ -1,11 +1,9 @@
 import { css } from '@emotion/css';
 import { Button, Tooltip, useStyles2 } from '@grafana/ui';
-import { useSpanSelectorFromUrl } from '@shared/domain/url-params/useSpanSelectorFromUrl';
 import React from 'react';
 
-export function SpanSelectorLabel() {
+export function SpanSelectorLabel({ spanSelector }: { spanSelector: string }) {
   const styles = useStyles2(getStyles);
-  const [spanSelector, setSpanSelector] = useSpanSelectorFromUrl();
 
   return (
     <div className={styles.container}>
@@ -19,7 +17,7 @@ export function SpanSelectorLabel() {
         icon="times"
         tooltip={`Remove span selector from query`}
         tooltipPlacement="top"
-        onClick={() => setSpanSelector('')}
+        onClick={() => {}}
       />
     </div>
   );

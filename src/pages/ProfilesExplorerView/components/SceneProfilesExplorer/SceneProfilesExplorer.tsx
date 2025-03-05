@@ -36,6 +36,7 @@ import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByV
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
+import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
@@ -125,6 +126,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new FiltersVariable({ key: 'filtersBaseline' }),
           new FiltersVariable({ key: 'filtersComparison' }),
           new GroupByVariable(),
+          new SpanSelectorVariable(),
         ],
       }),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
