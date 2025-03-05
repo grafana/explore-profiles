@@ -24,6 +24,7 @@ import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
+import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -158,6 +159,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     };
   };
 
+  removeSpanSelector() {
+    this.publishEvent(new RemoveSpanSelector({}), true);
+  }
+
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
 
@@ -193,7 +198,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           isLoading={data.isLoading}
           headerActions={
             <>
-              {spanSelector && <SpanSelectorLabel spanSelector={spanSelector} />}
+              {spanSelector && (
+                <SpanSelectorLabel spanSelector={spanSelector} removeSpanSelector={() => model.removeSpanSelector()} />
+              )}
               <AIButton
                 disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
                 onClick={() => sidePanel.open('ai')}

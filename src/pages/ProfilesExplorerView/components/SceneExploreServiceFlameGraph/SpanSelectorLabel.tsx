@@ -2,7 +2,13 @@ import { css } from '@emotion/css';
 import { Button, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
-export function SpanSelectorLabel({ spanSelector }: { spanSelector: string }) {
+type Props = {
+  spanSelector: string;
+  removeSpanSelector: () => void;
+};
+
+export function SpanSelectorLabel(props: Props) {
+  const { spanSelector, removeSpanSelector } = props;
   const styles = useStyles2(getStyles);
 
   return (
@@ -17,7 +23,9 @@ export function SpanSelectorLabel({ spanSelector }: { spanSelector: string }) {
         icon="times"
         tooltip={`Remove span selector from query`}
         tooltipPlacement="top"
-        onClick={() => {}}
+        onClick={() => {
+          removeSpanSelector();
+        }}
       />
     </div>
   );

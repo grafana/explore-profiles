@@ -47,6 +47,7 @@ import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/Scen
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
+import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { Header } from './components/Header';
 
@@ -202,6 +203,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          this.resetSpanSelector();
         }
       });
 
@@ -210,6 +212,23 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          this.resetSpanSelector();
+        }
+      });
+
+    const profileTypeSub = sceneGraph
+      .findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable)
+      .subscribeToState((newState, prevState) => {
+        if (newState.value && newState.value !== prevState.value) {
+          this.resetSpanSelector();
+        }
+      });
+
+    const filtersSub = sceneGraph
+      .findByKeyAndType(this, 'filters', FiltersVariable)
+      .subscribeToState((newState, prevState) => {
+        if (JSON.stringify(newState.filters) !== JSON.stringify(prevState.filters)) {
+          this.resetSpanSelector();
         }
       });
 
@@ -217,6 +236,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       unsubscribe() {
         serviceNameSub.unsubscribe();
         dataSourceSub.unsubscribe();
+        filtersSub.unsubscribe();
+        profileTypeSub.unsubscribe();
       },
     };
   }
@@ -261,12 +282,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       });
     });
 
+    const removeSpanSelectorSub = this.subscribeToEvent(RemoveSpanSelector, () => {
+      this.resetSpanSelector();
+    });
+
     return {
       unsubscribe() {
         diffFlameGraphSub.unsubscribe();
         flameGraphSub.unsubscribe();
         labelsSub.unsubscribe();
         profilesSub.unsubscribe();
+        removeSpanSelectorSub.unsubscribe();
       },
     };
   }
@@ -293,10 +319,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
+  resetSpanSelector() {
+    sceneGraph.findByKeyAndType(this, 'spanSelector', SpanSelectorVariable).reset();
+  }
+
   resetVariables(nextExplorationType: string) {
     sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).reset();
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
+    this.resetSpanSelector();
 
     // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"
     // if not, they will be added to the queries without any notice on the UI

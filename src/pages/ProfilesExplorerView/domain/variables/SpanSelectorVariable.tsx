@@ -1,15 +1,16 @@
-import { QueryVariable } from '@grafana/scenes';
+import { CustomVariable } from '@grafana/scenes';
 
-import { PYROSCOPE_FAVORITES_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
-
-export class SpanSelectorVariable extends QueryVariable {
+export class SpanSelectorVariable extends CustomVariable {
   constructor() {
     super({
+      key: 'spanSelector',
       name: 'spanSelector',
       label: 'Span selector',
-      datasource: PYROSCOPE_FAVORITES_DATA_SOURCE,
-      // "hack": we want to subscribe to changes of dataSource, serviceName, profileMetricId and filters
-      query: '$dataSource and $profileMetricId{service_name="$serviceName"} {filters="$filters"}',
+      value: undefined,
     });
+  }
+
+  reset() {
+    this.setState({ value: undefined });
   }
 }
