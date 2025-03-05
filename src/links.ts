@@ -93,11 +93,11 @@ export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<any> = {
       labelSelector: `service_name="${serviceName}"`,
       profileTypeId,
       spanSelector,
-      datasource: context.targets[0].datasource,
+      datasource: context.datasource,
       groupBy: ['service_name'],
     };
 
-    if (pyroscopeQuery.datasource && pyroscopeQuery.datasource.type === 'grafana-pyroscope-datasource') {
+    if (pyroscopeQuery.datasource) {
       const path = buildURL({
         pyroscopeQuery: pyroscopeQuery,
         timeRange,
