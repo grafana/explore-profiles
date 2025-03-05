@@ -38,7 +38,7 @@ function buildURL(props: URLParamsBuilderProps) {
     timeRangeParam = `&from=${timeRange.from}&to=${timeRange.to}`;
   }
   if (pyroscopeQuery.spanSelector) {
-    spanSelectorParam = `&spanSelector=${pyroscopeQuery.spanSelector}`;
+    spanSelectorParam = `&var-spanSelector=${pyroscopeQuery.spanSelector}`;
   }
 
   const base = '/a/grafana-pyroscope-app/explore?';
