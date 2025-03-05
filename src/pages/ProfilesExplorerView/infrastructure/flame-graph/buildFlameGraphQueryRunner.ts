@@ -6,9 +6,10 @@ import { withPreventInvalidQuery } from '../withPreventInvalidQuery';
 
 type FlameGraphQueryRunnerParams = TimeSeriesQueryRunnerParams & {
   maxNodes?: number;
+  spanSelector?: string;
 };
 
-export function buildFlameGraphQueryRunner({ filters, maxNodes }: FlameGraphQueryRunnerParams) {
+export function buildFlameGraphQueryRunner({ filters, maxNodes, spanSelector }: FlameGraphQueryRunnerParams) {
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: '$serviceName' });
 
@@ -23,6 +24,7 @@ export function buildFlameGraphQueryRunner({ filters, maxNodes }: FlameGraphQuer
         profileTypeId: '$profileMetricId',
         labelSelector: `{${selector},$filters}`,
         maxNodes,
+        ...(spanSelector && { spanSelector: [spanSelector] }),
       },
     ],
   });
