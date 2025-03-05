@@ -212,7 +212,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
-          this.resetSpanSelector();
+          // This is to prevent removing the span selector if the previous service name was not correct
+          // This way a user can still select the service name for selected span in case there's a mismatch
+          // in the service name that was provided from the trace
+          if (newState.options.some((option) => option.value === prevState.value)) {
+            this.resetSpanSelector();
+          }
         }
       });
 
