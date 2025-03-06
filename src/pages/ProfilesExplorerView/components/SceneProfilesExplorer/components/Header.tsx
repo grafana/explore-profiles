@@ -49,7 +49,7 @@ export function Header(props: HeaderProps) {
           )}
 
           <div className={styles.appMiscButtons}>
-            <IconButton name="gf-prometheus" tooltip="View metrics" onClick={actions.onClickMetrics} />
+            <IconButton name="gf-prometheus" tooltip="View recording rules" onClick={actions.onClickRecordingRules} />
 
             <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />
 

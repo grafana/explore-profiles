@@ -14,16 +14,16 @@ import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
-import { Metric } from '../../../../shared/infrastructure/metrics/Metric';
+import { RecordingRule } from '../../../../shared/infrastructure/recording-rules/RecordingRule';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
-import { useCreateMetric } from '../SceneCreateMetricModal/domain/useCreateMetricModal';
-import { useCreateMetricsMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
-import { SceneCreateMetricModal } from '../SceneCreateMetricModal/SceneCreateMetricModal';
+import { useCreateRecordingRuleModal } from '../SceneCreateMetricModal/domain/useCreateRecordingRuleModal';
+import { useCreateRecordingRulesMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
+import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
@@ -35,7 +35,7 @@ interface SceneFlameGraphState extends SceneObjectState {
   exportMenu: SceneExportMenu;
   aiPanel: SceneAiPanel;
   functionDetailsPanel: SceneFunctionDetailsPanel;
-  createMetricModal: SceneCreateMetricModal;
+  createRecordingRuleModal: SceneCreateRecordingRuleModal;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -52,7 +52,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       exportMenu: new SceneExportMenu(),
       aiPanel: new SceneAiPanel(),
       functionDetailsPanel: new SceneFunctionDetailsPanel(),
-      createMetricModal: new SceneCreateMetricModal(),
+      createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -102,7 +102,8 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createMetricModal } = this.useState();
+    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createRecordingRuleModal } =
+      this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -147,8 +148,8 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           panel: functionDetailsPanel,
           timeRange: lastTimeRange,
         },
-        metrics: {
-          modal: createMetricModal,
+        recordingRules: {
+          modal: createRecordingRuleModal,
         },
       },
       actions: {
@@ -164,9 +165,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
-    const { actions: metricsActions } = useCreateMetric();
-    const metricsModal = useCreateMetricModal();
-    const metricsMenu = useCreateMetricsMenu(metricsModal.open);
+    const { actions: recordingRulesActions } = useCreateRecordingRuleModal();
+    const recordingRuleModal = useCreateMetricModal();
+    const recordingRulesMenu = useCreateRecordingRulesMenu(recordingRuleModal.open);
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -193,9 +194,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       data: Record<string, any>
     ) => {
       const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
-      const metricsButtons = metricsMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+      const recordingRulesButtons = recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
 
-      return [...ghButtons, ...metricsButtons];
+      return [...ghButtons, ...recordingRulesButtons];
     };
 
     return (
@@ -244,13 +245,13 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           />
         )}
 
-        <data.metrics.modal.Component
-          model={data.metrics.modal}
-          isModalOpen={metricsModal.isModalOpen}
-          onDismiss={metricsModal.close}
-          onCreate={(metric: Metric) => {
-            metricsActions.save(metric);
-            metricsModal.close();
+        <data.recordingRules.modal.Component
+          model={data.recordingRules.modal}
+          isModalOpen={recordingRuleModal.isModalOpen}
+          onDismiss={recordingRuleModal.close}
+          onCreate={(rule: RecordingRule) => {
+            recordingRulesActions.save(rule);
+            recordingRuleModal.close();
           }}
         />
       </div>

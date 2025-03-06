@@ -1,10 +1,10 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Button, Divider, Field, Icon, Input, Modal, MultiSelect, Stack, useStyles2 } from '@grafana/ui';
+import { Button, Divider, Field, Input, Modal, MultiSelect, useStyles2 } from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
-import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import React, { useEffect, useState } from 'react';
 import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form';
 
@@ -13,21 +13,20 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { ReadonlyChicletList, ReadonlyFilter } from './components/ReadonlyChiclet';
 
-interface MetricForm {
+interface RecordingRuleForm {
   metricName: string;
   labels: Array<SelectableValue<string>>;
   serviceName: string;
   profileType: string;
-  prometheusDataSource: string;
   matcher: string;
 }
 
-interface SceneCreateMetricModalState extends SceneObjectState {}
+interface SceneCreateRecordingRuleModalState extends SceneObjectState {}
 
-export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricModalState> {
+export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRecordingRuleModalState> {
   constructor() {
     super({
-      key: 'create-metric-modal',
+      key: 'create-recording-rule-modal',
     });
   }
 
@@ -36,10 +35,10 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     isModalOpen,
     onDismiss,
     onCreate,
-  }: SceneComponentProps<SceneCreateMetricModal> & {
+  }: SceneComponentProps<SceneCreateRecordingRuleModal> & {
     isModalOpen: () => boolean;
     onDismiss: () => void;
-    onCreate: (metric: Metric) => Promise<void>;
+    onCreate: (rule: RecordingRule) => Promise<void>;
   }) => {
     const styles = useStyles2(getStyles);
 
@@ -48,8 +47,8 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
       handleSubmit,
       control,
       formState: { errors },
-    } = useForm<MetricForm>();
-    const onSubmit: SubmitHandler<MetricForm> = (data) =>
+    } = useForm<RecordingRuleForm>();
+    const onSubmit: SubmitHandler<RecordingRuleForm> = (data) =>
       onCreate({
         version: 1,
         name: data.metricName,
@@ -57,11 +56,8 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
         profileType: data.profileType,
         matcher: data.matcher,
         labels: data.labels.map((label) => label.value ?? ''),
-        prometheusDataSource: data.prometheusDataSource,
       });
 
-    // TODO(bryan) replace this with real data sources.
-    const dataSourceName = 'dummy-data-source';
     const [options, setOptions] = useState<string[]>([]);
 
     const profileMetricVariable = sceneGraph.findByKeyAndType(model, 'profileMetricId', ProfileMetricVariable);
@@ -94,7 +90,7 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
     }, [filterQuery, model]);
 
     return (
-      <Modal title="Create metric" isOpen={isModalOpen()} onDismiss={onDismiss}>
+      <Modal title="Create recording rule" isOpen={isModalOpen()} onDismiss={onDismiss}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             label="Metric name"
@@ -148,16 +144,6 @@ export class SceneCreateMetricModal extends SceneObjectBase<SceneCreateMetricMod
             <div className={styles.readonlyValue}>{`${profileMetric.group}/${profileMetric.type}`}</div>
           </Field>
           <input type="text" value={profileMetric.id} hidden {...register('profileType')} />
-
-          <Field label="Data source" description="Prometheus data source">
-            <div className={styles.readonlyValue}>
-              <Stack direction="row" alignItems="center" justifyContent="flex-start">
-                {/* note(bryanhuhta): This color is taken from the Prometheus svg from grafana.com */}
-                <Icon name="gf-prometheus" color="#DA4E31" />
-                <span>{dataSourceName}</span>
-              </Stack>
-            </div>
-          </Field>
 
           <Field label="Filters" description="Additional filters used to refine the scope of the metric">
             <div className={styles.readonlyValue}>

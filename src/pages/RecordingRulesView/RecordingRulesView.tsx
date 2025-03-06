@@ -2,9 +2,7 @@ import { css } from '@emotion/css';
 import { applyFieldOverrides, arrayToDataFrame, DataFrame, FieldType, GrafanaTheme2 } from '@grafana/data';
 import { TableCellHeight } from '@grafana/schema';
 import {
-  Icon,
   IconButton,
-  Stack,
   Table,
   TableCellDisplayMode,
   TableCustomCellOptions,
@@ -14,23 +12,23 @@ import {
   useTheme2,
 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
-import { Metric } from '@shared/infrastructure/metrics/Metric';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
-import { useMetricsView } from './domain/useMetricsView';
+import { useRecordingRulesView } from './domain/useRecordingRulesView';
 
-type DeleteFn = (metric: Metric) => Promise<void>;
+type DeleteFn = (rule: RecordingRule) => Promise<void>;
 
-export default function MetricsView() {
+export default function RecordingRulesView() {
   const styles = useStyles2(getStyles);
-  const { data, actions } = useMetricsView();
-  const { metrics } = data;
+  const { data, actions } = useRecordingRulesView();
+  const { recordingRules } = data;
 
   if (data.fetchError) {
     displayError(data.fetchError, [
-      'Error while retrieving created metrics!',
+      'Error while retrieving recording rules!',
       'Please try to reload the page, sorry for the inconvenience.',
     ]);
   }
@@ -40,11 +38,14 @@ export default function MetricsView() {
   // from the window width to account for the sidebar.
   const width = window.innerWidth - 400;
   const theme = useTheme2();
-  const dataFrame = metrics !== undefined ? buildDataFrame(metrics, theme, width, styles, actions.removeMetric) : null;
+  const dataFrame =
+    recordingRules !== undefined
+      ? buildDataFrame(recordingRules, theme, width, styles, actions.removeRecordingRule)
+      : null;
 
   return (
     <>
-      <PageTitle title="Created metrics" />
+      <PageTitle title="Recording rules" />
       {dataFrame && (
         <Table
           data={dataFrame}
@@ -68,43 +69,29 @@ const getStyles = () => ({
 });
 
 function buildDataFrame(
-  metrics: Metric[],
+  rules: RecordingRule[],
   theme: GrafanaTheme2,
   tableWidth: number,
   styles: Record<string, any>,
   onDelete: DeleteFn
 ): DataFrame {
   const df = arrayToDataFrame(
-    metrics.map((m) => {
-      const profileType = getProfileMetric(m.profileType as ProfileMetricId);
+    rules.map((r) => {
+      const profileType = getProfileMetric(r.profileType as ProfileMetricId);
 
       return {
-        Name: m.name,
-        'Service Name': m.serviceName,
+        Name: r.name,
+        'Service Name': r.serviceName,
         'Profile Type': `${profileType.group}/${profileType.type}`,
       };
     })
   );
 
-  const dataSourceOptions: TableCustomCellOptions = {
-    type: TableCellDisplayMode.Custom,
-    cellComponent: (props) => {
-      const dataSource = metrics[props.rowIndex]?.prometheusDataSource ?? '';
-      return (
-        <Stack direction="row" alignItems="center">
-          {/* note(bryanhuhta): This color is taken from the Prometheus svg from grafana.com */}
-          <Icon name="gf-prometheus" color="#DA4E31" />
-          <span>{dataSource}</span>
-        </Stack>
-      );
-    },
-  };
-
   const labelOptions: TableCustomCellOptions = {
     type: TableCellDisplayMode.Custom,
     cellComponent: (props) => {
       // Exclude hidden labels.
-      const labels = metrics[props.rowIndex]?.labels?.filter((label: string) => !label.match(/^__\S+__$/));
+      const labels = rules[props.rowIndex]?.labels?.filter((label: string) => !label.match(/^__\S+__$/));
 
       if (!labels || labels.length === 0) {
         return (
@@ -122,7 +109,7 @@ function buildDataFrame(
     type: TableCellDisplayMode.Custom,
     cellComponent: (props) => {
       const name = props.frame.fields.find((f) => f.name === 'Name')?.values[props.rowIndex];
-      const label = name ? `Delete ${name}` : 'Delete metric';
+      const label = name ? `Delete ${name}` : 'Delete recording rule';
 
       // todo(bryan): Make this a confirmation modal.
       return (
@@ -131,7 +118,7 @@ function buildDataFrame(
           variant="destructive"
           aria-label={label}
           tooltip={label}
-          onClick={() => onDelete(metrics[props.rowIndex])}
+          onClick={() => onDelete(rules[props.rowIndex])}
         />
       );
     },
@@ -139,16 +126,6 @@ function buildDataFrame(
 
   df.fields = [
     ...df.fields,
-    {
-      name: 'Data Source',
-      type: FieldType.other,
-      values: [],
-      config: {
-        custom: {
-          cellOptions: dataSourceOptions,
-        },
-      },
-    },
     {
       name: 'Labels',
       type: FieldType.other,
@@ -174,10 +151,9 @@ function buildDataFrame(
 
   const colWidthPercentages = [
     0.2, // Name
-    0.1, // Service name
+    0.15, // Service name
     0.2, // Profile type
-    0.1, // Data source
-    0.25, // Labels
+    0.3, // Labels
     0.05, // Actions
   ];
 

@@ -1,16 +1,16 @@
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 
-import { Metric } from './Metric';
+import { RecordingRule } from './RecordingRule';
 
 type ApiResponse = {
   settings: Array<{ name: string; value: string }>;
 };
 
-// todo(bryan): Refactor this to use the existing SettingsApiClient.
-class MetricsApiClient extends ApiClient {
-  static METRIC_SETTING_PREFIX = 'metric.';
+// TODO(bryan): refactor this to use generated protobuf types
+class RecordingRulesApiClient extends ApiClient {
+  static RECORDING_RULE_SETTING_PREFIX = 'metric.';
 
-  async get(): Promise<Metric[]> {
+  async get(): Promise<RecordingRule[]> {
     return super
       .fetch('/settings.v1.SettingsService/Get', { method: 'POST', body: JSON.stringify({}) })
       .then((response) => response.json())
@@ -20,39 +20,39 @@ class MetricsApiClient extends ApiClient {
         }
 
         return json.settings
-          .filter(({ name }) => name.startsWith(MetricsApiClient.METRIC_SETTING_PREFIX))
+          .filter(({ name }) => name.startsWith(RecordingRulesApiClient.RECORDING_RULE_SETTING_PREFIX))
           .map((setting) => JSON.parse(setting.value));
       });
   }
 
-  async create(metric: Metric): Promise<void> {
+  async create(rule: RecordingRule): Promise<void> {
     return super
       .fetch('/settings.v1.SettingsService/Set', {
         method: 'POST',
         body: JSON.stringify({
           setting: {
-            name: this.withPrefix(metric.name),
-            value: JSON.stringify(metric),
+            name: this.withPrefix(rule.name),
+            value: JSON.stringify(rule),
           },
         }),
       })
       .then((response) => response.json());
   }
 
-  async remove(metric: Metric): Promise<void> {
+  async remove(rule: RecordingRule): Promise<void> {
     return super
       .fetch('/settings.v1.SettingsService/Delete', {
         method: 'POST',
         body: JSON.stringify({
-          name: this.withPrefix(metric.name),
+          name: this.withPrefix(rule.name),
         }),
       })
       .then((response) => response.json());
   }
 
   private withPrefix(name: string): string {
-    return `${MetricsApiClient.METRIC_SETTING_PREFIX}${name}`;
+    return `${RecordingRulesApiClient.RECORDING_RULE_SETTING_PREFIX}${name}`;
   }
 }
 
-export const metricsApiClient = new MetricsApiClient();
+export const recordingRulesApiClient = new RecordingRulesApiClient();

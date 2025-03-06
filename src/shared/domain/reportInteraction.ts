@@ -49,7 +49,7 @@ export type Interactions = {
     layout: LayoutType;
   };
   g_pyroscope_app_open_in_explore_clicked: {};
-  g_pyroscope_app_open_metrics_list: {};
+  g_pyroscope_app_open_recording_rules_view: {};
   g_pyroscope_app_optimize_code_clicked: {};
   g_pyroscope_app_panel_type_changed: {
     panelType: PanelType;
