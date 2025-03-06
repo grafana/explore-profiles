@@ -1,4 +1,4 @@
-# Developing the Explore Profiles plugin with a local version of Grafana
+# Developing the Grafana Profiles Drilldown plugin with a local version of Grafana
 
 In some cases, you might want to:
 

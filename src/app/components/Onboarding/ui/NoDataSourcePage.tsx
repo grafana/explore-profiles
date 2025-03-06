@@ -9,7 +9,7 @@ import { StyledLink } from './StyledLink';
 export function NoDataSourcePage() {
   return (
     <PluginPage layout={PageLayoutType.Canvas}>
-      <PageTitle title="Explore Profiles" />
+      <PageTitle title="Grafana Profiles Drilldown" />
 
       <Alert severity="error" title="Missing Pyroscope data source!">
         This plugin requires a Pyroscope data source. Please{' '}

@@ -8,7 +8,7 @@ export function ErrorPage({ error }: { error: Error }) {
   return (
     <PluginPage layout={PageLayoutType.Canvas}>
       <div className="pyroscope-app">
-        <PageTitle title="Explore Profiles" />
+        <PageTitle title="Grafana Profiles Drilldown" />
 
         <InlineBanner
           severity="error"

@@ -12,7 +12,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   constructor(readonly page: Page, defaultUrlParams: URLSearchParams) {
     const urlParams = new URLSearchParams(defaultUrlParams);
 
-    super(page, '/a/grafana-pyroscope-app/profiles-explorer', urlParams.toString());
+    super(page, '/a/grafana-pyroscope-app/explore', urlParams.toString());
   }
 
   goto(explorationType: ExplorationType, urlSearchParams = new URLSearchParams()) {

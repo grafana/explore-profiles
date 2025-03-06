@@ -2,7 +2,7 @@ import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import { useFetchRecordingRules } from '@shared/infrastructure/recording-rules/useFetchRecordingRules';
 
-export function useCreateRecordingRuleModal() {
+export function useCreateRecordingRule() {
   const { recordingRules, error: fetchError, mutate } = useFetchRecordingRules();
 
   return {

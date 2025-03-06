@@ -1,42 +1,18 @@
-# Explore Profiles
+# Grafana Profiles Drilldown
 
-Explore Profiles is a native Grafana application designed to integrate seamlessly with [Pyroscope](https://github.com/grafana/pyroscope), the open-source continuous profiling platform, providing a smooth, query-less experience for browsing and analyzing profiling data.
+Grafana Profiles Drilldown is a native Grafana application designed to integrate seamlessly with [Pyroscope](https://github.com/grafana/pyroscope), the open-source continuous profiling platform, providing a smooth, query-less experience for browsing and analyzing profiling data.
 
-> [!IMPORTANT]
-> Explore Profiles is presently undergoing active development and is offered in a preview state. Subsequent updates are likely to incorporate significant changes that may impact existing functionality.
+![Grafana Profiles Drilldown flame graph](./docs/sources/images/explore-profiles-flamegraph.png)
 
-## Install Explore Profiles
+## Install Profiles Drilldown
 
-Explore Profiles is distributed as a Grafana Plugin. You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-pyroscope-app/).
+Profiles Drilldown is distributed as a Grafana Plugin. You can find it in the official [Grafana Plugin Directory](https://grafana.com/grafana/plugins/grafana-pyroscope-app/).
 
 ### Install in [Grafana Cloud](https://grafana.com/products/cloud/)
 
-All Grafana Cloud instances come with Explore Profiles plugin preinstalled.
+All Grafana instances come with Profiles Drilldown plugin preinstalled.
 
-### Installation in your Grafana instance
-
-You can install Explore Profiles in your own Grafana instance using `grafana-cli`:
-
-```shell
-grafana-cli plugins install grafana-pyroscope-app
-```
-
-Alternatively, you can do it via Grafana UI by following these steps:
-
-1. Within Grafana, go to Administration > Plugins and data > Plugins.
-2. Search for "Explore Profiles".
-3. Click on "Explore Profiles".
-4. Click on "Install" button.
-
-### Install using environment variables
-
-If you want to install the app in a docker container, you need to configure the following environment variable:
-
-```shell
-GF_INSTALL_PLUGINS=grafana-pyroscope-app
-```
-
-## Getting Started
+## Get started
 
 1. In the main navigation bar, click on Explore > Profiles.
 2. You’ll land in the **All services** overview that shows time series and CPU utilization visualizations for all the services in your selected Pyroscope instance.
@@ -50,10 +26,10 @@ GF_INSTALL_PLUGINS=grafana-pyroscope-app
 6. Select the profile type you would like to explore by selecting **Flame graph** on any time series visualization.
 7. View the flame graph.
 
-For more information, refer to the Explore Profiles documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/).
+For more information, refer to the Profiles Drilldown documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/).
 
 To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/explore-profiles/blob/main/docs/README.md).
-The Explore Profiles documentation source files are in docs/sources.
+The Profiles Drilldown documentation source files are in docs/sources.
 
 ### Development / Contributing
 

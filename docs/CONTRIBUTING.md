@@ -1,10 +1,10 @@
-# Contributing to Grafana Explore Profiles
+# Contributing to Grafana Profiles Drilldown
 
 Welcome! We're excited that you're interested in contributing. Below are some basic guidelines.
 
 ## Workflow
 
-Grafana Explore Profiles follows a standard GitHub pull request workflow. If you're unfamiliar with this workflow, read the very helpful [Understanding the GitHub flow](https://guides.github.com/introduction/flow/) guide from GitHub.
+Grafana Profiles Drilldown follows a standard GitHub pull request workflow. If you're unfamiliar with this workflow, read the very helpful [Understanding the GitHub flow](https://guides.github.com/introduction/flow/) guide from GitHub.
 
 You are welcome to create draft PRs at any stage of readiness - this
 can be helpful to ask for assistance or to develop an idea.  
@@ -76,7 +76,7 @@ For more information, refer to the [Flame graph AI](https://grafana.com/docs/gra
 
 For developing in this repo, requirements are generally managed by lint rules and pre-commit hooks. However, for other things, like code organization, please follow the pattern established by the rest of the repo.
 
-In case of doubt, have a look at ["Explore Profiles frontend architecture"](./CODE-ARCHITECTURE.md)
+In case of doubt, have a look at ["Profiles Drilldown frontend architecture"](./CODE-ARCHITECTURE.md)
 
 ### Lint and format your code
 

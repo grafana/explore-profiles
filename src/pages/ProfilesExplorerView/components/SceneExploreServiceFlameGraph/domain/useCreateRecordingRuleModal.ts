@@ -6,7 +6,7 @@ type ToggleModal = {
   close: () => void;
 };
 
-export function useCreateMetricModal(): ToggleModal {
+export function useCreateRecordingRuleModal(): ToggleModal {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return {

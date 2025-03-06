@@ -7,8 +7,14 @@ import { LayoutType } from '../../pages/ProfilesExplorerView/components/SceneByV
 import { PanelType } from '../../pages/ProfilesExplorerView/components/SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { GIT_COMMIT } from '../../version';
 
+export type PageName = 'explore' | 'settings' | 'ad_hoc';
+
 // hey future dev: don't forget to add any new value to our features tracking dashboard!
 export type Interactions = {
+  g_pyroscope_app_page_initialized: {
+    page: PageName;
+  };
+
   g_pyroscope_app_ad_hoc_file_dropped: {
     fileType: string;
   };

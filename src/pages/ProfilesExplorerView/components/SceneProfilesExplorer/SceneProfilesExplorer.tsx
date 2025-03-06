@@ -36,6 +36,7 @@ import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByV
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
+import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
@@ -46,6 +47,7 @@ import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/Scen
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
+import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { Header } from './components/Header';
 
@@ -125,6 +127,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new FiltersVariable({ key: 'filtersBaseline' }),
           new FiltersVariable({ key: 'filtersComparison' }),
           new GroupByVariable(),
+          new SpanSelectorVariable(),
         ],
       }),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
@@ -200,6 +203,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          this.resetSpanSelector();
         }
       });
 
@@ -208,6 +212,28 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          // This is to prevent removing the span selector if the previous service name was not correct
+          // This way a user can still select the service name for selected span in case there's a mismatch
+          // in the service name that was provided from the trace
+          if (newState.options.some((option) => option.value === prevState.value)) {
+            this.resetSpanSelector();
+          }
+        }
+      });
+
+    const profileTypeSub = sceneGraph
+      .findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable)
+      .subscribeToState((newState, prevState) => {
+        if (newState.value && newState.value !== prevState.value) {
+          this.resetSpanSelector();
+        }
+      });
+
+    const filtersSub = sceneGraph
+      .findByKeyAndType(this, 'filters', FiltersVariable)
+      .subscribeToState((newState, prevState) => {
+        if (JSON.stringify(newState.filters) !== JSON.stringify(prevState.filters)) {
+          this.resetSpanSelector();
         }
       });
 
@@ -215,6 +241,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       unsubscribe() {
         serviceNameSub.unsubscribe();
         dataSourceSub.unsubscribe();
+        filtersSub.unsubscribe();
+        profileTypeSub.unsubscribe();
       },
     };
   }
@@ -259,12 +287,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       });
     });
 
+    const removeSpanSelectorSub = this.subscribeToEvent(RemoveSpanSelector, () => {
+      this.resetSpanSelector();
+    });
+
     return {
       unsubscribe() {
         diffFlameGraphSub.unsubscribe();
         flameGraphSub.unsubscribe();
         labelsSub.unsubscribe();
         profilesSub.unsubscribe();
+        removeSpanSelectorSub.unsubscribe();
       },
     };
   }
@@ -291,10 +324,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
   }
 
+  resetSpanSelector() {
+    sceneGraph.findByKeyAndType(this, 'spanSelector', SpanSelectorVariable).reset();
+  }
+
   resetVariables(nextExplorationType: string) {
     sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).reset();
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
+    this.resetSpanSelector();
 
     // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"
     // if not, they will be added to the queries without any notice on the UI

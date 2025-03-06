@@ -52,25 +52,23 @@ Refer to the [AI-powered flame graph interpreter](https://pyroscope.io/blog/ai-p
 
 Flame graph AI uses the LLM plugin for Grafana to provide the large-language model using OpenAI API.
 
-You can use Flame graph AI in Grafana **Explore** > **Profiles** and the Explore Profiles app, nested underneath **Explore** > **Profiles** > **Explore profiles**.
+You can use Flame graph AI in the Profiles Drilldown app, nested underneath **Drilldown** > **Profiles**.
 
 ### Before you begin
-
-Flame graph AI is available only when using Explore Profiles.
 
 To use Flame graph AI, you must have:
 
 - Configured a [Grafana Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) that has profiling data
 
 - Enabled the [LLM plugin](https://grafana.com/docs/grafana-cloud/alerting-and-irm/machine-learning/configure/llm-plugin/) for your Grafana instance
-- Activated the [Explore Profiles](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app for your Grafana instance
+- Activated the [Profiles Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app for your Grafana instance
 
 ### Use Flame graph AI
 
 To use Flame graph AI when viewing a flame graph:
 
 1. Sign on to your Grafana Cloud account and start your Grafana instance.
-1. Select **Explore** > **Profiles** from the left navigation.
+1. Select **Drilldown** > **Profiles** from the left navigation.
 1. Select **Flame graph** view from the **Exploration** types or select any view or service with an available flame graph. For example, from the **All services** view, select any **Flame graph** link to open the flame graph for that service.
 1. Select **Explain Flame Graph** to view the **Flame graph analysis**.
 
@@ -86,7 +84,7 @@ You can use Flame graph AI to interpret the diff view.
 To use Flame graph AI when comparing two different flame graphs:
 
 1. Sign on to your Grafana Cloud account and start your Grafana instance.
-1. Select **Explore** > **Profiles** from the left navigation.
+1. Select **Drilldown** > **Profiles** from the left navigation.
 1. Select a **Service**, **Profile**, and time range (optional; default value is **Last 1 hour**).
 1. Optional: In **Baseline time range**, select one or more labels to use as filters. Select **Execute**.
 1. Optional: In **Comparison time range**, select one or more labels to use as filters. Select **Execute**.
