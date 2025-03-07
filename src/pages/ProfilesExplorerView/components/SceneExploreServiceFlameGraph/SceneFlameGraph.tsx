@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
-import { FlameGraph } from '@grafana/flamegraph';
+import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
@@ -15,16 +15,21 @@ import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 import { Unsubscribable } from 'rxjs';
 
+import { RecordingRule } from '../../../../shared/infrastructure/recording-rules/RecordingRule';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
+import { useCreateRecordingRule } from '../SceneCreateMetricModal/domain/useCreateRecordingRule';
+import { useCreateRecordingRulesMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
+import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
+import { useCreateRecordingRuleModal } from './domain/useCreateRecordingRuleModal';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -33,6 +38,7 @@ interface SceneFlameGraphState extends SceneObjectState {
   exportMenu: SceneExportMenu;
   aiPanel: SceneAiPanel;
   functionDetailsPanel: SceneFunctionDetailsPanel;
+  createRecordingRuleModal: SceneCreateRecordingRuleModal;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -49,6 +55,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       exportMenu: new SceneExportMenu(),
       aiPanel: new SceneAiPanel(),
       functionDetailsPanel: new SceneFunctionDetailsPanel(),
+      createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -98,7 +105,8 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel } = this.useState();
+    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createRecordingRuleModal } =
+      this.useState();
 
     if (isFetchingSettingsError) {
       displayWarning([
@@ -152,6 +160,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           panel: functionDetailsPanel,
           timeRange: lastTimeRange,
         },
+        recordingRules: {
+          modal: createRecordingRuleModal,
+        },
       },
       actions: {
         getTheme,
@@ -171,6 +182,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
+    const { actions: recordingRulesActions } = useCreateRecordingRule();
+    const recordingRuleModal = useCreateRecordingRuleModal();
+    const recordingRulesMenu = useCreateRecordingRulesMenu(recordingRuleModal.open);
+
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
     useEffect(() => {
@@ -188,6 +203,18 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       ),
       [data.isLoading, data.title, styles.spinner]
     );
+
+    // Any is necessary because the type of clickedItemData is not exported by
+    // the flamegraph package.
+    const extraContextMenuButtons: FlameGraphProps['getExtraContextMenuButtons'] = (
+      clickedItemData: any,
+      data: Record<string, any>
+    ) => {
+      const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+      const recordingRulesButtons = recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+
+      return [...ghButtons, ...recordingRulesButtons];
+    };
 
     return (
       <div className={styles.flex}>
@@ -220,7 +247,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
               data={data.profileData as any}
               disableCollapsing={!data.settings?.collapsedFlamegraphs}
               getTheme={actions.getTheme as any}
-              getExtraContextMenuButtons={gitHubIntegration.actions.getExtraFlameGraphMenuItems}
+              getExtraContextMenuButtons={extraContextMenuButtons}
               extraHeaderElements={
                 <data.export.menu.Component
                   model={data.export.menu}
@@ -245,6 +272,16 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             onClose={sidePanel.close}
           />
         )}
+
+        <data.recordingRules.modal.Component
+          model={data.recordingRules.modal}
+          isModalOpen={recordingRuleModal.isModalOpen}
+          onDismiss={recordingRuleModal.close}
+          onCreate={(rule: RecordingRule) => {
+            recordingRulesActions.save(rule);
+            recordingRuleModal.close();
+          }}
+        />
       </div>
     );
   };
