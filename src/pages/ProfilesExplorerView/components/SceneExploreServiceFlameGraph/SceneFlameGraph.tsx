@@ -24,6 +24,8 @@ import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
+import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
+import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
@@ -90,7 +92,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     );
   }
 
-  useSceneFlameGraph = (): DomainHookReturnValue => {
+  useSceneFlameGraph = (spanSelector: string): DomainHookReturnValue => {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
@@ -108,10 +110,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     useEffect(() => {
       if (maxNodes) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes }),
+          $data: buildFlameGraphQueryRunner({ maxNodes, spanSelector }),
         });
       }
-    }, [maxNodes]);
+    }, [maxNodes, spanSelector]);
 
     const $dataState = $data.useState();
     const loadingState = $dataState?.data?.state;
@@ -134,6 +136,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         isFetchingProfileData,
         hasProfileData,
         profileData,
+        spanSelector,
         fetchProfileError,
         settings,
         export: {
@@ -156,10 +159,15 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     };
   };
 
+  removeSpanSelector() {
+    this.publishEvent(new RemoveSpanSelector({}), true);
+  }
+
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
 
-    const { data, actions } = model.useSceneFlameGraph();
+    const spanSelector = getSceneVariableValue(model, 'spanSelector');
+    const { data, actions } = model.useSceneFlameGraph(spanSelector);
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
@@ -189,13 +197,18 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           title={panelTitle}
           isLoading={data.isLoading}
           headerActions={
-            <AIButton
-              disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
-              onClick={() => sidePanel.open('ai')}
-              interactionName="g_pyroscope_app_explain_flamegraph_clicked"
-            >
-              Explain Flame Graph
-            </AIButton>
+            <>
+              {spanSelector && (
+                <SpanSelectorLabel spanSelector={spanSelector} removeSpanSelector={() => model.removeSpanSelector()} />
+              )}
+              <AIButton
+                disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
+                onClick={() => sidePanel.open('ai')}
+                interactionName="g_pyroscope_app_explain_flamegraph_clicked"
+              >
+                Explain Flame Graph
+              </AIButton>
+            </>
           }
         >
           {data.fetchProfileError && (
