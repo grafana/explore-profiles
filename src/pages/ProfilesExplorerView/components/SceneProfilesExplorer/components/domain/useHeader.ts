@@ -60,6 +60,11 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
     actions: {
       onChangeExplorationType,
       onClickShareLink,
+      onClickRecordingRules: useCallback(() => {
+        reportInteraction('g_pyroscope_app_open_recording_rules_view');
+
+        navigate(`${PLUGIN_BASE_URL}${ROUTES.RECORDING_RULES}`, { state: { referrer: window.location.href } });
+      }, [navigate]),
       onClickAdHoc: useCallback(() => {
         reportInteraction('g_pyroscope_app_upload_ad_hoc_clicked');
 
