@@ -12,7 +12,7 @@
   },
   "info": {
     "keywords": ["app", "pyroscope", "profiling", "explore", "profiles", "performance", "drilldown"],
-    "description": "Continuous profiling service powered by Grafana Pyroscope",
+    "description": "View and analyze high-level service performance, identify problem processes for optimization, and diagnose issues to determine root causes.",
     "author": {
       "name": "Grafana"
     },
