@@ -1,3 +1,13 @@
+# [1.2.0](https://github.com/grafana/explore-profiles/compare/v1.1.0...v1.2.0) (2025-03-10)
+
+
+### Features
+
+* Add generated typed Pyroscope API client ([#410](https://github.com/grafana/explore-profiles/issues/410)) ([2e2b4e1](https://github.com/grafana/explore-profiles/commit/2e2b4e1d41fab1ed37029fff0073879f51fe932f))
+* **FlameGraph:** Show the flame graph for a selected span ([#445](https://github.com/grafana/explore-profiles/issues/445)) ([2e036ee](https://github.com/grafana/explore-profiles/commit/2e036eeabc705e147560f13d8137821adf2585c5))
+
+
+
 # [1.1.0](https://github.com/grafana/explore-profiles/compare/v1.0.0...v1.1.0) (2025-02-21)
 
 
