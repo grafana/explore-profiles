@@ -57,7 +57,7 @@ jobs:
         run: echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Get current commit short SHA
-        run: echo "commit_short_sha=$(echo ${{ github.event.pull_request.head.sha || env.commit_sha }} | cut -d- -f2)" >> $GITHUB_ENV
+        run: echo "commit_short_sha=$(echo ${{ github.event.pull_request.head.sha || env.commit_sha }} | cut -c1-7)" >> $GITHUB_ENV
 
       # Before building make sure we update the version so it's easy to identify it
       # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
