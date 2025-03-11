@@ -5,15 +5,16 @@ import { FunctionDetails, LineProfile } from '../../../domain/types/FunctionDeta
 import { useGitHubContext } from '../../GitHubContextProvider/useGitHubContext';
 import { useFetchVCSFile } from '../infrastructure/useFetchVCSFile';
 import { buildGithubUrlForFunction } from './buildGithubUrlForFunction';
-import { buildLineProfiles, buildPlaceholderLineProfiles } from './buildLineProfiles';
+import { annotateLines, annotatePlaceholderLineProfiles } from './buildLineProfiles';
 
 /**
  * View model for Code component
  */
 export type CodeLine = LineProfile & { line: string };
 
-type CodeContainerDomainValue = DomainHookReturnValue & { data: { lines: CodeLine[] } };
+type CodeContainerDomainValue = DomainHookReturnValue & { data: { snippetLines: CodeLine[]; allLines: CodeLine[] } };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export function useCodeContainer(dataSourceUid: string, functionDetails: FunctionDetails): CodeContainerDomainValue {
   const { isLoggedIn } = useGitHubContext();
   const { version } = functionDetails;
@@ -34,13 +35,16 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
   });
 
   // might be a bit costly so we memoize it
-  const lines = useMemo(
-    () =>
-      fileInfo?.content
-        ? buildLineProfiles(fileInfo.content, functionDetails.callSites)
-        : buildPlaceholderLineProfiles(functionDetails.callSites),
-    [fileInfo?.content, functionDetails.callSites]
-  );
+  const { snippetLines, lines } = useMemo(() => {
+    const [snippetLines, lines] = fileInfo?.content
+      ? annotateLines(fileInfo.content, functionDetails.callSites)
+      : annotatePlaceholderLineProfiles(functionDetails.callSites);
+
+    return {
+      snippetLines,
+      lines,
+    };
+  }, [fileInfo?.content, functionDetails.callSites]);
 
   return {
     data: {
@@ -49,7 +53,8 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
       isLoadingCode: isFetching,
       unit: functionDetails.unit,
       githubUrl: fileInfo?.URL ? buildGithubUrlForFunction(fileInfo.URL, functionDetails.startLine) : undefined,
-      lines: lines.map((line) => ({ ...line, line: line.line ?? '???' })),
+      snippetLines: snippetLines.map((annotatedLine) => ({ ...annotatedLine, line: annotatedLine.line ?? '???' })),
+      allLines: lines.map((annotateLine) => ({ ...annotateLine, line: annotateLine.line ?? '???' })),
       noCodeAvailable: Boolean(fetchError) || !lines.some((line) => line.line),
     },
     actions: {
