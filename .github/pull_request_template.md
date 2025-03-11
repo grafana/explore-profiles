@@ -1,7 +1,7 @@
 ### ✨ Description
 
 Fixes: <!-- Link to the issue this PR fixes -->
-Related issue(s): !-- Link to the issue this PR is related to but does not resolve it -->
+Related issue(s): <!-- Link to the issue this PR is related to but does not resolve it -->
 
 <!-- General summary of what the PR aims to do -->
 
