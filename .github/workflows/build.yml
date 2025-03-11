@@ -68,7 +68,7 @@ jobs:
 
       - name: Append sha to plugin version
         if: inputs.addSha == true
-        run: npm version --no-git-tag-version `jq -r '.version' package.json`-`git rev-parse --short HEAD`
+        run: npm version --no-git-tag-version `jq -r '.version' package.json`-`${{ github.event.pull_request.head.sha.substr(0, 7) || env.commit_sha.substr(0, 7) }}`
 
       - name: Build frontend
         run: yarn build
