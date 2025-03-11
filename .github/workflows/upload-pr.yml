@@ -1,19 +1,10 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    paths-ignore:
-      - docs/*
-      - docs/sources/**
     branches:
       - main
     types:
-      - opened
-      - reopened
-      - synchronize
       - labeled
 
 env:
@@ -31,28 +22,14 @@ jobs:
     if: github.actor != 'databases-frontend-ci-bot[bot]'
     uses: ./.github/workflows/build.yml
     with:
-      e2e: true
+      e2e: false
 
   upload:
     name: Upload to GCS
     needs: [build]
-    if: github.event_name == 'push'
+    if: github.event.label.name == 'upload'
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
-      github_environment: gcs-no-approval
-
-  deploy-main-to-dev-and-ops:
-    name: Deploy
-    needs: [upload]
-    uses: ./.github/workflows/deploy.yml
-    # Make deployments available only from main
-    if: github.event_name == 'push'
-    secrets: inherit
-    strategy:
-      matrix:
-        environment: [dev, ops]
-    with:
-      version: ${{ github.event.pull_request.head.sha || github.sha }}
-      environment: ${{ matrix.environment }}
+      github_environment: gcs-pr
