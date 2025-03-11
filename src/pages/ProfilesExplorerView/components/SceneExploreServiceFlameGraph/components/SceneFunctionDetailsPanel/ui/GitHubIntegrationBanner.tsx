@@ -13,7 +13,7 @@ export const GitHubIntegrationBanner = ({ onDismiss }: GitHubIntegrationBannerPr
       </p>
       <p>
         To activate this feature, you will need to add two new labels when sending profiles{' '}
-        <code>service_repository</code> and <code>service_ref</code>.{' '}
+        <code>service_repository</code> and <code>service_git_ref</code>.{' '}
       </p>
       <p>
         They should respectively be set to the full repository GitHub URL and the current{' '}
