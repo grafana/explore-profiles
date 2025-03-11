@@ -11,6 +11,10 @@ on:
       e2e:
         required: true
         type: boolean
+      addSha:
+        required: true
+        type: boolean
+        description: whether to append commit sha to plugin version
 
 jobs:
   frontend:
@@ -61,6 +65,10 @@ jobs:
       # see also https://github.com/orgs/community/discussions/25318
       - name: Update version.ts
         run: echo "export const GIT_COMMIT = '${{ github.event.pull_request.head.sha || env.commit_sha }}';" > src/version.ts
+
+      - name: Append sha to plugin version
+        if: inputs.addSha == true
+        run: npm version --no-git-tag-version `jq -r '.version' package.json`-`git rev-parse --short HEAD`
 
       - name: Build frontend
         run: yarn build

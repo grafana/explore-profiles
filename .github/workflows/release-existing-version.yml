@@ -20,6 +20,7 @@ jobs:
     with:
       ref: ${{ inputs.version }}
       e2e: false
+      addSha: false
 
   upload:
     needs: [build]
