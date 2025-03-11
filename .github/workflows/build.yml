@@ -56,6 +56,9 @@ jobs:
         id: get_sha
         run: echo "commit_sha=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
+      - name: Get current commit short SHA
+        run: echo "commit_short_sha=$(echo ${{ github.event.pull_request.head.sha || env.commit_sha }} | cut -d- -f2)" >> $GITHUB_ENV
+
       # Before building make sure we update the version so it's easy to identify it
       # This needs to be done after unit tests because unit tests rely on 'dev' sha in some steps
       # We need to get correct sha in the stop above in cases when we are building a tag as github.ref
@@ -68,7 +71,7 @@ jobs:
 
       - name: Append sha to plugin version
         if: inputs.addSha == true
-        run: npm version --no-git-tag-version `jq -r '.version' package.json`-`${{ github.event.pull_request.head.sha.substr(0, 7) || env.commit_sha.substr(0, 7) }}`
+        run: npm version --no-git-tag-version `jq -r '.version' package.json`-`${{ env.commit_short_sha }}`
 
       - name: Build frontend
         run: yarn build
