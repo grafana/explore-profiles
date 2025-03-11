@@ -10,6 +10,11 @@ on:
       - docs/sources/**
     branches:
       - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
 
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
@@ -31,11 +36,12 @@ jobs:
   upload:
     name: Upload to GCS
     needs: [build]
+    if: github.event.label.name == 'upload'
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
-      github_environment: ${{ github.event_name != 'push' && 'gcs' || 'gcs-no-approval' }}
+      github_environment: gcs-no-approval
 
   deploy-main-to-dev-and-ops:
     name: Deploy
