@@ -21,12 +21,12 @@ permissions:
   id-token: write
 
 # This ensures builds in main are queued instead of running in parallel to ensure there's no race condition to
-# deploy dev environment from main with Argo. At the same time we don't cancel in progress workflows to ensure they finish
-# to give feedback about the build for each commit. See also https://github.com/grafana/explore-profiles/issues/440
+# deploy dev environment from main with Argo. At the same time we cancel in progress workflows to not lock the queue
+# as some steps require approval an may not be run. See also https://github.com/grafana/explore-profiles/issues/440
 # for more information.
 concurrency:
   group: ${{ github.ref }} # ensures workflows in the same branch are grouped together
-  cancel-in-progress: false # ensures workflows do not cancel each other, they will queue instead
+  cancel-in-progress: true # ensures workflows do not cancel each other, they will queue instead
 
 jobs:
   build:
