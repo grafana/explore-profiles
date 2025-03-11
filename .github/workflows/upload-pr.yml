@@ -32,4 +32,4 @@ jobs:
     secrets: inherit
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
-      github_environment: gcs-pr
+      github_environment: gcs-no-approval
