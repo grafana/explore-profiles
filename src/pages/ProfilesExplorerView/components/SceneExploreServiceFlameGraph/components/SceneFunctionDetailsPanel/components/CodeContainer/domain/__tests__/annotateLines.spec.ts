@@ -4,7 +4,10 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
   describe('if callSitesMap is empty', () => {
     it('returns an empty snippet and empty allLines array', () => {
       const result = annotatePlaceholderLines(new Map());
-      expect(result).toEqual([[], []]);
+      expect(result).toEqual({
+        snippetLines: [],
+        allLines: [],
+      });
     });
   });
 
