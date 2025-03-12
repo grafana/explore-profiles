@@ -22,7 +22,7 @@ export function CodeContainer({ dataSourceUid, functionDetails }: CodeContainerP
   return (
     <>
       <Code
-        lines={data.lines}
+        lines={data.snippetLines}
         unit={data.unit}
         githubUrl={data.githubUrl}
         isLoadingCode={data.isLoadingCode}
@@ -39,7 +39,7 @@ export function CodeContainer({ dataSourceUid, functionDetails }: CodeContainerP
         <AiSuggestionsPanel
           suggestionPromptInputs={{
             functionDetails: functionDetails,
-            lines: data.lines,
+            lines: data.allLines,
           }}
         />
       ) : null}
