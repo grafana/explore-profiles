@@ -1,16 +1,16 @@
-import { annotateLines, annotatePlaceholderLineProfiles } from '../buildLineProfiles';
+import { annotateLines, annotatePlaceholderLines } from '../annotateLines';
 
 describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
   describe('if callSitesMap is empty', () => {
     it('returns an empty snippet and empty allLines array', () => {
-      const result = annotatePlaceholderLineProfiles(new Map());
+      const result = annotatePlaceholderLines(new Map());
       expect(result).toEqual([[], []]);
     });
   });
 
   describe('if callSitesMap is not empty', () => {
     it('returns a snippet of annotated code lines', () => {
-      const [snippet, allLines] = annotatePlaceholderLineProfiles(
+      const { snippetLines, allLines } = annotatePlaceholderLines(
         new Map([
           [12, { line: 12, flat: 0, cum: 40000000 }],
           [15, { line: 15, flat: 0, cum: 710000000 }],
@@ -18,7 +18,7 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
         ])
       );
 
-      expect(snippet).toEqual([
+      expect(snippetLines).toEqual([
         {
           cum: 0,
           flat: 0,
@@ -116,7 +116,7 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
 
     describe('when the lines contained in callSitesMap are smaller than the number of padded lines', () => {
       it('returns an array cropped properly', () => {
-        const [snippet, allLines] = annotatePlaceholderLineProfiles(
+        const { snippetLines, allLines } = annotatePlaceholderLines(
           new Map([
             [2, { line: 2, flat: 0, cum: 40000000 }],
             [4, { line: 4, flat: 0, cum: 710000000 }],
@@ -124,7 +124,7 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
           ])
         );
 
-        expect(snippet).toEqual([
+        expect(snippetLines).toEqual([
           {
             cum: 30000000,
             flat: 0,
@@ -190,8 +190,8 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
 describe('buildLineProfiles(fileContent, callSitesMap', () => {
   describe('if callSitesMap is empty', () => {
     it('returns an empty snippet array', () => {
-      const [snippet, allLines] = annotateLines('// this file is empty', new Map());
-      expect(snippet).toEqual([]);
+      const { snippetLines, allLines } = annotateLines('// this file is empty', new Map());
+      expect(snippetLines).toEqual([]);
       expect(allLines).toEqual([
         {
           cum: 0,
@@ -230,7 +230,7 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
 });`;
 
     it('returns an array containing samples/line info, sorted by line number and padded with extra lines', () => {
-      const [snippet, allLines] = annotateLines(
+      const { snippetLines, allLines } = annotateLines(
         fileContent,
         new Map([
           [12, { line: 12, flat: 0, cum: 40000000 }],
@@ -239,7 +239,7 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
         ])
       );
 
-      expect(snippet).toEqual([
+      expect(snippetLines).toEqual([
         {
           cum: 0,
           flat: 0,
@@ -482,7 +482,7 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
 
     describe('when the lines contained in callSitesMap are smaller than the number of padded lines', () => {
       it('returns an array cropped properly', () => {
-        const [snippet, allLines] = annotateLines(
+        const { snippetLines, allLines } = annotateLines(
           fileContent,
           new Map([
             [2, { line: 2, flat: 0, cum: 40000000 }],
@@ -491,7 +491,7 @@ describe('buildPlaceholderLineProfiles(callSitesMap)', () => {
           ])
         );
 
-        expect(snippet).toEqual([
+        expect(snippetLines).toEqual([
           {
             cum: 30000000,
             flat: 0,

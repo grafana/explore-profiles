@@ -4,9 +4,17 @@ const VERTICAL_LINES_PADDING = 5;
 
 type CallSitesMap = Map<number, CallSiteProps>;
 
-export function annotatePlaceholderLineProfiles(callSitesMap: CallSitesMap): LineProfile[][] {
+interface AnnotatedLines {
+  snippetLines: LineProfile[];
+  allLines: LineProfile[];
+}
+
+export function annotatePlaceholderLines(callSitesMap: CallSitesMap): AnnotatedLines {
   if (!callSitesMap.size) {
-    return [[], []];
+    return {
+      snippetLines: [],
+      allLines: [],
+    };
   }
 
   const callSites = Array.from(callSitesMap.values()).sort((a, b) => a.line - b.line);
@@ -28,10 +36,13 @@ export function annotatePlaceholderLineProfiles(callSitesMap: CallSitesMap): Lin
 
   // With no file contents, we return only a dummy annotated snippet which shows
   // the appropriate line numbers, but no content.
-  return [annotatedSnippet, []];
+  return {
+    snippetLines: annotatedSnippet,
+    allLines: [],
+  };
 }
 
-export function annotateLines(fileContent: string, callSitesMap: CallSitesMap): LineProfile[][] {
+export function annotateLines(fileContent: string, callSitesMap: CallSitesMap): AnnotatedLines {
   const callSites = Array.from(callSitesMap.values()).sort((a, b) => a.line - b.line);
   const lines = fileContent.split('\n');
 
@@ -49,12 +60,18 @@ export function annotateLines(fileContent: string, callSitesMap: CallSitesMap): 
 
   if (callSitesMap.size === 0) {
     // If the call site map is empty, there's no snippet to render.
-    return [[], annotatedLines];
+    return {
+      snippetLines: [],
+      allLines: annotatedLines,
+    };
   }
 
   const firstLineIndex = Math.max(0, callSites[0].line - VERTICAL_LINES_PADDING - 1);
   const lastLineIndex = Math.min(lines.length, callSites[callSites.length - 1].line + VERTICAL_LINES_PADDING);
   const annotatedSnippet = annotatedLines.slice(firstLineIndex, lastLineIndex);
 
-  return [annotatedSnippet, annotatedLines];
+  return {
+    snippetLines: annotatedSnippet,
+    allLines: annotatedLines,
+  };
 }
