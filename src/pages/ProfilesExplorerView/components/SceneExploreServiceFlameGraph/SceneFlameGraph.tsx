@@ -12,7 +12,7 @@ import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
 import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Unsubscribable } from 'rxjs';
 
 import { RecordingRule } from '../../../../shared/infrastructure/recording-rules/RecordingRule';
@@ -29,7 +29,6 @@ import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
-import { useCreateRecordingRuleModal } from './domain/useCreateRecordingRuleModal';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -183,8 +182,8 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
     const { actions: recordingRulesActions } = useCreateRecordingRule();
-    const recordingRuleModal = useCreateRecordingRuleModal();
-    const recordingRulesMenu = useCreateRecordingRulesMenu(recordingRuleModal.open);
+    const [recordingRulesModelOpen, setIsRecordingRulesModalOpen] = useState(false);
+    const recordingRulesMenu = useCreateRecordingRulesMenu(() => setIsRecordingRulesModalOpen(true));
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -275,11 +274,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
         <data.recordingRules.modal.Component
           model={data.recordingRules.modal}
-          isModalOpen={recordingRuleModal.isModalOpen}
-          onDismiss={recordingRuleModal.close}
+          isModalOpen={recordingRulesModelOpen}
+          onDismiss={() => setIsRecordingRulesModalOpen(false)}
           onCreate={(rule: RecordingRule) => {
             recordingRulesActions.save(rule);
-            recordingRuleModal.close();
+            setIsRecordingRulesModalOpen(false);
           }}
         />
       </div>

@@ -35,7 +35,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     onDismiss,
     onCreate,
   }: SceneComponentProps<SceneCreateRecordingRuleModal> & {
-    isModalOpen: () => boolean;
+    isModalOpen: boolean;
     onDismiss: () => void;
     onCreate: (rule: RecordingRule) => Promise<void>;
   }) => {
@@ -83,7 +83,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     }, [filterQuery, model]);
 
     return (
-      <Modal title="Create recording rule" isOpen={isModalOpen()} onDismiss={onDismiss}>
+      <Modal title="Create recording rule" isOpen={isModalOpen} onDismiss={onDismiss}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             label="Metric name"
