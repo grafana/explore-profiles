@@ -72,7 +72,12 @@ export function Header(props: HeaderProps) {
 
           <div className={styles.appMiscButtons}>
             {settings?.enableMetricsFromProfiles && (
-              <IconButton name="gf-prometheus" tooltip="View recording rules" onClick={actions.onClickRecordingRules} />
+              <IconButton
+                name="gf-prometheus"
+                tooltip="View recording rules"
+                aria-label="View recording rules"
+                onClick={actions.onClickRecordingRules}
+              />
             )}
 
             <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />

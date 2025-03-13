@@ -82,7 +82,7 @@ export default function SettingsView() {
             </InlineFieldRow>
           </FieldSet>
 
-          <FieldSet label="Experimental features" data-testid="export-settings">
+          <FieldSet label="Experimental features" data-testid="experimental-features">
             <InlineFieldRow>
               <InlineField
                 label="Metrics from profiles"
