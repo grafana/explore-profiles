@@ -27,6 +27,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       e2e: true
+      addSha: true
 
   upload:
     name: Upload to GCS
