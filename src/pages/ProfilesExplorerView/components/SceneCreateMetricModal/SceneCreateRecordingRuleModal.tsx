@@ -24,9 +24,7 @@ interface SceneCreateRecordingRuleModalState extends SceneObjectState {}
 
 export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRecordingRuleModalState> {
   constructor() {
-    super({
-      key: 'create-recording-rule-modal',
-    });
+    super({});
   }
 
   static Component = ({
