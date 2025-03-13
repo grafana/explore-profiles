@@ -61,7 +61,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
         serviceName: data.serviceName,
         profileType: data.profileType,
         matcher: data.matcher,
-        labels: data.labels.map((label) => label.value ?? ''),
+        labels: data.labels ? data.labels.map((label) => label.value ?? '') : [],
       });
 
     const [options, setOptions] = useState<string[]>([]);
