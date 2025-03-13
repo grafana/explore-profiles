@@ -29,10 +29,12 @@ export default function RecordingRulesView() {
     {
       id: 'serviceName',
       header: 'Service Name',
+      sortType: 'alphanumeric',
     },
     {
       id: 'profileType',
       header: 'Profile Type',
+      sortType: 'alphanumeric',
     },
     {
       id: 'labels',
@@ -75,8 +77,18 @@ export default function RecordingRulesView() {
   return (
     <>
       <PageTitle title="Recording rules" />
-      <InteractiveTable columns={columns} data={formattedRules || []} getRowId={(rule) => rule.name}></InteractiveTable>
-      <Button variant="secondary" onClick={() => history.back()} aria-label="Back to Profiles Drilldown">
+      <InteractiveTable
+        columns={columns}
+        pageSize={10}
+        data={formattedRules || []}
+        getRowId={(rule) => rule.name}
+      ></InteractiveTable>
+      <Button
+        className={css({ marginTop: '32px' })}
+        variant="secondary"
+        onClick={() => history.back()}
+        aria-label="Back to Profiles Drilldown"
+      >
         Back to Profiles Drilldown
       </Button>
     </>
