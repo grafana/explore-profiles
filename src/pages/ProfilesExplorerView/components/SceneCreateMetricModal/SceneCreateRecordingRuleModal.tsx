@@ -41,16 +41,10 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
   }) => {
     const {
       register,
-      reset,
       handleSubmit,
       control,
       formState: { errors },
-    } = useForm<RecordingRuleForm>({ mode: 'onBlur' });
-
-    const closeModal = () => {
-      reset();
-      onDismiss();
-    };
+    } = useForm<RecordingRuleForm>({ mode: 'onBlur', shouldUnregister: true });
 
     const onSubmit: SubmitHandler<RecordingRuleForm> = (data) =>
       onCreate({
@@ -88,7 +82,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     }, [filterQuery, model]);
 
     return (
-      <Modal title="Create recording rule" isOpen={isModalOpen} onDismiss={closeModal}>
+      <Modal title="Create recording rule" isOpen={isModalOpen} onDismiss={onDismiss}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             label="Metric name"
@@ -148,7 +142,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
           </Field>
 
           <Modal.ButtonRow>
-            <Button variant="secondary" fill="outline" onClick={closeModal}>
+            <Button variant="secondary" fill="outline" onClick={onDismiss}>
               Cancel
             </Button>
             <Button variant="primary" type="submit">
