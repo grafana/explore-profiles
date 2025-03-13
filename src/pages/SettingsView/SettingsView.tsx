@@ -82,6 +82,19 @@ export default function SettingsView() {
             </InlineFieldRow>
           </FieldSet>
 
+          <FieldSet label="Experimental" data-testid="export-settings">
+            <InlineFieldRow>
+              <InlineField label="Metrics from profiles" labelWidth={24}>
+                <InlineSwitch
+                  label="Enable metrics from profiles"
+                  name="metrics-from-profiles"
+                  value={data.enableMetricsFromProfiles}
+                  onChange={actions.toggleEnableMetricsFromProfiles}
+                />
+              </InlineField>
+            </InlineFieldRow>
+          </FieldSet>
+
           <div className={styles.buttons}>
             <Button variant="primary" type="submit">
               Save settings
