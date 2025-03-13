@@ -181,6 +181,8 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
+    const { settings } = useFetchPluginSettings();
+
     const { actions: recordingRulesActions } = useCreateRecordingRule();
     const [recordingRulesModelOpen, setIsRecordingRulesModalOpen] = useState(false);
     const recordingRulesMenu = useCreateRecordingRulesMenu(() => setIsRecordingRulesModalOpen(true));
@@ -210,7 +212,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       data: Record<string, any>
     ) => {
       const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
-      const recordingRulesButtons = recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
+      const recordingRulesButtons = settings?.enableMetricsFromProfiles
+        ? recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data)
+        : [];
 
       return [...ghButtons, ...recordingRulesButtons];
     };

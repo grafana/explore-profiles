@@ -82,9 +82,13 @@ export default function SettingsView() {
             </InlineFieldRow>
           </FieldSet>
 
-          <FieldSet label="Experimental" data-testid="export-settings">
+          <FieldSet label="Experimental features" data-testid="export-settings">
             <InlineFieldRow>
-              <InlineField label="Metrics from profiles" labelWidth={24}>
+              <InlineField
+                label="Metrics from profiles"
+                tooltip="Allows creating Prometheus recording rules from profiles"
+                labelWidth={24}
+              >
                 <InlineSwitch
                   label="Enable metrics from profiles"
                   name="metrics-from-profiles"
