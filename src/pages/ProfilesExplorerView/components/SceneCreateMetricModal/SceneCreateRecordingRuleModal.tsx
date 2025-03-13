@@ -45,7 +45,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
       handleSubmit,
       control,
       formState: { errors },
-    } = useForm<RecordingRuleForm>();
+    } = useForm<RecordingRuleForm>({ mode: 'onBlur' });
 
     const closeModal = () => {
       reset();
