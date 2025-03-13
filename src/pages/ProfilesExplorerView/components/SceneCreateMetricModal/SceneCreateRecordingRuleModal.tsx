@@ -11,7 +11,6 @@ import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form'
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
-import { ReadonlyChicletList, ReadonlyFilter } from './components/ReadonlyChiclet';
 
 interface RecordingRuleForm {
   metricName: string;
@@ -69,12 +68,6 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     const filtersVariable = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable);
     const filters = filtersVariable.state.filters;
     const filterQuery = filters.map((filter) => `${filter.key}${filter.operator}"${filter.value}"`).join(', ');
-    const chicletFilters: ReadonlyFilter[] = filters.map((filter, idx) => ({
-      id: String(idx),
-      attribute: filter.key,
-      operator: filter.operator,
-      value: filter.value,
-    }));
 
     useEffect(() => {
       const timeRange = sceneGraph.getTimeRange(model).state.value;
@@ -145,10 +138,8 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
           </Field>
           <input type="text" value={profileMetric.id} hidden {...register('profileType')} />
 
-          <Field label="Filters" description="Additional filters used to refine the scope of the metric">
-            <div className={styles.readonlyValue}>
-              <ReadonlyChicletList filters={chicletFilters} />
-            </div>
+          <Field label="Filters" description="Filters selected in the main view will be applied to this rule">
+            <div className={styles.readonlyValue}>{filters.length === 0 ? 'No filters selected' : filterQuery}</div>
           </Field>
 
           <Modal.ButtonRow>
