@@ -1,5 +1,5 @@
 import { recordingRulesApiClient } from '@shared/infrastructure/recording-rules/recordingRulesApiClient';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { RecordingRule } from './RecordingRule';
 
@@ -16,6 +16,8 @@ type FetchResponse = {
 };
 
 export function useFetchRecordingRules({ enabled }: FetchParams = {}): FetchResponse {
+  const queryClient = useQueryClient();
+
   const { isFetching, error, data } = useQuery({
     enabled,
     queryKey: ['recording_rules'],
@@ -28,7 +30,10 @@ export function useFetchRecordingRules({ enabled }: FetchParams = {}): FetchResp
   });
 
   const { mutateAsync: remove } = useMutation({
-    mutationFn: (rule: RecordingRule) => recordingRulesApiClient.remove(rule),
+    mutationFn: async (rule: RecordingRule) => {
+      await recordingRulesApiClient.remove(rule);
+      await queryClient.invalidateQueries({ queryKey: ['recording_rules'] });
+    },
     networkMode: 'always',
   });
 
