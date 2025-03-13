@@ -4,9 +4,8 @@ import { Navigate, Routes as ReactRouterRoutes, Route } from 'react-router-dom';
 import { PLUGIN_BASE_URL, ROUTES } from '../constants';
 import AdHocView from '../pages/AdHocView/AdHocView';
 import ProfilesExplorerView from '../pages/ProfilesExplorerView/ProfilesExplorerView';
+import RecordingRulesView from '../pages/RecordingRulesView/RecordingRulesView';
 import SettingsView from '../pages/SettingsView/SettingsView';
-
-const RecordingRulesView = React.lazy(() => import('../pages/RecordingRulesView/RecordingRulesView'));
 
 export function Routes() {
   return (
