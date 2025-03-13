@@ -99,8 +99,8 @@ export default function SettingsView() {
             <Button variant="primary" type="submit">
               Save settings
             </Button>
-            <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Grafana Profiles Drilldown">
-              Back to Grafana Profiles Drilldown
+            <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Profiles Drilldown">
+              Back to Profiles Drilldown
             </Button>
           </div>
         </>

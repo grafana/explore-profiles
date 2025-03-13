@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { applyFieldOverrides, arrayToDataFrame, DataFrame, FieldType, GrafanaTheme2 } from '@grafana/data';
 import { TableCellHeight } from '@grafana/schema';
 import {
+  Button,
   IconButton,
   Table,
   TableCellDisplayMode,
@@ -57,6 +58,9 @@ export default function RecordingRulesView() {
           initialSortBy={[{ displayName: 'Name' }]}
         />
       )}
+      <Button variant="secondary" onClick={() => history.back()} aria-label="Back to Profiles Drilldown">
+        Back to Profiles Drilldown
+      </Button>
     </>
   );
 }
