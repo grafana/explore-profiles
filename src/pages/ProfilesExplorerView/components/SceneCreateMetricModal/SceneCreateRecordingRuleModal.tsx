@@ -39,8 +39,6 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     onDismiss: () => void;
     onCreate: (rule: RecordingRule) => Promise<void>;
   }) => {
-    const styles = useStyles2(getStyles);
-
     const {
       register,
       reset,
@@ -136,17 +134,17 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
           <Divider />
 
           <Field label="Service name">
-            <div className={styles.readonlyValue}>{`${serviceName}`}</div>
+            <div>{`${serviceName}`}</div>
           </Field>
           <input type="text" value={serviceName.toString()} hidden {...register('serviceName')} />
 
           <Field label="Profile type">
-            <div className={styles.readonlyValue}>{`${profileMetric.group}/${profileMetric.type}`}</div>
+            <div>{`${profileMetric.group}/${profileMetric.type}`}</div>
           </Field>
           <input type="text" value={profileMetric.id} hidden {...register('profileType')} />
 
           <Field label="Filters" description="Filters selected in the main view will be applied to this rule">
-            <div className={styles.readonlyValue}>{filters.length === 0 ? 'No filters selected' : filterQuery}</div>
+            <div>{filters.length === 0 ? 'No filters selected' : filterQuery}</div>
           </Field>
 
           <Modal.ButtonRow>
@@ -172,30 +170,20 @@ const MetricNameErrorComponent = (error: FieldError | undefined) => {
 
   if (error.type === 'pattern') {
     return (
-      <div>
+      <span>
         <span>Metric name is invalid, it must have the following properties:</span>
         <ul className={styles.errorList}>
           <li>Only contain alphanumeric characters or underscores</li>
           <li>Must not begin with a number</li>
         </ul>
-      </div>
+      </span>
     );
   }
 
-  return <div>{error.message}</div>;
+  return <span>{error.message}</span>;
 };
 
-// eslint-disable-next-line no-unused-vars
 const getStyles = (theme: GrafanaTheme2) => ({
-  readonlyRow: css`
-    align-items: center;
-    max-width: 100%;
-  `,
-
-  readonlyValue: css`
-    max-width: 100%;
-  `,
-
   errorList: css`
     padding-left: ${theme.spacing(2)};
   `,
