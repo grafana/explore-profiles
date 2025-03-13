@@ -44,7 +44,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
       handleSubmit,
       control,
       formState: { errors },
-    } = useForm<RecordingRuleForm>({ mode: 'onBlur', shouldUnregister: true });
+    } = useForm<RecordingRuleForm>({ mode: 'onChange', shouldUnregister: true });
 
     const onSubmit: SubmitHandler<RecordingRuleForm> = (data) =>
       onCreate({
