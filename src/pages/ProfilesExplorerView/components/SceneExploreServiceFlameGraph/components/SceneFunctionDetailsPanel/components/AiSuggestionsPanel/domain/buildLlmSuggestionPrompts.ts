@@ -16,11 +16,19 @@ export const buildSuggestionPrompts = ({
 }: // dotProfile,
 SuggestionPromptInputs) => {
   const userPrompt = `
-You are a code optimization expert. I will give you code, each line annotated with amount of time spent on a particular line (it's in the beginning of each line), and a function name.
+You are a code optimization expert. I will give you source code file where each line is annotated with profiling information. The annotation has the following format:
+
+\`\`\`
+(<cost>) <source code line>
+\`\`\`
+
+The \`\`\`<source code line>\`\`\` is the exact line of source code.
+
+The \`\`\`<cost>\`\`\` field will contain the resource cost of the given resource cost. This field will also contain the unit of the cost (e.g. seconds, bytes, etc). If \`\`\`<cost>\`\`\` is \`-\` that means there is no profiling data available.
 
 I want you to write back a new improved code for this function and explain why you made changes.
 
-Make sure to take annotations into strong consideration. If a suggested performance improvement isn't backed up by information from the annotations, do not include it.
+Make sure to take annotations into strong consideration. If a suggested performance improvement isn't backed up by information from the annotations, do not include it. Prioritize lines annotated with a higher cost.
 
 Do not mention the actual numbers from the annotations, users can already see how much time was spent on each line. Do not list various lines and their time spent. When you mention functions or lines, do not mention the time spent on them.
 
@@ -49,11 +57,12 @@ ${codeInfoToAnnotatedCode(functionDetails, lines)}
 };
 
 function codeInfoToAnnotatedCode(functionDetails: FunctionDetails, lines: LineProfile[]): string {
-  let code = lines
+  return lines
     .map((line) => {
+      if (line.cum === 0) {
+        return `(-) ${line.line}`;
+      }
       return `(${line.cum} ${functionDetails.unit}) ${line.line}`;
     })
     .join('\n');
-
-  return code;
 }
