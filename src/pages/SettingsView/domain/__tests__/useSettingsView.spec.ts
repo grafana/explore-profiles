@@ -55,6 +55,7 @@ describe('useSettingsView(plugin)', () => {
         updateMaxNodes: expect.any(Function),
         toggleEnableFlameGraphDotComExport: expect.any(Function),
         toggleEnableFunctionDetails: expect.any(Function),
+        toggleEnableMetricsFromProfiles: expect.any(Function),
         saveSettings: expect.any(Function),
         goBack: expect.any(Function),
       },

@@ -82,12 +82,29 @@ export default function SettingsView() {
             </InlineFieldRow>
           </FieldSet>
 
+          <FieldSet label="Experimental features" data-testid="experimental-features">
+            <InlineFieldRow>
+              <InlineField
+                label="Metrics from profiles"
+                tooltip="Allows creating Prometheus recording rules from profiles"
+                labelWidth={24}
+              >
+                <InlineSwitch
+                  label="Enable metrics from profiles"
+                  name="metrics-from-profiles"
+                  value={data.enableMetricsFromProfiles}
+                  onChange={actions.toggleEnableMetricsFromProfiles}
+                />
+              </InlineField>
+            </InlineFieldRow>
+          </FieldSet>
+
           <div className={styles.buttons}>
             <Button variant="primary" type="submit">
               Save settings
             </Button>
-            <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Grafana Profiles Drilldown">
-              Back to Grafana Profiles Drilldown
+            <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Profiles Drilldown">
+              Back to Profiles Drilldown
             </Button>
           </div>
         </>

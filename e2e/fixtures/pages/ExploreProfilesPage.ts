@@ -75,6 +75,12 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getRefreshPicker().click();
   }
 
+  /* Header elements */
+
+  get viewRecordingRulesButton() {
+    return this.getByLabel('View recording rules');
+  }
+
   /* Service */
 
   getServiceSelector() {

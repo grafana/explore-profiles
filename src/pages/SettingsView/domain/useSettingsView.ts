@@ -53,6 +53,12 @@ export function useSettingsView() {
           enableFunctionDetails: !s.enableFunctionDetails,
         }));
       },
+      toggleEnableMetricsFromProfiles() {
+        setCurrentSettings((s) => ({
+          ...s,
+          enableMetricsFromProfiles: !s.enableMetricsFromProfiles,
+        }));
+      },
       async saveSettings() {
         setMaxNodes(currentSettings.maxNodes);
 

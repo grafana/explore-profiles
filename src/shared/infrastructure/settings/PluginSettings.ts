@@ -3,6 +3,7 @@ export type PluginSettings = {
   maxNodes: number;
   enableFlameGraphDotComExport: boolean;
   enableFunctionDetails: boolean;
+  enableMetricsFromProfiles?: boolean;
 };
 
 export const DEFAULT_SETTINGS: PluginSettings = Object.freeze({
@@ -10,4 +11,5 @@ export const DEFAULT_SETTINGS: PluginSettings = Object.freeze({
   maxNodes: 16384,
   enableFlameGraphDotComExport: true,
   enableFunctionDetails: true,
+  enableMetricsFromProfiles: false,
 });
