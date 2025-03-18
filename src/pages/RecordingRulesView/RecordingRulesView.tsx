@@ -119,7 +119,7 @@ const getStyles = () => ({
 function RecordingRulesViewError({ error }: { error: HttpClientError }) {
   let errorMessage = 'Error while retrieving recording rules';
   if (error.response?.status === 404) {
-    errorMessage = 'This features require Pyroscope with recording_rules flag enabled.';
+    errorMessage = 'This feature requires Pyroscope with recording_rules flag enabled.';
   } else if (error.message) {
     errorMessage = error.message;
   }
