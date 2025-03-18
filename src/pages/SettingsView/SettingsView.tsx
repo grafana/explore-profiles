@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
+import { BackButton } from '@shared/components/Common/BackButton';
 import { displayError } from '@shared/domain/displayStatus';
 import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import { PageTitle } from '@shared/ui/PageTitle';
@@ -103,9 +104,7 @@ export default function SettingsView() {
             <Button variant="primary" type="submit">
               Save settings
             </Button>
-            <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Profiles Drilldown">
-              Back to Profiles Drilldown
-            </Button>
+            <BackButton onClick={actions.goBack} />
           </div>
         </>
       </form>

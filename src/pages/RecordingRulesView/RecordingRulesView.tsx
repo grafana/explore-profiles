@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
-import { Button, Column, DeleteButton, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
+import { Column, DeleteButton, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
+import { BackButton } from '@shared/components/Common/BackButton';
 import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { PageTitle } from '@shared/ui/PageTitle';
@@ -74,24 +75,13 @@ export default function RecordingRulesView() {
 
   const isEmpty = !formattedRules || formattedRules.length === 0;
 
-  const backButton = (
-    <Button
-      className={css({ marginTop: '32px' })}
-      variant="secondary"
-      onClick={() => history.back()}
-      aria-label="Back to Profiles Drilldown"
-    >
-      Back to Profiles Drilldown
-    </Button>
-  );
-
   let component = null;
 
   if (data.fetchError) {
-    component = <RecordingRulesViewError error={data.fetchError} backButton={backButton} />;
+    component = <RecordingRulesViewError error={data.fetchError} />;
   } else if (isEmpty) {
     component = (
-      <EmptyState message={'No recording rules'} variant="not-found" button={backButton}>
+      <EmptyState message={'No recording rules'} variant="not-found" button={<BackButton />}>
         Open a flame graph, click on the &quot;total&quot; block at the top and select &quot;Create recording rule&quot;
         from the context menu to define a new rule.
       </EmptyState>
@@ -100,12 +90,13 @@ export default function RecordingRulesView() {
     component = (
       <div>
         <InteractiveTable
+          className={css({ marginBottom: '32px' })}
           columns={columns}
           pageSize={10}
           data={formattedRules || []}
           getRowId={(rule) => rule.metricName}
         ></InteractiveTable>
-        {backButton}
+        <BackButton />
       </div>
     );
   }
@@ -125,7 +116,7 @@ const getStyles = () => ({
   `,
 });
 
-function RecordingRulesViewError({ error, backButton }: { error: HttpClientError; backButton: React.ReactNode }) {
+function RecordingRulesViewError({ error }: { error: HttpClientError }) {
   let errorMessage = 'Error while retrieving recording rules';
   if (error.response?.status === 404) {
     errorMessage = 'This features require Pyroscope with recording_rules flag enabled.';
@@ -133,7 +124,7 @@ function RecordingRulesViewError({ error, backButton }: { error: HttpClientError
     errorMessage = error.message;
   }
   return (
-    <EmptyState message="Error while retrieving recording rules" variant="not-found" button={backButton}>
+    <EmptyState message="Error while retrieving recording rules" variant="not-found" button={<BackButton />}>
       {errorMessage}
     </EmptyState>
   );

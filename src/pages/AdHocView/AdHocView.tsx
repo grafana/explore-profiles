@@ -1,4 +1,4 @@
-import { Button } from '@grafana/ui';
+import { BackButton } from '@shared/components/Common/BackButton';
 import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
@@ -11,9 +11,7 @@ export default function AdHocView() {
     <>
       <PageTitle title="Ad hoc view" />
       <AdHocTabs />
-      <Button variant="secondary" onClick={() => history.back()} aria-label="Back to Profiles Drilldown">
-        Back to Profiles Drilldown
-      </Button>
+      <BackButton />
     </>
   );
 }
