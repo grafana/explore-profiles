@@ -1,9 +1,8 @@
-// TODO(bryan): replace this with generate protobuf type
 export type RecordingRule = {
-  version: number;
+  id: string;
   name: string;
   serviceName: string;
   profileType: string;
-  matcher: string;
+  matchers: string[];
   labels: string[];
 };

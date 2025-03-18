@@ -3,12 +3,13 @@ import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingR
 import { useFetchRecordingRules } from '@shared/infrastructure/recording-rules/useFetchRecordingRules';
 
 export function useRecordingRulesView() {
-  const { recordingRules, error: fetchError, remove } = useFetchRecordingRules();
+  const { recordingRules, error: fetchError, remove, isFetching } = useFetchRecordingRules();
 
   return {
     data: {
       recordingRules,
       fetchError,
+      isFetching,
     },
     actions: {
       async removeRecordingRule(rule: RecordingRule) {

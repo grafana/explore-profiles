@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { Button, Column, DeleteButton, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
+import { Button, Column, DeleteButton, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
@@ -18,6 +18,10 @@ export default function RecordingRulesView() {
       'Error while retrieving recording rules!',
       'Please try to reload the page, sorry for the inconvenience.',
     ]);
+  }
+
+  if (data.isFetching) {
+    return '';
   }
 
   const columns: Array<Column<RecordingRule>> = [
@@ -74,23 +78,43 @@ export default function RecordingRulesView() {
     };
   });
 
+  const isEmpty = !formattedRules || formattedRules.length === 0;
+
+  const backButton = (
+    <Button
+      className={css({ marginTop: '32px' })}
+      variant="secondary"
+      onClick={() => history.back()}
+      aria-label="Back to Profiles Drilldown"
+    >
+      Back to Profiles Drilldown
+    </Button>
+  );
+
   return (
     <>
       <PageTitle title="Recording rules" />
-      <InteractiveTable
-        columns={columns}
-        pageSize={10}
-        data={formattedRules || []}
-        getRowId={(rule) => rule.name}
-      ></InteractiveTable>
-      <Button
-        className={css({ marginTop: '32px' })}
-        variant="secondary"
-        onClick={() => history.back()}
-        aria-label="Back to Profiles Drilldown"
-      >
-        Back to Profiles Drilldown
-      </Button>
+
+      {isEmpty && (
+        <EmptyState message={'No recording rules'} variant="not-found">
+          <div>
+            Open a flame graph, click on the &quot;total&quot; block at the top and select &quot;Create recording
+            rule&quot; from the context menu to define a new rule.
+          </div>
+          {backButton}
+        </EmptyState>
+      )}
+      {!isEmpty && (
+        <div>
+          <InteractiveTable
+            columns={columns}
+            pageSize={10}
+            data={formattedRules || []}
+            getRowId={(rule) => rule.name}
+          ></InteractiveTable>
+          {backButton}
+        </div>
+      )}
     </>
   );
 }

@@ -46,11 +46,11 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
 
     const onSubmit: SubmitHandler<RecordingRuleForm> = (data) =>
       onCreate({
-        version: 1,
+        id: '',
         name: data.metricName,
         serviceName: data.serviceName,
         profileType: data.profileType,
-        matcher: data.matcher,
+        matchers: [data.matcher],
         labels: data.labels ? data.labels.map((label) => label.value ?? '') : [],
       });
 

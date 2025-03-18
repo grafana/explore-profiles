@@ -1,57 +1,75 @@
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import {
+  ListRecordingRulesResponse,
+  RecordingRule as RecordingRuleProto,
+  UpsertRecordingRuleRequest,
+} from '@shared/pyroscope-api/settings/v1/recording_rules_pb';
 
 import { RecordingRule } from './RecordingRule';
 
-type ApiResponse = {
-  settings: Array<{ name: string; value: string }>;
-};
+function mapRuleToRecordingRule(rule: RecordingRuleProto): RecordingRule {
+  let serviceName = '';
+  for (let matcher of rule.matchers || []) {
+    if (matcher.includes('service_name=')) {
+      serviceName = matcher?.match(/service_name="([^"]+)"/)?.[1] || '';
+      break;
+    }
+  }
+  return {
+    id: rule.id,
+    name: rule.metricName,
+    serviceName,
+    profileType: rule.profileType,
+    matchers: rule.matchers,
+    labels: rule.groupBy || [],
+  };
+}
 
 // TODO(bryan): refactor this to use generated protobuf types
 class RecordingRulesApiClient extends ApiClient {
-  static RECORDING_RULE_SETTING_PREFIX = 'metric.';
-
   async get(): Promise<RecordingRule[]> {
     return super
-      .fetch('/settings.v1.SettingsService/Get', { method: 'POST', body: JSON.stringify({}) })
+      .fetch('/settings.v1.RecordingRulesService/ListRecordingRules', {
+        method: 'POST',
+        body: JSON.stringify({}),
+      })
       .then((response) => response.json())
-      .then((json: ApiResponse) => {
-        if (!json.settings) {
+      .then((json: ListRecordingRulesResponse) => {
+        if (!json.rules) {
           return [];
         }
-
-        return json.settings
-          .filter(({ name }) => name.startsWith(RecordingRulesApiClient.RECORDING_RULE_SETTING_PREFIX))
-          .map((setting) => JSON.parse(setting.value));
+        return json.rules.map((rule: RecordingRuleProto) => {
+          return mapRuleToRecordingRule(rule);
+        });
       });
   }
 
   async create(rule: RecordingRule): Promise<void> {
     return super
-      .fetch('/settings.v1.SettingsService/Set', {
+      .fetch('/settings.v1.RecordingRulesService/UpsertRecordingRule', {
         method: 'POST',
         body: JSON.stringify({
-          setting: {
-            name: this.withPrefix(rule.name),
-            value: JSON.stringify(rule),
-          },
-        }),
+          metricName: rule.name,
+          matchers: [
+            `{ service_name="${rule.serviceName}" }`,
+            `{ __profile_type__="${rule.profileType}"}`,
+            ...(rule.matchers || []),
+          ],
+          groupBy: rule.labels || [],
+        } as UpsertRecordingRuleRequest),
       })
       .then((response) => response.json());
   }
 
   async remove(rule: RecordingRule): Promise<void> {
     return super
-      .fetch('/settings.v1.SettingsService/Delete', {
+      .fetch('/settings.v1.RecordingRulesService/DeleteRecordingRule', {
         method: 'POST',
         body: JSON.stringify({
-          name: this.withPrefix(rule.name),
+          id: rule.id,
         }),
       })
       .then((response) => response.json());
-  }
-
-  private withPrefix(name: string): string {
-    return `${RecordingRulesApiClient.RECORDING_RULE_SETTING_PREFIX}${name}`;
   }
 }
 
