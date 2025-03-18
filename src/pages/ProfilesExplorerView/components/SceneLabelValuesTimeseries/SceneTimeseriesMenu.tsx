@@ -1,4 +1,4 @@
-import { PanelMenuItem, PluginExtensionLink } from '@grafana/data';
+import { Field, FieldConfig, FieldConfigSource, PanelMenuItem, PluginExtensionLink } from '@grafana/data';
 import { reportInteraction } from '@grafana/runtime';
 import {
   SceneComponentProps,
@@ -7,6 +7,7 @@ import {
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
+  VizPanel,
   VizPanelMenu,
 } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
@@ -140,7 +141,53 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       ) as TimeSeriesQuery;
   }
 
+  getFieldConfig() {
+    const panel = sceneGraph.findObject(this, (o) => o instanceof VizPanel) as VizPanel | null;
+    const data = sceneGraph.getData(this);
+    const frames = data?.state.data?.series;
+    let fieldConfig = panel?.state.fieldConfig;
+    if (!fieldConfig || !frames?.length) {
+      return null;
+    }
+
+    for (const frame of frames) {
+      for (const field of frame.fields) {
+        fieldConfig = this.setFieldConfigPerField(field, fieldConfig);
+      }
+    }
+
+    return fieldConfig;
+  }
+
+  private setFieldConfigPerField(field: Field, fieldConfig: FieldConfigSource): FieldConfigSource {
+    const configKeys = Object.keys(field.config);
+    const properties = configKeys.map((key) => ({
+      id: key,
+      value: field.config[key as keyof FieldConfig],
+    }));
+
+    const fieldName = field.config.displayNameFromDS ?? field.config.displayName ?? field.name;
+    const existingOverride = fieldConfig.overrides.find(
+      (o) => o.matcher.options === fieldName && o.matcher.id === 'byName'
+    );
+
+    if (!existingOverride) {
+      fieldConfig.overrides.unshift({
+        matcher: {
+          id: 'byName',
+          options: fieldName,
+        },
+        properties,
+      });
+    } else if (JSON.stringify(existingOverride.properties) !== JSON.stringify(properties)) {
+      existingOverride.properties = properties;
+    }
+
+    return fieldConfig;
+  }
+
   useGetInvestigationPluginLinkContext() {
+    const fieldConfig = this.getFieldConfig();
     const { refId, queryType, profileTypeId, labelSelector, groupBy } = this.getInterpolatedQuery();
 
     const parsedQuery = parseQuery(`${profileTypeId}${labelSelector}`);
@@ -170,8 +217,9 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
         timeRange: { ...timeRange },
         queries: [{ refId, queryType, profileTypeId, labelSelector, groupBy }],
         datasource,
+        fieldConfig,
       };
-    }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
+    }, [datasource, fieldConfig, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
   }
 
   useUpdateMenuItems() {
