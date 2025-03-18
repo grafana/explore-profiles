@@ -1,3 +1,4 @@
+import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import { recordingRulesApiClient } from '@shared/infrastructure/recording-rules/recordingRulesApiClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -9,7 +10,7 @@ type FetchParams = {
 
 type FetchResponse = {
   isFetching: boolean;
-  error: Error | null;
+  error: HttpClientError | null;
   recordingRules?: RecordingRuleViewModel[];
   mutate: (rule: RecordingRuleViewModel) => Promise<void>;
   remove: (rule: RecordingRuleViewModel) => Promise<void>;
@@ -18,7 +19,7 @@ type FetchResponse = {
 export function useFetchRecordingRules({ enabled }: FetchParams = {}): FetchResponse {
   const queryClient = useQueryClient();
 
-  const { isFetching, error, data } = useQuery({
+  const { isFetching, error, data } = useQuery<RecordingRuleViewModel[], HttpClientError>({
     enabled,
     queryKey: ['recording_rules'],
     queryFn: () => recordingRulesApiClient.get(),

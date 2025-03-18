@@ -1,10 +1,11 @@
 import { css } from '@emotion/css';
 import { Button, Column, DeleteButton, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
-import { displayError } from '@shared/domain/displayStatus';
+import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
+import { EmptyLoadingPage } from '../../app/components/Onboarding/ui/EmptyLoadingPage';
 import { RecordingRuleViewModel } from './domain/RecordingRuleViewModel';
 import { useRecordingRulesView } from './domain/useRecordingRulesView';
 
@@ -13,15 +14,8 @@ export default function RecordingRulesView() {
   const { data, actions } = useRecordingRulesView();
   const { recordingRules } = data;
 
-  if (data.fetchError) {
-    displayError(data.fetchError, [
-      'Error while retrieving recording rules!',
-      'Please try to reload the page, sorry for the inconvenience.',
-    ]);
-  }
-
   if (data.isFetching) {
-    return '';
+    return <EmptyLoadingPage />;
   }
 
   const columns: Array<Column<RecordingRuleViewModel>> = [
@@ -91,30 +85,35 @@ export default function RecordingRulesView() {
     </Button>
   );
 
+  let component = null;
+
+  if (data.fetchError) {
+    component = <RecordingRulesViewError error={data.fetchError} backButton={backButton} />;
+  } else if (isEmpty) {
+    component = (
+      <EmptyState message={'No recording rules'} variant="not-found" button={backButton}>
+        Open a flame graph, click on the &quot;total&quot; block at the top and select &quot;Create recording rule&quot;
+        from the context menu to define a new rule.
+      </EmptyState>
+    );
+  } else {
+    component = (
+      <div>
+        <InteractiveTable
+          columns={columns}
+          pageSize={10}
+          data={formattedRules || []}
+          getRowId={(rule) => rule.metricName}
+        ></InteractiveTable>
+        {backButton}
+      </div>
+    );
+  }
+
   return (
     <>
       <PageTitle title="Recording rules" />
-
-      {isEmpty && (
-        <EmptyState message={'No recording rules'} variant="not-found">
-          <div>
-            Open a flame graph, click on the &quot;total&quot; block at the top and select &quot;Create recording
-            rule&quot; from the context menu to define a new rule.
-          </div>
-          {backButton}
-        </EmptyState>
-      )}
-      {!isEmpty && (
-        <div>
-          <InteractiveTable
-            columns={columns}
-            pageSize={10}
-            data={formattedRules || []}
-            getRowId={(rule) => rule.metricName}
-          ></InteractiveTable>
-          {backButton}
-        </div>
-      )}
+      {component}
     </>
   );
 }
@@ -125,3 +124,17 @@ const getStyles = () => ({
     justify-content: start;
   `,
 });
+
+function RecordingRulesViewError({ error, backButton }: { error: HttpClientError; backButton: React.ReactNode }) {
+  let errorMessage = 'Error while retrieving recording rules';
+  if (error.response?.status === 404) {
+    errorMessage = 'This features require Pyroscope with recording_rules flag enabled.';
+  } else if (error.message) {
+    errorMessage = error.message;
+  }
+  return (
+    <EmptyState message="Error while retrieving recording rules" variant="not-found" button={backButton}>
+      {errorMessage}
+    </EmptyState>
+  );
+}
