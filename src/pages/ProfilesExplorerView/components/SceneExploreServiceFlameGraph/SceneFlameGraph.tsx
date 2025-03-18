@@ -205,12 +205,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       [data.isLoading, data.title, styles.spinner]
     );
 
-    // Any is necessary because the type of clickedItemData is not exported by
-    // the flamegraph package.
-    const extraContextMenuButtons: FlameGraphProps['getExtraContextMenuButtons'] = (
-      clickedItemData: any,
-      data: Record<string, any>
-    ) => {
+    const extraContextMenuButtons: FlameGraphProps['getExtraContextMenuButtons'] = (clickedItemData, data) => {
       const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
       const recordingRulesButtons = settings?.enableMetricsFromProfiles
         ? recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data)
