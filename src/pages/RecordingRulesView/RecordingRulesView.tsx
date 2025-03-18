@@ -2,10 +2,10 @@ import { css } from '@emotion/css';
 import { Button, Column, DeleteButton, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
+import { RecordingRuleViewModel } from './domain/RecordingRuleViewModel';
 import { useRecordingRulesView } from './domain/useRecordingRulesView';
 
 export default function RecordingRulesView() {
@@ -24,9 +24,9 @@ export default function RecordingRulesView() {
     return '';
   }
 
-  const columns: Array<Column<RecordingRule>> = [
+  const columns: Array<Column<RecordingRuleViewModel>> = [
     {
-      id: 'name',
+      id: 'metricName',
       header: 'Name',
       sortType: 'alphanumeric',
     },
@@ -41,12 +41,12 @@ export default function RecordingRulesView() {
       sortType: 'alphanumeric',
     },
     {
-      id: 'labels',
+      id: 'groupBy',
       header: 'Labels',
       cell: (props) => {
         // Exclude hidden labels.
-        const rule: RecordingRule = props.row.original;
-        const labels = rule.labels?.filter((label: string) => !label.match(/^__\S+__$/));
+        const rule: RecordingRuleViewModel = props.row.original;
+        const labels = rule.groupBy?.filter((label: string) => !label.match(/^__\S+__$/));
 
         if (!labels || labels.length === 0) {
           return (
@@ -64,7 +64,7 @@ export default function RecordingRulesView() {
       header: 'Actions',
       disableGrow: true,
       cell: (props) => {
-        const rule: RecordingRule = props.row.original;
+        const rule: RecordingRuleViewModel = props.row.original;
         return <DeleteButton onConfirm={() => actions.removeRecordingRule(rule)} />;
       },
     },
@@ -110,7 +110,7 @@ export default function RecordingRulesView() {
             columns={columns}
             pageSize={10}
             data={formattedRules || []}
-            getRowId={(rule) => rule.name}
+            getRowId={(rule) => rule.metricName}
           ></InteractiveTable>
           {backButton}
         </div>

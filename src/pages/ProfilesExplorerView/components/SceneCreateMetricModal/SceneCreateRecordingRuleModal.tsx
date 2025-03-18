@@ -4,10 +4,10 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Button, Divider, Field, Input, Modal, MultiSelect, useStyles2 } from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import React, { useEffect, useState } from 'react';
 import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form';
 
+import { RecordingRuleViewModel } from '../../../RecordingRulesView/domain/RecordingRuleViewModel';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -35,7 +35,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
   }: SceneComponentProps<SceneCreateRecordingRuleModal> & {
     isModalOpen: boolean;
     onDismiss: () => void;
-    onCreate: (rule: RecordingRule) => Promise<void>;
+    onCreate: (rule: RecordingRuleViewModel) => Promise<void>;
   }) => {
     const {
       register,
@@ -43,16 +43,6 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
       control,
       formState: { errors },
     } = useForm<RecordingRuleForm>({ mode: 'onChange', shouldUnregister: true });
-
-    const onSubmit: SubmitHandler<RecordingRuleForm> = (data) =>
-      onCreate({
-        id: '',
-        name: data.metricName,
-        serviceName: data.serviceName,
-        profileType: data.profileType,
-        matchers: [data.matcher],
-        labels: data.labels ? data.labels.map((label) => label.value ?? '') : [],
-      });
 
     const [options, setOptions] = useState<string[]>([]);
 
@@ -65,6 +55,16 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     const filtersVariable = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable);
     const filters = filtersVariable.state.filters;
     const filterQuery = filters.map((filter) => `${filter.key}${filter.operator}"${filter.value}"`).join(', ');
+
+    const onSubmit: SubmitHandler<RecordingRuleForm> = (data) =>
+      onCreate({
+        id: '',
+        metricName: data.metricName,
+        serviceName: data.serviceName,
+        profileType: data.profileType,
+        matchers: [`{${filterQuery}}`],
+        groupBy: data.labels ? data.labels.map((label) => label.value ?? '') : [],
+      });
 
     useEffect(() => {
       const timeRange = sceneGraph.getTimeRange(model).state.value;

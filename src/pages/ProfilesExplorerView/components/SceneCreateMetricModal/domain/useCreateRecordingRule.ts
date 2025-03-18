@@ -1,6 +1,7 @@
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
-import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import { useFetchRecordingRules } from '@shared/infrastructure/recording-rules/useFetchRecordingRules';
+
+import { RecordingRuleViewModel } from '../../../../RecordingRulesView/domain/RecordingRuleViewModel';
 
 export function useCreateRecordingRule() {
   const { recordingRules, error: fetchError, mutate } = useFetchRecordingRules();
@@ -11,12 +12,12 @@ export function useCreateRecordingRule() {
       fetchError,
     },
     actions: {
-      async save(rule: RecordingRule) {
+      async save(rule: RecordingRuleViewModel) {
         try {
           await mutate(rule);
-          displaySuccess([`Recording rule ${rule.name} created successfully!`]);
+          displaySuccess([`Recording rule ${rule.metricName} created successfully!`]);
         } catch (e) {
-          displayError(e as Error, [`Failed to save recording rule ${rule.name}.`]);
+          displayError(e as Error, [`Failed to save recording rule ${rule.metricName}.`]);
         }
       },
     },

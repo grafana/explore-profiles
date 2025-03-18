@@ -1,8 +1,8 @@
-export type RecordingRule = {
+export type RecordingRuleViewModel = {
   id: string;
-  name: string;
+  metricName: string;
   serviceName: string;
   profileType: string;
   matchers: string[];
-  labels: string[];
+  groupBy: string[];
 };

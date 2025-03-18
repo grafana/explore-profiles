@@ -1,13 +1,13 @@
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import {
   ListRecordingRulesResponse,
-  RecordingRule as RecordingRuleProto,
+  RecordingRule,
   UpsertRecordingRuleRequest,
 } from '@shared/pyroscope-api/settings/v1/recording_rules_pb';
 
-import { RecordingRule } from './RecordingRule';
+import { RecordingRuleViewModel } from '../../../pages/RecordingRulesView/domain/RecordingRuleViewModel';
 
-function mapRuleToRecordingRule(rule: RecordingRuleProto): RecordingRule {
+function mapRuleToRecordingRuleViewModel(rule: RecordingRule): RecordingRuleViewModel {
   let serviceName = '';
   for (let matcher of rule.matchers || []) {
     if (matcher.includes('service_name=')) {
@@ -17,17 +17,16 @@ function mapRuleToRecordingRule(rule: RecordingRuleProto): RecordingRule {
   }
   return {
     id: rule.id,
-    name: rule.metricName,
+    metricName: rule.metricName,
     serviceName,
     profileType: rule.profileType,
     matchers: rule.matchers,
-    labels: rule.groupBy || [],
+    groupBy: rule.groupBy || [],
   };
 }
 
-// TODO(bryan): refactor this to use generated protobuf types
 class RecordingRulesApiClient extends ApiClient {
-  async get(): Promise<RecordingRule[]> {
+  async get(): Promise<RecordingRuleViewModel[]> {
     return super
       .fetch('/settings.v1.RecordingRulesService/ListRecordingRules', {
         method: 'POST',
@@ -38,30 +37,30 @@ class RecordingRulesApiClient extends ApiClient {
         if (!json.rules) {
           return [];
         }
-        return json.rules.map((rule: RecordingRuleProto) => {
-          return mapRuleToRecordingRule(rule);
+        return json.rules.map((rule: RecordingRule) => {
+          return mapRuleToRecordingRuleViewModel(rule);
         });
       });
   }
 
-  async create(rule: RecordingRule): Promise<void> {
+  async create(rule: RecordingRuleViewModel): Promise<void> {
     return super
       .fetch('/settings.v1.RecordingRulesService/UpsertRecordingRule', {
         method: 'POST',
         body: JSON.stringify({
-          metricName: rule.name,
+          metricName: rule.metricName,
           matchers: [
             `{ service_name="${rule.serviceName}" }`,
             `{ __profile_type__="${rule.profileType}"}`,
             ...(rule.matchers || []),
           ],
-          groupBy: rule.labels || [],
+          groupBy: rule.groupBy || [],
         } as UpsertRecordingRuleRequest),
       })
       .then((response) => response.json());
   }
 
-  async remove(rule: RecordingRule): Promise<void> {
+  async remove(rule: RecordingRuleViewModel): Promise<void> {
     return super
       .fetch('/settings.v1.RecordingRulesService/DeleteRecordingRule', {
         method: 'POST',

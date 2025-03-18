@@ -7,7 +7,6 @@ import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { InlineBanner } from '@shared/ui/InlineBanner';
@@ -16,6 +15,7 @@ import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Unsubscribable } from 'rxjs';
 
+import { RecordingRuleViewModel } from '../../../RecordingRulesView/domain/RecordingRuleViewModel';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
@@ -280,7 +280,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           model={data.recordingRules.modal}
           isModalOpen={recordingRulesModelOpen}
           onDismiss={() => setIsRecordingRulesModalOpen(false)}
-          onCreate={(rule: RecordingRule) => {
+          onCreate={(rule: RecordingRuleViewModel) => {
             recordingRulesActions.save(rule);
             setIsRecordingRulesModalOpen(false);
           }}

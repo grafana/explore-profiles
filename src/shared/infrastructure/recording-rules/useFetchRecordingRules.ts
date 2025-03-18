@@ -1,7 +1,7 @@
 import { recordingRulesApiClient } from '@shared/infrastructure/recording-rules/recordingRulesApiClient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { RecordingRule } from './RecordingRule';
+import { RecordingRuleViewModel } from '../../../pages/RecordingRulesView/domain/RecordingRuleViewModel';
 
 type FetchParams = {
   enabled?: boolean;
@@ -10,9 +10,9 @@ type FetchParams = {
 type FetchResponse = {
   isFetching: boolean;
   error: Error | null;
-  recordingRules?: RecordingRule[];
-  mutate: (rule: RecordingRule) => Promise<void>;
-  remove: (rule: RecordingRule) => Promise<void>;
+  recordingRules?: RecordingRuleViewModel[];
+  mutate: (rule: RecordingRuleViewModel) => Promise<void>;
+  remove: (rule: RecordingRuleViewModel) => Promise<void>;
 };
 
 export function useFetchRecordingRules({ enabled }: FetchParams = {}): FetchResponse {
@@ -25,12 +25,12 @@ export function useFetchRecordingRules({ enabled }: FetchParams = {}): FetchResp
   });
 
   const { mutateAsync: mutate } = useMutation({
-    mutationFn: (rule: RecordingRule) => recordingRulesApiClient.create(rule),
+    mutationFn: (rule: RecordingRuleViewModel) => recordingRulesApiClient.create(rule),
     networkMode: 'always',
   });
 
   const { mutateAsync: remove } = useMutation({
-    mutationFn: async (rule: RecordingRule) => {
+    mutationFn: async (rule: RecordingRuleViewModel) => {
       await recordingRulesApiClient.remove(rule);
       await queryClient.invalidateQueries({ queryKey: ['recording_rules'] });
     },

@@ -1,6 +1,7 @@
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
-import { RecordingRule } from '@shared/infrastructure/recording-rules/RecordingRule';
 import { useFetchRecordingRules } from '@shared/infrastructure/recording-rules/useFetchRecordingRules';
+
+import { RecordingRuleViewModel } from './RecordingRuleViewModel';
 
 export function useRecordingRulesView() {
   const { recordingRules, error: fetchError, remove, isFetching } = useFetchRecordingRules();
@@ -12,12 +13,12 @@ export function useRecordingRulesView() {
       isFetching,
     },
     actions: {
-      async removeRecordingRule(rule: RecordingRule) {
+      async removeRecordingRule(rule: RecordingRuleViewModel) {
         try {
           await remove(rule);
-          displaySuccess([`Recording rule ${rule.name} deleted!`]);
+          displaySuccess([`Recording rule ${rule.metricName} deleted!`]);
         } catch (e) {
-          displayError(e as Error, [`Failed to delete recording rule ${rule.name}.`]);
+          displayError(e as Error, [`Failed to delete recording rule ${rule.metricName}.`]);
         }
       },
     },
