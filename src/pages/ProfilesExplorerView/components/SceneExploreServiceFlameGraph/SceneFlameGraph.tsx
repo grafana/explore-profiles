@@ -9,13 +9,13 @@ import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
+import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
 import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Unsubscribable } from 'rxjs';
 
-import { RecordingRuleViewModel } from '../../../RecordingRulesView/domain/RecordingRuleViewModel';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';

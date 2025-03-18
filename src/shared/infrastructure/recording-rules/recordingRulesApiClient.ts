@@ -4,8 +4,7 @@ import {
   RecordingRule,
   UpsertRecordingRuleRequest,
 } from '@shared/pyroscope-api/settings/v1/recording_rules_pb';
-
-import { RecordingRuleViewModel } from '../../../pages/RecordingRulesView/domain/RecordingRuleViewModel';
+import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
 
 function mapRuleToRecordingRuleViewModel(rule: RecordingRule): RecordingRuleViewModel {
   let serviceName = '';

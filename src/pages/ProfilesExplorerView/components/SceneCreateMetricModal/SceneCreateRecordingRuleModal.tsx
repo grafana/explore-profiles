@@ -4,10 +4,10 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Button, Divider, Field, Input, Modal, MultiSelect, useStyles2 } from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
 import React, { useEffect, useState } from 'react';
 import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form';
 
-import { RecordingRuleViewModel } from '../../../RecordingRulesView/domain/RecordingRuleViewModel';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';

@@ -1,8 +1,7 @@
 import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import { recordingRulesApiClient } from '@shared/infrastructure/recording-rules/recordingRulesApiClient';
+import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-import { RecordingRuleViewModel } from '../../../pages/RecordingRulesView/domain/RecordingRuleViewModel';
 
 type FetchParams = {
   enabled?: boolean;

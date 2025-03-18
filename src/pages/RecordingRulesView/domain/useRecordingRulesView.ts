@@ -1,7 +1,6 @@
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { useFetchRecordingRules } from '@shared/infrastructure/recording-rules/useFetchRecordingRules';
-
-import { RecordingRuleViewModel } from './RecordingRuleViewModel';
+import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
 
 export function useRecordingRulesView() {
   const { recordingRules, error: fetchError, remove, isFetching } = useFetchRecordingRules();
