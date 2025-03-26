@@ -78,6 +78,7 @@ jobs:
     with:
       ref: ${{ needs.create-new-version.outputs.version }}
       e2e: false
+      addSha: false
 
   upload:
     name: Upload to GCS
