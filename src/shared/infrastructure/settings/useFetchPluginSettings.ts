@@ -1,7 +1,8 @@
+import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
 import { DEFAULT_SETTINGS, PluginSettings } from './PluginSettings';
-import { settingsApiClient } from './settingsApiClient';
+import { useSettingsApiClient } from './settingsApiClient';
 
 type FetchParams = {
   enabled?: boolean;
@@ -18,9 +19,11 @@ type FetchResponse = {
  * Fetches the plugin settings and, if none/only some have been stored previously, returns adequate default values for the rest of the application
  */
 export function useFetchPluginSettings({ enabled }: FetchParams = {}): FetchResponse {
+  const settingsApiClient = useSettingsApiClient();
+
   const { isFetching, error, data } = useQuery({
     enabled,
-    queryKey: ['settings'],
+    queryKey: ['settings', 'ds-uid-' + ApiClient.selectDefaultDataSource().uid],
     queryFn: () =>
       settingsApiClient.get().then(
         (json) =>
