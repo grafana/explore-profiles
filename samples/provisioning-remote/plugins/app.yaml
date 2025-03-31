@@ -28,3 +28,26 @@ apps:
 
     secureJsonData:
       openAIKey: $OPENAI_API_KEY
+  - type: grafana-collector-app
+    # <int> Org ID. Default to 1, unless org_name is specified
+    org_id: 1
+    # <string> Org name. Overrides org_id unless org_id not specified
+    org_name: Main Org.
+    # <bool> disable the app. Default to false.
+    disabled: false
+    jsonData:
+      hmPromClusterId: 1
+      hmInstanceId: 18103
+      orgId: '1'
+      region: 'dev-us-central'
+      stackId: '3726'
+      grafanaComUrl: 'http://host.docker.internal:4040/api'
+      agmClusterUrl: 'https://fleet-management-dev-001.grafana-dev.net'
+      integrationsApiUrl: 'https://integrations-api-dev.grafana.net'
+      environment: 'dev'
+      isLocalDev: true
+    secureJsonData:
+      # This is a key that is seeded into the Auth API database
+      apiToken: $AGM_API_KEY_BUILTIN
+      # token is not required when running the API locally
+      agmApiKey: $AGM_API_KEY_BUILTIN
