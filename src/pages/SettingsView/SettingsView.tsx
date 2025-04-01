@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
+import { GrafanaTheme2, PluginExtensionComponent } from '@grafana/data';
 import {
   Button,
   FieldSet,
@@ -17,7 +17,7 @@ import { useReportPageInitialized } from '@shared/infrastructure/tracking/useRep
 import { PageTitle } from '@shared/ui/PageTitle';
 import React, { useState } from 'react';
 
-import { CollectorSettings } from './components/CollectorSettings';
+import { useSettingsExtensions } from './domain/useSettingsExtensions';
 import { useSettingsView } from './domain/useSettingsView';
 
 export default function SettingsView() {
@@ -103,14 +103,18 @@ export default function SettingsView() {
     },
   ];
 
-  // Get the extension components
+  const { components, isLoading } = useSettingsExtensions();
   const pyroscopeDataSource = ApiClient.selectDefaultDataSource();
-  const pluginTabs = [
-    {
-      label: 'Collector Settings',
-      content: CollectorSettings({ datasource_id: pyroscopeDataSource.uid }),
-    },
-  ].filter((f) => f.content !== null && f.content !== undefined);
+  const pluginTabs = components.map((Component) => {
+    return {
+      label: (Component as unknown as PluginExtensionComponent).title || 'Unknown Extension',
+      content: <Component datasource_uid={pyroscopeDataSource.uid} />,
+    };
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   const allTabs = [...builtInTabs, ...pluginTabs];
 

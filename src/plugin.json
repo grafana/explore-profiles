@@ -10,7 +10,7 @@
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
-      "exposedComponents": ["grafana-insights-app/insights-launcher/v1", "grafana-collector-app/pyroscope-settings/v1"]
+      "exposedComponents": ["grafana-insights-app/insights-launcher/v1"]
     }
   },
   "info": {
@@ -56,6 +56,9 @@
     "extensionPoints": [
       {
         "id": "grafana-pyroscope-app/investigation/v1"
+      },
+      {
+        "id": "grafana-pyroscope-app/settings/v1"
       }
     ],
     "addedLinks": [
