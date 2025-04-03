@@ -1,3 +1,12 @@
+## [1.2.2](https://github.com/grafana/explore-profiles/compare/v1.2.1...v1.2.2) (2025-04-03)
+
+
+### Bug Fixes
+
+* revert "profiling insights" extension ([#447](https://github.com/grafana/explore-profiles/issues/447)) ([43b35dc](https://github.com/grafana/explore-profiles/commit/43b35dc8f929e922bb8d554b92c6a763581d3443))
+
+
+
 ## [1.2.1](https://github.com/grafana/explore-profiles/compare/v1.2.0...v1.2.1) (2025-04-02)
 
 
