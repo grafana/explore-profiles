@@ -44,7 +44,7 @@
     "@grafana/data": "11.5.0",
     "@grafana/faro-web-sdk": "^1.10.0",
     "@grafana/flamegraph": "11.5.0-218249",
-    "@grafana/llm": "^0.12.0",
+    "@grafana/llm": "0.16.0",
     "@grafana/runtime": "11.5.0",
     "@grafana/scenes": "^4.22.0",
     "@grafana/schema": "11.5.0",
