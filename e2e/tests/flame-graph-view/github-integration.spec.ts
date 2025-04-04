@@ -15,7 +15,7 @@ test.describe('Flame graph view', () => {
   });
 
   test.describe('GitHub Integration', () => {
-    const nodePosition = { x: 30, y: 30 };
+    const nodePosition = { x: 30, y: 60 };
     const functionName = 'github.com/grafana/dskit/services.(*BasicService).main';
     const startLine = '153';
     // see ellipsis hack in SceneFunctionDetailsPanel.tsx

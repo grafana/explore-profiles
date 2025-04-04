@@ -70,7 +70,7 @@ export function AiReply({ reply }: AiReplyProps) {
         .map((message) => (
           <>
             <div className={styles.reply}>
-              <Markdown options={MARKDOWN_OPTIONS}>{message.content}</Markdown>
+              <Markdown options={MARKDOWN_OPTIONS}>{message.content || ''}</Markdown>
             </div>
             <hr />
           </>

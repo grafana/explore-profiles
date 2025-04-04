@@ -1,3 +1,36 @@
+## [1.2.3](https://github.com/grafana/explore-profiles/compare/v1.2.2...v1.2.3) (2025-04-03)
+
+
+### Bug Fixes
+
+* Get suggestions for optimize code ([#480](https://github.com/grafana/explore-profiles/issues/480)) ([23674c3](https://github.com/grafana/explore-profiles/commit/23674c3eaf8adf5572a725bade08f0a53038e77b))
+
+
+
+## [1.2.2](https://github.com/grafana/explore-profiles/compare/v1.2.1...v1.2.2) (2025-04-03)
+
+
+### Bug Fixes
+
+* revert "profiling insights" extension ([#447](https://github.com/grafana/explore-profiles/issues/447)) ([43b35dc](https://github.com/grafana/explore-profiles/commit/43b35dc8f929e922bb8d554b92c6a763581d3443))
+
+
+
+## [1.2.1](https://github.com/grafana/explore-profiles/compare/v1.2.0...v1.2.1) (2025-04-02)
+
+
+### Bug Fixes
+
+* **FlameGraph:** Use entire file as context in "Optimize Code" prompt ([#459](https://github.com/grafana/explore-profiles/issues/459)) ([569c17c](https://github.com/grafana/explore-profiles/commit/569c17c41511167add7a7a4db3f90cbc88897d68))
+* **llm:** Add extra context in AI prompt about other lines in a file ([#460](https://github.com/grafana/explore-profiles/issues/460)) ([004b7aa](https://github.com/grafana/explore-profiles/commit/004b7aa04a136b02f036c0e33a27d1b333cbbf93))
+
+
+### Features
+
+* "profiling insights" extension ([#447](https://github.com/grafana/explore-profiles/issues/447)) ([13ff552](https://github.com/grafana/explore-profiles/commit/13ff552083cc4555aa21e8401be1516a364b8271))
+
+
+
 # [1.2.0](https://github.com/grafana/explore-profiles/compare/v1.1.0...v1.2.0) (2025-03-10)
 
 
