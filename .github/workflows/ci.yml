@@ -10,11 +10,6 @@ on:
       - docs/sources/**
     branches:
       - main
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - labeled
 
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
@@ -36,6 +31,7 @@ jobs:
   upload:
     name: Upload to GCS
     needs: [build]
+    # Make uploads available only from main (needed for deployments)
     if: github.event_name == 'push'
     uses: ./.github/workflows/upload.yml
     secrets: inherit
