@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-app-plugin",
-  "version": "1.2.0",
+  "version": "1.2.3",
   "description": "Grafana Pyroscope app plugin (profiles)",
   "license": "AGPL-3.0-only",
   "author": "Grafana",
@@ -44,7 +44,7 @@
     "@grafana/data": "11.5.0",
     "@grafana/faro-web-sdk": "^1.10.0",
     "@grafana/flamegraph": "11.5.0-218249",
-    "@grafana/llm": "^0.10.7",
+    "@grafana/llm": "0.16.0",
     "@grafana/runtime": "11.5.0",
     "@grafana/scenes": "^4.22.0",
     "@grafana/schema": "11.5.0",
