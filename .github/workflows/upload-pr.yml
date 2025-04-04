@@ -1,4 +1,4 @@
-name: CI
+name: Upload PR
 
 on:
   pull_request:
