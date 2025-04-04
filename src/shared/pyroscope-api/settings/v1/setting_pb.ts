@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file settings/v1/setting.proto.
  */
 export const file_settings_v1_setting: GenFile = /*@__PURE__*/
-  fileDesc("ChlzZXR0aW5ncy92MS9zZXR0aW5nLnByb3RvEgtzZXR0aW5ncy52MSIUChJHZXRTZXR0aW5nc1JlcXVlc3QiPQoTR2V0U2V0dGluZ3NSZXNwb25zZRImCghzZXR0aW5ncxgBIAMoCzIULnNldHRpbmdzLnYxLlNldHRpbmciOwoSU2V0U2V0dGluZ3NSZXF1ZXN0EiUKB3NldHRpbmcYASABKAsyFC5zZXR0aW5ncy52MS5TZXR0aW5nIjwKE1NldFNldHRpbmdzUmVzcG9uc2USJQoHc2V0dGluZxgBIAEoCzIULnNldHRpbmdzLnYxLlNldHRpbmciOgoHU2V0dGluZxIMCgRuYW1lGAEgASgJEg0KBXZhbHVlGAIgASgJEhIKCm1vZGlmaWVkQXQYAyABKAMiLAoLU2VydmljZURhdGESDAoEbmFtZRgBIAEoCRIPCgdlbmFibGVkGAIgASgIIh8KDEphdmFTZXR0aW5ncxIPCgdlbmFibGVkGAEgASgIIh8KDEVCUEZTZXR0aW5ncxIPCgdlbmFibGVkGAEgASgIIoMCChtVcHNlcnRDb2xsZWN0aW9uUnVsZVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIqCghzZXJ2aWNlcxgCIAMoCzIYLnNldHRpbmdzLnYxLlNlcnZpY2VEYXRhEiwKBGVicGYYAyABKAsyGS5zZXR0aW5ncy52MS5FQlBGU2V0dGluZ3NIAIgBARIsCgRqYXZhGAQgASgLMhkuc2V0dGluZ3MudjEuSmF2YVNldHRpbmdzSAGIAQESIgoVb2JzZXJ2ZWRfbGFzdF91cGRhdGVkGAUgASgDSAKIAQFCBwoFX2VicGZCBwoFX2phdmFCGAoWX29ic2VydmVkX2xhc3RfdXBkYXRlZCIoChhHZXRDb2xsZWN0aW9uUnVsZVJlcXVlc3QSDAoEbmFtZRgBIAEoCSKEAgoZR2V0Q29sbGVjdGlvblJ1bGVSZXNwb25zZRIMCgRuYW1lGAEgASgJEioKCHNlcnZpY2VzGAIgAygLMhguc2V0dGluZ3MudjEuU2VydmljZURhdGESLAoEZWJwZhgDIAEoCzIZLnNldHRpbmdzLnYxLkVCUEZTZXR0aW5nc0gAiAEBEiwKBGphdmEYBCABKAsyGS5zZXR0aW5ncy52MS5KYXZhU2V0dGluZ3NIAYgBARIUCgxsYXN0X3VwZGF0ZWQYBSABKAMSEgoKZ2VuZXJhdGlvbhgGIAEoAxIVCg1jb25maWd1cmF0aW9uGAcgASgJQgcKBV9lYnBmQgcKBV9qYXZhIhwKGkxpc3RDb2xsZWN0aW9uUnVsZXNSZXF1ZXN0ImgKG0xpc3RDb2xsZWN0aW9uUnVsZXNSZXNwb25zZRI1CgVydWxlcxgBIAMoCzImLnNldHRpbmdzLnYxLkdldENvbGxlY3Rpb25SdWxlUmVzcG9uc2USEgoKZ2VuZXJhdGlvbhgCIAEoAyIrChtEZWxldGVDb2xsZWN0aW9uUnVsZVJlcXVlc3QSDAoEbmFtZRgBIAEoCSIeChxEZWxldGVDb2xsZWN0aW9uUnVsZVJlc3BvbnNlIrcBChNDb2xsZWN0aW9uUnVsZVN0b3JlEgwKBG5hbWUYASABKAkSKgoIc2VydmljZXMYAiADKAsyGC5zZXR0aW5ncy52MS5TZXJ2aWNlRGF0YRInCgRlYnBmGAMgASgLMhkuc2V0dGluZ3MudjEuRUJQRlNldHRpbmdzEicKBGphdmEYBCABKAsyGS5zZXR0aW5ncy52MS5KYXZhU2V0dGluZ3MSFAoMbGFzdF91cGRhdGVkGAUgASgDIlsKFENvbGxlY3Rpb25SdWxlc1N0b3JlEi8KBXJ1bGVzGAEgAygLMiAuc2V0dGluZ3MudjEuQ29sbGVjdGlvblJ1bGVTdG9yZRISCgpnZW5lcmF0aW9uGAIgASgDMqkBCg9TZXR0aW5nc1NlcnZpY2USSgoDR2V0Eh8uc2V0dGluZ3MudjEuR2V0U2V0dGluZ3NSZXF1ZXN0GiAuc2V0dGluZ3MudjEuR2V0U2V0dGluZ3NSZXNwb25zZSIAEkoKA1NldBIfLnNldHRpbmdzLnYxLlNldFNldHRpbmdzUmVxdWVzdBogLnNldHRpbmdzLnYxLlNldFNldHRpbmdzUmVzcG9uc2UiADLFAwoWQ29sbGVjdGlvblJ1bGVzU2VydmljZRJkChFHZXRDb2xsZWN0aW9uUnVsZRIlLnNldHRpbmdzLnYxLkdldENvbGxlY3Rpb25SdWxlUmVxdWVzdBomLnNldHRpbmdzLnYxLkdldENvbGxlY3Rpb25SdWxlUmVzcG9uc2UiABJqChRVcHNlcnRDb2xsZWN0aW9uUnVsZRIoLnNldHRpbmdzLnYxLlVwc2VydENvbGxlY3Rpb25SdWxlUmVxdWVzdBomLnNldHRpbmdzLnYxLkdldENvbGxlY3Rpb25SdWxlUmVzcG9uc2UiABJqChNMaXN0Q29sbGVjdGlvblJ1bGVzEicuc2V0dGluZ3MudjEuTGlzdENvbGxlY3Rpb25SdWxlc1JlcXVlc3QaKC5zZXR0aW5ncy52MS5MaXN0Q29sbGVjdGlvblJ1bGVzUmVzcG9uc2UiABJtChREZWxldGVDb2xsZWN0aW9uUnVsZRIoLnNldHRpbmdzLnYxLkRlbGV0ZUNvbGxlY3Rpb25SdWxlUmVxdWVzdBopLnNldHRpbmdzLnYxLkRlbGV0ZUNvbGxlY3Rpb25SdWxlUmVzcG9uc2UiAGIGcHJvdG8z");
+  fileDesc("ChlzZXR0aW5ncy92MS9zZXR0aW5nLnByb3RvEgtzZXR0aW5ncy52MSIUChJHZXRTZXR0aW5nc1JlcXVlc3QiPQoTR2V0U2V0dGluZ3NSZXNwb25zZRImCghzZXR0aW5ncxgBIAMoCzIULnNldHRpbmdzLnYxLlNldHRpbmciOwoSU2V0U2V0dGluZ3NSZXF1ZXN0EiUKB3NldHRpbmcYASABKAsyFC5zZXR0aW5ncy52MS5TZXR0aW5nIjwKE1NldFNldHRpbmdzUmVzcG9uc2USJQoHc2V0dGluZxgBIAEoCzIULnNldHRpbmdzLnYxLlNldHRpbmciJQoVRGVsZXRlU2V0dGluZ3NSZXF1ZXN0EgwKBG5hbWUYASABKAkiGAoWRGVsZXRlU2V0dGluZ3NSZXNwb25zZSI6CgdTZXR0aW5nEgwKBG5hbWUYASABKAkSDQoFdmFsdWUYAiABKAkSEgoKbW9kaWZpZWRBdBgDIAEoAzL+AQoPU2V0dGluZ3NTZXJ2aWNlEkoKA0dldBIfLnNldHRpbmdzLnYxLkdldFNldHRpbmdzUmVxdWVzdBogLnNldHRpbmdzLnYxLkdldFNldHRpbmdzUmVzcG9uc2UiABJKCgNTZXQSHy5zZXR0aW5ncy52MS5TZXRTZXR0aW5nc1JlcXVlc3QaIC5zZXR0aW5ncy52MS5TZXRTZXR0aW5nc1Jlc3BvbnNlIgASUwoGRGVsZXRlEiIuc2V0dGluZ3MudjEuRGVsZXRlU2V0dGluZ3NSZXF1ZXN0GiMuc2V0dGluZ3MudjEuRGVsZXRlU2V0dGluZ3NSZXNwb25zZSIAYgZwcm90bzM");
 
 /**
  * @generated from message settings.v1.GetSettingsRequest
@@ -77,6 +77,36 @@ export const SetSettingsResponseSchema: GenMessage<SetSettingsResponse> = /*@__P
   messageDesc(file_settings_v1_setting, 3);
 
 /**
+ * @generated from message settings.v1.DeleteSettingsRequest
+ */
+export type DeleteSettingsRequest = Message<"settings.v1.DeleteSettingsRequest"> & {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name: string;
+};
+
+/**
+ * Describes the message settings.v1.DeleteSettingsRequest.
+ * Use `create(DeleteSettingsRequestSchema)` to create a new message.
+ */
+export const DeleteSettingsRequestSchema: GenMessage<DeleteSettingsRequest> = /*@__PURE__*/
+  messageDesc(file_settings_v1_setting, 4);
+
+/**
+ * @generated from message settings.v1.DeleteSettingsResponse
+ */
+export type DeleteSettingsResponse = Message<"settings.v1.DeleteSettingsResponse"> & {
+};
+
+/**
+ * Describes the message settings.v1.DeleteSettingsResponse.
+ * Use `create(DeleteSettingsResponseSchema)` to create a new message.
+ */
+export const DeleteSettingsResponseSchema: GenMessage<DeleteSettingsResponse> = /*@__PURE__*/
+  messageDesc(file_settings_v1_setting, 5);
+
+/**
  * @generated from message settings.v1.Setting
  */
 export type Setting = Message<"settings.v1.Setting"> & {
@@ -101,306 +131,7 @@ export type Setting = Message<"settings.v1.Setting"> & {
  * Use `create(SettingSchema)` to create a new message.
  */
 export const SettingSchema: GenMessage<Setting> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 4);
-
-/**
- * @generated from message settings.v1.ServiceData
- */
-export type ServiceData = Message<"settings.v1.ServiceData"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * @generated from field: bool enabled = 2;
-   */
-  enabled: boolean;
-};
-
-/**
- * Describes the message settings.v1.ServiceData.
- * Use `create(ServiceDataSchema)` to create a new message.
- */
-export const ServiceDataSchema: GenMessage<ServiceData> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 5);
-
-/**
- * @generated from message settings.v1.JavaSettings
- */
-export type JavaSettings = Message<"settings.v1.JavaSettings"> & {
-  /**
-   * @generated from field: bool enabled = 1;
-   */
-  enabled: boolean;
-};
-
-/**
- * Describes the message settings.v1.JavaSettings.
- * Use `create(JavaSettingsSchema)` to create a new message.
- */
-export const JavaSettingsSchema: GenMessage<JavaSettings> = /*@__PURE__*/
   messageDesc(file_settings_v1_setting, 6);
-
-/**
- * @generated from message settings.v1.EBPFSettings
- */
-export type EBPFSettings = Message<"settings.v1.EBPFSettings"> & {
-  /**
-   * @generated from field: bool enabled = 1;
-   */
-  enabled: boolean;
-};
-
-/**
- * Describes the message settings.v1.EBPFSettings.
- * Use `create(EBPFSettingsSchema)` to create a new message.
- */
-export const EBPFSettingsSchema: GenMessage<EBPFSettings> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 7);
-
-/**
- * UpsertCollectionRuleRequest is used to create / update a collection rule.
- *
- * @generated from message settings.v1.UpsertCollectionRuleRequest
- */
-export type UpsertCollectionRuleRequest = Message<"settings.v1.UpsertCollectionRuleRequest"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * @generated from field: repeated settings.v1.ServiceData services = 2;
-   */
-  services: ServiceData[];
-
-  /**
-   * @generated from field: optional settings.v1.EBPFSettings ebpf = 3;
-   */
-  ebpf?: EBPFSettings;
-
-  /**
-   * @generated from field: optional settings.v1.JavaSettings java = 4;
-   */
-  java?: JavaSettings;
-
-  /**
-   * this is observed_last_updated in milliseconds unix time. Can be used to avoid update conflicts
-   *
-   * @generated from field: optional int64 observed_last_updated = 5;
-   */
-  observedLastUpdated?: bigint;
-};
-
-/**
- * Describes the message settings.v1.UpsertCollectionRuleRequest.
- * Use `create(UpsertCollectionRuleRequestSchema)` to create a new message.
- */
-export const UpsertCollectionRuleRequestSchema: GenMessage<UpsertCollectionRuleRequest> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 8);
-
-/**
- * @generated from message settings.v1.GetCollectionRuleRequest
- */
-export type GetCollectionRuleRequest = Message<"settings.v1.GetCollectionRuleRequest"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-};
-
-/**
- * Describes the message settings.v1.GetCollectionRuleRequest.
- * Use `create(GetCollectionRuleRequestSchema)` to create a new message.
- */
-export const GetCollectionRuleRequestSchema: GenMessage<GetCollectionRuleRequest> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 9);
-
-/**
- * @generated from message settings.v1.GetCollectionRuleResponse
- */
-export type GetCollectionRuleResponse = Message<"settings.v1.GetCollectionRuleResponse"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * @generated from field: repeated settings.v1.ServiceData services = 2;
-   */
-  services: ServiceData[];
-
-  /**
-   * @generated from field: optional settings.v1.EBPFSettings ebpf = 3;
-   */
-  ebpf?: EBPFSettings;
-
-  /**
-   * @generated from field: optional settings.v1.JavaSettings java = 4;
-   */
-  java?: JavaSettings;
-
-  /**
-   * milliseconds unix time of last update
-   *
-   * @generated from field: int64 last_updated = 5;
-   */
-  lastUpdated: bigint;
-
-  /**
-   *  incremented on each update
-   *
-   * @generated from field: int64 generation = 6;
-   */
-  generation: bigint;
-
-  /**
-   * generated configuration block in alloy syntax
-   *
-   * @generated from field: string configuration = 7;
-   */
-  configuration: string;
-};
-
-/**
- * Describes the message settings.v1.GetCollectionRuleResponse.
- * Use `create(GetCollectionRuleResponseSchema)` to create a new message.
- */
-export const GetCollectionRuleResponseSchema: GenMessage<GetCollectionRuleResponse> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 10);
-
-/**
- * @generated from message settings.v1.ListCollectionRulesRequest
- */
-export type ListCollectionRulesRequest = Message<"settings.v1.ListCollectionRulesRequest"> & {
-};
-
-/**
- * Describes the message settings.v1.ListCollectionRulesRequest.
- * Use `create(ListCollectionRulesRequestSchema)` to create a new message.
- */
-export const ListCollectionRulesRequestSchema: GenMessage<ListCollectionRulesRequest> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 11);
-
-/**
- * @generated from message settings.v1.ListCollectionRulesResponse
- */
-export type ListCollectionRulesResponse = Message<"settings.v1.ListCollectionRulesResponse"> & {
-  /**
-   * @generated from field: repeated settings.v1.GetCollectionRuleResponse rules = 1;
-   */
-  rules: GetCollectionRuleResponse[];
-
-  /**
-   *  incremented on each update
-   *
-   * @generated from field: int64 generation = 2;
-   */
-  generation: bigint;
-};
-
-/**
- * Describes the message settings.v1.ListCollectionRulesResponse.
- * Use `create(ListCollectionRulesResponseSchema)` to create a new message.
- */
-export const ListCollectionRulesResponseSchema: GenMessage<ListCollectionRulesResponse> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 12);
-
-/**
- * @generated from message settings.v1.DeleteCollectionRuleRequest
- */
-export type DeleteCollectionRuleRequest = Message<"settings.v1.DeleteCollectionRuleRequest"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-};
-
-/**
- * Describes the message settings.v1.DeleteCollectionRuleRequest.
- * Use `create(DeleteCollectionRuleRequestSchema)` to create a new message.
- */
-export const DeleteCollectionRuleRequestSchema: GenMessage<DeleteCollectionRuleRequest> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 13);
-
-/**
- * @generated from message settings.v1.DeleteCollectionRuleResponse
- */
-export type DeleteCollectionRuleResponse = Message<"settings.v1.DeleteCollectionRuleResponse"> & {
-};
-
-/**
- * Describes the message settings.v1.DeleteCollectionRuleResponse.
- * Use `create(DeleteCollectionRuleResponseSchema)` to create a new message.
- */
-export const DeleteCollectionRuleResponseSchema: GenMessage<DeleteCollectionRuleResponse> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 14);
-
-/**
- * CollectionRuleStore is how the message gets stored in object store
- *
- * @generated from message settings.v1.CollectionRuleStore
- */
-export type CollectionRuleStore = Message<"settings.v1.CollectionRuleStore"> & {
-  /**
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * @generated from field: repeated settings.v1.ServiceData services = 2;
-   */
-  services: ServiceData[];
-
-  /**
-   * @generated from field: settings.v1.EBPFSettings ebpf = 3;
-   */
-  ebpf?: EBPFSettings;
-
-  /**
-   * @generated from field: settings.v1.JavaSettings java = 4;
-   */
-  java?: JavaSettings;
-
-  /**
-   * milliseconds unix time
-   *
-   * @generated from field: int64 last_updated = 5;
-   */
-  lastUpdated: bigint;
-};
-
-/**
- * Describes the message settings.v1.CollectionRuleStore.
- * Use `create(CollectionRuleStoreSchema)` to create a new message.
- */
-export const CollectionRuleStoreSchema: GenMessage<CollectionRuleStore> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 15);
-
-/**
- * @generated from message settings.v1.CollectionRulesStore
- */
-export type CollectionRulesStore = Message<"settings.v1.CollectionRulesStore"> & {
-  /**
-   * @generated from field: repeated settings.v1.CollectionRuleStore rules = 1;
-   */
-  rules: CollectionRuleStore[];
-
-  /**
-   *  incremented on each update
-   *
-   * @generated from field: int64 generation = 2;
-   */
-  generation: bigint;
-};
-
-/**
- * Describes the message settings.v1.CollectionRulesStore.
- * Use `create(CollectionRulesStoreSchema)` to create a new message.
- */
-export const CollectionRulesStoreSchema: GenMessage<CollectionRulesStore> = /*@__PURE__*/
-  messageDesc(file_settings_v1_setting, 16);
 
 /**
  * @generated from service settings.v1.SettingsService
@@ -422,45 +153,14 @@ export const SettingsService: GenService<{
     input: typeof SetSettingsRequestSchema;
     output: typeof SetSettingsResponseSchema;
   },
+  /**
+   * @generated from rpc settings.v1.SettingsService.Delete
+   */
+  delete: {
+    methodKind: "unary";
+    input: typeof DeleteSettingsRequestSchema;
+    output: typeof DeleteSettingsResponseSchema;
+  },
 }> = /*@__PURE__*/
   serviceDesc(file_settings_v1_setting, 0);
-
-/**
- * @generated from service settings.v1.CollectionRulesService
- */
-export const CollectionRulesService: GenService<{
-  /**
-   * @generated from rpc settings.v1.CollectionRulesService.GetCollectionRule
-   */
-  getCollectionRule: {
-    methodKind: "unary";
-    input: typeof GetCollectionRuleRequestSchema;
-    output: typeof GetCollectionRuleResponseSchema;
-  },
-  /**
-   * @generated from rpc settings.v1.CollectionRulesService.UpsertCollectionRule
-   */
-  upsertCollectionRule: {
-    methodKind: "unary";
-    input: typeof UpsertCollectionRuleRequestSchema;
-    output: typeof GetCollectionRuleResponseSchema;
-  },
-  /**
-   * @generated from rpc settings.v1.CollectionRulesService.ListCollectionRules
-   */
-  listCollectionRules: {
-    methodKind: "unary";
-    input: typeof ListCollectionRulesRequestSchema;
-    output: typeof ListCollectionRulesResponseSchema;
-  },
-  /**
-   * @generated from rpc settings.v1.CollectionRulesService.DeleteCollectionRule
-   */
-  deleteCollectionRule: {
-    methodKind: "unary";
-    input: typeof DeleteCollectionRuleRequestSchema;
-    output: typeof DeleteCollectionRuleResponseSchema;
-  },
-}> = /*@__PURE__*/
-  serviceDesc(file_settings_v1_setting, 1);
 

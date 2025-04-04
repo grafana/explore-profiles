@@ -2,6 +2,8 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useChromeHeaderHeight } from '@grafana/runtime';
 import { Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
+import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
 
@@ -23,6 +25,8 @@ export function Header(props: HeaderProps) {
   const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0);
 
   const { data, actions } = useHeader(props);
+
+  const { settings } = useFetchPluginSettings();
 
   const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
     data;
@@ -49,6 +53,15 @@ export function Header(props: HeaderProps) {
           )}
 
           <div className={styles.appMiscButtons}>
+            {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
+              <IconButton
+                name="gf-prometheus"
+                tooltip="View recording rules"
+                aria-label="View recording rules"
+                onClick={actions.onClickRecordingRules}
+              />
+            )}
+
             <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />
 
             <IconButton name="cog" tooltip="View/edit tenant settings" onClick={actions.onClickUserSettings} />
