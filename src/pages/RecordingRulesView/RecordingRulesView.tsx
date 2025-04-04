@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { Column, DeleteButton, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
+import { Column, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
 import { BackButton } from '@shared/components/Common/BackButton';
 import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -8,6 +8,7 @@ import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
 import { EmptyLoadingPage } from '../../app/components/Onboarding/ui/EmptyLoadingPage';
+import { DeleteRecordingRuleButton } from './DeleteRecordingRuleButton';
 import { useRecordingRulesView } from './domain/useRecordingRulesView';
 
 export default function RecordingRulesView() {
@@ -60,7 +61,7 @@ export default function RecordingRulesView() {
       disableGrow: true,
       cell: (props) => {
         const rule: RecordingRuleViewModel = props.row.original;
-        return <DeleteButton onConfirm={() => actions.removeRecordingRule(rule)} />;
+        return <DeleteRecordingRuleButton rule={rule} confirm={() => actions.removeRecordingRule(rule)} />;
       },
     },
   ];
