@@ -7,6 +7,7 @@ import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
@@ -207,9 +208,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const extraContextMenuButtons: FlameGraphProps['getExtraContextMenuButtons'] = (clickedItemData, data) => {
       const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
-      const recordingRulesButtons = settings?.enableMetricsFromProfiles
-        ? recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data)
-        : [];
+      const recordingRulesButtons =
+        settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles
+          ? recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data)
+          : [];
 
       return [...ghButtons, ...recordingRulesButtons];
     };

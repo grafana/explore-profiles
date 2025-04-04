@@ -3,6 +3,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Button, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import { BackButton } from '@shared/components/Common/BackButton';
 import { displayError } from '@shared/domain/displayStatus';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
@@ -83,22 +84,24 @@ export default function SettingsView() {
             </InlineFieldRow>
           </FieldSet>
 
-          <FieldSet label="Experimental features" data-testid="experimental-features">
-            <InlineFieldRow>
-              <InlineField
-                label="Metrics from profiles"
-                tooltip="Allows creating Prometheus recording rules from profiles"
-                labelWidth={24}
-              >
-                <InlineSwitch
-                  label="Enable metrics from profiles"
-                  name="metrics-from-profiles"
-                  value={data.enableMetricsFromProfiles}
-                  onChange={actions.toggleEnableMetricsFromProfiles}
-                />
-              </InlineField>
-            </InlineFieldRow>
-          </FieldSet>
+          {featureToggles.metricsFromProfiles && (
+            <FieldSet label="Experimental features" data-testid="experimental-features">
+              <InlineFieldRow>
+                <InlineField
+                  label="Metrics from profiles"
+                  tooltip="Allows creating Prometheus recording rules from profiles"
+                  labelWidth={24}
+                >
+                  <InlineSwitch
+                    label="Enable metrics from profiles"
+                    name="metrics-from-profiles"
+                    value={data.enableMetricsFromProfiles}
+                    onChange={actions.toggleEnableMetricsFromProfiles}
+                  />
+                </InlineField>
+              </InlineFieldRow>
+            </FieldSet>
+          )}
 
           <div className={styles.buttons}>
             <Button variant="primary" type="submit">

@@ -2,6 +2,7 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
 import { Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
@@ -71,7 +72,7 @@ export function Header(props: HeaderProps) {
           )}
 
           <div className={styles.appMiscButtons}>
-            {settings?.enableMetricsFromProfiles && (
+            {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
               <IconButton
                 name="gf-prometheus"
                 tooltip="View recording rules"
