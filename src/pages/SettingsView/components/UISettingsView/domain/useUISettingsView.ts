@@ -1,5 +1,6 @@
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { DEFAULT_SETTINGS, PluginSettings } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useEffect, useState } from 'react';
@@ -43,6 +44,12 @@ export function useUISettingsView() {
         setCurrentSettings((s) => ({
           ...s,
           enableFunctionDetails: !s.enableFunctionDetails,
+        }));
+      },
+      toggleEnableMetricsFromProfiles() {
+        setCurrentSettings((s) => ({
+          ...s,
+          enableMetricsFromProfiles: !s.enableMetricsFromProfiles,
         }));
       },
       async saveSettings() {

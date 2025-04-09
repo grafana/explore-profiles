@@ -95,7 +95,7 @@ test.describe('Profile types view', () => {
 
     await expect(exploreProfilesPage.getByTestId('page-title')).toHaveText('Profiles settings (tenant)');
 
-    await exploreProfilesPage.getByLabel('Back to Grafana Profiles Drilldown').click();
+    await exploreProfilesPage.getByLabel('Back to Profiles Drilldown').click();
 
     await assertMainUiElements(exploreProfilesPage);
 

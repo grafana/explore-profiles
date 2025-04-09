@@ -1,3 +1,12 @@
+## [1.2.3](https://github.com/grafana/explore-profiles/compare/v1.2.2...v1.2.3) (2025-04-03)
+
+
+### Bug Fixes
+
+* Get suggestions for optimize code ([#480](https://github.com/grafana/explore-profiles/issues/480)) ([23674c3](https://github.com/grafana/explore-profiles/commit/23674c3eaf8adf5572a725bade08f0a53038e77b))
+
+
+
 ## [1.2.2](https://github.com/grafana/explore-profiles/compare/v1.2.1...v1.2.2) (2025-04-03)
 
 
