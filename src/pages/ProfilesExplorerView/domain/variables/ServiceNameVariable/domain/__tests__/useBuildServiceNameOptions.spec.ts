@@ -99,23 +99,23 @@ describe('buildServiceNameCascaderOptions', () => {
 
     const expected: CascaderOption[] = [
       {
-        value: 'service1',
-        label: 'service1',
+        value: 'top-service',
+        label: 'top-service',
         items: undefined,
       },
       {
-        value: 'service2',
-        label: 'service2',
-        items: [{ value: 'service2/subservice1', label: 'subservice1' }],
-      },
-      {
-        value: 'service3',
-        label: 'service3',
+        value: 'top-service',
+        label: 'top-service',
         items: [
           {
-            value: 'service3/subservice1',
-            label: 'subservice1',
-            items: [{ value: 'service3/subservice1/endpoint1', label: 'endpoint1' }],
+            label: 'sub-service1',
+            value: 'top-service/sub-service1',
+            items: undefined,
+          },
+          {
+            label: 'sub-service2',
+            value: 'top-service/sub-service2',
+            items: undefined,
           },
         ],
       },

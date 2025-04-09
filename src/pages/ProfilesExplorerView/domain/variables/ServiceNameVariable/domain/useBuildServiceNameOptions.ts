@@ -1,40 +1,54 @@
-import { CascaderOption } from '@grafana/ui';
+import { Cascader, CascaderOption } from '@grafana/ui';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function buildServiceNameCascaderOptions(serviceNames: string[]) {
-  const options: CascaderOption[] = [];
+  // Sort the service names to ensure consistent ordering
+  const sortedServiceNames = [...serviceNames].sort();
 
-  for (const serviceId of serviceNames) {
-    // serviceId = ebpf/agent-logs/agent ; parts = [ebpf,agent-logs,agent]
+  // Keep track of the root elements
+  const rootElements: CascaderOption[] = [];
+
+  // Create a map to store the hierarchy
+  const hierarchy = new Map<string, CascaderOption>();
+
+  for (const serviceId of sortedServiceNames) {
     const parts = serviceId.split('/');
+    let currentPath = '';
 
-    let currentPart: string;
-    const currentValues = [];
-    let currentOptions = options;
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const previousPath = currentPath;
+      currentPath = currentPath ? `${currentPath}/${part}` : part;
 
-    for (let level = 0; level < parts.length; level += 1) {
-      currentPart = parts[level];
-      currentValues.push(currentPart);
-      const value = currentValues.join('/');
+      const isComplete = i == parts.length - 1;
 
-      const existingOption = currentOptions.find((o) => o.value === value);
-
-      if (existingOption) {
-        currentOptions = existingOption.items as CascaderOption[];
-      } else {
-        const newOption = {
-          value,
-          label: currentPart,
-          // setting items only for non-terminal nodes is required by the Cascader component
-          // without it, the initial value would not be properly set in the UI
-          items: level < parts.length - 1 ? [] : undefined,
+      if (!hierarchy.has(currentPath) || isComplete) {
+        const option: CascaderOption = {
+          value: currentPath,
+          label: part,
+          items: isComplete ? undefined : [],
         };
 
-        currentOptions.push(newOption);
-        currentOptions = newOption.items || [];
+        // if the option is complete, we don't need to show the placeholder
+        if (!isComplete) {
+          hierarchy.set(currentPath, option);
+        }
+
+        if (!previousPath) {
+          rootElements.push(option);
+        }
+
+        // Add to parent's items if not root level
+        if (previousPath) {
+          const parent = hierarchy.get(previousPath);
+          if (parent && parent.items) {
+            parent.items.push(option);
+          }
+        }
       }
     }
   }
 
-  return options;
+  // Return only root level options
+  return rootElements;
 }
