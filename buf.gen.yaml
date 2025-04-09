@@ -9,16 +9,16 @@ plugins:
     out: src/shared/pyroscope-api
     opt: target=ts
 inputs:
-    # Build a subset of the Pyroscope protobuf API
+  # Build a subset of the Pyroscope protobuf API
   - git_repo: https://github.com/grafana/pyroscope.git
     # Update this to any commit, which is merged in Pyroscope main
     ref: weekly-f105-886b418af
     subdir: api
     paths:
-    - adhocprofiles/
-    - querier/
-    - settings/
-    - types/
-    - vcs/
-    - google/
+      - adhocprofiles/
+      - querier/
+      - settings/
+      - types/
+      - vcs/
+      - google/
 

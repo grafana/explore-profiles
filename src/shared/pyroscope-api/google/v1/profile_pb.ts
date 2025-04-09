@@ -44,9 +44,6 @@ import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv1";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv1";
 import type { Message } from "@bufbuild/protobuf";
 
-
-// cheecky comment, that should be flagged by ci 
-
 /**
  * Describes the file google/v1/profile.proto.
  */

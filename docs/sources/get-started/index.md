@@ -11,8 +11,6 @@ weight: 300
 
 # Get started with Explore Profiles
 
-{{< docs/public-preview product="Explore Profiles" >}}
-
 Profiles can help you identify errors in your apps and services.
 Using this information, you can optimize and streamline your apps.
 
