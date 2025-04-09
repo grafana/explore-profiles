@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Button, Space, Tab, TabsBar, useStyles2 } from '@grafana/ui';
+import { BackButton } from '@shared/components/Common/BackButton';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
@@ -16,13 +17,6 @@ export default function SettingsView() {
     return <div>Loading...</div>;
   }
 
-  const BackButton = () => {
-    return (
-      <Button variant="secondary" onClick={actions.goBack} aria-label="Back to Grafana Profiles Drilldown">
-        Back to Grafana Profiles Drilldown
-      </Button>
-    );
-  };
   const newTabBar = (index: number) => {
     const TabBar = ({ title }: { title: string }) => {
       return (
@@ -49,7 +43,7 @@ export default function SettingsView() {
             <Button variant="primary" type="submit">
               Save settings
             </Button>
-            <BackButton />
+            <BackButton onClick={actions.goBack} />
           </div>
         </UISettingsView>
       ),
@@ -61,7 +55,7 @@ export default function SettingsView() {
     datasourceUid: pyroscopeDataSource.uid,
     backButton: (
       <div className={styles.buttons}>
-        <BackButton />
+        <BackButton onClick={actions.goBack} />
       </div>
     ),
   };
