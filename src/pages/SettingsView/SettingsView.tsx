@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { Button, Tab, TabsBar, useStyles2 } from '@grafana/ui';
+import { Button, Space, Tab, TabsBar, useStyles2 } from '@grafana/ui';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
@@ -78,7 +78,12 @@ export default function SettingsView() {
     <>
       <PageTitle title="Profiles settings (tenant)" />
       {/* if there is only one tab, don't render tab bar */}
-      {allTabs.length > 1 && <TabsBar>{allTabs.map((tab) => tab.title)}</TabsBar>}
+      {allTabs.length > 1 && (
+        <>
+          <TabsBar>{allTabs.map((tab) => tab.title)}</TabsBar>
+          <Space v={2} />
+        </>
+      )}
       {allTabs[data.activeTab].content}
     </>
   );
