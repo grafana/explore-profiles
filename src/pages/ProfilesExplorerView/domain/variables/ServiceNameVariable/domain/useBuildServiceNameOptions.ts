@@ -1,4 +1,4 @@
-import { Cascader, CascaderOption } from '@grafana/ui';
+import { CascaderOption } from '@grafana/ui';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function buildServiceNameCascaderOptions(serviceNames: string[]) {
@@ -20,7 +20,7 @@ export function buildServiceNameCascaderOptions(serviceNames: string[]) {
       const previousPath = currentPath;
       currentPath = currentPath ? `${currentPath}/${part}` : part;
 
-      const isComplete = i == parts.length - 1;
+      const isComplete = i === parts.length - 1;
 
       if (!hierarchy.has(currentPath) || isComplete) {
         const option: CascaderOption = {
@@ -29,26 +29,22 @@ export function buildServiceNameCascaderOptions(serviceNames: string[]) {
           items: isComplete ? undefined : [],
         };
 
-        // if the option is complete, we don't need to show the placeholder
+        // if the option is not complete it should be part of the hierachy
         if (!isComplete) {
           hierarchy.set(currentPath, option);
         }
 
-        if (!previousPath) {
-          rootElements.push(option);
-        }
-
-        // Add to parent's items if not root level
+        // Add to parent's items if not root level, other wise it will be added to the rootElements
         if (previousPath) {
           const parent = hierarchy.get(previousPath);
           if (parent && parent.items) {
             parent.items.push(option);
           }
+        } else {
+          rootElements.push(option);
         }
       }
     }
   }
-
-  // Return only root level options
   return rootElements;
 }
