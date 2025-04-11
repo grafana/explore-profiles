@@ -24,7 +24,8 @@ export function buildServiceNameCascaderOptions(serviceNames: string[]) {
 
       if (!hierarchy.has(currentPath) || isComplete) {
         const option: CascaderOption = {
-          value: currentPath,
+          // the value needs to be different for a complete one vs the one that goes deeper otherwise it will not be selected.
+          value: isComplete ? currentPath : currentPath + '/',
           label: part,
           items: isComplete ? undefined : [],
         };
