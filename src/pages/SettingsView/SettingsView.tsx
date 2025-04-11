@@ -3,6 +3,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Button, Space, Tab, TabsBar, useStyles2 } from '@grafana/ui';
 import { BackButton } from '@shared/components/Common/BackButton';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import { PageTitle } from '@shared/ui/PageTitle';
 import React from 'react';
 
@@ -12,6 +13,8 @@ import { useSettingsView } from './domain/useSettingsView';
 export default function SettingsView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useSettingsView();
+
+  useReportPageInitialized('settings');
 
   if (data.isLoading) {
     return <div>Loading...</div>;

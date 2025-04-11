@@ -3,7 +3,6 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
-import { useReportPageInitialized } from '@shared/infrastructure/tracking/useReportPageInitialized';
 import React from 'react';
 
 import { useUISettingsView } from './domain/useUISettingsView';
@@ -23,8 +22,6 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
     event.preventDefault();
     actions.saveSettings();
   }
-
-  useReportPageInitialized('settings');
 
   return (
     <form className={styles.settingsForm} onSubmit={onSubmit}>
