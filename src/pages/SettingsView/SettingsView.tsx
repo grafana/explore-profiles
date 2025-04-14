@@ -10,6 +10,12 @@ import React from 'react';
 import { UISettingsView } from './components/UISettingsView/UISettingsView';
 import { useSettingsView } from './domain/useSettingsView';
 
+interface ComponentWithMeta {
+  meta?: {
+    title: string;
+  };
+}
+
 export default function SettingsView() {
   const styles = useStyles2(getStyles);
   const { data, actions } = useSettingsView();
@@ -20,26 +26,11 @@ export default function SettingsView() {
     return <div>Loading...</div>;
   }
 
-  const newTabBar = (index: number) => {
-    const TabBar = ({ title }: { title: string }) => {
-      return (
-        <Tab
-          key={`settings-tab-${index}`}
-          label={title}
-          active={data.activeTab === index}
-          onChangeTab={() => actions.setActiveTab(index)}
-        />
-      );
-    };
-    TabBar.displayName = `TabBar-${index}`;
-    return TabBar;
-  };
-
   // Define the build in tabs
   const builtInTabs = [
     {
       // Standard UI settings tab
-      title: newTabBar(0)({ title: 'UI Settings' }),
+      title: 'UI Settings',
       content: (
         <UISettingsView>
           <div className={styles.buttons}>
@@ -62,9 +53,12 @@ export default function SettingsView() {
       </div>
     ),
   };
-  const pluginTabs = data.components.map((Component, index) => {
+  const pluginTabs = data.components.map((Component) => {
+    // get title from plugin meta (works in Grafana 11.6+)
+    const title = (Component as ComponentWithMeta).meta?.title || 'Unknown Extension';
+
     return {
-      title: <Component {...pluginProps} TabBar={newTabBar(index + 1)} />,
+      title: title,
       content: <Component {...pluginProps} />,
     };
   });
@@ -77,7 +71,16 @@ export default function SettingsView() {
       {/* if there is only one tab, don't render tab bar */}
       {allTabs.length > 1 && (
         <>
-          <TabsBar>{allTabs.map((tab) => tab.title)}</TabsBar>
+          <TabsBar>
+            {allTabs.map((tab, index) => (
+              <Tab
+                key={`settings-tab-${index}`}
+                label={tab.title}
+                active={data.activeTab === index}
+                onChangeTab={() => actions.setActiveTab(index)}
+              />
+            ))}
+          </TabsBar>
           <Space v={2} />
         </>
       )}

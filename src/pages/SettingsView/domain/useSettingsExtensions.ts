@@ -3,8 +3,7 @@ import { usePluginComponents } from '@grafana/runtime';
 const SETTINGS_EXTENSION_POINT_ID = 'grafana-pyroscope-app/settings/v1';
 
 export type SettingsExtensionProps = {
-  TabBar?: React.ComponentType<{ title: string }>; // when given it should render a tab bar
-  datasourceUid: string; // the datasource uid currently in use
+  datasourceUid: string; // the datasource uid currently in use, extensions might not use it
   backButton: React.ReactNode; // the back button component
 };
 
