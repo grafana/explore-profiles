@@ -42,8 +42,8 @@
   "includes": [
     {
       "type": "page",
-      "name": "Profiles",
-      "path": "/a/%PLUGIN_ID%/explore",
+      "name": "Explore",
+      "path": "/a/%PLUGIN_ID%",
       "action": "datasources:explore",
       "addToNav": true,
       "defaultNav": true
