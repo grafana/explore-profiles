@@ -62,6 +62,8 @@ const config = async (env): Promise<Configuration> => {
         },
       ],
     },
+    // TODO: https://github.com/grafana/explore-profiles/issues/488
+    // A temporary workaround for https://github.com/grafana/grafana/issues/104040 Should be removed when it's fixed and new version of grafana/flamegraph is released
     plugins: [
       new NormalModuleReplacementPlugin(
         /react-use\/lib\/usePrevious/,
