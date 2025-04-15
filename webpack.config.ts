@@ -1,7 +1,7 @@
 // webpack.config.ts
 import * as path from 'path';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import type { Configuration, RuleSetRule } from 'webpack';
+import { type Configuration, NormalModuleReplacementPlugin, type RuleSetRule } from 'webpack';
 import LiveReloadPlugin from 'webpack-livereload-plugin';
 import { merge } from 'webpack-merge';
 
@@ -62,6 +62,16 @@ const config = async (env): Promise<Configuration> => {
         },
       ],
     },
+    plugins: [
+      new NormalModuleReplacementPlugin(
+        /react-use\/lib\/usePrevious/,
+        path.resolve(__dirname, 'src/shims/react-use-usePrevious-default.js')
+      ),
+      new NormalModuleReplacementPlugin(
+        /react-use\/lib\/useDebounce/,
+        path.resolve(__dirname, 'src/shims/react-use-useDebounce-default.js')
+      ),
+    ],
   });
 
   return finalConfig;
