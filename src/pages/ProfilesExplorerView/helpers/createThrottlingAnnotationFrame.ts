@@ -10,8 +10,16 @@ import {
 
 const formatSize = (size: number) => formattedValueToString(getValueFormat('bytes')(size));
 
+interface RawProfileAnnotation {
+  key: string;
+  value: string;
+}
+
+enum ProfileAnnotationKey {
+  Throttled = 'pyroscope.ingest.throttled',
+}
+
 interface ProfileAnnotation {
-  type: ProfileAnnotationType;
   body: ProfileThrottledAnnotation;
 }
 
@@ -24,14 +32,6 @@ interface ProfileThrottledAnnotation {
   usageGroup: string;
 }
 
-enum ProfileAnnotationType {
-  Throttled = 'throttled',
-}
-
-interface ProfileAnnotationContainer {
-  bodies: string[];
-}
-
 interface AnnotationData {
   times: number[];
   timeEnds: number[];
@@ -39,28 +39,33 @@ interface AnnotationData {
   isRegion: boolean[];
 }
 
-function processThrottledAnnotation(
-  annotation: ProfileAnnotation,
+function processThrottlingAnnotation(
+  annotation: RawProfileAnnotation,
   currentKey: number | undefined
 ): { text: string; timeEnd: number; isRegion: boolean; key: number } | null {
-  if (annotation.type !== ProfileAnnotationType.Throttled) {
+  if (annotation.key !== ProfileAnnotationKey.Throttled) {
+    // currently we only support throttling annotations
+    // this can get refactored once we add more annotation types
     return null;
   }
 
-  if (currentKey === annotation.body.limitResetTime) {
+  const profileAnnotation = JSON.parse(annotation.value) as ProfileAnnotation;
+  const throttlingInfo = profileAnnotation.body;
+
+  if (currentKey === throttlingInfo.limitResetTime) {
     return null;
   }
 
-  const limit = formatSize(annotation.body.periodLimitMb * 1024 * 1024);
+  const limit = formatSize(throttlingInfo.periodLimitMb * 1024 * 1024);
   return {
-    text: `Ingestion limit of ${limit}/${annotation.body.periodType} reached`,
-    timeEnd: annotation.body.limitResetTime * 1000,
-    isRegion: annotation.body.limitResetTime < Math.floor(Date.now() / 1000),
-    key: annotation.body.limitResetTime,
+    text: `Ingestion limit of ${limit}/${throttlingInfo.periodType} reached`,
+    timeEnd: throttlingInfo.limitResetTime * 1000,
+    isRegion: throttlingInfo.limitResetTime < Math.floor(Date.now() / 1000),
+    key: throttlingInfo.limitResetTime,
   };
 }
 
-function collectAnnotationData(data: PanelData): AnnotationData {
+function collectThrottlingAnnotationData(data: PanelData): AnnotationData {
   const result: AnnotationData = {
     times: [],
     timeEnds: [],
@@ -74,14 +79,13 @@ function collectAnnotationData(data: PanelData): AnnotationData {
     }
 
     let key: number | undefined;
-    s.fields[2].values.forEach((annotationContainer: ProfileAnnotationContainer, i) => {
-      if (!annotationContainer) {
+    s.fields[2].values.forEach((annotations: RawProfileAnnotation[], i) => {
+      if (!annotations) {
         return;
       }
 
-      annotationContainer.bodies.forEach((body) => {
-        const annotation = JSON.parse(body) as ProfileAnnotation;
-        const processed = processThrottledAnnotation(annotation, key);
+      annotations.forEach((a) => {
+        const processed = processThrottlingAnnotation(a, key);
 
         if (processed) {
           result.times.push(s.fields[0].values[i]);
@@ -97,8 +101,8 @@ function collectAnnotationData(data: PanelData): AnnotationData {
   return result;
 }
 
-export function createAnnotationFrame(data: PanelData) {
-  const { times, timeEnds, texts, isRegion } = collectAnnotationData(data);
+export function createThrottlingAnnotationFrame(data: PanelData) {
+  const { times, timeEnds, texts, isRegion } = collectThrottlingAnnotationData(data);
 
   const fields = [
     { name: 'time', type: FieldType.time, values: times },

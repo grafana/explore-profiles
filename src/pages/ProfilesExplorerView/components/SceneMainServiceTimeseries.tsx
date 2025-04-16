@@ -17,7 +17,7 @@ import { FiltersVariable } from '../domain/variables/FiltersVariable/FiltersVari
 import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
-import { createAnnotationFrame } from '../helpers/annotationCollector';
+import { createThrottlingAnnotationFrame } from '../helpers/createThrottlingAnnotationFrame';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { PYROSCOPE_DATA_SOURCE } from '../infrastructure/pyroscope-data-sources';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
@@ -158,7 +158,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         // add annotation for the first time
         if (!newState.data.annotations?.length && !prevState.data?.annotations?.length) {
           const { $data } = this.getTimeseries()!.state;
-          const annotationFrame = createAnnotationFrame(newState.data);
+          const annotationFrame = createThrottlingAnnotationFrame(newState.data);
 
           $data?.setState({
             data: {
