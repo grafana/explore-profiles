@@ -2,7 +2,7 @@ import { AppEvents } from '@grafana/data';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/PluginSettings';
 import { act, renderHook } from '@testing-library/react';
 
-import { useSettingsView } from '../useSettingsView';
+import { useUISettingsView } from '../../domain/useUISettingsView';
 import plugin from './fixtures/plugin.json';
 
 // appEvents dependency
@@ -43,10 +43,10 @@ jest.mock('react-router-dom', () => ({
 }));
 
 // tests
-describe('useSettingsView(plugin)', () => {
+describe('useUISettingsView(plugin)', () => {
   it('returns an object with "data" and "actions" fields', () => {
     // @ts-expect-error
-    const { result } = renderHook(() => useSettingsView(plugin));
+    const { result } = renderHook(() => useUISettingsView(plugin));
 
     expect(result.current).toEqual({
       data: { ...DEFAULT_SETTINGS, fetchError: null },
@@ -57,7 +57,6 @@ describe('useSettingsView(plugin)', () => {
         toggleEnableFunctionDetails: expect.any(Function),
         toggleEnableMetricsFromProfiles: expect.any(Function),
         saveSettings: expect.any(Function),
-        goBack: expect.any(Function),
       },
     });
   });
@@ -65,7 +64,7 @@ describe('useSettingsView(plugin)', () => {
   describe('actions.toggleCollapsedFlamegraphs()', () => {
     it('toggles the value of data.collapsedFlamegraphs', () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useSettingsView(plugin));
+      const { result } = renderHook(() => useUISettingsView(plugin));
 
       const { data, actions } = result.current;
 
@@ -82,7 +81,7 @@ describe('useSettingsView(plugin)', () => {
   describe('actions.updateMaxNodes(event)', () => {
     it('updates the value of data.maxNodes', () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useSettingsView(plugin));
+      const { result } = renderHook(() => useUISettingsView(plugin));
 
       const { data, actions } = result.current;
 
@@ -99,7 +98,7 @@ describe('useSettingsView(plugin)', () => {
   describe('actions.toggleEnableFlameGraphDotComExport()', () => {
     it('toggles the value of data.enableFlameGraphDotComExport', () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useSettingsView(plugin));
+      const { result } = renderHook(() => useUISettingsView(plugin));
 
       const { data, actions } = result.current;
 
@@ -116,7 +115,7 @@ describe('useSettingsView(plugin)', () => {
   describe('actions.toggleEnableFunctionDetails()', () => {
     it('toggles the value of data.toggleEnableFunctionDetails', () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useSettingsView(plugin));
+      const { result } = renderHook(() => useUISettingsView(plugin));
 
       const { data, actions } = result.current;
 
@@ -133,7 +132,7 @@ describe('useSettingsView(plugin)', () => {
   describe('actions.saveSettings()', () => {
     it('stores the plugin settings & updates the URL search param', async () => {
       // @ts-expect-error
-      const { result } = renderHook(() => useSettingsView(plugin));
+      const { result } = renderHook(() => useUISettingsView(plugin));
 
       const { saveSettings } = result.current.actions;
 
@@ -148,7 +147,7 @@ describe('useSettingsView(plugin)', () => {
         mutate.mockResolvedValue({ ok: true });
 
         // @ts-expect-error
-        const { result } = renderHook(() => useSettingsView(plugin));
+        const { result } = renderHook(() => useUISettingsView(plugin));
 
         const { saveSettings } = result.current.actions;
 
@@ -170,7 +169,7 @@ describe('useSettingsView(plugin)', () => {
         jest.spyOn(console, 'error').mockImplementation(() => {});
 
         // @ts-expect-error
-        const { result } = renderHook(() => useSettingsView(plugin));
+        const { result } = renderHook(() => useUISettingsView(plugin));
 
         const { saveSettings } = result.current.actions;
 
