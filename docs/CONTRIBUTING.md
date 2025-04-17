@@ -23,7 +23,7 @@ Before a piece of work is finished, it should:
 
 ## Get started
 
-1. Clone the repository `git clone git@github.com:grafana/explore-profiles.git`
+1. Clone the repository `git clone git@github.com:grafana/profiles-drilldown.git`
 2. Install the dependencies: `yarn install`
 3. Build the plugin in dev mode: `yarn dev`
 4. Start the Grafana server (with static data): `yarn server:static`
