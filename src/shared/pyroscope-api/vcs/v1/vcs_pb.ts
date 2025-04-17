@@ -68,7 +68,7 @@ export type GithubLoginResponse = Message<"vcs.v1.GithubLoginResponse"> & {
    * In future version, this cookie won't be sent. Now, old cookie is sent alongside the new expected
    * data (token, token_expires_at and refresh_token_expires_at). Frontend will be responsible of computing
    * its own cookie from the new data.
-   * Remove after completing https://github.com/grafana/profiles-drilldown/issues/187
+   * Remove after completing https://github.com/grafana/explore-profiles/issues/187
    *
    * @generated from field: string cookie = 1;
    */
