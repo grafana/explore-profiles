@@ -28,7 +28,7 @@ All Grafana instances come with Profiles Drilldown plugin preinstalled.
 
 For more information, refer to the Profiles Drilldown documentation in [Grafana](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) or [Grafana Cloud](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/).
 
-To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/explore-profiles/blob/main/docs/README.md).
+To learn more about contributing to the documentation, refer to the [README](https://github.com/grafana/profiles-drilldown/blob/main/docs/README.md).
 The Profiles Drilldown documentation source files are in docs/sources.
 
 ### Development / Contributing
