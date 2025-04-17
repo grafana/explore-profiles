@@ -80,10 +80,6 @@ export function useOpenAiSuggestions(suggestionPromptInputs: SuggestionPromptInp
       sendMessages([
         {
           role: 'system',
-          content: prompts.system,
-        },
-        {
-          role: 'system',
           content: prompts.user,
         },
       ]);

@@ -38,4 +38,6 @@ class SettingsApiClient extends ApiClient {
   }
 }
 
-export const settingsApiClient = new SettingsApiClient();
+export const useSettingsApiClient = () => {
+  return new SettingsApiClient();
+};

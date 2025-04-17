@@ -1,7 +1,9 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
+import { useChromeHeaderHeight } from '@grafana/runtime';
 import { Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
+import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
 
@@ -24,23 +26,10 @@ export function Header(props: HeaderProps) {
 
   const { data, actions } = useHeader(props);
 
-  const {
-    explorationType,
-    dataSourceVariable,
-    timePickerControl,
-    refreshPickerControl,
-    sceneVariables,
-    gridControls,
-    serviceName,
-  } = data;
+  const { settings } = useFetchPluginSettings();
 
-  type InsightsLauncherProps = {
-    dataSourceUid: string;
-    serviceName?: string;
-  };
-  const { component: InsightsLauncher } = usePluginComponent<InsightsLauncherProps>(
-    'grafana-insights-app/insights-launcher/v1'
-  );
+  const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
+    data;
 
   return (
     <div className={styles.header} data-testid="allControls">
@@ -56,10 +45,6 @@ export function Header(props: HeaderProps) {
         </div>
 
         <div className={styles.appControlsRight}>
-          {InsightsLauncher && (
-            <InsightsLauncher dataSourceUid={dataSourceVariable.getValueText()} serviceName={serviceName} />
-          )}
-
           {timePickerControl && (
             <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
           )}
@@ -68,6 +53,15 @@ export function Header(props: HeaderProps) {
           )}
 
           <div className={styles.appMiscButtons}>
+            {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
+              <IconButton
+                name="gf-prometheus"
+                tooltip="View recording rules"
+                aria-label="View recording rules"
+                onClick={actions.onClickRecordingRules}
+              />
+            )}
+
             <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />
 
             <IconButton name="cog" tooltip="View/edit tenant settings" onClick={actions.onClickUserSettings} />

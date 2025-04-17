@@ -8,10 +8,7 @@
   "preload": true,
   "dependencies": {
     "grafanaDependency": ">=11.5.0",
-    "plugins": [],
-    "extensions": {
-      "exposedComponents": ["grafana-insights-app/insights-launcher/v1"]
-    }
+    "plugins": []
   },
   "info": {
     "keywords": ["app", "pyroscope", "profiling", "explore", "profiles", "performance", "drilldown"],
@@ -56,6 +53,9 @@
     "extensionPoints": [
       {
         "id": "grafana-pyroscope-app/investigation/v1"
+      },
+      {
+        "id": "grafana-pyroscope-app/settings/v1"
       }
     ],
     "addedLinks": [

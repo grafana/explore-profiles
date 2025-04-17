@@ -21,6 +21,31 @@ test.describe('Plugin Settings', () => {
     await expect(flamegraphSettings.getByText('Maximum number of nodes')).toBeVisible();
   });
 
+  // TODO: re-enable when we can upgrade to Grafana 12
+  test.describe.skip('Metrics from profiles settings', () => {
+    test('is not available by default', async ({ exploreProfilesPage }) => {
+      await exploreProfilesPage.goto(ExplorationType.FlameGraph);
+
+      await expect(exploreProfilesPage.viewRecordingRulesButton).not.toBeVisible();
+
+      await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 10 });
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).not.toBeVisible();
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).not.toBeVisible();
+    });
+
+    test('can be enabled', async ({ settingsPage, exploreProfilesPage }) => {
+      await settingsPage.getMetricsFromProfilesCheckbox().click();
+      await settingsPage.getSaveSettingsButton().click();
+      await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
+
+      await exploreProfilesPage.goto(ExplorationType.FlameGraph);
+      await expect(exploreProfilesPage.viewRecordingRulesButton).toBeVisible();
+
+      await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 10 });
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).toBeVisible();
+    });
+  });
+
   test.describe('Flame graph settings', () => {
     test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
       await settingsPage.getCollapsedFlamegraphsCheckbox().click();

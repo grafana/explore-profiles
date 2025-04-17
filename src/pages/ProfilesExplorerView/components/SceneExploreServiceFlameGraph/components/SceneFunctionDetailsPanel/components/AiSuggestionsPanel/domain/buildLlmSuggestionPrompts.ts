@@ -51,7 +51,6 @@ ${codeInfoToAnnotatedCode(functionDetails, lines)}
 `;
 
   return {
-    system: ``,
     user: userPrompt,
   };
 };
