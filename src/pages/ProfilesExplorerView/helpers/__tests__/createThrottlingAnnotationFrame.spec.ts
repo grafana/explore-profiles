@@ -31,30 +31,39 @@ describe('createThrottlingAnnotationFrame', () => {
               values: [100],
               config: {},
             } as Field<number>,
+          ],
+          length: 1,
+        } as DataFrame,
+      ],
+      annotations: [
+        {
+          fields: [
             {
               name: 'annotations',
               type: FieldType.other,
               values: [
                 [
                   {
-                    key: 'pyroscope.ingest.throttled',
-                    value: JSON.stringify({
-                      body: {
-                        periodType: 'day',
-                        periodLimitMb: 1024,
-                        limitResetTime: mockLimitResetTime,
-                        samplingPeriodSec: 60,
-                        samplingRequests: 1,
-                        usageGroup: '',
-                      },
-                    }),
+                    timestamp: mockTime,
+                    annotation: {
+                      key: 'pyroscope.ingest.throttled',
+                      value: JSON.stringify({
+                        body: {
+                          periodType: 'day',
+                          periodLimitMb: 1024,
+                          limitResetTime: mockLimitResetTime,
+                          samplingPeriodSec: 60,
+                          samplingRequests: 1,
+                          usageGroup: '',
+                        },
+                      }),
+                    },
                   },
                 ],
               ],
               config: {},
             } as Field,
           ],
-          length: 1,
         } as DataFrame,
       ],
       state: LoadingState.Done,
@@ -76,7 +85,7 @@ describe('createThrottlingAnnotationFrame', () => {
     expect(result.fields[1].name).toBe('timeEnd');
     expect(result.fields[1].values[0]).toBe(mockLimitResetTime * 1000);
     expect(result.fields[3].name).toBe('text');
-    expect(result.fields[3].values[0]).toBe('Ingestion limit of 1 GiB/day reached');
+    expect(result.fields[3].values[0]).toBe('Ingestion limit (1 GiB/day) reached');
     expect(result.fields[4].name).toBe('isRegion');
     expect(result.fields[4].values[0]).toBe(false);
     expect(result.meta?.dataTopic).toBe(DataTopic.Annotations);
@@ -99,6 +108,13 @@ describe('createThrottlingAnnotationFrame', () => {
               values: [100],
               config: {},
             } as Field<number>,
+          ],
+          length: 1,
+        } as DataFrame,
+      ],
+      annotations: [
+        {
+          fields: [
             {
               name: 'annotations',
               type: FieldType.other,
@@ -106,7 +122,6 @@ describe('createThrottlingAnnotationFrame', () => {
               config: {},
             } as Field,
           ],
-          length: 1,
         } as DataFrame,
       ],
       state: LoadingState.Done,
@@ -141,21 +156,30 @@ describe('createThrottlingAnnotationFrame', () => {
               values: [100],
               config: {},
             } as Field<number>,
+          ],
+          length: 1,
+        } as DataFrame,
+      ],
+      annotations: [
+        {
+          fields: [
             {
               name: 'annotations',
               type: FieldType.other,
               values: [
                 [
                   {
-                    key: 'unsupported.annotation.type',
-                    value: JSON.stringify({ some: 'data' }),
+                    timestamp: mockTime,
+                    annotation: {
+                      key: 'unsupported.annotation.type',
+                      value: JSON.stringify({ some: 'data' }),
+                    },
                   },
                 ],
               ],
               config: {},
             } as Field,
           ],
-          length: 1,
         } as DataFrame,
       ],
       state: LoadingState.Done,
@@ -226,45 +250,57 @@ describe('createThrottlingAnnotationFrame', () => {
               values: [100, 200],
               config: {},
             } as Field<number>,
+          ],
+          length: 2,
+        } as DataFrame,
+      ],
+      annotations: [
+        {
+          fields: [
             {
               name: 'annotations',
               type: FieldType.other,
               values: [
                 [
                   {
-                    key: 'pyroscope.ingest.throttled',
-                    value: JSON.stringify({
-                      body: {
-                        periodType: 'day',
-                        periodLimitMb: 1024,
-                        limitResetTime: mockLimitResetTime,
-                        samplingPeriodSec: 60,
-                        samplingRequests: 1,
-                        usageGroup: '',
-                      },
-                    }),
+                    timestamp: mockTime,
+                    annotation: {
+                      key: 'pyroscope.ingest.throttled',
+                      value: JSON.stringify({
+                        body: {
+                          periodType: 'day',
+                          periodLimitMb: 1024,
+                          limitResetTime: mockLimitResetTime,
+                          samplingPeriodSec: 60,
+                          samplingRequests: 1,
+                          usageGroup: '',
+                        },
+                      }),
+                    },
                   },
                 ],
                 [
                   {
-                    key: 'pyroscope.ingest.throttled',
-                    value: JSON.stringify({
-                      body: {
-                        periodType: 'day',
-                        periodLimitMb: 1024,
-                        limitResetTime: mockLimitResetTime,
-                        samplingPeriodSec: 60,
-                        samplingRequests: 1,
-                        usageGroup: '',
-                      },
-                    }),
+                    timestamp: mockTime + 1000,
+                    annotation: {
+                      key: 'pyroscope.ingest.throttled',
+                      value: JSON.stringify({
+                        body: {
+                          periodType: 'day',
+                          periodLimitMb: 1024,
+                          limitResetTime: mockLimitResetTime,
+                          samplingPeriodSec: 60,
+                          samplingRequests: 1,
+                          usageGroup: '',
+                        },
+                      }),
+                    },
                   },
                 ],
               ],
               config: {},
             } as Field,
           ],
-          length: 2,
         } as DataFrame,
       ],
       state: LoadingState.Done,
