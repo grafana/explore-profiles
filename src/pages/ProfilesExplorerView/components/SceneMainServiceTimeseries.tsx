@@ -156,7 +156,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         }
 
         // add annotation for the first time
-        if (!newState.data.annotations?.length && !prevState.data?.annotations?.length) {
+        if (!prevState.data?.annotations?.length) {
           const { $data } = this.getTimeseries()!.state;
           const annotationFrame = createThrottlingAnnotationFrame(newState.data);
 
