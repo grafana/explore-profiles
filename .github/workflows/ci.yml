@@ -64,7 +64,7 @@ jobs:
 
   deploy-main-to-dev-and-ops:
     name: Deploy
-    needs: [upload]
+    needs: [upload-sha, upload-edge, upload-main]
     uses: ./.github/workflows/deploy.yml
     # Make deployments available only from main
     if: github.event_name == 'push'

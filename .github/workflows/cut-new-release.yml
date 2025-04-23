@@ -100,7 +100,7 @@ jobs:
 
   create-github-release:
     name: Create GitHub release
-    needs: [create-new-version, upload]
+    needs: [create-new-version, upload-version, upload-latest]
     runs-on: ubuntu-latest
     # Required to created a release
     permissions:
