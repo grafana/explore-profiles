@@ -1,3 +1,19 @@
+# [1.3.0](https://github.com/grafana/explore-profiles/compare/v1.2.3...v1.3.0) (2025-04-16)
+
+
+### Bug Fixes
+
+* Cascader options break when services have multiple levels with matching prefix ([#484](https://github.com/grafana/explore-profiles/issues/484)) ([2bb6034](https://github.com/grafana/explore-profiles/commit/2bb603464a329bec9b6da2c26ca0c30a2ef6f45e))
+* **Settings:** Reload settings when data source changes ([#474](https://github.com/grafana/explore-profiles/issues/474)) ([23d814b](https://github.com/grafana/explore-profiles/commit/23d814be30fc8cf050024e556c132785d24a196c))
+
+
+### Features
+
+* **CI:** Append SHA to version number when releasing from main ([#455](https://github.com/grafana/explore-profiles/issues/455)) ([03e6158](https://github.com/grafana/explore-profiles/commit/03e6158377a87b6494ac39a9764296dd2de19a01))
+* **Metrics:** Basic UI for experimental metrics from profiles ([#462](https://github.com/grafana/explore-profiles/issues/462)) ([1500a59](https://github.com/grafana/explore-profiles/commit/1500a59e6daeb097576449273e2dc3da47f8f311))
+
+
+
 ## [1.2.3](https://github.com/grafana/explore-profiles/compare/v1.2.2...v1.2.3) (2025-04-03)
 
 
