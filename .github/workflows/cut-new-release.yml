@@ -88,6 +88,7 @@ jobs:
     with:
       version: ${{ needs.create-new-version.outputs.version }}
       github_environment: gcs-no-approval
+      upload_github_artifact: true
 
   upload-latest:
     name: Upload latest tag to GCS

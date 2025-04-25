@@ -10,6 +10,11 @@ on:
       github_environment:
         required: true
         type: string
+      upload_github_artifact:
+        required: false
+        default: false
+        type: boolean
+        description: 'Additionally uploads the artifact to GitHub artifacts if needed by next steps - used only for creating GitHub release'
 
 jobs:
   upload:
@@ -68,7 +73,7 @@ jobs:
           predefinedAcl: publicRead
 
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ inputs.upload_github_artifact }}
         with:
           name: build-upload
           path: ${{ steps.metadata.outputs.archive_name }}
