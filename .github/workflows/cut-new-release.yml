@@ -80,8 +80,8 @@ jobs:
       e2e: false
       addSha: false
 
-  upload:
-    name: Upload to GCS
+  upload-version:
+    name: Upload version tag to GCS
     needs: [create-new-version, build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
@@ -89,9 +89,18 @@ jobs:
       version: ${{ needs.create-new-version.outputs.version }}
       github_environment: gcs-no-approval
 
+  upload-latest:
+    name: Upload latest tag to GCS
+    needs: [create-new-version, build]
+    uses: ./.github/workflows/upload.yml
+    secrets: inherit
+    with:
+      version: 'latest'
+      github_environment: gcs-no-approval
+
   create-github-release:
     name: Create GitHub release
-    needs: [create-new-version, upload]
+    needs: [create-new-version, upload-version, upload-latest]
     runs-on: ubuntu-latest
     # Required to created a release
     permissions:

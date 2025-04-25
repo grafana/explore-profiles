@@ -29,8 +29,8 @@ jobs:
       e2e: true
       addSha: true
 
-  upload:
-    name: Upload to GCS
+  upload-sha:
+    name: Upload sha commit tag to GCS
     needs: [build]
     # Make uploads available only from main (needed for deployments)
     if: github.event_name == 'push'
@@ -40,9 +40,31 @@ jobs:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
       github_environment: gcs-no-approval
 
+  upload-edge:
+    name: Upload edge tag to GCS
+    needs: [build]
+    # Make uploads available only from main (needed for deployments)
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/upload.yml
+    secrets: inherit
+    with:
+      version: 'edge'
+      github_environment: gcs-no-approval
+
+  upload-main:
+    name: Upload main tag to GCS
+    needs: [build]
+    # Make uploads available only from main (needed for deployments)
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/upload.yml
+    secrets: inherit
+    with:
+      version: 'main'
+      github_environment: gcs-no-approval
+
   deploy-main-to-dev-and-ops:
     name: Deploy
-    needs: [upload]
+    needs: [upload-sha, upload-edge, upload-main]
     uses: ./.github/workflows/deploy.yml
     # Make deployments available only from main
     if: github.event_name == 'push'
