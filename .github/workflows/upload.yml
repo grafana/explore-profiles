@@ -39,11 +39,13 @@ jobs:
 
       - name: Get plugin metadata
         id: metadata
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
         run: |
           sudo apt-get install jq
 
           export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
-          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${{ inputs.version }}
+          export PACKAGE_ID="${GRAFANA_PLUGIN_ID}-${INPUTS_VERSION}"
           echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
           echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
