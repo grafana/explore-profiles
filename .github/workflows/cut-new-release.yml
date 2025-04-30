@@ -56,14 +56,16 @@ jobs:
       - name: Create version & update CHANGELOG
         id: tag
         env:
+          INPUTS_VERSION: ${{ inputs.version }}
           DB_FE_CI_BOT_EMAIL: ${{ secrets.DB_FE_CI_BOT_EMAIL }}
+          STEPS_GET_INSTALLATION_TOKEN_OUTPUTS_TOKEN: ${{ steps.get_installation_token.outputs.token }}
         # Note: We don't get the version with VERSION=$(npm version ${{ inputs.version }})
         # because npm version runs standard changelog that outputs additional text we cannot include in version
         run: |
           git config --global user.email "$DB_FE_CI_BOT_EMAIL"
           git config --global user.name "Databases Frontend CI Bot"
-          git config --global url.https://${{ steps.get_installation_token.outputs.token }}@github.com/.insteadOf https://github.com/
-          npm version ${{ inputs.version }}
+          git config --global url."https://${STEPS_GET_INSTALLATION_TOKEN_OUTPUTS_TOKEN}@github.com/".insteadOf https://github.com/
+          npm version ${INPUTS_VERSION}
           VERSION=$(git describe --tags --abbrev=0)
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "version: $VERSION" >> $GITHUB_STEP_SUMMARY
