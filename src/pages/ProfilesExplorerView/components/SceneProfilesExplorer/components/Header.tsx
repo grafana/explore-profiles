@@ -43,7 +43,7 @@ export function Header(props: HeaderProps) {
     serviceName?: string;
   };
   const { component: InsightsLauncher } = usePluginComponent<InsightsLauncherProps>(
-    'grafana-insights-app/insights-launcher/v1'
+    'grafana-o11yinsights-app/insights-launcher/v1'
   );
 
   return (
