@@ -1,3 +1,4 @@
+import { LoadingState } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -6,6 +7,7 @@ import {
   SceneObjectState,
   SceneQueryRunner,
   VariableDependencyConfig,
+  VizPanel,
   VizPanelState,
 } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -15,6 +17,7 @@ import { FiltersVariable } from '../domain/variables/FiltersVariable/FiltersVari
 import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
+import { createThrottlingAnnotationFrame } from '../helpers/createThrottlingAnnotationFrame';
 import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { PYROSCOPE_DATA_SOURCE } from '../infrastructure/pyroscope-data-sources';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
@@ -65,6 +68,8 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     if (supportGroupBy) {
       this.subscribeToGroupByStateChanges(item);
     }
+
+    this.subscribeToTimeseriesChanges();
   }
 
   initVariables(item: GridItemData) {
@@ -141,6 +146,39 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         }
       })
     );
+  }
+
+  subscribeToTimeseriesChanges() {
+    this._subs.add(
+      this.getTimeseries()?.state.$data?.subscribeToState((newState, prevState) => {
+        if (!newState.data || newState.data.state !== LoadingState.Done) {
+          return;
+        }
+
+        // add annotation for the first time
+        if (!prevState.data?.annotations?.length) {
+          const { $data } = this.getTimeseries()!.state;
+          const annotationFrame = createThrottlingAnnotationFrame(newState.data);
+
+          $data?.setState({
+            data: {
+              ...newState.data,
+              annotations: [annotationFrame],
+            },
+          });
+          return;
+        }
+
+        // ensure we retain the previous annotations, if they exist
+        if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
+          newState.data.annotations = prevState.data.annotations;
+        }
+      })
+    );
+  }
+
+  protected getTimeseries(): VizPanel | undefined {
+    return this.state.body?.getPanel();
   }
 
   onGroupByChanged(groupByVariable: GroupByVariable) {
