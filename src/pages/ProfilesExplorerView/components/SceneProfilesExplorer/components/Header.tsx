@@ -28,11 +28,19 @@ export function Header(props: HeaderProps) {
 
   const { settings } = useFetchPluginSettings();
 
-  const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
-    data;
+  const {
+    explorationType,
+    dataSourceVariable,
+    timePickerControl,
+    refreshPickerControl,
+    sceneVariables,
+    gridControls,
+    serviceName,
+  } = data;
 
   type InsightsLauncherProps = {
     dataSourceUid: string;
+    serviceName?: string;
   };
   const { component: InsightsLauncher } = usePluginComponent<InsightsLauncherProps>(
     'grafana-insights-app/insights-launcher/v1'
@@ -52,7 +60,9 @@ export function Header(props: HeaderProps) {
         </div>
 
         <div className={styles.appControlsRight}>
-          {InsightsLauncher && <InsightsLauncher dataSourceUid={dataSourceVariable.getValueText()} />}
+          {InsightsLauncher && (
+            <InsightsLauncher dataSourceUid={dataSourceVariable.getValueText()} serviceName={serviceName} />
+          )}
 
           {timePickerControl && (
             <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
