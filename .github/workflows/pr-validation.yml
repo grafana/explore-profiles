@@ -1,3 +1,4 @@
+# trigger zizmor
 name: 'PR Conventional Commit Validation'
 
 on:

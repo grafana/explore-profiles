@@ -1,3 +1,4 @@
+# trigger zizmor
 name: Release existing version
 
 on:

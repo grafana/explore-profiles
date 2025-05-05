@@ -1,3 +1,4 @@
+# trigger zizmor
 # Upload build-frontend artifact and send it to GCS
 name: Upload to GCS
 

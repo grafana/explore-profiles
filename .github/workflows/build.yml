@@ -1,3 +1,4 @@
+# trigger zizmor
 # Build current branch (or provided ref) with specific version tag and create build-frontend artifact
 name: Build and test frontend
 
