@@ -61,7 +61,13 @@ export function Header(props: HeaderProps) {
 
         <div className={styles.appControlsRight}>
           {InsightsLauncher && (
-            <InsightsLauncher dataSourceUid={dataSourceVariable.getValueText()} serviceName={serviceName} />
+            <ErrorBoundary>
+              {({ error }) =>
+                error ? undefined : (
+                  <InsightsLauncher dataSourceUid={dataSourceVariable.getValueText()} serviceName={serviceName} />
+                )
+              }
+            </ErrorBoundary>
           )}
 
           {timePickerControl && (
