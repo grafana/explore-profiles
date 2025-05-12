@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
+    permissions:
+      id-token: write # required to access secrets
     with:
       ref: ${{ inputs.version }}
       e2e: false
@@ -19,10 +21,9 @@ jobs:
 
   upload:
     needs: [build]
-    # Required to create OIDC/JWT token required to use shared actions
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
@@ -72,10 +73,9 @@ jobs:
 
   update-prod-catalog:
     name: Update Prod Plugins Catalog
-    # Required to create OIDC/JWT token required to use shared actions
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required to read secrets
     needs: [create-github-release]
     uses: ./.github/workflows/update-plugins-catalog.yml
     secrets: inherit
@@ -85,10 +85,9 @@ jobs:
 
   deploy-to-cloud:
     needs: [update-prod-catalog]
-    # Required to create OIDC/JWT token required to use shared actions
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     strategy:

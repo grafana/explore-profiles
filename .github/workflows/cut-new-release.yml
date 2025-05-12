@@ -72,6 +72,8 @@ jobs:
     name: Build and test
     needs: [create-new-version]
     uses: ./.github/workflows/build.yml
+    permissions:
+      id-token: write # required to access secrets
     with:
       ref: ${{ needs.create-new-version.outputs.version }}
       e2e: false
@@ -175,7 +177,7 @@ jobs:
     # Required to create OIDC/JWT token required to use shared actions
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required to read secrets
     needs: [create-new-version, deploy-to-ops]
     uses: ./.github/workflows/update-plugins-catalog.yml
     secrets: inherit

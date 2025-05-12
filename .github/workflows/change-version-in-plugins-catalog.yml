@@ -27,10 +27,9 @@ jobs:
 
   deploy:
     uses: ./.github/workflows/update-plugins-catalog.yml
-    # Required to create OIDC/JWT token required to use shared actions
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required to read secrets
     needs: [verify]
     secrets: inherit
     with:

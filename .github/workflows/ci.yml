@@ -21,7 +21,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write # required to create PR comment with test coverage
-      id-token: write
+      id-token: write # required to access secrets
     if: github.actor != 'databases-frontend-ci-bot[bot]'
     uses: ./.github/workflows/build.yml
     with:
@@ -30,10 +30,9 @@ jobs:
 
   upload-sha:
     name: Upload sha commit tag to GCS
-    # Required to create OIDC/JWT token required to use shared actions
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     needs: [build]
     # Make uploads available only from main (needed for deployments)
     if: github.event_name == 'push'
@@ -45,10 +44,9 @@ jobs:
 
   upload-edge:
     name: Upload edge tag to GCS
-    # Required to create OIDC/JWT token required to use shared actions
     permissions:
       contents: read
-      id-token: write
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     needs: [build]
     # Make uploads available only from main (needed for deployments)
     if: github.event_name == 'push'
