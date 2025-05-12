@@ -1,4 +1,3 @@
-# trigger zizmor
 name: 'Close stale issues and PRs'
 on:
   schedule:
