@@ -13,12 +13,6 @@ on:
           - minor
           - major
 
-# Required to create OIDC/JWT token required to use shared actions
-permissions:
-  contents: read
-  pull-requests: write
-  id-token: write
-
 jobs:
   create-new-version:
     name: Tag new version (with changelog)
@@ -31,7 +25,7 @@ jobs:
     steps:
       # We need to use GitHub App instead of just passing the token in order to have CLA singed by the committer.
       # To run correctly it needs to be used before the checkout
-      - uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
         id: get_installation_token
         with:
           app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
@@ -85,6 +79,10 @@ jobs:
 
   upload-version:
     name: Upload version tag to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [create-new-version, build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
@@ -95,6 +93,10 @@ jobs:
 
   upload-latest:
     name: Upload latest tag to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [create-new-version, build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
@@ -112,7 +114,7 @@ jobs:
     steps:
       # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
       # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
-      - uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
         id: get_installation_token
         with:
           app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
@@ -144,6 +146,10 @@ jobs:
 
   deploy-to-dev:
     name: Deploy (dev)
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, create-github-release]
     secrets: inherit
@@ -153,6 +159,10 @@ jobs:
 
   deploy-to-ops:
     name: Deploy (ops)
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, deploy-to-dev]
     secrets: inherit
@@ -162,6 +172,10 @@ jobs:
 
   update-prod-catalog:
     name: Update Prod Plugins Catalog
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [create-new-version, deploy-to-ops]
     uses: ./.github/workflows/update-plugins-catalog.yml
     secrets: inherit
@@ -171,6 +185,10 @@ jobs:
 
   deploy-to-prod:
     name: Deploy (prod)
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, update-prod-catalog]
     secrets: inherit

@@ -30,6 +30,10 @@ jobs:
 
   upload:
     name: Upload to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [build]
     if: github.event.label.name == 'upload'
     uses: ./.github/workflows/upload.yml
