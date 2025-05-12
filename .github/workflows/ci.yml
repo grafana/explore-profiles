@@ -21,6 +21,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write # required to create PR comment with test coverage
+      id-token: read
     if: github.actor != 'databases-frontend-ci-bot[bot]'
     uses: ./.github/workflows/build.yml
     with:
