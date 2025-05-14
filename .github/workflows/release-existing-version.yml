@@ -20,6 +20,7 @@ jobs:
     with:
       ref: ${{ inputs.version }}
       e2e: false
+      addSha: false
 
   upload:
     needs: [build]
@@ -28,6 +29,7 @@ jobs:
     with:
       version: ${{ inputs.version }}
       github_environment: gcs-no-approval
+      upload_github_artifact: true
 
   create-github-release:
     name: Create GitHub release

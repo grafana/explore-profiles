@@ -13,3 +13,8 @@ export const get = SettingsService.method.get;
  * @generated from rpc settings.v1.SettingsService.Set
  */
 export const set = SettingsService.method.set;
+
+/**
+ * @generated from rpc settings.v1.SettingsService.Delete
+ */
+export const delete$ = SettingsService.method.delete;

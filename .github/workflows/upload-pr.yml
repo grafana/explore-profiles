@@ -1,0 +1,38 @@
+name: Upload PR
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      # triggered only when a label is added, the workflow is triggered for all added labels
+      - labeled
+
+env:
+  BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
+
+# Required to create OIDC/JWT token required to use shared actions
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build and test
+    if: github.actor != 'databases-frontend-ci-bot[bot]' && github.event.label.name == 'upload'
+    uses: ./.github/workflows/build.yml
+    with:
+      # don't run e2e tests here - we just need to deploy the artifact
+      e2e: false
+      addSha: true
+
+  upload:
+    name: Upload to GCS
+    needs: [build]
+    if: github.event.label.name == 'upload'
+    uses: ./.github/workflows/upload.yml
+    secrets: inherit
+    with:
+      version: ${{ github.event.pull_request.head.sha || github.sha }}
+      github_environment: gcs-no-approval

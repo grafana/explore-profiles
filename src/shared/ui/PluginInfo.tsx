@@ -8,7 +8,7 @@ import { GIT_COMMIT } from '../../version';
 import { PyroscopeLogo } from './PyroscopeLogo';
 
 const pluginCommitSha: string = GIT_COMMIT;
-const pluginCommitURL = `https://github.com/grafana/explore-profiles/commit/${pluginCommitSha}`;
+const pluginCommitURL = `https://github.com/grafana/profiles-drilldown/commit/${pluginCommitSha}`;
 
 const { buildInfo: grafanaBuildInfo } = config;
 
@@ -47,12 +47,12 @@ function InfoMenu() {
       <Menu.Item
         label="Changelog"
         icon="list-ul"
-        onClick={() => window.open('https://github.com/grafana/explore-profiles/blob/main/CHANGELOG.md')}
+        onClick={() => window.open('https://github.com/grafana/profiles-drilldown/blob/main/CHANGELOG.md')}
       />
       <Menu.Item
         label="Contribute"
         icon="external-link-alt"
-        onClick={() => window.open('https://github.com/grafana/explore-profiles/blob/main/docs/CONTRIBUTING.md')}
+        onClick={() => window.open('https://github.com/grafana/profiles-drilldown/blob/main/docs/CONTRIBUTING.md')}
       />
       <Menu.Item
         label="Documentation"
@@ -62,7 +62,7 @@ function InfoMenu() {
       <Menu.Item
         label="Report an issue"
         icon="bug"
-        onClick={() => window.open('https://github.com/grafana/explore-profiles/issues/new?template=bug_report.md')}
+        onClick={() => window.open('https://github.com/grafana/profiles-drilldown/issues/new?template=bug_report.md')}
       />
       <Menu.Divider />
       <Menu.Item

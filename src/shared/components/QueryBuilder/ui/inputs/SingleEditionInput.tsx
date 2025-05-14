@@ -21,7 +21,7 @@ export function SingleEditionInput({ placeholder, defaultValue, onFocus, onChang
     const value = (e.target as HTMLInputElement).value.trim();
 
     // TODO: introduce an "is empty" value to handle this case (so that the filter will be synced in the URL)?
-    // see https://github.com/grafana/explore-profiles/pull/205
+    // see https://github.com/grafana/profiles-drilldown/pull/205
     if (e.code === 'Enter') {
       if (value) {
         onChange({ value, label: value });

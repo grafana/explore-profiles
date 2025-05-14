@@ -1,71 +1,30 @@
-import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
-import { DEFAULT_SETTINGS, PluginSettings } from '@shared/infrastructure/settings/PluginSettings';
-import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { PLUGIN_BASE_URL, ROUTES } from '../../../constants';
+import { useSettingsExtensions } from './useSettingsExtensions';
 
 export function useSettingsView() {
-  const { settings, error: fetchError, mutate } = useFetchPluginSettings();
-  const [maxNodesFromUrl, setMaxNodes] = useMaxNodesFromUrl();
-  const [currentSettings, setCurrentSettings] = useState<PluginSettings>(settings ?? DEFAULT_SETTINGS);
+  const [maxNodesFromUrl] = useMaxNodesFromUrl();
+  const [activeTab, setActiveTab] = useState(0);
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const referrerRef = useRef(location.state?.referrer);
 
-  useEffect(() => {
-    if (settings) {
-      setCurrentSettings(settings);
-    }
-  }, [settings]);
+  const { components, isLoading } = useSettingsExtensions();
 
   return {
     data: {
-      ...currentSettings,
-      fetchError,
+      activeTab,
+      components,
+      isLoading,
     },
     actions: {
-      toggleCollapsedFlamegraphs() {
-        setCurrentSettings((s) => ({
-          ...s,
-          collapsedFlamegraphs: !s.collapsedFlamegraphs,
-        }));
-      },
-      updateMaxNodes(event: React.ChangeEvent<HTMLInputElement>) {
-        setCurrentSettings((s) => ({
-          ...s,
-          maxNodes: Number(event.target.value),
-        }));
-      },
-      toggleEnableFlameGraphDotComExport() {
-        setCurrentSettings((s) => ({
-          ...s,
-          enableFlameGraphDotComExport: !s.enableFlameGraphDotComExport,
-        }));
-      },
-      toggleEnableFunctionDetails() {
-        setCurrentSettings((s) => ({
-          ...s,
-          enableFunctionDetails: !s.enableFunctionDetails,
-        }));
-      },
-      async saveSettings() {
-        setMaxNodes(currentSettings.maxNodes);
-
-        try {
-          await mutate(currentSettings);
-
-          displaySuccess(['Plugin settings successfully saved!']);
-        } catch (error) {
-          displayError(error as Error, [
-            'Error while saving the plugin settings!',
-            'Please try again later, sorry for the inconvenience.',
-          ]);
-        }
+      setActiveTab(tab: number) {
+        setActiveTab(tab);
       },
       goBack() {
         if (!referrerRef.current) {

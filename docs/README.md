@@ -16,7 +16,7 @@ The Profiles Drilldown documentation is written using the CommonMark flavor of m
 
 If you have a GitHub account and you're just making a small fix, for example fixing a typo or updating an example, you can edit the topic in GitHub.
 
-1. Find the topic in the explore-profiles repo.
+1. Find the topic in the profiles-drilldown repo.
 2. Click the pencil icon.
 3. Enter your changes.
 4. Click **Commit changes**. GitHub creates a pull request for you.

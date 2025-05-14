@@ -23,7 +23,7 @@ This section describes how you can set up your local development environment to 
 
 ```ini
 [paths]
-plugins = /path/to/the/explore-profiles/folder
+plugins = /path/to/the/profiles-drilldown/folder
 ```
 
 The [plugins option](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#plugins) lets you customize where Grafana will look for plugins.

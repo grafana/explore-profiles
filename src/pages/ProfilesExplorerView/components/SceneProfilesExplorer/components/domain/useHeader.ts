@@ -5,7 +5,6 @@ import { logger } from '@shared/infrastructure/tracking/logger';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PLUGIN_BASE_URL, ROUTES } from 'src/constants';
-import { getSceneVariableValue } from 'src/pages/ProfilesExplorerView/helpers/getSceneVariableValue';
 
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
 import { ExplorationType } from '../../SceneProfilesExplorer';
@@ -47,11 +46,6 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
 
   const navigate = useNavigate();
 
-  const explorationTypeHasServiceName =
-    explorationType !== ExplorationType.ALL_SERVICES && explorationType !== ExplorationType.FAVORITES;
-
-  const serviceName = explorationTypeHasServiceName ? getSceneVariableValue($variables, 'serviceName') : undefined;
-
   return {
     data: {
       explorationType,
@@ -62,11 +56,15 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
       gridControls,
       body,
       dataSourceUid,
-      serviceName,
     },
     actions: {
       onChangeExplorationType,
       onClickShareLink,
+      onClickRecordingRules: useCallback(() => {
+        reportInteraction('g_pyroscope_app_open_recording_rules_view');
+
+        navigate(`${PLUGIN_BASE_URL}${ROUTES.RECORDING_RULES}`, { state: { referrer: window.location.href } });
+      }, [navigate]),
       onClickAdHoc: useCallback(() => {
         reportInteraction('g_pyroscope_app_upload_ad_hoc_clicked');
 
