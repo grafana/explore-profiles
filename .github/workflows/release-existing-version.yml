@@ -39,14 +39,22 @@ jobs:
     permissions:
       contents: write
     steps:
+      - id: get-secrets
+        uses: grafana/shared-workflows/actions/get-vault-secrets@5d7e361bc7e0a183cde8afe9899fb7b596d2659b
+        with:
+          repo_secrets: |
+            app_id=grafana-profiles-drilldown-ci:app-id
+            app_installation_id=grafana-profiles-drilldown-ci:app-installation-id
+            private_key=grafana-profiles-drilldown-ci:private-key
+          export_env: false
       # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
       # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
       - uses: tibdex/github-app-token@v1
         id: get_installation_token
         with:
-          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
-          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
-          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+          app_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).app_id }}
+          installation_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).installation_id }}
+          private_key: ${{ fromJSON(steps.get-secrets.outputs.secrets).private_key }}
       # We need to fetch the tag to get the CHANGELOG
       - uses: actions/checkout@v4
         with:
