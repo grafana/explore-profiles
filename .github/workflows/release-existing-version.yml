@@ -43,9 +43,9 @@ jobs:
         uses: grafana/shared-workflows/actions/get-vault-secrets@5d7e361bc7e0a183cde8afe9899fb7b596d2659b
         with:
           repo_secrets: |
-            app_id=grafana-profiles-drilldown-ci:app-id
-            app_installation_id=grafana-profiles-drilldown-ci:app-installation-id
-            private_key=grafana-profiles-drilldown-ci:private-key
+            app_id=profiles-drilldown-ci:app-id
+            app_installation_id=profiles-drilldown-ci:app-installation-id
+            private_key=profiles-drilldown-ci:private-key
           export_env: false
       # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
       # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
