@@ -24,6 +24,7 @@ jobs:
     # Required to push the tag
     permissions:
       contents: write
+      id-token: write # needed to get secrets from Vault
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.tag.outputs.version }}
@@ -116,6 +117,7 @@ jobs:
     # Required to created a release
     permissions:
       contents: write
+      id-token: write # needed to get secrets from Vault
     steps:
       - id: get-secrets
         uses: grafana/shared-workflows/actions/get-vault-secrets@5d7e361bc7e0a183cde8afe9899fb7b596d2659b
