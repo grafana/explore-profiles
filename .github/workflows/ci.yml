@@ -23,7 +23,7 @@ permissions:
 jobs:
   build:
     name: Build and test
-    if: github.actor != 'databases-frontend-ci-bot[bot]'
+    if: github.actor != 'profiles-drilldown-ci[bot]'
     uses: ./.github/workflows/build.yml
     with:
       e2e: true
