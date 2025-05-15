@@ -8,15 +8,11 @@ on:
         required: true
         type: string
 
-# Required to create OIDC/JWT token required to use shared actions
-permissions:
-  contents: read
-  pull-requests: write
-  id-token: write
-
 jobs:
   build:
     uses: ./.github/workflows/build.yml
+    permissions:
+      id-token: write # required to access secrets
     with:
       ref: ${{ inputs.version }}
       e2e: false
@@ -24,6 +20,9 @@ jobs:
 
   upload:
     needs: [build]
+    permissions:
+      contents: read
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
@@ -50,7 +49,7 @@ jobs:
           export_env: false
       # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
       # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
-      - uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
         id: get_installation_token
         with:
           app_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).app_id }}
@@ -82,6 +81,9 @@ jobs:
 
   update-prod-catalog:
     name: Update Prod Plugins Catalog
+    permissions:
+      contents: read
+      id-token: write # required to read secrets
     needs: [create-github-release]
     uses: ./.github/workflows/update-plugins-catalog.yml
     secrets: inherit
@@ -91,6 +93,9 @@ jobs:
 
   deploy-to-cloud:
     needs: [update-prod-catalog]
+    permissions:
+      contents: read
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
     strategy:

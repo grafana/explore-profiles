@@ -15,12 +15,6 @@ on:
           - ops
           - prod
 
-# Required to create OIDC/JWT token required to use shared actions
-permissions:
-  contents: read
-  pull-requests: write
-  id-token: write
-
 jobs:
   verify:
     name: Verify ${{ inputs.version }} exists
@@ -32,6 +26,10 @@ jobs:
 
   deploy:
     uses: ./.github/workflows/deploy.yml
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [verify]
     secrets: inherit
     with:
