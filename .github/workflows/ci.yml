@@ -21,7 +21,7 @@ jobs:
       contents: read
       pull-requests: write # required to create PR comment with test coverage
       id-token: write # required to access secrets
-    if: github.actor != 'databases-frontend-ci-bot[bot]'
+    if: github.actor != 'profiles-drilldown-ci[bot]'
     uses: ./.github/workflows/build.yml
     with:
       e2e: true
