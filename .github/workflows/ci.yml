@@ -32,8 +32,6 @@ jobs:
   upload-sha:
     name: Upload sha commit tag to GCS
     needs: [build]
-    # Make uploads available only from main (needed for deployments)
-    if: github.event_name == 'push'
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
