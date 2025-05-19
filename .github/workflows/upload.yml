@@ -10,6 +10,11 @@ on:
       github_environment:
         required: true
         type: string
+      upload_github_artifact:
+        required: false
+        default: false
+        type: boolean
+        description: 'Additionally uploads the artifact to GitHub artifacts if needed by next steps - used only for creating GitHub release'
 
 jobs:
   upload:
@@ -34,11 +39,13 @@ jobs:
 
       - name: Get plugin metadata
         id: metadata
+        env:
+          INPUTS_VERSION: ${{ inputs.version }}
         run: |
           sudo apt-get install jq
 
           export GRAFANA_PLUGIN_ID=$(cat dist/plugin.json | jq -r .id)
-          export PACKAGE_ID=${GRAFANA_PLUGIN_ID}-${{ inputs.version }}
+          export PACKAGE_ID="${GRAFANA_PLUGIN_ID}-${INPUTS_VERSION}"
           echo "plugin_id=${GRAFANA_PLUGIN_ID}" >> $GITHUB_OUTPUT
           echo "package_id=${PACKAGE_ID}" >> $GITHUB_OUTPUT
           echo "archive_name=${PACKAGE_ID}.zip" >> $GITHUB_OUTPUT
@@ -48,10 +55,13 @@ jobs:
       # used by grafana/plugin-ci-workflows/actions/plugins/publish/publish@main
       # to publish the artifact to Plugins Catalog
       - name: Upload plugin
+        env:
+          STEPS_METADATA_PLUGIN_ID: ${{ steps.metadata.outputs.plugin_id }}
+          STEPS_METADATA_ARCHIVE_NAME: ${{ steps.metadata.outputs.archive_name }}
         run: |
-          mv dist ${{ steps.metadata.outputs.plugin_id }}
-          zip ${{ steps.metadata.outputs.archive_name }} ${{ steps.metadata.outputs.plugin_id }} -r
-          md5sum -b ${{ steps.metadata.outputs.archive_name }} | awk '{ print $1 }' > ${{ steps.metadata.outputs.archive_name }}.md5
+          mv dist "${STEPS_METADATA_PLUGIN_ID}"
+          zip -r "${STEPS_METADATA_ARCHIVE_NAME}" "${STEPS_METADATA_PLUGIN_ID}"
+          md5sum -b "${STEPS_METADATA_ARCHIVE_NAME}" | awk '{ print $1 }' > "${STEPS_METADATA_ARCHIVE_NAME}".md5
 
       - name: Login to GCS
         uses: 'google-github-actions/auth@v2'
@@ -68,7 +78,7 @@ jobs:
           predefinedAcl: publicRead
 
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ inputs.upload_github_artifact }}
         with:
           name: build-upload
           path: ${{ steps.metadata.outputs.archive_name }}
