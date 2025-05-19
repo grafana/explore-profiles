@@ -80,6 +80,7 @@ jobs:
     needs: [create-new-version]
     uses: ./.github/workflows/build.yml
     permissions:
+      contents: read
       id-token: write # required to access secrets
     with:
       ref: ${{ needs.create-new-version.outputs.version }}

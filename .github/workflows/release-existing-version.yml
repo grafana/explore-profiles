@@ -12,6 +12,7 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     permissions:
+      contents: read
       id-token: write # required to access secrets
     with:
       ref: ${{ inputs.version }}
