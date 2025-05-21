@@ -14,15 +14,13 @@ on:
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
 
-# Required to create OIDC/JWT token required to use shared actions
-permissions:
-  contents: read
-  pull-requests: write
-  id-token: write
-
 jobs:
   build:
     name: Build and test
+    permissions:
+      contents: read
+      pull-requests: write # required to create PR comment with test coverage
+      id-token: write # required to access secrets
     if: github.actor != 'profiles-drilldown-ci[bot]'
     uses: ./.github/workflows/build.yml
     with:
@@ -31,6 +29,9 @@ jobs:
 
   upload-sha:
     name: Upload sha commit tag to GCS
+    permissions:
+      contents: read
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     needs: [build]
     # Make uploads available only from main (needed for deployments)
     if: github.event_name == 'push'
@@ -42,6 +43,9 @@ jobs:
 
   upload-edge:
     name: Upload edge tag to GCS
+    permissions:
+      contents: read
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     needs: [build]
     # Make uploads available only from main (needed for deployments)
     if: github.event_name == 'push'
@@ -53,6 +57,10 @@ jobs:
 
   upload-main:
     name: Upload main tag to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [build]
     # Make uploads available only from main (needed for deployments)
     if: github.event_name == 'push'
@@ -64,6 +72,10 @@ jobs:
 
   deploy-main-to-dev-and-ops:
     name: Deploy
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [upload-sha, upload-edge, upload-main]
     uses: ./.github/workflows/deploy.yml
     # Make deployments available only from main

@@ -11,17 +11,14 @@ on:
 env:
   BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
 
-# Required to create OIDC/JWT token required to use shared actions
-permissions:
-  contents: read
-  pull-requests: write
-  id-token: write
-
 jobs:
   build:
     name: Build and test
     if: github.actor != 'databases-frontend-ci-bot[bot]' && github.event.label.name == 'upload'
     uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+      id-token: write # required to access secrets
     with:
       # don't run e2e tests here - we just need to deploy the artifact
       e2e: false
@@ -29,6 +26,10 @@ jobs:
 
   upload:
     name: Upload to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [build]
     if: github.event.label.name == 'upload'
     uses: ./.github/workflows/upload.yml
