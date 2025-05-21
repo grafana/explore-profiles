@@ -1,3 +1,12 @@
+## [1.4.1](https://github.com/grafana/profiles-drilldown/compare/v1.4.0...v1.4.1) (2025-05-21)
+
+
+### Features
+
+* **GitHub Integration:** Add a github callback view ([#495](https://github.com/grafana/profiles-drilldown/issues/495)) ([012a0e6](https://github.com/grafana/profiles-drilldown/commit/012a0e6a775fd3af777ccae5c538e73bd83d4833))
+
+
+
 # [1.4.0](https://github.com/grafana/profiles-drilldown/compare/v1.3.0...v1.4.0) (2025-05-15)
 
 
