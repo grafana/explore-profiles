@@ -66,8 +66,8 @@ jobs:
       - name: Login to GCS
         uses: google-github-actions/auth@6fc4af4b145ae7821d527454aa9bd537d1f2dc5f # v2.1.7
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCS_SERVICE_ACCOUNT }}
+          workload_identity_provider: 'projects/304398677251/locations/global/workloadIdentityPools/github/providers/github-provider'
+          service_account: 'github-explore-profiles-deploy@grafanalabs-workload-identity.iam.gserviceaccount.com'
 
       - name: Upload to GCS
         uses: google-github-actions/upload-cloud-storage@e95a15f226403ed658d3e65f40205649f342ba2c # v1.0.3
