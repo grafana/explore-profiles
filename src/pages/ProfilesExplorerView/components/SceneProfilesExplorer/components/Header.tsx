@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useChromeHeaderHeight } from '@grafana/runtime';
-import { Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
+import { Dropdown, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
@@ -18,6 +18,7 @@ export type HeaderProps = {
   body: SceneProfilesExplorerState['body'];
   $variables: SceneProfilesExplorerState['$variables'];
   onChangeExplorationType: (explorationType: string) => void;
+  onCreateRecordingRule: () => void;
 };
 
 export function Header(props: HeaderProps) {
@@ -30,6 +31,17 @@ export function Header(props: HeaderProps) {
 
   const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
     data;
+
+  const metricsFromProfilesMenu = (
+    <Menu>
+      <Menu.Item
+        ariaLabel="View recording rules"
+        label="View recording rules"
+        onClick={actions.onClickRecordingRules}
+      />
+      <Menu.Item ariaLabel="Add recording rule" label="Add recording rule" onClick={props.onCreateRecordingRule} />
+    </Menu>
+  );
 
   return (
     <div className={styles.header} data-testid="allControls">
@@ -54,12 +66,11 @@ export function Header(props: HeaderProps) {
 
           <div className={styles.appMiscButtons}>
             {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
-              <IconButton
-                name="gf-prometheus"
-                tooltip="View recording rules"
-                aria-label="View recording rules"
-                onClick={actions.onClickRecordingRules}
-              />
+              <>
+                <Dropdown overlay={metricsFromProfilesMenu}>
+                  <IconButton name="gf-prometheus" tooltip="Recording rules" aria-label="Recording rules" />
+                </Dropdown>
+              </>
             )}
 
             <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />

@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Button, Divider, Field, Input, Modal, MultiSelect, useStyles2 } from '@grafana/ui';
+import { Button, Divider, Field, Input, Modal, MultiSelect, Text, useStyles2 } from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
@@ -11,6 +11,8 @@ import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form'
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
+import { ExplorationType, SceneProfilesExplorer } from '../SceneProfilesExplorer/SceneProfilesExplorer';
+import { useCreateRecordingRule } from './domain/useCreateRecordingRule';
 
 interface RecordingRuleForm {
   metricName: string;
@@ -22,6 +24,22 @@ interface RecordingRuleForm {
 
 interface SceneCreateRecordingRuleModalState extends SceneObjectState {}
 
+/**
+ * Returns the service name visible to the user. Takes into account views were service name is not visible (though
+ * still may be selected of be part of the URL).
+ */
+function useCurrentServiceName(model: SceneCreateRecordingRuleModal) {
+  const serviceNameVariable = sceneGraph.findByKeyAndType(model, 'serviceName', ServiceNameVariable);
+  const serviceName = serviceNameVariable.state.value;
+
+  const explorationType = sceneGraph
+    .findByKeyAndType(model, 'profiles-explorer', SceneProfilesExplorer)
+    .useState().explorationType;
+  return explorationType === ExplorationType.ALL_SERVICES || explorationType === ExplorationType.FAVORITES
+    ? undefined
+    : serviceName;
+}
+
 export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRecordingRuleModalState> {
   constructor() {
     super({});
@@ -31,11 +49,11 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     model,
     isModalOpen,
     onDismiss,
-    onCreate,
+    onCreated,
   }: SceneComponentProps<SceneCreateRecordingRuleModal> & {
     isModalOpen: boolean;
     onDismiss: () => void;
-    onCreate: (rule: RecordingRuleViewModel) => Promise<void>;
+    onCreated: () => void;
   }) => {
     const {
       register,
@@ -46,25 +64,29 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
 
     const [options, setOptions] = useState<string[]>([]);
 
+    const { actions } = useCreateRecordingRule();
+
     const profileMetricVariable = sceneGraph.findByKeyAndType(model, 'profileMetricId', ProfileMetricVariable);
     const profileMetric = getProfileMetric(profileMetricVariable.state.value as ProfileMetricId);
 
-    const serviceNameVariable = sceneGraph.findByKeyAndType(model, 'serviceName', ServiceNameVariable);
-    const serviceName = serviceNameVariable.state.value;
+    const serviceName = useCurrentServiceName(model);
 
     const filtersVariable = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable);
     const filters = filtersVariable.state.filters;
     const filterQuery = filters.map((filter) => `${filter.key}${filter.operator}"${filter.value}"`).join(', ');
 
-    const onSubmit: SubmitHandler<RecordingRuleForm> = (data) =>
-      onCreate({
+    const onSubmit: SubmitHandler<RecordingRuleForm> = async (data) => {
+      const rule: RecordingRuleViewModel = {
         id: '',
         metricName: data.metricName,
         serviceName: data.serviceName,
         profileType: data.profileType,
         matchers: [`{${filterQuery}}`],
         groupBy: data.labels ? data.labels.map((label) => label.value ?? '') : [],
-      });
+      };
+      await actions.save(rule);
+      onCreated();
+    };
 
     useEffect(() => {
       const timeRange = sceneGraph.getTimeRange(model).state.value;
@@ -80,7 +102,12 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     }, [filterQuery, model]);
 
     return (
-      <Modal title="Create recording rule" isOpen={isModalOpen} onDismiss={onDismiss}>
+      <Modal
+        title="Create recording rule"
+        isOpen={isModalOpen}
+        onDismiss={onDismiss}
+        data-testid="Create recording rule modal"
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             label="Metric name"
@@ -89,7 +116,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
             invalid={!!errors.metricName}
           >
             <Input
-              placeholder={`pyroscope_metric_${profileMetric.type}_${serviceName
+              placeholder={`pyroscope_metric_${profileMetric.type}_${(serviceName || 'name')
                 .toString()
                 .replace(/[^a-zA-Z0-9_]/g, '_')}`}
               required
@@ -125,10 +152,17 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
 
           <Divider />
 
-          <Field label="Service name">
-            <div>{`${serviceName}`}</div>
+          <Field label="Service name" data-testid="Create recording rule modal service name field">
+            {serviceName ? (
+              <div>{`${serviceName}`}</div>
+            ) : (
+              <Text element="span" color="secondary">
+                All services
+              </Text>
+            )}
           </Field>
-          <input type="text" value={serviceName.toString()} hidden {...register('serviceName')} />
+
+          <input type="text" value={serviceName?.toString()} hidden {...register('serviceName')} />
 
           <Field label="Profile type">
             <div>{`${profileMetric.group}/${profileMetric.type}`}</div>
@@ -140,7 +174,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
           </Field>
 
           <Modal.ButtonRow>
-            <Button variant="secondary" fill="outline" onClick={onDismiss}>
+            <Button variant="secondary" fill="outline" onClick={onDismiss} aria-label="Cancel">
               Cancel
             </Button>
             <Button variant="primary" type="submit">

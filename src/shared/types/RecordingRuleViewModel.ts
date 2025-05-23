@@ -1,7 +1,7 @@
 export type RecordingRuleViewModel = {
   id: string;
   metricName: string;
-  serviceName: string;
+  serviceName?: string;
   profileType: string;
   matchers: string[];
   groupBy: string[];
