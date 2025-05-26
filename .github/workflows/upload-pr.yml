@@ -8,9 +8,6 @@ on:
       # triggered only when a label is added, the workflow is triggered for all added labels
       - labeled
 
-env:
-  BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
-
 jobs:
   build:
     name: Build and test
