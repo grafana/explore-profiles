@@ -8,6 +8,7 @@ describe('openLoginPopup(clientId, nonce)', () => {
   });
 
   it('opens a new GitHub login window', () => {
+    const mockOpen = jest.fn();
     Object.defineProperties(window, {
       top: {
         value: {
@@ -17,17 +18,29 @@ describe('openLoginPopup(clientId, nonce)', () => {
         writable: true,
       },
       open: {
-        value: jest.fn(),
+        value: mockOpen,
         writable: true,
       },
     });
 
     openLoginPopup('client-42', 'crypto-nonce');
 
-    expect(window.open).toHaveBeenCalledWith(
-      'https://github.com/login/oauth/authorize?client_id=client-42&scope=repo&state=eyJyZWRpcmVjdF91cmkiOiJodHRwOi8vbG9jYWxob3N0Iiwibm9uY2UiOiJjcnlwdG8tbm9uY2UifQ%3D%3D',
-      'GitHub Login',
+    expect(mockOpen.mock.calls.length).toBe(1);
+    const args = mockOpen.mock.calls[0];
+    expect(args[1]).toBe('GitHub Login');
+    expect(args[2]).toBe(
       'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=800, height=950, top=59, left=455'
     );
+
+    // parse the url from the args[0]
+    const url = new URL(args[0]);
+    expect(url.href).toContain('https://github.com/login/oauth/authorize?');
+    expect(url.searchParams.get('scope')).toBe('repo');
+    expect(url.searchParams.get('client_id')).toBe('client-42');
+
+    // base64 decode the state
+    const state = JSON.parse(atob(url.searchParams.get('state') || ''));
+    expect(state.redirect_uri).toBe('http://localhost/a/grafana-pyroscope-app/github/callback');
+    expect(state.nonce).toBe('crypto-nonce');
   });
 });
