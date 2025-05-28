@@ -33,9 +33,11 @@ export default function RecordingRulesView() {
       cell: (props) => {
         const rule: RecordingRuleViewModel = props.row.original;
         return (
-          <Text element="span" color="secondary">
-            {rule.serviceName || 'All services'}
-          </Text>
+          rule.serviceName || (
+            <Text element="span" color="secondary">
+              All services
+            </Text>
+          )
         );
       },
     },
