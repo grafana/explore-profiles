@@ -30,6 +30,8 @@ jobs:
       contents: read
       id-token: write # required to create OIDC/JWT token required to use shared actions
     needs: [build]
+    # Make uploads available only from main (needed for deployments)
+    if: github.event_name == 'push'
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
