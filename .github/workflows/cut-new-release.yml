@@ -12,30 +12,33 @@ on:
           - minor
           - major
 
-# Required to create OIDC/JWT token required to use shared actions
-permissions:
-  contents: read
-  pull-requests: write
-  id-token: write
-
 jobs:
   create-new-version:
     name: Tag new version (with changelog)
     # Required to push the tag
     permissions:
       contents: write
+      id-token: write # needed to get secrets from Vault
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.tag.outputs.version }}
     steps:
+      - id: get-secrets
+        uses: grafana/shared-workflows/actions/get-vault-secrets@5d7e361bc7e0a183cde8afe9899fb7b596d2659b
+        with:
+          repo_secrets: |
+            app_id=profiles-drilldown-ci:app-id
+            app_installation_id=profiles-drilldown-ci:app-installation-id
+            private_key=profiles-drilldown-ci:private-key
+          export_env: false
       # We need to use GitHub App instead of just passing the token in order to have CLA singed by the committer.
       # To run correctly it needs to be used before the checkout
-      - uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
         id: get_installation_token
         with:
-          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
-          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
-          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+          app_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).app_id }}
+          installation_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).installation_id }}
+          private_key: ${{ fromJSON(steps.get-secrets.outputs.secrets).private_key }}
 
       - uses: actions/checkout@v4
         with:
@@ -57,13 +60,12 @@ jobs:
         id: tag
         env:
           INPUTS_VERSION: ${{ inputs.version }}
-          DB_FE_CI_BOT_EMAIL: ${{ secrets.DB_FE_CI_BOT_EMAIL }}
           STEPS_GET_INSTALLATION_TOKEN_OUTPUTS_TOKEN: ${{ steps.get_installation_token.outputs.token }}
         # Note: We don't get the version with VERSION=$(npm version ${{ inputs.version }})
         # because npm version runs standard changelog that outputs additional text we cannot include in version
         run: |
-          git config --global user.email "$DB_FE_CI_BOT_EMAIL"
-          git config --global user.name "Databases Frontend CI Bot"
+          git config --global user.email "profiles-drilldown-ci[bot]@users.noreply.github.com"
+          git config --global user.name "Profiles Drilldown CI"
           git config --global url."https://${STEPS_GET_INSTALLATION_TOKEN_OUTPUTS_TOKEN}@github.com/".insteadOf https://github.com/
           npm version ${INPUTS_VERSION}
           VERSION=$(git describe --tags --abbrev=0)
@@ -77,6 +79,9 @@ jobs:
     name: Build and test
     needs: [create-new-version]
     uses: ./.github/workflows/build.yml
+    permissions:
+      contents: read
+      id-token: write # required to access secrets
     with:
       ref: ${{ needs.create-new-version.outputs.version }}
       e2e: false
@@ -84,6 +89,10 @@ jobs:
 
   upload-version:
     name: Upload version tag to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [create-new-version, build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
@@ -94,6 +103,10 @@ jobs:
 
   upload-latest:
     name: Upload latest tag to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     needs: [create-new-version, build]
     uses: ./.github/workflows/upload.yml
     secrets: inherit
@@ -108,15 +121,24 @@ jobs:
     # Required to created a release
     permissions:
       contents: write
+      id-token: write # needed to get secrets from Vault
     steps:
+      - id: get-secrets
+        uses: grafana/shared-workflows/actions/get-vault-secrets@5d7e361bc7e0a183cde8afe9899fb7b596d2659b
+        with:
+          repo_secrets: |
+            app_id=profiles-drilldown-ci:app-id
+            app_installation_id=profiles-drilldown-ci:app-installation-id
+            private_key=profiles-drilldown-ci:private-key
+          export_env: false
       # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
       # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
-      - uses: tibdex/github-app-token@v1
+      - uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
         id: get_installation_token
         with:
-          app_id: ${{ secrets.DB_FE_GITHUB_APP_ID }}
-          installation_id: ${{ secrets.DB_FE_GITHUB_APP_INSTALLATION_ID }}
-          private_key: ${{ secrets.DB_FE_GITHUB_APP_PRIVATE_KEY }}
+          app_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).app_id }}
+          installation_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).installation_id }}
+          private_key: ${{ fromJSON(steps.get-secrets.outputs.secrets).private_key }}
       # We need to fetch the tag to get the CHANGELOG
       - uses: actions/checkout@v4
         with:
@@ -143,6 +165,10 @@ jobs:
 
   deploy-to-dev:
     name: Deploy (dev)
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, create-github-release]
     secrets: inherit
@@ -152,6 +178,10 @@ jobs:
 
   deploy-to-ops:
     name: Deploy (ops)
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, deploy-to-dev]
     secrets: inherit
@@ -161,6 +191,10 @@ jobs:
 
   update-prod-catalog:
     name: Update Prod Plugins Catalog
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write # required to read secrets
     needs: [create-new-version, deploy-to-ops]
     uses: ./.github/workflows/update-plugins-catalog.yml
     secrets: inherit
@@ -170,6 +204,10 @@ jobs:
 
   deploy-to-prod:
     name: Deploy (prod)
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
     uses: ./.github/workflows/deploy.yml
     needs: [create-new-version, update-prod-catalog]
     secrets: inherit
