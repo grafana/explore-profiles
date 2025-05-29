@@ -25,8 +25,11 @@ interface RecordingRuleForm {
 interface SceneCreateRecordingRuleModalState extends SceneObjectState {}
 
 /**
- * Returns the service name visible to the user. Takes into account views were service name is not visible (though
- * still may be selected of be part of the URL).
+ * Returns the service name if a service name dropdown is visible on the screen for the user.
+ *
+ * In "All services" and "Favorites" exploration types, the service name is not shown on the screen,
+ * though the variable is still present in the URL so we need to check explicitly what's the current
+ * exploration type instead of just reading the variable name.
  */
 function useCurrentServiceName(model: SceneCreateRecordingRuleModal) {
   const serviceNameVariable = sceneGraph.findByKeyAndType(model, 'serviceName', ServiceNameVariable);
