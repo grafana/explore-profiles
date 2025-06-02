@@ -14,3 +14,4 @@ PprofRequest*.ts
 
 # ignore the generated pyroscope-api
 src/shared/pyroscope-api/
+src/generated/
