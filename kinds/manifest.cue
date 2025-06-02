@@ -6,7 +6,7 @@ manifest: {
 	appName: "profiles-drilldown"
 	// kinds is the list of kinds that your app defines and manages. If your app deals with kinds defined/managed
 	// by another app, use permissions.accessKinds to allow your app access
-	kinds: []
+	kinds: [setting]
 	// extraPermissions contains any additional permissions your app may require to function.
 	// Your app will always have all permissions for each kind it manages (the items defined in 'kinds').
 	extraPermissions: {

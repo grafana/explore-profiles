@@ -2,11 +2,11 @@ version: v2
 plugins:
   # This will invoke protoc-gen-es and write output to src/gen
   - local: protoc-gen-es
-    out: src/shared/pyroscope-api
+    out: src/generated/pyroscope
     opt: target=ts
     # This will invoke protoc-gen-connect-query
   - local: protoc-gen-connect-query
-    out: src/shared/pyroscope-api
+    out: src/generated/pyroscope
     opt: target=ts
 inputs:
   # Build a subset of the Pyroscope protobuf API

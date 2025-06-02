@@ -46,6 +46,7 @@ const config = async (env): Promise<Configuration> => {
       extensions: ['.ts', '.tsx', '.js', '.json'],
       alias: {
         '@shared': path.resolve(__dirname, './src/shared'),
+        '@generated': path.resolve(__dirname, './src/generated'),
         '@img': path.resolve(__dirname, './src/img'),
       },
     },

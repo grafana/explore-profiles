@@ -1,9 +1,9 @@
-import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import {
   ListRecordingRulesResponse,
   RecordingRule,
   UpsertRecordingRuleRequest,
-} from '@shared/pyroscope-api/settings/v1/recording_rules_pb';
+} from '@generated/pyroscope/settings/v1/recording_rules_pb';
+import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
 
 function mapRuleToRecordingRuleViewModel(rule: RecordingRule): RecordingRuleViewModel {

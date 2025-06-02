@@ -15,7 +15,7 @@ pluginJson:
 pluginSecureJson:
   baz: foo
 # Standalone operator docker image. Leave this empty to not deploy an operator
-operatorImage: "profiles-drilldown:latest"
+operatorImage: 'profiles-drilldown:latest'
 # Governs whether the local setup generates kubernetes manifests for varying kinds of webhooks attached to your operator and each CRD
 webhooks:
   # The port the operator exposes an HTTPS server with the webhook endpoint(s) on
@@ -39,4 +39,4 @@ generateGrafanaDeployment: true
 grafanaImage: grafana/grafana-enterprise:main
 
 # Install plugins from other sources (URLS). See https://grafana.com/docs/grafana/latest/setup-grafana/configure-docker/#install-plugins-from-other-sources
-grafanaInstallPlugins: ""
+grafanaInstallPlugins: ''
