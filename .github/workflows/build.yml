@@ -48,7 +48,7 @@ jobs:
 
       - name: Report test coverage
         if: ${{ github.event_name == 'pull_request' }}
-        uses: MishaKav/jest-coverage-comment@v1.0.27
+        uses: MishaKav/jest-coverage-comment@d74238813c33e6ea20530ff91b5ea37953d11c91 # v1.0.27
         with:
           title: Unit test coverage
 
@@ -75,9 +75,6 @@ jobs:
 
       - name: Build frontend
         run: yarn build
-
-      - name: Check bundlesize
-        run: yarn run bundlewatch
 
       - name: Compatibility check
         run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime

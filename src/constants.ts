@@ -9,4 +9,5 @@ export enum ROUTES {
   ADHOC = '/ad-hoc',
   SETTINGS = '/settings',
   RECORDING_RULES = '/recording-rules',
+  GITHUB_CALLBACK = '/github/callback',
 }

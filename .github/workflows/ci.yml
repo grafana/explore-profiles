@@ -11,36 +11,71 @@ on:
     branches:
       - main
 
-env:
-  BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
-
-# Required to create OIDC/JWT token required to use shared actions
-permissions:
-  contents: read
-  pull-requests: write
-  id-token: write
-
 jobs:
   build:
     name: Build and test
-    if: github.actor != 'databases-frontend-ci-bot[bot]'
+    permissions:
+      contents: read
+      pull-requests: write # required to create PR comment with test coverage
+      id-token: write # required to access secrets
+    if: github.actor != 'profiles-drilldown-ci[bot]'
     uses: ./.github/workflows/build.yml
     with:
       e2e: true
       addSha: true
 
-  upload:
-    name: Upload to GCS
+  upload-sha:
+    name: Upload sha commit tag to GCS
+    permissions:
+      contents: read
+      id-token: write # required to create OIDC/JWT token required to use shared actions
     needs: [build]
+    # In this workflow we upload artifacts only from main branch (needed for releases and deployments).
+    # For pull request we upload artifacts on demand to avoid storing too many artifacts.
+    # Label a PR with "upload" label to get it uploaded to GCS (`upload-pr.yml` workflow)
+    if: github.event_name == 'push'
     uses: ./.github/workflows/upload.yml
     secrets: inherit
     with:
       version: ${{ github.event.pull_request.head.sha || github.sha }}
-      github_environment: ${{ github.event_name != 'push' && 'gcs' || 'gcs-no-approval' }}
+      github_environment: gcs-no-approval
+
+  upload-edge:
+    name: Upload edge tag to GCS
+    permissions:
+      contents: read
+      id-token: write # required to create OIDC/JWT token required to use shared actions
+    needs: [build]
+    # Make uploads available only from main (needed for deployments)
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/upload.yml
+    secrets: inherit
+    with:
+      version: 'edge'
+      github_environment: gcs-no-approval
+
+  upload-main:
+    name: Upload main tag to GCS
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
+    needs: [build]
+    # Make uploads available only from main (needed for deployments)
+    if: github.event_name == 'push'
+    uses: ./.github/workflows/upload.yml
+    secrets: inherit
+    with:
+      version: 'main'
+      github_environment: gcs-no-approval
 
   deploy-main-to-dev-and-ops:
     name: Deploy
-    needs: [upload]
+    # Required to create OIDC/JWT token required to use shared actions
+    permissions:
+      contents: read
+      id-token: write
+    needs: [upload-sha, upload-edge, upload-main]
     uses: ./.github/workflows/deploy.yml
     # Make deployments available only from main
     if: github.event_name == 'push'

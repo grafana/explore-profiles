@@ -1,7 +1,7 @@
 // webpack.config.ts
 import * as path from 'path';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
-import type { Configuration, RuleSetRule } from 'webpack';
+import { type Configuration, NormalModuleReplacementPlugin, type RuleSetRule } from 'webpack';
 import LiveReloadPlugin from 'webpack-livereload-plugin';
 import { merge } from 'webpack-merge';
 
@@ -62,6 +62,18 @@ const config = async (env): Promise<Configuration> => {
         },
       ],
     },
+    // TODO: https://github.com/grafana/explore-profiles/issues/488
+    // A temporary workaround for https://github.com/grafana/grafana/issues/104040 Should be removed when it's fixed and new version of grafana/flamegraph is released
+    plugins: [
+      new NormalModuleReplacementPlugin(
+        /react-use\/lib\/usePrevious/,
+        path.resolve(__dirname, 'src/shims/react-use-usePrevious-default.js')
+      ),
+      new NormalModuleReplacementPlugin(
+        /react-use\/lib\/useDebounce/,
+        path.resolve(__dirname, 'src/shims/react-use-useDebounce-default.js')
+      ),
+    ],
   });
 
   return finalConfig;

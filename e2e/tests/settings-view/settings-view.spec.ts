@@ -21,8 +21,7 @@ test.describe('Plugin Settings', () => {
     await expect(flamegraphSettings.getByText('Maximum number of nodes')).toBeVisible();
   });
 
-  // TODO: re-enable when we can upgrade to Grafana 12
-  test.describe.skip('Metrics from profiles settings', () => {
+  test.describe('Metrics from profiles settings', () => {
     test('is not available by default', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.goto(ExplorationType.FlameGraph);
 
