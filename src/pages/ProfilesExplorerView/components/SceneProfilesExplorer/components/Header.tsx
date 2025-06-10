@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { useChromeHeaderHeight } from '@grafana/runtime';
-import { Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
+import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
+import { ErrorBoundary, Field, Icon, IconButton, useStyles2 } from '@grafana/ui';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
@@ -28,8 +28,23 @@ export function Header(props: HeaderProps) {
 
   const { settings } = useFetchPluginSettings();
 
-  const { explorationType, dataSourceVariable, timePickerControl, refreshPickerControl, sceneVariables, gridControls } =
-    data;
+  const {
+    explorationType,
+    dataSourceVariable,
+    timePickerControl,
+    refreshPickerControl,
+    sceneVariables,
+    gridControls,
+    serviceName,
+  } = data;
+
+  type InsightsLauncherProps = {
+    dataSourceUid: string;
+    serviceName?: string;
+  };
+  const { component: InsightsLauncher } = usePluginComponent<InsightsLauncherProps>(
+    'grafana-o11yinsights-app/insights-launcher/v1'
+  );
 
   return (
     <div className={styles.header} data-testid="allControls">
@@ -45,6 +60,16 @@ export function Header(props: HeaderProps) {
         </div>
 
         <div className={styles.appControlsRight}>
+          {InsightsLauncher && (
+            <ErrorBoundary>
+              {({ error }) =>
+                error ? undefined : (
+                  <InsightsLauncher dataSourceUid={dataSourceVariable.getValueText()} serviceName={serviceName} />
+                )
+              }
+            </ErrorBoundary>
+          )}
+
           {timePickerControl && (
             <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
           )}
