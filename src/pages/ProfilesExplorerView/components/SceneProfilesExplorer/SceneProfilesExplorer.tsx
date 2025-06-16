@@ -20,7 +20,7 @@ import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
@@ -45,6 +45,7 @@ import { SceneNoDataSwitcher } from '../SceneByVariableRepeaterGrid/components/S
 import { ScenePanelTypeSwitcher } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { SceneQuickFilter } from '../SceneByVariableRepeaterGrid/components/SceneQuickFilter';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
@@ -57,6 +58,7 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   gridControls: Array<SceneObject & { key?: string }>;
   explorationType?: ExplorationType;
   body?: SplitLayout;
+  createRecordingRuleModal: SceneCreateRecordingRuleModal;
 }
 
 export enum ExplorationType {
@@ -130,6 +132,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           new SpanSelectorVariable(),
         ],
       }),
+      createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -415,6 +418,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { data, actions } = model.useProfilesExplorer();
     const { explorationType, controls, body, $variables, dataSourceUid } = data;
 
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [recordingRulesModelOpen, setIsRecordingRulesModalOpen] = useState(false);
+    const { createRecordingRuleModal } = model.useState();
+
     return (
       <GitHubContextProvider dataSourceUid={dataSourceUid}>
         <Header
@@ -423,11 +430,23 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           body={body}
           $variables={$variables}
           onChangeExplorationType={actions.onChangeExplorationType}
+          onCreateRecordingRule={() => {
+            setIsRecordingRulesModalOpen(true);
+          }}
         />
 
         <div className={styles.body} data-testid="sceneBody">
           {body && <body.Component model={body} />}
         </div>
+
+        <SceneCreateRecordingRuleModal.Component
+          model={createRecordingRuleModal}
+          isModalOpen={recordingRulesModelOpen}
+          onDismiss={() => setIsRecordingRulesModalOpen(false)}
+          onCreated={() => {
+            setIsRecordingRulesModalOpen(false);
+          }}
+        />
       </GitHubContextProvider>
     );
   }
