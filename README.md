@@ -1,4 +1,4 @@
-# Grafana Profiles Drilldown
+v# Grafana Profiles Drilldown
 
 Grafana Profiles Drilldown is a native Grafana application designed to integrate seamlessly with [Pyroscope](https://github.com/grafana/pyroscope), the open-source continuous profiling platform, providing a smooth, query-less experience for browsing and analyzing profiling data.
 
