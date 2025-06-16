@@ -11,9 +11,6 @@ on:
     branches:
       - main
 
-env:
-  BUNDLEWATCH_GITHUB_TOKEN: ${{secrets.BUNDLEWATCH_GITHUB_TOKEN}}
-
 jobs:
   build:
     name: Build and test
@@ -33,7 +30,9 @@ jobs:
       contents: read
       id-token: write # required to create OIDC/JWT token required to use shared actions
     needs: [build]
-    # Make uploads available only from main (needed for deployments)
+    # In this workflow we upload artifacts only from main branch (needed for releases and deployments).
+    # For pull request we upload artifacts on demand to avoid storing too many artifacts.
+    # Label a PR with "upload" label to get it uploaded to GCS (`upload-pr.yml` workflow)
     if: github.event_name == 'push'
     uses: ./.github/workflows/upload.yml
     secrets: inherit

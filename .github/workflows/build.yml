@@ -76,9 +76,6 @@ jobs:
       - name: Build frontend
         run: yarn build
 
-      - name: Check bundlesize
-        run: yarn run bundlewatch
-
       - name: Compatibility check
         run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
 

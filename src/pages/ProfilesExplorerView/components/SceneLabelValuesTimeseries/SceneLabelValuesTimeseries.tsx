@@ -65,7 +65,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
             new SceneDataTransformer({
               $data: buildTimeSeriesQueryRunner(
                 item.queryRunnerParams,
-                displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES
+                displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
+                true
               ),
               transformations: [addRefId, addStats],
             })
