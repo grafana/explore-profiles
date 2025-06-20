@@ -29,7 +29,11 @@ export function GitHubContextProvider({ dataSourceUid, children }: GitHubContext
   // when logged in and changing data source
   // TODO: provide a better way
   useEffect(() => {
-    setSessionCookie('');
+    const gitHubIntegrationDataSourceUid = sessionStorage.getItem('gitHubIntegration.dataSourceUid');
+    if (gitHubIntegrationDataSourceUid !== dataSourceUid) {
+      setSessionCookie('');
+      sessionStorage.setItem('gitHubIntegration.dataSourceUid', dataSourceUid || '');
+    }
   }, [dataSourceUid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   usePollGitHubPopup({ vcsClient, externalWindow, setExternalWindow, setSessionCookie, nonce });
