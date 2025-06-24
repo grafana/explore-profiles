@@ -77,8 +77,24 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   /* Header elements */
 
-  get viewRecordingRulesButton() {
-    return this.getByLabel('View recording rules');
+  get recordingRulesButton() {
+    return this.getByLabel('Recording rules');
+  }
+
+  clickOnViewRecordingRulesButton() {
+    return this.recordingRulesButton.click();
+  }
+
+  get addRecordingRuleButton() {
+    return this.getByLabel('Add recording rule');
+  }
+
+  async clickOnAddRecordingRuleButton() {
+    return this.addRecordingRuleButton.click();
+  }
+
+  get recordingRulesModalServiceName() {
+    return this.getByTestId('Create recording rule modal service name field');
   }
 
   /* Service */

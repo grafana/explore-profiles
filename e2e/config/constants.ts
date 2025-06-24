@@ -28,6 +28,10 @@ export const AUTH_FILE = path.join(process.cwd(), 'e2e', 'auth', 'user.json');
 
 /* Grafana Profiles Drilldown */
 
+/**
+ * If you're adding a new exploration type, please make sure to update the useCurrentServiceName() function
+ * @see src/pages/ProfilesExplorerView/components/SceneCreateMetricModal/SceneCreateRecordingRuleModal.tsx
+ */
 export enum ExplorationType {
   AllServices = 'all',
   ProfileTypes = 'profiles',
