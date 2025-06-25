@@ -36,9 +36,6 @@ export function useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stac
   const [start, end] = [timeRange.from.unix(), timeRange.to.unix()];
   const { isLoggedIn: isGitHubLogged } = useGitHubContext();
 
-  //const overrides = getOverrides(dataSourceUid, serviceId);
-  // const overridesExists = !!overrides;
-
   const pprofApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, PprofApiClient);
 
   const {
@@ -71,13 +68,7 @@ export function useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stac
     () =>
       data?.length
         ? data
-        : // ? data.map(data => {
-          //   return {
-          //     ...data,
-          //     version: data.version ? { ...data.version, ...overrides } : overrides,
-          //   }
-          // })
-          [
+        : [
             {
               name: stackTrace.at(-1) as string,
               startLine: undefined,

@@ -3,6 +3,7 @@ export type FunctionVersion = {
   git_ref: string;
   root_path: string;
 
+  // CODE: how to avoid it?
   // true if the version is provided by the user and overrides the result from the backend
   custom?: boolean;
 };

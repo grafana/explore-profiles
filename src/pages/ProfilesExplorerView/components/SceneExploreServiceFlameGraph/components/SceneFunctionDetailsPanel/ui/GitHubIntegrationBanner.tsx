@@ -22,10 +22,6 @@ export const GitHubIntegrationBanner = ({ onDismiss }: GitHubIntegrationBannerPr
         </TextLink>{' '}
         of the running service.
       </p>
-      <p>
-        For debugging purposes you can manually provide repository details using <Icon name="pen" /> icon next to
-        repository name below. The custom value is saved in your browser local storage.
-      </p>
       <Icon name="document-info" />{' '}
       <TextLink
         href="https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/"

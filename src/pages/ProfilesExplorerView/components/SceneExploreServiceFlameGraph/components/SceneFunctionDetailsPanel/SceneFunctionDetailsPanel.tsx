@@ -16,12 +16,6 @@ import { CodeContainer } from './components/CodeContainer/CodeContainer';
 import { GitHubRepository } from './components/GitHubRepository';
 import { formatFileName } from './domain/formatFileName';
 import { useFunctionVersion } from './domain/functionDetailsOverridesStorage';
-// import {
-//   deleteAllOverrides,
-//   deleteOverride,
-//   getOverrides,
-//   saveOverrides, useFunctionVersion,
-// } from './domain/functionDetailsOverridesStorage';
 import { CommitWithSamples, getCommitsWithSamples } from './domain/getCommitsWithSamples';
 import { getRepositoryDetails } from './domain/getRepositoryDetails';
 import { isGitHubRepository } from './domain/isGitHubRepository';
@@ -32,10 +26,6 @@ import { CommitSelect } from './ui/CommitSelect';
 import { GitHubIntegrationBanner } from './ui/GitHubIntegrationBanner';
 import { InlineSpinner } from './ui/InlineSpinner';
 import { OverrideRepositoryDetailsButton } from './ui/OverrideRepositoryDetailsButton';
-
-// function getVersion(functionDetails: FunctionDetails, overrides: FunctionVersion): FunctionVersion | undefined {
-//   return overrides || functionDetails.version;
-// }
 
 interface SceneFunctionDetailsPanelState extends SceneObjectState {}
 
@@ -61,6 +51,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       isFetching,
     } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace });
 
+    // CODE: rename
     const versionA = useFunctionVersion(dataSourceUid, serviceName, functionsDetails[0].version);
 
     const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
@@ -113,25 +104,12 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       actions: {
         deleteFunctionOverride(datasourceUid: string, serviceName: string) {
           versionA.deleteOverride(datasourceUid, serviceName);
-          //deleteOverride(datasourceUid, serviceName);
         },
         deleteFunctionAllOverrides() {
           versionA.deleteAllOverrides();
-          // deleteAllOverrides();
         },
         saveFunctionDetails(datasourceUid: string, serviceName: string, o: FunctionVersion) {
           versionA.saveOverride(datasourceUid, serviceName, o);
-          // saveOverrides(datasourceUid, serviceName, version);
-          // setCurrentFunctionDetails((details) => {
-          //   return {
-          //     ...details,
-          //     version: {
-          //       ...details.version,
-          //       ...version
-          //     },
-          //     custom: true,
-          //   };
-          // })
         },
         selectCommit(selectedCommit: CommitWithSamples) {
           const details = functionsDetails.find(({ commit }) => commit.sha === selectedCommit.sha);

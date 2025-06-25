@@ -39,39 +39,8 @@ export const useFunctionVersion = (
     deleteAllOverrides: () => {
       setOverrides({});
     },
+    // CODE: rename to value? or provide each prop separately
     overrides: overrides?.[datasourceUid]?.[serviceName] || version,
+    // CODE: plus info about if override was applied
   };
 };
-
-// export const saveOverrides = (datasourceUid: string, serviceName: string, version: FunctionVersion) => {
-//   const overrides = JSON.parse(localStorage.getItem('functionDetailsOverrides') || '{}');
-//
-//   if (!overrides[datasourceUid]) {
-//     overrides[datasourceUid] = {};
-//   }
-//
-//   overrides[datasourceUid][serviceName] = {
-//     ...version,
-//     custom: true
-//   };
-//
-//   localStorage.setItem('functionDetailsOverrides', JSON.stringify(overrides));
-// }
-//
-// export const deleteOverride = (datasourceUid: string, serviceName: string) => {
-//     const overrides = JSON.parse(localStorage.getItem('functionDetailsOverrides') || '{}');
-//
-//     if (overrides[datasourceUid] && overrides[datasourceUid][serviceName]) {
-//         delete overrides[datasourceUid][serviceName];
-//         localStorage.setItem('functionDetailsOverrides', JSON.stringify(overrides));
-//     }
-// }
-//
-// export const deleteAllOverrides = () => {
-//     localStorage.removeItem('functionDetailsOverrides');
-// }
-//
-// export const getOverrides = (datasourceUid: string, serviceName: string): FunctionVersion | undefined => {
-//   const overrides = JSON.parse(localStorage.getItem('functionDetailsOverrides') || '{}');
-//   return overrides[datasourceUid]?.[serviceName];
-// }
