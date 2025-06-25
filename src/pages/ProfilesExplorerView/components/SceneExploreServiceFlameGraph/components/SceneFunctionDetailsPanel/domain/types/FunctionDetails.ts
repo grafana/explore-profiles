@@ -2,6 +2,9 @@ export type FunctionVersion = {
   repository: string;
   git_ref: string;
   root_path: string;
+
+  // true if the version is provided by the user and overrides the result from the backend
+  custom?: boolean;
 };
 
 export type Commit = {

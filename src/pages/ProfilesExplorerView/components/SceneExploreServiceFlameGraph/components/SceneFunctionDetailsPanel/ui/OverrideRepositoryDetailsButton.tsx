@@ -1,0 +1,124 @@
+import { css } from '@emotion/css';
+import { DataSourcePicker } from '@grafana/runtime';
+import { Alert, Button, ConfirmButton, Field, Input, Modal, Stack } from '@grafana/ui';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+
+import { FunctionVersion } from '../domain/types/FunctionDetails';
+
+type Props = {
+  serviceName: string;
+  datasourceName: string;
+  datasourceUid: string;
+  version?: FunctionVersion;
+  saveOverrides: (datasourceUid: string, serviceName: string, version: FunctionVersion) => void;
+  deleteOverride: (datasourceUid: string, serviceName: string) => void;
+  deleteAllOverrides: () => void;
+};
+
+export const OverrideRepositoryDetailsButton = (props: Props) => {
+  const { serviceName, version, datasourceUid, saveOverrides } = props;
+  const [open, setOpen] = React.useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FunctionVersion>({ mode: 'onChange' });
+
+  const onSubmit = (data: FunctionVersion) => {
+    saveOverrides(datasourceUid, serviceName, {
+      repository: data.repository,
+      git_ref: data.git_ref,
+      root_path: data.root_path || '',
+    });
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <Button
+        className={css({ marginLeft: '10px' })}
+        aria-label="override repository settings"
+        variant="secondary"
+        fill="text"
+        size="sm"
+        icon="pen"
+        onClick={() => {
+          setOpen(true);
+          reset(version);
+        }}
+      ></Button>
+      {open && (
+        <Modal title="Override Repository Details" isOpen={open} onDismiss={() => setOpen(false)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Alert severity="info" title="Override Github Integration labels">
+              <p>
+                To activate GitHub Integration feature, you will need to add two new labels when sending profiles:
+                <code>service_repository</code> and <code>service_git_ref</code>.
+              </p>
+              <p>
+                For debugging purposes, you can manually provide repository details using this form. The custom value is
+                saved in your browser local storage for given data source and service name.
+              </p>
+            </Alert>
+
+            <Field label="Data source">
+              <DataSourcePicker current={datasourceUid} disabled={true}></DataSourcePicker>
+            </Field>
+            <Field label="Serive name">
+              <Input disabled={true} value={serviceName}></Input>
+            </Field>
+
+            <Field
+              label="service_repository (repository URL)"
+              invalid={!!errors.repository}
+              error={errors?.repository?.message?.toString()}
+            >
+              <Input
+                {...register('repository', { required: 'Repository name is required' })}
+                placeholder="Enter GitHub repo name, https://github.com/org/repo"
+              />
+            </Field>
+            <Field
+              label="service_git_ref (commit reference)"
+              invalid={!!errors.git_ref}
+              error={errors?.git_ref?.message?.toString()}
+            >
+              <Input {...register('git_ref', { required: 'Repository reference is required' })} placeholder="HEAD" />
+            </Field>
+            <Field label="Path to root">
+              <Input {...register('root_path')} placeholder="Enter root path" />
+            </Field>
+
+            <Stack direction="row">
+              <Button type="submit">Save</Button>
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => {
+                  props.deleteOverride(datasourceUid, serviceName);
+                  reset();
+                  setOpen(false);
+                }}
+              >
+                Delete override
+              </Button>
+              <ConfirmButton
+                confirmVariant="destructive"
+                confirmText="Remove all"
+                onConfirm={() => {
+                  props.deleteAllOverrides();
+                  reset();
+                  setOpen(false);
+                }}
+              >
+                Remove all overrides
+              </ConfirmButton>
+            </Stack>
+          </form>
+        </Modal>
+      )}
+    </>
+  );
+};

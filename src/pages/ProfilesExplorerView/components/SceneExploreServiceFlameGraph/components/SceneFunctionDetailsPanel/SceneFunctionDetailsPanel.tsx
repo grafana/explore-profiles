@@ -11,23 +11,36 @@ import React, { useMemo, useState } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
+import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { CodeContainer } from './components/CodeContainer/CodeContainer';
 import { GitHubRepository } from './components/GitHubRepository';
 import { formatFileName } from './domain/formatFileName';
+import { useFunctionVersion } from './domain/functionDetailsOverridesStorage';
+// import {
+//   deleteAllOverrides,
+//   deleteOverride,
+//   getOverrides,
+//   saveOverrides, useFunctionVersion,
+// } from './domain/functionDetailsOverridesStorage';
 import { CommitWithSamples, getCommitsWithSamples } from './domain/getCommitsWithSamples';
 import { getRepositoryDetails } from './domain/getRepositoryDetails';
 import { isGitHubRepository } from './domain/isGitHubRepository';
-import { FunctionDetails } from './domain/types/FunctionDetails';
+import { FunctionDetails, FunctionVersion } from './domain/types/FunctionDetails';
 import { StackTrace } from './domain/types/StackTrace';
 import { useFetchFunctionsDetails } from './infrastructure/useFetchFunctionsDetails';
 import { CommitSelect } from './ui/CommitSelect';
 import { GitHubIntegrationBanner } from './ui/GitHubIntegrationBanner';
 import { InlineSpinner } from './ui/InlineSpinner';
+import { OverrideRepositoryDetailsButton } from './ui/OverrideRepositoryDetailsButton';
+
+// function getVersion(functionDetails: FunctionDetails, overrides: FunctionVersion): FunctionVersion | undefined {
+//   return overrides || functionDetails.version;
+// }
 
 interface SceneFunctionDetailsPanelState extends SceneObjectState {}
 
 export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDetailsPanelState> {
-  static LABEL_WIDTH = 16;
+  static LABEL_WIDTH = 18;
 
   constructor() {
     super({ key: 'function-details-panel' });
@@ -37,6 +50,9 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
   useSceneFunctionDetailsPanel = (stackTrace: StackTrace, timeRange: TimeRange): DomainHookReturnValue => {
     const dataSourceUid = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
       .value as string;
+    const dataSourceName = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
+      .text as string;
+    const serviceName = getSceneVariableValue(this, 'serviceName');
     const query = useBuildPyroscopeQuery(this, 'filters');
 
     const {
@@ -44,6 +60,8 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       error: fetchFunctionDetailsError,
       isFetching,
     } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace });
+
+    const versionA = useFunctionVersion(dataSourceUid, serviceName, functionsDetails[0].version);
 
     const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
     const [currentFunctionDetails, setCurrentFunctionDetails] = useState<FunctionDetails>(functionsDetails[0]);
@@ -59,7 +77,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       }
     }
 
-    const isGitHubRepo = isGitHubRepository(currentFunctionDetails?.version?.repository || '');
+    const isGitHubRepo = isGitHubRepository(versionA.overrides?.repository || '');
     const isGitHubSupported = currentFunctionDetails?.fileName?.endsWith('.go');
     const shouldDisplayGitHubBanner = !isGitHubBannerDismissed && !isGitHubRepo && isGitHubSupported;
 
@@ -76,11 +94,16 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
 
     return {
       data: {
+        serviceName,
+        dataSourceName,
         isLoading: isFetching,
         fetchFunctionDetailsError,
-        functionDetails: currentFunctionDetails,
+        functionDetails: {
+          ...currentFunctionDetails,
+          version: { ...currentFunctionDetails?.version, ...versionA?.overrides },
+        },
         // TODO: massage in useFetchFunctionsDetails?
-        repository: getRepositoryDetails(isGitHubRepo, currentFunctionDetails?.version),
+        repository: getRepositoryDetails(isGitHubRepo, versionA?.overrides),
         commits,
         selectedCommit,
         isGitHubSupported,
@@ -88,6 +111,28 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
         dataSourceUid,
       },
       actions: {
+        deleteFunctionOverride(datasourceUid: string, serviceName: string) {
+          versionA.deleteOverride(datasourceUid, serviceName);
+          //deleteOverride(datasourceUid, serviceName);
+        },
+        deleteFunctionAllOverrides() {
+          versionA.deleteAllOverrides();
+          // deleteAllOverrides();
+        },
+        saveFunctionDetails(datasourceUid: string, serviceName: string, o: FunctionVersion) {
+          versionA.saveOverride(datasourceUid, serviceName, o);
+          // saveOverrides(datasourceUid, serviceName, version);
+          // setCurrentFunctionDetails((details) => {
+          //   return {
+          //     ...details,
+          //     version: {
+          //       ...details.version,
+          //       ...version
+          //     },
+          //     custom: true,
+          //   };
+          // })
+        },
         selectCommit(selectedCommit: CommitWithSamples) {
           const details = functionsDetails.find(({ commit }) => commit.sha === selectedCommit.sha);
           setCurrentFunctionDetails(details as FunctionDetails);
@@ -198,20 +243,42 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                 width={SceneFunctionDetailsPanel.LABEL_WIDTH}
               >
                 Repository
+                {!data.isLoading && (
+                  <OverrideRepositoryDetailsButton
+                    serviceName={data.serviceName}
+                    datasourceName={data.dataSourceName}
+                    datasourceUid={data.dataSourceUid}
+                    version={data.functionDetails.version}
+                    saveOverrides={actions.saveFunctionDetails}
+                    deleteAllOverrides={actions.deleteFunctionAllOverrides}
+                    deleteOverride={actions.deleteFunctionOverride}
+                  />
+                )}
               </InlineLabel>
               <InlineSpinner isLoading={data.isLoading}>
                 {data.repository ? (
                   data.repository.isGitHub ? (
                     <GitHubRepository enableIntegration={data.isGitHubSupported} repository={data.repository} />
                   ) : (
-                    <TextLink href={data.repository} external>
-                      {data.repository}
+                    <TextLink href={data.repository.url} external>
+                      {data.repository.url}
                     </TextLink>
                   )
                 ) : (
                   '-'
                 )}
               </InlineSpinner>
+              {!data.isLoading && (
+                <OverrideRepositoryDetailsButton
+                  serviceName={data.serviceName}
+                  datasourceName={data.dataSourceName}
+                  datasourceUid={data.dataSourceUid}
+                  version={data.functionDetails.version}
+                  saveOverrides={actions.saveFunctionDetails}
+                  deleteAllOverrides={actions.deleteFunctionAllOverrides}
+                  deleteOverride={actions.deleteFunctionOverride}
+                />
+              )}
             </div>
 
             <div className={styles.row} data-testid="row-commit">

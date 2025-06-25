@@ -16,5 +16,6 @@ export function getRepositoryDetails(isGitHub: boolean, functionVersion?: Functi
     name,
     commitUrl: gitRef ? `${url}/commit/${gitRef}` : url,
     commitName: gitRef ? `${name}@${gitRef.substring(0, 7)}` : name,
+    custom: functionVersion?.custom,
   };
 }
