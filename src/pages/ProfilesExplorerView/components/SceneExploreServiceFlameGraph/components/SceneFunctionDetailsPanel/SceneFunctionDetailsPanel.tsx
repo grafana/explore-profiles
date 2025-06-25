@@ -15,12 +15,12 @@ import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue
 import { CodeContainer } from './components/CodeContainer/CodeContainer';
 import { GitHubRepository } from './components/GitHubRepository';
 import { formatFileName } from './domain/formatFileName';
-import { useFunctionVersion } from './domain/functionDetailsOverridesStorage';
 import { CommitWithSamples, getCommitsWithSamples } from './domain/getCommitsWithSamples';
 import { getRepositoryDetails } from './domain/getRepositoryDetails';
 import { isGitHubRepository } from './domain/isGitHubRepository';
 import { FunctionDetails, FunctionVersion } from './domain/types/FunctionDetails';
 import { StackTrace } from './domain/types/StackTrace';
+import { useFunctionVersion } from './domain/useFunctionVersion';
 import { useFetchFunctionsDetails } from './infrastructure/useFetchFunctionsDetails';
 import { CommitSelect } from './ui/CommitSelect';
 import { GitHubIntegrationBanner } from './ui/GitHubIntegrationBanner';
@@ -52,7 +52,11 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
     } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace });
 
     // CODE: rename
-    const versionA = useFunctionVersion(dataSourceUid, serviceName, functionsDetails[0].version);
+    const { saveOverride, deleteOverride, functionVersion, deleteAllOverrides } = useFunctionVersion(
+      dataSourceUid,
+      serviceName,
+      functionsDetails[0].version
+    );
 
     const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
     const [currentFunctionDetails, setCurrentFunctionDetails] = useState<FunctionDetails>(functionsDetails[0]);
@@ -68,7 +72,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       }
     }
 
-    const isGitHubRepo = isGitHubRepository(versionA.overrides?.repository || '');
+    const isGitHubRepo = isGitHubRepository(functionVersion?.repository || '');
     const isGitHubSupported = currentFunctionDetails?.fileName?.endsWith('.go');
     const shouldDisplayGitHubBanner = !isGitHubBannerDismissed && !isGitHubRepo && isGitHubSupported;
 
@@ -91,10 +95,10 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
         fetchFunctionDetailsError,
         functionDetails: {
           ...currentFunctionDetails,
-          version: { ...currentFunctionDetails?.version, ...versionA?.overrides },
+          version: { ...currentFunctionDetails?.version, ...functionVersion },
         },
         // TODO: massage in useFetchFunctionsDetails?
-        repository: getRepositoryDetails(isGitHubRepo, versionA?.overrides),
+        repository: getRepositoryDetails(isGitHubRepo, functionVersion),
         commits,
         selectedCommit,
         isGitHubSupported,
@@ -103,13 +107,13 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       },
       actions: {
         deleteFunctionOverride(datasourceUid: string, serviceName: string) {
-          versionA.deleteOverride(datasourceUid, serviceName);
+          deleteOverride(datasourceUid, serviceName);
         },
         deleteFunctionAllOverrides() {
-          versionA.deleteAllOverrides();
+          deleteAllOverrides();
         },
         saveFunctionDetails(datasourceUid: string, serviceName: string, o: FunctionVersion) {
-          versionA.saveOverride(datasourceUid, serviceName, o);
+          saveOverride(datasourceUid, serviceName, o);
         },
         selectCommit(selectedCommit: CommitWithSamples) {
           const details = functionsDetails.find(({ commit }) => commit.sha === selectedCommit.sha);

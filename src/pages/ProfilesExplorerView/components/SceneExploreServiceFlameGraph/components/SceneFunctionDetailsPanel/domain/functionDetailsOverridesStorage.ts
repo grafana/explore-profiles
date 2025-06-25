@@ -39,8 +39,7 @@ export const useFunctionVersion = (
     deleteAllOverrides: () => {
       setOverrides({});
     },
-    // CODE: rename to value? or provide each prop separately
-    overrides: overrides?.[datasourceUid]?.[serviceName] || version,
+    functionVersion: overrides?.[datasourceUid]?.[serviceName] || version,
     // CODE: plus info about if override was applied
   };
 };
