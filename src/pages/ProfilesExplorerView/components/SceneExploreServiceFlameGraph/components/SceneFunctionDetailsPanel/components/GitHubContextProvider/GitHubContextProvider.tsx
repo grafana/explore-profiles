@@ -17,7 +17,8 @@ type GitHubContextProviderProps = {
 
 export const nonce = generateNonce();
 
-const LOCAL_STORAGE_OVERRIDES_KEY = `grafana-pyroscope-app.gitHubIntegration.dataSourceUid`;
+// Keep the data source UID in session storage to reuse it if the page is refreshed
+const SESSION_DATA_SOURCE_KEY = `grafana-pyroscope-app.gitHubIntegration.dataSourceUid`;
 
 export function GitHubContextProvider({ dataSourceUid, children }: GitHubContextProviderProps) {
   const vcsClient = DataSourceProxyClientBuilder.build(dataSourceUid, VcsClient);
@@ -31,10 +32,10 @@ export function GitHubContextProvider({ dataSourceUid, children }: GitHubContext
   // when logged in and changing data source
   // TODO: provide a better way
   useEffect(() => {
-    const gitHubIntegrationDataSourceUid = sessionStorage.getItem(LOCAL_STORAGE_OVERRIDES_KEY);
+    const gitHubIntegrationDataSourceUid = sessionStorage.getItem(SESSION_DATA_SOURCE_KEY);
     if (gitHubIntegrationDataSourceUid !== dataSourceUid) {
       setSessionCookie('');
-      sessionStorage.setItem(LOCAL_STORAGE_OVERRIDES_KEY, dataSourceUid || '');
+      sessionStorage.setItem(SESSION_DATA_SOURCE_KEY, dataSourceUid || '');
     }
   }, [dataSourceUid]); // eslint-disable-line react-hooks/exhaustive-deps
 
