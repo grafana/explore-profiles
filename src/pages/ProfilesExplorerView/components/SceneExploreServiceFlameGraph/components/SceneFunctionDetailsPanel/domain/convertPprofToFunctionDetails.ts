@@ -7,7 +7,6 @@ const buildDetails = (profile: PprofProfile, func: Function, mapping?: Mapping) 
   let version;
 
   try {
-    // CODE: comment out for testing
     version = mapping ? JSON.parse(profile.stringTable[Number(mapping.buildId)]) : undefined;
   } catch {}
 
