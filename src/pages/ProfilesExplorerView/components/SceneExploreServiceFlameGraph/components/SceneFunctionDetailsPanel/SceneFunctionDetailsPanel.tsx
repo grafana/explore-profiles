@@ -30,7 +30,7 @@ import { OverrideRepositoryDetailsButton } from './ui/OverrideRepositoryDetailsB
 interface SceneFunctionDetailsPanelState extends SceneObjectState {}
 
 export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDetailsPanelState> {
-  static LABEL_WIDTH = 18;
+  static LABEL_WIDTH = 16;
 
   constructor() {
     super({ key: 'function-details-panel' });
@@ -51,12 +51,8 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       isFetching,
     } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace });
 
-    // CODE: rename
-    const { saveOverride, deleteOverride, functionVersion, deleteAllOverrides } = useFunctionVersion(
-      dataSourceUid,
-      serviceName,
-      functionsDetails[0].version
-    );
+    const { saveOverride, deleteOverride, functionVersion, deleteAllOverrides, functionVersionOrigin } =
+      useFunctionVersion(dataSourceUid, serviceName, functionsDetails[0].version);
 
     const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
     const [currentFunctionDetails, setCurrentFunctionDetails] = useState<FunctionDetails>(functionsDetails[0]);
@@ -97,6 +93,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
           ...currentFunctionDetails,
           version: { ...currentFunctionDetails?.version, ...functionVersion },
         },
+        functionVersionOrigin,
         // TODO: massage in useFetchFunctionsDetails?
         repository: getRepositoryDetails(isGitHubRepo, functionVersion),
         commits,
@@ -225,17 +222,6 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                 width={SceneFunctionDetailsPanel.LABEL_WIDTH}
               >
                 Repository
-                {!data.isLoading && (
-                  <OverrideRepositoryDetailsButton
-                    serviceName={data.serviceName}
-                    datasourceName={data.dataSourceName}
-                    datasourceUid={data.dataSourceUid}
-                    version={data.functionDetails.version}
-                    saveOverrides={actions.saveFunctionDetails}
-                    deleteAllOverrides={actions.deleteFunctionAllOverrides}
-                    deleteOverride={actions.deleteFunctionOverride}
-                  />
-                )}
               </InlineLabel>
               <InlineSpinner isLoading={data.isLoading}>
                 {data.repository ? (
@@ -256,6 +242,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                   datasourceName={data.dataSourceName}
                   datasourceUid={data.dataSourceUid}
                   version={data.functionDetails.version}
+                  functionVersionOrigin={data.functionVersionOrigin}
                   saveOverrides={actions.saveFunctionDetails}
                   deleteAllOverrides={actions.deleteFunctionAllOverrides}
                   deleteOverride={actions.deleteFunctionOverride}

@@ -4,12 +4,30 @@ import { FunctionVersion } from './types/FunctionDetails';
 
 type OverridesStorage = Record<string, Record<string, FunctionVersion>>;
 
+/**
+ * Indicates how function version was defined
+ */
+export enum FunctionVersionOrigin {
+  // provided manually by the user
+  USER = 'user',
+  // retrieved from profile labels
+  LABELS = 'labels',
+}
+
 export const useFunctionVersion = (
   datasourceUid: string,
   serviceName: string,
   version: FunctionVersion | undefined
+  // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
   const [overrides, setOverrides] = useLocalStorage<OverridesStorage>('functionDetailsOverrides', {});
+
+  let functionVersionOrigin;
+  if (overrides?.[datasourceUid]?.[serviceName]) {
+    functionVersionOrigin = FunctionVersionOrigin.USER;
+  } else if (version) {
+    functionVersionOrigin = FunctionVersionOrigin.LABELS;
+  }
 
   return {
     saveOverride: (datasourceUid: string, serviceName: string, version: FunctionVersion) => {
@@ -22,7 +40,6 @@ export const useFunctionVersion = (
         }
         overrides[datasourceUid][serviceName] = {
           ...version,
-          custom: true,
         };
         return overrides;
       });
@@ -40,6 +57,6 @@ export const useFunctionVersion = (
       setOverrides({});
     },
     functionVersion: overrides?.[datasourceUid]?.[serviceName] || version,
-    // CODE: plus info about if override was applied
+    functionVersionOrigin,
   };
 };
