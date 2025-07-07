@@ -10,7 +10,6 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
-import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import { Panel } from '@shared/ui/Panel/Panel';
 import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
@@ -23,7 +22,6 @@ import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/bui
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
-import { useCreateRecordingRule } from '../SceneCreateMetricModal/domain/useCreateRecordingRule';
 import { useCreateRecordingRulesMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
 import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
@@ -184,7 +182,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const { settings } = useFetchPluginSettings();
 
-    const { actions: recordingRulesActions } = useCreateRecordingRule();
     const [recordingRulesModelOpen, setIsRecordingRulesModalOpen] = useState(false);
     const recordingRulesMenu = useCreateRecordingRulesMenu(() => setIsRecordingRulesModalOpen(true));
 
@@ -277,8 +274,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           model={data.recordingRules.modal}
           isModalOpen={recordingRulesModelOpen}
           onDismiss={() => setIsRecordingRulesModalOpen(false)}
-          onCreate={(rule: RecordingRuleViewModel) => {
-            recordingRulesActions.save(rule);
+          onCreated={() => {
             setIsRecordingRulesModalOpen(false);
           }}
         />

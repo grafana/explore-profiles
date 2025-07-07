@@ -30,6 +30,16 @@ export default function RecordingRulesView() {
       id: 'serviceName',
       header: 'Service Name',
       sortType: 'alphanumeric',
+      cell: (props) => {
+        const rule: RecordingRuleViewModel = props.row.original;
+        return (
+          rule.serviceName || (
+            <Text element="span" color="secondary">
+              All services
+            </Text>
+          )
+        );
+      },
     },
     {
       id: 'profileType',
