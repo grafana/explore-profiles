@@ -24,7 +24,7 @@ Select a view by choosing an **Exploration**: **All services**, **Profile types*
 
 <!-- screenshots need to be updated -->
 
-![Select an Exploration type to begin](../images/explore-profiles-exploration-bar.png)
+![Select an Exploration type to begin](/media/docs/explore-profiles/explore-profiles-exploration-bar.png)
 
 You can refine any selected views by selecting a Profile type, Label, or Flame graph from one of the charts.
 Click and drag on an area of interest to see more detail.
@@ -137,21 +137,21 @@ Determining which view to use frames the rest of your investigation.
 
 The **All services** view is the default view when you first open Profiles Drilldown.
 
-![The All services view](../images/explore-profiles-homescreen.png)
+![The All services view](/media/docs/explore-profiles/explore-profiles-homescreen.png)
 
 ### Profile types
 
 The Profile types shows one chart for each profile available for the selected service.
 You can select to display the charts in a grid or one chart per row.
 
-![Profile types](../images/explore-profiles-profile-types.png)
+![Profile types](/media/docs/explore-profiles/explore-profiles-profile-types.png)
 
 ### Labels
 
 The Labels view lets you navigate and analyze performance data through labels.
 This feature is crucial for identifying performance anomalies and understanding the behavior of different application segments under various conditions.
 
-![Labels view](../images/explore-profiles-labels.png)
+![Labels view](/media/docs/explore-profiles/explore-profiles-labels.png)
 
 ### Flame graphs
 
@@ -162,7 +162,7 @@ For more information, refer to [Flame graph AI](https://grafana.com/docs/grafana
 
 You can also use line-level insights from the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/).
 
-![Flame graphs](../images/explore-profiles-flamegraph-2.png)
+![Flame graphs](/media/docs/explore-profiles/explore-profiles-flamegraph-2.png)
 
 ### Diff flame graph
 
@@ -172,7 +172,7 @@ This lets you compare two different queries that may have different total amount
 
 Similar to a `git diff`, it takes the selected flame graphs and highlights the differences between them.
 
-![Diff flame graph](../images/explore-profiles-diff-flamegraph.png)
+![Diff flame graph](/media/docs/explore-profiles/explore-profiles-diff-flamegraph.png)
 
 <!-- from old screenshot of cpu usage profile Red represents an increase in CPU usage from the baseline to the comparison and green represents a decrease. -->
 
@@ -181,6 +181,6 @@ Similar to a `git diff`, it takes the selected flame graphs and highlights the d
 The **Favorites** view shows all your favorited visualizations.
 Clicking on the star (⭐️) at the top-right corner of a visualization saves it as a favorite.
 
-Using favories, you can create an overview of what's important, as well as jump to the **Flame graph** view or the **Labels** view.
+Using favorites, you can create an overview of what's important, as well as jump to the **Flame graph** view or the **Labels** view.
 
-![Favorites](../images/explore-profiles-favorites.png)
+![Favorites](/media/docs/explore-profiles/explore-profiles-favorites.png)
