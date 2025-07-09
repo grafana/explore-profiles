@@ -40,7 +40,7 @@ To use Explore Profiles with Grafana open source, you need:
 
 Most investigations follow four general steps:
 
-![Steps for exploring your profiling data](../images/explore-profiles-steps.svg)
+![Steps for exploring your profiling data](/media/docs/explore-profiles/explore-profiles-steps.svg)
 
 1. [Determine your use case](../determine-use-case/).
 1. [Choose a view](../choose-a-view/).
