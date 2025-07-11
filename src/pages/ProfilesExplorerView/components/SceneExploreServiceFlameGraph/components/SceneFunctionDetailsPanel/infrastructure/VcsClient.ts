@@ -4,6 +4,11 @@ type GithubLoginResponse = {
   cookie: string;
 };
 
+type GithubAppResponse = {
+  clientID: string;
+  callbackURL?: string;
+};
+
 export class VcsClient extends DataSourceProxyClient {
   async githubLogin(authorizationCode: string): Promise<GithubLoginResponse> {
     const response = await this.fetch('/vcs.v1.VCSService/GithubLogin', {
@@ -19,7 +24,7 @@ export class VcsClient extends DataSourceProxyClient {
   }
 
   // TODO: return json + rename?
-  async githubApp(): Promise<string> {
+  async githubApp(): Promise<GithubAppResponse> {
     const response = await this.fetch('/vcs.v1.VCSService/GithubApp', {
       method: 'POST',
       body: JSON.stringify({}),
@@ -27,6 +32,6 @@ export class VcsClient extends DataSourceProxyClient {
 
     const json = await response.json();
 
-    return json.clientID;
+    return json;
   }
 }
