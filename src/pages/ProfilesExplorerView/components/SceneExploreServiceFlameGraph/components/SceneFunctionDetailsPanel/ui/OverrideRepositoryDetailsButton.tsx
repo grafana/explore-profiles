@@ -82,7 +82,7 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
             <Field label="Data source">
               <DataSourcePicker current={datasourceUid} disabled={true}></DataSourcePicker>
             </Field>
-            <Field label="Serive name">
+            <Field label="Service name">
               <Input disabled={true} value={serviceName}></Input>
             </Field>
 
