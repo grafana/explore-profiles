@@ -1,3 +1,14 @@
+# [1.5.0](https://github.com/grafana/profiles-drilldown/compare/v1.4.1...v1.5.0) (2025-07-10)
+
+
+### Features
+
+* **GitHub Integration:** Keep GitHub auth cookie within the same session if the data source doesn't change ([#535](https://github.com/grafana/profiles-drilldown/issues/535)) ([8a7b157](https://github.com/grafana/profiles-drilldown/commit/8a7b15791906ce4218a3a4ebf43969039b529727))
+* **Metrics from Profiles:** Allow creating recording rules for all services ([#525](https://github.com/grafana/profiles-drilldown/issues/525)) ([837393b](https://github.com/grafana/profiles-drilldown/commit/837393b8d8ef41d50528722b03071c16ebc027fa))
+* **metrics:** Show annotations ([#522](https://github.com/grafana/profiles-drilldown/issues/522)) ([5259b0b](https://github.com/grafana/profiles-drilldown/commit/5259b0b449bd37e18e1d406bc988a44f7f7dc709))
+
+
+
 ## [1.4.1](https://github.com/grafana/profiles-drilldown/compare/v1.4.0...v1.4.1) (2025-05-21)
 
 
