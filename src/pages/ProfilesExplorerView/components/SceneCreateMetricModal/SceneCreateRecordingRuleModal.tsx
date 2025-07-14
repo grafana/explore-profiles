@@ -20,6 +20,7 @@ interface RecordingRuleForm {
   serviceName: string;
   profileType: string;
   matcher: string;
+  functionName?: string;
 }
 
 interface SceneCreateRecordingRuleModalState extends SceneObjectState {}
@@ -53,18 +54,13 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     isModalOpen,
     onDismiss,
     onCreated,
+    functionName,
   }: SceneComponentProps<SceneCreateRecordingRuleModal> & {
     isModalOpen: boolean;
     onDismiss: () => void;
     onCreated: () => void;
+    functionName?: string;
   }) => {
-    const {
-      register,
-      handleSubmit,
-      control,
-      formState: { errors },
-    } = useForm<RecordingRuleForm>({ mode: 'onChange', shouldUnregister: true });
-
     const [options, setOptions] = useState<string[]>([]);
 
     const { actions } = useCreateRecordingRule();
@@ -78,6 +74,24 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     const filters = filtersVariable.state.filters;
     const filterQuery = filters.map((filter) => `${filter.key}${filter.operator}"${filter.value}"`).join(', ');
 
+    const {
+      register,
+      handleSubmit,
+      control,
+      formState: { errors },
+    } = useForm<RecordingRuleForm>({
+      mode: 'onChange',
+      shouldUnregister: true,
+      values: {
+        functionName,
+        metricName: '',
+        labels: [],
+        serviceName: serviceName?.toString() || '',
+        matcher: '',
+        profileType: profileMetric.id,
+      },
+    });
+
     const onSubmit: SubmitHandler<RecordingRuleForm> = async (data) => {
       const rule: RecordingRuleViewModel = {
         id: '',
@@ -86,6 +100,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
         profileType: data.profileType,
         matchers: [`{${filterQuery}}`],
         groupBy: data.labels ? data.labels.map((label) => label.value ?? '') : [],
+        functionName: data.functionName,
       };
       await actions.save(rule);
       onCreated();
@@ -165,12 +180,16 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
             )}
           </Field>
 
-          <input type="text" value={serviceName?.toString()} hidden {...register('serviceName')} />
+          <input type="text" hidden {...register('serviceName')} />
 
           <Field label="Profile type">
             <div>{`${profileMetric.group}/${profileMetric.type}`}</div>
           </Field>
-          <input type="text" value={profileMetric.id} hidden {...register('profileType')} />
+          <input type="text" hidden {...register('profileType')} />
+
+          <Field label="Function name" description="Optional function name to filter the recording rule">
+            <Input placeholder="Leave empty for total aggregation" {...register('functionName')} />
+          </Field>
 
           <Field label="Filters" description="Filters selected in the main view will be applied to this rule">
             <div>{filters.length === 0 ? 'No filters selected' : filterQuery}</div>

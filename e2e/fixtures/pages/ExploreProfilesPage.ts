@@ -97,6 +97,51 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('Create recording rule modal service name field');
   }
 
+  get recordingRulesModalFunctionNameField() {
+    return this.getByLabel('Function name');
+  }
+
+  async fillRecordingRuleForm(options: { metricName?: string; functionName?: string }) {
+    if (options.metricName) {
+      await this.getByLabel('Metric name').fill(options.metricName);
+    }
+    if (options.functionName) {
+      await this.recordingRulesModalFunctionNameField.fill(options.functionName);
+    }
+  }
+
+  async submitRecordingRuleForm() {
+    await this.getByRole('button', { name: 'Create' }).click();
+  }
+
+  async assertRecordingRuleFormFunctionName(expectedValue: string) {
+    await expect(this.recordingRulesModalFunctionNameField).toHaveValue(expectedValue);
+  }
+
+  async assertRecordingRuleFormFunctionNamePlaceholder(expectedPlaceholder: string) {
+    await expect(this.recordingRulesModalFunctionNameField).toHaveAttribute('placeholder', expectedPlaceholder);
+  }
+
+  async goToRecordingRulesPage() {
+    await this.clickOnViewRecordingRulesButton();
+  }
+
+  getRecordingRulesTable() {
+    return this.page.locator('table');
+  }
+
+  async assertRecordingRuleInTable(ruleName: string, functionName?: string) {
+    const table = this.getRecordingRulesTable();
+    const row = table.locator('tr').filter({ hasText: ruleName });
+    await expect(row).toBeVisible();
+
+    if (functionName) {
+      await expect(row).toContainText(functionName);
+    } else {
+      await expect(row).toContainText('Total (all functions)');
+    }
+  }
+
   /* Service */
 
   getServiceSelector() {

@@ -2,8 +2,8 @@
 // @generated from file settings/v1/recording_rules.proto (package settings.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv1";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv1";
 import type { LabelPair } from "../../types/v1/types_pb";
 import { file_types_v1_types } from "../../types/v1/types_pb";
 import type { Message } from "@bufbuild/protobuf";
@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file settings/v1/recording_rules.proto.
  */
 export const file_settings_v1_recording_rules: GenFile = /*@__PURE__*/
-  fileDesc("CiFzZXR0aW5ncy92MS9yZWNvcmRpbmdfcnVsZXMucHJvdG8SC3NldHRpbmdzLnYxIiUKF0dldFJlY29yZGluZ1J1bGVSZXF1ZXN0EgoKAmlkGAEgASgJIkQKGEdldFJlY29yZGluZ1J1bGVSZXNwb25zZRIoCgRydWxlGAEgASgLMhouc2V0dGluZ3MudjEuUmVjb3JkaW5nUnVsZSIbChlMaXN0UmVjb3JkaW5nUnVsZXNSZXF1ZXN0IkcKGkxpc3RSZWNvcmRpbmdSdWxlc1Jlc3BvbnNlEikKBXJ1bGVzGAEgAygLMhouc2V0dGluZ3MudjEuUmVjb3JkaW5nUnVsZSKjAQoaVXBzZXJ0UmVjb3JkaW5nUnVsZVJlcXVlc3QSCgoCaWQYASABKAkSEwoLbWV0cmljX25hbWUYAiABKAkSEAoIbWF0Y2hlcnMYAyADKAkSEAoIZ3JvdXBfYnkYBCADKAkSLAoPZXh0ZXJuYWxfbGFiZWxzGAUgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyEhIKCmdlbmVyYXRpb24YBiABKAMiRwobVXBzZXJ0UmVjb3JkaW5nUnVsZVJlc3BvbnNlEigKBHJ1bGUYASABKAsyGi5zZXR0aW5ncy52MS5SZWNvcmRpbmdSdWxlIigKGkRlbGV0ZVJlY29yZGluZ1J1bGVSZXF1ZXN0EgoKAmlkGAEgASgJIh0KG0RlbGV0ZVJlY29yZGluZ1J1bGVSZXNwb25zZSKsAQoNUmVjb3JkaW5nUnVsZRIKCgJpZBgBIAEoCRITCgttZXRyaWNfbmFtZRgCIAEoCRIUCgxwcm9maWxlX3R5cGUYAyABKAkSEAoIbWF0Y2hlcnMYBCADKAkSEAoIZ3JvdXBfYnkYBSADKAkSLAoPZXh0ZXJuYWxfbGFiZWxzGAYgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyEhIKCmdlbmVyYXRpb24YByABKAMiuwEKElJlY29yZGluZ1J1bGVTdG9yZRIKCgJpZBgBIAEoCRITCgttZXRyaWNfbmFtZRgCIAEoCRIeChZwcm9tZXRoZXVzX2RhdGFfc291cmNlGAMgASgJEhAKCG1hdGNoZXJzGAQgAygJEhAKCGdyb3VwX2J5GAUgAygJEiwKD2V4dGVybmFsX2xhYmVscxgGIAMoCzITLnR5cGVzLnYxLkxhYmVsUGFpchISCgpnZW5lcmF0aW9uGAcgASgDIlkKE1JlY29yZGluZ1J1bGVzU3RvcmUSLgoFcnVsZXMYASADKAsyHy5zZXR0aW5ncy52MS5SZWNvcmRpbmdSdWxlU3RvcmUSEgoKZ2VuZXJhdGlvbhgCIAEoAzK7AwoVUmVjb3JkaW5nUnVsZXNTZXJ2aWNlEmEKEEdldFJlY29yZGluZ1J1bGUSJC5zZXR0aW5ncy52MS5HZXRSZWNvcmRpbmdSdWxlUmVxdWVzdBolLnNldHRpbmdzLnYxLkdldFJlY29yZGluZ1J1bGVSZXNwb25zZSIAEmcKEkxpc3RSZWNvcmRpbmdSdWxlcxImLnNldHRpbmdzLnYxLkxpc3RSZWNvcmRpbmdSdWxlc1JlcXVlc3QaJy5zZXR0aW5ncy52MS5MaXN0UmVjb3JkaW5nUnVsZXNSZXNwb25zZSIAEmoKE1Vwc2VydFJlY29yZGluZ1J1bGUSJy5zZXR0aW5ncy52MS5VcHNlcnRSZWNvcmRpbmdSdWxlUmVxdWVzdBooLnNldHRpbmdzLnYxLlVwc2VydFJlY29yZGluZ1J1bGVSZXNwb25zZSIAEmoKE0RlbGV0ZVJlY29yZGluZ1J1bGUSJy5zZXR0aW5ncy52MS5EZWxldGVSZWNvcmRpbmdSdWxlUmVxdWVzdBooLnNldHRpbmdzLnYxLkRlbGV0ZVJlY29yZGluZ1J1bGVSZXNwb25zZSIAYgZwcm90bzM", [file_types_v1_types]);
+  fileDesc("CiFzZXR0aW5ncy92MS9yZWNvcmRpbmdfcnVsZXMucHJvdG8SC3NldHRpbmdzLnYxIiUKF0dldFJlY29yZGluZ1J1bGVSZXF1ZXN0EgoKAmlkGAEgASgJIkQKGEdldFJlY29yZGluZ1J1bGVSZXNwb25zZRIoCgRydWxlGAEgASgLMhouc2V0dGluZ3MudjEuUmVjb3JkaW5nUnVsZSIbChlMaXN0UmVjb3JkaW5nUnVsZXNSZXF1ZXN0IkcKGkxpc3RSZWNvcmRpbmdSdWxlc1Jlc3BvbnNlEikKBXJ1bGVzGAEgAygLMhouc2V0dGluZ3MudjEuUmVjb3JkaW5nUnVsZSL4AQoaVXBzZXJ0UmVjb3JkaW5nUnVsZVJlcXVlc3QSCgoCaWQYASABKAkSEwoLbWV0cmljX25hbWUYAiABKAkSEAoIbWF0Y2hlcnMYAyADKAkSEAoIZ3JvdXBfYnkYBCADKAkSLAoPZXh0ZXJuYWxfbGFiZWxzGAUgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyEhIKCmdlbmVyYXRpb24YBiABKAMSPQoRc3RhY2t0cmFjZV9maWx0ZXIYByABKAsyHS5zZXR0aW5ncy52MS5TdGFja3RyYWNlRmlsdGVySACIAQFCFAoSX3N0YWNrdHJhY2VfZmlsdGVyIkcKG1Vwc2VydFJlY29yZGluZ1J1bGVSZXNwb25zZRIoCgRydWxlGAEgASgLMhouc2V0dGluZ3MudjEuUmVjb3JkaW5nUnVsZSIoChpEZWxldGVSZWNvcmRpbmdSdWxlUmVxdWVzdBIKCgJpZBgBIAEoCSIdChtEZWxldGVSZWNvcmRpbmdSdWxlUmVzcG9uc2UigQIKDVJlY29yZGluZ1J1bGUSCgoCaWQYASABKAkSEwoLbWV0cmljX25hbWUYAiABKAkSFAoMcHJvZmlsZV90eXBlGAMgASgJEhAKCG1hdGNoZXJzGAQgAygJEhAKCGdyb3VwX2J5GAUgAygJEiwKD2V4dGVybmFsX2xhYmVscxgGIAMoCzITLnR5cGVzLnYxLkxhYmVsUGFpchISCgpnZW5lcmF0aW9uGAcgASgDEj0KEXN0YWNrdHJhY2VfZmlsdGVyGAggASgLMh0uc2V0dGluZ3MudjEuU3RhY2t0cmFjZUZpbHRlckgAiAEBQhQKEl9zdGFja3RyYWNlX2ZpbHRlciJrChBTdGFja3RyYWNlRmlsdGVyEkUKDWZ1bmN0aW9uX25hbWUYASABKAsyKS5zZXR0aW5ncy52MS5TdGFja3RyYWNlRmlsdGVyRnVuY3Rpb25OYW1lSACIAQFCEAoOX2Z1bmN0aW9uX25hbWUiYwocU3RhY2t0cmFjZUZpbHRlckZ1bmN0aW9uTmFtZRIVCg1mdW5jdGlvbl9uYW1lGAEgASgJEiwKC21ldHJpY190eXBlGAIgASgOMhcuc2V0dGluZ3MudjEuTWV0cmljVHlwZSKQAgoSUmVjb3JkaW5nUnVsZVN0b3JlEgoKAmlkGAEgASgJEhMKC21ldHJpY19uYW1lGAIgASgJEh4KFnByb21ldGhldXNfZGF0YV9zb3VyY2UYAyABKAkSEAoIbWF0Y2hlcnMYBCADKAkSEAoIZ3JvdXBfYnkYBSADKAkSLAoPZXh0ZXJuYWxfbGFiZWxzGAYgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyEhIKCmdlbmVyYXRpb24YByABKAMSPQoRc3RhY2t0cmFjZV9maWx0ZXIYCCABKAsyHS5zZXR0aW5ncy52MS5TdGFja3RyYWNlRmlsdGVySACIAQFCFAoSX3N0YWNrdHJhY2VfZmlsdGVyIlkKE1JlY29yZGluZ1J1bGVzU3RvcmUSLgoFcnVsZXMYASADKAsyHy5zZXR0aW5ncy52MS5SZWNvcmRpbmdSdWxlU3RvcmUSEgoKZ2VuZXJhdGlvbhgCIAEoAyoXCgpNZXRyaWNUeXBlEgkKBVRPVEFMEAAyuwMKFVJlY29yZGluZ1J1bGVzU2VydmljZRJhChBHZXRSZWNvcmRpbmdSdWxlEiQuc2V0dGluZ3MudjEuR2V0UmVjb3JkaW5nUnVsZVJlcXVlc3QaJS5zZXR0aW5ncy52MS5HZXRSZWNvcmRpbmdSdWxlUmVzcG9uc2UiABJnChJMaXN0UmVjb3JkaW5nUnVsZXMSJi5zZXR0aW5ncy52MS5MaXN0UmVjb3JkaW5nUnVsZXNSZXF1ZXN0Gicuc2V0dGluZ3MudjEuTGlzdFJlY29yZGluZ1J1bGVzUmVzcG9uc2UiABJqChNVcHNlcnRSZWNvcmRpbmdSdWxlEicuc2V0dGluZ3MudjEuVXBzZXJ0UmVjb3JkaW5nUnVsZVJlcXVlc3QaKC5zZXR0aW5ncy52MS5VcHNlcnRSZWNvcmRpbmdSdWxlUmVzcG9uc2UiABJqChNEZWxldGVSZWNvcmRpbmdSdWxlEicuc2V0dGluZ3MudjEuRGVsZXRlUmVjb3JkaW5nUnVsZVJlcXVlc3QaKC5zZXR0aW5ncy52MS5EZWxldGVSZWNvcmRpbmdSdWxlUmVzcG9uc2UiAGIGcHJvdG8z", [file_types_v1_types]);
 
 /**
  * @generated from message settings.v1.GetRecordingRuleRequest
@@ -118,6 +118,11 @@ export type UpsertRecordingRuleRequest = Message<"settings.v1.UpsertRecordingRul
    * @generated from field: int64 generation = 6;
    */
   generation: bigint;
+
+  /**
+   * @generated from field: optional settings.v1.StacktraceFilter stacktrace_filter = 7;
+   */
+  stacktraceFilter?: StacktraceFilter;
 };
 
 /**
@@ -232,6 +237,15 @@ export type RecordingRule = Message<"settings.v1.RecordingRule"> & {
    * @generated from field: int64 generation = 7;
    */
   generation: bigint;
+
+  /**
+   * The stacktrace filter allows filtering on particular function names in the stacktrace.
+   * This allows recording rules to focus on specific functions and calculate their "total"
+   * resource usage.
+   *
+   * @generated from field: optional settings.v1.StacktraceFilter stacktrace_filter = 8;
+   */
+  stacktraceFilter?: StacktraceFilter;
 };
 
 /**
@@ -240,6 +254,45 @@ export type RecordingRule = Message<"settings.v1.RecordingRule"> & {
  */
 export const RecordingRuleSchema: GenMessage<RecordingRule> = /*@__PURE__*/
   messageDesc(file_settings_v1_recording_rules, 8);
+
+/**
+ * @generated from message settings.v1.StacktraceFilter
+ */
+export type StacktraceFilter = Message<"settings.v1.StacktraceFilter"> & {
+  /**
+   * @generated from field: optional settings.v1.StacktraceFilterFunctionName function_name = 1;
+   */
+  functionName?: StacktraceFilterFunctionName;
+};
+
+/**
+ * Describes the message settings.v1.StacktraceFilter.
+ * Use `create(StacktraceFilterSchema)` to create a new message.
+ */
+export const StacktraceFilterSchema: GenMessage<StacktraceFilter> = /*@__PURE__*/
+  messageDesc(file_settings_v1_recording_rules, 9);
+
+/**
+ * @generated from message settings.v1.StacktraceFilterFunctionName
+ */
+export type StacktraceFilterFunctionName = Message<"settings.v1.StacktraceFilterFunctionName"> & {
+  /**
+   * @generated from field: string function_name = 1;
+   */
+  functionName: string;
+
+  /**
+   * @generated from field: settings.v1.MetricType metric_type = 2;
+   */
+  metricType: MetricType;
+};
+
+/**
+ * Describes the message settings.v1.StacktraceFilterFunctionName.
+ * Use `create(StacktraceFilterFunctionNameSchema)` to create a new message.
+ */
+export const StacktraceFilterFunctionNameSchema: GenMessage<StacktraceFilterFunctionName> = /*@__PURE__*/
+  messageDesc(file_settings_v1_recording_rules, 10);
 
 /**
  * @generated from message settings.v1.RecordingRuleStore
@@ -279,6 +332,11 @@ export type RecordingRuleStore = Message<"settings.v1.RecordingRuleStore"> & {
    * @generated from field: int64 generation = 7;
    */
   generation: bigint;
+
+  /**
+   * @generated from field: optional settings.v1.StacktraceFilter stacktrace_filter = 8;
+   */
+  stacktraceFilter?: StacktraceFilter;
 };
 
 /**
@@ -286,7 +344,7 @@ export type RecordingRuleStore = Message<"settings.v1.RecordingRuleStore"> & {
  * Use `create(RecordingRuleStoreSchema)` to create a new message.
  */
 export const RecordingRuleStoreSchema: GenMessage<RecordingRuleStore> = /*@__PURE__*/
-  messageDesc(file_settings_v1_recording_rules, 9);
+  messageDesc(file_settings_v1_recording_rules, 11);
 
 /**
  * @generated from message settings.v1.RecordingRulesStore
@@ -308,7 +366,23 @@ export type RecordingRulesStore = Message<"settings.v1.RecordingRulesStore"> & {
  * Use `create(RecordingRulesStoreSchema)` to create a new message.
  */
 export const RecordingRulesStoreSchema: GenMessage<RecordingRulesStore> = /*@__PURE__*/
-  messageDesc(file_settings_v1_recording_rules, 10);
+  messageDesc(file_settings_v1_recording_rules, 12);
+
+/**
+ * @generated from enum settings.v1.MetricType
+ */
+export enum MetricType {
+  /**
+   * @generated from enum value: TOTAL = 0;
+   */
+  TOTAL = 0,
+}
+
+/**
+ * Describes the enum settings.v1.MetricType.
+ */
+export const MetricTypeSchema: GenEnum<MetricType> = /*@__PURE__*/
+  enumDesc(file_settings_v1_recording_rules, 0);
 
 /**
  * @generated from service settings.v1.RecordingRulesService
