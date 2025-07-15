@@ -20,7 +20,10 @@ export const useFunctionVersion = (
   version: FunctionVersion | undefined
   // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
-  const [overrides, setOverrides] = useLocalStorage<OverridesStorage>('functionDetailsOverrides', {});
+  const [overrides, setOverrides] = useLocalStorage<OverridesStorage>(
+    'grafana-pyroscope-app.functionDetailsOverrides',
+    {}
+  );
 
   let functionVersionOrigin;
   if (overrides?.[datasourceUid]?.[serviceName]) {

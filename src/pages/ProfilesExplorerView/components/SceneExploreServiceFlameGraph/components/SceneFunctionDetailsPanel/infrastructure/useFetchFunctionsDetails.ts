@@ -8,7 +8,8 @@ import { PprofApiClient } from '../../../infrastructure/PprofApiClient';
 import { PLACEHOLDER_COMMIT_DATA } from '../components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { useGitHubContext } from '../components/GitHubContextProvider/useGitHubContext';
 import { convertPprofToFunctionDetails } from '../domain/convertPprofToFunctionDetails';
-import { FunctionDetails } from '../domain/types/FunctionDetails';
+import { FunctionDetails, FunctionVersion } from '../domain/types/FunctionDetails';
+import { useFunctionVersion } from '../domain/useFunctionVersion';
 import { fetchCommitsInfo } from './fetchCommitsInfo';
 import { sortByTotal } from './helpers/sortByTotal';
 
@@ -30,13 +31,26 @@ type FetchResponse = {
 // TODO: This could be a setting in the UI.
 const MAX_NODES = 500;
 
+const DEFAULT_FUNCTION_VERSION: FunctionVersion = {
+  repository: '',
+  git_ref: 'HEAD',
+  root_path: '',
+};
+
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace }: FetchParams): FetchResponse {
-  const { profileMetricId, labelsSelector } = parseQuery(query);
+  const { profileMetricId, labelsSelector, serviceId } = parseQuery(query);
   const [start, end] = [timeRange.from.unix(), timeRange.to.unix()];
   const { isLoggedIn: isGitHubLogged } = useGitHubContext();
 
   const pprofApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, PprofApiClient);
+
+  // Get the default function version for the service including provided overrides
+  const { functionVersion: defaultFunctionVersion } = useFunctionVersion(
+    dataSourceUid,
+    serviceId,
+    DEFAULT_FUNCTION_VERSION
+  );
 
   const {
     isFetching,
@@ -45,7 +59,16 @@ export function useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stac
   } = useQuery({
     enabled: Boolean(profileMetricId && labelsSelector && stackTrace.length > 0 && start > 0 && end > 0),
     // eslint-disable-next-line @tanstack/query/exhaustive-deps
-    queryKey: ['function-details', profileMetricId, labelsSelector, start, end, stackTrace, isGitHubLogged],
+    queryKey: [
+      'function-details',
+      profileMetricId,
+      labelsSelector,
+      start,
+      end,
+      stackTrace,
+      isGitHubLogged,
+      defaultFunctionVersion?.root_path,
+    ],
     queryFn: async () => {
       const pprof = await pprofApiClient.selectMergeProfileJson({
         profileMetricId,
@@ -60,7 +83,9 @@ export function useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stac
         sortByTotal
       );
 
-      return isGitHubLogged ? fetchCommitsInfo(dataSourceUid, functionsDetails) : functionsDetails;
+      return isGitHubLogged
+        ? fetchCommitsInfo(dataSourceUid, functionsDetails, defaultFunctionVersion || DEFAULT_FUNCTION_VERSION)
+        : functionsDetails;
     },
   });
 
