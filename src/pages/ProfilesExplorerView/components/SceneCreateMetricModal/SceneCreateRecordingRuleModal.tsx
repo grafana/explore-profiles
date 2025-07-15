@@ -189,7 +189,11 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
           <input type="text" hidden {...register('profileType')} />
 
           <Field label="Function name" description="Optional function name to filter the recording rule">
-            <Input placeholder="Leave empty for total aggregation" {...register('functionName')} />
+            <Input
+              aria-label="Function name"
+              placeholder="Leave empty for total aggregation"
+              {...register('functionName')}
+            />
           </Field>
 
           <Field label="Filters" description="Filters selected in the main view will be applied to this rule">
