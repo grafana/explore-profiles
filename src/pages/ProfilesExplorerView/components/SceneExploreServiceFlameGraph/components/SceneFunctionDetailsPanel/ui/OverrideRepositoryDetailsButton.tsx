@@ -30,7 +30,7 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
   const onSubmit = (data: FunctionVersion) => {
     saveOverrides(datasourceUid, serviceName, {
       repository: data.repository,
-      git_ref: data.git_ref,
+      git_ref: data.git_ref || 'HEAD',
       root_path: data.root_path || '',
     });
     setOpen(false);
@@ -87,7 +87,7 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
             </Field>
 
             <Field
-              label="service_repository (repository URL)"
+              label="service_repository (repository URL) - required"
               invalid={!!errors.repository}
               error={errors?.repository?.message?.toString()}
             >
@@ -101,7 +101,7 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
               invalid={!!errors.git_ref}
               error={errors?.git_ref?.message?.toString()}
             >
-              <Input {...register('git_ref', { required: 'Repository reference is required' })} placeholder="HEAD" />
+              <Input {...register('git_ref')} placeholder="HEAD" />
             </Field>
             <Field label="Path to root">
               <Input {...register('root_path')} placeholder="Enter root path" />
