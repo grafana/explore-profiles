@@ -3,8 +3,8 @@ import { Alert, Button, ConfirmButton, Field, Input, Modal, Stack, Text } from '
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
+import { FunctionVersionOrigin } from '../domain/FunctionVersionContext';
 import { FunctionVersion } from '../domain/types/FunctionDetails';
-import { FunctionVersionOrigin } from '../domain/useFunctionVersion';
 
 type Props = {
   serviceName: string;

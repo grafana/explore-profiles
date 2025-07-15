@@ -8,8 +8,8 @@ import { PprofApiClient } from '../../../infrastructure/PprofApiClient';
 import { PLACEHOLDER_COMMIT_DATA } from '../components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { useGitHubContext } from '../components/GitHubContextProvider/useGitHubContext';
 import { convertPprofToFunctionDetails } from '../domain/convertPprofToFunctionDetails';
+import { useFunctionVersion } from '../domain/FunctionVersionContext';
 import { FunctionDetails, FunctionVersion } from '../domain/types/FunctionDetails';
-import { useFunctionVersion } from '../domain/useFunctionVersion';
 import { fetchCommitsInfo } from './fetchCommitsInfo';
 import { sortByTotal } from './helpers/sortByTotal';
 
@@ -67,7 +67,7 @@ export function useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stac
       end,
       stackTrace,
       isGitHubLogged,
-      defaultFunctionVersion?.root_path,
+      defaultFunctionVersion,
     ],
     queryFn: async () => {
       const pprof = await pprofApiClient.selectMergeProfileJson({

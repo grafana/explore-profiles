@@ -48,6 +48,7 @@ import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData'
 import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
+import { FunctionVersionProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/domain/FunctionVersionContext';
 import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { Header } from './components/Header';
@@ -423,31 +424,33 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { createRecordingRuleModal } = model.useState();
 
     return (
-      <GitHubContextProvider dataSourceUid={dataSourceUid}>
-        <Header
-          explorationType={explorationType}
-          controls={controls}
-          body={body}
-          $variables={$variables}
-          onChangeExplorationType={actions.onChangeExplorationType}
-          onCreateRecordingRule={() => {
-            setIsRecordingRulesModalOpen(true);
-          }}
-        />
+      <FunctionVersionProvider>
+        <GitHubContextProvider dataSourceUid={dataSourceUid}>
+          <Header
+            explorationType={explorationType}
+            controls={controls}
+            body={body}
+            $variables={$variables}
+            onChangeExplorationType={actions.onChangeExplorationType}
+            onCreateRecordingRule={() => {
+              setIsRecordingRulesModalOpen(true);
+            }}
+          />
 
-        <div className={styles.body} data-testid="sceneBody">
-          {body && <body.Component model={body} />}
-        </div>
+          <div className={styles.body} data-testid="sceneBody">
+            {body && <body.Component model={body} />}
+          </div>
 
-        <SceneCreateRecordingRuleModal.Component
-          model={createRecordingRuleModal}
-          isModalOpen={recordingRulesModelOpen}
-          onDismiss={() => setIsRecordingRulesModalOpen(false)}
-          onCreated={() => {
-            setIsRecordingRulesModalOpen(false);
-          }}
-        />
-      </GitHubContextProvider>
+          <SceneCreateRecordingRuleModal.Component
+            model={createRecordingRuleModal}
+            isModalOpen={recordingRulesModelOpen}
+            onDismiss={() => setIsRecordingRulesModalOpen(false)}
+            onCreated={() => {
+              setIsRecordingRulesModalOpen(false);
+            }}
+          />
+        </GitHubContextProvider>
+      </FunctionVersionProvider>
     );
   }
 }

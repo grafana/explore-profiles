@@ -15,12 +15,12 @@ import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue
 import { CodeContainer } from './components/CodeContainer/CodeContainer';
 import { GitHubRepository } from './components/GitHubRepository';
 import { formatFileName } from './domain/formatFileName';
+import { useFunctionVersion } from './domain/FunctionVersionContext';
 import { CommitWithSamples, getCommitsWithSamples } from './domain/getCommitsWithSamples';
 import { getRepositoryDetails } from './domain/getRepositoryDetails';
 import { isGitHubRepository } from './domain/isGitHubRepository';
 import { FunctionDetails, FunctionVersion } from './domain/types/FunctionDetails';
 import { StackTrace } from './domain/types/StackTrace';
-import { useFunctionVersion } from './domain/useFunctionVersion';
 import { useFetchFunctionsDetails } from './infrastructure/useFetchFunctionsDetails';
 import { CommitSelect } from './ui/CommitSelect';
 import { GitHubIntegrationBanner } from './ui/GitHubIntegrationBanner';
