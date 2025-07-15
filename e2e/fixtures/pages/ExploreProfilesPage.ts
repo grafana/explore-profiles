@@ -97,16 +97,20 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('Create recording rule modal service name field');
   }
 
-  get recordingRulesModalFunctionNameField() {
-    return this.getByLabel('Function name');
+  get recordingRulesModalMetricName() {
+    return this.getByLabel('Metric name', { type: 'input' });
+  }
+
+  get recordingRulesModalFunctionName() {
+    return this.getByLabel('Function name', { type: 'input' });
   }
 
   async fillRecordingRuleForm(options: { metricName?: string; functionName?: string }) {
     if (options.metricName) {
-      await this.getByLabel('Metric name').fill(options.metricName);
+      await this.recordingRulesModalMetricName.fill(options.metricName);
     }
     if (options.functionName) {
-      await this.recordingRulesModalFunctionNameField.fill(options.functionName);
+      await this.recordingRulesModalFunctionName.fill(options.functionName);
     }
   }
 
@@ -114,32 +118,40 @@ export class ExploreProfilesPage extends PyroscopePage {
     await this.getByRole('button', { name: 'Create' }).click();
   }
 
-  async assertRecordingRuleFormFunctionName(expectedValue: string) {
-    await expect(this.recordingRulesModalFunctionNameField).toHaveValue(expectedValue);
+  get recordingRulesDropdown() {
+    return this.getByLabel('Recording rules');
   }
 
-  async assertRecordingRuleFormFunctionNamePlaceholder(expectedPlaceholder: string) {
-    await expect(this.recordingRulesModalFunctionNameField).toHaveAttribute('placeholder', expectedPlaceholder);
+  get recordingRulesViewRecordingRules() {
+    return this.getByLabel('View recording rules');
+  }
+
+  clickOnViewRecordingRulesDropdown() {
+    return this.recordingRulesDropdown.click();
+  }
+
+  clickOnViewRecordingRulesViewRecordingRules() {
+    return this.recordingRulesViewRecordingRules.click();
   }
 
   async goToRecordingRulesPage() {
-    await this.clickOnViewRecordingRulesButton();
+    await this.clickOnViewRecordingRulesDropdown();
+    await this.clickOnViewRecordingRulesViewRecordingRules();
   }
 
-  getRecordingRulesTable() {
-    return this.page.locator('table');
-  }
-
-  async assertRecordingRuleInTable(ruleName: string, functionName?: string) {
+  async assertRecordingRuleInTable(metricName: string, functionName: string) {
     const table = this.getRecordingRulesTable();
-    const row = table.locator('tr').filter({ hasText: ruleName });
+    const row = table.locator('tr').filter({ hasText: metricName });
     await expect(row).toBeVisible();
-
     if (functionName) {
       await expect(row).toContainText(functionName);
     } else {
       await expect(row).toContainText('Total (all functions)');
     }
+  }
+
+  getRecordingRulesTable() {
+    return this.page.locator('table');
   }
 
   /* Service */
