@@ -1,7 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
-import { ErrorBoundary, Dropdown, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
+import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
