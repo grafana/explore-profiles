@@ -122,6 +122,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
               placeholder={`pyroscope_metric_${profileMetric.type}_${(serviceName || 'name')
                 .toString()
                 .replace(/[^a-zA-Z0-9_]/g, '_')}`}
+              aria-label="Metric name"
               required
               autoFocus
               {...register('metricName', {
