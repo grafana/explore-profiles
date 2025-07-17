@@ -18,6 +18,7 @@ import { EventTimeseriesDataReceived } from '../domain/events/EventTimeseriesDat
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { addRateCalculation } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesTableState extends SceneObjectState {
@@ -40,6 +41,7 @@ export class SceneLabelValuesTable extends SceneObjectBase<SceneLabelValuesTable
           new SceneDataTransformer({
             $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
             transformations: [
+              addRateCalculation,
               {
                 id: DataTransformerID.reduce,
                 options: {
@@ -111,7 +113,8 @@ export class SceneLabelValuesTable extends SceneObjectBase<SceneLabelValuesTable
 
     const profileMetricId = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable).state
       .value as ProfileMetricId;
-    const unitValue = getProfileMetric(profileMetricId).unit;
+    const profileMetric = getProfileMetric(profileMetricId);
+    const unitValue = profileMetric.unit;
 
     return {
       title: cardinality > 1 ? `${item.label} (${cardinality})` : item.label,

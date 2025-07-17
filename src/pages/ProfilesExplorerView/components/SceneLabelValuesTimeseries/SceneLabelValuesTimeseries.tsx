@@ -22,7 +22,11 @@ import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import {
+  addRateCalculation,
+  addRefId,
+  addStats,
+} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
@@ -68,7 +72,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
                 true
               ),
-              transformations: [addRefId, addStats],
+              transformations: [addRefId, addRateCalculation, addStats],
             })
         )
         .setHeaderActions(headerActions(item))
