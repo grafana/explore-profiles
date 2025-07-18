@@ -162,7 +162,7 @@ function getRateUnitForField(fieldUnit: string, fieldName: string): string {
   const isCpuTimeField = fieldName.toLowerCase() === 'cpu' && fieldUnit === 'ns';
 
   if (isCpuTimeField) {
-    return 's/s';
+    return 'cores';
   }
 
   switch (fieldUnit) {
