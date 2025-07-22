@@ -15,13 +15,17 @@ type Cookie = {
 };
 
 class InternalGitSessionCookieManager implements GitSessionCookieManager {
-  private rawCookie: Cookie | undefined;
   private sessionCookie: GitSessionCookie | undefined;
 
+  constructor() {
+    const cookie = InternalGitSessionCookieManager.getCookieFromJar(document.cookie, GITHUB_SESSION_COOKIE_NAME);
+
+    if (cookie) {
+      this.sessionCookie = GitSessionCookie.decode(cookie.value);
+    }
+  }
+
   getCookie(): GitSessionCookie | undefined {
-    // To make sure we're using a cookie that accurately reflects the browser
-    // state, let's be paranoid and make sure our cached cookie is accurate.
-    this.syncCookieWithBrowser();
     return this.sessionCookie;
   }
 
@@ -38,7 +42,6 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
     }
 
     this.deleteLegacyCookie();
-    this.rawCookie = rawCookie;
     this.sessionCookie = GitSessionCookie.decode(rawCookie.value);
     document.cookie = `${cookie}; path=/`;
   }
@@ -46,26 +49,11 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
   deleteCookie(): void {
     document.cookie = `${GITHUB_SESSION_COOKIE_NAME}=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
     this.deleteLegacyCookie();
-    this.rawCookie = undefined;
     this.sessionCookie = undefined;
   }
 
   private deleteLegacyCookie(): void {
     document.cookie = `${LEGACY_GITHUB_SESSION_COOKIE_NAME}=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
-  }
-
-  private syncCookieWithBrowser(): void {
-    const cookie = InternalGitSessionCookieManager.getCookieFromJar(document.cookie, GITHUB_SESSION_COOKIE_NAME);
-    if (cookie?.key === this.rawCookie?.key && cookie?.value === this.rawCookie?.value) {
-      return;
-    }
-
-    if (cookie) {
-      this.rawCookie = cookie;
-      this.sessionCookie = GitSessionCookie.decode(cookie.value);
-    } else {
-      this.deleteCookie();
-    }
   }
 
   private static getCookieFromJar(jar: string, name: string): Cookie | undefined {
