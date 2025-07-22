@@ -101,6 +101,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
         matchers: [`{${filterQuery}}`],
         groupBy: data.labels ? data.labels.map((label) => label.value ?? '') : [],
         functionName: data.functionName,
+        readonly: false,
       };
       await actions.save(rule);
       onCreated();

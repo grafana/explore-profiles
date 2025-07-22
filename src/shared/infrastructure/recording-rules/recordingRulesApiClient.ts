@@ -29,6 +29,7 @@ function mapRuleToRecordingRuleViewModel(rule: RecordingRule): RecordingRuleView
     matchers: rule.matchers,
     groupBy: rule.groupBy || [],
     functionName,
+    readonly: rule.metricName === 'provisioned' ? true : rule.provisioned,
   };
 }
 
