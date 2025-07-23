@@ -21,58 +21,6 @@ test.describe('Plugin Settings', () => {
     await expect(flamegraphSettings.getByText('Maximum number of nodes')).toBeVisible();
   });
 
-  test.describe('Metrics from profiles settings', () => {
-    test('is not available by default', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.goto(ExplorationType.FlameGraph);
-
-      await expect(exploreProfilesPage.recordingRulesButton).not.toBeVisible();
-
-      await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 10 });
-      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).not.toBeVisible();
-      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).not.toBeVisible();
-    });
-
-    test('can be enabled', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getMetricsFromProfilesCheckbox().click();
-      await settingsPage.getSaveSettingsButton().click();
-      await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
-
-      await exploreProfilesPage.goto(ExplorationType.FlameGraph);
-      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible();
-
-      await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 10 });
-      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).toBeVisible();
-    });
-
-    test('create a recording rule for all services', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getMetricsFromProfilesCheckbox().click();
-      await settingsPage.getSaveSettingsButton().click();
-      await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
-
-      await exploreProfilesPage.goto(ExplorationType.AllServices);
-      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible();
-      await exploreProfilesPage.clickOnViewRecordingRulesButton();
-      await expect(exploreProfilesPage.addRecordingRuleButton).toBeVisible();
-      await exploreProfilesPage.clickOnAddRecordingRuleButton();
-
-      await expect(exploreProfilesPage.recordingRulesModalServiceName).toContainText('All services');
-    });
-
-    test('create a recording rule for a single service', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getMetricsFromProfilesCheckbox().click();
-      await settingsPage.getSaveSettingsButton().click();
-      await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
-
-      await exploreProfilesPage.goto(ExplorationType.ProfileTypes);
-      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible();
-      await exploreProfilesPage.clickOnViewRecordingRulesButton();
-      await expect(exploreProfilesPage.addRecordingRuleButton).toBeVisible();
-      await exploreProfilesPage.clickOnAddRecordingRuleButton();
-
-      await expect(exploreProfilesPage.recordingRulesModalServiceName).toContainText('ride-sharing-app');
-    });
-  });
-
   test.describe('Flame graph settings', () => {
     test('Can be modified', async ({ settingsPage, exploreProfilesPage }) => {
       await settingsPage.getCollapsedFlamegraphsCheckbox().click();

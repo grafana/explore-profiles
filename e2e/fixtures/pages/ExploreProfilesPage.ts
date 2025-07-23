@@ -97,6 +97,51 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('Create recording rule modal service name field');
   }
 
+  get recordingRulesModalMetricName() {
+    return this.getByLabel('Metric name', { type: 'input' });
+  }
+
+  async fillRecordingRuleForm(options: { metricName?: string }) {
+    if (options.metricName) {
+      await this.recordingRulesModalMetricName.fill(options.metricName);
+    }
+  }
+
+  async submitRecordingRuleForm() {
+    await this.getByRole('button', { name: 'Create' }).click();
+  }
+
+  get recordingRulesDropdown() {
+    return this.getByLabel('Recording rules');
+  }
+
+  get recordingRulesViewRecordingRules() {
+    return this.getByLabel('View recording rules');
+  }
+
+  clickOnViewRecordingRulesDropdown() {
+    return this.recordingRulesDropdown.click();
+  }
+
+  clickOnViewRecordingRulesViewRecordingRules() {
+    return this.recordingRulesViewRecordingRules.click();
+  }
+
+  async goToRecordingRulesPage() {
+    await this.clickOnViewRecordingRulesDropdown();
+    await this.clickOnViewRecordingRulesViewRecordingRules();
+  }
+
+  async assertRecordingRuleInTable(metricName: string) {
+    const table = this.getRecordingRulesTable();
+    const row = table.locator('tr').filter({ hasText: metricName });
+    await expect(row).toBeVisible();
+  }
+
+  getRecordingRulesTable() {
+    return this.page.locator('table');
+  }
+
   /* Service */
 
   getServiceSelector() {
