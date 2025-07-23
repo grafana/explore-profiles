@@ -276,7 +276,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           />
         )}
 
-        <SceneCreateRecordingRuleModal.Component
+        <data.recordingRules.modal.Component
           model={data.recordingRules.modal}
           isModalOpen={recordingRulesModalState.isOpen}
           functionName={recordingRulesModalState.functionName}
