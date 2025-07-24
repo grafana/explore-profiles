@@ -5,7 +5,7 @@
     "type": "contentions",
     "group": "block",
     "unit": "short",
-    "aggregationType": "instant"
+    "aggregationType": "cumulative"
   },
   "block:delay:nanoseconds:contentions:count": {
     "id": "block:delay:nanoseconds:contentions:count",
@@ -157,6 +157,6 @@
     "type": "samples",
     "group": "process_cpu",
     "unit": "short",
-    "aggregationType": "cumulative"
+    "aggregationType": "instant"
   }
 }

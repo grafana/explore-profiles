@@ -1,14 +1,5 @@
 import { css, cx } from '@emotion/css';
-import {
-  AdHocVariableFilter,
-  DataFrame,
-  dateTime,
-  dateTimeFormat,
-  FieldMatcherID,
-  getValueFormat,
-  GrafanaTheme2,
-  systemDateFormats,
-} from '@grafana/data';
+import { AdHocVariableFilter, DataFrame, dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -31,15 +22,12 @@ import React from 'react';
 
 import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
+import { formatSingleSeriesDisplayName } from '../../../../helpers/formatSingleSeriesDisplayName';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
 import { PanelType } from '../../../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
-import {
-  addRateCalculation,
-  addRefId,
-  addStats,
-} from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from '../../../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { SceneLabelValuesTimeseries } from '../../../SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 import { CompareTarget } from '../../domain/types';
 import { Preset } from '../ScenePresetsPicker/ScenePresetsPicker';
@@ -140,8 +128,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     };
   }
 
-  static buildTimeSeriesPanel({ target, filterKey, title, color }: any) {
-    const timeseriesPanel = new SceneLabelValuesTimeseries({
+  static buildTimeSeriesPanel({ target, filterKey, title, color }: any): SceneLabelValuesTimeseries {
+    const timeseriesPanel: SceneLabelValuesTimeseries = new SceneLabelValuesTimeseries({
       item: {
         index: 0,
         value: target,
@@ -151,44 +139,56 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       },
       data: new SceneDataTransformer({
         $data: buildCompareTimeSeriesQueryRunner({ filterKey }),
-        transformations: [addRefId, addRateCalculation, addStats],
+        transformations: [addRefId, addStats],
       }),
-      overrides: (series) =>
-        series.map((s) => {
-          const metricField = s.fields[1];
-          const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
-          const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
-          const total = `${formattedValue.text}${formattedValue.suffix}`;
-          const [diffFrom, diffTo, timeZone] = SceneComparePanel.getDiffRange(timeseriesPanel);
-
-          const displayName =
-            diffFrom && diffTo
-              ? `Total = ${total} / Flame graph range = ${dateTimeFormat(diffFrom, {
-                  format: systemDateFormats.fullDate,
-                  timeZone,
-                })} → ${dateTimeFormat(diffTo, {
-                  format: systemDateFormats.fullDate,
-                  timeZone,
-                })}`
-              : `Total = ${total}`;
-
-          return {
-            matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
-            properties: [
-              {
-                id: 'displayName',
-                value: displayName,
-              },
-              {
-                id: 'color',
-                value: { mode: 'fixed', fixedColor: color },
-              },
-            ],
-          };
-        }),
+      overrides: (series: DataFrame[]) => SceneComparePanel.buildSeriesOverrides(series, color),
       headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
     });
 
+    SceneComparePanel.configureTimeRange(timeseriesPanel, target, title);
+    return timeseriesPanel;
+  }
+
+  private static buildSeriesOverrides(series: DataFrame[], color: string): Array<{ matcher: any; properties: any[] }> {
+    return series.map((s) => {
+      const metricField = s.fields[1];
+      const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
+
+      const properLabel = SceneComparePanel.getProperLabel(s);
+      const total = SceneComparePanel.formatTotalValue(allValuesSum, metricField.config.unit || 'short');
+
+      const properties = [
+        {
+          id: 'displayName',
+          value: `${properLabel} = ${total}`,
+        },
+        {
+          id: 'color',
+          value: { mode: 'fixed', fixedColor: color },
+        },
+      ];
+
+      return {
+        matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
+        properties,
+      };
+    });
+  }
+
+  private static getProperLabel(s: DataFrame): string {
+    const displayNameWithLabel = formatSingleSeriesDisplayName('', s);
+    const labelMatch = displayNameWithLabel.match(/^(avg|total)/);
+    return labelMatch ? labelMatch[1] : 'total';
+  }
+
+  private static formatTotalValue(allValuesSum: number, displayUnit: string): string {
+    const safeDisplayUnit = displayUnit || 'short';
+    const formattedValue = getValueFormat(safeDisplayUnit)(allValuesSum);
+
+    return `${formattedValue.text}${formattedValue.suffix}`;
+  }
+
+  private static configureTimeRange(timeseriesPanel: SceneLabelValuesTimeseries, target: string, title: string) {
     timeseriesPanel.state.body.setState({
       $timeRange: new SceneTimeRangeWithAnnotations({
         key: `${target}-annotation-timerange`,
@@ -198,8 +198,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         annotationTitle: `${title} flame graph range`,
       }),
     });
-
-    return timeseriesPanel;
   }
 
   static getDiffRange(
@@ -427,7 +425,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const siblingStep = this.extractStepDuration(siblingData);
 
     if (myStep && siblingStep && Math.abs(myStep - siblingStep) > 0.001) {
-      const targetStep = Math.min(myStep, siblingStep);
+      const targetStep = Math.max(myStep, siblingStep); // Use highest step (lowest resolution) to reduce data points
 
       if (this.state.lastSyncedStepSec !== targetStep) {
         this.setState({ lastSyncedStepSec: targetStep });
@@ -447,7 +445,9 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
 
     const times = timeField.values as number[];
-    return (times[1] - times[0]) / 1000; // Convert to seconds
+    const stepDurationMs = times[1] - times[0];
+    const stepDurationSec = stepDurationMs / 1000;
+    return stepDurationSec;
   }
 
   private updateQueryStep(targetStepSec: number) {
@@ -457,6 +457,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
 
     const currentQueries = queryRunner.state.queries;
+
     const updatedQueries = currentQueries.map((query: any) => ({
       ...query,
       step: targetStepSec,

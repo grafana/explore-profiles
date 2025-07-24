@@ -17,11 +17,7 @@ import { formatSingleSeriesDisplayName } from '../helpers/formatSingleSeriesDisp
 import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import {
-  addRateCalculation,
-  addRefId,
-  addStats,
-} from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesHistogramState extends SceneObjectState {
@@ -47,7 +43,7 @@ export class SceneLabelValuesHistogram extends SceneObjectBase<SceneLabelValuesH
         .setData(
           new SceneDataTransformer({
             $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-            transformations: [addRefId, addRateCalculation, addStats],
+            transformations: [addRefId, addStats],
           })
         )
         .setHeaderActions(headerActions(item))

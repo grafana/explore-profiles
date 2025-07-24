@@ -16,11 +16,7 @@ import { getColorByIndex } from '../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../infrastructure/helpers/getSeriesLabelFieldName';
 import { getSeriesStatsValue } from '../infrastructure/helpers/getSeriesStatsValue';
 import { buildTimeSeriesQueryRunner } from '../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import {
-  addRateCalculation,
-  addRefId,
-  addStats,
-} from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 
 interface SceneLabelValuesBarGaugeState extends SceneObjectState {
@@ -42,7 +38,7 @@ export class SceneLabelValuesBarGauge extends SceneObjectBase<SceneLabelValuesBa
         .setData(
           new SceneDataTransformer({
             $data: buildTimeSeriesQueryRunner(item.queryRunnerParams),
-            transformations: [addRefId, addRateCalculation, addStats],
+            transformations: [addRefId, addStats],
           })
         )
         .setHeaderActions(headerActions(item))

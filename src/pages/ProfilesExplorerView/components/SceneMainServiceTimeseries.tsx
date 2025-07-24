@@ -19,11 +19,7 @@ import { getSceneVariableValue } from '../helpers/getSceneVariableValue';
 import { PYROSCOPE_DATA_SOURCE } from '../infrastructure/pyroscope-data-sources';
 import { getProfileMetricLabel } from '../infrastructure/series/helpers/getProfileMetricLabel';
 import { PanelType } from './SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
-import {
-  addRateCalculation,
-  addRefId,
-  addStats,
-} from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import { addRefId, addStats } from './SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from './SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
 
@@ -117,7 +113,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
         !item && supportGroupBy && groupBy && groupBy !== 'all'
           ? new SceneDataTransformer({
               $data: new SceneQueryRunner({ datasource: PYROSCOPE_DATA_SOURCE, queries: [] }),
-              transformations: [addRefId, addRateCalculation, addStats],
+              transformations: [addRefId, addStats],
             })
           : undefined,
     });
