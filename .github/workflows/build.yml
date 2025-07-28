@@ -171,7 +171,7 @@ jobs:
         run: tar cvzf ./logs.tgz ./logs
       - name: Upload logs to GitHub
         if: failure()
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: logs.tgz
           path: ./logs.tgz
