@@ -11,18 +11,21 @@ import React, { useMemo, useState } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
+import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { CodeContainer } from './components/CodeContainer/CodeContainer';
 import { GitHubRepository } from './components/GitHubRepository';
 import { formatFileName } from './domain/formatFileName';
+import { useFunctionVersion } from './domain/FunctionVersionContext';
 import { CommitWithSamples, getCommitsWithSamples } from './domain/getCommitsWithSamples';
 import { getRepositoryDetails } from './domain/getRepositoryDetails';
 import { isGitHubRepository } from './domain/isGitHubRepository';
-import { FunctionDetails } from './domain/types/FunctionDetails';
+import { FunctionDetails, FunctionVersion } from './domain/types/FunctionDetails';
 import { StackTrace } from './domain/types/StackTrace';
 import { useFetchFunctionsDetails } from './infrastructure/useFetchFunctionsDetails';
 import { CommitSelect } from './ui/CommitSelect';
 import { GitHubIntegrationBanner } from './ui/GitHubIntegrationBanner';
 import { InlineSpinner } from './ui/InlineSpinner';
+import { OverrideRepositoryDetailsButton } from './ui/OverrideRepositoryDetailsButton';
 
 interface SceneFunctionDetailsPanelState extends SceneObjectState {}
 
@@ -37,6 +40,9 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
   useSceneFunctionDetailsPanel = (stackTrace: StackTrace, timeRange: TimeRange): DomainHookReturnValue => {
     const dataSourceUid = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
       .value as string;
+    const dataSourceName = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
+      .text as string;
+    const serviceName = getSceneVariableValue(this, 'serviceName');
     const query = useBuildPyroscopeQuery(this, 'filters');
 
     const {
@@ -44,6 +50,9 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       error: fetchFunctionDetailsError,
       isFetching,
     } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace });
+
+    const { saveOverride, deleteOverride, functionVersion, deleteAllOverrides, functionVersionOrigin } =
+      useFunctionVersion(dataSourceUid, serviceName, functionsDetails[0].version);
 
     const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
     const [currentFunctionDetails, setCurrentFunctionDetails] = useState<FunctionDetails>(functionsDetails[0]);
@@ -59,7 +68,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       }
     }
 
-    const isGitHubRepo = isGitHubRepository(currentFunctionDetails?.version?.repository || '');
+    const isGitHubRepo = isGitHubRepository(functionVersion?.repository || '');
     const isGitHubSupported = currentFunctionDetails?.fileName?.endsWith('.go');
     const shouldDisplayGitHubBanner = !isGitHubBannerDismissed && !isGitHubRepo && isGitHubSupported;
 
@@ -76,11 +85,17 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
 
     return {
       data: {
+        serviceName,
+        dataSourceName,
         isLoading: isFetching,
         fetchFunctionDetailsError,
-        functionDetails: currentFunctionDetails,
+        functionDetails: {
+          ...currentFunctionDetails,
+          version: { ...currentFunctionDetails?.version, ...functionVersion },
+        },
+        functionVersionOrigin,
         // TODO: massage in useFetchFunctionsDetails?
-        repository: getRepositoryDetails(isGitHubRepo, currentFunctionDetails?.version),
+        repository: getRepositoryDetails(isGitHubRepo, functionVersion),
         commits,
         selectedCommit,
         isGitHubSupported,
@@ -88,6 +103,15 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
         dataSourceUid,
       },
       actions: {
+        deleteFunctionOverride(datasourceUid: string, serviceName: string) {
+          deleteOverride(datasourceUid, serviceName);
+        },
+        deleteFunctionAllOverrides() {
+          deleteAllOverrides();
+        },
+        saveFunctionDetails(datasourceUid: string, serviceName: string, o: FunctionVersion) {
+          saveOverride(datasourceUid, serviceName, o);
+        },
         selectCommit(selectedCommit: CommitWithSamples) {
           const details = functionsDetails.find(({ commit }) => commit.sha === selectedCommit.sha);
           setCurrentFunctionDetails(details as FunctionDetails);
@@ -204,14 +228,26 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                   data.repository.isGitHub ? (
                     <GitHubRepository enableIntegration={data.isGitHubSupported} repository={data.repository} />
                   ) : (
-                    <TextLink href={data.repository} external>
-                      {data.repository}
+                    <TextLink href={data.repository.url} external>
+                      {data.repository.url}
                     </TextLink>
                   )
                 ) : (
                   '-'
                 )}
               </InlineSpinner>
+              {!data.isLoading && (
+                <OverrideRepositoryDetailsButton
+                  serviceName={data.serviceName}
+                  datasourceName={data.dataSourceName}
+                  datasourceUid={data.dataSourceUid}
+                  version={data.functionDetails.version}
+                  functionVersionOrigin={data.functionVersionOrigin}
+                  saveOverrides={actions.saveFunctionDetails}
+                  deleteAllOverrides={actions.deleteFunctionAllOverrides}
+                  deleteOverride={actions.deleteFunctionOverride}
+                />
+              )}
             </div>
 
             <div className={styles.row} data-testid="row-commit">

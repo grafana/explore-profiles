@@ -1,17 +1,18 @@
 import { DataSourceProxyClientBuilder } from '../../../../../infrastructure/series/http/DataSourceProxyClientBuilder';
 import { PrivateVcsClient } from '../components/GitHubContextProvider/infrastructure/PrivateVcsClient';
-import { FunctionDetails } from '../domain/types/FunctionDetails';
+import { FunctionDetails, FunctionVersion } from '../domain/types/FunctionDetails';
 
 export async function fetchCommitsInfo(
   dataSourceUid: string,
-  functionsDetails: FunctionDetails[]
+  functionsDetails: FunctionDetails[],
+  defaultFunctionVersion: FunctionVersion
 ): Promise<FunctionDetails[]> {
   const privateVcsClient = DataSourceProxyClientBuilder.build(dataSourceUid, PrivateVcsClient);
 
   const commits = functionsDetails.map((details) => ({
-    repositoryUrl: details?.version?.repository || '',
-    gitRef: details?.version?.git_ref || 'HEAD',
-    rootPath: details?.version?.root_path || '',
+    repositoryUrl: details?.version?.repository || defaultFunctionVersion.repository,
+    gitRef: details?.version?.git_ref || defaultFunctionVersion.git_ref,
+    rootPath: details?.version?.root_path || defaultFunctionVersion.root_path,
   }));
 
   // TODO: extract to its own hook and simplify useSceneFunctionDetailsPanel()?
