@@ -14,7 +14,7 @@ services:
     volumes:
       - ./dist:/var/lib/grafana/plugins/grafana-pyroscope-app
     environment:
-      GF_PLUGINS_PREINSTALL_SYNC: grafana-llm-app
+      GF_PLUGINS_PREINSTALL: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
 
