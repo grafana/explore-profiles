@@ -136,6 +136,30 @@ jobs:
       - name: Prepare e2e tests
         run: npm run e2e:ci:prepare
 
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-reports-and-results
+          path: |
+            e2e/test-reports
+            e2e/test-results
+          retention-days: 15
+
+      - name: Collect docker logs on failure
+        if: always()
+        uses: jwalton/gh-docker-logs@v2
+        with:
+          dest: './logs'
+      - name: Tar logs
+        if: always()
+        run: tar cvzf ./logs.tgz ./logs
+      - name: Upload logs to GitHub
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-before.tgz
+          path: ./logs.tgz
+
       # commented to save time during the build (building this action takes ~30s)
       # the next step "Prepare e2e test" takes ~20s, which gives us the time needed
       # uncomment it if you experience flakiness
