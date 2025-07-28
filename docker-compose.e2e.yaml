@@ -4,7 +4,7 @@ services:
     build:
       context: ./.config
       args:
-        grafana_image: ${GRAFANA_IMAGE:-grafana}
+        grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
         grafana_version: ${GRAFANA_VERSION:-12.1.0}
     ports:
       - ${GRAFANA_PORT:-3000}:3000/tcp
@@ -13,7 +13,7 @@ services:
       - ./samples/provisioning:/etc/grafana/provisioning
       - ./samples/dashboards:/var/lib/grafana/dashboards
     environment:
-      GF_PLUGINS_PREINSTALL: grafana-llm-app
+      GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
       GF_FEATURE_TOGGLES_ENABLE: metricsFromProfiles
