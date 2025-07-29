@@ -1,3 +1,12 @@
+# [1.6.0](https://github.com/grafana/profiles-drilldown/compare/v1.5.0...v1.6.0) (2025-07-29)
+
+
+### Features
+
+* **GitHub:** Allow providing GitHub integration details manually ([#538](https://github.com/grafana/profiles-drilldown/issues/538)) ([70a61be](https://github.com/grafana/profiles-drilldown/commit/70a61be46936daa7b354d2671538bb2bc6c55c76))
+
+
+
 # [1.5.0](https://github.com/grafana/profiles-drilldown/compare/v1.4.1...v1.5.0) (2025-07-10)
 
 
