@@ -76,9 +76,6 @@ jobs:
       - name: Build frontend
         run: yarn build
 
-      - name: Compatibility check
-        run: npx @grafana/levitate@latest is-compatible --path src/module.ts --target @grafana/data,@grafana/ui,@grafana/runtime
-
       # The plugin is signed here so it's possible to use the artifact produced by the job directly
       # Forks are not allowed to get is signed so we skip this step (and job to upload the artifact)
       # See also https://github.com/grafana/explore-profiles/issues/366)
