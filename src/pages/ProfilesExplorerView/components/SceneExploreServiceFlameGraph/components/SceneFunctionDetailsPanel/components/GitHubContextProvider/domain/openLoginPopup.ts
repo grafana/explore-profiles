@@ -6,7 +6,7 @@ function stripTrailingSlash(str: string): string {
   return str.endsWith('/') ? str.slice(0, -1) : str;
 }
 
-function buildGitHubAuthURL(clientID: string, nonce: string, callbackUrl?: string): string {
+function buildGitHubAuthURL(clientID: string, nonce: string, callbackUrl: string): string {
   const appSubUrl = stripTrailingSlash(config.appSubUrl || '/');
   const redirectUri = `${window.location.origin}${appSubUrl}${PLUGIN_BASE_URL}${ROUTES.GITHUB_CALLBACK}`;
 
@@ -32,7 +32,7 @@ function buildGitHubAuthURL(clientID: string, nonce: string, callbackUrl?: strin
 const POPUP_WIDTH = 800;
 const POPUP_HEIGHT = 950;
 
-export function openLoginPopup(clientId: string, nonce: string, callbackUrl?: string): Window | null {
+export function openLoginPopup(clientId: string, nonce: string, callbackUrl: string): Window | null {
   const oauthURL = buildGitHubAuthURL(clientId, nonce, callbackUrl);
 
   const { top } = window;
