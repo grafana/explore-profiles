@@ -38,8 +38,8 @@ export async function githubLogin(
 
   // No session cookie exists, begin the complete login flow.
   try {
-    const clientId = await vcsClient.githubApp();
-    setExternalWindow(openLoginPopup(clientId, nonce));
+    const { clientID: clientId, callbackURL: callbackUrl } = await vcsClient.githubApp();
+    setExternalWindow(openLoginPopup(clientId, nonce, callbackUrl));
   } catch (error) {
     displayError(error as Error, ['Failed to start login flow.', (error as Error).message]);
   }
