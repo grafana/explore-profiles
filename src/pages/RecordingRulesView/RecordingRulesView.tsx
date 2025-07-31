@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { Column, EmptyState, InteractiveTable, TagList, Text, useStyles2 } from '@grafana/ui';
+import { Column, EmptyState, Icon, InteractiveTable, TagList, Text, Tooltip, useStyles2 } from '@grafana/ui';
 import { BackButton } from '@shared/components/Common/BackButton';
 import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -86,7 +86,15 @@ export default function RecordingRulesView() {
       disableGrow: true,
       cell: (props) => {
         const rule: RecordingRuleViewModel = props.row.original;
-        return <DeleteRecordingRuleButton rule={rule} confirm={() => actions.removeRecordingRule(rule)} />;
+        if (rule.readonly) {
+          return (
+            <Tooltip content="This rule is provisioned with tenant settings and cannot be deleted.">
+              <Icon name="info-circle" />
+            </Tooltip>
+          );
+        } else {
+          return <DeleteRecordingRuleButton rule={rule} confirm={() => actions.removeRecordingRule(rule)} />;
+        }
       },
     },
   ];

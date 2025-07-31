@@ -6,4 +6,5 @@ export type RecordingRuleViewModel = {
   matchers: string[];
   groupBy: string[];
   functionName?: string;
+  readonly: boolean;
 };
