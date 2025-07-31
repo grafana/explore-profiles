@@ -23,7 +23,7 @@ describe('openLoginPopup(clientId, nonce)', () => {
       },
     });
 
-    openLoginPopup('client-42', 'crypto-nonce');
+    openLoginPopup('client-42', 'crypto-nonce', '');
 
     expect(mockOpen.mock.calls.length).toBe(1);
     const args = mockOpen.mock.calls[0];

@@ -1,3 +1,5 @@
+import { GithubAppResponse } from '@shared/pyroscope-api/vcs/v1/vcs_pb';
+
 import { DataSourceProxyClient } from '../../../../../infrastructure/series/http/DataSourceProxyClient';
 
 type GithubLoginResponse = {
@@ -18,8 +20,7 @@ export class VcsClient extends DataSourceProxyClient {
     return json;
   }
 
-  // TODO: return json + rename?
-  async githubApp(): Promise<string> {
+  async githubApp(): Promise<GithubAppResponse> {
     const response = await this.fetch('/vcs.v1.VCSService/GithubApp', {
       method: 'POST',
       body: JSON.stringify({}),
@@ -27,6 +28,6 @@ export class VcsClient extends DataSourceProxyClient {
 
     const json = await response.json();
 
-    return json.clientID;
+    return json;
   }
 }

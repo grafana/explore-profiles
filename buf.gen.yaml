@@ -12,7 +12,7 @@ inputs:
   # Build a subset of the Pyroscope protobuf API
   - git_repo: https://github.com/grafana/pyroscope.git
     # Update this to any commit, which is merged in Pyroscope main
-    ref: weekly-f128-88b215206
+    ref: weekly-f129-6d0f4264a
     subdir: api
     paths:
       - adhocprofiles/
