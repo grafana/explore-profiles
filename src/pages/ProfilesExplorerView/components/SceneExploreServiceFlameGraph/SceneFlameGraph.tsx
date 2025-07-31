@@ -182,8 +182,14 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const { settings } = useFetchPluginSettings();
 
-    const [recordingRulesModelOpen, setIsRecordingRulesModalOpen] = useState(false);
-    const recordingRulesMenu = useCreateRecordingRulesMenu(() => setIsRecordingRulesModalOpen(true));
+    const [recordingRulesModalState, setRecordingRulesModalState] = useState<{
+      isOpen: boolean;
+      functionName?: string;
+    }>({ isOpen: false });
+
+    const recordingRulesMenu = useCreateRecordingRulesMenu((functionName?: string) => {
+      setRecordingRulesModalState({ isOpen: true, functionName });
+    });
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -272,10 +278,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
         <data.recordingRules.modal.Component
           model={data.recordingRules.modal}
-          isModalOpen={recordingRulesModelOpen}
-          onDismiss={() => setIsRecordingRulesModalOpen(false)}
+          isModalOpen={recordingRulesModalState.isOpen}
+          functionName={recordingRulesModalState.functionName}
+          onDismiss={() => setRecordingRulesModalState({ isOpen: false })}
           onCreated={() => {
-            setIsRecordingRulesModalOpen(false);
+            setRecordingRulesModalState({ isOpen: false });
           }}
         />
       </div>

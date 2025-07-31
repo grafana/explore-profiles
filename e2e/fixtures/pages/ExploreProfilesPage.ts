@@ -101,9 +101,16 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByLabel('Metric name', { type: 'input' });
   }
 
-  async fillRecordingRuleForm(options: { metricName?: string }) {
+  get recordingRulesModalFunctionName() {
+    return this.getByLabel('Function name', { type: 'input' });
+  }
+
+  async fillRecordingRuleForm(options: { metricName?: string; functionName?: string }) {
     if (options.metricName) {
       await this.recordingRulesModalMetricName.fill(options.metricName);
+    }
+    if (options.functionName) {
+      await this.recordingRulesModalFunctionName.fill(options.functionName);
     }
   }
 
@@ -132,10 +139,15 @@ export class ExploreProfilesPage extends PyroscopePage {
     await this.clickOnViewRecordingRulesViewRecordingRules();
   }
 
-  async assertRecordingRuleInTable(metricName: string) {
+  async assertRecordingRuleInTable(metricName: string, functionName: string) {
     const table = this.getRecordingRulesTable();
     const row = table.locator('tr').filter({ hasText: metricName });
     await expect(row).toBeVisible();
+    if (functionName) {
+      await expect(row).toContainText(functionName);
+    } else {
+      await expect(row).toContainText('Total (all functions)');
+    }
   }
 
   getRecordingRulesTable() {
