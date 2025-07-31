@@ -77,11 +77,15 @@ test.describe('Recording rules', () => {
     // Create rule with specific function name
     await exploreProfilesPage.fillRecordingRuleForm({
       metricName: 'test_specific_function_metric',
+      functionName: 'test_specific_function_name',
     });
     await exploreProfilesPage.submitRecordingRuleForm();
 
     // Go to recording rules page and verify the function name is displayed
     await exploreProfilesPage.goToRecordingRulesPage();
-    await exploreProfilesPage.assertRecordingRuleInTable('test_specific_function_metric');
+    await exploreProfilesPage.assertRecordingRuleInTable(
+      'test_specific_function_metric',
+      'test_specific_function_name'
+    );
   });
 });

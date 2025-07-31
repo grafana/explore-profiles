@@ -47,6 +47,21 @@ export default function RecordingRulesView() {
       sortType: 'alphanumeric',
     },
     {
+      id: 'functionName',
+      header: 'Function Name',
+      sortType: 'alphanumeric',
+      cell: (props) => {
+        const rule: RecordingRuleViewModel = props.row.original;
+        return (
+          rule.functionName || (
+            <Text element="span" color="secondary">
+              Total (all functions)
+            </Text>
+          )
+        );
+      },
+    },
+    {
       id: 'groupBy',
       header: 'Labels',
       cell: (props) => {
