@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file types/v1/types.proto.
  */
 export const file_types_v1_types: GenFile = /*@__PURE__*/
-  fileDesc("ChR0eXBlcy92MS90eXBlcy5wcm90bxIIdHlwZXMudjEiKAoJTGFiZWxQYWlyEgwKBG5hbWUYASABKAkSDQoFdmFsdWUYAiABKAkiewoLUHJvZmlsZVR5cGUSCgoCSUQYASABKAkSDAoEbmFtZRgCIAEoCRITCgtzYW1wbGVfdHlwZRgEIAEoCRITCgtzYW1wbGVfdW5pdBgFIAEoCRITCgtwZXJpb2RfdHlwZRgGIAEoCRITCgtwZXJpb2RfdW5pdBgHIAEoCSItCgZMYWJlbHMSIwoGbGFiZWxzGAEgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyIk4KBlNlcmllcxIjCgZsYWJlbHMYASADKAsyEy50eXBlcy52MS5MYWJlbFBhaXISHwoGcG9pbnRzGAIgAygLMg8udHlwZXMudjEuUG9pbnQiKQoFUG9pbnQSDQoFdmFsdWUYASABKAESEQoJdGltZXN0YW1wGAIgASgDIlAKEkxhYmVsVmFsdWVzUmVxdWVzdBIMCgRuYW1lGAEgASgJEhAKCG1hdGNoZXJzGAIgAygJEg0KBXN0YXJ0GAMgASgDEgsKA2VuZBgEIAEoAyIkChNMYWJlbFZhbHVlc1Jlc3BvbnNlEg0KBW5hbWVzGAEgAygJIkEKEUxhYmVsTmFtZXNSZXF1ZXN0EhAKCG1hdGNoZXJzGAEgAygJEg0KBXN0YXJ0GAIgASgDEgsKA2VuZBgDIAEoAyIjChJMYWJlbE5hbWVzUmVzcG9uc2USDQoFbmFtZXMYASADKAkikQEKCUJsb2NrSW5mbxIMCgR1bGlkGAEgASgJEhAKCG1pbl90aW1lGAIgASgDEhAKCG1heF90aW1lGAMgASgDEi0KCmNvbXBhY3Rpb24YBCABKAsyGS50eXBlcy52MS5CbG9ja0NvbXBhY3Rpb24SIwoGbGFiZWxzGAUgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyIkIKD0Jsb2NrQ29tcGFjdGlvbhINCgVsZXZlbBgBIAEoBRIPCgdzb3VyY2VzGAIgAygJEg8KB3BhcmVudHMYAyADKAkiXAoSU3RhY2tUcmFjZVNlbGVjdG9yEiUKCWNhbGxfc2l0ZRgBIAMoCzISLnR5cGVzLnYxLkxvY2F0aW9uEh8KBmdvX3BnbxgCIAEoCzIPLnR5cGVzLnYxLkdvUEdPIhgKCExvY2F0aW9uEgwKBG5hbWUYASABKAkiOgoFR29QR08SFgoOa2VlcF9sb2NhdGlvbnMYASABKA0SGQoRYWdncmVnYXRlX2NhbGxlZXMYAiABKAgiGAoWR2V0UHJvZmlsZVN0YXRzUmVxdWVzdCJqChdHZXRQcm9maWxlU3RhdHNSZXNwb25zZRIVCg1kYXRhX2luZ2VzdGVkGAEgASgIEhsKE29sZGVzdF9wcm9maWxlX3RpbWUYAiABKAMSGwoTbmV3ZXN0X3Byb2ZpbGVfdGltZRgDIAEoAyprChlUaW1lU2VyaWVzQWdncmVnYXRpb25UeXBlEiQKIFRJTUVfU0VSSUVTX0FHR1JFR0FUSU9OX1RZUEVfU1VNEAASKAokVElNRV9TRVJJRVNfQUdHUkVHQVRJT05fVFlQRV9BVkVSQUdFEAFiBnByb3RvMw");
+  fileDesc("ChR0eXBlcy92MS90eXBlcy5wcm90bxIIdHlwZXMudjEiKAoJTGFiZWxQYWlyEgwKBG5hbWUYASABKAkSDQoFdmFsdWUYAiABKAkiewoLUHJvZmlsZVR5cGUSCgoCSUQYASABKAkSDAoEbmFtZRgCIAEoCRITCgtzYW1wbGVfdHlwZRgEIAEoCRITCgtzYW1wbGVfdW5pdBgFIAEoCRITCgtwZXJpb2RfdHlwZRgGIAEoCRITCgtwZXJpb2RfdW5pdBgHIAEoCSItCgZMYWJlbHMSIwoGbGFiZWxzGAEgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyIk4KBlNlcmllcxIjCgZsYWJlbHMYASADKAsyEy50eXBlcy52MS5MYWJlbFBhaXISHwoGcG9pbnRzGAIgAygLMg8udHlwZXMudjEuUG9pbnQiWwoFUG9pbnQSDQoFdmFsdWUYASABKAESEQoJdGltZXN0YW1wGAIgASgDEjAKC2Fubm90YXRpb25zGAMgAygLMhsudHlwZXMudjEuUHJvZmlsZUFubm90YXRpb24iLwoRUHJvZmlsZUFubm90YXRpb24SCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJIlAKEkxhYmVsVmFsdWVzUmVxdWVzdBIMCgRuYW1lGAEgASgJEhAKCG1hdGNoZXJzGAIgAygJEg0KBXN0YXJ0GAMgASgDEgsKA2VuZBgEIAEoAyIkChNMYWJlbFZhbHVlc1Jlc3BvbnNlEg0KBW5hbWVzGAEgAygJIkEKEUxhYmVsTmFtZXNSZXF1ZXN0EhAKCG1hdGNoZXJzGAEgAygJEg0KBXN0YXJ0GAIgASgDEgsKA2VuZBgDIAEoAyIjChJMYWJlbE5hbWVzUmVzcG9uc2USDQoFbmFtZXMYASADKAkikQEKCUJsb2NrSW5mbxIMCgR1bGlkGAEgASgJEhAKCG1pbl90aW1lGAIgASgDEhAKCG1heF90aW1lGAMgASgDEi0KCmNvbXBhY3Rpb24YBCABKAsyGS50eXBlcy52MS5CbG9ja0NvbXBhY3Rpb24SIwoGbGFiZWxzGAUgAygLMhMudHlwZXMudjEuTGFiZWxQYWlyIkIKD0Jsb2NrQ29tcGFjdGlvbhINCgVsZXZlbBgBIAEoBRIPCgdzb3VyY2VzGAIgAygJEg8KB3BhcmVudHMYAyADKAkiXAoSU3RhY2tUcmFjZVNlbGVjdG9yEiUKCWNhbGxfc2l0ZRgBIAMoCzISLnR5cGVzLnYxLkxvY2F0aW9uEh8KBmdvX3BnbxgCIAEoCzIPLnR5cGVzLnYxLkdvUEdPIhgKCExvY2F0aW9uEgwKBG5hbWUYASABKAkiOgoFR29QR08SFgoOa2VlcF9sb2NhdGlvbnMYASABKA0SGQoRYWdncmVnYXRlX2NhbGxlZXMYAiABKAgiGAoWR2V0UHJvZmlsZVN0YXRzUmVxdWVzdCJqChdHZXRQcm9maWxlU3RhdHNSZXNwb25zZRIVCg1kYXRhX2luZ2VzdGVkGAEgASgIEhsKE29sZGVzdF9wcm9maWxlX3RpbWUYAiABKAMSGwoTbmV3ZXN0X3Byb2ZpbGVfdGltZRgDIAEoAyprChlUaW1lU2VyaWVzQWdncmVnYXRpb25UeXBlEiQKIFRJTUVfU0VSSUVTX0FHR1JFR0FUSU9OX1RZUEVfU1VNEAASKAokVElNRV9TRVJJRVNfQUdHUkVHQVRJT05fVFlQRV9BVkVSQUdFEAFiBnByb3RvMw");
 
 /**
  * @generated from message types.v1.LabelPair
@@ -132,6 +132,11 @@ export type Point = Message<"types.v1.Point"> & {
    * @generated from field: int64 timestamp = 2;
    */
   timestamp: bigint;
+
+  /**
+   * @generated from field: repeated types.v1.ProfileAnnotation annotations = 3;
+   */
+  annotations: ProfileAnnotation[];
 };
 
 /**
@@ -140,6 +145,28 @@ export type Point = Message<"types.v1.Point"> & {
  */
 export const PointSchema: GenMessage<Point> = /*@__PURE__*/
   messageDesc(file_types_v1_types, 4);
+
+/**
+ * @generated from message types.v1.ProfileAnnotation
+ */
+export type ProfileAnnotation = Message<"types.v1.ProfileAnnotation"> & {
+  /**
+   * @generated from field: string key = 1;
+   */
+  key: string;
+
+  /**
+   * @generated from field: string value = 2;
+   */
+  value: string;
+};
+
+/**
+ * Describes the message types.v1.ProfileAnnotation.
+ * Use `create(ProfileAnnotationSchema)` to create a new message.
+ */
+export const ProfileAnnotationSchema: GenMessage<ProfileAnnotation> = /*@__PURE__*/
+  messageDesc(file_types_v1_types, 5);
 
 /**
  * @generated from message types.v1.LabelValuesRequest
@@ -171,7 +198,7 @@ export type LabelValuesRequest = Message<"types.v1.LabelValuesRequest"> & {
  * Use `create(LabelValuesRequestSchema)` to create a new message.
  */
 export const LabelValuesRequestSchema: GenMessage<LabelValuesRequest> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 5);
+  messageDesc(file_types_v1_types, 6);
 
 /**
  * @generated from message types.v1.LabelValuesResponse
@@ -188,7 +215,7 @@ export type LabelValuesResponse = Message<"types.v1.LabelValuesResponse"> & {
  * Use `create(LabelValuesResponseSchema)` to create a new message.
  */
 export const LabelValuesResponseSchema: GenMessage<LabelValuesResponse> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 6);
+  messageDesc(file_types_v1_types, 7);
 
 /**
  * @generated from message types.v1.LabelNamesRequest
@@ -215,7 +242,7 @@ export type LabelNamesRequest = Message<"types.v1.LabelNamesRequest"> & {
  * Use `create(LabelNamesRequestSchema)` to create a new message.
  */
 export const LabelNamesRequestSchema: GenMessage<LabelNamesRequest> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 7);
+  messageDesc(file_types_v1_types, 8);
 
 /**
  * @generated from message types.v1.LabelNamesResponse
@@ -232,7 +259,7 @@ export type LabelNamesResponse = Message<"types.v1.LabelNamesResponse"> & {
  * Use `create(LabelNamesResponseSchema)` to create a new message.
  */
 export const LabelNamesResponseSchema: GenMessage<LabelNamesResponse> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 8);
+  messageDesc(file_types_v1_types, 9);
 
 /**
  * @generated from message types.v1.BlockInfo
@@ -269,7 +296,7 @@ export type BlockInfo = Message<"types.v1.BlockInfo"> & {
  * Use `create(BlockInfoSchema)` to create a new message.
  */
 export const BlockInfoSchema: GenMessage<BlockInfo> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 9);
+  messageDesc(file_types_v1_types, 10);
 
 /**
  * @generated from message types.v1.BlockCompaction
@@ -296,7 +323,7 @@ export type BlockCompaction = Message<"types.v1.BlockCompaction"> & {
  * Use `create(BlockCompactionSchema)` to create a new message.
  */
 export const BlockCompactionSchema: GenMessage<BlockCompaction> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 10);
+  messageDesc(file_types_v1_types, 11);
 
 /**
  * StackTraceSelector is used for filtering stack traces by locations.
@@ -327,7 +354,7 @@ export type StackTraceSelector = Message<"types.v1.StackTraceSelector"> & {
  * Use `create(StackTraceSelectorSchema)` to create a new message.
  */
 export const StackTraceSelectorSchema: GenMessage<StackTraceSelector> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 11);
+  messageDesc(file_types_v1_types, 12);
 
 /**
  * @generated from message types.v1.Location
@@ -344,7 +371,7 @@ export type Location = Message<"types.v1.Location"> & {
  * Use `create(LocationSchema)` to create a new message.
  */
 export const LocationSchema: GenMessage<Location> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 12);
+  messageDesc(file_types_v1_types, 13);
 
 /**
  * @generated from message types.v1.GoPGO
@@ -371,7 +398,7 @@ export type GoPGO = Message<"types.v1.GoPGO"> & {
  * Use `create(GoPGOSchema)` to create a new message.
  */
 export const GoPGOSchema: GenMessage<GoPGO> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 13);
+  messageDesc(file_types_v1_types, 14);
 
 /**
  * @generated from message types.v1.GetProfileStatsRequest
@@ -384,7 +411,7 @@ export type GetProfileStatsRequest = Message<"types.v1.GetProfileStatsRequest"> 
  * Use `create(GetProfileStatsRequestSchema)` to create a new message.
  */
 export const GetProfileStatsRequestSchema: GenMessage<GetProfileStatsRequest> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 14);
+  messageDesc(file_types_v1_types, 15);
 
 /**
  * @generated from message types.v1.GetProfileStatsResponse
@@ -417,7 +444,7 @@ export type GetProfileStatsResponse = Message<"types.v1.GetProfileStatsResponse"
  * Use `create(GetProfileStatsResponseSchema)` to create a new message.
  */
 export const GetProfileStatsResponseSchema: GenMessage<GetProfileStatsResponse> = /*@__PURE__*/
-  messageDesc(file_types_v1_types, 15);
+  messageDesc(file_types_v1_types, 16);
 
 /**
  * @generated from enum types.v1.TimeSeriesAggregationType

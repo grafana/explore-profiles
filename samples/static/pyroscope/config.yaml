@@ -7,3 +7,7 @@ storage:
 limits:
   max_query_length: 0
   max_query_lookback: 0
+
+tenant_settings:
+  recording_rules:
+    enabled: true
