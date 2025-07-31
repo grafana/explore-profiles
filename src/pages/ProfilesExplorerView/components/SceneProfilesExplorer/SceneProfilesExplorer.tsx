@@ -420,7 +420,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const { explorationType, controls, body, $variables, dataSourceUid } = data;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    const [recordingRulesModelOpen, setIsRecordingRulesModalOpen] = useState(false);
+    const [recordingRulesModalState, setRecordingRulesModalState] = useState<{
+      isOpen: boolean;
+      functionName?: string;
+    }>({ isOpen: false });
     const { createRecordingRuleModal } = model.useState();
 
     return (
@@ -433,7 +436,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             $variables={$variables}
             onChangeExplorationType={actions.onChangeExplorationType}
             onCreateRecordingRule={() => {
-              setIsRecordingRulesModalOpen(true);
+              setRecordingRulesModalState({ isOpen: true });
             }}
           />
 
@@ -443,10 +446,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
           <SceneCreateRecordingRuleModal.Component
             model={createRecordingRuleModal}
-            isModalOpen={recordingRulesModelOpen}
-            onDismiss={() => setIsRecordingRulesModalOpen(false)}
+            isModalOpen={recordingRulesModalState.isOpen}
+            functionName={recordingRulesModalState.functionName}
+            onDismiss={() => setRecordingRulesModalState({ isOpen: false })}
             onCreated={() => {
-              setIsRecordingRulesModalOpen(false);
+              setRecordingRulesModalState({ isOpen: false });
             }}
           />
         </GitHubContextProvider>

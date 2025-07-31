@@ -5,4 +5,6 @@ export type RecordingRuleViewModel = {
   profileType: string;
   matchers: string[];
   groupBy: string[];
+  functionName?: string;
+  readonly: boolean;
 };

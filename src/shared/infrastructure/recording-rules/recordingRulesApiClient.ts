@@ -1,7 +1,11 @@
+import { create } from '@bufbuild/protobuf';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import {
   ListRecordingRulesResponse,
+  MetricType,
   RecordingRule,
+  StacktraceFilterFunctionNameSchema,
+  StacktraceFilterSchema,
   UpsertRecordingRuleRequest,
 } from '@shared/pyroscope-api/settings/v1/recording_rules_pb';
 import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
@@ -14,6 +18,9 @@ function mapRuleToRecordingRuleViewModel(rule: RecordingRule): RecordingRuleView
       break;
     }
   }
+
+  const functionName = rule.stacktraceFilter?.functionName?.functionName;
+
   return {
     id: rule.id,
     metricName: rule.metricName,
@@ -21,6 +28,8 @@ function mapRuleToRecordingRuleViewModel(rule: RecordingRule): RecordingRuleView
     profileType: rule.profileType,
     matchers: rule.matchers,
     groupBy: rule.groupBy || [],
+    functionName,
+    readonly: rule.provisioned,
   };
 }
 
@@ -43,18 +52,30 @@ class RecordingRulesApiClient extends ApiClient {
   }
 
   async create(rule: RecordingRuleViewModel): Promise<void> {
+    let requestBody: UpsertRecordingRuleRequest = {
+      metricName: rule.metricName,
+      matchers: [
+        `{ service_name="${rule.serviceName}" }`,
+        `{ __profile_type__="${rule.profileType}"}`,
+        ...(rule.matchers || []),
+      ],
+      groupBy: rule.groupBy || [],
+    } as UpsertRecordingRuleRequest;
+
+    // Add stacktrace filter if function name is provided
+    if (rule.functionName) {
+      requestBody.stacktraceFilter = create(StacktraceFilterSchema, {
+        functionName: create(StacktraceFilterFunctionNameSchema, {
+          functionName: rule.functionName,
+          metricType: MetricType.TOTAL,
+        }),
+      });
+    }
+
     return super
       .fetch('/settings.v1.RecordingRulesService/UpsertRecordingRule', {
         method: 'POST',
-        body: JSON.stringify({
-          metricName: rule.metricName,
-          matchers: [
-            `{ service_name="${rule.serviceName}" }`,
-            `{ __profile_type__="${rule.profileType}"}`,
-            ...(rule.matchers || []),
-          ],
-          groupBy: rule.groupBy || [],
-        } as UpsertRecordingRuleRequest),
+        body: JSON.stringify(requestBody),
       })
       .then((response) => response.json());
   }
