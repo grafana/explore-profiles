@@ -1,3 +1,14 @@
+# [1.7.0](https://github.com/grafana/profiles-drilldown/compare/v1.6.0...v1.7.0) (2025-07-31)
+
+
+### Features
+
+* Propagate the redirect_uri for GitHub logins ([#541](https://github.com/grafana/profiles-drilldown/issues/541)) ([d0ae06c](https://github.com/grafana/profiles-drilldown/commit/d0ae06c4a90cbfc5b6e1d1764b5ea196e3029f7d))
+* **Recording Rules:** Pass function name to recording rules ([#543](https://github.com/grafana/profiles-drilldown/issues/543)) ([9000fd4](https://github.com/grafana/profiles-drilldown/commit/9000fd4d478dbac7adb59d7d07f421be570d58ec))
+* Support for provisioned recording rules ([#549](https://github.com/grafana/profiles-drilldown/issues/549)) ([dc5fea3](https://github.com/grafana/profiles-drilldown/commit/dc5fea349e8198dce53f32e27ee124abc42bb9e7))
+
+
+
 # [1.6.0](https://github.com/grafana/profiles-drilldown/compare/v1.5.0...v1.6.0) (2025-07-29)
 
 
