@@ -1516,6 +1516,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@grafana/assistant@npm:^0.0.12":
+  version: 0.0.12
+  resolution: "@grafana/assistant@npm:0.0.12"
+  peerDependencies:
+    "@grafana/data": ">=12.1.0"
+    "@grafana/runtime": ">=12.1.0"
+    "@grafana/scenes": ">=5.41.0"
+    "@grafana/ui": ">=12.1.0"
+    react: ">=18.0.0"
+    rxjs: ">=7.0.0"
+  checksum: 10/ebf714e025bc919149fc88b41bf0f9c89805285488324233149d61749a812e7c1c65934e42863f739d87f731af3d8c8ccfa783701587b03d1e6ee844a0a7e7a3
+  languageName: node
+  linkType: hard
+
 "@grafana/data@npm:12.1.0":
   version: 12.1.0
   resolution: "@grafana/data@npm:12.1.0"
@@ -1646,27 +1660,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/flamegraph@npm:12.1.0":
-  version: 12.1.0
-  resolution: "@grafana/flamegraph@npm:12.1.0"
-  dependencies:
-    "@emotion/css": "npm:11.13.5"
-    "@grafana/data": "npm:12.1.0"
-    "@grafana/ui": "npm:12.1.0"
-    "@leeoniya/ufuzzy": "npm:1.0.18"
-    d3: "npm:^7.8.5"
-    lodash: "npm:4.17.21"
-    react: "npm:^18.0.0"
-    react-use: "npm:17.6.0"
-    react-virtualized-auto-sizer: "npm:1.0.25"
-    tinycolor2: "npm:1.6.0"
-    tslib: "npm:2.8.1"
-  peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  checksum: 10/692d9bef0dba4c74cf159d2dcecf2effbedbe5b5aafe1bb4d9d9ad7ff872d1f4086011566e79b68d9767158d24bfc962e5547f8186e8c81246330079c531abc8
+"@grafana/flamegraph@link:/Users/ifrost/projects/grafana/packages/grafana-flamegraph::locator=pyroscope-app-plugin%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@grafana/flamegraph@link:/Users/ifrost/projects/grafana/packages/grafana-flamegraph::locator=pyroscope-app-plugin%40workspace%3A."
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@grafana/i18n@npm:12.1.0":
   version: 12.1.0
@@ -6274,7 +6272,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"d3@npm:7.9.0, d3@npm:^7.8.5":
+"d3@npm:7.9.0":
   version: 7.9.0
   resolution: "d3@npm:7.9.0"
   dependencies:
@@ -11679,11 +11677,12 @@ __metadata:
     "@connectrpc/connect-web": "npm:^2.0.1"
     "@connectrpc/protoc-gen-connect-query": "npm:^2.0.1"
     "@emotion/css": "npm:11.10.6"
+    "@grafana/assistant": "npm:^0.0.12"
     "@grafana/data": "npm:12.1.0"
     "@grafana/e2e-selectors": "npm:^10.0.0"
     "@grafana/eslint-config": "npm:^8.0.0"
     "@grafana/faro-web-sdk": "npm:^1.10.0"
-    "@grafana/flamegraph": "npm:12.1.0"
+    "@grafana/flamegraph": "link:/Users/ifrost/projects/grafana/packages/grafana-flamegraph"
     "@grafana/llm": "npm:0.16.0"
     "@grafana/runtime": "npm:12.1.0"
     "@grafana/scenes": "npm:^4.22.0"
@@ -12623,16 +12622,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtualized-auto-sizer@npm:1.0.25":
-  version: 1.0.25
-  resolution: "react-virtualized-auto-sizer@npm:1.0.25"
-  peerDependencies:
-    react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
-    react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/43678a904019f0413a3c649b5b64ea51263283120c991b285077b5075cf2ea564571f6d48b3a396b588d500d45820d1c98989cb7091e2a009e73e4faa7da9d20
-  languageName: node
-  linkType: hard
-
 "react-virtualized-auto-sizer@npm:1.0.7":
   version: 1.0.7
   resolution: "react-virtualized-auto-sizer@npm:1.0.7"
@@ -12662,15 +12651,6 @@ __metadata:
   dependencies:
     loose-envify: "npm:^1.1.0"
   checksum: 10/b9214a9bd79e99d08de55f8bef2b7fc8c39630be97c4e29d7be173d14a9a10670b5325e94485f74cd8bff4966ef3c78ee53c79a7b0b9b70cba20aa8973acc694
-  languageName: node
-  linkType: hard
-
-"react@npm:^18.0.0":
-  version: 18.3.1
-  resolution: "react@npm:18.3.1"
-  dependencies:
-    loose-envify: "npm:^1.1.0"
-  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
   languageName: node
   linkType: hard
 
