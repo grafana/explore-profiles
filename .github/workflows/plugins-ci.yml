@@ -32,5 +32,8 @@ jobs:
 
       run-playwright: false
       run-playwright-docker: true
+      run-playwright-with-skip-grafana-dev-image: true
+      upload-playwright-artifacts: true
+      run-playwright-with-grafana-dependency: '>=12.1.0'
       playwright-config: e2e/config/playwright.config.ci.ts
       playwright-docker-compose-file: docker-compose.e2e.yaml
