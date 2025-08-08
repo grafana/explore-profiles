@@ -2,7 +2,7 @@ name: (Old) CI
 
 # Disable temporarily to test plugins-ci for now
 on:
-    workflow_dispatch:
+  workflow_dispatch:
 #  push:
 #    branches:
 #      - main
