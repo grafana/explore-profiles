@@ -37,5 +37,22 @@ services:
       GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET
       GITHUB_SESSION_SECRET: $GITHUB_SESSION_SECRET
 
+  # e2e testing
+  playwright:
+    network_mode: host
+    container_name: 'playwright-e2e'
+    build:
+      dockerfile: .Dockerfile.plugin.e2e
+      context: .
+    volumes:
+      - ./e2e:/app/e2e
+      - ./src:/app/src
+    command: ${PLAYWRIGHT_ARGS:-}
+    profiles: [ playwright ]
+    environment:
+      GRAFANA_PORT: ${GRAFANA_PORT:-3000}
+      GRAFANA_IMAGE: ${GRAFANA_VERSION:-grafana-enterprise}
+      GRAFANA_VERSION: ${GRAFANA_VERSION:-11.6.4}
+
 volumes:
   qdrant-storage:
