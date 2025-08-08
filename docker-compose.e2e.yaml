@@ -42,7 +42,7 @@ services:
     network_mode: host
     container_name: 'playwright-e2e'
     build:
-      dockerfile: .Dockerfile.plugin.e2e
+      dockerfile: Dockerfile.plugin.e2e
       context: .
     volumes:
       - ./e2e:/app/e2e
