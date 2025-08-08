@@ -30,6 +30,5 @@ jobs:
       grafana-cloud-deployment-type: provisioned
       argo-workflow-slack-channel: '#proj-profilesdrilldown-cd'
 
-      run-playwright-docker: true
       playwright-config: e2e/config/playwright.config.ci.ts
       playwright-docker-compose-file: docker-compose.e2e.yaml
