@@ -19,7 +19,6 @@ jobs:
       id-token: write
       attestations: write
     with:
-      E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
       # Checkout/build PR or main branch, depending on event
       branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
 
