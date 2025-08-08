@@ -46,11 +46,7 @@ services:
       - ./e2e:/app/e2e
       - ./src:/app/src
     command: ${PLAYWRIGHT_ARGS:-}
-    profiles: [ playwright ]
-    environment:
-      GRAFANA_PORT: ${GRAFANA_PORT:-3000}
-      GRAFANA_IMAGE: ${GRAFANA_VERSION:-grafana-enterprise}
-      GRAFANA_VERSION: ${GRAFANA_VERSION:-12.1.0}
+    profiles: [playwright]
 
 volumes:
   qdrant-storage:
