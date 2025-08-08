@@ -5,7 +5,7 @@ services:
       context: ./.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
-        grafana_version: ${GRAFANA_VERSION:-12.0.0}
+        grafana_version: 12.1.0
     ports:
       - ${GRAFANA_PORT:-3000}:3000/tcp
     volumes:
@@ -13,8 +13,6 @@ services:
       - ./samples/provisioning:/etc/grafana/provisioning
       - ./samples/dashboards:/var/lib/grafana/dashboards
     environment:
-      # prevents a Grafana startup error in case a newer plugin version (set in package.json) is used compared to the latest one published in the catalog
-      GF_PLUGINS_PREINSTALL_DISABLED: true
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
@@ -52,7 +50,7 @@ services:
     environment:
       GRAFANA_PORT: ${GRAFANA_PORT:-3000}
       GRAFANA_IMAGE: ${GRAFANA_VERSION:-grafana-enterprise}
-      GRAFANA_VERSION: ${GRAFANA_VERSION:-11.6.4}
+      GRAFANA_VERSION: ${GRAFANA_VERSION:-12.1.0}
 
 volumes:
   qdrant-storage:
