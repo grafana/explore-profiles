@@ -23,12 +23,15 @@ jobs:
       branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
 
       # When pushing to "main", publish and deploy to "dev" (CD). For PRs, skip publishing and deploying (run CI only)
-      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev,ops' || 'none' }}
+      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev' || 'none' }}
       # Disabled for testing purposes to see if created config looks good. Uncomment when ready to deploy.
       #auto-merge-environments: dev,ops
       # Deploy provisioned plugin to Grafana Cloud
       grafana-cloud-deployment-type: provisioned
       argo-workflow-slack-channel: '#proj-profilesdrilldown-cd'
+
+      # Add the git head ref sha to the plugin version as suffix (`+abcdef`). This is required for CD builds.
+      plugin-version-suffix: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
 
       run-playwright: false
       run-playwright-docker: true
