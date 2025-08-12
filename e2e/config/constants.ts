@@ -14,7 +14,7 @@ function getEnvVars(): EnvVars {
   }, {} as EnvVars);
 
   if (!envVars.E2E_BASE_URL) {
-    throw new Error('Missing E2E_BASE_URL environment variable!');
+    envVars.E2E_BASE_URL = 'http://localhost:3000';
   }
 
   return envVars;
