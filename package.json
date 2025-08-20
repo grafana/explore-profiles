@@ -32,8 +32,7 @@
     "tdd": "jest --watch --onlyChanged",
     "test": "jest --watch --onlyChanged",
     "test:ci": "jest --passWithNoTests --maxWorkers 4 --coverage",
-    "typecheck": "tsc --noEmit",
-    "version": "standard-changelog && git add CHANGELOG.md"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.2.3",
@@ -130,7 +129,6 @@
     "replace-in-file-webpack-plugin": "^1.0.6",
     "sass": "1.63.2",
     "sass-loader": "13.3.1",
-    "standard-changelog": "^6.0.0",
     "style-loader": "3.3.3",
     "swc-loader": "^0.2.3",
     "terser-webpack-plugin": "^5.3.10",
