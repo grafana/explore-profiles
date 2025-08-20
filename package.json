@@ -32,8 +32,7 @@
     "tdd": "jest --watch --onlyChanged",
     "test": "jest --watch --onlyChanged",
     "test:ci": "jest --passWithNoTests --maxWorkers 4 --coverage",
-    "typecheck": "tsc --noEmit",
-    "version": "standard-changelog && git add CHANGELOG.md"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.2.3",

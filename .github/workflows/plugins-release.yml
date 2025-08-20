@@ -28,7 +28,7 @@ jobs:
         uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@main
         with:
           # We generate changelog in npm version command via `standard-changelog` library
-          generate-changelog: false
+          generate-changelog: true
           version: ${{ inputs.version }}
 
   cd:
