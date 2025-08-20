@@ -11,11 +11,6 @@ on:
           - patch
           - minor
           - major
-      generate-changelog:
-        description: 'Generate changelog'
-        required: false
-        type: boolean
-        default: true
 
 # No global permissions, each job defines own scope
 permissions: {}
@@ -32,11 +27,13 @@ jobs:
       - name: Version bump
         uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@main
         with:
-          generate-changelog: ${{ inputs.generate-changelog }}
+          # We generate changelog in npm version command via `standard-changelog` library
+          generate-changelog: false
           version: ${{ inputs.version }}
 
   cd:
     name: CI / CD
+    needs: bump-version
     uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
@@ -44,8 +41,6 @@ jobs:
       id-token: write
       attestations: write
     with:
-      # Checkout/build PR or main branch, depending on event
-      branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
 
       environment: prod
       attestation: true
