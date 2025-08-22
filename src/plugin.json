@@ -68,5 +68,18 @@
         "targets": ["grafana/explore/toolbar/action", "grafana/traceview/details"]
       }
     ]
-  }
+  },
+  "routes": [
+    {
+      "path": "/grafanacom-api/instances",
+      "method": "GET",
+      "url": "{{.SecureJsonData.gcomApiUrl}}/instances/{{.SecureJsonData.stackId}}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Bearer {{.SecureJsonData.gcomApiToken}}"
+        }
+      ]
+    }
+  ]
 }
