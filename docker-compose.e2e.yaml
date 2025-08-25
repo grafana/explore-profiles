@@ -5,7 +5,7 @@ services:
       context: ./.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
-        grafana_version: ${GRAFANA_VERSION:-12.0.0}
+        grafana_version: ${GRAFANA_VERSION:-12.1.0}
     ports:
       - ${GRAFANA_PORT:-3000}:3000/tcp
     volumes:
@@ -13,8 +13,6 @@ services:
       - ./samples/provisioning:/etc/grafana/provisioning
       - ./samples/dashboards:/var/lib/grafana/dashboards
     environment:
-      # prevents a Grafana startup error in case a newer plugin version (set in package.json) is used compared to the latest one published in the catalog
-      GF_PLUGINS_PREINSTALL_DISABLED: true
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
@@ -36,6 +34,19 @@ services:
       GITHUB_CLIENT_ID: $GITHUB_CLIENT_ID
       GITHUB_CLIENT_SECRET: $GITHUB_CLIENT_SECRET
       GITHUB_SESSION_SECRET: $GITHUB_SESSION_SECRET
+
+  # e2e testing
+  playwright:
+    network_mode: host
+    container_name: 'playwright-e2e'
+    build:
+      dockerfile: Dockerfile.plugin.e2e
+      context: .
+    volumes:
+      - ./e2e:/app/e2e
+      - ./src:/app/src
+    command: ${PLAYWRIGHT_ARGS:-}
+    profiles: [playwright]
 
 volumes:
   qdrant-storage:

@@ -1,15 +1,17 @@
-name: CI
+name: (Old) CI
 
+# Disable temporarily to test plugins-ci for now
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    paths-ignore:
-      - docs/*
-      - docs/sources/**
-    branches:
-      - main
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    paths-ignore:
+#      - docs/*
+#      - docs/sources/**
+#    branches:
+#      - main
 
 jobs:
   build:
