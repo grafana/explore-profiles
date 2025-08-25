@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { useAssistant } from '@grafana/assistant';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
 import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
@@ -29,7 +30,6 @@ import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/dom
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
-import { useAssistant } from '@grafana/assistant';
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
@@ -195,7 +195,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     // Do not show AI button if the assistant integration is enabled to avoid having two AI buttons in the UI
     // For debugging purposes and comparing both you can use localStorage flag grafana-pyroscope-app.forceShowAiButton
     const [isAvailable] = useAssistant();
-    const hideAIButton = featureToggles.grafanaAssistantInProfilesDrilldown && isAvailable && !localStorage.getItem('grafana-pyroscope-app.forceShowAIButton');
+    const hideAIButton =
+      featureToggles.grafanaAssistantInProfilesDrilldown &&
+      isAvailable &&
+      !localStorage.getItem('grafana-pyroscope-app.forceShowAIButton');
 
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
@@ -237,13 +240,15 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
               {spanSelector && (
                 <SpanSelectorLabel spanSelector={spanSelector} removeSpanSelector={() => model.removeSpanSelector()} />
               )}
-              { !hideAIButton && (<AIButton
-                disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
-                onClick={() => sidePanel.open('ai')}
-                interactionName="g_pyroscope_app_explain_flamegraph_clicked"
-              >
-                Explain Flame Graph
-              </AIButton>) }
+              {!hideAIButton && (
+                <AIButton
+                  disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
+                  onClick={() => sidePanel.open('ai')}
+                  interactionName="g_pyroscope_app_explain_flamegraph_clicked"
+                >
+                  Explain Flame Graph
+                </AIButton>
+              )}
             </>
           }
         >
