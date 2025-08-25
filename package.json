@@ -73,6 +73,7 @@
     "@bufbuild/buf": "^1.50.0",
     "@bufbuild/protoc-gen-es": "^2.2.3",
     "@connectrpc/protoc-gen-connect-query": "^2.0.1",
+    "@grafana/assistant": "0.0.12",
     "@grafana/e2e-selectors": "^10.0.0",
     "@grafana/eslint-config": "^8.0.0",
     "@grafana/tsconfig": "^2.0.0",
