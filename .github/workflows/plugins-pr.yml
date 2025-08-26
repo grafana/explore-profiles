@@ -1,19 +1,12 @@
 name: Plugins Platform Publish - CD
-run-name: Deploy ${{ inputs.branch }} to ${{ inputs.environment }} by @${{ github.actor }}
+run-name: Deploy ${{ inputs.branch }}
 
 on:
   workflow_dispatch:
     inputs:
       branch:
         description: Branch to publish from. Can be used to deploy PRs to dev
-        default: main
-      environment:
-        description: Environment to publish to
         required: true
-        type: choice
-        options:
-          - 'dev'
-          - 'ops'
       docs-only:
         description: Only publish docs, do not publish the plugin
         default: false
@@ -32,25 +25,7 @@ jobs:
       id-token: write
       attestations: write
     with:
-      # Checkout/build PR or main branch, depending on event
-      branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
+      branch: ${{ inputs.branch }}
+      environment: ops
+      # No grafana-cloud-deployment-type defined -> plugin will be published to the catalog, but not deployed to Grafana Cloud
 
-      # When pushing to "main", publish and deploy to "dev" (CD). For PRs, skip publishing and deploying (run CI only)
-      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev,ops' || 'none' }}
-      # Disabled for testing purposes to see if created config looks good. Uncomment when ready to deploy.
-      #auto-merge-environments: dev,ops
-      # Deploy provisioned plugin to Grafana Cloud
-      grafana-cloud-deployment-type: provisioned
-      argo-workflow-slack-channel: '#proj-profilesdrilldown-cd'
-
-      # Add the git head ref sha to the plugin version as suffix (`+abcdef`). This is required for CD builds.
-      plugin-version-suffix: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
-
-      run-playwright: false
-      run-playwright-docker: true
-      run-playwright-with-skip-grafana-dev-image: true
-      upload-playwright-artifacts: true
-      run-playwright-with-grafana-dependency: '>=12.1.0'
-      playwright-config: e2e/config/playwright.config.ci.ts
-      playwright-docker-compose-file: docker-compose.e2e.yaml
-      playwright-report-path: 'e2e/test-reports/'
