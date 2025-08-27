@@ -26,6 +26,6 @@ jobs:
       attestations: write
     with:
       branch: ${{ inputs.branch }}
-      environment: ops
+      environment: dev
       # No grafana-cloud-deployment-type defined -> plugin will be published to the catalog, but not deployed to Grafana Cloud
 
