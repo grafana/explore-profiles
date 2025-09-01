@@ -6,7 +6,7 @@ RUN unzip grafana-pyroscope-sample-blocks-public.zip \
  && mv grafana-pyroscope-sample-blocks-public data-shared \
  && rm grafana-pyroscope-sample-blocks-public.zip
 
-FROM docker.io/grafana/pyroscope:latest
+FROM docker.io/grafana/pyroscope:weekly-f129-6d0f4264a
 
 COPY samples/static/pyroscope/config.yaml /etc/pyroscope/config.yaml
 COPY --from=blocks --chown=pyroscope:pyroscope data-shared /data-shared
