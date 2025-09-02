@@ -1,3 +1,22 @@
+# Changelog
+
+## 1.8.1
+
+
+## 1.8.0
+
+##### Chores
+
+*  Upgrade playwright to 1.55 (#576) (601ee656)
+*  Create plugin update (#564) (2ef28dc6)
+
+##### Continuous Integration
+
+*  Use shared action to create a changelog (32e56544)
+*  Update release workflow (#573) (939c7b68)
+*  Push build to ops (#570) (f42be894)
+*  Use shared workflows for publishing (#565) (96855248)
+
 # [1.7.0](https://github.com/grafana/profiles-drilldown/compare/v1.6.0...v1.7.0) (2025-07-31)
 
 
