@@ -28,6 +28,6 @@ jobs:
       branch: ${{ inputs.branch }}
       environment: dev
       # No grafana-cloud-deployment-type defined -> plugin will be published to the catalog, but not deployed to Grafana Cloud
-      # Skip tests (theu are run in the main PR/CI workflow)
+      # Skip tests (they are run in the main PR/CI workflow)
       run-playwright: false
       run-playwright-docker: false
