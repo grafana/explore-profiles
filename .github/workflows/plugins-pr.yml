@@ -1,4 +1,4 @@
-name: Plugins Platform Publish - CD
+name: (New) Plugins - Publish Branch To Dev
 run-name: Deploy ${{ inputs.branch }}
 
 on:
