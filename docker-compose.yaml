@@ -26,7 +26,7 @@ services:
 
   pyroscope:
     container_name: 'pyroscope'
-    image: grafana/pyroscope:weekly-f129-6d0f4264a
+    image: grafana/pyroscope:latest
     ports:
       - 4100:4100/tcp
     volumes:
