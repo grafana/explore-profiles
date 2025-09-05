@@ -128,7 +128,7 @@ export default function RecordingRulesView() {
           columns={columns}
           pageSize={10}
           data={formattedRules || []}
-          getRowId={(rule) => rule.metricName}
+          getRowId={(rule) => rule.id}
         ></InteractiveTable>
         <BackButton />
       </div>
