@@ -1,0 +1,39 @@
+name: (New) Plugins - Publish Branch To Dev
+run-name: Deploy ${{ inputs.branch }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to publish from. Can be used to deploy PRs to dev
+        required: true
+      docs-only:
+        description: Only publish docs, do not publish the plugin
+        default: false
+        type: boolean
+
+# No global permissions, each job defines own scope
+permissions: {}
+
+jobs:
+  cd:
+    name: CI / CD
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
+    # These are maximum permissions for the job and should match the permissions defined in the workflow
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    with:
+      branch: ${{ inputs.branch }}
+      environment: dev
+      # No grafana-cloud-deployment-type defined -> plugin will be published to the catalog, but not deployed to Grafana Cloud
+
+      run-playwright: false
+      run-playwright-docker: true
+      run-playwright-with-skip-grafana-dev-image: true
+      upload-playwright-artifacts: true
+      run-playwright-with-grafana-dependency: '>=12.1.0'
+      playwright-config: e2e/config/playwright.config.ci.ts
+      playwright-docker-compose-file: docker-compose.e2e.yaml
+      playwright-report-path: 'e2e/test-reports/'
