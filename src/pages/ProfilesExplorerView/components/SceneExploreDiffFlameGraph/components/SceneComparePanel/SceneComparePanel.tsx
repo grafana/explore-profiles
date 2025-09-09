@@ -1,19 +1,12 @@
 import { css, cx } from '@emotion/css';
-import {
-  AdHocVariableFilter,
-  dateTime,
-  dateTimeFormat,
-  FieldMatcherID,
-  getValueFormat,
-  GrafanaTheme2,
-  systemDateFormats,
-} from '@grafana/data';
+import { AdHocVariableFilter, DataFrame, dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
+  SceneQueryRunner,
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
@@ -29,6 +22,7 @@ import React from 'react';
 
 import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
+import { formatSingleSeriesDisplayName } from '../../../../helpers/formatSingleSeriesDisplayName';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { getSeriesStatsValue } from '../../../../infrastructure/helpers/getSeriesStatsValue';
 import { getProfileMetricLabel } from '../../../../infrastructure/series/helpers/getProfileMetricLabel';
@@ -65,6 +59,7 @@ interface SceneComparePanelState extends SceneObjectState {
   $timeRange: SceneTimeRange;
   timeseriesPanel: SceneLabelValuesTimeseries;
   timeRangeSyncEnabled: boolean;
+  lastSyncedStepSec?: number;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
@@ -133,8 +128,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     };
   }
 
-  static buildTimeSeriesPanel({ target, filterKey, title, color }: any) {
-    const timeseriesPanel = new SceneLabelValuesTimeseries({
+  static buildTimeSeriesPanel({ target, filterKey, title, color }: any): SceneLabelValuesTimeseries {
+    const timeseriesPanel: SceneLabelValuesTimeseries = new SceneLabelValuesTimeseries({
       item: {
         index: 0,
         value: target,
@@ -146,42 +141,54 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         $data: buildCompareTimeSeriesQueryRunner({ filterKey }),
         transformations: [addRefId, addStats],
       }),
-      overrides: (series) =>
-        series.map((s) => {
-          const metricField = s.fields[1];
-          const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
-          const formattedValue = getValueFormat(metricField.config.unit)(allValuesSum);
-          const total = `${formattedValue.text}${formattedValue.suffix}`;
-          const [diffFrom, diffTo, timeZone] = SceneComparePanel.getDiffRange(timeseriesPanel);
-
-          const displayName =
-            diffFrom && diffTo
-              ? `Total = ${total} / Flame graph range = ${dateTimeFormat(diffFrom, {
-                  format: systemDateFormats.fullDate,
-                  timeZone,
-                })} → ${dateTimeFormat(diffTo, {
-                  format: systemDateFormats.fullDate,
-                  timeZone,
-                })}`
-              : `Total = ${total}`;
-
-          return {
-            matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
-            properties: [
-              {
-                id: 'displayName',
-                value: displayName,
-              },
-              {
-                id: 'color',
-                value: { mode: 'fixed', fixedColor: color },
-              },
-            ],
-          };
-        }),
+      overrides: (series: DataFrame[]) => SceneComparePanel.buildSeriesOverrides(series, color),
       headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
     });
 
+    SceneComparePanel.configureTimeRange(timeseriesPanel, target, title);
+    return timeseriesPanel;
+  }
+
+  private static buildSeriesOverrides(series: DataFrame[], color: string): Array<{ matcher: any; properties: any[] }> {
+    return series.map((s) => {
+      const metricField = s.fields[1];
+      const allValuesSum = getSeriesStatsValue(s, 'allValuesSum') || 0;
+
+      const properLabel = SceneComparePanel.getProperLabel(s);
+      const total = SceneComparePanel.formatTotalValue(allValuesSum, metricField.config.unit || 'short');
+
+      const properties = [
+        {
+          id: 'displayName',
+          value: `${properLabel} = ${total}`,
+        },
+        {
+          id: 'color',
+          value: { mode: 'fixed', fixedColor: color },
+        },
+      ];
+
+      return {
+        matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
+        properties,
+      };
+    });
+  }
+
+  private static getProperLabel(s: DataFrame): string {
+    const displayNameWithLabel = formatSingleSeriesDisplayName('', s);
+    const labelMatch = displayNameWithLabel.match(/^(avg|total)/);
+    return labelMatch ? labelMatch[1] : 'total';
+  }
+
+  private static formatTotalValue(allValuesSum: number, displayUnit: string): string {
+    const safeDisplayUnit = displayUnit || 'short';
+    const formattedValue = getValueFormat(safeDisplayUnit)(allValuesSum);
+
+    return `${formattedValue.text}${formattedValue.suffix}`;
+  }
+
+  private static configureTimeRange(timeseriesPanel: SceneLabelValuesTimeseries, target: string, title: string) {
     timeseriesPanel.state.body.setState({
       $timeRange: new SceneTimeRangeWithAnnotations({
         key: `${target}-annotation-timerange`,
@@ -191,8 +198,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         annotationTitle: `${title} flame graph range`,
       }),
     });
-
-    return timeseriesPanel;
   }
 
   static getDiffRange(
@@ -255,11 +260,19 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }
     });
 
+    // Subscribe to data changes for step synchronization
+    const dataSub = timeseriesPanel.state.body.state.$data?.subscribeToState((newState) => {
+      if (newState.data?.state === 'Done' && newState.data.series?.length) {
+        this.syncStepSizeWithSibling(newState.data.series);
+      }
+    });
+
     return {
       unsubscribe() {
         timeRangeSub.unsubscribe();
         annotationTimeRangeSub.unsubscribe();
         switchSub.unsubscribe();
+        dataSub?.unsubscribe();
       },
     };
   }
@@ -372,6 +385,86 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   refreshTimeseries() {
     this.state.$timeRange.onRefresh();
+  }
+
+  private syncStepSizeWithSibling(myData: DataFrame[]) {
+    const siblingPanel = this.getSiblingPanel();
+    if (!siblingPanel) {
+      return;
+    }
+
+    const siblingData = this.getSiblingData(siblingPanel);
+    if (!siblingData?.length) {
+      return;
+    }
+
+    this.performStepSynchronization(myData, siblingData);
+  }
+
+  private getSiblingPanel(): SceneComparePanel | null {
+    if (!this.parent) {
+      return null;
+    }
+
+    const parentState = 'state' in this.parent ? this.parent.state : this.parent;
+    if (!('baselinePanel' in parentState && 'comparisonPanel' in parentState)) {
+      return null;
+    }
+
+    return this.state.target === CompareTarget.BASELINE
+      ? (parentState.comparisonPanel as SceneComparePanel)
+      : (parentState.baselinePanel as SceneComparePanel);
+  }
+
+  private getSiblingData(siblingPanel: SceneComparePanel): DataFrame[] | null {
+    return siblingPanel.state.timeseriesPanel.state.body.state.$data?.state.data?.series || null;
+  }
+
+  private performStepSynchronization(myData: DataFrame[], siblingData: DataFrame[]) {
+    const myStep = this.extractStepDuration(myData);
+    const siblingStep = this.extractStepDuration(siblingData);
+
+    if (myStep && siblingStep && Math.abs(myStep - siblingStep) > 0.001) {
+      const targetStep = Math.max(myStep, siblingStep); // Use highest step (lowest resolution) to reduce data points
+
+      if (this.state.lastSyncedStepSec !== targetStep) {
+        this.setState({ lastSyncedStepSec: targetStep });
+        this.updateQueryStep(targetStep);
+      }
+    }
+  }
+
+  private extractStepDuration(data: DataFrame[]): number | null {
+    if (!data?.length) {
+      return null;
+    }
+
+    const timeField = data[0].fields.find((f) => f.type === 'time');
+    if (!timeField?.values?.length || timeField.values.length < 2) {
+      return null;
+    }
+
+    const times = timeField.values as number[];
+    const stepDurationMs = times[1] - times[0];
+    const stepDurationSec = stepDurationMs / 1000;
+    return stepDurationSec;
+  }
+
+  private updateQueryStep(targetStepSec: number) {
+    const queryRunner = this.state.timeseriesPanel.state.body.state.$data?.state.$data as SceneQueryRunner;
+    if (!queryRunner?.setState || !queryRunner?.runQueries) {
+      return;
+    }
+
+    const currentQueries = queryRunner.state.queries;
+
+    const updatedQueries = currentQueries.map((query: any) => ({
+      ...query,
+      step: targetStepSec,
+    }));
+
+    queryRunner.setState({ queries: updatedQueries });
+    queryRunner.runQueries();
   }
 
   public static Component = ({ model }: SceneComponentProps<SceneComparePanel>) => {
