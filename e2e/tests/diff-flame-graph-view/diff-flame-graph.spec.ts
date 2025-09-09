@@ -28,7 +28,7 @@ test.describe('Diff flame graph view', () => {
     // diff flame graph panel
     const diffFlameGraphPanel = exploreProfilesPage.getByTestId('diff-flame-graph-panel');
     await expect(diffFlameGraphPanel.locator('h6')).toContainText('Diff flame graph for ride-sharing-app (cpu)');
-    await expect(diffFlameGraphPanel.getByRole('button', { name: /Explain Flame Graph/i })).toBeVisible();
+    await expect(diffFlameGraphPanel.getByRole('button', { name: /Explain Diff Flame Graph/i })).toBeVisible();
 
     // body
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({

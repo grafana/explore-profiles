@@ -16,7 +16,6 @@ on:
 permissions: {}
 
 jobs:
-
   bump-version:
     # Don't run on forks
     if: github.repository == 'grafana/profiles-drilldown'
@@ -40,7 +39,6 @@ jobs:
       id-token: write
       attestations: write
     with:
-
       environment: prod
       attestation: true
 

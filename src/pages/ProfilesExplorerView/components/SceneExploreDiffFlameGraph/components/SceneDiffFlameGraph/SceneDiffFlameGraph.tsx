@@ -178,7 +178,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
               onClick={() => sidePanel.open('ai')}
               interactionName="g_pyroscope_app_explain_flamegraph_clicked"
             >
-              Explain Flame Graph
+              Explain Diff Flame Graph
             </AIButton>
           }
         >
@@ -208,6 +208,8 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
               profile={data.profile}
               enableFlameGraphDotComExport={data.settings?.enableFlameGraphDotComExport}
               collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
+              /** Grafana assistant does not support diff flame graphs yet, we will use LLM plugin if enabled */
+              showAnalyzeWithAssistant={false}
             />
           )}
         </Panel>

@@ -14,6 +14,7 @@ type FlameGraphProps = {
   enableFlameGraphDotComExport?: boolean;
   collapsedFlamegraphs?: boolean;
   getExtraContextMenuButtons?: Props['getExtraContextMenuButtons'];
+  showAnalyzeWithAssistant?: boolean;
 };
 
 function FlameGraphComponent({
@@ -23,6 +24,7 @@ function FlameGraphComponent({
   enableFlameGraphDotComExport,
   collapsedFlamegraphs,
   getExtraContextMenuButtons,
+  showAnalyzeWithAssistant,
 }: FlameGraphProps) {
   const { isLight } = useTheme2();
   const getTheme = () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } });
@@ -47,6 +49,7 @@ function FlameGraphComponent({
       getTheme={getTheme as any}
       getExtraContextMenuButtons={getExtraContextMenuButtons}
       keepFocusOnDataChange
+      showAnalyzeWithAssistant={showAnalyzeWithAssistant}
     />
   );
 }
