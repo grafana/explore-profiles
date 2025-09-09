@@ -111,7 +111,8 @@ export class SceneLabelValuesTable extends SceneObjectBase<SceneLabelValuesTable
 
     const profileMetricId = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable).state
       .value as ProfileMetricId;
-    const unitValue = getProfileMetric(profileMetricId).unit;
+    const profileMetric = getProfileMetric(profileMetricId);
+    const unitValue = profileMetric.unit;
 
     return {
       title: cardinality > 1 ? `${item.label} (${cardinality})` : item.label,
