@@ -14,7 +14,7 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/
 import { ExplorationType, SceneProfilesExplorer } from '../SceneProfilesExplorer/SceneProfilesExplorer';
 import { useCreateRecordingRule } from './domain/useCreateRecordingRule';
 
-const METRIC_NAME_PREFIX = 'pyroscope_exported_metrics_';
+const METRIC_NAME_PREFIX = 'profiles_recorded_';
 
 interface RecordingRuleForm {
   metricName: string;
