@@ -54,7 +54,7 @@ describe('buildURL - Original Functionality', () => {
       expect(result).toContain('explorationType=labels'); // Changes to labels when service name found
     });
 
-    it('should ignore other labels in labelSelector', () => {
+    it('should extract additional labels when exploration type is labels', () => {
       const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
         refId: 'A',
         datasource: mockDatasource,
@@ -69,9 +69,10 @@ describe('buildURL - Original Functionality', () => {
       });
 
       expect(result).toContain('var-serviceName=payment');
-      // Should NOT contain region or instance parameters (old behavior)
-      expect(result).not.toContain('region');
-      expect(result).not.toContain('instance');
+      expect(result).toContain('explorationType=labels'); // Service name present, so becomes labels
+      // Now extracts additional labels for labels exploration type
+      expect(result).toContain('region');
+      expect(result).toContain('instance');
     });
 
     it('should handle span selector', () => {
@@ -109,7 +110,7 @@ describe('buildURL - Original Functionality', () => {
       expect(result).not.toContain('to=');
     });
 
-    it('should override exploration type when explicitly provided', () => {
+    it('should use exploration type when explicitly provided', () => {
       const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
         refId: 'A',
         datasource: mockDatasource,
@@ -143,6 +144,122 @@ describe('buildURL - Original Functionality', () => {
       });
 
       expect(result).not.toContain('var-spanSelector');
+    });
+  });
+
+  describe('enhanced functionality', () => {
+    it('should return base URL for datasource-only context', () => {
+      const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: '', // Empty
+        labelSelector: '{}', // No service_name
+        groupBy: [],
+      };
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+      });
+
+      expect(result).toBe(
+        '/a/grafana-pyroscope-app/explore?var-dataSource=test-pyroscope-uid&explorationType=all&from=now-1h&to=now'
+      );
+    });
+
+    it('should extract additional labels for labels exploration type', () => {
+      const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{service_name="payment", region="us-east", version=~"1.2.*"}',
+        groupBy: [],
+      };
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+        explorationType: 'labels',
+      });
+
+      expect(result).toContain('var-serviceName=payment');
+      expect(result).toContain('var-filters=region%3D%22us-east%22%2Cversion%3D%7E%221.2.*%22');
+      expect(result).toContain('explorationType=labels');
+    });
+
+    it('should handle maxNodes parameter', () => {
+      const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{}',
+        groupBy: [],
+        maxNodes: 8192,
+      };
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+      });
+
+      expect(result).toContain('maxNodes=8192');
+    });
+
+    it('should handle multiple span selectors', () => {
+      const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{}',
+        groupBy: [],
+        spanSelector: ['span-1', 'span-2'],
+      };
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+      });
+
+      expect(result).toContain('var-spanSelector=span-1%2Cspan-2');
+    });
+
+    it('should preserve all label operators', () => {
+      const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{service_name="api", region!="test", version=~"1.*", env!~"dev.*"}',
+        groupBy: [],
+      };
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+        explorationType: 'labels',
+      });
+
+      const decodedUrl = decodeURIComponent(result);
+      expect(decodedUrl).toContain('var-filters=region!="test",version=~"1.*",env!~"dev.*"');
+    });
+
+    it('should not add filters for non-labels exploration types', () => {
+      const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{service_name="payment", region="us-east"}',
+        groupBy: [],
+      };
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+        explorationType: 'flame-graph',
+      });
+
+      expect(result).toContain('var-serviceName=payment');
+      expect(result).not.toContain('var-filters'); // Should not add filters for flame-graph
+      expect(result).toContain('explorationType=flame-graph');
     });
   });
 });

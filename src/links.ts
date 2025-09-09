@@ -13,43 +13,133 @@ type URLParamsBuilderProps = {
   explorationType?: string;
 };
 
-function buildURL(props: URLParamsBuilderProps) {
-  const { timeRange, pyroscopeQuery } = props;
+// Helper function to extract additional labels (preserving operators)
+function extractAdditionalLabels(labelSelector: string): string[] {
+  const labels: string[] = [];
+  // Match: label_name + operator + quoted_value
+  const labelRegex = /(\w+)(=|!=|=~|!~)"([^"]+)"/g;
+  let match;
+  while ((match = labelRegex.exec(labelSelector)) !== null) {
+    if (match[1] !== 'service_name') {
+      // Skip service_name, handled separately
+      labels.push(`${match[1]}${match[2]}"${match[3]}"`); // Preserve original operator
+    }
+  }
+  return labels;
+}
 
-  let timeRangeParam = '';
-  let spanSelectorParam = '';
-  let explorationType = 'all';
+/**
+ * Builds a base URL for datasource-only navigation (fallback case)
+ * Used when no service name or profile type is specified - shows overview of all services
+ * @param datasourceUid - Pyroscope datasource UID
+ * @param timeRange - Optional time range for the query
+ * @returns Complete URL for 'all services' exploration type
+ */
+function buildBaseURL(datasourceUid: string, timeRange?: RawTimeRange): string {
+  const baseParams = new URLSearchParams();
+  baseParams.append('var-dataSource', datasourceUid);
+  baseParams.append('explorationType', 'all');
+  if (timeRange) {
+    baseParams.append('from', timeRange.from.toString());
+    baseParams.append('to', timeRange.to.toString());
+  }
+  return `/a/grafana-pyroscope-app/explore?${baseParams.toString()}`;
+}
 
-  let serviceName = props.pyroscopeQuery.labelSelector?.match(/service_name="([^"]+)"/)?.[1];
+/**
+ * Determines the appropriate exploration type based on available data
+ * Follows Profiles Drilldown hierarchy: explicit type > service-based type > default
+ * @param serviceName - Extracted service name from labelSelector
+ * @param explorationType - Explicit exploration type override
+ * @returns Exploration type: 'labels' if service name present, 'all' otherwise, or explicit override
+ */
+function determineExplorationTypeFromQuery(serviceName?: string, explorationType?: string): string {
+  if (explorationType) {
+    return explorationType;
+  }
+  return serviceName ? 'labels' : 'all';
+}
+
+/**
+ * Builds all URL parameters systematically based on query data and exploration type
+ * Handles conditional parameter inclusion (filters only for 'labels' type, etc.)
+ * @param pyroscopeQuery - Complete Pyroscope query object
+ * @param timeRange - Time range for the query
+ * @param finalExplorationType - Determined exploration type
+ * @param serviceName - Extracted service name for service-specific parameters
+ * @returns URL parameter string ready for URLSearchParams
+ */
+function buildURLParams(
+  pyroscopeQuery: GrafanaPyroscopeDataQuery,
+  timeRange: RawTimeRange | undefined,
+  finalExplorationType: string,
+  serviceName: string | undefined
+): string {
+  const params: string[] = [];
+
+  params.push(`var-dataSource=${pyroscopeQuery.datasource?.uid}`);
 
   if (serviceName) {
-    explorationType = 'labels';
+    params.push(`var-serviceName=${serviceName}`);
   }
 
-  if (props.explorationType) {
-    explorationType = props.explorationType;
-  }
+  params.push(`var-profileMetricId=${pyroscopeQuery.profileTypeId}`);
+  params.push(`explorationType=${finalExplorationType}`);
 
-  const datasourceParam = `var-dataSource=${pyroscopeQuery.datasource?.uid}`;
-  const serviceNameParam = serviceName ? `&var-serviceName=${serviceName}` : '';
-  const profileTypeParam = `&var-profileMetricId=${pyroscopeQuery.profileTypeId}`;
-  const explorationTypeParam = `&explorationType=${explorationType}`;
   if (timeRange) {
-    timeRangeParam = `&from=${timeRange.from}&to=${timeRange.to}`;
-  }
-  if (pyroscopeQuery.spanSelector) {
-    spanSelectorParam = `&var-spanSelector=${pyroscopeQuery.spanSelector}`;
+    params.push(`from=${timeRange.from.toString()}`);
+    params.push(`to=${timeRange.to.toString()}`);
   }
 
-  const base = '/a/grafana-pyroscope-app/explore?';
-  const params = new URLSearchParams(
-    `${datasourceParam}${serviceNameParam}${profileTypeParam}${timeRangeParam}${explorationTypeParam}${spanSelectorParam}`
-  ).toString();
-  return `${base}${params}`;
+  if (pyroscopeQuery.spanSelector?.length) {
+    params.push(`var-spanSelector=${pyroscopeQuery.spanSelector.join(',')}`);
+  }
+
+  if (pyroscopeQuery.maxNodes) {
+    params.push(`maxNodes=${pyroscopeQuery.maxNodes}`);
+  }
+
+  if (finalExplorationType === 'labels' && pyroscopeQuery.labelSelector) {
+    const additionalLabels = extractAdditionalLabels(pyroscopeQuery.labelSelector);
+    if (additionalLabels.length) {
+      params.push(`var-filters=${additionalLabels.join(',')}`);
+    }
+  }
+
+  return params.join('&');
+}
+
+/**
+ * Main URL builder for Profiles Drilldown navigation
+ * Refactored from original monolithic function to improve readability and maintainability
+ *
+ * Flow:
+ * 1. Check for datasource-only fallback case (no service/profile specified)
+ * 2. Extract service name from labelSelector using regex
+ * 3. Determine appropriate exploration type based on available data
+ * 4. Build all URL parameters systematically
+ * 5. Construct final URL with proper encoding
+ *
+ * @param props - URLParamsBuilderProps containing pyroscope query, time range, and optional exploration type
+ * @returns Complete URL for Profiles Drilldown app navigation
+ */
+export function buildURL(props: URLParamsBuilderProps) {
+  const { timeRange, pyroscopeQuery, explorationType } = props;
+
+  // Base URL fallback for datasource-only context
+  if (!pyroscopeQuery.profileTypeId && !pyroscopeQuery.labelSelector?.includes('service_name')) {
+    return buildBaseURL(pyroscopeQuery.datasource?.uid || '', timeRange);
+  }
+
+  const serviceName = pyroscopeQuery.labelSelector?.match(/service_name="([^"]+)"/)?.[1];
+  const finalExplorationType = determineExplorationTypeFromQuery(serviceName, explorationType);
+  const urlParams = buildURLParams(pyroscopeQuery, timeRange, finalExplorationType, serviceName);
+
+  return `/a/grafana-pyroscope-app/explore?${new URLSearchParams(urlParams).toString()}`;
 }
 
 export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtensionExploreContext> = {
-  targets: [PluginExtensionPoints.ExploreToolbarAction],
+  targets: [PluginExtensionPoints.ExploreToolbarAction, 'grafana-assistant-app/navigateToDrilldown/v1'],
   title: 'Open in Grafana Profiles Drilldown',
   icon: 'fire',
   description: 'Try our new queryless experience for profiles',
