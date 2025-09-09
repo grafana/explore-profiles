@@ -14,6 +14,8 @@ import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/
 import { ExplorationType, SceneProfilesExplorer } from '../SceneProfilesExplorer/SceneProfilesExplorer';
 import { useCreateRecordingRule } from './domain/useCreateRecordingRule';
 
+const METRIC_NAME_PREFIX = 'pyroscope_exported_metrics_';
+
 interface RecordingRuleForm {
   metricName: string;
   labels: Array<SelectableValue<string>>;
@@ -95,7 +97,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     const onSubmit: SubmitHandler<RecordingRuleForm> = async (data) => {
       const rule: RecordingRuleViewModel = {
         id: '',
-        metricName: data.metricName,
+        metricName: METRIC_NAME_PREFIX + data.metricName,
         serviceName: data.serviceName,
         profileType: data.profileType,
         matchers: [`{${filterQuery}}`],
@@ -130,26 +132,30 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
         <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             label="Metric name"
-            description="The name of the Prometheus metric"
+            description={`The name of the Prometheus metric. The name will be automatically prefixed with '${METRIC_NAME_PREFIX}'.`}
             error={MetricNameErrorComponent(errors.metricName)}
             invalid={!!errors.metricName}
           >
-            <Input
-              placeholder={`pyroscope_metric_${profileMetric.type}_${(serviceName || 'name')
-                .toString()
-                .replace(/[^a-zA-Z0-9_]/g, '_')}`}
-              aria-label="Metric name"
-              required
-              autoFocus
-              {...register('metricName', {
-                required: 'Metric name is required.',
-                // This pattern was pulled from here: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
-                pattern: {
-                  value: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
-                  message: 'Invalid metric name.',
-                },
-              })}
-            />
+            <div className={css({ display: 'flex' })}>
+              <div className={css({ alignContent: 'center', fontFamily: 'monospace' })}>{METRIC_NAME_PREFIX}</div>
+              <Input
+                className={css({ input: { fontFamily: 'monospace', paddingLeft: 0 } })}
+                placeholder={`${profileMetric.type}_${(serviceName || 'name')
+                  .toString()
+                  .replace(/[^a-zA-Z0-9_]/g, '_')}`}
+                aria-label="Metric name"
+                required
+                autoFocus
+                {...register('metricName', {
+                  required: 'Metric name is required.',
+                  // This pattern was pulled from here: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
+                  pattern: {
+                    value: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
+                    message: 'Invalid metric name.',
+                  },
+                })}
+              />
+            </div>
           </Field>
 
           <Field label="Additional labels" description="Additional profiling labels to forward to the metric">
