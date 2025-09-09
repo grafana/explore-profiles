@@ -5,6 +5,7 @@ import { GrafanaPyroscopeDataQuery } from '@grafana/schema/dist/esm/raw/composab
 export type PluginExtensionExploreContext = {
   targets: DataQuery[];
   timeRange: RawTimeRange;
+  explorationType?: string;
 };
 
 type URLParamsBuilderProps = {
@@ -156,6 +157,7 @@ export const EXPLORE_TOOLBAR_ACTION: PluginExtensionAddedLinkConfig<PluginExtens
         path: buildURL({
           pyroscopeQuery: firstQuery as GrafanaPyroscopeDataQuery,
           timeRange: context.timeRange,
+          explorationType: context.explorationType, // Pass explorationType if present
         }),
       };
     }
