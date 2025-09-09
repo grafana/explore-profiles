@@ -183,7 +183,7 @@ describe('buildURL - Original Functionality', () => {
       });
 
       expect(result).toContain('var-serviceName=payment');
-      expect(result).toContain('var-filters=region%7C%3D%7C%22us-east%22%2Cversion%7C%3D%7E%7C%221.2.*%22');
+      expect(result).toContain('var-filters=region%7C%3D%7Cus-east%2Cversion%7C%3D%7E%7C1.2.*');
       expect(result).toContain('explorationType=labels');
     });
 
@@ -239,10 +239,10 @@ describe('buildURL - Original Functionality', () => {
       });
 
       const decodedUrl = decodeURIComponent(result);
-      expect(decodedUrl).toContain('var-filters=region|!=|"test",version|=~|"1.*",env|!~|"dev.*"');
+      expect(decodedUrl).toContain('var-filters=region|!=|test,version|=~|1.*,env|!~|dev.*');
     });
 
-    it('should not add filters for non-labels exploration types', () => {
+    it('should add filters for flame-graph exploration type', () => {
       const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
         refId: 'A',
         datasource: mockDatasource,
@@ -258,7 +258,7 @@ describe('buildURL - Original Functionality', () => {
       });
 
       expect(result).toContain('var-serviceName=payment');
-      expect(result).not.toContain('var-filters'); // Should not add filters for flame-graph
+      expect(result).toContain('var-filters=region%7C%3D%7Cus-east'); // Should add filters for flame-graph too
       expect(result).toContain('explorationType=flame-graph');
     });
   });

@@ -25,7 +25,7 @@ function extractAdditionalLabels(labelSelector: string): string[] {
       // Skip service_name, handled separately
       // must have | delimiter for Scenes variables
       const scenesDelimiter = '|';
-      labels.push(`${match[1]}${scenesDelimiter}${match[2]}${scenesDelimiter}"${match[3]}"`); // Preserve original operator
+      labels.push(`${match[1]}${scenesDelimiter}${match[2]}${scenesDelimiter}${match[3]}`); // Remove quotes, they'll be added by URLSearchParams
     }
   }
   return labels;
@@ -63,9 +63,63 @@ function determineExplorationTypeFromQuery(serviceName?: string, explorationType
   return serviceName ? 'labels' : 'all';
 }
 
+function addCoreParams(
+  params: string[],
+  pyroscopeQuery: GrafanaPyroscopeDataQuery,
+  finalExplorationType: string,
+  serviceName: string | undefined
+): void {
+  params.push(`var-dataSource=${pyroscopeQuery.datasource?.uid}`);
+  if (serviceName) {
+    params.push(`var-serviceName=${serviceName}`);
+  }
+  params.push(`var-profileMetricId=${pyroscopeQuery.profileTypeId}`);
+  params.push(`explorationType=${finalExplorationType}`);
+}
+
+function addTimeRangeParams(params: string[], timeRange: RawTimeRange | undefined): void {
+  if (timeRange) {
+    params.push(`from=${timeRange.from.toString()}`);
+    params.push(`to=${timeRange.to.toString()}`);
+  }
+}
+
+function addQueryParams(params: string[], pyroscopeQuery: GrafanaPyroscopeDataQuery): void {
+  if (pyroscopeQuery.spanSelector?.length) {
+    params.push(`var-spanSelector=${pyroscopeQuery.spanSelector.join(',')}`);
+  }
+
+  if (pyroscopeQuery.maxNodes) {
+    params.push(`maxNodes=${pyroscopeQuery.maxNodes}`);
+  }
+}
+
+function addFilterParams(
+  params: string[],
+  finalExplorationType: string,
+  pyroscopeQuery: GrafanaPyroscopeDataQuery
+): void {
+  if ((finalExplorationType === 'labels' || finalExplorationType === 'flame-graph') && pyroscopeQuery.labelSelector) {
+    const additionalLabels = extractAdditionalLabels(pyroscopeQuery.labelSelector);
+    if (additionalLabels.length) {
+      params.push(`var-filters=${additionalLabels.join(',')}`);
+    }
+  }
+}
+
+function addOptionalParams(
+  params: string[],
+  pyroscopeQuery: GrafanaPyroscopeDataQuery,
+  timeRange: RawTimeRange | undefined,
+  finalExplorationType: string
+): void {
+  addTimeRangeParams(params, timeRange);
+  addQueryParams(params, pyroscopeQuery);
+  addFilterParams(params, finalExplorationType, pyroscopeQuery);
+}
+
 /**
  * Builds all URL parameters systematically based on query data and exploration type
- * Handles conditional parameter inclusion (filters only for 'labels' type, etc.)
  * @param pyroscopeQuery - Complete Pyroscope query object
  * @param timeRange - Time range for the query
  * @param finalExplorationType - Determined exploration type
@@ -80,34 +134,8 @@ function buildURLParams(
 ): string {
   const params: string[] = [];
 
-  params.push(`var-dataSource=${pyroscopeQuery.datasource?.uid}`);
-
-  if (serviceName) {
-    params.push(`var-serviceName=${serviceName}`);
-  }
-
-  params.push(`var-profileMetricId=${pyroscopeQuery.profileTypeId}`);
-  params.push(`explorationType=${finalExplorationType}`);
-
-  if (timeRange) {
-    params.push(`from=${timeRange.from.toString()}`);
-    params.push(`to=${timeRange.to.toString()}`);
-  }
-
-  if (pyroscopeQuery.spanSelector?.length) {
-    params.push(`var-spanSelector=${pyroscopeQuery.spanSelector.join(',')}`);
-  }
-
-  if (pyroscopeQuery.maxNodes) {
-    params.push(`maxNodes=${pyroscopeQuery.maxNodes}`);
-  }
-
-  if (finalExplorationType === 'labels' && pyroscopeQuery.labelSelector) {
-    const additionalLabels = extractAdditionalLabels(pyroscopeQuery.labelSelector);
-    if (additionalLabels.length) {
-      params.push(`var-filters=${additionalLabels.join(',')}`);
-    }
-  }
+  addCoreParams(params, pyroscopeQuery, finalExplorationType, serviceName);
+  addOptionalParams(params, pyroscopeQuery, timeRange, finalExplorationType);
 
   return params.join('&');
 }
