@@ -132,7 +132,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
         <form onSubmit={handleSubmit(onSubmit)}>
           <Field
             label="Metric name"
-            description={`The name of the Prometheus metric. The name will be automatically prefixed with '${METRIC_NAME_PREFIX}'.`}
+            description={`Prometheus metric name (automatically prefixed with ${METRIC_NAME_PREFIX}).`}
             error={MetricNameErrorComponent(errors.metricName)}
             invalid={!!errors.metricName}
           >
