@@ -183,7 +183,7 @@ describe('buildURL - Original Functionality', () => {
       });
 
       expect(result).toContain('var-serviceName=payment');
-      expect(result).toContain('var-filters=region%3D%22us-east%22%2Cversion%3D%7E%221.2.*%22');
+      expect(result).toContain('var-filters=region%7C%3D%7C%22us-east%22%2Cversion%7C%3D%7E%7C%221.2.*%22');
       expect(result).toContain('explorationType=labels');
     });
 
@@ -239,7 +239,7 @@ describe('buildURL - Original Functionality', () => {
       });
 
       const decodedUrl = decodeURIComponent(result);
-      expect(decodedUrl).toContain('var-filters=region!="test",version=~"1.*",env!~"dev.*"');
+      expect(decodedUrl).toContain('var-filters=region|!=|"test",version|=~|"1.*",env|!~|"dev.*"');
     });
 
     it('should not add filters for non-labels exploration types', () => {

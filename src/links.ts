@@ -23,7 +23,9 @@ function extractAdditionalLabels(labelSelector: string): string[] {
   while ((match = labelRegex.exec(labelSelector)) !== null) {
     if (match[1] !== 'service_name') {
       // Skip service_name, handled separately
-      labels.push(`${match[1]}${match[2]}"${match[3]}"`); // Preserve original operator
+      // must have | delimiter for Scenes variables
+      const scenesDelimiter = '|';
+      labels.push(`${match[1]}${scenesDelimiter}${match[2]}${scenesDelimiter}"${match[3]}"`); // Preserve original operator
     }
   }
   return labels;
