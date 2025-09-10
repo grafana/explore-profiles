@@ -148,7 +148,6 @@ function buildURLParams(
 
 /**
  * Main URL builder for Profiles Drilldown navigation
- * Refactored from original monolithic function to improve readability and maintainability
  *
  * Flow:
  * 1. Check for datasource-only fallback case (no service/profile specified)
