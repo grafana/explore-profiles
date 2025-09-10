@@ -84,7 +84,7 @@ test.describe('Recording rules', () => {
     // Go to recording rules page and verify the function name is displayed
     await exploreProfilesPage.goToRecordingRulesPage();
     await exploreProfilesPage.assertRecordingRuleInTable(
-      'test_specific_function_metric',
+      'profiles_recorded_test_specific_function_metric',
       'test_specific_function_name'
     );
   });
