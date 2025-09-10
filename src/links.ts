@@ -94,16 +94,22 @@ function addQueryParams(params: string[], pyroscopeQuery: GrafanaPyroscopeDataQu
   }
 }
 
+function shouldAddFilters(finalExplorationType: string): boolean {
+  return finalExplorationType === 'labels' || finalExplorationType === 'flame-graph';
+}
+
 function addFilterParams(
   params: string[],
   finalExplorationType: string,
   pyroscopeQuery: GrafanaPyroscopeDataQuery
 ): void {
-  if ((finalExplorationType === 'labels' || finalExplorationType === 'flame-graph') && pyroscopeQuery.labelSelector) {
-    const additionalLabels = extractAdditionalLabels(pyroscopeQuery.labelSelector);
-    if (additionalLabels.length) {
-      params.push(`var-filters=${additionalLabels.join(',')}`);
-    }
+  if (!shouldAddFilters(finalExplorationType) || !pyroscopeQuery.labelSelector) {
+    return;
+  }
+
+  const additionalLabels = extractAdditionalLabels(pyroscopeQuery.labelSelector);
+  if (additionalLabels.length) {
+    params.push(`var-filters=${additionalLabels.join(',')}`);
   }
 }
 
