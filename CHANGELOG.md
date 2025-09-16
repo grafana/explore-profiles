@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.9.0
+
+##### Chores
+
+*  Use a specific version of Pyroscope for e2e tests (#587) (ab5a4543)
+
+##### Continuous Integration
+
+*  Add a workflow to publish a PR/branch (#578) (c690fc67)
+
+##### New Features
+
+* **Metrics From Profiles:**  Automatically prefix metric name (#592) (7404aba4)
+*  Add rate calculation support and step synchronization (#548) (0538e0bc)
+* **AI:**  Integrate with Grafana Assistant (#558) (0756b05a)
+
+##### Bug Fixes
+
+*  recording rules list to use rule id as row id (#591) (d07f2528)
+*  use rule id as row id (4e261a87)
+
+
 ## 1.8.1
 
 
