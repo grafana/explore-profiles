@@ -13,6 +13,9 @@ services:
       - ./samples/provisioning:/etc/grafana/provisioning
       - ./samples/dashboards:/var/lib/grafana/dashboards
     environment:
+      {{- if not (semverCompare ">=12.1.0" .Env.GRAFANA_VERSION) }}
+      GF_PLUGINS_PREINSTALL_DISABLED: true
+      {{- end }}
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
