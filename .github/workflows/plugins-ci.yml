@@ -24,8 +24,7 @@ jobs:
 
       # When pushing to "main", publish and deploy to "dev" (CD). For PRs, skip publishing and deploying (run CI only)
       environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev,ops' || 'none' }}
-      # Disabled for testing purposes to see if created config looks good. Uncomment when ready to deploy.
-      #auto-merge-environments: dev,ops
+      auto-merge-environments: dev,ops
       # Deploy provisioned plugin to Grafana Cloud
       grafana-cloud-deployment-type: provisioned
       argo-workflow-slack-channel: '#proj-profilesdrilldown-cd'
