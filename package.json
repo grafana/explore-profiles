@@ -41,7 +41,7 @@
     "@connectrpc/connect-web": "^2.0.1",
     "@emotion/css": "11.10.6",
     "@grafana/data": "^12.1.0",
-    "@grafana/faro-web-sdk": "^1.10.0",
+    "@grafana/faro-web-sdk": "^1.19.0",
     "@grafana/flamegraph": "12.2.0-17195718647",
     "@grafana/llm": "0.16.0",
     "@grafana/runtime": "^12.1.0",
