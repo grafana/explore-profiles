@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.10.0
+
+##### Chores
+
+*  Add missing target to plugin.json (#605) (3d7c76dc)
+*  Update @grafana/faro-web-sdk to latest release (#603) (cb3615dc)
+* **e2e:**  Upgrade Playwright to 1.55.1 (#604) (95940103)
+
+##### Continuous Integration
+
+*  Deploy automatically to ops (#600) (9632905b)
+
+##### New Features
+
+*  update extension point for grafana assistant, add vars and tests (#593) (50820a7a)
+
+##### Bug Fixes
+
+*  Update grafana/assistant (#597) (6a5758ac)
+
+
 ## 1.9.0
 
 ##### Chores
