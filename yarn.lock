@@ -1406,7 +1406,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react-dom@npm:^2.1.5":
+"@floating-ui/react-dom@npm:^2.1.6":
   version: 2.1.6
   resolution: "@floating-ui/react-dom@npm:2.1.6"
   dependencies:
@@ -1432,17 +1432,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@floating-ui/react@npm:0.27.15":
-  version: 0.27.15
-  resolution: "@floating-ui/react@npm:0.27.15"
+"@floating-ui/react@npm:0.27.16":
+  version: 0.27.16
+  resolution: "@floating-ui/react@npm:0.27.16"
   dependencies:
-    "@floating-ui/react-dom": "npm:^2.1.5"
+    "@floating-ui/react-dom": "npm:^2.1.6"
     "@floating-ui/utils": "npm:^0.2.10"
     tabbable: "npm:^6.0.0"
   peerDependencies:
     react: ">=17.0.0"
     react-dom: ">=17.0.0"
-  checksum: 10/1b48c0956f04eb00e8d992ef27234fbf6c204ad5c266538109332a1b469ef1360b3bf98c6ebfb23b05aa29e8284a67bd01a26ba0484a9f34af4a087d67d65fcc
+  checksum: 10/b9baedee124035323a8f74794ec782678faf52af1c88731ce7d2641b7e7c97748fda1e711a3c4db007a0153d93158d867f4726ee632d713d3de76ec4bdfd84e1
   languageName: node
   linkType: hard
 
@@ -1601,13 +1601,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/data@npm:12.2.0-17195718647":
-  version: 12.2.0-17195718647
-  resolution: "@grafana/data@npm:12.2.0-17195718647"
+"@grafana/data@npm:12.2.0":
+  version: 12.2.0
+  resolution: "@grafana/data@npm:12.2.0"
   dependencies:
     "@braintree/sanitize-url": "npm:7.0.1"
-    "@grafana/i18n": "npm:12.2.0-17195718647"
-    "@grafana/schema": "npm:12.2.0-17195718647"
+    "@grafana/i18n": "npm:12.2.0"
+    "@grafana/schema": "npm:12.2.0"
     "@leeoniya/ufuzzy": "npm:1.0.18"
     "@types/d3-interpolate": "npm:^3.0.0"
     "@types/string-hash": "npm:1.1.3"
@@ -1635,7 +1635,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/811b2ba6b655f99f2287818f19fd18ad0e3f27d63d14c3a353a155977266e9b3cb1251d0d99ee46eb36fcb5d9145e3b5886677b323f78f2da06dd7c1e6776e59
+  checksum: 10/22c7619c0eb1621a639125d6dd6379a3296014be540703c5a2c39fdf5645185164aaa88e2da2156422ba90420c46e92d77a383a063be91ee734d4f84d129bde4
   languageName: node
   linkType: hard
 
@@ -1651,14 +1651,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/e2e-selectors@npm:12.2.0-17195718647":
-  version: 12.2.0-17195718647
-  resolution: "@grafana/e2e-selectors@npm:12.2.0-17195718647"
+"@grafana/e2e-selectors@npm:12.2.0":
+  version: 12.2.0
+  resolution: "@grafana/e2e-selectors@npm:12.2.0"
   dependencies:
     semver: "npm:^7.7.0"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.2"
-  checksum: 10/9a5cb98bbbd9a8eb7414b5fb79b01dd7f6a39d464d2cb46e61ddb05ce5df991412112dccc23d875cf6e45fc33ad78123a8694699c27fffa79625ca036ee68eb7
+  checksum: 10/d803956b032e1ef2c2b919201a1b98dcf08bd0f817c1aeeffc632957f4e14c70fc214d683fc50d5769bf486df8d23c71494de4adf6fd57a243741bfe08b8e54f
   languageName: node
   linkType: hard
 
@@ -1743,13 +1743,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/flamegraph@npm:12.2.0-17195718647":
-  version: 12.2.0-17195718647
-  resolution: "@grafana/flamegraph@npm:12.2.0-17195718647"
+"@grafana/flamegraph@npm:^12.2.0":
+  version: 12.2.0
+  resolution: "@grafana/flamegraph@npm:12.2.0"
   dependencies:
     "@emotion/css": "npm:11.13.5"
-    "@grafana/data": "npm:12.2.0-17195718647"
-    "@grafana/ui": "npm:12.2.0-17195718647"
+    "@grafana/data": "npm:12.2.0"
+    "@grafana/ui": "npm:12.2.0"
     "@leeoniya/ufuzzy": "npm:1.0.18"
     d3: "npm:^7.8.5"
     lodash: "npm:4.17.21"
@@ -1759,10 +1759,10 @@ __metadata:
     tinycolor2: "npm:1.6.0"
     tslib: "npm:2.8.1"
   peerDependencies:
-    "@grafana/assistant": ^0.0.12
+    "@grafana/assistant": ^0.0.17
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/0dfbdc25a5cd8251dfb03c6e8e6d949a62eacca2c170358a1208c477b9555f8e034831002aa2d6e2b58ed19a5361c8faab459683588f2ee626ffeceb29d2cfe2
+  checksum: 10/b612cd7702c86ea0353e53d714da7878d8370e16115ecf8e5ec07e17e0ab644a0ae84c7f9ce8253dc6321c7d226284da74000030767a8257b87ea211a6396fea
   languageName: node
   linkType: hard
 
@@ -1784,9 +1784,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/i18n@npm:12.2.0-17195718647":
-  version: 12.2.0-17195718647
-  resolution: "@grafana/i18n@npm:12.2.0-17195718647"
+"@grafana/i18n@npm:12.2.0":
+  version: 12.2.0
+  resolution: "@grafana/i18n@npm:12.2.0"
   dependencies:
     "@formatjs/intl-durationformat": "npm:^0.7.0"
     "@typescript-eslint/utils": "npm:^8.33.1"
@@ -1798,7 +1798,7 @@ __metadata:
     react-i18next: "npm:^15.0.0"
   peerDependencies:
     react: ">=18"
-  checksum: 10/754f19cd5ff1a0d872c431cb9a9125a8284b97db8e6d04472b521755c5c658b83b1066600064b01366b23aca1c49c26f58f91f5ce434772bee21a17ecd852d09
+  checksum: 10/aab1daea562252731e2496989dee62f7d686dff891c46b16a5c53755d71ae81963b83731346a3bbe2d625c4cabd2ba97688e8389bfef53ff89fb043770697a77
   languageName: node
   linkType: hard
 
@@ -1872,12 +1872,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/schema@npm:12.2.0-17195718647":
-  version: 12.2.0-17195718647
-  resolution: "@grafana/schema@npm:12.2.0-17195718647"
+"@grafana/schema@npm:12.2.0":
+  version: 12.2.0
+  resolution: "@grafana/schema@npm:12.2.0"
   dependencies:
     tslib: "npm:2.8.1"
-  checksum: 10/eae89719b8ee092bc68e021547a910718a567dc2838abb3eed69cc1ba13327fe468c4ac08ab33ccb9720db95de71d68dc62240e8dbbbeebe840ded0c1ce4ba30
+  checksum: 10/8b48400991a1def052754959faf457eb0a426e94395ef71742356e17114256833a03134191ab1eb8d00824095831095c1fc80ca613d6233fc222a17ca7a2288b
   languageName: node
   linkType: hard
 
@@ -1974,19 +1974,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/ui@npm:12.2.0-17195718647":
-  version: 12.2.0-17195718647
-  resolution: "@grafana/ui@npm:12.2.0-17195718647"
+"@grafana/ui@npm:12.2.0":
+  version: 12.2.0
+  resolution: "@grafana/ui@npm:12.2.0"
   dependencies:
     "@emotion/css": "npm:11.13.5"
     "@emotion/react": "npm:11.14.0"
     "@emotion/serialize": "npm:1.3.3"
-    "@floating-ui/react": "npm:0.27.15"
-    "@grafana/data": "npm:12.2.0-17195718647"
-    "@grafana/e2e-selectors": "npm:12.2.0-17195718647"
+    "@floating-ui/react": "npm:0.27.16"
+    "@grafana/data": "npm:12.2.0"
+    "@grafana/e2e-selectors": "npm:12.2.0"
     "@grafana/faro-web-sdk": "npm:^1.13.2"
-    "@grafana/i18n": "npm:12.2.0-17195718647"
-    "@grafana/schema": "npm:12.2.0-17195718647"
+    "@grafana/i18n": "npm:12.2.0"
+    "@grafana/schema": "npm:12.2.0"
     "@hello-pangea/dnd": "npm:18.0.1"
     "@monaco-editor/react": "npm:4.7.0"
     "@popperjs/core": "npm:2.11.8"
@@ -2050,7 +2050,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/f7c2643fae67aa0439ab19b41d14de02c1936e41577665a08768e91cf67e2b9f2afc3163bd39e35588350b7a6beaa161af4ad9c36d76d3ec40aaee2777e46d08
+  checksum: 10/881ce7d4a16a7b7c9f504e26d9a91cbf3e7723e55251ab26819213447d7c6630c975eb810b1be2d5b55d7e9f0cf9d912446256170a03816a59c22c7b750f02cc
   languageName: node
   linkType: hard
 
@@ -11766,7 +11766,7 @@ __metadata:
     "@grafana/e2e-selectors": "npm:^10.0.0"
     "@grafana/eslint-config": "npm:^8.0.0"
     "@grafana/faro-web-sdk": "npm:^1.10.0"
-    "@grafana/flamegraph": "npm:12.2.0-17195718647"
+    "@grafana/flamegraph": "npm:^12.2.0"
     "@grafana/llm": "npm:0.16.0"
     "@grafana/runtime": "npm:^12.1.0"
     "@grafana/scenes": "npm:^4.22.0"
