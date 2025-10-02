@@ -1,13 +1,14 @@
 import { css, cx } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
-import { LinkButton, Spinner, useStyles2 } from '@grafana/ui';
-import React from 'react';
+import { GrafanaTheme2, rangeUtil } from '@grafana/data';
+import { Button, LinkButton, Modal, Spinner, useStyles2 } from '@grafana/ui';
+import React, { useState } from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
 import { CodeLine } from '../domain/useCodeContainer';
 
 type CodeProps = {
+  functionCode: string;
   lines: CodeLine[];
   unit: string;
   githubUrl?: string;
@@ -16,7 +17,15 @@ type CodeProps = {
   onOptimizeCodeClick: () => void;
 };
 
-export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, onOptimizeCodeClick }: CodeProps) => {
+export const Code = ({
+  functionCode,
+  lines,
+  unit,
+  githubUrl,
+  isLoadingCode,
+  noCodeAvailable,
+  onOptimizeCodeClick,
+}: CodeProps) => {
   const styles = useStyles2(getStyles);
 
   const fmt = buildUnitFormatter(unit);
@@ -44,8 +53,20 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
     [0, 0]
   );
 
+  const [prompt, setPrompt] = useState('');
+
+  const clearPrompt = () => setPrompt('');
+
   return (
     <div data-testid="function-details-code-container">
+      {
+        <Modal title="Prompt Example" isOpen={prompt !== ''} onDismiss={clearPrompt} onClickBackdrop={clearPrompt}>
+          <pre>{prompt}</pre>
+          <Modal.ButtonRow>
+            <Button onClick={clearPrompt}>Clear prompt</Button>
+          </Modal.ButtonRow>
+        </Modal>
+      }
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.breakdownLabel}>
@@ -57,6 +78,37 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
           </div>
 
           <div className={styles.buttons}>
+            {functionCode && (
+              <LinkButton
+                fill="text"
+                icon={'search-plus'}
+                onClick={() => {
+                  const params = new URLSearchParams(document.URL);
+                  const serviceName = params.get('var-serviceName');
+                  const profileMetricId = params.get('var-profileMetricId');
+                  const shortProfileId = profileMetricId?.split(':').slice(0, 2).join('/');
+
+                  const from = params.get('from');
+                  const to = params.get('to');
+
+                  const timeRange = !from || !to ? 'last 30 minutes' : rangeUtil.describeTimeRange({ from, to });
+
+                  const prompt = [
+                    `Through a Profiles Drilldown query of the \`${shortProfileId}\` profile `,
+                    `for \`{service_name="${serviceName}"\` in the ${timeRange} time range, `,
+                    `I found the following source code:\n\n`,
+                    '```\n',
+                    functionCode,
+                    '\n```\n\n',
+                    'Can you find relevant observability data from those lines of code (traces, metrics, or logs)?',
+                  ].join('');
+
+                  setPrompt(prompt);
+                }}
+              >
+                Co(de) Relate
+              </LinkButton>
+            )}
             <LinkButton
               disabled={Boolean(isLoadingCode || !githubUrl)}
               href={githubUrl}

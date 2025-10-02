@@ -6,6 +6,7 @@ import { useGitHubContext } from '../../GitHubContextProvider/useGitHubContext';
 import { useFetchVCSFile } from '../infrastructure/useFetchVCSFile';
 import { annotateLines, annotatePlaceholderLines } from './annotateLines';
 import { buildGithubUrlForFunction } from './buildGithubUrlForFunction';
+import { extractFunction } from './extractFunction';
 
 /**
  * View model for Code component
@@ -43,6 +44,14 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
     [fileInfo?.content, functionDetails.callSites]
   );
 
+  const functionCode = useMemo(
+    () =>
+      fileInfo?.content && functionDetails.startLine !== undefined
+        ? extractFunction(functionDetails.startLine, fileInfo.content)
+        : null,
+    [fileInfo?.content, functionDetails.startLine]
+  );
+
   return {
     data: {
       fetchError,
@@ -52,6 +61,7 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
       githubUrl: fileInfo?.URL ? buildGithubUrlForFunction(fileInfo.URL, functionDetails.startLine) : undefined,
       snippetLines: snippetLines.map((annotatedLine) => ({ ...annotatedLine, line: annotatedLine.line ?? '???' })),
       allLines: allLines.map((annotateLine) => ({ ...annotateLine, line: annotateLine.line ?? '???' })),
+      functionCode,
       noCodeAvailable: Boolean(fetchError) || !allLines.some((line) => line.line),
     },
     actions: {
