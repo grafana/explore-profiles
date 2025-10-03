@@ -27,7 +27,7 @@ export function codeRelate(functionCode: string) {
 
   const prompt = [
     `Through a Profiles Drilldown query of the \`${shortProfileId}\` profile `,
-    `for \`{service_name="${serviceName}"\` in the ${timeRange} time range, `,
+    `for \`{service_name="${serviceName}"}\` in the ${timeRange} time range, `,
     `I found the following source code:\n\n`,
     '```\n',
     functionCode,
