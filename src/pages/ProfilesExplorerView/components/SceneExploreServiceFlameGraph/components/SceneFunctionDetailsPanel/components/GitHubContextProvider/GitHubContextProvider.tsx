@@ -64,6 +64,7 @@ export function GitHubContextProvider({ dataSourceUid, children }: GitHubContext
         isLoggedIn: Boolean(sessionCookie && !sessionCookie.isUserTokenExpired()),
         isSessionExpired: Boolean(sessionCookie?.isUserTokenExpired()),
         login,
+        logout: () => setSessionCookie(''),
       }}
     >
       {children}
