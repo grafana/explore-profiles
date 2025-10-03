@@ -1,6 +1,8 @@
 import { createAssistantContextItem, isAssistantAvailable, openAssistant } from '@grafana/assistant';
 import { rangeUtil } from '@grafana/data';
 
+import { FunctionDetails } from '../../../domain/types/FunctionDetails';
+
 let isAvailable = false;
 
 // Subscribe to assistant availability
@@ -8,7 +10,8 @@ isAssistantAvailable().subscribe((available) => {
   isAvailable = available;
 });
 
-export function codeRelate(functionCode: string) {
+// TODO improve how these params are obtained and passed through the flow
+export function codeRelate(functionCode: string, functionDetails: FunctionDetails) {
   if (!isAvailable) {
     // eslint-disable-next-line no-console
     console.error('Sorry, Grafana Assistant is not available');
@@ -25,11 +28,10 @@ export function codeRelate(functionCode: string) {
 
   const timeRange = !from || !to ? 'last 30 minutes' : rangeUtil.describeTimeRange({ from, to });
 
-  // TO-DO: Ensure those are propagated properly
-  const functionCodeOffset = 0;
-  const functionCodePath = 'pkg/distributor/distributor.go';
-  const functionCodeRepository = 'https://github.com/grafana/pyroscope';
-  const functionCodeCommit = 'HEAD';
+  const functionCodeOffset = functionDetails.startLine;
+  const functionCodePath = functionDetails.fileName;
+  const functionCodeRepository = functionDetails.version?.repository;
+  const functionCodeCommit = functionDetails.commit.sha;
 
   const prompt = [
     `Through a Profiles Drilldown query of the \`${shortProfileId}\` profile `,
