@@ -52,7 +52,7 @@ export function getCodeRelate(functionDetails: FunctionDetails, functionCode?: s
       'Follow exactly these steps:\n',
       '1. Find any observability signal references in the source code snippet.\n',
       '2. Query datasources for those observability signals\n',
-      '3. Compile the itemize list as per above specification.\n\n',
+      '3. Compile the itemized list as per above specification.\n\n',
     ].join('');
 
     const datasourceUid = params.get('var-dataSource')!;
