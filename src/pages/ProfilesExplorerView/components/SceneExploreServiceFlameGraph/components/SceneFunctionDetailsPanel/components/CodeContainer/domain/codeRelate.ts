@@ -5,7 +5,6 @@ let isAvailable = false;
 // Subscribe to assistant availability
 isAssistantAvailable().subscribe((available) => {
   isAvailable = available;
-  alert('Assistant available: ' + isAvailable);
 });
 
 export function codeRelate(prompt: string) {
