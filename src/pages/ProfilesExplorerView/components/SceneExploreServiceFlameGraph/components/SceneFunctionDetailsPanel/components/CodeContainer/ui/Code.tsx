@@ -5,11 +5,13 @@ import React from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
+import { FunctionDetails } from '../../../domain/types/FunctionDetails';
 import { codeRelate } from '../domain/codeRelate';
 import { CodeLine } from '../domain/useCodeContainer';
 
 type CodeProps = {
   functionCode: string;
+  functionDetails: FunctionDetails;
   lines: CodeLine[];
   unit: string;
   githubUrl?: string;
@@ -20,6 +22,7 @@ type CodeProps = {
 
 export const Code = ({
   functionCode,
+  functionDetails,
   lines,
   unit,
   githubUrl,
@@ -72,7 +75,7 @@ export const Code = ({
                 fill="text"
                 icon={'search-plus'}
                 onClick={() => {
-                  codeRelate(functionCode);
+                  codeRelate(functionCode, functionDetails);
                 }}
               >
                 Co(de) Relate

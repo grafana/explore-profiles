@@ -28,6 +28,7 @@ export function CodeContainer({ dataSourceUid, functionDetails }: CodeContainerP
         isLoadingCode={data.isLoadingCode}
         noCodeAvailable={data.noCodeAvailable}
         functionCode={data.functionCode}
+        functionDetails={functionDetails}
         onOptimizeCodeClick={() => {
           actions.setOpenAiSuggestions(true);
           document.getElementById('ai-suggestions-panel')?.scrollIntoView({
