@@ -5,29 +5,25 @@ import React from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
-import { FunctionDetails } from '../../../domain/types/FunctionDetails';
-import { codeRelate } from '../domain/codeRelate';
 import { CodeLine } from '../domain/useCodeContainer';
 
 type CodeProps = {
-  functionCode: string;
-  functionDetails: FunctionDetails;
   lines: CodeLine[];
   unit: string;
   githubUrl?: string;
   isLoadingCode: boolean;
   noCodeAvailable: boolean;
+  onCodeRelateClick?: () => void;
   onOptimizeCodeClick: () => void;
 };
 
 export const Code = ({
-  functionCode,
-  functionDetails,
   lines,
   unit,
   githubUrl,
   isLoadingCode,
   noCodeAvailable,
+  onCodeRelateClick,
   onOptimizeCodeClick,
 }: CodeProps) => {
   const styles = useStyles2(getStyles);
@@ -70,14 +66,8 @@ export const Code = ({
           </div>
 
           <div className={styles.buttons}>
-            {functionCode && (
-              <LinkButton
-                fill="text"
-                icon={'search-plus'}
-                onClick={() => {
-                  codeRelate(functionCode, functionDetails);
-                }}
-              >
+            {onCodeRelateClick && (
+              <LinkButton fill="text" icon={'search-plus'} onClick={onCodeRelateClick}>
                 Co(de) Relate
               </LinkButton>
             )}

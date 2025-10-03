@@ -4,6 +4,7 @@ import React from 'react';
 
 import { FunctionDetails } from '../../domain/types/FunctionDetails';
 import { AiSuggestionsPanel } from '../AiSuggestionsPanel/AiSuggestionsPanel';
+import { getCodeRelate } from './domain/codeRelate';
 import { useCodeContainer } from './domain/useCodeContainer';
 import { Code } from './ui/Code';
 
@@ -19,6 +20,8 @@ export function CodeContainer({ dataSourceUid, functionDetails }: CodeContainerP
     displayError(data.fetchError, ['Failed to fetch file information!', (data.fetchError as Error).message]);
   }
 
+  const codeRelate = getCodeRelate(functionDetails, data.functionCode);
+
   return (
     <>
       <Code
@@ -27,8 +30,7 @@ export function CodeContainer({ dataSourceUid, functionDetails }: CodeContainerP
         githubUrl={data.githubUrl}
         isLoadingCode={data.isLoadingCode}
         noCodeAvailable={data.noCodeAvailable}
-        functionCode={data.functionCode}
-        functionDetails={functionDetails}
+        onCodeRelateClick={codeRelate}
         onOptimizeCodeClick={() => {
           actions.setOpenAiSuggestions(true);
           document.getElementById('ai-suggestions-panel')?.scrollIntoView({
