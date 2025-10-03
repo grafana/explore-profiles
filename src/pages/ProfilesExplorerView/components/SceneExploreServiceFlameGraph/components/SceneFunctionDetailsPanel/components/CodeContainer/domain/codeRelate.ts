@@ -25,6 +25,12 @@ export function codeRelate(functionCode: string) {
 
   const timeRange = !from || !to ? 'last 30 minutes' : rangeUtil.describeTimeRange({ from, to });
 
+  // TO-DO: Ensure those are propagated properly
+  const functionCodeOffset = 0;
+  const functionCodePath = 'pkg/distributor/distributor.go';
+  const functionCodeRepository = 'https://github.com/grafana/pyroscope';
+  const functionCodeCommit = 'HEAD';
+
   const prompt = [
     `Through a Profiles Drilldown query of the \`${shortProfileId}\` profile `,
     `for \`{service_name="${serviceName}"}\` in the ${timeRange} time range, `,
@@ -32,7 +38,12 @@ export function codeRelate(functionCode: string) {
     '```\n',
     functionCode,
     '\n```\n\n',
-    'Can you find relevant observability data from those lines of code (traces, metrics, or logs)?',
+    `The source code is from file \`${functionCodePath}\`, starting with line ${functionCodeOffset}, so make sure to offset line reference by that much. The repository URL is \`${functionCodeRepository}\` and we used git reference \`${functionCodeCommit}\`\n`,
+    '\n',
+    'Can you generate an itemized list of the observabililty signals (metrics, logs or traces) you found in the given source code?\n',
+    'Ensure to include a summary of the signal (and show the signal type using an emoji), the line number, a code snippet, a PromQL/LogQL/TraceQL query and a link showing executing the query in Grafana Explore. Make sure to correctly urlencode the parameters in the link.\n',
+    'Remember in order to query the span name in TraceQL you need {name="[span name]"}.\n\n',
+    'In order to verify your findings, query the related data sources and order the list starting with the one with the most results you found.\n\n',
   ].join('');
 
   const datasourceUid = params.get('var-dataSource')!;
