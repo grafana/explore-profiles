@@ -49,6 +49,10 @@ export function getCodeRelate(functionDetails: FunctionDetails, functionCode?: s
       'Ensure to include a summary of the signal (and show the signal type using an emoji), the line number, a code snippet, a PromQL/LogQL/TraceQL query and a link showing executing the query in Grafana Explore. Make sure to correctly urlencode the parameters in the link.\n',
       'Remember in order to query the span name in TraceQL you need {name="[span name]"}.\n\n',
       'In order to verify your findings, query the related data sources and order the list starting with the one with the most results you found.\n\n',
+      'Follow exactly these steps:\n',
+      '1. Find any observability signal references in the source code snippet.\n',
+      '2. Query datasources for those observability signals\n',
+      '3. Compile the itemize list as per above specification.\n\n',
     ].join('');
 
     const datasourceUid = params.get('var-dataSource')!;
