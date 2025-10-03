@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
+import { codeRelate } from '../domain/codeRelate';
 import { CodeLine } from '../domain/useCodeContainer';
 
 type CodeProps = {
@@ -63,6 +64,13 @@ export const Code = ({
         <Modal title="Prompt Example" isOpen={prompt !== ''} onDismiss={clearPrompt} onClickBackdrop={clearPrompt}>
           <pre>{prompt}</pre>
           <Modal.ButtonRow>
+            <Button
+              onClick={() => {
+                codeRelate(prompt);
+              }}
+            >
+              Investigate
+            </Button>
             <Button onClick={clearPrompt}>Clear prompt</Button>
           </Modal.ButtonRow>
         </Modal>
