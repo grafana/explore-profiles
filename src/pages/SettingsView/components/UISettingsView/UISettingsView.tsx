@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
+import { Alert, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import React from 'react';
@@ -78,6 +78,23 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
 
       {featureToggles.metricsFromProfiles && (
         <FieldSet label="Experimental features" data-testid="experimental-features">
+          <Alert severity="info" title="Metrics from profiles" className={css({ maxWidth: '1000px' })}>
+            {data.enableMetricsFromProfiles ? (
+              <>
+                <p>
+                  Disabling this feature only hides it from the UI. No existing recording rules are removed. These rules
+                  will remain active and continue to export metrics, which will still impact your bill.
+                </p>
+                <p>To stop exporting data, delete all related recording rules before disabling this feature.</p>
+              </>
+            ) : (
+              <p>
+                Enabling this feature lets you define recording rules from Profiles Drilldown. Any recording rules you
+                create will send new metrics to your Grafana Cloud instance, increasing your data usage in Grafana Mimir
+                and potentially affecting your bill.
+              </p>
+            )}
+          </Alert>
           <InlineFieldRow>
             <InlineField
               label="Metrics from profiles"
