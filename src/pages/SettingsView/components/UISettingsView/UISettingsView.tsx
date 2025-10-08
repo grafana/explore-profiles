@@ -77,8 +77,8 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
       </FieldSet>
 
       {featureToggles.metricsFromProfiles && (
-        <FieldSet label="Experimental features" data-testid="experimental-features">
-          <Alert severity="info" title="Metrics from profiles" className={css({ maxWidth: '1000px' })}>
+        <FieldSet label="Metric from profiles" data-testid="experimental-features">
+          <Alert severity="info" title="" className={css({ maxWidth: '1000px' })}>
             {data.enableMetricsFromProfiles ? (
               <>
                 <p>
@@ -97,9 +97,9 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
           </Alert>
           <InlineFieldRow>
             <InlineField
-              label="Metrics from profiles"
+              label="Enable metrics from profiles"
               tooltip="Allows creating Prometheus recording rules from profiles"
-              labelWidth={24}
+              labelWidth={30}
             >
               <InlineSwitch
                 label="Enable metrics from profiles"
