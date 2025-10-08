@@ -10,21 +10,11 @@
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
-      "exposedComponents": [
-        "grafana-o11yinsights-app/insights-launcher/v1"
-      ]
+      "exposedComponents": ["grafana-o11yinsights-app/insights-launcher/v1"]
     }
   },
   "info": {
-    "keywords": [
-      "app",
-      "pyroscope",
-      "profiling",
-      "explore",
-      "profiles",
-      "performance",
-      "drilldown"
-    ],
+    "keywords": ["app", "pyroscope", "profiling", "explore", "profiles", "performance", "drilldown"],
     "description": "View and analyze high-level service performance, identify problem processes for optimization, and diagnose issues to determine root causes.",
     "author": {
       "name": "Grafana"
