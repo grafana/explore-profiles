@@ -77,7 +77,7 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
       </FieldSet>
 
       {featureToggles.metricsFromProfiles && (
-        <FieldSet label="Metric from profiles" data-testid="experimental-features">
+        <FieldSet label="Metrics from profiles" data-testid="experimental-features">
           <Alert severity="info" title="" className={css({ maxWidth: '1000px' })}>
             {data.enableMetricsFromProfiles ? (
               <>
