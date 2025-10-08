@@ -98,7 +98,7 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
           <InlineFieldRow>
             <InlineField
               label="Enable metrics from profiles"
-              tooltip="Allows creating Prometheus recording rules from profiles"
+              tooltip="Allows creating recording rules from profiles"
               labelWidth={30}
             >
               <InlineSwitch
