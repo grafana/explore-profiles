@@ -51,7 +51,9 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     super({});
   }
 
-  static Component = ({
+  // TODO: https://github.com/grafana/profiles-drilldown/issues/614
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  static Component = function ({
     model,
     isModalOpen,
     onDismiss,
@@ -62,9 +64,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     onDismiss: () => void;
     onCreated: () => void;
     functionName?: string;
-    // TODO: https://github.com/grafana/profiles-drilldown/issues/614
-    // eslint-disable-next-line sonarjs/cognitive-complexity
-  }) => {
+  }) {
     const [options, setOptions] = useState<string[]>([]);
 
     const { actions } = useCreateRecordingRule();
