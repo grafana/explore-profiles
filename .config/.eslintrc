@@ -14,7 +14,7 @@
     {
       "files": ["src/**/*.{ts,tsx}"],
       "rules": {
-        "@typescript-eslint/no-deprecated": "warn"
+        "deprecation/deprecation": "warn"
       },
       "parserOptions": {
         "project": "./tsconfig.json"

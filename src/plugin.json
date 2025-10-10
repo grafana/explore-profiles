@@ -53,6 +53,13 @@
     }
   ],
   "extensions": {
+    "exposedComponents": [
+      {
+        "id": "grafana-pyroscope-app/embedded-profiles-exploration/v1",
+        "title": "Embedded Profiles Exploration",
+        "description": "A component that renders a profiles exploration view that can be embedded in other parts of Grafana."
+      }
+    ],
     "extensionPoints": [
       {
         "id": "grafana-pyroscope-app/investigation/v1"
@@ -65,7 +72,11 @@
       {
         "title": "Open in Grafana Profiles Drilldown",
         "description": "Try our new queryless experience for profiles",
-        "targets": ["grafana/explore/toolbar/action", "grafana/traceview/details", "grafana-assistant-app/navigateToDrilldown/v1"]
+        "targets": [
+          "grafana/explore/toolbar/action",
+          "grafana/traceview/details",
+          "grafana-assistant-app/navigateToDrilldown/v1"
+        ]
       }
     ]
   }

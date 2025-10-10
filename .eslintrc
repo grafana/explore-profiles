@@ -1,5 +1,5 @@
 {
-  "plugins": ["jest", "sonarjs", "@tanstack/query"],
+  "plugins": ["jest", "sonarjs", "@tanstack/query", "deprecation"],
   "extends": [
     "./.config/.eslintrc",
     "plugin:jest/recommended",
