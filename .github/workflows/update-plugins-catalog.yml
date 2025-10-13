@@ -36,7 +36,7 @@ jobs:
             GCOM_PUBLISH_TOKEN=plugins/gcom-publish-token:${{ inputs.environment }}
 
       - name: Update catalog
-        uses: grafana/plugin-ci-workplugin-ci-workflows/actions/plugins/publish/publish@main@ci-cd-workflows/v2
+        uses: grafana/plugin-ci-workplugin-ci-workflows/actions/plugins/publish/publish@ci-cd-workflows/v2
         with:
           zips: '["https://storage.googleapis.com/grafana-pyroscope-app/releases/grafana-pyroscope-app-${{ inputs.version }}.zip"]'
           environment: ${{ inputs.environment }}

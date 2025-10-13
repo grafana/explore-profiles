@@ -52,7 +52,7 @@ jobs:
 
       # Create zip file with name following convention [plugin-id]-[version].zip
       # and md5 following [plugin-id]-[version].zip.md5 convention
-      # used by grafana/plugin-ci-workplugin-ci-workflows/actions/plugins/publish/publish@main@ci-cd-workflows/v2
+      # used by grafana/plugin-ci-workplugin-ci-workflows/actions/plugins/publish/publish@ci-cd-workflows/v2
       # to publish the artifact to Plugins Catalog
       - name: Upload plugin
         env:
