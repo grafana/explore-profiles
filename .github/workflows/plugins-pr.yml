@@ -18,7 +18,7 @@ permissions: {}
 jobs:
   cd:
     name: CI / CD
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
+    uses: grafana/plugin-ci-workplugin-ci-workflows/.github/workflows/cd.yml@main@ci-cd-workflows/v2
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
