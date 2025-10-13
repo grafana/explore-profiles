@@ -61,12 +61,8 @@ export class SettingsPage extends PyroscopePage {
     return this.page.getByTestId('export-settings');
   }
 
-  getExperimentalSettings() {
-    return this.page.getByTestId('experimental-features');
-  }
-
   getMetricsFromProfilesCheckbox() {
-    return this.getExperimentalSettings().getByLabel('Enable metrics from profiles');
+    return this.page.getByTestId('metrics-from-profiles').getByLabel('Enable metrics from profiles');
   }
 
   getEnableFlamegraphDotComCheckbox() {
