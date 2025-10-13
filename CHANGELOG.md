@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.10.1
+
+##### Chores
+
+*  Update flamegraph package (#607) (12c37c7e)
+
+
 ## 1.10.0
 
 ##### Chores
