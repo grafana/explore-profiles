@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { Button, Icon, Spinner, useStyles2 } from '@grafana/ui';
+import { Button, Icon, IconButton, Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { useGitHubContext } from './GitHubContextProvider/useGitHubContext';
@@ -26,7 +26,7 @@ type GitHubRepositoryProps = {
 
 export const GitHubRepository = ({ enableIntegration, repository }: GitHubRepositoryProps) => {
   const styles = useStyles2(getStyles);
-  const { isLoginInProgress, isLoggedIn, login } = useGitHubContext();
+  const { isLoginInProgress, isLoggedIn, login, logout } = useGitHubContext();
 
   if (!enableIntegration) {
     return <>-</>;
@@ -66,6 +66,12 @@ export const GitHubRepository = ({ enableIntegration, repository }: GitHubReposi
         &nbsp;
         {repository.commitName}
       </a>
+      <IconButton
+        name="signout"
+        onClick={() => logout()}
+        aria-label="Disconnect from GitHub"
+        title="Disconnect from GitHub"
+      />
     </>
   );
 };

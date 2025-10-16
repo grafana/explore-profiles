@@ -60,7 +60,12 @@ class InternalGitSessionCookieManager implements GitSessionCookieManager {
       return;
     }
 
-    cookie !== undefined ? this.setCookie(`${cookie.key}=${cookie.value}`) : this.deleteCookie();
+    if (cookie === undefined) {
+      this.deleteCookie();
+    } else {
+      this.rawCookie = cookie;
+      this.sessionCookie = GitSessionCookie.decode(cookie.value);
+    }
   }
 
   private static getCookieFromJar(jar: string, name: string): Cookie | undefined {
