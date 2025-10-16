@@ -45,6 +45,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     legendPlacement,
     data,
     overrides,
+    annotations,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
@@ -52,6 +53,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     legendPlacement?: SceneLabelValuesTimeseriesState['legendPlacement'];
     data?: SceneDataTransformer;
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
+    annotations?: boolean;
   }) {
     super({
       key: 'timeseries-label-values',
@@ -68,7 +70,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               $data: buildTimeSeriesQueryRunner(
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
-                true
+                annotations
               ),
               transformations: [addRefId, addStats],
             })
