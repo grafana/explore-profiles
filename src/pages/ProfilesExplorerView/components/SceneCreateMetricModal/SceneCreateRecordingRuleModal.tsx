@@ -5,8 +5,9 @@ import { Button, Divider, Field, Input, Modal, MultiSelect, Text, useStyles2 } f
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Controller, FieldError, SubmitHandler, useForm } from 'react-hook-form';
+import { useMount } from 'react-use';
 
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -72,11 +73,14 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
     const profileMetricVariable = sceneGraph.findByKeyAndType(model, 'profileMetricId', ProfileMetricVariable);
     const profileMetric = getProfileMetric(profileMetricVariable.state.value as ProfileMetricId);
 
-    const serviceName = useCurrentServiceName(model);
+    const serviceNameVariable = useCurrentServiceName(model);
 
     const filtersVariable = sceneGraph.findByKeyAndType(model, 'filters', FiltersVariable);
     const filters = filtersVariable.state.filters;
     const filterQuery = filters.map((filter) => `${filter.key}${filter.operator}"${filter.value}"`).join(', ');
+
+    const serviceName = serviceNameVariable?.toString() || '';
+    const ruleForAllServices = !serviceName;
 
     const {
       register,
@@ -89,8 +93,8 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
       values: {
         functionName,
         metricName: '',
-        labels: [],
-        serviceName: serviceName?.toString() || '',
+        labels: ruleForAllServices ? [{ label: 'service_name', value: 'service_name' }] : [],
+        serviceName,
         matcher: '',
         profileType: profileMetric.id,
       },
@@ -111,7 +115,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
       onCreated();
     };
 
-    useEffect(() => {
+    useMount(() => {
       const timeRange = sceneGraph.getTimeRange(model).state.value;
       labelsRepository
         .listLabels({
@@ -120,9 +124,13 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
           to: timeRange.to.unix() * 1000,
         })
         .then((suggestions) => {
-          setOptions(suggestions.map((s) => s.value));
+          let options = suggestions.map((s) => s.value);
+          if (ruleForAllServices) {
+            options = ['service_name', ...options];
+          }
+          setOptions(options);
         });
-    }, [filterQuery, model]);
+    });
 
     return (
       <Modal
