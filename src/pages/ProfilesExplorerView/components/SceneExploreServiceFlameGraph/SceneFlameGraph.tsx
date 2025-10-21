@@ -194,7 +194,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     // Do not show AI button if the assistant integration is enabled to avoid having two AI buttons in the UI
     // For debugging purposes and comparing both you can use localStorage flag grafana-pyroscope-app.forceShowAiButton
-    const [isAvailable] = useAssistant();
+    const { isAvailable } = useAssistant();
     const hideAIButton =
       featureToggles.grafanaAssistantInProfilesDrilldown &&
       isAvailable &&
