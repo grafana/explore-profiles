@@ -52,13 +52,11 @@ class RecordingRulesApiClient extends ApiClient {
   }
 
   async create(rule: RecordingRuleViewModel): Promise<void> {
+    const basicMatchers = rule.serviceName ? [`{ service_name="${rule.serviceName}" }`] : [];
+
     let requestBody: UpsertRecordingRuleRequest = {
       metricName: rule.metricName,
-      matchers: [
-        `{ service_name="${rule.serviceName}" }`,
-        `{ __profile_type__="${rule.profileType}"}`,
-        ...(rule.matchers || []),
-      ],
+      matchers: [...basicMatchers, `{ __profile_type__="${rule.profileType}"}`, ...(rule.matchers || [])],
       groupBy: rule.groupBy || [],
     } as UpsertRecordingRuleRequest;
 
