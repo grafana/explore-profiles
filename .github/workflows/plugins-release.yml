@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Version bump
-        uses: grafana/plugin-ci-workplugin-ci-workflows/actions/plugins/version-bump-changelog@ci-cd-workflows/v2
+        uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@ci-cd-workflows/v2
         with:
           generate-changelog: true
           version: ${{ inputs.version }}
