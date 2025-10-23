@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.11.0
+
+##### Chores
+
+*  fix version bump (#635) (844dfea2)
+*  Update flamegraph package (#620) (6f31ac78)
+*  Fix plugin.json formatting (#612) (f1f22f27)
+*  Auto deploy to dev/ops (#618) (0b13153e)
+* **annotations:**  Show annotations only on main timeline panels (#624) (c14295b4)
+* **Recording Rules:**  Add disclaimer to metrics from profiles (#611) (4b306a5f)
+
+##### Continuous Integration
+
+*  Use version 2.x.x of plugin workflows (#622) (70ce3fa9)
+
+##### New Features
+
+* **Recording Rules:**  Allow using service_name as group by label (#617) (2825ee75)
+
+##### Bug Fixes
+
+* **Recording Rules:**  Do not pass empty matchers (#616) (602530fe)
+* **GitHub:**  Keep GitHub Integration cookie between tabs (#609) (bb8ee3dd)
+
+
 ## 1.10.1
 
 ##### Chores
