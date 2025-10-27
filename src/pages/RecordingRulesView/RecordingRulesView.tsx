@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { Column, EmptyState, Icon, InteractiveTable, TagList, Text, Tooltip, useStyles2 } from '@grafana/ui';
 import { BackButton } from '@shared/components/Common/BackButton';
+import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { HttpClientError } from '@shared/infrastructure/http/HttpClientError';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { RecordingRuleViewModel } from '@shared/types/RecordingRuleViewModel';
@@ -10,6 +11,35 @@ import React from 'react';
 import { EmptyLoadingPage } from '../../app/components/Onboarding/ui/EmptyLoadingPage';
 import { DeleteRecordingRuleButton } from './DeleteRecordingRuleButton';
 import { useRecordingRulesView } from './domain/useRecordingRulesView';
+
+const RecordingRulesDetails = (model: RecordingRuleViewModel) => {
+  const { matchers, readonly } = model;
+
+  let labels: string[] = [];
+
+  matchers.forEach((matcher) => {
+    const p = parseQuery(matcher);
+
+    labels = [...labels, ...p.labels.filter((label) => !label.trim().match(/^__profile_type__/))];
+  });
+
+  let matchersContent = <span>No labels</span>;
+
+  if (labels.length !== 0) {
+    matchersContent = <span className={css({ fontFamily: 'monospace' })}>{labels.join(', ')}</span>;
+  }
+
+  return (
+    <div>
+      <dl>
+        <dt>Filters</dt>
+        <dd>{matchersContent}</dd>
+        <dt>Read only</dt>
+        <dd>{readonly ? 'Yes' : 'No'}</dd>
+      </dl>
+    </div>
+  );
+};
 
 export default function RecordingRulesView() {
   const styles = useStyles2(getStyles);
@@ -129,6 +159,7 @@ export default function RecordingRulesView() {
           pageSize={10}
           data={formattedRules || []}
           getRowId={(rule) => rule.id}
+          renderExpandedRow={RecordingRulesDetails}
         ></InteractiveTable>
         <BackButton />
       </div>
