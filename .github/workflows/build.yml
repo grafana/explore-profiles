@@ -97,7 +97,7 @@ jobs:
         env:
           GRAFANA_ACCESS_POLICY_TOKEN: ${{ env.SIGN_PLUGIN_ACCESS_POLICY_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
           name: build-frontend
@@ -122,7 +122,7 @@ jobs:
           cache: 'yarn'
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
         with:
           pattern: build-*
           merge-multiple: true
@@ -152,7 +152,7 @@ jobs:
       - name: Stop Grafana server
         run: npm run e2e:ci:server:down
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()
         with:
           name: e2e-test-reports-and-results
