@@ -33,7 +33,7 @@ jobs:
           export_env: false
       # We need to use GitHub App instead of just passing the token in order to have CLA singed by the committer.
       # To run correctly it needs to be used before the checkout
-      - uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
+      - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
         id: get_installation_token
         with:
           app_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).app_id }}
@@ -133,7 +133,7 @@ jobs:
           export_env: false
       # Unlike in create-new-version we don't commit anything so we could simply pass secrets.GITHUB_TOKEN here
       # but this way we will see the Databases FE bot at the author of release (instead of github-actions)
-      - uses: tibdex/github-app-token@32691ba7c9e7063bd457bd8f2a5703138591fa58 # v1.9.0
+      - uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a # v2.1.0
         id: get_installation_token
         with:
           app_id: ${{ fromJSON(steps.get-secrets.outputs.secrets).app_id }}
