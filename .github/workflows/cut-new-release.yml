@@ -48,7 +48,7 @@ jobs:
           token: ${{ steps.get_installation_token.outputs.token }}
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
           node-version: 20
           cache: 'yarn'
