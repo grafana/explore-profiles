@@ -1,5 +1,80 @@
 # Changelog
 
+## 1.11.0
+
+##### Chores
+
+*  fix version bump (#635) (844dfea2)
+*  Update flamegraph package (#620) (6f31ac78)
+*  Fix plugin.json formatting (#612) (f1f22f27)
+*  Auto deploy to dev/ops (#618) (0b13153e)
+* **annotations:**  Show annotations only on main timeline panels (#624) (c14295b4)
+* **Recording Rules:**  Add disclaimer to metrics from profiles (#611) (4b306a5f)
+
+##### Continuous Integration
+
+*  Use version 2.x.x of plugin workflows (#622) (70ce3fa9)
+
+##### New Features
+
+* **Recording Rules:**  Allow using service_name as group by label (#617) (2825ee75)
+
+##### Bug Fixes
+
+* **Recording Rules:**  Do not pass empty matchers (#616) (602530fe)
+* **GitHub:**  Keep GitHub Integration cookie between tabs (#609) (bb8ee3dd)
+
+
+## 1.10.1
+
+##### Chores
+
+*  Update flamegraph package (#607) (12c37c7e)
+
+
+## 1.10.0
+
+##### Chores
+
+*  Add missing target to plugin.json (#605) (3d7c76dc)
+*  Update @grafana/faro-web-sdk to latest release (#603) (cb3615dc)
+* **e2e:**  Upgrade Playwright to 1.55.1 (#604) (95940103)
+
+##### Continuous Integration
+
+*  Deploy automatically to ops (#600) (9632905b)
+
+##### New Features
+
+*  update extension point for grafana assistant, add vars and tests (#593) (50820a7a)
+
+##### Bug Fixes
+
+*  Update grafana/assistant (#597) (6a5758ac)
+
+
+## 1.9.0
+
+##### Chores
+
+*  Use a specific version of Pyroscope for e2e tests (#587) (ab5a4543)
+
+##### Continuous Integration
+
+*  Add a workflow to publish a PR/branch (#578) (c690fc67)
+
+##### New Features
+
+* **Metrics From Profiles:**  Automatically prefix metric name (#592) (7404aba4)
+*  Add rate calculation support and step synchronization (#548) (0538e0bc)
+* **AI:**  Integrate with Grafana Assistant (#558) (0756b05a)
+
+##### Bug Fixes
+
+*  recording rules list to use rule id as row id (#591) (d07f2528)
+*  use rule id as row id (4e261a87)
+
+
 ## 1.8.1
 
 

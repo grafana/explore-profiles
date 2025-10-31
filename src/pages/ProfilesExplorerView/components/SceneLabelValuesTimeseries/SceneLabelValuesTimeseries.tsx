@@ -4,6 +4,7 @@ import {
   SceneComponentProps,
   SceneDataProvider,
   SceneDataTransformer,
+  sceneGraph,
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
@@ -17,6 +18,7 @@ import { isEqual, merge } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
@@ -43,6 +45,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     legendPlacement,
     data,
     overrides,
+    annotations,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
@@ -50,6 +53,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     legendPlacement?: SceneLabelValuesTimeseriesState['legendPlacement'];
     data?: SceneDataTransformer;
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
+    annotations?: boolean;
   }) {
     super({
       key: 'timeseries-label-values',
@@ -66,7 +70,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               $data: buildTimeSeriesQueryRunner(
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
-                true
+                annotations
               ),
               transformations: [addRefId, addStats],
             })
@@ -82,31 +86,63 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   onActivate() {
     const { body } = this.state;
 
-    const sub = (body.state.$data as SceneDataProvider).subscribeToState((newState, prevState) => {
-      if (newState.data?.state !== LoadingState.Done) {
-        return;
-      }
+    const dataSub = (body.state.$data as SceneDataProvider).subscribeToState(this.handleDataStateChange.bind(this));
 
-      // ensure we retain the previous annotations, if they exist
-      if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
-        newState.data.annotations = prevState.data.annotations;
-      }
-
-      const { series } = newState.data;
-
-      if (series?.length) {
-        const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
-        body.setState(merge({}, body.state, config));
-      }
-
-      // we publish the event only after setting the new config so that the subscribers can modify it
-      // (e.g. sync y-axis in SceneExploreDiffFlameGraphs.tsx)
-      this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
-    });
+    const profileMetricSub = this.subscribeToProfileMetricChanges();
 
     return () => {
-      sub.unsubscribe();
+      dataSub.unsubscribe();
+      profileMetricSub?.unsubscribe();
     };
+  }
+
+  private handleDataStateChange(newState: any, prevState: any) {
+    if (newState.data?.state !== LoadingState.Done) {
+      return;
+    }
+
+    this.retainPreviousAnnotations(newState, prevState);
+
+    const { series } = newState.data;
+
+    if (series?.length) {
+      this.updateBodyConfig(series);
+    }
+
+    this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
+  }
+
+  private retainPreviousAnnotations(newState: any, prevState: any) {
+    if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
+      newState.data.annotations = prevState.data.annotations;
+    }
+  }
+
+  private updateBodyConfig(series: DataFrame[]) {
+    const { body } = this.state;
+    const config = this.state.displayAllValues ? this.getAllValuesConfig(series) : this.getConfig(series);
+    body.setState(merge({}, body.state, config));
+  }
+
+  private subscribeToProfileMetricChanges() {
+    try {
+      const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
+      return profileMetricVariable.subscribeToState((newState, prevState) => {
+        if (newState.value !== prevState.value) {
+          this.handleProfileMetricChange();
+        }
+      });
+    } catch (error) {
+      return null;
+    }
+  }
+
+  private handleProfileMetricChange() {
+    const { body } = this.state;
+    const currentData = (body.state.$data as SceneDataProvider).state.data;
+    if (currentData?.series?.length) {
+      this.updateBodyConfig(currentData.series);
+    }
   }
 
   getConfig(series: DataFrame[]) {
@@ -207,22 +243,22 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       const metricField = s.fields[1];
       let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
 
-      if (series.length === 1) {
-        displayName = formatSingleSeriesDisplayName(displayName, s);
-      }
+      displayName = formatSingleSeriesDisplayName(displayName, s);
+
+      const properties = [
+        {
+          id: 'displayName',
+          value: displayName,
+        },
+        {
+          id: 'color',
+          value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
+        },
+      ];
 
       return {
         matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
-        properties: [
-          {
-            id: 'displayName',
-            value: displayName,
-          },
-          {
-            id: 'color',
-            value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
-          },
-        ],
+        properties,
       };
     });
   }

@@ -444,15 +444,17 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             {body && <body.Component model={body} />}
           </div>
 
-          <SceneCreateRecordingRuleModal.Component
-            model={createRecordingRuleModal}
-            isModalOpen={recordingRulesModalState.isOpen}
-            functionName={recordingRulesModalState.functionName}
-            onDismiss={() => setRecordingRulesModalState({ isOpen: false })}
-            onCreated={() => {
-              setRecordingRulesModalState({ isOpen: false });
-            }}
-          />
+          {recordingRulesModalState.isOpen && (
+            <SceneCreateRecordingRuleModal.Component
+              model={createRecordingRuleModal}
+              isModalOpen={recordingRulesModalState.isOpen}
+              functionName={recordingRulesModalState.functionName}
+              onDismiss={() => setRecordingRulesModalState({ isOpen: false })}
+              onCreated={() => {
+                setRecordingRulesModalState({ isOpen: false });
+              }}
+            />
+          )}
         </GitHubContextProvider>
       </FunctionVersionProvider>
     );

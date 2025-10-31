@@ -12,7 +12,7 @@ permissions: {}
 jobs:
   cd:
     name: CI / CD
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@main
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v2
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
@@ -24,8 +24,7 @@ jobs:
 
       # When pushing to "main", publish and deploy to "dev" (CD). For PRs, skip publishing and deploying (run CI only)
       environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev,ops' || 'none' }}
-      # Disabled for testing purposes to see if created config looks good. Uncomment when ready to deploy.
-      #auto-merge-environments: dev,ops
+      auto-merge-environments: dev,ops
       # Deploy provisioned plugin to Grafana Cloud
       grafana-cloud-deployment-type: provisioned
       argo-workflow-slack-channel: '#proj-profilesdrilldown-cd'
@@ -37,7 +36,7 @@ jobs:
       run-playwright-docker: true
       run-playwright-with-skip-grafana-dev-image: true
       upload-playwright-artifacts: true
-      run-playwright-with-grafana-dependency: '>=12.1.0'
+      run-playwright-with-grafana-dependency: '>=12.1.0 <12.2.0'
       playwright-config: e2e/config/playwright.config.ci.ts
       playwright-docker-compose-file: docker-compose.e2e.yaml
       playwright-report-path: 'e2e/test-reports/'
