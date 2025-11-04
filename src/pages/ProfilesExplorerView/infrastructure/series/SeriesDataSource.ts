@@ -62,10 +62,6 @@ export class SeriesDataSource extends RuntimeDataSource {
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
     const sceneObject = options.scopedVars?.__sceneObject?.valueOf() as ServiceNameVariable | ProfileMetricVariable;
 
-    if (!sceneObject) {
-      return [];
-    }
-
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
     const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
     const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
