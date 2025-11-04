@@ -10,6 +10,8 @@ import {
 import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
 import { logger } from '@shared/infrastructure/tracking/logger';
 
+import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../pyroscope-data-sources';
 import { formatSeriesToProfileMetrics } from './formatSeriesToProfileMetrics';
 import { formatSeriesToServices } from './formatSeriesToServices';
@@ -58,7 +60,11 @@ export class SeriesDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    const sceneObject = options.scopedVars?.__sceneObject?.value;
+    const sceneObject = options.scopedVars?.__sceneObject?.valueOf() as ServiceNameVariable | ProfileMetricVariable;
+
+    if (!sceneObject?.isActive) {
+      return [];
+    }
 
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
     const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');

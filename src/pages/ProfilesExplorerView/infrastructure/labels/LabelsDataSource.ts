@@ -50,7 +50,7 @@ export class LabelsDataSource extends RuntimeDataSource {
 
   getParams(options: LegacyMetricFindQueryOptions) {
     const { scopedVars, range } = options;
-    const sceneObject = scopedVars?.__sceneObject?.value as GroupByVariable;
+    const sceneObject = scopedVars?.__sceneObject?.valueOf() as GroupByVariable;
 
     const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
     const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
@@ -123,7 +123,7 @@ export class LabelsDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(_: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    const sceneObject = options.scopedVars?.__sceneObject?.value as GroupByVariable;
+    const sceneObject = options.scopedVars?.__sceneObject?.valueOf() as GroupByVariable;
 
     // save bandwidth
     // TODO: remove this when we can declare the GroupByVariable in the Scene it's used
