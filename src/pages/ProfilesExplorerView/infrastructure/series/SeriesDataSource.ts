@@ -62,7 +62,7 @@ export class SeriesDataSource extends RuntimeDataSource {
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
     const sceneObject = options.scopedVars?.__sceneObject?.valueOf() as ServiceNameVariable | ProfileMetricVariable;
 
-    if (!sceneObject?.isActive) {
+    if (!sceneObject) {
       return [];
     }
 

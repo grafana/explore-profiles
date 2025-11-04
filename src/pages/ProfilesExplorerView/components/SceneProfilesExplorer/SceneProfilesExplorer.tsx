@@ -143,13 +143,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         new SceneNoDataSwitcher(),
       ],
     });
+    this.registerRuntimeDataSources();
 
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
   onActivate() {
-    this.registerRuntimeDataSources();
-
     const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
 
