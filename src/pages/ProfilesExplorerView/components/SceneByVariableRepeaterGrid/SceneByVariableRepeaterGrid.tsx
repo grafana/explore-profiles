@@ -103,7 +103,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
 
     const variableSub = variable.subscribeToState((newState, prevState) => {
-      if (!newState.loading && prevState.loading && newState.value !== prevState.value) {
+      const optionsChanged = !isEqual(newState.options, prevState.options);
+      if (!newState.loading && prevState.loading && optionsChanged) {
         this.renderGridItems();
       }
     });
@@ -111,6 +112,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     // if the variable is inactive, the data source will not fetch the options
     // so we force an update here to be sure we have the latest values
     variable.update();
+    this.renderGridItems();
 
     const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
