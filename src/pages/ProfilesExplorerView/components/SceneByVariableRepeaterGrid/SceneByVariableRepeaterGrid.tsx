@@ -103,7 +103,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
 
     const variableSub = variable.subscribeToState((newState, prevState) => {
-      if (!newState.loading && prevState.loading) {
+      if (!newState.loading && prevState.loading && newState.value !== prevState.value) {
         this.renderGridItems();
       }
     });
