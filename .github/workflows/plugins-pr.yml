@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: Branch to publish from. Can be used to deploy PRs to dev
+        description: Branch to publish from. Can be used to deploy PRs to dev and ops
         required: true
       docs-only:
         description: Only publish docs, do not publish the plugin
