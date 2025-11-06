@@ -3354,13 +3354,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash@npm:4.17.6":
-  version: 4.17.6
-  resolution: "@types/lodash@npm:4.17.6"
-  checksum: 10/6d3a68b3e795381f4aaf946855134d24eeb348ad5d66e9a44461d30026da82b215d55b92b70486d811ca45d54d4ab956aa2dced37fd04e19d49afe160ae3da2e
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:*, @types/node@npm:22.7.4, @types/node@npm:>=13.7.0":
   version: 22.7.4
   resolution: "@types/node@npm:22.7.4"
@@ -10898,7 +10891,7 @@ __metadata:
     "@types/flot": "npm:0.0.32"
     "@types/jest": "npm:29.5.14"
     "@types/jquery": "npm:3.5.30"
-    "@types/lodash": "npm:4.17.6"
+    "@types/lodash": "npm:4.17.20"
     "@types/node": "npm:22.7.4"
     "@types/prismjs": "npm:1.26.4"
     "@types/react": "npm:18.2.37"
