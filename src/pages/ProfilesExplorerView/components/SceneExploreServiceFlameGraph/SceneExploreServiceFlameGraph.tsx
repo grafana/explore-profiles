@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, SceneReactObject } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -11,6 +11,7 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { SceneMainServiceTimeseries } from '../SceneMainServiceTimeseries';
+import { ResolutionBoostExtensionPoint } from './components/ResolutionBoostExtensionPoint';
 import { SceneFlameGraph } from './SceneFlameGraph';
 
 interface SceneExploreServiceFlameGraphState extends SceneObjectState {
@@ -24,7 +25,11 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       key: 'explore-service-flame-graph',
       mainTimeseries: new SceneMainServiceTimeseries({
         item,
-        headerActions: (item) => [new SelectAction({ type: 'view-labels', item }), new FavAction({ item })],
+        headerActions: (item) => [
+          new SceneReactObject({ component: ResolutionBoostExtensionPoint, props: { scene: this } }),
+          new SelectAction({ type: 'view-labels', item }),
+          new FavAction({ item }),
+        ],
       }),
       body: new SceneFlameGraph(),
     });

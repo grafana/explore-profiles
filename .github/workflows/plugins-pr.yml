@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: Branch to publish from. Can be used to deploy PRs to dev
+        description: Branch to publish from. Can be used to deploy PRs to dev and ops
         required: true
       docs-only:
         description: Only publish docs, do not publish the plugin
@@ -26,7 +26,7 @@ jobs:
       attestations: write
     with:
       branch: ${{ inputs.branch }}
-      environment: dev
+      environment: dev,ops
       # No grafana-cloud-deployment-type defined -> plugin will be published to the catalog, but not deployed to Grafana Cloud
 
       run-playwright: false
