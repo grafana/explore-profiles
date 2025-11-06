@@ -90,7 +90,7 @@
     "@types/color": "3.0.6",
     "@types/d3-scale": "4.0.8",
     "@types/file-saver": "2.0.7",
-    "@types/flot": "0.0.32",
+    "@types/flot": "0.0.36",
     "@types/jest": "29.5.14",
     "@types/jquery": "3.5.30",
     "@types/lodash": "4.17.6",

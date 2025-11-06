@@ -3242,12 +3242,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/flot@npm:0.0.32":
-  version: 0.0.32
-  resolution: "@types/flot@npm:0.0.32"
+"@types/flot@npm:0.0.36":
+  version: 0.0.36
+  resolution: "@types/flot@npm:0.0.36"
   dependencies:
     "@types/jquery": "npm:*"
-  checksum: 10/5520f49470791be76aa2d3c92646ddc0f15c1f0a527f3978443bb10e105d43a4781d0565a8cdafb73b4d92cfe31a1f50249a601ee31a6663c1ebcfacd686ba7b
+  checksum: 10/90b9f1604c0c9d75e35627faa991b52b9e649f350cdaefae296292ec831b16eaaa97800a5098cfd46eca7bdd2120135f06eb5f7d17afe56d22285a47c26b199c
   languageName: node
   linkType: hard
 
@@ -10895,7 +10895,7 @@ __metadata:
     "@types/color": "npm:3.0.6"
     "@types/d3-scale": "npm:4.0.8"
     "@types/file-saver": "npm:2.0.7"
-    "@types/flot": "npm:0.0.32"
+    "@types/flot": "npm:0.0.36"
     "@types/jest": "npm:29.5.14"
     "@types/jquery": "npm:3.5.30"
     "@types/lodash": "npm:4.17.6"
