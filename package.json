@@ -106,7 +106,7 @@
     "css-loader": "^6.7.3",
     "dotenv": "^16.3.1",
     "esbuild-loader": "^4.0.2",
-    "eslint": "8.52.0",
+    "eslint": "8.57.1",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-deprecation": "^2.0.0",
     "eslint-plugin-jest": "^27.4.2",
