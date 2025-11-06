@@ -106,7 +106,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
         metricName: METRIC_NAME_PREFIX + data.metricName,
         serviceName: data.serviceName,
         profileType: data.profileType,
-        matchers: [`{${filterQuery}}`],
+        matchers: filterQuery ? [`{${filterQuery}}`] : [],
         groupBy: data.labels ? data.labels.map((label) => label.value ?? '') : [],
         functionName: data.functionName,
         readonly: false,

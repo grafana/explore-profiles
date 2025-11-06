@@ -1,4 +1,4 @@
-FROM alpine:latest AS blocks
+FROM alpine:latest@sha256:4b7ce07002c69e8f3d704a9c5d6fd3053be500b7f1c69fc0d80990c2ad8dd412 AS blocks
 
 COPY samples/static/grafana-pyroscope-sample-blocks-public.zip /
 
@@ -6,7 +6,7 @@ RUN unzip grafana-pyroscope-sample-blocks-public.zip \
  && mv grafana-pyroscope-sample-blocks-public data-shared \
  && rm grafana-pyroscope-sample-blocks-public.zip
 
-FROM docker.io/grafana/pyroscope:weekly-f129-6d0f4264a
+FROM docker.io/grafana/pyroscope:weekly-f129-6d0f4264a@sha256:89f1108d5534e3de0a54d72e4eb36c11d300a16029b1bc289886694ef307349a
 
 COPY samples/static/pyroscope/config.yaml /etc/pyroscope/config.yaml
 COPY --from=blocks --chown=pyroscope:pyroscope data-shared /data-shared
