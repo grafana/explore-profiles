@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/grafana/pyroscope-go v1.0.2
-	github.com/pyroscope-io/otel-profiling-go v0.4.1-0.20220827003940-ddd28219c77e
+	github.com/pyroscope-io/otel-profiling-go v0.5.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.44.0
 	go.opentelemetry.io/otel v1.18.0
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.9.0
