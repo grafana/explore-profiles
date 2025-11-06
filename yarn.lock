@@ -3304,15 +3304,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jquery@npm:3.5.30":
-  version: 3.5.30
-  resolution: "@types/jquery@npm:3.5.30"
-  dependencies:
-    "@types/sizzle": "npm:*"
-  checksum: 10/5287586be022bfe85d411733b35f8f0ae8577c4afb5a94ff0e157d2c1036e10adfdd15ed80becb06f01647c39be5dbb24a45cba10db3fa6304eb442fa509321e
-  languageName: node
-  linkType: hard
-
 "@types/jquery@npm:3.5.32":
   version: 3.5.32
   resolution: "@types/jquery@npm:3.5.32"
@@ -10897,7 +10888,7 @@ __metadata:
     "@types/file-saver": "npm:2.0.7"
     "@types/flot": "npm:0.0.32"
     "@types/jest": "npm:29.5.14"
-    "@types/jquery": "npm:3.5.30"
+    "@types/jquery": "npm:3.5.33"
     "@types/lodash": "npm:4.17.6"
     "@types/node": "npm:22.7.4"
     "@types/prismjs": "npm:1.26.4"
