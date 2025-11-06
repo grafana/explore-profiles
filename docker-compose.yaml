@@ -18,13 +18,13 @@ services:
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
 
   qdrant:
-    image: qdrant/qdrant
+    image: qdrant/qdrant@sha256:0fb8897412abc81d1c0430a899b9a81eb8328aa634e7242d1bc804c1fe8fe863
     volumes:
       - qdrant-storage:/qdrant/storage
 
   pyroscope:
     container_name: 'pyroscope'
-    image: grafana/pyroscope:weekly-f129-6d0f4264a
+    image: grafana/pyroscope:weekly-f129-6d0f4264a@sha256:89f1108d5534e3de0a54d72e4eb36c11d300a16029b1bc289886694ef307349a
     ports:
       - 4100:4100/tcp
     volumes:
