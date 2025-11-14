@@ -117,7 +117,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   public constructor(state: Partial<SceneProfilesExplorerState>) {
     super({
       key: 'profiles-explorer',
-      explorationType: undefined,
+      explorationType: state.initialFilters && state.initialFilters.length > 0 ? ExplorationType.LABELS : undefined,
       body: undefined,
       $timeRange: state?.$timeRange ?? new SceneTimeRange(getDefaultTimeRange()),
       $variables:
