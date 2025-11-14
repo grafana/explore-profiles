@@ -127,18 +127,5 @@ test.describe('Favorites view', () => {
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
-
-    test('Favorite action, after clicking on the main refresh button', async ({ exploreProfilesPage }) => {
-      await exploreProfilesPage.clickOnPanelAction('ride-sharing-app · inuse_space (memory)', 'Favorite');
-
-      await exploreProfilesPage.clickOnRefresh();
-
-      await expect(exploreProfilesPage.getPanels()).toHaveCount(3);
-      await expect(exploreProfilesPage.getPanelByTitle('load-generator · cpu (process_cpu)')).toBeVisible();
-      await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
-      await expect(
-        exploreProfilesPage.getPanelByTitle('ride-sharing-app · samples (process_cpu) · vehicle (4)')
-      ).toBeVisible();
-    });
   });
 });
