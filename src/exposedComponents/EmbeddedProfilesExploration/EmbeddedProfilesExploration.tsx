@@ -6,7 +6,12 @@ import { SceneProfilesExplorer } from 'src/pages/ProfilesExplorerView/components
 
 import { EmbeddedProfilesExplorationState } from '../types';
 
-function buildProfilesExplorationFromState({ initialTimeRange, onTimeRangeChange }: EmbeddedProfilesExplorationState) {
+function buildProfilesExplorationFromState({
+  initialTimeRange,
+  onTimeRangeChange,
+  initialFilters,
+  initialDS,
+}: EmbeddedProfilesExplorationState) {
   const $timeRange = new SceneTimeRange({
     value: initialTimeRange,
     from: initialTimeRange.raw.from.toString(),
@@ -19,7 +24,12 @@ function buildProfilesExplorationFromState({ initialTimeRange, onTimeRangeChange
     }
   });
 
-  const exploration = new SceneProfilesExplorer({ $timeRange, isEmbedded: true });
+  const exploration = new SceneProfilesExplorer({
+    $timeRange,
+    isEmbedded: true,
+    initialFilters: initialFilters ? initialFilters.map((filter) => ({ ...filter })) : undefined,
+    initialDS,
+  });
 
   const params = new URLSearchParams(window.location.search);
   sceneUtils.syncStateFromSearchParams(exploration, params);

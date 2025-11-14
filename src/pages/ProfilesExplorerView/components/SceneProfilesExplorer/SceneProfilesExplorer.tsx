@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { AdHocVariableFilter } from '@grafana/data';
 import {
   EmbeddedSceneState,
   SceneComponentProps,
@@ -60,6 +61,8 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   body?: SplitLayout;
   createRecordingRuleModal: SceneCreateRecordingRuleModal;
   isEmbedded?: boolean;
+  initialFilters?: AdHocVariableFilter[];
+  initialDS?: string;
 }
 
 export enum ExplorationType {
@@ -109,6 +112,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   static DEFAULT_EXPLORATION_TYPE = SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS[0].value;
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
+  private initialFilters?: AdHocVariableFilter[];
 
   public constructor(state: Partial<SceneProfilesExplorerState>) {
     super({
@@ -125,10 +129,21 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           // (because values would be empty before loading, then populated after fetched)
           // see setExplorationType() for dynamic updates
           variables: [
-            new ProfilesDataSourceVariable(),
-            new ServiceNameVariable(),
+            new ProfilesDataSourceVariable({ initialDS: state?.initialDS }),
+            new ServiceNameVariable({ initialFilters: state?.initialFilters }),
             new ProfileMetricVariable(),
-            new FiltersVariable({ key: 'filters' }),
+            new FiltersVariable({
+              key: 'filters',
+              initialFilters: (() => {
+                if (!state?.initialFilters) {
+                  return undefined;
+                }
+                const filtered = state.initialFilters.filter(
+                  (filter: AdHocVariableFilter) => filter.key !== 'service_name'
+                );
+                return filtered.length > 0 ? filtered : undefined;
+              })(),
+            }),
             new FiltersVariable({ key: 'filtersBaseline' }),
             new FiltersVariable({ key: 'filtersComparison' }),
             new GroupByVariable(),
@@ -150,6 +165,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.registerRuntimeDataSources();
 
+    this.initialFilters = state?.initialFilters;
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
@@ -176,6 +192,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   updateFromUrl(values: SceneObjectUrlValues) {
+    // Don't update from URL if initialFilters are provided - we want to select the LABELS view as we are in embedded mode
+    if (this.initialFilters && this.initialFilters.length > 0) {
+      this.setExplorationType({ type: ExplorationType.LABELS, comesFromUserAction: false });
+      return;
+    }
+
     if (typeof values.explorationType === 'string' && values.explorationType !== this.state.explorationType) {
       const type = values.explorationType as ExplorationType;
       this.setExplorationType({

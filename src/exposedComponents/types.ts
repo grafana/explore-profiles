@@ -5,7 +5,5 @@ export interface EmbeddedProfilesExplorationState {
   initialFilters?: AdHocVariableFilter[];
   initialTimeRange: TimeRange;
   onTimeRangeChange?: (timeRange: TimeRange) => void;
-  urlSync?: boolean;
-  embedded?: boolean;
   returnToPreviousSource?: string;
 }
