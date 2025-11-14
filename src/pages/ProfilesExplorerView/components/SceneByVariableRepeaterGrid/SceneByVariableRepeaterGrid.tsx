@@ -1,4 +1,4 @@
-import { DashboardCursorSync, VariableRefresh } from '@grafana/data';
+import { DashboardCursorSync } from '@grafana/data';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -13,7 +13,6 @@ import {
 } from '@grafana/scenes';
 import { Spinner } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
-import { logger } from '@shared/infrastructure/tracking/logger';
 import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
@@ -112,7 +111,6 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     // so we force an update here to be sure we have the latest values
     variable.update();
 
-    const refreshSub = this.subscribeToRefreshClick();
     const quickFilterSub = this.subscribeToQuickFilterChange();
     const layoutChangeSub = this.subscribeToLayoutChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
@@ -123,45 +121,8 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
       quickFilterSub.unsubscribe();
-      refreshSub.unsubscribe();
 
       variableSub.unsubscribe();
-    };
-  }
-
-  subscribeToRefreshClick() {
-    const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & { update: () => void };
-    const originalRefresh = variable.state.refresh;
-
-    variable.setState({ refresh: VariableRefresh.never });
-
-    const onClickRefresh = () => {
-      variable.update();
-    };
-
-    // start of hack, for a better UX: we disable the variable "refresh" option and we allow the user to reload the list only by clicking on the "Refresh" button
-    // if we don't do this, every time the time range changes (even with auto-refresh on),
-    // all the timeseries present on the screen would be re-created, resulting in blinking and a poor UX
-    const refreshButton = document.querySelector(
-      '[data-testid="data-testid RefreshPicker run button"]'
-    ) as HTMLButtonElement;
-
-    if (!refreshButton) {
-      logger.error(
-        new Error('SceneByVariableRepeaterGrid: Refresh button not found! The list of items will never be updated.')
-      );
-    }
-
-    refreshButton?.addEventListener('click', onClickRefresh);
-    refreshButton?.setAttribute('title', 'Click to completely refresh all the panels present on the screen');
-    // end of hack
-
-    return {
-      unsubscribe() {
-        refreshButton?.removeAttribute('title');
-        refreshButton?.removeEventListener('click', onClickRefresh);
-        variable.setState({ refresh: originalRefresh });
-      },
     };
   }
 
