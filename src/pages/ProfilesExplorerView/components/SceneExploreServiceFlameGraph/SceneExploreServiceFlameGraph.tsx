@@ -25,6 +25,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       key: 'explore-service-flame-graph',
       mainTimeseries: new SceneMainServiceTimeseries({
         item,
+        includeExemplars: true,
         headerActions: (item) => [
           new SceneReactObject({ component: ResolutionBoostExtensionPoint, props: { scene: this } }),
           new SelectAction({ type: 'view-labels', item }),
