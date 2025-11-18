@@ -5,7 +5,7 @@ services:
       context: ./.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
-        grafana_version: ${GRAFANA_VERSION:-12.1.0}
+        grafana_version: ${GRAFANA_VERSION:-12.1.2}
     ports:
       - ${GRAFANA_PORT:-3000}:3000/tcp
     volumes:
@@ -40,7 +40,7 @@ services:
       context: ./samples/rideshare
       dockerfile: Dockerfile.load-generator
     environment:
-      - HOST_PREFIX=pyroscope-app-plugin-rideshare
+      - HOST_PREFIX=profiles-drilldown-rideshare
       # This should be the same as the rideshare replica count.
       - REPLICAS=5
       # Set this to 1 to turn on debug logging.

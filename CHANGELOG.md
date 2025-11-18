@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.12.0
+
+##### Chores
+
+* **deps:**
+  *  update dependency @types/prismjs to v1.26.5 (#741) (fb16ca90)
+  *  bump assistant-sdk version to 0.1.4 (6ecd1896)
+  *  pin dependencies (#627) (74144bf5)
+*  fix shared workflows versions (#736) (72747451)
+*  Remove unused CI workflows (#634) (838fe138)
+* **ci:**  Push PR branches to ops catalog (#735) (abd1e90f)
+
+##### New Features
+
+*  adaptive profiles boost button extension point (#626) (04964dc7)
+* **Recording Rules:**  Show recording rule labels (#636) (e173a5d6)
+
+##### Other Changes
+
+* local (#744) (313db674)
+
+
 ## 1.11.0
 
 ##### Chores

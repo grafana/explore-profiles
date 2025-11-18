@@ -1,7 +1,6 @@
 import { css } from '@emotion/css';
 import {
   EmbeddedSceneState,
-  getUrlSyncManager,
   SceneComponentProps,
   sceneGraph,
   SceneObject,
@@ -144,9 +143,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         new SceneNoDataSwitcher(),
       ],
     });
-
-    getUrlSyncManager().initSync(this);
-
     this.registerRuntimeDataSources();
 
     this.addActivationHandler(this.onActivate.bind(this));
