@@ -63,6 +63,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     annotations?: boolean;
     includeExemplars?: boolean;
   }) {
+    includeExemplars = featureToggles.exemplars ? includeExemplars : false;
     const exemplarToggleAction = featureToggles.exemplars
       ? new ExemplarToggleAction({ showExemplars: includeExemplars })
       : undefined;
