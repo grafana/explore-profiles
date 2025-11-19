@@ -9,12 +9,7 @@ export default function ProfilesExplorerView() {
   useReportPageInitialized('explore');
 
   return (
-    <UrlSyncContextProvider
-      namespace="pd"
-      scene={sceneProfilesExplorer}
-      updateUrlOnInit={false}
-      createBrowserHistorySteps={true}
-    >
+    <UrlSyncContextProvider scene={sceneProfilesExplorer} updateUrlOnInit={false} createBrowserHistorySteps={true}>
       <sceneProfilesExplorer.Component model={sceneProfilesExplorer} />
     </UrlSyncContextProvider>
   );
