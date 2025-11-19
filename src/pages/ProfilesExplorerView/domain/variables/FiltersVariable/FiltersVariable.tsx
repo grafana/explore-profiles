@@ -1,4 +1,3 @@
-import { AdHocVariableFilter } from '@grafana/data';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph, SceneObject } from '@grafana/scenes';
 import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
@@ -12,10 +11,8 @@ import { convertPyroscopeToVariableFilter, isFilterValid } from './filters-ops';
 
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
-  private initialFilters?: AdHocVariableFilter[];
-  private hasLoadedInitialFilters = false;
 
-  constructor({ key, initialFilters }: { key: string; initialFilters?: AdHocVariableFilter[] }) {
+  constructor({ key }: { key: string }) {
     super({
       key,
       name: key,
@@ -32,15 +29,11 @@ export class FiltersVariable extends AdHocFiltersVariable {
           .join(','),
     });
 
-    this.initialFilters = initialFilters;
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
   reset() {
-    // Don't reset if we haven't loaded initial filters yet
-    if (!this.hasLoadedInitialFilters) {
-      this.setState({ filters: FiltersVariable.DEFAULT_VALUE });
-    }
+    this.setState({ filters: FiltersVariable.DEFAULT_VALUE });
   }
 
   static resetAll(sceneObject: SceneObject) {
@@ -50,8 +43,6 @@ export class FiltersVariable extends AdHocFiltersVariable {
   }
 
   onActivate() {
-    this.setInitialValue();
-
     // VariableDependencyConfig does not work :man_shrug: (never called)
     const dataSourceSub = sceneGraph
       .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
@@ -62,13 +53,6 @@ export class FiltersVariable extends AdHocFiltersVariable {
     return () => {
       dataSourceSub.unsubscribe();
     };
-  }
-
-  setInitialValue() {
-    if (this.initialFilters && this.initialFilters.length > 0) {
-      this.setState({ filters: this.initialFilters });
-    }
-    this.hasLoadedInitialFilters = true;
   }
 
   onChangeQuery = (query: string, filters: CompleteFilters) => {
