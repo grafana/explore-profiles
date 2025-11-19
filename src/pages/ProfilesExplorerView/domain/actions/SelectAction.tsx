@@ -15,7 +15,13 @@ import { EventViewServiceFlameGraph, EventViewServiceFlameGraphPayload } from '.
 import { EventViewServiceLabels, EventViewServiceLabelsPayload } from '../events/EventViewServiceLabels';
 import { EventViewServiceProfiles, EventViewServiceProfilesPayload } from '../events/EventViewServiceProfiles';
 
-type ActionType = 'expand-panel' | 'select-label' | 'view-flame-graph' | 'view-labels' | 'view-profiles';
+type ActionType =
+  | 'expand-panel'
+  | 'select-label'
+  | 'view-flame-graph'
+  | 'view-labels'
+  | 'view-profiles'
+  | 'view-exemplars';
 
 type EventLookup = {
   icon?: IconName;

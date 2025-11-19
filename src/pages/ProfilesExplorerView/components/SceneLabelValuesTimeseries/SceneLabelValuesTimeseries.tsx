@@ -5,6 +5,7 @@ import {
   SceneDataProvider,
   SceneDataTransformer,
   sceneGraph,
+  SceneObject,
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
@@ -14,9 +15,11 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { isEqual, merge } from 'lodash';
 import React from 'react';
 
+import { ExemplarToggleAction } from '../../domain/actions/ExemplarToggleAction';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
@@ -26,6 +29,7 @@ import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { RangeAnnotation } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/domain/RangeAnnotation';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
@@ -35,6 +39,8 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   displayAllValues: boolean;
   legendPlacement: VizLegendOptions['placement'];
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
+  exemplarToggleAction?: ExemplarToggleAction;
+  annotations?: boolean;
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
@@ -57,13 +63,22 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     annotations?: boolean;
     includeExemplars?: boolean;
   }) {
+    const exemplarToggleAction = featureToggles.exemplars
+      ? new ExemplarToggleAction({ showExemplars: includeExemplars })
+      : undefined;
+    const headerActionsWithExemplarToggle = exemplarToggleAction
+      ? (item: GridItemData) => [...(headerActions(item) as SceneObject[]), exemplarToggleAction!]
+      : headerActions;
+
     super({
       key: 'timeseries-label-values',
       item,
-      headerActions,
+      headerActions: headerActionsWithExemplarToggle,
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
       overrides,
+      annotations,
+      exemplarToggleAction,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
@@ -78,7 +93,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               transformations: [addRefId, addStats],
             })
         )
-        .setHeaderActions(headerActions(item))
+        .setHeaderActions(headerActionsWithExemplarToggle(item))
         .setMenu(new SceneTimeseriesMenu({}) as unknown as VizPanelMenu)
         .build(),
     });
@@ -93,9 +108,12 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     const profileMetricSub = this.subscribeToProfileMetricChanges();
 
+    const exemplarToggleSub = this.subscribeToExemplarToggleChanges();
+
     return () => {
       dataSub.unsubscribe();
       profileMetricSub?.unsubscribe();
+      exemplarToggleSub?.unsubscribe();
     };
   }
 
@@ -116,8 +134,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   private retainPreviousAnnotations(newState: any, prevState: any) {
-    if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
-      newState.data.annotations = prevState.data.annotations;
+    const rangeAnnotations = prevState?.data?.annotations?.filter(
+      (annotation: any) => annotation instanceof RangeAnnotation
+    );
+    if (
+      rangeAnnotations &&
+      !newState?.data?.annotations?.some((annotation: any) => annotation instanceof RangeAnnotation)
+    ) {
+      newState?.data?.annotations?.push(...rangeAnnotations);
     }
   }
 
@@ -145,6 +169,37 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const currentData = (body.state.$data as SceneDataProvider).state.data;
     if (currentData?.series?.length) {
       this.updateBodyConfig(currentData.series);
+    }
+  }
+
+  private subscribeToExemplarToggleChanges() {
+    const { exemplarToggleAction } = this.state;
+    if (!exemplarToggleAction) {
+      return null;
+    }
+
+    return exemplarToggleAction.subscribeToState((newState, prevState) => {
+      if (newState.showExemplars !== prevState.showExemplars) {
+        this.handleExemplarToggleChange(newState.showExemplars ?? false);
+      }
+    });
+  }
+
+  private handleExemplarToggleChange(includeExemplars: boolean) {
+    const { body, item, displayAllValues, annotations } = this.state;
+
+    const { queries } = buildTimeSeriesQueryRunner(
+      item.queryRunnerParams,
+      displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
+      annotations,
+      includeExemplars
+    ).state;
+
+    const queryRunner = body.state.$data?.state.$data as SceneQueryRunner;
+
+    if (queryRunner) {
+      queryRunner.setState({ queries });
+      queryRunner.runQueries();
     }
   }
 
