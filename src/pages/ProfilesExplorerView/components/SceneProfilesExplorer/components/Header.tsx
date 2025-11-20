@@ -19,11 +19,12 @@ export type HeaderProps = {
   $variables: SceneProfilesExplorerState['$variables'];
   onChangeExplorationType: (explorationType: string) => void;
   onCreateRecordingRule: () => void;
+  isEmbedded?: boolean;
 };
 
 export function Header(props: HeaderProps) {
   const chromeHeaderHeight = useChromeHeaderHeight?.();
-  const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0);
+  const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0, props.isEmbedded ?? false);
 
   const { data, actions } = useHeader(props);
 
@@ -60,7 +61,7 @@ export function Header(props: HeaderProps) {
 
   return (
     <div className={styles.header} data-testid="allControls">
-      <GiveFeedbackButton />
+      {!props.isEmbedded && <GiveFeedbackButton />}
 
       <div className={styles.appControls} data-testid="appControls">
         <div className={styles.appControlsLeft}>
@@ -89,38 +90,42 @@ export function Header(props: HeaderProps) {
             <refreshPickerControl.Component key={refreshPickerControl.state.key} model={refreshPickerControl} />
           )}
 
-          <div className={styles.appMiscButtons}>
-            {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
-              <>
-                <Dropdown overlay={metricsFromProfilesMenu}>
-                  <IconButton name="gf-prometheus" tooltip="Recording rules" aria-label="Recording rules" />
-                </Dropdown>
-              </>
-            )}
+          {!props.isEmbedded && (
+            <div className={styles.appMiscButtons}>
+              {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
+                <>
+                  <Dropdown overlay={metricsFromProfilesMenu}>
+                    <IconButton name="gf-prometheus" tooltip="Recording rules" aria-label="Recording rules" />
+                  </Dropdown>
+                </>
+              )}
 
-            <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />
+              <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />
 
-            <IconButton name="cog" tooltip="View/edit tenant settings" onClick={actions.onClickUserSettings} />
+              <IconButton name="cog" tooltip="View/edit tenant settings" onClick={actions.onClickUserSettings} />
 
-            <IconButton
-              name="share-alt"
-              tooltip="Copy shareable link to the clipboard"
-              onClick={actions.onClickShareLink}
-            />
+              <IconButton
+                name="share-alt"
+                tooltip="Copy shareable link to the clipboard"
+                onClick={actions.onClickShareLink}
+              />
 
-            <PluginInfo />
-          </div>
+              <PluginInfo />
+            </div>
+          )}
         </div>
       </div>
 
       <div id={`scene-controls-${explorationType}`} className={styles.sceneControls} data-testid="sceneControls">
-        <Field
-          label={dataSourceVariable.state.label}
-          className={cx(styles.sceneVariable, dataSourceVariable.state.name)}
-          data-testid={dataSourceVariable.state.name}
-        >
-          <dataSourceVariable.Component model={dataSourceVariable} />
-        </Field>
+        {!props.isEmbedded && (
+          <Field
+            label={dataSourceVariable.state.label}
+            className={cx(styles.sceneVariable, dataSourceVariable.state.name)}
+            data-testid={dataSourceVariable.state.name}
+          >
+            <dataSourceVariable.Component model={dataSourceVariable} />
+          </Field>
+        )}
 
         {sceneVariables.map((variable) => (
           <Field
@@ -152,11 +157,11 @@ export function Header(props: HeaderProps) {
   );
 }
 
-const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
+const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded: boolean) => ({
   header: css`
-    background-color: ${theme.colors.background.canvas};
+    background-color: ${isEmbedded ? theme.colors.background.primary : theme.colors.background.canvas};
     position: sticky;
-    top: ${chromeHeaderHeight}px;
+    top: ${isEmbedded ? 0 : chromeHeaderHeight}px;
     z-index: 1;
     padding-bottom: ${theme.spacing(2)};
   `,
@@ -165,6 +170,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number) => ({
     padding: ${theme.spacing(1)} 0;
     justify-content: space-between;
     gap: ${theme.spacing(2)};
+    flex-flow: wrap;
   `,
   appControlsLeft: css`
     display: flex;
