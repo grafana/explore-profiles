@@ -41,7 +41,7 @@ export function AnalyzeDiffFlameGraph({
   if (!loading && profileType && profiles) {
     const prompts = buildPrompts({
       system: 'empty',
-      user: profiles.length === 2 ? 'diff' : 'single',
+      user: 'diff',
       profileType,
       profiles,
     });
@@ -51,14 +51,18 @@ export function AnalyzeDiffFlameGraph({
         datasourceUid: dataSourceUid,
       }),
       createAssistantContextItem('structured', {
-        title: 'DOT Profiles Data',
-        data: { stringifiedData: `${prompts.user}` },
+        title: 'DOT Profiles and instructions',
+        data: { stringifiedData: `${prompts.system}\n${prompts.user}` },
       }),
     ];
 
     return (
       <div className={css({ marginTop: '10px' })}>
-        <OpenAssistantButton origin="grafana/diff-flame-graph" prompt={`${prompts.system}`} context={context} />
+        <OpenAssistantButton
+          origin="grafana/diff-flame-graph"
+          prompt={`Analyze the differences between these two performance profiles.`}
+          context={context}
+        />
       </div>
     );
   }
