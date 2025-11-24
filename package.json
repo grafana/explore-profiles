@@ -112,7 +112,7 @@
     "eslint-plugin-sonarjs": "0.21.0",
     "eslint-webpack-plugin": "4.2.0",
     "fork-ts-checker-webpack-plugin": "8.0.0",
-    "glob": "10.4.5",
+    "glob": "10.5.0",
     "husky": "8.0.3",
     "identity-obj-proxy": "3.0.0",
     "imports-loader": "5.0.0",
