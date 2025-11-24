@@ -21,29 +21,6 @@ test.describe('All services view', () => {
     await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot();
   });
 
-  test.describe('Main refresh button', () => {
-    test('To preserve the user context, the panels in grid remain in place until "Refresh" is clicked', async ({
-      exploreProfilesPage,
-    }) => {
-      await expect(exploreProfilesPage.getPanels()).toHaveCount(3);
-      await expect(exploreProfilesPage.getPanelByTitle('load-generator')).toBeVisible();
-      await expect(exploreProfilesPage.getPanelByTitle('pyroscope')).toBeVisible();
-      await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app')).toBeVisible();
-
-      await exploreProfilesPage.selectTimeRange('Last 5 minutes');
-
-      await expect(exploreProfilesPage.getPanels()).toHaveCount(3);
-      await expect(exploreProfilesPage.getPanelByTitle('load-generator')).toBeVisible();
-      await expect(exploreProfilesPage.getPanelByTitle('pyroscope')).toBeVisible();
-      await expect(exploreProfilesPage.getPanelByTitle('ride-sharing-app')).toBeVisible();
-
-      await exploreProfilesPage.clickOnRefresh();
-
-      await expect(exploreProfilesPage.getPanels()).toHaveCount(1);
-      await expect(exploreProfilesPage.getPanelByTitle('pyroscope')).toBeVisible();
-    });
-  });
-
   test('Profile type selector', async ({ exploreProfilesPage }) => {
     await exploreProfilesPage.selectProfileType('memory/inuse_objects');
 

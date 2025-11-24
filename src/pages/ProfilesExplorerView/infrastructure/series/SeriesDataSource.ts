@@ -7,12 +7,16 @@ import {
   TestDataSourceResponse,
   TimeRange,
 } from '@grafana/data';
-import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
+import { RuntimeDataSource } from '@grafana/scenes';
+import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { logger } from '@shared/infrastructure/tracking/logger';
 
+import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
+import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../pyroscope-data-sources';
 import { formatSeriesToProfileMetrics } from './formatSeriesToProfileMetrics';
 import { formatSeriesToServices } from './formatSeriesToServices';
+import { safeInterpolate } from './helpers/safeInterpolate';
 import { DataSourceProxyClientBuilder } from './http/DataSourceProxyClientBuilder';
 import { SeriesApiClient } from './http/SeriesApiClient';
 import { seriesRepository } from './http/seriesRepository';
@@ -58,11 +62,16 @@ export class SeriesDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    const sceneObject = options.scopedVars?.__sceneObject?.value;
+    const sceneObject = options.scopedVars?.__sceneObject?.valueOf() as ServiceNameVariable | ProfileMetricVariable;
 
-    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
-    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
-    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+    let dataSourceUid = safeInterpolate(sceneObject, '$dataSource');
+    const serviceName = safeInterpolate(sceneObject, '$serviceName');
+    const profileMetricId = safeInterpolate(sceneObject, '$profileMetricId');
+
+    // Fallback to default datasource if interpolation not ready yet
+    if (!dataSourceUid) {
+      dataSourceUid = ApiClient.selectDefaultDataSource().uid as string;
+    }
 
     const pyroscopeSeries = await this.fetchSeries(dataSourceUid, options.range as TimeRange, options.variable?.name);
 
