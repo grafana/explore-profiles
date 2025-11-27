@@ -102,5 +102,6 @@ In build time (PR and main branch), we run a [Pyroscope server with static data]
 - Identify the current Playwright version, e.g. `1.46.0`
 - Identify the new Playwright version, e.g. `1.47.0`
 - In a terminal, execute: `./scripts/upgrade-playwright 1.46.0 1.47.0`
+- Update sha for the new version in Dockerfile.plugin.e2e based on https://mcr.microsoft.com/en-us/artifact/mar/playwright
 - Launch the E2E tests locally with Docker to verify that the new version works: `yarn e2e:ci:server:up && yarn e2e:ci`
 - Push the modified files to the PR
