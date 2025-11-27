@@ -10,6 +10,7 @@ type FetchParams = {
   gitRef: string;
   localPath: string;
   rootPath: string;
+  functionName: string;
 };
 
 type FetchResponse = {
@@ -28,14 +29,15 @@ export function useFetchVCSFile({
   gitRef,
   localPath,
   rootPath,
+  functionName,
 }: FetchParams): FetchResponse {
   const privateVcsClient = DataSourceProxyClientBuilder.build(dataSourceUid, PrivateVcsClient);
   const { isFetching, error, data } = useQuery({
-    enabled: Boolean(enabled && localPath),
-    queryKey: ['vcs-file', repository, gitRef, localPath, rootPath],
+    enabled: Boolean(enabled && repository && (localPath || functionName)),
+    queryKey: ['vcs-file', repository, gitRef, localPath, rootPath, functionName],
     queryFn: () =>
       privateVcsClient
-        .getFile(repository, gitRef, localPath, rootPath)
+        .getFile(repository, gitRef, localPath, rootPath, functionName)
         .then((code) => ({
           content: code.content,
           URL: code.URL,
