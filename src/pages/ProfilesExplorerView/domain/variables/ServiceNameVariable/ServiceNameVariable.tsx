@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { AdHocVariableFilter, GrafanaTheme2, VariableRefresh } from '@grafana/data';
+import { AdHocVariableFilter, GrafanaTheme2 } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
@@ -35,7 +35,6 @@ export class ServiceNameVariable extends QueryVariable {
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ServiceNameVariable.QUERY_DEFAULT,
       loading: true,
-      refresh: VariableRefresh.onTimeRangeChanged,
       ...state,
     });
 
