@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
+import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { localeCompare } from '@shared/domain/localeCompare';
@@ -41,6 +41,7 @@ export class ProfileMetricVariable extends QueryVariable {
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ProfileMetricVariable.QUERY_DEFAULT,
       loading: true,
+      refresh: VariableRefresh.onTimeRangeChanged,
       ...state,
     });
 
