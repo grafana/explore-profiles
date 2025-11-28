@@ -32,6 +32,7 @@ export function useCodeContainer(dataSourceUid: string, functionDetails: Functio
     repository: version?.repository ?? '',
     gitRef: version?.git_ref ?? '',
     rootPath: version?.root_path ?? '',
+    functionName: functionDetails.name ?? '',
   });
 
   // might be a bit costly so we memoize it
