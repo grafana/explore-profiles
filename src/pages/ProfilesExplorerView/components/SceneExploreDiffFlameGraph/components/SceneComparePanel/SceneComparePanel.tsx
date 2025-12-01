@@ -143,6 +143,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }),
       overrides: (series: DataFrame[]) => SceneComparePanel.buildSeriesOverrides(series, color),
       headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
+      convertRangesToPoints: true,
     });
 
     SceneComparePanel.configureTimeRange(timeseriesPanel, target, title);

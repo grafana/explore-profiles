@@ -31,7 +31,7 @@ export class SceneLabelValuePanel extends SceneObjectBase<SceneLabelValuesStatAn
     super({
       key: 'label-value-panel',
       statsPanel: new SceneStatsPanel({ item }),
-      timeseriesPanel: new SceneLabelValuesTimeseries({ item, headerActions }),
+      timeseriesPanel: new SceneLabelValuesTimeseries({ item, headerActions, convertRangesToPoints: true }),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));

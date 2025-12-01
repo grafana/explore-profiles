@@ -17,6 +17,6 @@ export function vizPanelBuilder(panelType: PanelType, options: any) {
 
     case PanelType.TIMESERIES:
     default:
-      return new SceneLabelValuesTimeseries(options);
+      return new SceneLabelValuesTimeseries({ ...options, convertRangesToPoints: true });
   }
 }
