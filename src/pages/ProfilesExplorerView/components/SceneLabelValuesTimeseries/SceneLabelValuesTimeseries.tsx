@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, FieldType, LoadingState, MutableDataFrame } from '@grafana/data';
+import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -109,7 +109,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     if (this.state.showAnnotations) {
       this.retainPreviousAnnotations(newState, prevState);
-      this.addDummyAnnotations(newState);
       if (this.state.convertRangesToPoints) {
         this.convertRangeAnnotationsToPoints(newState);
       }
@@ -146,44 +145,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         isRegionField.values = isRegionField.values.map(() => false);
       }
     });
-  }
-
-  private addDummyAnnotations(newState: any) {
-    const series = newState.data?.series;
-    if (!series?.length) {
-      return;
-    }
-
-    const timeField = series[0].fields.find((f: any) => f.type === FieldType.time);
-    if (!timeField || !timeField.values?.length) {
-      return;
-    }
-
-    const times = timeField.values;
-    const minTime = Math.min(...times);
-    const maxTime = Math.max(...times);
-    const timeRange = maxTime - minTime;
-
-    const annotation = new MutableDataFrame();
-    [
-      { name: 'time', type: FieldType.time },
-      { name: 'timeEnd', type: FieldType.time },
-      { name: 'isRegion', type: FieldType.boolean },
-      { name: 'color', type: FieldType.other },
-      { name: 'text', type: FieldType.string },
-    ].forEach((field) => annotation.addField(field));
-
-    annotation.add({
-      time: minTime + timeRange * 0.25,
-      timeEnd: minTime + timeRange * 0.35,
-      isRegion: true,
-      color: 'cyan',
-      text: 'Dummy Annotation 1',
-    });
-
-    if (!newState.data.annotations?.length) {
-      newState.data.annotations = [annotation];
-    }
   }
 
   private updateBodyConfig(series: DataFrame[]) {
@@ -339,6 +300,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       if (partialItem.queryRunnerParams.groupBy === undefined) {
         delete updatedItem.queryRunnerParams.groupBy;
       } else {
+        // we completely replace groupBy because merge() above concatenates groupBy.values
         updatedItem.queryRunnerParams.groupBy = partialItem.queryRunnerParams.groupBy;
       }
     }
