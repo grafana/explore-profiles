@@ -28,6 +28,7 @@ import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
   scaleType?: ScaleDistribution;
+  showAnnotations?: boolean;
 }
 
 const SCALE_TYPES = [
@@ -45,6 +46,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   constructor(state: SceneTimeseriesMenuState) {
     super({
       scaleType: ScaleDistribution.Linear,
+      showAnnotations: true,
       ...state,
     });
 
@@ -56,7 +58,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   buildMenuItems(addToInvestigationLink?: PluginExtensionLink): PanelMenuItem[] {
-    const { items, scaleType } = this.state;
+    const { items, scaleType, showAnnotations } = this.state;
 
     const menuItems: PanelMenuItem[] = [
       {
@@ -66,6 +68,14 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
           text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
           onClick: () => this.onClickScaleOption(option),
         })),
+      },
+      {
+        type: 'divider',
+        text: '',
+      },
+      {
+        text: `${showAnnotations ? '✔ ' : ''}Show annotations`,
+        onClick: () => this.onClickToggleAnnotations(),
       },
       {
         type: 'divider',
@@ -108,6 +118,18 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
 
     this.setState({
       scaleType: scaleDistribution.type,
+      items: this.buildMenuItems(),
+    });
+  }
+
+  onClickToggleAnnotations() {
+    const { showAnnotations } = this.state;
+
+    const timeseries = sceneGraph.getAncestor(this, SceneLabelValuesTimeseries);
+    timeseries.toggleAnnotations(!showAnnotations);
+
+    this.setState({
+      showAnnotations: !showAnnotations,
       items: this.buildMenuItems(),
     });
   }
