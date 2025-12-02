@@ -1,4 +1,4 @@
-import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
+import { DataFrame, FieldDTO, FieldMatcherID, LoadingState } from '@grafana/data';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -139,8 +139,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       return;
     }
 
-    annotations.forEach((annotation: any) => {
-      const isRegionField = annotation.fields?.find((field: any) => field.name === 'isRegion');
+    annotations.forEach((annotation: DataFrame) => {
+      const isRegionField = annotation.fields?.find((field: FieldDTO) => field.name === 'isRegion');
       if (isRegionField) {
         isRegionField.values = isRegionField.values.map(() => false);
       }
