@@ -6383,10 +6383,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:16.4.5":
-  version: 16.4.5
-  resolution: "dotenv@npm:16.4.5"
-  checksum: 10/55a3134601115194ae0f924e54473459ed0d9fc340ae610b676e248cca45aa7c680d86365318ea964e6da4e2ea80c4514c1adab5adb43d6867fb57ff068f95c8
+"dotenv@npm:16.6.1":
+  version: 16.6.1
+  resolution: "dotenv@npm:16.6.1"
+  checksum: 10/1d1897144344447ffe62aa1a6d664f4cd2e0784e0aff787eeeec1940ded32f8e4b5b506d665134fc87157baa086fce07ec6383970a2b6d2e7985beaed6a4cc14
   languageName: node
   linkType: hard
 
@@ -11719,7 +11719,7 @@ __metadata:
     compression-streams-polyfill: "npm:^0.1.7"
     copy-webpack-plugin: "npm:11.0.0"
     css-loader: "npm:6.11.0"
-    dotenv: "npm:16.4.5"
+    dotenv: "npm:16.6.1"
     esbuild-loader: "npm:4.2.0"
     eslint: "npm:8.52.0"
     eslint-config-prettier: "npm:8.10.0"
