@@ -5,7 +5,6 @@ import {
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
-  VariableDependencyConfig,
   VizPanelState,
 } from '@grafana/scenes';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
@@ -30,13 +29,6 @@ interface SceneMainServiceTimeseriesState extends SceneObjectState {
 
 export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainServiceTimeseriesState> {
   static MIN_HEIGHT = 240;
-
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['serviceName', 'profileMetricId'],
-    onReferencedVariableValueChanged: (variable) => {
-      this.resetTimeseries(variable.state.name === 'serviceName');
-    },
-  });
 
   constructor({
     item,
@@ -65,6 +57,25 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     if (supportGroupBy) {
       this.subscribeToGroupByStateChanges(item);
     }
+
+    const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
+    const profileMetricsVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
+
+    this._subs.add(
+      serviceNameVariable.subscribeToState((newState, prevState) => {
+        if (newState?.value !== prevState?.value) {
+          this.resetTimeseries(true); // reset filters when service name changes
+        }
+      })
+    );
+
+    this._subs.add(
+      profileMetricsVariable.subscribeToState((newState, prevState) => {
+        if (newState?.value !== prevState?.value) {
+          this.resetTimeseries(false); // keep same filters whe just profiles metric changes
+        }
+      })
+    );
   }
 
   initVariables(item: GridItemData) {
