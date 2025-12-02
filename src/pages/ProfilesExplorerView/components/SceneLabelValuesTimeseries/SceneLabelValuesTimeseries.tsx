@@ -113,8 +113,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
         this.convertRangeAnnotationsToPoints(newState);
       }
     } else {
-      if (newState.data.annotations) {
-        newState.data.annotations = [];
+      if (newState.data?.annotations) {
+        newState.data = {
+          ...newState.data,
+          annotations: [],
+        };
       }
     }
 
