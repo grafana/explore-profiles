@@ -1,18 +1,22 @@
-import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
+import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button } from '@grafana/ui';
 import React from 'react';
 
+import { SceneLabelValuesTimeseries } from '../../components/SceneLabelValuesTimeseries/SceneLabelValuesTimeseries';
+
 interface ExemplarToggleActionState extends SceneObjectState {
-  showExemplars?: boolean;
+  showExemplars: boolean;
 }
 
 export class ExemplarToggleAction extends SceneObjectBase<ExemplarToggleActionState> {
-  constructor(state: ExemplarToggleActionState) {
-    super(state);
+  constructor(showExemplars: boolean) {
+    super({ showExemplars });
   }
 
   public onClick = () => {
     this.setState({ showExemplars: !this.state.showExemplars });
+    const timeseries = sceneGraph.getAncestor(this, SceneLabelValuesTimeseries);
+    timeseries.handleExemplarToggleChange(this.state.showExemplars);
   };
 
   public static Component = ({ model }: SceneComponentProps<ExemplarToggleAction>) => {

@@ -28,6 +28,7 @@ import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
   scaleType?: ScaleDistribution;
+  showExemplars?: boolean; // undefined means that the Exemplars button is not shown in the menu. Otherwise, it's shown and the value is the current state of the Exemplars button.
 }
 
 const SCALE_TYPES = [
@@ -56,7 +57,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   buildMenuItems(addToInvestigationLink?: PluginExtensionLink): PanelMenuItem[] {
-    const { items, scaleType } = this.state;
+    const { scaleType, showExemplars } = this.state;
 
     const menuItems: PanelMenuItem[] = [
       {
@@ -78,23 +79,52 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       },
     ];
 
+    if (showExemplars !== undefined) {
+      menuItems.unshift(
+        {
+          iconClassName: showExemplars ? 'eye' : 'eye-slash',
+          text: 'Exemplars',
+          onClick: () => this.onClickToggleExemplars(),
+        },
+        {
+          type: 'divider',
+          text: 'new-divider',
+        }
+      );
+    }
+
+    const addToInvestigationItem = this.buildAddToInvestigationItem(addToInvestigationLink);
+    if (addToInvestigationItem) {
+      menuItems.push(addToInvestigationItem);
+    }
+
+    return menuItems;
+  }
+
+  private buildAddToInvestigationItem(addToInvestigationLink?: PluginExtensionLink): PanelMenuItem | undefined {
     if (addToInvestigationLink) {
-      menuItems.push({
+      return {
         iconClassName: 'plus-square',
         text: 'Add to investigation (beta)',
         onClick: () => {
           addToInvestigationLink.onClick!();
         },
-      });
-    } else {
-      const existingAddToInvestigationItem = items?.find((i) => i.text.includes('Add to investigation'));
-
-      if (existingAddToInvestigationItem) {
-        menuItems.push({ ...existingAddToInvestigationItem });
-      }
+      };
     }
 
-    return menuItems;
+    const existingAddToInvestigationItem = this.state.items?.find((i) => i.text.includes('Add to investigation'));
+
+    return existingAddToInvestigationItem ? { ...existingAddToInvestigationItem } : undefined;
+  }
+
+  private onClickToggleExemplars() {
+    this.setState({
+      showExemplars: !this.state.showExemplars,
+      items: this.buildMenuItems(),
+    });
+
+    const timeseries = sceneGraph.getAncestor(this, SceneLabelValuesTimeseries);
+    timeseries.handleExemplarToggleChange(this.state.showExemplars!);
   }
 
   onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {

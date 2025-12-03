@@ -39,7 +39,6 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   displayAllValues: boolean;
   legendPlacement: VizLegendOptions['placement'];
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
-  exemplarToggleAction?: ExemplarToggleAction;
   annotations?: boolean;
 }
 
@@ -63,23 +62,29 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     annotations?: boolean;
     includeExemplars?: boolean;
   }) {
-    includeExemplars = featureToggles.exemplars ? includeExemplars : false;
-    const exemplarToggleAction = featureToggles.exemplars
-      ? new ExemplarToggleAction({ showExemplars: includeExemplars })
-      : undefined;
-    const headerActionsWithExemplarToggle = exemplarToggleAction
-      ? (item: GridItemData) => [...(headerActions(item) as SceneObject[]), exemplarToggleAction!]
-      : headerActions;
+    let menuState = {};
+    if (featureToggles.exemplars) {
+      if (includeExemplars) {
+        // when includeExemplers is true, we show Exemplars button in the timeseries header.
+        const headerActionsRef = headerActions;
+        headerActions = (item: GridItemData) => [
+          ...(headerActionsRef(item) as SceneObject[]),
+          new ExemplarToggleAction(true),
+        ];
+      } else {
+        // Otherwise, we keep it on the menu. (Disabled by default)
+        menuState = { showExemplars: false };
+      }
+    }
 
     super({
       key: 'timeseries-label-values',
       item,
-      headerActions: headerActionsWithExemplarToggle,
+      headerActions: headerActions,
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
       overrides,
       annotations,
-      exemplarToggleAction,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
@@ -89,13 +94,13 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
                 annotations,
-                includeExemplars
+                includeExemplars && featureToggles.exemplars
               ),
               transformations: [addRefId, addStats],
             })
         )
-        .setHeaderActions(headerActionsWithExemplarToggle(item))
-        .setMenu(new SceneTimeseriesMenu({}) as unknown as VizPanelMenu)
+        .setHeaderActions(headerActions(item))
+        .setMenu(new SceneTimeseriesMenu(menuState) as unknown as VizPanelMenu)
         .build(),
     });
 
@@ -109,12 +114,9 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     const profileMetricSub = this.subscribeToProfileMetricChanges();
 
-    const exemplarToggleSub = this.subscribeToExemplarToggleChanges();
-
     return () => {
       dataSub.unsubscribe();
       profileMetricSub?.unsubscribe();
-      exemplarToggleSub?.unsubscribe();
     };
   }
 
@@ -173,21 +175,24 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     }
   }
 
-  private subscribeToExemplarToggleChanges() {
-    const { exemplarToggleAction } = this.state;
-    if (!exemplarToggleAction) {
-      return null;
-    }
-
-    return exemplarToggleAction.subscribeToState((newState, prevState) => {
-      if (newState.showExemplars !== prevState.showExemplars) {
-        this.handleExemplarToggleChange(newState.showExemplars ?? false);
-      }
-    });
-  }
-
-  private handleExemplarToggleChange(includeExemplars: boolean) {
+  handleExemplarToggleChange(includeExemplars: boolean) {
     const { body, item, displayAllValues, annotations } = this.state;
+    if (!includeExemplars) {
+      // Hide exemplars (annotations) by filtering them out from the data without running queries
+      const { $data } = body.state;
+      const data = ($data as SceneDataProvider)?.state.data;
+      if (data?.annotations) {
+        // Keep only RangeAnnotations, filter out exemplar annotations
+        const rangeAnnotations = data.annotations.filter((annotation: any) => annotation instanceof RangeAnnotation);
+        ($data as SceneDataProvider)?.setState({
+          data: {
+            ...data,
+            annotations: rangeAnnotations,
+          },
+        });
+      }
+      return;
+    }
 
     const { queries } = buildTimeSeriesQueryRunner(
       item.queryRunnerParams,
