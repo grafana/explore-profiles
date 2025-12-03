@@ -528,7 +528,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bufbuild/protobuf@npm:2.10.1, @bufbuild/protobuf@npm:^2.2.1, @bufbuild/protobuf@npm:^2.2.3":
+"@bufbuild/protobuf@npm:2.10.1, @bufbuild/protobuf@npm:^2.2.3, @bufbuild/protobuf@npm:^2.5.1":
   version: 2.10.1
   resolution: "@bufbuild/protobuf@npm:2.10.1"
   checksum: 10/74c3076b47e0c17c9d247d94b15c6d8bf1c4f0c56f7a79e054f8557ab387ee392dda14cce1a05fd976aee4518d3cac602cf59dca3327dff243af4019dc5a03a2
@@ -608,11 +608,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@connectrpc/protoc-gen-connect-query@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@connectrpc/protoc-gen-connect-query@npm:2.0.1"
+"@connectrpc/protoc-gen-connect-query@npm:2.2.0":
+  version: 2.2.0
+  resolution: "@connectrpc/protoc-gen-connect-query@npm:2.2.0"
   dependencies:
-    "@bufbuild/protobuf": "npm:^2.2.1"
+    "@bufbuild/protobuf": "npm:^2.5.1"
     "@bufbuild/protoplugin": "npm:^2.2.1"
   peerDependencies:
     "@bufbuild/protoc-gen-es": 2.x
@@ -621,7 +621,7 @@ __metadata:
       optional: true
   bin:
     protoc-gen-connect-query: bin/protoc-gen-connect-query
-  checksum: 10/8709ad67868d016b63612a5d59aa958ca7366ca1c68ce4fb3fc711c3e7d45a36927db8dee732503a882e6112c8982b2cd5733282dd7c25815774d739d315637e
+  checksum: 10/c5183f5dd91308aa137dd45d4fd53a6663fd8838076e55a28d7280e52781eda91c44676ffb1efe2837667c72d19a2254f4243ed2feb54b7c5920694cd4e0839f
   languageName: node
   linkType: hard
 
@@ -11677,7 +11677,7 @@ __metadata:
     "@connectrpc/connect": "npm:^2.0.1"
     "@connectrpc/connect-query": "npm:^2.0.1"
     "@connectrpc/connect-web": "npm:^2.0.1"
-    "@connectrpc/protoc-gen-connect-query": "npm:2.0.1"
+    "@connectrpc/protoc-gen-connect-query": "npm:2.2.0"
     "@emotion/css": "npm:11.10.6"
     "@grafana/assistant": "npm:0.1.4"
     "@grafana/data": "npm:^12.1.0"
