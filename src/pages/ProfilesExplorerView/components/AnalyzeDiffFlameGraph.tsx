@@ -32,13 +32,11 @@ export function AnalyzeDiffFlameGraph({
     return null;
   }
 
-  const loading = validationError || fetchError || isFetching;
-
   if (validationError || fetchError) {
     return null;
   }
 
-  if (!loading && profileType && profiles) {
+  if (!isFetching && profileType && profiles) {
     const prompts = buildPrompts({
       system: 'empty',
       user: 'diff',
