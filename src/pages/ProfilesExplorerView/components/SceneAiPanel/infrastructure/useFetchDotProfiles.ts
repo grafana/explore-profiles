@@ -1,4 +1,5 @@
 import { TimeRange } from '@grafana/data';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useQuery } from '@tanstack/react-query';
 
 import { ProfileApiClient } from '../../../infrastructure/profiles/ProfileApiClient';
@@ -12,7 +13,39 @@ export type FetchParams = Array<{
 
 const MAX_NODES = 100;
 
-export function useFetchDotProfiles(dataSourceUid: string, fetchParams: FetchParams) {
+export function useFetchDotProfiles(
+  isDiff: boolean,
+  fetchParams: Array<{
+    query: string;
+    timeRange: TimeRange;
+  }>,
+  dataSourceUid: string,
+  profileMetricId: string
+) {
+  const { params, error: validationError } = validateFetchParams(isDiff, fetchParams);
+
+  const { error: fetchError, isFetching, profiles } = usePerformFetchDotProfiles(dataSourceUid, params);
+  const profileType = getProfileMetric(profileMetricId as ProfileMetricId).type;
+
+  return { profileType, profiles, validationError, fetchError, isFetching };
+}
+
+function validateFetchParams(isDiff: boolean, fetchParams: FetchParams) {
+  let params = fetchParams;
+  let error;
+
+  if (isDiff && fetchParams.length !== 2) {
+    error = new Error(`Invalid number of fetch parameters for analyzing the diff flame graph (${fetchParams.length})!`);
+    params = [];
+  } else if (!isDiff && fetchParams.length !== 1) {
+    error = new Error(`Invalid number of fetch parameters for analyzing the flame graph (${fetchParams.length})!`);
+    params = [];
+  }
+
+  return { params, error };
+}
+
+function usePerformFetchDotProfiles(dataSourceUid: string, fetchParams: FetchParams) {
   const profileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, ProfileApiClient);
 
   const { isFetching, error, data } = useQuery({

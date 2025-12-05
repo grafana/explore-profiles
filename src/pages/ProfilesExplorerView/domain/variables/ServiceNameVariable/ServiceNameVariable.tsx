@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
+import { AdHocVariableFilter, GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
@@ -13,8 +13,9 @@ import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../../infrastructure/pyroscope-
 import { buildServiceNameCascaderOptions } from './domain/useBuildServiceNameOptions';
 
 type ServiceNameVariableState = {
-  query: string;
-  skipUrlSync: boolean;
+  query?: string;
+  skipUrlSync?: boolean;
+  initialFilters?: AdHocVariableFilter[];
 };
 
 export class ServiceNameVariable extends QueryVariable {
@@ -23,6 +24,8 @@ export class ServiceNameVariable extends QueryVariable {
 
   // hack: subscribe to changes of dataSource and profileMetricId
   static QUERY_PROFILE_METRIC_DEPENDENT = '$dataSource and only $profileMetricId services';
+
+  private initialFilters?: AdHocVariableFilter[];
 
   constructor(state?: ServiceNameVariableState) {
     super({
@@ -36,15 +39,12 @@ export class ServiceNameVariable extends QueryVariable {
       ...state,
     });
 
+    this.initialFilters = state?.initialFilters;
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
   onActivate() {
-    const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
-
-    if (serviceNameFromStorage && !this.state.value) {
-      this.setState({ value: serviceNameFromStorage });
-    }
+    this.setInitialValue();
 
     this.subscribeToState((newState, prevState) => {
       if (newState.value && newState.value !== prevState.value) {
@@ -53,6 +53,20 @@ export class ServiceNameVariable extends QueryVariable {
         userStorage.set(userStorage.KEYS.PROFILES_EXPLORER, storage);
       }
     });
+  }
+
+  setInitialValue() {
+    const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
+
+    const initialServiceName = this.initialFilters?.find(
+      (filter: AdHocVariableFilter) => filter.key === 'service_name' && filter.operator === '='
+    )?.value;
+
+    if (serviceNameFromStorage && !this.state.value && !initialServiceName) {
+      this.setState({ value: serviceNameFromStorage });
+    } else if (initialServiceName) {
+      this.setState({ value: initialServiceName });
+    }
   }
 
   async update() {

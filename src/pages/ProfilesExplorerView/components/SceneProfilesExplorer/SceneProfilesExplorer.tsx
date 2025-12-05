@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { AdHocVariableFilter } from '@grafana/data';
 import {
   EmbeddedSceneState,
   SceneComponentProps,
@@ -59,6 +60,9 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   explorationType?: ExplorationType;
   body?: SplitLayout;
   createRecordingRuleModal: SceneCreateRecordingRuleModal;
+  isEmbedded?: boolean;
+  initialFilters?: AdHocVariableFilter[];
+  initialDS?: string;
 }
 
 export enum ExplorationType {
@@ -108,30 +112,44 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   static DEFAULT_EXPLORATION_TYPE = SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS[0].value;
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
+  private initialFilters?: AdHocVariableFilter[];
 
-  constructor() {
+  public constructor(state: Partial<SceneProfilesExplorerState>) {
     super({
       key: 'profiles-explorer',
-      explorationType: undefined,
+      explorationType: state.initialFilters && state.initialFilters.length > 0 ? ExplorationType.LABELS : undefined,
       body: undefined,
-      $timeRange: new SceneTimeRange(getDefaultTimeRange()),
-      $variables: new SceneVariableSet({
-        // in order to sync with the URL and...
-        // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
-        // also, we prevent re-creating all variables when switching exploration type, which would lead to unecessary work and layout shifts in the UI
-        // (because values would be empty before loading, then populated after fetched)
-        // see setExplorationType() for dynamic updates
-        variables: [
-          new ProfilesDataSourceVariable(),
-          new ServiceNameVariable(),
-          new ProfileMetricVariable(),
-          new FiltersVariable({ key: 'filters' }),
-          new FiltersVariable({ key: 'filtersBaseline' }),
-          new FiltersVariable({ key: 'filtersComparison' }),
-          new GroupByVariable(),
-          new SpanSelectorVariable(),
-        ],
-      }),
+      $timeRange: state?.$timeRange ?? new SceneTimeRange(getDefaultTimeRange()),
+      $variables:
+        state?.$variables ??
+        new SceneVariableSet({
+          // in order to sync with the URL and...
+          // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
+          // also, we prevent re-creating all variables when switching exploration type, which would lead to unecessary work and layout shifts in the UI
+          // (because values would be empty before loading, then populated after fetched)
+          // see setExplorationType() for dynamic updates
+          variables: [
+            new ProfilesDataSourceVariable({ initialDS: state?.initialDS }),
+            new ServiceNameVariable({ initialFilters: state?.initialFilters }),
+            new ProfileMetricVariable(),
+            new FiltersVariable({
+              key: 'filters',
+              initialFilters: (() => {
+                if (!state?.initialFilters) {
+                  return undefined;
+                }
+                const filtered = state.initialFilters.filter(
+                  (filter: AdHocVariableFilter) => filter.key !== 'service_name'
+                );
+                return filtered.length > 0 ? filtered : undefined;
+              })(),
+            }),
+            new FiltersVariable({ key: 'filtersBaseline' }),
+            new FiltersVariable({ key: 'filtersComparison' }),
+            new GroupByVariable(),
+            new SpanSelectorVariable(),
+          ],
+        }),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
@@ -142,9 +160,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         new SceneLayoutSwitcher(),
         new SceneNoDataSwitcher(),
       ],
+      isEmbedded: state?.isEmbedded,
     });
+
     this.registerRuntimeDataSources();
 
+    this.initialFilters = state?.initialFilters;
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
@@ -171,6 +192,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   updateFromUrl(values: SceneObjectUrlValues) {
+    // Don't update from URL if initialFilters are provided - we want to select the LABELS view as we are in embedded mode
+    if (this.initialFilters && this.initialFilters.length > 0) {
+      this.setExplorationType({ type: ExplorationType.LABELS, comesFromUserAction: false });
+      return;
+    }
+
     if (typeof values.explorationType === 'string' && values.explorationType !== this.state.explorationType) {
       const type = values.explorationType as ExplorationType;
       this.setExplorationType({
@@ -420,7 +447,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       isOpen: boolean;
       functionName?: string;
     }>({ isOpen: false });
-    const { createRecordingRuleModal } = model.useState();
+    const { createRecordingRuleModal, isEmbedded } = model.useState();
 
     return (
       <FunctionVersionProvider>
@@ -431,6 +458,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             body={body}
             $variables={$variables}
             onChangeExplorationType={actions.onChangeExplorationType}
+            isEmbedded={isEmbedded}
             onCreateRecordingRule={() => {
               setRecordingRulesModalState({ isOpen: true });
             }}
