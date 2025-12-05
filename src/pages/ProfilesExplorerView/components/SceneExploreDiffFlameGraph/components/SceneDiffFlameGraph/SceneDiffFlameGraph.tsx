@@ -16,8 +16,10 @@ import { PyroscopeLogo } from '@shared/ui/PyroscopeLogo';
 import React, { useEffect, useMemo } from 'react';
 
 import { useBuildPyroscopeQuery } from '../../../../domain/useBuildPyroscopeQuery';
+import { useGrafanaAssistant } from '../../../../domain/useGrafanaAssistant';
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
+import { AnalyzeDiffFlameGraph } from '../../../AnalyzeDiffFlameGraph';
 import { AIButton } from '../../../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../../../SceneAiPanel/SceneAiPanel';
 import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
@@ -140,6 +142,8 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const { data } = model.useSceneDiffFlameGraph();
     const sidePanel = useToggleSidePanel();
 
+    const { hideAIButton } = useGrafanaAssistant();
+
     const isAiButtonDisabled = data.isLoading || data.hasMissingSelections || data.noProfileDataAvailable;
 
     useEffect(() => {
@@ -165,6 +169,27 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
       [data.isLoading, data.title, styles.spinner]
     );
 
+    const dataSourceUid = sceneGraph.findByKeyAndType(model, 'dataSource', ProfilesDataSourceVariable).useState()
+      .value as string;
+    const profileMetricId = getSceneVariableValue(model, 'profileMetricId');
+
+    const aiActionButton = hideAIButton ? (
+      <AnalyzeDiffFlameGraph
+        dataSourceUid={dataSourceUid}
+        profileMetricId={profileMetricId}
+        isDiff
+        fetchParams={data.ai.fetchParams}
+      />
+    ) : (
+      <AIButton
+        disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
+        onClick={() => sidePanel.open('ai')}
+        interactionName="g_pyroscope_app_explain_flamegraph_clicked"
+      >
+        Explain Diff Flame Graph
+      </AIButton>
+    );
+
     return (
       <div className={styles.flex}>
         <Panel
@@ -172,15 +197,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
           className={styles.flamegraphPanel}
           title={panelTitle}
           isLoading={data.isLoading}
-          headerActions={
-            <AIButton
-              disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
-              onClick={() => sidePanel.open('ai')}
-              interactionName="g_pyroscope_app_explain_flamegraph_clicked"
-            >
-              Explain Diff Flame Graph
-            </AIButton>
-          }
+          headerActions={aiActionButton}
         >
           {data.hasMissingSelections && (
             <MissingSelectionsBanner
