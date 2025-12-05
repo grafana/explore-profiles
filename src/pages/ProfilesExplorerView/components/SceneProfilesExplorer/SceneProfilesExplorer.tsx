@@ -132,7 +132,18 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             new ProfilesDataSourceVariable({ initialDS: state?.initialDS }),
             new ServiceNameVariable({ initialFilters: state?.initialFilters }),
             new ProfileMetricVariable(),
-            new FiltersVariable({ key: 'filters' }),
+            new FiltersVariable({
+              key: 'filters',
+              initialFilters: (() => {
+                if (!state?.initialFilters) {
+                  return undefined;
+                }
+                const filtered = state.initialFilters.filter(
+                  (filter: AdHocVariableFilter) => filter.key !== 'service_name'
+                );
+                return filtered.length > 0 ? filtered : undefined;
+              })(),
+            }),
             new FiltersVariable({ key: 'filtersBaseline' }),
             new FiltersVariable({ key: 'filtersComparison' }),
             new GroupByVariable(),
