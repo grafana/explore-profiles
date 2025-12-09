@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.14.0
+
+##### Chores
+
+*  fix styling (#771) (14655e41)
+
+##### New Features
+
+* **DiffFlameGraph:**  Analyze Diff Flame Graph with Grafana Assistant (#752) (e18b2639)
+
+
 ## 1.13.0
 
 ##### Chores
