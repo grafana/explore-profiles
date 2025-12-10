@@ -9,7 +9,6 @@ import {
   SceneQueryRunner,
   SceneRefreshPicker,
   SceneTimePicker,
-  SceneTimeRange,
   SceneTimeRangeLike,
   SceneTimeRangeState,
   VariableDependencyConfig,
@@ -17,7 +16,6 @@ import {
 import { IconButton, useStyles2 } from '@grafana/ui';
 import { SceneTimePickerWithoutSync } from '@shared/components/SceneTimePickerWithoutSync/SceneTimePickerWithoutSync';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { omit } from 'lodash';
 import React from 'react';
 
 import { buildTimeRange } from '../../../../domain/buildTimeRange';
@@ -56,7 +54,6 @@ interface SceneComparePanelState extends SceneObjectState {
   color: string;
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
-  $timeRange: SceneTimeRange;
   timeseriesPanel: SceneLabelValuesTimeseries;
   timeRangeSyncEnabled: boolean;
   lastSyncedStepSec?: number;
@@ -72,12 +69,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   constructor({
     target,
-    useAncestorTimeRange,
     clearDiffRange,
     filters,
   }: {
     target: SceneComparePanelState['target'];
-    useAncestorTimeRange: boolean;
     clearDiffRange: boolean;
     filters: AdHocVariableFilter[];
   }) {
@@ -92,25 +87,20 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       filterKey,
       title,
       color,
-      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...buildTimeRange('now-1h', 'now') }),
       timePicker: new SceneTimePickerWithoutSync({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
       timeRangeSyncEnabled: false,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, useAncestorTimeRange, clearDiffRange, filters));
+    this.addActivationHandler(this.onActivate.bind(this, clearDiffRange, filters));
   }
 
-  onActivate(useAncestorTimeRange: boolean, clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
-    const { $timeRange, timeseriesPanel, filterKey } = this.state;
+  onActivate(clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
+    const { timeseriesPanel, filterKey } = this.state;
 
     if (clearDiffRange) {
       this.setDiffRange(null);
-    }
-
-    if (useAncestorTimeRange) {
-      $timeRange.setState(omit(this.getAncestorTimeRange().state, 'key'));
     }
 
     if (filters.length) {
@@ -226,7 +216,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   subscribeToEvents() {
-    const { target, timeseriesPanel, $timeRange } = this.state;
+    const { target, timeseriesPanel } = this.state;
 
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
@@ -250,16 +240,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }
     });
 
-    const timeRangeSub = $timeRange.subscribeToState((newState, prevState) => {
-      if (newState.from !== prevState.from || newState.to !== prevState.to) {
-        this.updateTitle('');
-
-        if (this.state.timeRangeSyncEnabled) {
-          this.publishEvent(new EventSyncTimeRanges({ source: target, timeRange: newState }), true);
-        }
-      }
-    });
-
     // Subscribe to data changes for step synchronization
     const dataSub = timeseriesPanel.state.body.state.$data?.subscribeToState((newState) => {
       if (newState.data?.state === 'Done' && newState.data.series?.length) {
@@ -269,7 +249,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
     return {
       unsubscribe() {
-        timeRangeSub.unsubscribe();
         annotationTimeRangeSub.unsubscribe();
         switchSub.unsubscribe();
         dataSub?.unsubscribe();
@@ -296,10 +275,18 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   setTimeRange(newTimeRange: SceneTimeRangeState) {
-    const { from, to } = this.state.$timeRange.state.value;
+    const timeRange = this.state.$data?.state.$timeRange?.state.value;
+    if (!timeRange) {
+      return;
+    }
 
+    const { from, to } = timeRange;
     if (!from.isSame(newTimeRange.value.from) || !to.isSame(newTimeRange.value.to)) {
-      this.state.$timeRange.setState({ from: newTimeRange.from, to: newTimeRange.to, value: newTimeRange.value });
+      this.state.$data?.state.$timeRange?.setState({
+        from: newTimeRange.from,
+        to: newTimeRange.to,
+        value: newTimeRange.value,
+      });
     }
   }
 
@@ -329,9 +316,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
    * the region with the highest consumption on the comparison panel.
    */
   autoSelectDiffRange(selectWholeRange: boolean) {
-    const { $timeRange, target } = this.state;
-    const { from, to } = $timeRange.state.value;
+    const timeRange = this.state.$data?.state.$timeRange;
+    if (!timeRange) {
+      return;
+    }
 
+    const { from, to } = timeRange.state.value;
     this.updateTitle('');
 
     if (selectWholeRange) {
@@ -344,6 +334,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     // ensure that we don't kill the backend when selecting long periods like 7d
     const range = Math.min(Math.round(diff * 0.25), ONE_DAY_IN_MS);
 
+    const { target } = this.state;
     if (target === CompareTarget.BASELINE) {
       // we have to create a new instance because add() mutates the original one
       this.setDiffRange({ from: from.toISOString(), to: dateTime(from).add(range).toISOString() });
@@ -364,11 +355,15 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const { target, timeRangeSyncEnabled, $timeRange, timeseriesPanel } = this.state;
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
+    if (!$timeRange) {
+      return;
+    }
+
     this.publishEvent(
       new EventEnableSyncTimeRanges({
         source: target,
         enable: !timeRangeSyncEnabled,
-        timeRange: $timeRange.state,
+        timeRange: $timeRange?.state,
         annotationTimeRange: $annotationTimeRange.state.annotationTimeRange,
       }),
       true
@@ -384,7 +379,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   };
 
   refreshTimeseries() {
-    this.state.$timeRange.onRefresh();
+    this.state.$timeRange?.onRefresh();
   }
 
   private syncStepSizeWithSibling(myData: DataFrame[]) {

@@ -34,8 +34,6 @@ interface SceneExploreDiffFlameGraphState extends SceneObjectState {
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
   constructor({
-    useAncestorTimeRange,
-    clearDiffRange,
     baselineFilters,
     comparisonFilters,
   }: {
@@ -48,14 +46,12 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
       key: 'explore-diff-flame-graph',
       baselinePanel: new SceneComparePanel({
         target: CompareTarget.BASELINE,
-        useAncestorTimeRange: Boolean(useAncestorTimeRange),
-        clearDiffRange: Boolean(clearDiffRange),
+        clearDiffRange: Boolean(true),
         filters: baselineFilters || [],
       }),
       comparisonPanel: new SceneComparePanel({
         target: CompareTarget.COMPARISON,
-        useAncestorTimeRange: Boolean(useAncestorTimeRange),
-        clearDiffRange: Boolean(clearDiffRange),
+        clearDiffRange: Boolean(true),
         filters: comparisonFilters || [],
       }),
       $behaviors: [

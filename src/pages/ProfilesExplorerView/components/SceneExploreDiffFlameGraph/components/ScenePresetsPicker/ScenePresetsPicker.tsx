@@ -156,7 +156,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       this._subs.add(
         sceneGraph
           .findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel)
-          .state.$timeRange.subscribeToState((newState, prevState) => {
+          .state.$timeRange?.subscribeToState((newState, prevState) => {
             if (newState.from !== prevState.from || newState.to !== prevState.to) {
               this.setState({ value: null });
             }
