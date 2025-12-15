@@ -73,6 +73,17 @@ export function validateFetchParams(isDiff: boolean, fetchParams: FetchParams) {
     params = [];
   }
 
+  // Validate time ranges - ensure all have non-zero from and to values
+  // Sending zero parameter values to the API can cause issues
+  const hasInvalidTimeRanges = params.some(({ timeRange }) => {
+    return timeRange.from.unix() === 0 || timeRange.to.unix() === 0;
+  });
+
+  if (hasInvalidTimeRanges) {
+    error = new Error('Invalid time range: from and to values must be non-zero');
+    params = [];
+  }
+
   return { params, error };
 }
 
@@ -91,6 +102,7 @@ function getFetchDotProfilesOptions(
       ...fetchParams.flatMap(({ query, timeRange }) => [query, timeRange.from.unix(), timeRange.to.unix()]),
       MAX_NODES,
     ],
+    enabled: fetchParams.length > 0,
     queryFn: () => {
       // TODO: pass a signal options to properly abort all in-flight requests
       return Promise.all(
