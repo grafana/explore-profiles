@@ -1,5 +1,6 @@
 import { TimeRange } from '@grafana/data';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { queryClient } from '@shared/infrastructure/react-query/queryClient';
 import { useQuery } from '@tanstack/react-query';
 
 import { ProfileApiClient } from '../../../infrastructure/profiles/ProfileApiClient';
@@ -13,6 +14,9 @@ export type FetchParams = Array<{
 
 const MAX_NODES = 100;
 
+/**
+ * React hook to fetch DOT profiles for React components. For one-off calls, use fetchDotProfiles function.
+ */
 export function useFetchDotProfiles(
   isDiff: boolean,
   fetchParams: Array<{
@@ -30,7 +34,34 @@ export function useFetchDotProfiles(
   return { profileType, profiles, validationError, fetchError, isFetching };
 }
 
-function validateFetchParams(isDiff: boolean, fetchParams: FetchParams) {
+/**
+ * One-off function to fetch DOT profiles. For React components, prefer using useFetchDotProfiles hook.
+ */
+export async function fetchDotProfiles(
+  isDiff: boolean,
+  fetchParams: Array<{
+    query: string;
+    timeRange: TimeRange;
+  }>,
+  dataSourceUid: string,
+  profileMetricId: string
+) {
+  const profileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, ProfileApiClient);
+
+  const { params, error: validationError } = validateFetchParams(isDiff, fetchParams);
+
+  if (validationError) {
+    throw validationError;
+  }
+
+  const dotProfilesOptions = getFetchDotProfilesOptions(dataSourceUid, params, profileApiClient);
+  const data = await queryClient.fetchQuery(dotProfilesOptions);
+  const profileType = getProfileMetric(profileMetricId as ProfileMetricId).type;
+
+  return { profiles: data || [], profileType };
+}
+
+export function validateFetchParams(isDiff: boolean, fetchParams: FetchParams) {
   let params = fetchParams;
   let error;
 
@@ -56,10 +87,15 @@ function validateFetchParams(isDiff: boolean, fetchParams: FetchParams) {
   return { params, error };
 }
 
-function usePerformFetchDotProfiles(dataSourceUid: string, fetchParams: FetchParams) {
-  const profileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, ProfileApiClient);
-
-  const { isFetching, error, data } = useQuery({
+function getFetchDotProfilesOptions(
+  dataSourceUid: string,
+  fetchParams: Array<{
+    query: string;
+    timeRange: TimeRange;
+  }>,
+  profileApiClient: ProfileApiClient
+) {
+  return {
     queryKey: [
       'dot-profiles',
       dataSourceUid,
@@ -77,7 +113,13 @@ function usePerformFetchDotProfiles(dataSourceUid: string, fetchParams: FetchPar
         )
       );
     },
-  });
+  };
+}
+
+function usePerformFetchDotProfiles(dataSourceUid: string, fetchParams: FetchParams) {
+  const profileApiClient = DataSourceProxyClientBuilder.build(dataSourceUid, ProfileApiClient);
+  let dotProfilesOptions = getFetchDotProfilesOptions(dataSourceUid, fetchParams, profileApiClient);
+  const { isFetching, error, data } = useQuery({ ...dotProfilesOptions });
 
   return {
     isFetching,
