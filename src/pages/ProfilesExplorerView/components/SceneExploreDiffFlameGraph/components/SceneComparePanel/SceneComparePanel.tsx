@@ -519,6 +519,7 @@ const getStyles = (theme: GrafanaTheme2, color: string) => ({
     padding: ${theme.spacing(1)} ${theme.spacing(1)} 0 ${theme.spacing(1)};
     border: 1px solid ${theme.colors.border.weak};
     border-radius: 2px;
+    width: 100%;
   `,
   panelHeader: css`
     display: flex;

@@ -1,15 +1,15 @@
-import { css } from '@emotion/css';
-import { AdHocVariableFilter, DashboardCursorSync, GrafanaTheme2, TimeRange } from '@grafana/data';
+import { AdHocVariableFilter, DashboardCursorSync, TimeRange } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
 import {
   behaviors,
   SceneComponentProps,
+  SceneFlexItem,
+  SceneFlexLayout,
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
   SceneTimeRangeState,
 } from '@grafana/scenes';
-import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -28,7 +28,7 @@ import { CompareTarget } from './domain/types';
 interface SceneExploreDiffFlameGraphState extends SceneObjectState {
   baselinePanel: SceneComparePanel;
   comparisonPanel: SceneComparePanel;
-  body: SceneDiffFlameGraph;
+  body: SceneFlexLayout;
   presetsPicker: ScenePresetsPicker;
 }
 
@@ -61,7 +61,35 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         }),
         syncYAxis(),
       ],
-      body: new SceneDiffFlameGraph(),
+      body: new SceneFlexLayout({
+        direction: 'column',
+        children: [
+          new SceneFlexLayout({
+            direction: 'row',
+            children: [
+              // Baseline
+              new SceneFlexItem({
+                body: new SceneComparePanel({
+                  target: CompareTarget.BASELINE,
+                  clearDiffRange: Boolean(true),
+                  filters: baselineFilters || [],
+                }),
+              }),
+
+              // Comparsion
+              new SceneFlexItem({
+                body: new SceneComparePanel({
+                  target: CompareTarget.COMPARISON,
+                  clearDiffRange: Boolean(true),
+                  filters: baselineFilters || [],
+                }),
+              }),
+            ],
+          }),
+
+          new SceneDiffFlameGraph(),
+        ],
+      }),
       presetsPicker: new ScenePresetsPicker(),
     });
 
@@ -181,37 +209,8 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   };
 
   static Component({ model }: SceneComponentProps<SceneExploreDiffFlameGraph>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const { body } = model.useState();
 
-    const { baselinePanel, comparisonPanel, body } = model.useState();
-
-    return (
-      <div className={styles.container}>
-        <div className={styles.columns}>
-          <baselinePanel.Component model={baselinePanel} />
-          <comparisonPanel.Component model={comparisonPanel} />
-        </div>
-
-        <body.Component model={body} />
-      </div>
-    );
+    return <body.Component model={body} />;
   }
 }
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  container: css`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  `,
-  columns: css`
-    display: flex;
-    flex-direction: row;
-    gap: ${theme.spacing(1)};
-    margin-bottom: ${theme.spacing(1)};
-
-    & > div {
-      flex: 1 1 0;
-    }
-  `,
-});

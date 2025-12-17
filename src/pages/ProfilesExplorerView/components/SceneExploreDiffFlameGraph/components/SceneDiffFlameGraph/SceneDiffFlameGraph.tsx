@@ -24,7 +24,6 @@ import { AIButton } from '../../../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../../../SceneAiPanel/SceneAiPanel';
 import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
 import { EventDiffChoosePreset } from '../../domain/events/EventDiffChoosePreset';
-import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 import { MissingSelectionsBanner } from './ui/MissingSelectionsBanner';
 
@@ -55,7 +54,9 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
 
   useSceneDiffFlameGraph = (): DomainHookReturnValue => {
     const { aiPanel } = this.useState();
-    const { baselineTimeRange, comparisonTimeRange } = (this.parent as SceneExploreDiffFlameGraph).useDiffTimeRanges();
+
+    const baselineTimeRange = sceneGraph.getTimeRange(this).state.value;
+    const comparisonTimeRange = sceneGraph.getTimeRange(this).state.value;
 
     const baselineQuery = useBuildPyroscopeQuery(this, 'filtersBaseline');
     const comparisonQuery = useBuildPyroscopeQuery(this, 'filtersComparison');
