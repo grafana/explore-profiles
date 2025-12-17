@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.14.1
+
+##### Bug Fixes
+
+*  call /render for dot profiles only once Assistant is being opened (#778) (cbb2d764)
+* **DiffFlameGraph:**  prevent API queries with zero time ranges (#777) (665d9f9b)
+
+
 ## 1.14.0
 
 ##### Chores
