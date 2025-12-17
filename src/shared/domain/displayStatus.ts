@@ -7,24 +7,30 @@ export function displayError(error: Error, msgs: string[]) {
 
   logger.error(error, context);
 
-  getAppEvents().publish({
-    type: AppEvents.alertError.name,
-    payload: msgs,
-  });
+  if (!__QUIET_MODE__) {
+    getAppEvents().publish({
+      type: AppEvents.alertError.name,
+      payload: msgs,
+    });
+  }
 }
 
 export function displayWarning(msgs: string[]) {
   logger.warn(msgs);
 
-  getAppEvents().publish({
-    type: AppEvents.alertWarning.name,
-    payload: msgs,
-  });
+  if (!__QUIET_MODE__) {
+    getAppEvents().publish({
+      type: AppEvents.alertWarning.name,
+      payload: msgs,
+    });
+  }
 }
 
 export function displaySuccess(msgs: string[]) {
-  getAppEvents().publish({
-    type: AppEvents.alertSuccess.name,
-    payload: msgs,
-  });
+  if (!__QUIET_MODE__) {
+    getAppEvents().publish({
+      type: AppEvents.alertSuccess.name,
+      payload: msgs,
+    });
+  }
 }
