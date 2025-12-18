@@ -1,5 +1,13 @@
 import { css, cx } from '@emotion/css';
-import { AdHocVariableFilter, DataFrame, dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
+import {
+  AdHocVariableFilter,
+  DataFrame,
+  dateTime,
+  FieldMatcherID,
+  getValueFormat,
+  GrafanaTheme2,
+  TimeRange,
+} from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -17,6 +25,7 @@ import { IconButton, useStyles2 } from '@grafana/ui';
 import { SceneTimePickerWithoutSync } from '@shared/components/SceneTimePickerWithoutSync/SceneTimePickerWithoutSync';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
+import { Unsubscribable } from 'rxjs';
 
 import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
@@ -52,6 +61,7 @@ interface SceneComparePanelState extends SceneObjectState {
   filterKey: 'filtersBaseline' | 'filtersComparison';
   title: string;
   color: string;
+  $timeRange?: SceneTimeRangeLike;
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
   timeseriesPanel: SceneLabelValuesTimeseries;
@@ -216,7 +226,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   subscribeToEvents() {
-    const { target, timeseriesPanel } = this.state;
+    const { target, timeseriesPanel, $timeRange } = this.state;
 
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
@@ -247,11 +257,23 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }
     });
 
+    let timeRangeSub: Unsubscribable | undefined;
+    if (target === CompareTarget.COMPARISON) {
+      timeRangeSub = $timeRange?.subscribeToState((newState, prevState) => {
+        if (newState.from === prevState.from || newState.to === prevState.to) {
+          return;
+        }
+
+        this.setTimeRange(newState);
+      });
+    }
+
     return {
       unsubscribe() {
         annotationTimeRangeSub.unsubscribe();
         switchSub.unsubscribe();
         dataSub?.unsubscribe();
+        timeRangeSub?.unsubscribe();
       },
     };
   }

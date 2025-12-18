@@ -56,7 +56,13 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     const { aiPanel } = this.useState();
 
     const baselineTimeRange = sceneGraph.getTimeRange(this).state.value;
-    const comparisonTimeRange = sceneGraph.getTimeRange(this).state.value;
+    let comparisonTimeRange;
+    try {
+      const comparisonPanel = sceneGraph.findByKey(this, 'comparison-panel');
+      comparisonTimeRange = sceneGraph.getTimeRange(comparisonPanel).state.value;
+    } catch {
+      comparisonTimeRange = sceneGraph.getTimeRange(this).state.value;
+    }
 
     const baselineQuery = useBuildPyroscopeQuery(this, 'filtersBaseline');
     const comparisonQuery = useBuildPyroscopeQuery(this, 'filtersComparison');
