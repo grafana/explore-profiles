@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.14.2
+
+##### Chores
+
+*  update llm plugin (#780) (9e097bd5)
+
+
 ## 1.14.1
 
 ##### Bug Fixes
