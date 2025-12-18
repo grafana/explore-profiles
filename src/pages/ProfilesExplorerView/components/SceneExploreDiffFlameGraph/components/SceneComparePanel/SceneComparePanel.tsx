@@ -1,22 +1,17 @@
 import { css, cx } from '@emotion/css';
-import {
-  AdHocVariableFilter,
-  DataFrame,
-  dateTime,
-  FieldMatcherID,
-  getValueFormat,
-  GrafanaTheme2,
-  TimeRange,
-} from '@grafana/data';
+import { AdHocVariableFilter, DataFrame, dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
 import {
   SceneComponentProps,
   SceneDataTransformer,
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
+  SceneObjectUrlSyncConfig,
+  SceneObjectUrlValues,
   SceneQueryRunner,
   SceneRefreshPicker,
   SceneTimePicker,
+  SceneTimeRange,
   SceneTimeRangeLike,
   SceneTimeRangeState,
   VariableDependencyConfig,
@@ -25,7 +20,6 @@ import { IconButton, useStyles2 } from '@grafana/ui';
 import { SceneTimePickerWithoutSync } from '@shared/components/SceneTimePickerWithoutSync/SceneTimePickerWithoutSync';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
-import { Unsubscribable } from 'rxjs';
 
 import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
@@ -77,6 +71,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     },
   });
 
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, {
+    keys: ['comparisonFrom', 'comparisonTo'],
+  });
+
   constructor({
     target,
     clearDiffRange,
@@ -107,10 +105,20 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onActivate(clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
-    const { timeseriesPanel, filterKey } = this.state;
+    const { target, timeseriesPanel, filterKey, $timeRange } = this.state;
 
     if (clearDiffRange) {
       this.setDiffRange(null);
+    }
+
+    if (target === CompareTarget.COMPARISON && !$timeRange) {
+      const globalTimeRange = sceneGraph.getTimeRange(this);
+      this.setState({
+        $timeRange: new SceneTimeRange({
+          from: globalTimeRange.state.from,
+          to: globalTimeRange.state.to,
+        }),
+      });
     }
 
     if (filters.length) {
@@ -126,6 +134,39 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return () => {
       eventSub.unsubscribe();
     };
+  }
+
+  getUrlState() {
+    const { target, $timeRange } = this.state;
+
+    if (target !== CompareTarget.COMPARISON || !$timeRange) {
+      return {};
+    }
+
+    return {
+      comparisonFrom: $timeRange.state.from,
+      comparisonTo: $timeRange.state.to,
+    };
+  }
+
+  updateFromUrl(values: SceneObjectUrlValues): void {
+    const { target } = this.state;
+
+    if (target !== CompareTarget.COMPARISON) {
+      return;
+    }
+
+    const { comparisonFrom, comparisonTo } = values;
+    if (!comparisonFrom || !comparisonTo) {
+      return;
+    }
+
+    this.setState({
+      $timeRange: new SceneTimeRange({
+        from: comparisonFrom as string,
+        to: comparisonTo as string,
+      }),
+    });
   }
 
   static buildTimeSeriesPanel({ target, filterKey, title, color }: any): SceneLabelValuesTimeseries {
@@ -226,7 +267,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   subscribeToEvents() {
-    const { target, timeseriesPanel, $timeRange } = this.state;
+    const { target, timeseriesPanel } = this.state;
 
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
@@ -257,23 +298,11 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }
     });
 
-    let timeRangeSub: Unsubscribable | undefined;
-    if (target === CompareTarget.COMPARISON) {
-      timeRangeSub = $timeRange?.subscribeToState((newState, prevState) => {
-        if (newState.from === prevState.from || newState.to === prevState.to) {
-          return;
-        }
-
-        this.setTimeRange(newState);
-      });
-    }
-
     return {
       unsubscribe() {
         annotationTimeRangeSub.unsubscribe();
         switchSub.unsubscribe();
         dataSub?.unsubscribe();
-        timeRangeSub?.unsubscribe();
       },
     };
   }
