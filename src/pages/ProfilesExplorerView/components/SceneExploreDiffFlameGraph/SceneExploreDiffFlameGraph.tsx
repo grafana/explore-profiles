@@ -26,10 +26,10 @@ import { EventDiffChoosePreset } from './domain/events/EventDiffChoosePreset';
 import { CompareTarget } from './domain/types';
 
 interface SceneExploreDiffFlameGraphState extends SceneObjectState {
-  baselinePanel: SceneComparePanel;
-  comparisonPanel: SceneComparePanel;
   body: SceneFlexLayout;
   presetsPicker: ScenePresetsPicker;
+  baselinePanel: SceneComparePanel;
+  comparisonPanel: SceneComparePanel;
 }
 
 export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiffFlameGraphState> {
@@ -42,18 +42,22 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     baselineFilters?: AdHocVariableFilter[];
     comparisonFilters?: AdHocVariableFilter[];
   }) {
+    const baselinePanel = new SceneComparePanel({
+      target: CompareTarget.BASELINE,
+      clearDiffRange: Boolean(true),
+      filters: baselineFilters || [],
+    });
+
+    const comparisonPanel = new SceneComparePanel({
+      target: CompareTarget.COMPARISON,
+      clearDiffRange: Boolean(true),
+      filters: comparisonFilters || [],
+    });
+
     super({
       key: 'explore-diff-flame-graph',
-      baselinePanel: new SceneComparePanel({
-        target: CompareTarget.BASELINE,
-        clearDiffRange: Boolean(true),
-        filters: baselineFilters || [],
-      }),
-      comparisonPanel: new SceneComparePanel({
-        target: CompareTarget.COMPARISON,
-        clearDiffRange: Boolean(true),
-        filters: comparisonFilters || [],
-      }),
+      baselinePanel,
+      comparisonPanel,
       $behaviors: [
         new behaviors.CursorSync({
           key: 'metricCrosshairSync',
@@ -69,20 +73,12 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
             children: [
               // Baseline
               new SceneFlexItem({
-                body: new SceneComparePanel({
-                  target: CompareTarget.BASELINE,
-                  clearDiffRange: Boolean(true),
-                  filters: baselineFilters || [],
-                }),
+                body: baselinePanel,
               }),
 
               // Comparsion
               new SceneFlexItem({
-                body: new SceneComparePanel({
-                  target: CompareTarget.COMPARISON,
-                  clearDiffRange: Boolean(true),
-                  filters: baselineFilters || [],
-                }),
+                body: comparisonPanel,
               }),
             ],
           }),
@@ -120,10 +116,8 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
       this.subscribeToEvent(EventDiffAutoSelect, (event) => {
         const selectWholeRange = event.payload.wholeRange;
         const { baselinePanel, comparisonPanel } = this.state;
-
         baselinePanel.toggleTimeRangeSync(false);
         comparisonPanel.toggleTimeRangeSync(false);
-
         baselinePanel.autoSelectDiffRange(selectWholeRange);
         comparisonPanel.autoSelectDiffRange(selectWholeRange);
       })
@@ -140,7 +134,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         const { source, enable, timeRange, annotationTimeRange } = event.payload;
         const { baselinePanel, comparisonPanel } = this.state;
         const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
-
         if (enable) {
           this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
         }
@@ -155,7 +148,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         const { source, timeRange, annotationTimeRange } = event.payload;
         const { baselinePanel, comparisonPanel } = this.state;
         const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
-
         this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
       })
     );
@@ -165,7 +157,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         const { source } = event.payload;
         const { baselinePanel, comparisonPanel } = this.state;
         const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
-
         targetPanel.refreshTimeseries();
       })
     );
@@ -198,7 +189,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
 
   useDiffTimeRanges = () => {
     const { baselinePanel, comparisonPanel } = this.state;
-
     const { annotationTimeRange: baselineTimeRange } = baselinePanel.useDiffTimeRange();
     const { annotationTimeRange: comparisonTimeRange } = comparisonPanel.useDiffTimeRange();
 

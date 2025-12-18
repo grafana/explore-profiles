@@ -45,10 +45,6 @@ export class SceneTimeRangeWithAnnotations
 {
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['dataSource', 'serviceName'],
-    onReferencedVariableValueChanged: () => {
-      this.nullifyAnnotationTimeRange();
-      this.updateTimeseriesAnnotation();
-    },
   });
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['diffFrom', 'diffTo'] });
@@ -155,10 +151,6 @@ export class SceneTimeRangeWithAnnotations
     if (updateTimeseries) {
       this.updateTimeseriesAnnotation();
     }
-  }
-
-  nullifyAnnotationTimeRange() {
-    this.setAnnotationTimeRange(TIMERANGE_NIL);
   }
 
   getUrlState() {

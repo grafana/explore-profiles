@@ -44,7 +44,6 @@ import { EventEnableSyncTimeRanges } from './domain/events/EventEnableSyncTimeRa
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { EventSyncRefresh } from './domain/events/EventSyncRefresh';
 import { EventSyncTimeRanges } from './domain/events/EventSyncTimeRanges';
-import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 
@@ -151,7 +150,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
   updateFromUrl(values: SceneObjectUrlValues): void {
     const { target } = this.state;
-
     if (target !== CompareTarget.COMPARISON) {
       return;
     }
@@ -241,31 +239,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     });
   }
 
-  static getDiffRange(
-    timeseriesPanel: SceneLabelValuesTimeseries
-  ): [number | undefined, number | undefined, string | undefined] {
-    let diffFrom: number | undefined;
-    let diffTo: number | undefined;
-
-    const annotation = timeseriesPanel.state.body.state.$data?.state.data?.annotations?.[0] as RangeAnnotation;
-
-    annotation?.fields.some(({ name, values }) => {
-      diffFrom = name === 'time' ? values[0] : diffFrom;
-      diffTo = name === 'timeEnd' ? values[0] : diffTo;
-      return diffFrom && diffTo;
-    });
-
-    return [diffFrom, diffTo, timeseriesPanel.state.$timeRange?.state.timeZone];
-  }
-
-  protected getAncestorTimeRange(): SceneTimeRangeLike {
-    if (!this.parent || !this.parent.parent) {
-      throw new Error(typeof this + ' must be used within $timeRange scope');
-    }
-
-    return sceneGraph.getTimeRange(this.parent.parent);
-  }
-
   subscribeToEvents() {
     const { target, timeseriesPanel } = this.state;
 
@@ -345,7 +318,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
     if (options === null) {
-      $diffTimeRange.nullifyAnnotationTimeRange();
       return;
     }
 
