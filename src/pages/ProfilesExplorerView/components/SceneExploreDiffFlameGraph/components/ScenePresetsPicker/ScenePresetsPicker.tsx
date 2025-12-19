@@ -184,8 +184,6 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
 
     [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
       const panel = sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel);
-
-      panel.toggleTimeRangeSync(false);
       panel.applyPreset(option[compareTarget]);
     });
 

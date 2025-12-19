@@ -40,7 +40,6 @@ import {
   SwitchTimeRangeSelectionModeAction,
   TimerangeSelectionMode,
 } from './domain/actions/SwitchTimeRangeSelectionModeAction';
-import { EventEnableSyncTimeRanges } from './domain/events/EventEnableSyncTimeRanges';
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { EventSyncRefresh } from './domain/events/EventSyncRefresh';
 import { EventSyncTimeRanges } from './domain/events/EventSyncTimeRanges';
@@ -58,7 +57,6 @@ interface SceneComparePanelState extends SceneObjectState {
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
   timeseriesPanel: SceneLabelValuesTimeseries;
-  timeRangeSyncEnabled: boolean;
   lastSyncedStepSec?: number;
 }
 
@@ -97,7 +95,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       timePicker: new SceneTimePickerWithoutSync({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
-      timeRangeSyncEnabled: false,
     });
 
     this.addActivationHandler(this.onActivate.bind(this, clearDiffRange, filters));
@@ -240,7 +237,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   subscribeToEvents() {
-    const { target, timeseriesPanel } = this.state;
+    const { timeseriesPanel } = this.state;
 
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
@@ -255,15 +252,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       });
     });
 
-    const annotationTimeRangeSub = $annotationTimeRange.subscribeToState((newState, prevState) => {
-      if (this.state.timeRangeSyncEnabled && newState.annotationTimeRange !== prevState.annotationTimeRange) {
-        this.publishEvent(
-          new EventSyncTimeRanges({ source: target, annotationTimeRange: newState.annotationTimeRange }),
-          true
-        );
-      }
-    });
-
     // Subscribe to data changes for step synchronization
     const dataSub = timeseriesPanel.state.body.state.$data?.subscribeToState((newState) => {
       if (newState.data?.state === 'Done' && newState.data.series?.length) {
@@ -273,7 +261,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
     return {
       unsubscribe() {
-        annotationTimeRangeSub.unsubscribe();
         switchSub.unsubscribe();
         dataSub?.unsubscribe();
       },
@@ -299,28 +286,27 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   setTimeRange(newTimeRange: SceneTimeRangeState) {
-    const timeRange = this.state.$data?.state.$timeRange?.state.value;
+    const timeRange = sceneGraph.getTimeRange(this);
     if (!timeRange) {
       return;
     }
 
-    const { from, to } = timeRange;
+    const { from, to } = timeRange.state.value;
     if (!from.isSame(newTimeRange.value.from) || !to.isSame(newTimeRange.value.to)) {
-      this.state.$data?.state.$timeRange?.setState({
+      timeRange.setState({
         from: newTimeRange.from,
         to: newTimeRange.to,
-        value: newTimeRange.value,
       });
+      timeRange.onRefresh();
     }
   }
 
   setDiffRange(options: { from: string; to: string } | null) {
-    const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
-
     if (options === null) {
       return;
     }
 
+    const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
     const { annotationTimeRange } = $diffTimeRange.state;
     const newAnnotationTimeRange = $diffTimeRange.buildAnnotationTimeRange(options.from, options.to);
 
@@ -339,7 +325,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
    * the region with the highest consumption on the comparison panel.
    */
   autoSelectDiffRange(selectWholeRange: boolean) {
-    const timeRange = this.state.$data?.state.$timeRange;
+    const timeRange = sceneGraph.getTimeRange(this);
     if (!timeRange) {
       return;
     }
@@ -375,27 +361,19 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onClickTimeRangeSync = () => {
-    const { target, timeRangeSyncEnabled, $timeRange, timeseriesPanel } = this.state;
+    const { target, timeseriesPanel } = this.state;
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
-
-    if (!$timeRange) {
-      return;
-    }
+    const timeRange = sceneGraph.getTimeRange(this);
 
     this.publishEvent(
-      new EventEnableSyncTimeRanges({
+      new EventSyncTimeRanges({
         source: target,
-        enable: !timeRangeSyncEnabled,
-        timeRange: $timeRange?.state,
+        timeRange: timeRange.state,
         annotationTimeRange: $annotationTimeRange.state.annotationTimeRange,
       }),
       true
     );
   };
-
-  toggleTimeRangeSync(timeRangeSyncEnabled: boolean) {
-    this.setState({ timeRangeSyncEnabled });
-  }
 
   onClickRefresh = () => {
     this.publishEvent(new EventSyncRefresh({ source: this.state.target }), true);
@@ -494,7 +472,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       timePicker,
       refreshPicker,
       filterKey,
-      timeRangeSyncEnabled,
     } = model.useState();
 
     const styles = useStyles2(getStyles, color);
@@ -517,10 +494,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
             </div>
 
             <IconButton
-              className={cx(styles.syncButton, timeRangeSyncEnabled && 'active')}
+              className={cx(styles.syncButton)}
               name="link"
-              aria-label={timeRangeSyncEnabled ? 'Unsync time ranges' : 'Sync time ranges'}
-              tooltip={timeRangeSyncEnabled ? 'Unsync time ranges' : 'Sync time ranges'}
+              aria-label="Sync time ranges"
+              tooltip="Sync time ranges"
               onClick={model.onClickTimeRangeSync}
             />
           </div>
@@ -581,11 +558,6 @@ const getStyles = (theme: GrafanaTheme2, color: string) => ({
 
     &:hover {
       background: ${theme.colors.secondary.shade};
-    }
-
-    &.active {
-      color: ${theme.colors.primary.text};
-      border: 1px solid ${theme.colors.primary.text};
     }
   `,
   filter: css`

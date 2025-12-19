@@ -1,4 +1,4 @@
-import { AdHocVariableFilter, DashboardCursorSync, TimeRange } from '@grafana/data';
+import { AdHocVariableFilter, DashboardCursorSync } from '@grafana/data';
 import { locationService } from '@grafana/runtime';
 import {
   behaviors,
@@ -8,13 +8,11 @@ import {
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
-  SceneTimeRangeState,
 } from '@grafana/scenes';
 import React from 'react';
 
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
-import { EventEnableSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventEnableSyncTimeRanges';
 import { EventSyncRefresh } from './components/SceneComparePanel/domain/events/EventSyncRefresh';
 import { EventSyncTimeRanges } from './components/SceneComparePanel/domain/events/EventSyncTimeRanges';
 import { SceneComparePanel } from './components/SceneComparePanel/SceneComparePanel';
@@ -114,41 +112,16 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   subscribeToEvents() {
     this._subs.add(
       this.subscribeToEvent(EventDiffAutoSelect, (event) => {
-        const selectWholeRange = event.payload.wholeRange;
+        const { wholeRange } = event.payload;
         const { baselinePanel, comparisonPanel } = this.state;
-        baselinePanel.toggleTimeRangeSync(false);
-        comparisonPanel.toggleTimeRangeSync(false);
-        baselinePanel.autoSelectDiffRange(selectWholeRange);
-        comparisonPanel.autoSelectDiffRange(selectWholeRange);
+        baselinePanel.autoSelectDiffRange(wholeRange);
+        comparisonPanel.autoSelectDiffRange(wholeRange);
       })
     );
 
     this._subs.add(
       this.subscribeToEvent(EventDiffChoosePreset, () => {
         this.state.presetsPicker.openSelect();
-      })
-    );
-
-    this._subs.add(
-      this.subscribeToEvent(EventEnableSyncTimeRanges, (event) => {
-        const { source, enable, timeRange, annotationTimeRange } = event.payload;
-        const { baselinePanel, comparisonPanel } = this.state;
-        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
-        if (enable) {
-          this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
-        }
-
-        comparisonPanel.toggleTimeRangeSync(enable);
-        baselinePanel.toggleTimeRangeSync(enable);
-      })
-    );
-
-    this._subs.add(
-      this.subscribeToEvent(EventSyncTimeRanges, (event) => {
-        const { source, timeRange, annotationTimeRange } = event.payload;
-        const { baselinePanel, comparisonPanel } = this.state;
-        const targetPanel = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
-        this.syncTimeRanges(targetPanel, timeRange, annotationTimeRange);
       })
     );
 
@@ -160,19 +133,19 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
         targetPanel.refreshTimeseries();
       })
     );
-  }
 
-  syncTimeRanges(targetPanel: SceneComparePanel, timeRange?: SceneTimeRangeState, annotationTimeRange?: TimeRange) {
-    if (timeRange) {
-      targetPanel.setTimeRange(timeRange);
-    }
+    this._subs.add(
+      this.subscribeToEvent(EventSyncTimeRanges, (event) => {
+        const { source, timeRange } = event.payload;
+        if (!timeRange) {
+          return;
+        }
 
-    if (annotationTimeRange) {
-      targetPanel.setDiffRange({
-        from: annotationTimeRange.from.toISOString(),
-        to: annotationTimeRange.to.toISOString(),
-      });
-    }
+        const { baselinePanel, comparisonPanel } = this.state;
+        const panelToChange = source === CompareTarget.BASELINE ? comparisonPanel : baselinePanel;
+        panelToChange.setTimeRange(timeRange);
+      })
+    );
   }
 
   // see SceneProfilesExplorer
