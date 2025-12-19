@@ -152,7 +152,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   updateFromUrl(values: SceneObjectUrlValues): void {
-    const { target } = this.state;
+    const { target, $timeRange } = this.state;
     if (target !== CompareTarget.COMPARISON) {
       return;
     }
@@ -162,12 +162,19 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       return;
     }
 
-    this.setState({
-      $timeRange: new SceneTimeRange({
+    if ($timeRange) {
+      $timeRange.setState({
         from: comparisonFrom as string,
         to: comparisonTo as string,
-      }),
-    });
+      });
+    } else {
+      this.setState({
+        $timeRange: new SceneTimeRange({
+          from: comparisonFrom as string,
+          to: comparisonTo as string,
+        }),
+      });
+    }
   }
 
   static buildTimeSeriesPanel({ target, filterKey, title, color }: any): SceneLabelValuesTimeseries {
