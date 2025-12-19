@@ -58,6 +58,7 @@ interface SceneComparePanelState extends SceneObjectState {
   refreshPicker: SceneRefreshPicker;
   timeseriesPanel: SceneLabelValuesTimeseries;
   lastSyncedStepSec?: number;
+  modeSelector: SwitchTimeRangeSelectionModeAction;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
@@ -85,6 +86,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const title = target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
     const color =
       target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString();
+    const mode = TimerangeSelectionMode.FLAMEGRAPH;
 
     super({
       key: `${target}-panel`,
@@ -94,14 +96,15 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       color,
       timePicker: new SceneTimePickerWithoutSync({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
-      timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
+      timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color, mode }),
+      modeSelector: new SwitchTimeRangeSelectionModeAction(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this, clearDiffRange, filters));
   }
 
   onActivate(clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
-    const { target, timeseriesPanel, filterKey, $timeRange } = this.state;
+    const { target, timeseriesPanel, filterKey, $timeRange, modeSelector } = this.state;
 
     if (clearDiffRange) {
       this.setDiffRange(null);
@@ -124,6 +127,9 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
 
     timeseriesPanel.updateItem({ label: this.buildTimeseriesTitle() });
+    timeseriesPanel.setState({
+      headerActions: () => [modeSelector],
+    });
 
     const eventSub = this.subscribeToEvents();
 
@@ -178,7 +184,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         transformations: [addRefId, addStats],
       }),
       overrides: (series: DataFrame[]) => SceneComparePanel.buildSeriesOverrides(series, color),
-      headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
+      headerActions: () => [],
     });
 
     SceneComparePanel.configureTimeRange(timeseriesPanel, target, title);
