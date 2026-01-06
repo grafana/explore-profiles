@@ -13,8 +13,7 @@ import { FunctionDetails } from './types/FunctionDetails';
 export function calculateIsGitHubSupported(functionDetails: FunctionDetails | undefined): boolean {
   const hasNameOrFileName = Boolean(functionDetails?.name || functionDetails?.fileName);
   const hasLineNumber = Boolean(
-    functionDetails?.callSites &&
-      Array.from(functionDetails.callSites.values()).some((callSite) => callSite.line > 0)
+    functionDetails?.callSites && Array.from(functionDetails.callSites.values()).some((callSite) => callSite.line > 0)
   );
   return hasNameOrFileName && hasLineNumber;
 }
