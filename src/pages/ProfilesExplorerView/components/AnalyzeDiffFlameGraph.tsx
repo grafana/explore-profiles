@@ -1,10 +1,11 @@
 import { css } from '@emotion/css';
-import { createAssistantContextItem, OpenAssistantButton, useAssistant } from '@grafana/assistant';
-import { Spinner } from '@grafana/ui';
+import { createAssistantContextItem, useAssistant } from '@grafana/assistant';
+import { displayError } from '@shared/domain/displayStatus';
 import React from 'react';
 
+import { OpenAssistantButtonAsync } from './OpenAssistantButtonAsync';
 import { buildPrompts } from './SceneAiPanel/domain/buildLlmPrompts';
-import { FetchParams, useFetchDotProfiles } from './SceneAiPanel/infrastructure/useFetchDotProfiles';
+import { fetchDotProfiles, FetchParams, validateFetchParams } from './SceneAiPanel/infrastructure/useFetchDotProfiles';
 
 interface AnalyzeDiffFlameGraphProps {
   dataSourceUid: string;
@@ -21,49 +22,56 @@ export function AnalyzeDiffFlameGraph({
 }: AnalyzeDiffFlameGraphProps) {
   const { isAvailable } = useAssistant();
 
-  const { profileType, profiles, validationError, fetchError, isFetching } = useFetchDotProfiles(
-    isDiff,
-    fetchParams,
-    dataSourceUid,
-    profileMetricId
-  );
-
   if (!isAvailable) {
     return null;
   }
 
-  if (validationError || fetchError) {
+  const { error } = validateFetchParams(true, fetchParams);
+
+  if (error) {
     return null;
   }
 
-  if (!isFetching && profileType && profiles) {
-    const prompts = buildPrompts({
-      system: 'empty',
-      user: 'diff',
-      profileType,
-      profiles,
-    });
+  return (
+    <div className={css({ marginTop: '10px' })}>
+      <OpenAssistantButtonAsync
+        origin="grafana/diff-flame-graph"
+        contextProvider={async () => {
+          try {
+            const { profiles, profileType } = await fetchDotProfiles(
+              isDiff,
+              fetchParams,
+              dataSourceUid,
+              profileMetricId
+            );
 
-    const context = [
-      createAssistantContextItem('datasource', {
-        datasourceUid: dataSourceUid,
-      }),
-      createAssistantContextItem('structured', {
-        title: 'DOT Profiles and instructions',
-        data: { stringifiedData: `${prompts.system}\n${prompts.user}` },
-      }),
-    ];
+            const prompts = buildPrompts({
+              system: 'empty',
+              user: 'diff',
+              profileType,
+              profiles,
+            });
 
-    return (
-      <div className={css({ marginTop: '10px' })}>
-        <OpenAssistantButton
-          origin="grafana/diff-flame-graph"
-          prompt={`Analyze the differences between these two performance profiles.`}
-          context={context}
-        />
-      </div>
-    );
-  }
+            const context = [
+              createAssistantContextItem('datasource', {
+                datasourceUid: dataSourceUid,
+              }),
+              createAssistantContextItem('structured', {
+                title: 'DOT Profiles and instructions',
+                data: { stringifiedData: `${prompts.system}\n${prompts.user}` },
+              }),
+            ];
 
-  return <Spinner />;
+            return {
+              prompt: 'Analyze the differences between these two performance profiles.',
+              context,
+            };
+          } catch (error) {
+            displayError(error as Error, ['Failed to fetch DOT profiles for analysis']);
+            return undefined;
+          }
+        }}
+      />
+    </div>
+  );
 }
