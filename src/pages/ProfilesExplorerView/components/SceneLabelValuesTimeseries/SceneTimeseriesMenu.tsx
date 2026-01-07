@@ -1,5 +1,4 @@
 import { PanelMenuItem, PluginExtensionLink } from '@grafana/data';
-import { reportInteraction } from '@grafana/runtime';
 import {
   SceneComponentProps,
   SceneDataQuery,
@@ -11,6 +10,7 @@ import {
 } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
 import PyroscopeLogo from '@img/logo.svg';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { parseQuery } from '@shared/domain/url-params/parseQuery';
 import { nanoid } from 'nanoid';
 import React, { useEffect, useMemo } from 'react';
@@ -118,13 +118,19 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   private onClickToggleExemplars() {
+    const newShowExemplars = !this.state.showExemplars;
+
+    reportInteraction('g_pyroscope_app_exemplars_toggled', {
+      showExemplars: newShowExemplars,
+    });
+
     this.setState({
-      showExemplars: !this.state.showExemplars,
+      showExemplars: newShowExemplars,
       items: this.buildMenuItems(),
     });
 
     const timeseries = sceneGraph.getAncestor(this, SceneLabelValuesTimeseries);
-    timeseries.handleExemplarToggleChange(this.state.showExemplars!);
+    timeseries.handleExemplarToggleChange(newShowExemplars);
   }
 
   onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
