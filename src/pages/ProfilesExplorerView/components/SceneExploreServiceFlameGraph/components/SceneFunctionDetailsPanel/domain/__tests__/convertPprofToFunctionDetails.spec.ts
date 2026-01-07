@@ -335,6 +335,39 @@ describe('convertPprofToFunctionDetails(fnName, profile)', () => {
       );
     });
 
+    describe('when location or line data is missing', () => {
+      it('skips samples with missing location', () => {
+        const fnName = 'net/http.HandlerFunc.ServeHTTP';
+        // Location '1' references locationId '1' which exists, but sample also references '999' which doesn't
+        const profile = buildJsonPprof(fnName, [{ id: '1', mappingId: '1', line: [{ functionId: '1', line: '42' }] }]);
+        // Add a sample referencing a non-existent location
+        const modifiedProfile = {
+          ...profile,
+          sample: [...profile.sample, { locationId: ['999'], value: ['100000'] }],
+        };
+
+        const result = convertPprofToFunctionDetails(fnName, modifiedProfile);
+
+        // Should still return results from valid location, ignoring the missing one
+        expect(result).toHaveLength(1);
+        expect(result[0].callSites.get(42)).toBeDefined();
+      });
+
+      it('skips locations with undefined line array', () => {
+        const fnName = 'net/http.HandlerFunc.ServeHTTP';
+        const result = convertPprofToFunctionDetails(
+          fnName,
+          buildJsonPprof(fnName, [
+            { id: '1', mappingId: '1', line: undefined as any },
+            { id: '2', mappingId: '1', line: [{ functionId: '1', line: '42' }] },
+          ])
+        );
+
+        expect(result).toHaveLength(1);
+        expect(result[0].callSites.get(42)).toBeDefined();
+      });
+    });
+
     describe('sample data tests', () => {
       it('pprof data - "runtime.netpoll"', () => {
         const funcName = 'runtime.netpoll';
