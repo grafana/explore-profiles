@@ -182,8 +182,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       const { $data } = body.state;
       const data = ($data as SceneDataProvider)?.state.data;
       if (data?.annotations) {
-        // Keep only RangeAnnotations, filter out exemplar annotations
-        const rangeAnnotations = data.annotations.filter((annotation: any) => annotation instanceof RangeAnnotation);
+        // Filter out exemplar annotations
+        const rangeAnnotations = data.annotations.filter((annotation: any) => annotation.name !== 'exemplar');
         ($data as SceneDataProvider)?.setState({
           data: {
             ...data,
