@@ -5,6 +5,7 @@ import {
   SceneDataProvider,
   SceneDataTransformer,
   sceneGraph,
+  SceneObject,
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
@@ -14,9 +15,11 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { isEqual, merge } from 'lodash';
 import React from 'react';
 
+import { ExemplarToggleAction } from '../../domain/actions/ExemplarToggleAction';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
@@ -26,6 +29,7 @@ import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { RangeAnnotation } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/domain/RangeAnnotation';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
@@ -35,6 +39,7 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   displayAllValues: boolean;
   legendPlacement: VizLegendOptions['placement'];
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
+  annotations?: boolean;
 }
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
@@ -46,6 +51,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     data,
     overrides,
     annotations,
+    includeExemplars,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
@@ -54,14 +60,31 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     data?: SceneDataTransformer;
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
     annotations?: boolean;
+    includeExemplars?: boolean;
   }) {
+    let menuState = {};
+    if (featureToggles.exemplars) {
+      if (includeExemplars) {
+        // when includeExemplers is true, we show Exemplars button in the timeseries header.
+        const headerActionsRef = headerActions;
+        headerActions = (item: GridItemData) => [
+          ...(headerActionsRef(item) as SceneObject[]),
+          new ExemplarToggleAction(true),
+        ];
+      } else {
+        // Otherwise, we keep it on the menu. (Disabled by default)
+        menuState = { showExemplars: false };
+      }
+    }
+
     super({
       key: 'timeseries-label-values',
       item,
-      headerActions,
+      headerActions: headerActions,
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
       overrides,
+      annotations,
       body: PanelBuilders.timeseries()
         .setTitle(item.label)
         .setData(
@@ -70,13 +93,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               $data: buildTimeSeriesQueryRunner(
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
-                annotations
+                annotations,
+                includeExemplars && featureToggles.exemplars
               ),
               transformations: [addRefId, addStats],
             })
         )
         .setHeaderActions(headerActions(item))
-        .setMenu(new SceneTimeseriesMenu({}) as unknown as VizPanelMenu)
+        .setMenu(new SceneTimeseriesMenu(menuState) as unknown as VizPanelMenu)
         .build(),
     });
 
@@ -113,8 +137,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   private retainPreviousAnnotations(newState: any, prevState: any) {
-    if (!newState.data.annotations?.length && prevState.data?.annotations?.length) {
-      newState.data.annotations = prevState.data.annotations;
+    const rangeAnnotations = prevState?.data?.annotations?.filter(
+      (annotation: any) => annotation instanceof RangeAnnotation
+    );
+    if (
+      rangeAnnotations &&
+      !newState?.data?.annotations?.some((annotation: any) => annotation instanceof RangeAnnotation)
+    ) {
+      newState?.data?.annotations?.push(...rangeAnnotations);
     }
   }
 
@@ -142,6 +172,40 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const currentData = (body.state.$data as SceneDataProvider).state.data;
     if (currentData?.series?.length) {
       this.updateBodyConfig(currentData.series);
+    }
+  }
+
+  handleExemplarToggleChange(includeExemplars: boolean) {
+    const { body, item, displayAllValues, annotations } = this.state;
+    if (!includeExemplars) {
+      // Hide exemplars (annotations) by filtering them out from the data without running queries
+      const { $data } = body.state;
+      const data = ($data as SceneDataProvider)?.state.data;
+      if (data?.annotations) {
+        // Filter out exemplar annotations
+        const rangeAnnotations = data.annotations.filter((annotation: any) => annotation.name !== 'exemplar');
+        ($data as SceneDataProvider)?.setState({
+          data: {
+            ...data,
+            annotations: rangeAnnotations,
+          },
+        });
+      }
+      return;
+    }
+
+    const { queries } = buildTimeSeriesQueryRunner(
+      item.queryRunnerParams,
+      displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
+      annotations,
+      includeExemplars
+    ).state;
+
+    const queryRunner = body.state.$data?.state.$data as SceneQueryRunner;
+
+    if (queryRunner) {
+      queryRunner.setState({ queries });
+      queryRunner.runQueries();
     }
   }
 
