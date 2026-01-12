@@ -5,4 +5,6 @@ export const featureToggles = {
   metricsFromProfiles: !!config.featureToggles['metricsFromProfiles'],
   // @ts-ignore Remove after upgrading grafana/runtime to version including the toggle type
   grafanaAssistantInProfilesDrilldown: !!config.featureToggles['grafanaAssistantInProfilesDrilldown'],
+  // @ts-ignore Remove after upgrading grafana/runtime to version including the toggle type
+  exemplars: !!config.featureToggles['profilesExemplars'],
 };
