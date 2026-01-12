@@ -19,6 +19,7 @@ import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
   scaleType?: ScaleDistribution;
+  showExemplars?: boolean; // undefined means that the Exemplars button is not shown in the menu. Otherwise, it's shown and the value is the current state of the Exemplars button.
 }
 
 const SCALE_TYPES = [
@@ -47,7 +48,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   buildMenuItems(): PanelMenuItem[] {
-    const { scaleType } = this.state;
+    const { scaleType, showExemplars } = this.state;
 
     const menuItems: PanelMenuItem[] = [
       {
@@ -69,7 +70,37 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       },
     ];
 
+    if (showExemplars !== undefined) {
+      menuItems.unshift(
+        {
+          iconClassName: showExemplars ? 'eye' : 'eye-slash',
+          text: 'Exemplars',
+          onClick: () => this.onClickToggleExemplars(),
+        },
+        {
+          type: 'divider',
+          text: 'new-divider',
+        }
+      );
+    }
+
     return menuItems;
+  }
+
+  private onClickToggleExemplars() {
+    const newShowExemplars = !this.state.showExemplars;
+
+    reportInteraction('g_pyroscope_app_exemplars_toggled', {
+      showExemplars: newShowExemplars,
+    });
+
+    this.setState({
+      showExemplars: newShowExemplars,
+      items: this.buildMenuItems(),
+    });
+
+    const timeseries = sceneGraph.getAncestor(this, SceneLabelValuesTimeseries);
+    timeseries.handleExemplarToggleChange(newShowExemplars);
   }
 
   onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
