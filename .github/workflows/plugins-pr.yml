@@ -18,7 +18,7 @@ permissions: {}
 jobs:
   cd:
     name: CI / CD
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v2
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@6d8cb8c5240cc11619c221beb201ee07e5ee855c
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
@@ -32,6 +32,7 @@ jobs:
       run-playwright: false
       run-playwright-docker: true
       run-playwright-with-skip-grafana-dev-image: true
+      run-playwright-with-skip-grafana-react-19-preview-image: true
       upload-playwright-artifacts: true
       run-playwright-with-grafana-dependency: '>=12.1.0 <12.2.0'
       playwright-config: e2e/config/playwright.config.ci.ts
