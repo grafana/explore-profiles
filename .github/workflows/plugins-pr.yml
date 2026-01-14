@@ -18,22 +18,20 @@ permissions: {}
 jobs:
   cd:
     name: CI / CD
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@6d8cb8c5240cc11619c221beb201ee07e5ee855c
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v2
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
       id-token: write
       attestations: write
-      pull-requests: read
     with:
       branch: ${{ inputs.branch }}
       environment: dev,ops
       # No grafana-cloud-deployment-type defined -> plugin will be published to the catalog, but not deployed to Grafana Cloud
 
       run-playwright: false
-      run-playwright-docker: true
+      run-playwright-docker: false
       run-playwright-with-skip-grafana-dev-image: true
-      run-playwright-with-skip-grafana-react-19-preview-image: true
       upload-playwright-artifacts: true
       run-playwright-with-grafana-dependency: '>=12.1.0 <12.2.0'
       playwright-config: e2e/config/playwright.config.ci.ts
