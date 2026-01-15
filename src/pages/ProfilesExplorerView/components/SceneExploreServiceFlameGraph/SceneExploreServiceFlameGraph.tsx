@@ -7,6 +7,7 @@ import React from 'react';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
+import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
@@ -55,7 +56,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
   }
 
   initVariables(item: GridItemData) {
-    const { serviceName, profileMetricId, filters } = item.queryRunnerParams;
+    const { serviceName, profileMetricId, filters, profileIdSelector } = item.queryRunnerParams;
 
     if (serviceName) {
       const serviceNameVariable = sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable);
@@ -65,6 +66,15 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     if (profileMetricId) {
       const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
       profileMetricVariable.changeValueTo(profileMetricId);
+    }
+
+    if (profileIdSelector) {
+      const profileIdSelectorVariable = sceneGraph.findByKeyAndType(
+        this,
+        'profileIdSelector',
+        ProfileIdSelectorVariable
+      );
+      profileIdSelectorVariable.changeValueTo(profileIdSelector);
     }
 
     if (filters) {

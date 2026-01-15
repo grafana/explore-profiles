@@ -28,7 +28,9 @@ import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCr
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
+import { RemoveProfileIdSelector } from './domain/events/RemoveProfileIdSelector';
 import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
+import { ProfileIdSelectorLabel } from './ProfileIdSelectorLabel';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -98,7 +100,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     );
   }
 
-  useSceneFlameGraph = (spanSelector: string): DomainHookReturnValue => {
+  useSceneFlameGraph = (spanSelector: string, profileIdSelector?: string): DomainHookReturnValue => {
     const { isLight } = useTheme2();
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
@@ -117,10 +119,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     useEffect(() => {
       if (maxNodes) {
         this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes, spanSelector }),
+          $data: buildFlameGraphQueryRunner({ maxNodes, spanSelector, profileIdSelector }),
         });
       }
-    }, [maxNodes, spanSelector]);
+    }, [maxNodes, spanSelector, profileIdSelector]);
 
     const $dataState = $data.useState();
     const loadingState = $dataState?.data?.state;
@@ -173,11 +175,16 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     this.publishEvent(new RemoveSpanSelector({}), true);
   }
 
+  removeProfileIdSelector() {
+    this.publishEvent(new RemoveProfileIdSelector({}), true);
+  }
+
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
 
     const spanSelector = getSceneVariableValue(model, 'spanSelector');
-    const { data, actions } = model.useSceneFlameGraph(spanSelector);
+    const profileIdSelector = getSceneVariableValue(model, 'profileIdSelector');
+    const { data, actions } = model.useSceneFlameGraph(spanSelector, profileIdSelector);
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
 
@@ -233,6 +240,12 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
             <>
               {spanSelector && (
                 <SpanSelectorLabel spanSelector={spanSelector} removeSpanSelector={() => model.removeSpanSelector()} />
+              )}
+              {profileIdSelector && (
+                <ProfileIdSelectorLabel
+                  profileIdSelector={profileIdSelector}
+                  removeProfileIdSelector={() => model.removeProfileIdSelector()}
+                />
               )}
               {!hideAIButton && (
                 <AIButton
