@@ -27,13 +27,15 @@ import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import {
-  addExemplarLinks,
-  addRefId,
-  addStats,
-} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+  addExemplarTransformations,
+  HIGHLIGHTED_SERIES_REF_ID,
+  highlightedSeriesOverrides,
+} from '../SceneByVariableRepeaterGrid/infrastructure/exemplars-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { RangeAnnotation } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/domain/RangeAnnotation';
+import { TimeseriesReprocess } from './domain/events/TimeseriesReprocess';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
@@ -135,9 +137,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     const profileMetricSub = this.subscribeToProfileMetricChanges();
 
+    const timeseriesReprocessSub = this.subscribeToEvent(TimeseriesReprocess, () => {
+      const bodyData = this.state.body.state.$data as SceneDataTransformer | undefined;
+      bodyData?.reprocessTransformations();
+    });
+
     return () => {
       dataSub.unsubscribe();
       profileMetricSub?.unsubscribe();
+      timeseriesReprocessSub?.unsubscribe();
     };
   }
 
@@ -145,7 +153,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const bodyData = this.state.body.state.$data as SceneDataTransformer;
     if (bodyData) {
       bodyData.setState({
-        transformations: [addRefId, addStats, addExemplarLinks(this, item)],
+        transformations: [addRefId, addStats, ...addExemplarTransformations(this, item)],
       });
     }
   }
@@ -333,28 +341,40 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    return series.map((s, i) => {
-      const metricField = s.fields[1];
-      let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
+    // Check if highlightedSeries is present
+    const hasHighlightedSeries = series.some((s) => s.refId === HIGHLIGHTED_SERIES_REF_ID);
 
-      displayName = formatSingleSeriesDisplayName(displayName, s);
+    const overrides = series
+      .filter((s) => s.refId !== HIGHLIGHTED_SERIES_REF_ID)
+      .map((s, i) => {
+        const metricField = s.fields[1];
+        let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
 
-      const properties = [
-        {
-          id: 'displayName',
-          value: displayName,
-        },
-        {
-          id: 'color',
-          value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
-        },
-      ];
+        let color;
+        if (hasHighlightedSeries) {
+          color = { mode: 'fixed', fixedColor: '#383838' }; // series become dark gray if there is a highlighted series
+        } else {
+          color = { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) };
+        }
 
-      return {
-        matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
-        properties,
-      };
-    });
+        const properties = [
+          {
+            id: 'displayName',
+            value: formatSingleSeriesDisplayName(displayName, s),
+          },
+          {
+            id: 'color',
+            value: color,
+          },
+        ];
+
+        return {
+          matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
+          properties,
+        };
+      });
+
+    return [...overrides, highlightedSeriesOverrides];
   }
 
   updateItem(partialItem: Partial<GridItemData>) {

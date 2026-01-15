@@ -25,12 +25,14 @@ import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { useCreateRecordingRulesMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
 import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
+import { TimeseriesReprocess } from '../SceneLabelValuesTimeseries/domain/events/TimeseriesReprocess';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
 import { RemoveProfileIdSelector } from './domain/events/RemoveProfileIdSelector';
 import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
 import { ProfileIdSelectorLabel } from './ProfileIdSelectorLabel';
+import { SceneExploreServiceFlameGraph } from './SceneExploreServiceFlameGraph';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -177,6 +179,10 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
   removeProfileIdSelector() {
     this.publishEvent(new RemoveProfileIdSelector({}), true);
+    (this.parent as SceneExploreServiceFlameGraph)?.state.mainTimeseries?.state.body?.publishEvent(
+      new TimeseriesReprocess({}),
+      true
+    );
   }
 
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
