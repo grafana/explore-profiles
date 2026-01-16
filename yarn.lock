@@ -1450,7 +1450,7 @@ __metadata:
 
 "@grafana/flamegraph@file:./grafana-flamegraph.tgz::locator=pyroscope-app-plugin%40workspace%3A.":
   version: 12.4.0-pre
-  resolution: "@grafana/flamegraph@file:./grafana-flamegraph.tgz#./grafana-flamegraph.tgz::hash=1b237e&locator=pyroscope-app-plugin%40workspace%3A."
+  resolution: "@grafana/flamegraph@file:./grafana-flamegraph.tgz#./grafana-flamegraph.tgz::hash=f58d94&locator=pyroscope-app-plugin%40workspace%3A."
   dependencies:
     "@emotion/css": "npm:11.13.5"
     "@grafana/data": "npm:12.4.0-pre"
@@ -1468,7 +1468,7 @@ __metadata:
     "@grafana/assistant": ^0.1.1
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/6ba7f2b16e109010eaa639c756b87878dfa043ba66a2157365c056dff46715632e7ee8d33f458ce5c8c8340d8b95abed9c9ba18fe673eed8ca05430d49c4bd9e
+  checksum: 10/09d660fd211fb7685e534c4963c17060032c2c7d3b24e257857b7f017df2983b35e6fb34e51fab9f0334158140da97d1a0c2d7c20a998f03928c349c6a5aea40
   languageName: node
   linkType: hard
 
