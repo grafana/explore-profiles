@@ -345,6 +345,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       this.resetVariables(type);
     }
 
+    if (type as ExplorationType == ExplorationType.DIFF_FLAME_GRAPH && bodySceneOptions === undefined) {
+      const filters = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).state.filters;
+      bodySceneOptions = {
+        baselineFilters: filters,
+        comparisonFilters: filters
+      }
+    }
+
     this.setState({
       explorationType: type,
       body: this.buildBodyScene(type, item, bodySceneOptions),
