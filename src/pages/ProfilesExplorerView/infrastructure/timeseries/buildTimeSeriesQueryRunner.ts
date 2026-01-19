@@ -15,7 +15,8 @@ export type TimeSeriesQuery = {
 export function buildTimeSeriesQueryRunner(
   { serviceName, profileMetricId, groupBy, filters }: TimeSeriesQueryRunnerParams,
   limit?: number,
-  annotations?: boolean
+  annotations?: boolean,
+  includeExemplars?: boolean
 ) {
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: serviceName || '$serviceName' });
@@ -33,6 +34,7 @@ export function buildTimeSeriesQueryRunner(
         groupBy: groupBy?.label ? [groupBy.label] : [],
         limit,
         annotations,
+        includeExemplars,
       },
     ],
   });
