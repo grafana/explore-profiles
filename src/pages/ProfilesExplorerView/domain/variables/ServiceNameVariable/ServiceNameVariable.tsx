@@ -120,8 +120,6 @@ export class ServiceNameVariable extends QueryVariable {
         // we add a key to ensure that the Cascader selects the initial value properly when landing on the page
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
         // (e.g. in SceneExploreServiceProfileTypes)
-        // it's also required for supporting the Investigations app when opening a link with a different data source
-        // than the one currently selected
         key={nanoid(5)}
         aria-label="Services list"
         width={32}
