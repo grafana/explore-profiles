@@ -10,7 +10,10 @@
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
     "extensions": {
-      "exposedComponents": ["grafana-o11yinsights-app/insights-launcher/v1", "grafana-adaptiveprofiles-app/resolution-boost/v1"]
+      "exposedComponents": [
+        "grafana-o11yinsights-app/insights-launcher/v1",
+        "grafana-adaptiveprofiles-app/resolution-boost/v1"
+      ]
     }
   },
   "info": {
@@ -53,6 +56,13 @@
     }
   ],
   "extensions": {
+    "exposedComponents": [
+      {
+        "id": "grafana-pyroscope-app/embedded-profiles-exploration/v1",
+        "title": "Embedded Profiles Exploration",
+        "description": "A component that renders a profiles exploration view that can be embedded in other parts of Grafana."
+      }
+    ],
     "extensionPoints": [
       {
         "id": "grafana-pyroscope-app/investigation/v1"

@@ -1,5 +1,81 @@
 # Changelog
 
+## 1.14.2
+
+##### Chores
+
+*  update llm plugin (#780) (9e097bd5)
+
+
+## 1.14.1
+
+##### Bug Fixes
+
+*  call /render for dot profiles only once Assistant is being opened (#778) (cbb2d764)
+* **DiffFlameGraph:**  prevent API queries with zero time ranges (#777) (665d9f9b)
+
+
+## 1.14.0
+
+##### Chores
+
+*  fix styling (#771) (14655e41)
+
+##### New Features
+
+* **DiffFlameGraph:**  Analyze Diff Flame Graph with Grafana Assistant (#752) (e18b2639)
+
+
+## 1.13.0
+
+##### Chores
+
+* **deps:**
+  *  update dependency @connectrpc/protoc-gen-connect-query to v2.2.0 (#764) (6241abc8)
+  *  update dependency @babel/core to v7.28.5 (#762) (eead60db)
+  *  update dependency @stylistic/eslint-plugin-ts to v2.13.0 (#765) (0c8acd3d)
+  *  update dependency @bufbuild/protoc-gen-es to v2.10.1 (#763) (a3326219)
+  *  update dependency dotenv to v16.6.1 (#766) (11df5159)
+  *  update dependency glob to v10.5.0 [security] (#751) (5cc428be)
+*  Upgrade Playwright to 1.57.0 (#760) (c094d592)
+*  Update Grafana version used locally to match CI (#753) (8acf4daf)
+*  remove unused deps (#742) (4066bdbc)
+*  Add renovate rules (#746) (a06fa858)
+*  update scenes (#733) (7d338e75)
+* **config:**  migrate config renovate.json (#749) (608da61c)
+
+##### New Features
+
+*  Support source code integration for languages without file paths (#747) (a81f7109)
+*  Embed Profiles Drilldown (#621) (b510bd19)
+
+##### Bug Fixes
+
+*  Do not force refresh ServiceName and ProfileMetric variables on time range change (#759) (4450a9ec)
+
+
+## 1.12.0
+
+##### Chores
+
+* **deps:**
+  *  update dependency @types/prismjs to v1.26.5 (#741) (fb16ca90)
+  *  bump assistant-sdk version to 0.1.4 (6ecd1896)
+  *  pin dependencies (#627) (74144bf5)
+*  fix shared workflows versions (#736) (72747451)
+*  Remove unused CI workflows (#634) (838fe138)
+* **ci:**  Push PR branches to ops catalog (#735) (abd1e90f)
+
+##### New Features
+
+*  adaptive profiles boost button extension point (#626) (04964dc7)
+* **Recording Rules:**  Show recording rule labels (#636) (e173a5d6)
+
+##### Other Changes
+
+* local (#744) (313db674)
+
+
 ## 1.11.0
 
 ##### Chores

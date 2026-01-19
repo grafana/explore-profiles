@@ -7,7 +7,7 @@ import {
   TestDataSourceResponse,
   TimeRange,
 } from '@grafana/data';
-import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
+import { RuntimeDataSource } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { logger } from '@shared/infrastructure/tracking/logger';
@@ -16,6 +16,7 @@ import pLimit from 'p-limit';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
+import { safeInterpolate } from '../series/helpers/safeInterpolate';
 import { LabelsApiClient } from './http/LabelsApiClient';
 
 const MAX_CONCURRENT_LABEL_VALUES_REQUESTS = 20;
@@ -50,11 +51,11 @@ export class LabelsDataSource extends RuntimeDataSource {
 
   getParams(options: LegacyMetricFindQueryOptions) {
     const { scopedVars, range } = options;
-    const sceneObject = scopedVars?.__sceneObject?.value as GroupByVariable;
+    const sceneObject = scopedVars?.__sceneObject?.valueOf() as GroupByVariable;
 
-    const dataSourceUid = sceneGraph.interpolate(sceneObject, '$dataSource');
-    const serviceName = sceneGraph.interpolate(sceneObject, '$serviceName');
-    const profileMetricId = sceneGraph.interpolate(sceneObject, '$profileMetricId');
+    const dataSourceUid = safeInterpolate(sceneObject, '$dataSource');
+    const serviceName = safeInterpolate(sceneObject, '$serviceName');
+    const profileMetricId = safeInterpolate(sceneObject, '$profileMetricId');
 
     // we could interpolate ad hoc filters, but the Labels exploration type would reload all labels each time they are modified
     // const filters = sceneGraph.interpolate(sceneObject, '$filters');
@@ -123,7 +124,7 @@ export class LabelsDataSource extends RuntimeDataSource {
   }
 
   async metricFindQuery(_: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
-    const sceneObject = options.scopedVars?.__sceneObject?.value as GroupByVariable;
+    const sceneObject = options.scopedVars?.__sceneObject?.valueOf() as GroupByVariable;
 
     // save bandwidth
     // TODO: remove this when we can declare the GroupByVariable in the Scene it's used

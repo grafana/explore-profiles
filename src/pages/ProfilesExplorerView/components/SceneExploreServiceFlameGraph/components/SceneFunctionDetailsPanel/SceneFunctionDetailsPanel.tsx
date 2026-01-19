@@ -14,6 +14,7 @@ import { ProfilesDataSourceVariable } from '../../../../domain/variables/Profile
 import { getSceneVariableValue } from '../../../../helpers/getSceneVariableValue';
 import { CodeContainer } from './components/CodeContainer/CodeContainer';
 import { GitHubRepository } from './components/GitHubRepository';
+import { calculateIsGitHubSupported } from './domain/calculateIsGitHubSupported';
 import { formatFileName } from './domain/formatFileName';
 import { useFunctionVersion } from './domain/FunctionVersionContext';
 import { CommitWithSamples, getCommitsWithSamples } from './domain/getCommitsWithSamples';
@@ -69,7 +70,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
     }
 
     const isGitHubRepo = isGitHubRepository(functionVersion?.repository || '');
-    const isGitHubSupported = currentFunctionDetails?.fileName?.endsWith('.go');
+    const isGitHubSupported = calculateIsGitHubSupported(currentFunctionDetails);
     const shouldDisplayGitHubBanner = !isGitHubBannerDismissed && !isGitHubRepo && isGitHubSupported;
 
     // TODO: massage in useFetchFunctionsDetails?

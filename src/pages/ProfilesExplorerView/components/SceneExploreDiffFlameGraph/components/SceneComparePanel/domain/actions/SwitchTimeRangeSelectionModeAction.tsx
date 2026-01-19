@@ -39,8 +39,14 @@ export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTi
 
     return (
       <div className={styles.container}>
-        <label className={styles.label}>
-          <span>Range selection mode&nbsp;</span>
+        <RadioButtonGroup
+          size="sm"
+          options={SwitchTimeRangeSelectionModeAction.OPTIONS}
+          value={mode}
+          onChange={model.onChange}
+          aria-label="Range selection mode"
+        />
+        <div>
           <Tooltip
             content={
               <div className={styles.tooltip}>
@@ -62,14 +68,7 @@ export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTi
           >
             <Icon name="question-circle" />
           </Tooltip>
-        </label>
-        <RadioButtonGroup
-          size="sm"
-          options={SwitchTimeRangeSelectionModeAction.OPTIONS}
-          value={mode}
-          onChange={model.onChange}
-          aria-label="Range selection mode"
-        />
+        </div>
       </div>
     );
   };
@@ -78,7 +77,8 @@ export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTi
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap: ${theme.spacing(1)};
   `,
   tooltip: css`
     padding: ${theme.spacing(1)};
