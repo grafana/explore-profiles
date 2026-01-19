@@ -61,11 +61,7 @@ function convertSample(
 
   sample.locationId.forEach((locationId, index) => {
     const location = locations.get(locationId);
-    if (!location) {
-      return;
-    }
-
-    location.line.forEach((line) => {
+    location?.line?.forEach((line) => {
       const func = functions.get(line.functionId);
       if (!func) {
         return;
