@@ -1,6 +1,6 @@
+import { PLACEHOLDER_COMMIT_DATA } from '../components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 import { calculateIsGitHubSupported } from '../domain/calculateIsGitHubSupported';
 import { FunctionDetails } from '../domain/types/FunctionDetails';
-import { PLACEHOLDER_COMMIT_DATA } from '../components/GitHubContextProvider/infrastructure/PrivateVcsClient';
 
 /**
  * Tests for the calculateIsGitHubSupported function
@@ -89,9 +89,7 @@ describe('calculateIsGitHubSupported', () => {
       const functionDetails = createMockFunctionDetails({
         name: 'testFunction',
         fileName: '/path/to/file.go',
-        callSites: new Map([
-          [0, { line: 0, flat: 100, cum: 200 }],
-        ]),
+        callSites: new Map([[0, { line: 0, flat: 100, cum: 200 }]]),
       });
 
       const result = calculateIsGitHubSupported(functionDetails);
