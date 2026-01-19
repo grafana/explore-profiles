@@ -34,6 +34,9 @@ export type Interactions = {
   g_pyroscope_app_exploration_type_clicked: {
     explorationType: string;
   };
+  g_pyroscope_app_exemplars_toggled: {
+    showExemplars: boolean;
+  };
   g_pyroscope_app_export_profile: {
     format: 'png' | 'json' | 'pprof' | 'flamegraph.com';
   };

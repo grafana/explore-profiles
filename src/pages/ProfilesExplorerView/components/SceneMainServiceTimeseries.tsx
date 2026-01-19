@@ -34,25 +34,27 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     item,
     headerActions,
     supportGroupBy,
+    includeExemplars,
   }: {
     item?: GridItemData;
     headerActions: SceneMainServiceTimeseriesState['headerActions'];
     supportGroupBy?: boolean;
+    includeExemplars?: boolean;
   }) {
     super({
       headerActions,
       body: undefined,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, item, supportGroupBy));
+    this.addActivationHandler(this.onActivate.bind(this, item, supportGroupBy, includeExemplars));
   }
 
-  onActivate(item?: GridItemData, supportGroupBy?: boolean) {
+  onActivate(item?: GridItemData, supportGroupBy?: boolean, includeExemplars?: boolean) {
     if (item) {
       this.initVariables(item);
     }
 
-    this.setState({ body: this.buildTimeseries(item, supportGroupBy) });
+    this.setState({ body: this.buildTimeseries(item, supportGroupBy, includeExemplars) });
 
     if (supportGroupBy) {
       this.subscribeToGroupByStateChanges(item);
@@ -97,7 +99,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     }
   }
 
-  buildTimeseries(item?: GridItemData, supportGroupBy?: boolean) {
+  buildTimeseries(item?: GridItemData, supportGroupBy?: boolean, includeExemplars?: boolean) {
     const { headerActions } = this.state;
 
     const timeseriesItem: GridItemData = {
@@ -118,6 +120,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       item: timeseriesItem,
       headerActions,
       annotations: true,
+      includeExemplars: includeExemplars,
       // we pass data for the scenarios where we land on the page from a shared link
       // we do this to prevent rendering a timeseries without groupBy for a second then with groupBy
       // and also to directly render something when there's no groupBy in the URL
