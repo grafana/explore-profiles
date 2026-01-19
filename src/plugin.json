@@ -65,9 +65,6 @@
     ],
     "extensionPoints": [
       {
-        "id": "grafana-pyroscope-app/investigation/v1"
-      },
-      {
         "id": "grafana-pyroscope-app/settings/v1"
       }
     ],
