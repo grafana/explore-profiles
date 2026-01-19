@@ -12,12 +12,13 @@ permissions: {}
 jobs:
   cd:
     name: CI / CD
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v2
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v5
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
       id-token: write
       attestations: write
+      pull-requests: read
     with:
       # Checkout/build PR or main branch, depending on event
       branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
