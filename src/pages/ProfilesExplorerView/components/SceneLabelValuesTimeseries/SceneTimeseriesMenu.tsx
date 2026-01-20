@@ -1,4 +1,5 @@
-import { PanelMenuItem, PluginExtensionLink } from '@grafana/data';
+import { PanelMenuItem } from '@grafana/data';
+import { reportInteraction } from '@grafana/runtime';
 import {
   SceneComponentProps,
   SceneDataQuery,
@@ -9,19 +10,9 @@ import {
   VizPanelMenu,
 } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
-import PyroscopeLogo from '@img/logo.svg';
-import { reportInteraction } from '@shared/domain/reportInteraction';
-import { parseQuery } from '@shared/domain/url-params/parseQuery';
-import { nanoid } from 'nanoid';
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 
-import {
-  INVESTIGATIONS_APP_ID,
-  INVESTIGATIONS_EXTENSTION_POINT_ID,
-  useGetPluginExtensionLink,
-} from '../../domain/useGetPluginExtensionLink';
 import { getExploreUrl } from '../../helpers/getExploreUrl';
-import { getProfileMetricLabel } from '../../infrastructure/series/helpers/getProfileMetricLabel';
 import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 
@@ -56,7 +47,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
     this.setState({ items: this.buildMenuItems() });
   }
 
-  buildMenuItems(addToInvestigationLink?: PluginExtensionLink): PanelMenuItem[] {
+  buildMenuItems(): PanelMenuItem[] {
     const { scaleType, showExemplars } = this.state;
 
     const menuItems: PanelMenuItem[] = [
@@ -93,28 +84,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       );
     }
 
-    const addToInvestigationItem = this.buildAddToInvestigationItem(addToInvestigationLink);
-    if (addToInvestigationItem) {
-      menuItems.push(addToInvestigationItem);
-    }
-
     return menuItems;
-  }
-
-  private buildAddToInvestigationItem(addToInvestigationLink?: PluginExtensionLink): PanelMenuItem | undefined {
-    if (addToInvestigationLink) {
-      return {
-        iconClassName: 'plus-square',
-        text: 'Add to investigation (beta)',
-        onClick: () => {
-          addToInvestigationLink.onClick!();
-        },
-      };
-    }
-
-    const existingAddToInvestigationItem = this.state.items?.find((i) => i.text.includes('Add to investigation'));
-
-    return existingAddToInvestigationItem ? { ...existingAddToInvestigationItem } : undefined;
   }
 
   private onClickToggleExemplars() {
@@ -176,64 +146,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       ) as TimeSeriesQuery;
   }
 
-  useGetInvestigationPluginLinkContext() {
-    const { refId, queryType, profileTypeId, labelSelector, groupBy } = this.getInterpolatedQuery();
-
-    const parsedQuery = parseQuery(`${profileTypeId}${labelSelector}`);
-    const titleParts = [parsedQuery.serviceId, getProfileMetricLabel(parsedQuery.profileMetricId)];
-
-    if (groupBy?.length) {
-      titleParts.push(groupBy[0]);
-    }
-
-    if (parsedQuery.labels.length) {
-      titleParts.push(parsedQuery.labels.join(', '));
-    }
-
-    const title = titleParts.join(' · ');
-    const datasource = sceneGraph.interpolate(this, '${dataSource}');
-    const timeRange = sceneGraph.getTimeRange(this).state.value;
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useMemo(() => {
-      return {
-        id: nanoid(),
-        origin: 'Grafana Profiles Drilldown',
-        url: window.location.href,
-        logoPath: PyroscopeLogo,
-        title,
-        type: 'timeseries',
-        timeRange: { ...timeRange },
-        queries: [{ refId, queryType, profileTypeId, labelSelector, groupBy }],
-        datasource,
-      };
-    }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
-  }
-
-  useUpdateMenuItems() {
-    const context = this.useGetInvestigationPluginLinkContext();
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const link = useGetPluginExtensionLink({
-      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
-      context,
-      pluginId: INVESTIGATIONS_APP_ID,
-    });
-
-    // wrapped in a useEffect to prevent a warning when clicking on the "Add to investigation" link
-    // ("Cannot update a component while rendering a different component")
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      if (link) {
-        this.setState({ items: this.buildMenuItems(link) });
-      }
-    }, [link]);
-  }
-
   static Component({ model }: SceneComponentProps<SceneTimeseriesMenu>) {
-    model.useUpdateMenuItems();
-
     return <VizPanelMenu.Component model={model as unknown as VizPanelMenu} />;
   }
 }
