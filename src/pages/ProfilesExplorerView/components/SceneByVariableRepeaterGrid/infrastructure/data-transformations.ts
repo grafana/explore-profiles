@@ -55,21 +55,9 @@ export const addStats = () => (source: Observable<DataFrame[]>) =>
     })
   );
 
-const extractProfileIdFromHref = (href: string | undefined): string | null => {
-  if (!href || !href.includes('#')) {
-    return null;
-  }
-  const profileId = href.split('#')[1];
-  return profileId && profileId !== '' ? profileId : null;
-};
-
 const showExemplarOnClickHandler = (sceneObject: SceneObject, item: GridItemData) => {
   return (event: DataLinkClickEvent<any>) => {
-    event.e?.stopPropagation();
-    const target = event.e?.target;
-    const parentElement = target instanceof HTMLElement ? target.parentElement?.parentElement : null;
-    const parentAnchorHref = parentElement instanceof HTMLAnchorElement ? parentElement.href : undefined;
-    const profileId = extractProfileIdFromHref(parentAnchorHref);
+    const profileId = event.replaceVariables?.('${__value.raw}');
 
     if (profileId) {
       const isFlamegraphView = sceneObject.parent?.parent instanceof SceneExploreServiceFlameGraph;
@@ -113,7 +101,7 @@ export const addExemplarLinks = (sceneObject: SceneObject, item: GridItemData): 
           profileIdField.config.links = [
             {
               title: 'View profile',
-              url: '#${__value.raw}',
+              url: '',
               onClick: showExemplarOnClickHandler(sceneObject, item),
             },
           ];
