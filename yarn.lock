@@ -2945,13 +2945,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.21.0":
-  version: 1.21.0
-  resolution: "@remix-run/router@npm:1.21.0"
-  checksum: 10/cf0fb69d19c1b79095ff67c59cea89086f3982a9a54c8a993818a60fc76e0ebab5a8db647c1a96a662729fad8e806ddd0a96622adf473f5a9f0b99998b2dbad4
-  languageName: node
-  linkType: hard
-
 "@remix-run/router@npm:1.23.2":
   version: 1.23.2
   resolution: "@remix-run/router@npm:1.23.2"
@@ -4962,11 +4955,11 @@ __metadata:
   linkType: hard
 
 "brace-expansion@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "brace-expansion@npm:2.0.1"
+  version: 2.0.2
+  resolution: "brace-expansion@npm:2.0.2"
   dependencies:
     balanced-match: "npm:^1.0.0"
-  checksum: 10/a61e7cd2e8a8505e9f0036b3b6108ba5e926b4b55089eeb5550cd04a471fe216c96d4fe7e4c7f995c728c554ae20ddfc4244cad10aef255e72b62930afd233d1
+  checksum: 10/01dff195e3646bc4b0d27b63d9bab84d2ebc06121ff5013ad6e5356daa5a9d6b60fa26cf73c74797f2dc3fbec112af13578d51f75228c1112b26c790a87b0488
   languageName: node
   linkType: hard
 
@@ -9956,13 +9949,13 @@ __metadata:
   linkType: hard
 
 "js-yaml@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "js-yaml@npm:4.1.0"
+  version: 4.1.1
+  resolution: "js-yaml@npm:4.1.1"
   dependencies:
     argparse: "npm:^2.0.1"
   bin:
     js-yaml: bin/js-yaml.js
-  checksum: 10/c138a34a3fd0d08ebaf71273ad4465569a483b8a639e0b118ff65698d257c2791d3199e3f303631f2cb98213fa7b5f5d6a4621fd0fff819421b990d30d967140
+  checksum: 10/a52d0519f0f4ef5b4adc1cde466cb54c50d56e2b4a983b9d5c9c0f2f99462047007a6274d7e95617a21d3c91fde3ee6115536ed70991cd645ba8521058b78f77
   languageName: node
   linkType: hard
 
@@ -10342,10 +10335,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.1.1, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
+"lodash@npm:4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10/c08619c038846ea6ac754abd6dd29d2568aa705feb69339e836dfa8d8b09abbb2f859371e86863eda41848221f9af43714491467b5b0299122431e202bb0c532
+  languageName: node
+  linkType: hard
+
+"lodash@npm:^4.1.1, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
+  version: 4.17.23
+  resolution: "lodash@npm:4.17.23"
+  checksum: 10/82504c88250f58da7a5a4289f57a4f759c44946c005dd232821c7688b5fcfbf4a6268f6a6cdde4b792c91edd2f3b5398c1d2a0998274432cff76def48735e233
   languageName: node
   linkType: hard
 
@@ -12626,17 +12626,17 @@ __metadata:
   linkType: hard
 
 "react-router-dom-v5-compat@npm:^6.26.1":
-  version: 6.28.0
-  resolution: "react-router-dom-v5-compat@npm:6.28.0"
+  version: 6.30.3
+  resolution: "react-router-dom-v5-compat@npm:6.30.3"
   dependencies:
-    "@remix-run/router": "npm:1.21.0"
+    "@remix-run/router": "npm:1.23.2"
     history: "npm:^5.3.0"
-    react-router: "npm:6.28.0"
+    react-router: "npm:6.30.3"
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
     react-router-dom: 4 || 5
-  checksum: 10/d3221bf660851e8ca4a13050fcaf17f3d510296baf5d56c710d114a7b3b05ee6249db7b6fb3cae649e9f78eea23b341fdeae12649f4651cde4b8670d7904b520
+  checksum: 10/af355cb7c38541c0766a23a140d431537fdeb5c4bda29a45a16242704731875d2ae8bfb96e0bedeb7232a2b6ebe710c47a090aea58f235258b22fbb9e48e903e
   languageName: node
   linkType: hard
 
@@ -12686,17 +12686,6 @@ __metadata:
   peerDependencies:
     react: ">=15"
   checksum: 10/99d54a99af6bc6d7cad2e5ea7eee9485b62a8b8e16a1182b18daa7fad7dafa5e526850eaeebff629848b297ae055a9cb5b4aba8760e81af8b903efc049d48f5c
-  languageName: node
-  linkType: hard
-
-"react-router@npm:6.28.0":
-  version: 6.28.0
-  resolution: "react-router@npm:6.28.0"
-  dependencies:
-    "@remix-run/router": "npm:1.21.0"
-  peerDependencies:
-    react: ">=16.8"
-  checksum: 10/f021a644513144884a567d9c2dcc432e8e3233f931378c219c5a3b5b842340f0faca86225a708bafca1e9010965afe1a7dada28aef5b7b6138c885c0552d9a7d
   languageName: node
   linkType: hard
 
