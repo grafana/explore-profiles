@@ -35,7 +35,7 @@ export function AnalyzeDiffFlameGraph({
   return (
     <div className={css({ marginTop: '10px' })}>
       <OpenAssistantButtonAsync
-        origin="grafana/diff-flame-graph"
+        origin="grafana-pyroscope-app/diff-flame-graph"
         contextProvider={async () => {
           try {
             const { profiles, profileType } = await fetchDotProfiles(

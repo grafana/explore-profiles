@@ -50,6 +50,7 @@ type ContextProviderResults = {
  */
 export function OpenAssistantButtonView({
   contextProvider,
+  origin,
   autoSend = true,
   title = 'Analyze with Assistant',
   size = 'sm',

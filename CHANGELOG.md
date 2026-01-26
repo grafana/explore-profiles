@@ -1,5 +1,37 @@
 # Changelog
 
+## 1.15.1
+
+
+## 1.15.0
+
+##### Chores
+
+* **deps:**
+  *  bump js-yaml from 3.14.1 to 3.14.2 (#783) (27db8c2c)
+  *  bump form-data from 4.0.0 to 4.0.5 (#781) (d7a8550e)
+  *  bump brace-expansion from 1.1.11 to 1.1.12 (#782) (3bb1e0fb)
+  *  Update react-router-dom to 6.30.3 (#798) (648f0af6)
+  *  bump @modelcontextprotocol/sdk from 1.24.3 to 1.25.2 (#789) (76fe5444)
+  *  bump undici from 7.16.0 to 7.18.2 (#794) (b24186dc)
+  *  bump body-parser from 2.2.0 to 2.2.2 (#788) (5d90c82f)
+  *  bump qs from 6.14.0 to 6.14.1 (#786) (8a9e6002)
+*  Remove investigations (#787) (188f8623)
+
+##### Continuous Integration
+
+*  update workflows (#792) (98baf273)
+
+##### New Features
+
+*  plot exemplars candidates in timeseries panel at the Flame graph view (#748) (9c87a512)
+
+##### Bug Fixes
+
+* **assistant:**  pass origin to openAssistant (#797) (d3a13ab7)
+*  Handle missing location lines from profiles (#785) (9c7616c2)
+
+
 ## 1.14.2
 
 ##### Chores
