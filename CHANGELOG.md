@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.16.0
+
+##### New Features
+
+*  switch cloud-home-app plugin proxy usage to own (#579) (689f4c82)
+
+
 ## 1.15.2
 
 ##### Chores
