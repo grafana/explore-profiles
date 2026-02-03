@@ -126,10 +126,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       filtersVariable.setState({ filters });
     }
 
-    timeseriesPanel.updateItem({ label: this.buildTimeseriesTitle() });
     timeseriesPanel.setState({
       headerActions: () => [modeSelector],
     });
+    timeseriesPanel.updateItem({ label: this.buildTimeseriesTitle() });
 
     const eventSub = this.subscribeToEvents();
 
