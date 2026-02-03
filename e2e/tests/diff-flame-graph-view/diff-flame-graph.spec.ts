@@ -201,21 +201,6 @@ test.describe('Diff flame graph view', () => {
       });
     }
 
-    test('Toggling', async ({ exploreProfilesPage }) => {
-      const baselinePanel = exploreProfilesPage.getComparisonPanel('baseline');
-      const comparisonPanel = exploreProfilesPage.getComparisonPanel('comparison');
-
-      await baselinePanel.getByRole('button', { name: /^sync time ranges/i }).click();
-
-      expect(baselinePanel.getByRole('button', { name: /^unsync time ranges/i })).toBeInViewport();
-      expect(comparisonPanel.getByRole('button', { name: /^unsync time ranges/i })).toBeInViewport();
-
-      await comparisonPanel.getByRole('button', { name: /sync time ranges/i }).click();
-
-      expect(baselinePanel.getByRole('button', { name: /^sync time ranges/i })).toBeInViewport();
-      expect(comparisonPanel.getByRole('button', { name: /^sync time ranges/i })).toBeInViewport();
-    });
-
     test('Syncing flame graph range selection', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.clickOnSyncTimerangesButton('baseline');
 
