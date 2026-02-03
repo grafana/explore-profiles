@@ -1,8 +1,8 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { Alert, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
+import { displayError } from '@shared/domain/displayStatus';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
-import { logger } from '@shared/infrastructure/tracking/logger';
 import React from 'react';
 
 import { useUISettingsView } from './domain/useUISettingsView';
@@ -12,11 +12,10 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
   const { data, actions } = useUISettingsView();
 
   if (data.fetchError) {
-    // displayError(data.fetchError, [
-    //   'Error while retrieving the plugin settings!',
-    //   'Please try to reload the page, sorry for the inconvenience.',
-    // ]);
-    logger.error(data.fetchError);
+    displayError(data.fetchError, [
+      'Error while retrieving the plugin settings!',
+      'Please try to reload the page, sorry for the inconvenience.',
+    ]);
   }
 
   function onSubmit(event: React.FormEvent) {
