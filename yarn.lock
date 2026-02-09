@@ -528,38 +528,38 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bufbuild/protobuf@npm:2.10.1, @bufbuild/protobuf@npm:^2.2.3, @bufbuild/protobuf@npm:^2.5.1":
-  version: 2.10.1
-  resolution: "@bufbuild/protobuf@npm:2.10.1"
-  checksum: 10/74c3076b47e0c17c9d247d94b15c6d8bf1c4f0c56f7a79e054f8557ab387ee392dda14cce1a05fd976aee4518d3cac602cf59dca3327dff243af4019dc5a03a2
+"@bufbuild/protobuf@npm:2.11.0, @bufbuild/protobuf@npm:^2.2.3, @bufbuild/protobuf@npm:^2.5.1":
+  version: 2.11.0
+  resolution: "@bufbuild/protobuf@npm:2.11.0"
+  checksum: 10/dddab84c2dc92f15b467449dc9d951b9aef6ea335dba448f8d4028f9b52fdb790d3b856a1dceb4dbcfe7f182072f0d1cd6ce05b2a95ff40132eea6a428e84883
   languageName: node
   linkType: hard
 
-"@bufbuild/protoc-gen-es@npm:2.10.1":
-  version: 2.10.1
-  resolution: "@bufbuild/protoc-gen-es@npm:2.10.1"
+"@bufbuild/protoc-gen-es@npm:2.11.0":
+  version: 2.11.0
+  resolution: "@bufbuild/protoc-gen-es@npm:2.11.0"
   dependencies:
-    "@bufbuild/protobuf": "npm:2.10.1"
-    "@bufbuild/protoplugin": "npm:2.10.1"
+    "@bufbuild/protobuf": "npm:2.11.0"
+    "@bufbuild/protoplugin": "npm:2.11.0"
   peerDependencies:
-    "@bufbuild/protobuf": 2.10.1
+    "@bufbuild/protobuf": 2.11.0
   peerDependenciesMeta:
     "@bufbuild/protobuf":
       optional: true
   bin:
     protoc-gen-es: bin/protoc-gen-es
-  checksum: 10/733c5e218c334001f763a89b1931af7d103cfbf4dd91e0c2c06fd1b0836db8950149e8c5f47850f35ccfee9ee3738e670c0af68418cef69066880e33d8776e50
+  checksum: 10/9dbf56ceb7b99b2c36a11a389eac441ef19c3aacb8b412b2a87fe8f6676679ef178329e585b26cbd1319c6b23261c256499578b7b16cfa52866377995037ac74
   languageName: node
   linkType: hard
 
-"@bufbuild/protoplugin@npm:2.10.1, @bufbuild/protoplugin@npm:^2.2.1":
-  version: 2.10.1
-  resolution: "@bufbuild/protoplugin@npm:2.10.1"
+"@bufbuild/protoplugin@npm:2.11.0, @bufbuild/protoplugin@npm:^2.2.1":
+  version: 2.11.0
+  resolution: "@bufbuild/protoplugin@npm:2.11.0"
   dependencies:
-    "@bufbuild/protobuf": "npm:2.10.1"
+    "@bufbuild/protobuf": "npm:2.11.0"
     "@typescript/vfs": "npm:^1.6.2"
     typescript: "npm:5.4.5"
-  checksum: 10/8cfa3e191bb2b44a06f3437cd68b347fd99f7aea2be7872b76b3a0c3d73f151f25caaae9754002521d9fedbcadb0afc934f3963c5c6249e400f48e9c8d6e3058
+  checksum: 10/271ab6bb33a6632bf6f4730c1788da00a8679f24f29990a4c04a22558defd89dffa481a3d51312ced7e385ebc0a1dc656506decfd7796c72c8e70a8102d7c4df
   languageName: node
   linkType: hard
 
@@ -11567,7 +11567,7 @@ __metadata:
     "@babel/core": "npm:7.28.5"
     "@bufbuild/buf": "npm:1.50.0"
     "@bufbuild/protobuf": "npm:^2.2.3"
-    "@bufbuild/protoc-gen-es": "npm:2.10.1"
+    "@bufbuild/protoc-gen-es": "npm:2.11.0"
     "@connectrpc/connect": "npm:^2.0.1"
     "@connectrpc/connect-query": "npm:^2.0.1"
     "@connectrpc/connect-web": "npm:^2.0.1"
