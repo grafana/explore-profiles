@@ -72,7 +72,7 @@
   "devDependencies": {
     "@babel/core": "7.28.5",
     "@bufbuild/buf": "1.50.0",
-    "@bufbuild/protoc-gen-es": "2.10.1",
+    "@bufbuild/protoc-gen-es": "2.11.0",
     "@connectrpc/protoc-gen-connect-query": "2.2.0",
     "@grafana/e2e-selectors": "10.4.19",
     "@grafana/eslint-config": "8.2.0",
