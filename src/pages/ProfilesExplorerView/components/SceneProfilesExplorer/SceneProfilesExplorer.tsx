@@ -148,6 +148,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 return filtered.length > 0 ? filtered : undefined;
               })(),
             }),
+            new FiltersVariable({ key: 'filters-all' }),
             new FiltersVariable({ key: 'filtersBaseline' }),
             new FiltersVariable({ key: 'filtersComparison' }),
             new GroupByVariable(),
@@ -236,6 +237,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          sceneGraph.findByKeyAndType(this, 'filters-all', FiltersVariable).reset();
           this.resetSpanSelector();
         }
       });
@@ -377,14 +379,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     sceneGraph.findByKeyAndType(this, 'profileIdSelector', ProfileIdSelectorVariable).reset();
     this.resetSpanSelector();
 
-    // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"
-    // if not, they will be added to the queries without any notice on the UI
-    if (
-      ![ExplorationType.LABELS, ExplorationType.FLAME_GRAPH, ExplorationType.DIFF_FLAME_GRAPH].includes(
-        nextExplorationType as ExplorationType
-      )
-    ) {
+    // Reset service-specific filters when switching to ALL_SERVICES (no selected service context)
+    if (nextExplorationType === ExplorationType.ALL_SERVICES) {
       sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).reset();
+    }
+
+    // Reset all filters when switching to Favorites (which displays/uses neither)
+    if (nextExplorationType === ExplorationType.FAVORITES) {
+      sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable).reset();
+      sceneGraph.findByKeyAndType(this, 'filters-all', FiltersVariable).reset();
     }
   }
 

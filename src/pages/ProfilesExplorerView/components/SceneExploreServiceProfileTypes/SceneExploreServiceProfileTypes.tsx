@@ -10,6 +10,7 @@ import React from 'react';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
+import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -35,13 +36,14 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
       body: new SceneByVariableRepeaterGrid({
         key: 'profile-metrics-grid',
         variableName: 'profileMetricId',
-        mapOptionToItem: (option, index, { serviceName }) => ({
+        mapOptionToItem: (option, index, { serviceName, filters }) => ({
           index,
           value: option.value as string,
           label: option.label,
           queryRunnerParams: {
             serviceName,
             profileMetricId: option.value as string,
+            filters,
           },
           panelType: PanelType.TIMESERIES,
         }),
@@ -76,7 +78,10 @@ export class SceneExploreServiceProfileTypes extends SceneObjectBase<SceneExplor
   // see SceneProfilesExplorer
   getVariablesAndGridControls() {
     return {
-      variables: [sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable)],
+      variables: [
+        sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
+        sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable),
+      ],
       gridControls: [
         sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter),
         sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher),

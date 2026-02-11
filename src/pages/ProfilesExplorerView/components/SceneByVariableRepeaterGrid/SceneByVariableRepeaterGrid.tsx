@@ -35,12 +35,13 @@ import { GridItemData } from './types/GridItemData';
 
 interface SceneByVariableRepeaterGridState extends EmbeddedSceneState {
   variableName: string;
+  filtersKey: string;
   items: GridItemData[];
   headerActions: (item: GridItemData, items: GridItemData[]) => VizPanelState['headerActions'];
   mapOptionToItem: (
     option: VariableValueOption,
     index: number,
-    variablesValues: Record<string, string>
+    variablesValues: Record<string, any>
   ) => GridItemData | null;
   sortItemsFn: (a: GridItemData, b: GridItemData) => number;
   hideNoData: boolean;
@@ -62,12 +63,14 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   constructor({
     key,
     variableName,
+    filtersKey = 'filters',
     headerActions,
     mapOptionToItem,
     sortItemsFn,
   }: {
     key: string;
     variableName: SceneByVariableRepeaterGridState['variableName'];
+    filtersKey?: string;
     headerActions: SceneByVariableRepeaterGridState['headerActions'];
     mapOptionToItem: SceneByVariableRepeaterGridState['mapOptionToItem'];
     sortItemsFn?: SceneByVariableRepeaterGridState['sortItemsFn'];
@@ -75,6 +78,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     super({
       key,
       variableName,
+      filtersKey,
       items: [],
       headerActions,
       mapOptionToItem,
@@ -188,14 +192,23 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   }
 
   subscribeToFiltersChange() {
-    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+    const filtersVariable = sceneGraph.findByKeyAndType(this, this.state.filtersKey, FiltersVariable);
     const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     // the handler will be called each time a filter is added/removed/modified
-    return filtersVariable.subscribeToState(() => {
-      if (noDataSwitcher.state.hideNoData === 'on') {
-        // to be sure the list is updated we force render because the filters only influence the query made in each panel
-        this.renderGridItems(true);
+    return filtersVariable.subscribeToState((newState, prevState) => {
+      // Check if filters actually changed (not just other state properties)
+      if (JSON.stringify(newState.filters) !== JSON.stringify(prevState.filters)) {
+        // Re-query the variable to get filtered services/profile types from the Series API
+        const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable & {
+          update: () => void;
+        };
+        variable.update();
+
+        // Also force re-render if hideNoData is enabled
+        if (noDataSwitcher.state.hideNoData === 'on') {
+          this.renderGridItems(true);
+        }
       }
     });
   }
@@ -203,10 +216,15 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
   buildItemsData(variable: QueryVariable) {
     const { mapOptionToItem } = this.state;
 
+    // Get current filters from FiltersVariable to include in queryRunnerParams
+    const filtersVariable = sceneGraph.findByKeyAndType(this, this.state.filtersKey, FiltersVariable);
+    const filters = filtersVariable.state.filters;
+
     const variableValues = {
       serviceName: getSceneVariableValue(this, 'serviceName'),
       profileMetricId: getSceneVariableValue(this, 'profileMetricId'),
       panelType: sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).state.panelType,
+      filters: filters.length > 0 ? filters : undefined,
     };
 
     const items = variable.state.options

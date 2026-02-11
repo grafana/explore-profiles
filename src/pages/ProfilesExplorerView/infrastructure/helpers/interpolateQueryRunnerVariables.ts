@@ -5,6 +5,7 @@ import { clone, defaults, uniqBy } from 'lodash';
 import { GridItemData } from '../../components/SceneByVariableRepeaterGrid/types/GridItemData';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
+import { getExplorationType } from './getExplorationType';
 
 type InterpolatedQueryRunnerParams = GridItemData['queryRunnerParams'] & {
   serviceName: string;
@@ -23,8 +24,10 @@ export function interpolateQueryRunnerVariables(
     profileMetricId: getSceneVariableValue(sceneObject, 'profileMetricId'),
   });
 
+  // Use filters-all for the all-services view so var-filters is never read there
+  const filtersVariableName = getExplorationType(sceneObject) === 'all' ? 'filters-all' : 'filters';
   // state.filters has the AdHocFilterWithLabels[] type so we get rid of keyLabel and valueLabel
-  const parsedFilters = (sceneGraph.lookupVariable('filters', sceneObject) as FiltersVariable).state.filters.map(
+  const parsedFilters = (sceneGraph.lookupVariable(filtersVariableName, sceneObject) as FiltersVariable).state.filters.map(
     ({ key, operator, value }) => ({ key, operator, value })
   );
 

@@ -30,7 +30,7 @@ export function buildTimeSeriesQueryRunner(
         refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy?.label || 'no-group-by'}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId || '$profileMetricId',
-        labelSelector: `{${selector},$filters}`,
+        labelSelector: `{${selector}}`,
         groupBy: groupBy?.label ? [groupBy.label] : [],
         limit,
         annotations,
