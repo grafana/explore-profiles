@@ -20,7 +20,6 @@
     "e2e:local:watch": "yarn e2e:local --ui",
     "format:fix": "prettier --write .",
     "generate:pyroscope-api": "npx @bufbuild/buf generate",
-    "postinstall": "husky install",
     "knip": "knip",
     "lint": "eslint --cache --ignore-path ./.gitignore --ext .js,.jsx,.ts,.tsx .",
     "lint:fix": "yarn run lint --fix && prettier --write --list-different .",
