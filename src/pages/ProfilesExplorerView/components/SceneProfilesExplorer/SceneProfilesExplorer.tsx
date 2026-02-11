@@ -38,6 +38,7 @@ import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataS
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
+import { GroupByLabelDataSource } from '../../infrastructure/group-by-label/GroupByLabelDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -212,6 +213,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       sceneUtils.registerRuntimeDataSource({ dataSource: new SeriesDataSource() });
       sceneUtils.registerRuntimeDataSource({ dataSource: new FavoritesDataSource() });
       sceneUtils.registerRuntimeDataSource({ dataSource: new LabelsDataSource() });
+      sceneUtils.registerRuntimeDataSource({ dataSource: new GroupByLabelDataSource() });
     } catch (error) {
       const { message } = error as Error;
 

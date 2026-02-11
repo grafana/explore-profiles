@@ -37,6 +37,36 @@ class SeriesRepository extends AbstractRepository<SeriesApiClient, MemoryCacheCl
       throw error;
     }
   }
+
+  async listWithPreset(options: { timeRange: TimeRange; presetLabels: string[] }): Promise<PyroscopeSeries> {
+    const { from, to } = computeRoundedTimeRange(options.timeRange);
+    const { presetLabels } = options;
+
+    // Include preset labels in cache key
+    const cacheParams = [this.apiClient!.baseUrl, from, to, 'preset', ...presetLabels];
+
+    const responseFromCacheP = this.cacheClient!.get(cacheParams);
+    if (responseFromCacheP) {
+      const { services, profileMetrics } = await responseFromCacheP;
+
+      if (!services.size && !profileMetrics.size) {
+        this.cacheClient!.delete(cacheParams);
+      }
+
+      return { services, profileMetrics };
+    }
+
+    const fetchP = this.apiClient!.listWithPreset({ from, to, presetLabels });
+    this.cacheClient!.set(cacheParams, fetchP);
+
+    try {
+      const { services, profileMetrics } = await fetchP;
+      return { services, profileMetrics };
+    } catch (error) {
+      this.cacheClient!.delete(cacheParams);
+      throw error;
+    }
+  }
 }
 
 export const seriesRepository = new SeriesRepository({

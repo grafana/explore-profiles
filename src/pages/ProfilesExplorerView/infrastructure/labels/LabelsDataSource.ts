@@ -7,12 +7,13 @@ import {
   TestDataSourceResponse,
   TimeRange,
 } from '@grafana/data';
-import { RuntimeDataSource } from '@grafana/scenes';
+import { RuntimeDataSource, sceneGraph } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
 import { logger } from '@shared/infrastructure/tracking/logger';
 import pLimit from 'p-limit';
 
+import { GroupByLabelValueVariable } from '../../domain/variables/GroupByVariable/GroupByLabelValueVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { computeRoundedTimeRange } from '../../helpers/computeRoundedTimeRange';
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../pyroscope-data-sources';
@@ -49,6 +50,30 @@ export class LabelsDataSource extends RuntimeDataSource {
     };
   }
 
+  getHierarchyFiltersSelector(sceneObject: GroupByVariable): string | null {
+    const filters: string[] = [];
+
+    // Try to find hierarchy variables (up to 10 levels)
+    for (let i = 0; i < 10; i++) {
+      try {
+        const hierarchyVar = sceneGraph.findByKeyAndType(
+          sceneObject,
+          `groupByLabelValue-${i}`,
+          GroupByLabelValueVariable
+        );
+        const value = hierarchyVar.state.value;
+        if (value && value !== '') {
+          filters.push(`${hierarchyVar.getLabelName()}="${value}"`);
+        }
+      } catch {
+        // Variable not found, stop looking
+        break;
+      }
+    }
+
+    return filters.length > 0 ? filters.join(',') : null;
+  }
+
   getParams(options: LegacyMetricFindQueryOptions) {
     const { scopedVars, range } = options;
     const sceneObject = scopedVars?.__sceneObject?.valueOf() as GroupByVariable;
@@ -57,10 +82,14 @@ export class LabelsDataSource extends RuntimeDataSource {
     const serviceName = safeInterpolate(sceneObject, '$serviceName');
     const profileMetricId = safeInterpolate(sceneObject, '$profileMetricId');
 
+    // Try to use hierarchy filters, fall back to serviceName
+    const hierarchySelector = this.getHierarchyFiltersSelector(sceneObject);
+    const labelSelector = hierarchySelector || `service_name="${serviceName}"`;
+
     // we could interpolate ad hoc filters, but the Labels exploration type would reload all labels each time they are modified
     // const filters = sceneGraph.interpolate(sceneObject, '$filters');
-    // const pyroscopeQuery = `${profileMetricId}{service_name="${serviceName}",${filters}}`;
-    const query = `${profileMetricId}{service_name="${serviceName}"}`;
+    // const pyroscopeQuery = `${profileMetricId}{${labelSelector},${filters}}`;
+    const query = `${profileMetricId}{${labelSelector}}`;
 
     const { from, to } = computeRoundedTimeRange(range as TimeRange);
 

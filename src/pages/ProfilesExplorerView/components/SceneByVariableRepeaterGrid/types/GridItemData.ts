@@ -1,5 +1,6 @@
 import { AdHocVariableFilter } from '@grafana/data';
 
+import { HierarchyFilter } from '../../../infrastructure/timeseries/TimeSeriesQueryRunnerParams';
 import { PanelType } from '../components/ScenePanelTypeSwitcher';
 
 export type GridItemData = {
@@ -14,6 +15,7 @@ export type GridItemData = {
       values: string[];
     };
     filters?: AdHocVariableFilter[];
+    hierarchyFilters?: HierarchyFilter[];
   };
   panelType: PanelType;
 };

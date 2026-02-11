@@ -41,6 +41,27 @@ export class SeriesDataSource extends RuntimeDataSource {
     }
   }
 
+  async fetchSeriesWithPreset(
+    dataSourceUid: string,
+    timeRange: TimeRange,
+    presetLabels: string[],
+    variableName?: string
+  ) {
+    seriesRepository.setApiClient(DataSourceProxyClientBuilder.build(dataSourceUid, SeriesApiClient));
+
+    try {
+      return await seriesRepository.listWithPreset({ timeRange, presetLabels });
+    } catch (error) {
+      logger.error(error as Error, {
+        info: 'Error while loading Pyroscope series with preset!',
+        variableName: variableName || '',
+        presetLabels: presetLabels.join(','),
+      });
+
+      throw error;
+    }
+  }
+
   async query(): Promise<DataQueryResponse> {
     return {
       state: LoadingState.Done,
@@ -61,6 +82,18 @@ export class SeriesDataSource extends RuntimeDataSource {
     };
   }
 
+  /**
+   * Parses a preset query string like "$dataSource preset [label1,label2] services"
+   * Returns the preset labels array or null if not a preset query
+   */
+  parsePresetQuery(query: string): string[] | null {
+    const match = query.match(/\$dataSource preset \[([^\]]+)\]/);
+    if (!match) {
+      return null;
+    }
+    return match[1].split(',').map((s) => s.trim());
+  }
+
   async metricFindQuery(query: string, options: LegacyMetricFindQueryOptions): Promise<MetricFindValue[]> {
     const sceneObject = options.scopedVars?.__sceneObject?.valueOf() as ServiceNameVariable | ProfileMetricVariable;
 
@@ -71,6 +104,22 @@ export class SeriesDataSource extends RuntimeDataSource {
     // Fallback to default datasource if interpolation not ready yet
     if (!dataSourceUid) {
       dataSourceUid = ApiClient.selectDefaultDataSource().uid as string;
+    }
+
+    // Check if this is a preset query
+    const presetLabels = this.parsePresetQuery(query);
+    if (presetLabels) {
+      const pyroscopeSeries = await this.fetchSeriesWithPreset(
+        dataSourceUid,
+        options.range as TimeRange,
+        presetLabels,
+        options.variable?.name
+      );
+
+      if (query.includes('$profileMetricId services')) {
+        return formatSeriesToServices(pyroscopeSeries, profileMetricId);
+      }
+      return formatSeriesToServices(pyroscopeSeries);
     }
 
     const pyroscopeSeries = await this.fetchSeries(dataSourceUid, options.range as TimeRange, options.variable?.name);

@@ -9,9 +9,22 @@ type FlameGraphQueryRunnerParams = TimeSeriesQueryRunnerParams & {
   spanSelector?: string;
 };
 
-export function buildFlameGraphQueryRunner({ filters, maxNodes, spanSelector }: FlameGraphQueryRunnerParams) {
+export function buildFlameGraphQueryRunner({
+  filters,
+  maxNodes,
+  spanSelector,
+  hierarchyFilters,
+}: FlameGraphQueryRunnerParams) {
   const completeFilters = filters ? [...filters] : [];
-  completeFilters.unshift({ key: 'service_name', operator: '=', value: '$serviceName' });
+
+  // Add hierarchy filters if provided, otherwise fall back to serviceName for backwards compatibility
+  if (hierarchyFilters && hierarchyFilters.length > 0) {
+    for (const { label, value } of hierarchyFilters) {
+      completeFilters.unshift({ key: label, operator: '=', value });
+    }
+  } else {
+    completeFilters.unshift({ key: 'service_name', operator: '=', value: '$serviceName' });
+  }
 
   const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
 

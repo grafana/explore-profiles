@@ -24,3 +24,8 @@ export const PYROSCOPE_LABELS_DATA_SOURCE: DataSourceDef = Object.freeze({
   type: 'grafana-pyroscope-labels-datasource',
   uid: 'grafana-pyroscope-labels-datasource',
 });
+
+export const PYROSCOPE_GROUP_BY_LABEL_DATA_SOURCE: DataSourceDef = Object.freeze({
+  type: 'grafana-pyroscope-group-by-label-datasource',
+  uid: 'grafana-pyroscope-group-by-label-datasource',
+});

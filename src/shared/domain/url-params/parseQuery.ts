@@ -20,6 +20,30 @@ export function parseQuery(query: string): ParsedQuery {
   return { serviceId, profileMetricId, labelsSelector, labels };
 }
 
+type HierarchyFilter = {
+  label: string;
+  value: string;
+};
+
+type ParsedQueryWithHierarchy = ParsedQuery & {
+  hierarchyFilters: HierarchyFilter[];
+};
+
+export function parseQueryWithHierarchy(query: string, groupByLabels: string[]): ParsedQueryWithHierarchy {
+  const base = parseQuery(query);
+  const hierarchyFilters: HierarchyFilter[] = [];
+
+  for (const label of groupByLabels) {
+    const regex = new RegExp(`${label}="([^"]+)"`);
+    const match = query.match(regex);
+    if (match && match[1]) {
+      hierarchyFilters.push({ label, value: match[1] });
+    }
+  }
+
+  return { ...base, hierarchyFilters };
+}
+
 type BuildQueryParams = {
   serviceId: string;
   profileMetricId: string;
@@ -30,3 +54,23 @@ export const buildQuery = ({ serviceId, profileMetricId, labels }: BuildQueryPar
   labels?.length
     ? `${profileMetricId}{service_name="${serviceId}",${labels.join()}}`
     : `${profileMetricId}{service_name="${serviceId}"}`;
+
+type BuildQueryWithHierarchyParams = {
+  hierarchyFilters: HierarchyFilter[];
+  profileMetricId: string;
+  labels?: string[];
+};
+
+export const buildQueryWithHierarchy = ({
+  hierarchyFilters,
+  profileMetricId,
+  labels,
+}: BuildQueryWithHierarchyParams): string => {
+  const hierarchySelector = hierarchyFilters.map(({ label, value }) => `${label}="${value}"`).join(',');
+
+  if (labels?.length) {
+    return `${profileMetricId}{${hierarchySelector},${labels.join()}}`;
+  }
+
+  return `${profileMetricId}{${hierarchySelector}}`
+};

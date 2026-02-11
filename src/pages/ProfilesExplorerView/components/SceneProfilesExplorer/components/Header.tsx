@@ -11,6 +11,7 @@ import { GiveFeedbackButton } from '../../GiveFeedbackButton';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { useHeader } from './domain/useHeader';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
+import { LabelPresetSelector } from './ui/LabelPresetSelector';
 
 export type HeaderProps = {
   explorationType: SceneProfilesExplorerState['explorationType'];
@@ -70,6 +71,7 @@ export function Header(props: HeaderProps) {
             value={explorationType as string}
             onChange={actions.onChangeExplorationType}
           />
+          <LabelPresetSelector />
         </div>
 
         <div className={styles.appControlsRight}>

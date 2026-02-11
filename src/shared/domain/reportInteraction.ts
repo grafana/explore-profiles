@@ -69,6 +69,10 @@ export type Interactions = {
     type: ActionType;
   };
   g_pyroscope_app_service_name_selected: {};
+  g_pyroscope_app_group_by_label_value_selected: {
+    labelName: string;
+    hierarchyLevel: number;
+  };
   g_pyroscope_app_share_link_clicked: {};
   g_pyroscope_app_timeseries_scale_changed: {
     scale: ScaleDistribution;

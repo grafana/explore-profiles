@@ -1,9 +1,22 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
-import { Alert, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
+import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import {
+  Alert,
+  Button,
+  FieldSet,
+  HorizontalGroup,
+  InlineField,
+  InlineFieldRow,
+  InlineSwitch,
+  Input,
+  Select,
+  TagsInput,
+  useStyles2,
+} from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
-import React from 'react';
+import { DEFAULT_LABEL_PRESETS, getActiveLabelPreset } from '@shared/infrastructure/settings/PluginSettings';
+import React, { useMemo, useState } from 'react';
 
 import { useUISettingsView } from './domain/useUISettingsView';
 
@@ -112,8 +125,127 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
         </FieldSet>
       )}
 
+      <LabelPresetsSettings data={data} actions={actions} styles={styles} />
+
       {children}
     </form>
+  );
+}
+
+function LabelPresetsSettings({
+  data,
+  actions,
+  styles,
+}: {
+  data: ReturnType<typeof useUISettingsView>['data'];
+  actions: ReturnType<typeof useUISettingsView>['actions'];
+  styles: Record<string, string>;
+}) {
+  const activePreset = getActiveLabelPreset(data);
+  const [isAddingPreset, setIsAddingPreset] = useState(false);
+  const [newPresetName, setNewPresetName] = useState('');
+
+  const presetOptions: Array<SelectableValue<string>> = useMemo(
+    () => data.labelPresets.map((p) => ({ label: p.name, value: p.name, description: p.labels.join(' / ') })),
+    [data.labelPresets]
+  );
+
+  const isDefaultPreset = DEFAULT_LABEL_PRESETS.some((p) => p.name === activePreset.name);
+
+  const handleAddPreset = () => {
+    if (newPresetName.trim() && !data.labelPresets.some((p) => p.name === newPresetName.trim())) {
+      actions.addLabelPreset({ name: newPresetName.trim(), labels: ['service_name'] });
+      actions.setActiveLabelPreset(newPresetName.trim());
+      setNewPresetName('');
+      setIsAddingPreset(false);
+    }
+  };
+
+  const handleDeletePreset = () => {
+    if (!isDefaultPreset && data.labelPresets.length > 1) {
+      actions.removeLabelPreset(activePreset.name);
+    }
+  };
+
+  return (
+    <FieldSet label="Label presets" data-testid="label-presets-settings">
+      <div className={styles.labelPresetsInfo}>
+        <p>
+          Label presets define how profiles are grouped and displayed. Each preset combines one or more labels into a
+          single identifier. For example, the <code>Kubernetes</code> preset combines <code>cluster</code>,{' '}
+          <code>namespace</code>, and <code>container</code> labels, displaying values like{' '}
+          <code>prod-cluster/my-namespace/my-container</code>.
+        </p>
+      </div>
+      <InlineFieldRow>
+        <InlineField
+          label="Active preset"
+          labelWidth={24}
+          tooltip="Select which label preset to use for grouping profiles"
+        >
+          <HorizontalGroup spacing="sm">
+            <Select
+              options={presetOptions}
+              value={data.activeLabelPreset}
+              onChange={(v) => v.value && actions.setActiveLabelPreset(v.value)}
+              width={30}
+            />
+            {!isDefaultPreset && data.labelPresets.length > 1 && (
+              <Button variant="destructive" size="sm" icon="trash-alt" onClick={handleDeletePreset} aria-label="Delete preset" />
+            )}
+          </HorizontalGroup>
+        </InlineField>
+      </InlineFieldRow>
+      <InlineFieldRow>
+        <InlineField
+          label="Labels"
+          labelWidth={24}
+          tooltip="The labels in this preset. Values will be joined with '/' to create a composite identifier."
+        >
+          <TagsInput
+            tags={activePreset.labels}
+            onChange={(labels) => actions.updateLabelPreset(activePreset.name, labels)}
+            placeholder="Add label"
+            width={40}
+          />
+        </InlineField>
+      </InlineFieldRow>
+      {activePreset.labels.length > 0 && (
+        <div className={styles.presetPreview}>
+          Preview: <code>{activePreset.labels.join(' / ')}</code>
+        </div>
+      )}
+
+      {isAddingPreset ? (
+        <div className={styles.addPresetForm}>
+          <InlineFieldRow>
+            <InlineField label="New preset name" labelWidth={24}>
+              <HorizontalGroup spacing="sm">
+                <Input
+                  value={newPresetName}
+                  onChange={(e) => setNewPresetName(e.currentTarget.value)}
+                  placeholder="Enter preset name"
+                  width={30}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddPreset()}
+                />
+                <Button variant="primary" size="sm" onClick={handleAddPreset} disabled={!newPresetName.trim()}>
+                  Create
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => setIsAddingPreset(false)}>
+                  Cancel
+                </Button>
+              </HorizontalGroup>
+            </InlineField>
+          </InlineFieldRow>
+        </div>
+      ) : (
+        <div className={styles.addPresetButton}>
+          <Button variant="secondary" size="sm" icon="plus" onClick={() => setIsAddingPreset(true)}>
+            Add new preset
+          </Button>
+        </div>
+      )}
+    </FieldSet>
   );
 }
 
@@ -147,5 +279,38 @@ const getStyles = (theme: GrafanaTheme2) => ({
       font-style: normal;
       font-weight: ${theme.typography.fontWeightBold};
     }
+  `,
+  labelPresetsInfo: css`
+    max-width: 700px;
+    margin-bottom: ${theme.spacing(2)};
+
+    p {
+      margin-bottom: ${theme.spacing(1)};
+    }
+
+    code {
+      background-color: ${theme.colors.background.secondary};
+      padding: ${theme.spacing(0.25)} ${theme.spacing(0.5)};
+      border-radius: ${theme.shape.radius.default};
+    }
+  `,
+  presetPreview: css`
+    margin-top: ${theme.spacing(1)};
+    margin-left: ${theme.spacing(24)};
+    color: ${theme.colors.text.secondary};
+
+    code {
+      background-color: ${theme.colors.background.secondary};
+      padding: ${theme.spacing(0.25)} ${theme.spacing(0.5)};
+      border-radius: ${theme.shape.radius.default};
+      font-weight: ${theme.typography.fontWeightMedium};
+    }
+  `,
+  addPresetForm: css`
+    margin-top: ${theme.spacing(2)};
+  `,
+  addPresetButton: css`
+    margin-top: ${theme.spacing(2)};
+    margin-left: ${theme.spacing(24)};
   `,
 });

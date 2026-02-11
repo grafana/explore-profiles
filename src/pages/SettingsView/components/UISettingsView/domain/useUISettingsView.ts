@@ -1,6 +1,6 @@
 import { displayError, displaySuccess } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
-import { DEFAULT_SETTINGS, PluginSettings } from '@shared/infrastructure/settings/PluginSettings';
+import { DEFAULT_SETTINGS, LabelPreset, PluginSettings } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { useEffect, useState } from 'react';
 
@@ -50,6 +50,35 @@ export function useUISettingsView() {
           ...s,
           enableMetricsFromProfiles: !s.enableMetricsFromProfiles,
         }));
+      },
+      setActiveLabelPreset(presetName: string) {
+        setCurrentSettings((s) => ({
+          ...s,
+          activeLabelPreset: presetName,
+        }));
+      },
+      addLabelPreset(preset: LabelPreset) {
+        setCurrentSettings((s) => ({
+          ...s,
+          labelPresets: [...s.labelPresets, preset],
+        }));
+      },
+      updateLabelPreset(presetName: string, labels: string[]) {
+        setCurrentSettings((s) => ({
+          ...s,
+          labelPresets: s.labelPresets.map((p) => (p.name === presetName ? { ...p, labels } : p)),
+        }));
+      },
+      removeLabelPreset(presetName: string) {
+        setCurrentSettings((s) => {
+          const newPresets = s.labelPresets.filter((p) => p.name !== presetName);
+          return {
+            ...s,
+            labelPresets: newPresets,
+            // If removing the active preset, switch to the first available
+            activeLabelPreset: s.activeLabelPreset === presetName ? newPresets[0]?.name || 'Services' : s.activeLabelPreset,
+          };
+        });
       },
       async saveSettings() {
         setMaxNodes(currentSettings.maxNodes);

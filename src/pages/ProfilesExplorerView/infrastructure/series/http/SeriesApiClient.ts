@@ -1,7 +1,7 @@
 import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 
 import { DataSourceProxyClient } from './DataSourceProxyClient';
-import { formatSeriesResponse } from './formatSeriesResponse';
+import { formatSeriesResponse, formatSeriesResponseWithPreset } from './formatSeriesResponse';
 
 type ProfileMetricsMap = Map<ProfileMetric['id'], ProfileMetric>;
 type ServiceToProfileMetricsMap = Map<string, ProfileMetricsMap>;
@@ -30,5 +30,24 @@ export class SeriesApiClient extends DataSourceProxyClient {
     })
       .then((response) => response.json())
       .then(formatSeriesResponse);
+  }
+
+  async listWithPreset(options: { from: number; to: number; presetLabels: string[] }): Promise<PyroscopeSeries> {
+    const { from, to, presetLabels } = options;
+
+    // Always include __profile_type__ for profile metric mapping
+    const labelNames = [...presetLabels, '__profile_type__'];
+
+    return this.fetch('/querier.v1.QuerierService/Series', {
+      method: 'POST',
+      body: JSON.stringify({
+        start: from,
+        end: to,
+        labelNames,
+        matchers: [],
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => formatSeriesResponseWithPreset(data, presetLabels));
   }
 }

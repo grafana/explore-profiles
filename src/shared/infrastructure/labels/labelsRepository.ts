@@ -9,6 +9,7 @@ type ListLabelsOptions = {
   query: string;
   from: number;
   to: number;
+  excludeLabels?: string[];
 };
 
 type ListLabelValuesOptions = ListLabelsOptions & {
@@ -18,14 +19,25 @@ type ListLabelValuesOptions = ListLabelsOptions & {
 class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheClient> {
   cacheClient: MemoryCacheClient;
 
+  static isNotMetaLabel = (label: string) => !/^__.+__$/.test(label);
+
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
 
-  static parseLabelsResponse(json: Record<string, any>): Suggestions {
+  static createLabelFilter = (excludeLabels: string[]) => {
+    const excludeSet = new Set(excludeLabels);
+    return (label: string) => LabelsRepository.isNotMetaLabel(label) && !excludeSet.has(label);
+  };
+
+  static parseLabelsResponse(json: Record<string, any>, excludeLabels?: string[]): Suggestions {
     if (!Array.isArray(json.names)) {
       return [];
     }
 
-    const uniqueLabels: string[] = Array.from(new Set(json.names.filter(LabelsRepository.isNotMetaLabelOrServiceName)));
+    const filterFn = excludeLabels?.length
+      ? LabelsRepository.createLabelFilter(excludeLabels)
+      : LabelsRepository.isNotMetaLabelOrServiceName;
+
+    const uniqueLabels: string[] = Array.from(new Set(json.names.filter(filterFn)));
 
     return uniqueLabels.map((label) => ({ value: label, label }));
   }
@@ -51,15 +63,15 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheCl
     invariant(from > 0 && to > 0 && to > from, 'Invalid timerange!');
   }
 
-  async listLabels({ query, from, to }: ListLabelsOptions): Promise<Suggestions> {
+  async listLabels({ query, from, to, excludeLabels }: ListLabelsOptions): Promise<Suggestions> {
     LabelsRepository.assertParams(query, from, to);
 
-    const cacheParams = [this.apiClient!.baseUrl, query, from, to];
+    const cacheParams = [this.apiClient!.baseUrl, query, from, to, excludeLabels?.join(',') || ''];
 
     const labelsFromCacheP = this.cacheClient.get(cacheParams);
     if (labelsFromCacheP) {
       const json = await labelsFromCacheP;
-      const labels = LabelsRepository.parseLabelsResponse(json);
+      const labels = LabelsRepository.parseLabelsResponse(json, excludeLabels);
 
       if (!labels.length) {
         this.cacheClient.delete(cacheParams);
@@ -73,7 +85,7 @@ class LabelsRepository extends AbstractRepository<LabelsApiClient, MemoryCacheCl
 
     try {
       const json = await fetchP;
-      return LabelsRepository.parseLabelsResponse(json);
+      return LabelsRepository.parseLabelsResponse(json, excludeLabels);
     } catch (error) {
       this.cacheClient.delete(cacheParams);
       throw error;
