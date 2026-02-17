@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.16.0
+
+##### New Features
+
+*  switch cloud-home-app plugin proxy usage to own (#579) (689f4c82)
+
+
+## 1.15.2
+
+##### Chores
+
+* **deps:**
+  *  Upgrade dependencies (#804) (418c922d)
+  *  Upgrade playwright to 1.58.0 (#805) (4a322241)
+
+
+## 1.15.1
+
+
 ## 1.15.0
 
 ##### Chores
