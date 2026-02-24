@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.17.0
+
+##### Chores
+
+* **release:**
+  *  publish github release (#825) (0c0d43ee)
+  *  publish the release to github (6554320b)
+* **deps:**
+  *  update dependency tar to v7.5.8 [security] (#829) (e549788b)
+  *  bump esbuild to 0.25.0 (#827) (ec99bdeb)
+  *  update dependency @bufbuild/protoc-gen-es to v2.11.0 (#810) (55e4a194)
+  *  update dependency terser-webpack-plugin to v5.3.16 (#807) (80596259)
+  *  update dependency @types/lodash to v4.17.23 (#806) (46bf6def)
+  *  update dependency webpack to v5.104.1 [security] (#813) (f3bab720)
+*  Upgrade packages (#814) (9879f7b4)
+
+##### Bug Fixes
+
+* **deps:**  update grafana packages (#808) (807f4d8a)
+*  use selected profile's version in function details panel (#801) (5b2a85ea)
+
+##### Other Changes
+
+* **release:**  publish the release to github" (00c520df)
+
+
 ## 1.16.0
 
 ##### New Features

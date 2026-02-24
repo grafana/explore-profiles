@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-app-plugin",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "Grafana Pyroscope app plugin (profiles)",
   "license": "AGPL-3.0-only",
   "author": "Grafana",
@@ -35,7 +35,8 @@
     "typecheck": "tsc --noEmit"
   },
   "resolutions": {
-    "tar": "7.5.7",
+    "esbuild": ">=0.25.0",
+    "tar": "7.5.8",
     "lodash": "4.17.23"
   },
   "dependencies": {
