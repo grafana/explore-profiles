@@ -45,13 +45,21 @@ class AdHocProfileClient extends ApiClient {
     };
   }
 
-  // TODO
-  async uploadDiff() {
+  async diff(leftId: string, rightId: string, profileType?: string) {
+    const response = await this.fetch('/adhocprofiles.v1.AdHocProfileService/Diff', {
+      method: 'POST',
+      body: JSON.stringify({
+        left_id: leftId,
+        right_id: rightId,
+        ...(profileType && { profile_type: profileType }),
+      }),
+    });
+
+    const json = await response.json();
+
     return {
-      id: '?',
-      name: '??',
-      profileTypes: [],
-      profile: null,
+      profileTypes: json.profileTypes as string[],
+      profile: JSON.parse(json.flamebearerProfile),
     };
   }
 

@@ -90,6 +90,7 @@ export function useUploadFile() {
   );
 
   return {
+    id: profileData.id,
     processFile,
     profileTypes: profileData.profileTypes,
     selectProfileType,
