@@ -101,7 +101,7 @@ export function AdHocDiff() {
           <>
             <div className={styles.selectorContainer}>
               <InlineFieldRow>
-                <InlineField label="Profile" disabled={!profileTypeOptions.length}>
+                <InlineField label="Profile" disabled={!profileTypeOptions.length} data-testid="profile-types-dropdown">
                   <Select
                     key={profileTypeOption?.value}
                     value={profileTypeOption}
@@ -125,7 +125,7 @@ export function AdHocDiff() {
           <>
             <div className={styles.selectorContainer}>
               <InlineFieldRow>
-                <InlineField label="Profile" disabled={!profileTypeOptions.length}>
+                <InlineField label="Profile" disabled={!profileTypeOptions.length} data-testid="profile-types-dropdown">
                   <Select
                     key={profileTypeOption?.value}
                     value={profileTypeOption}
