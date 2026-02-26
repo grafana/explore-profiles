@@ -33,6 +33,7 @@ import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabe
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
+import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -49,6 +50,7 @@ import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCr
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { FunctionVersionProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/domain/FunctionVersionContext';
+import { RemoveProfileIdSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveProfileIdSelector';
 import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { Header } from './components/Header';
@@ -147,6 +149,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             new FiltersVariable({ key: 'filtersBaseline' }),
             new FiltersVariable({ key: 'filtersComparison' }),
             new GroupByVariable(),
+            new ProfileIdSelectorVariable(),
             new SpanSelectorVariable(),
           ],
         }),
@@ -318,6 +321,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       this.resetSpanSelector();
     });
 
+    const removeProfileIdSelectorSub = this.subscribeToEvent(RemoveProfileIdSelector, () => {
+      this.resetProfileIdSelector();
+    });
+
     return {
       unsubscribe() {
         diffFlameGraphSub.unsubscribe();
@@ -325,6 +332,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         labelsSub.unsubscribe();
         profilesSub.unsubscribe();
         removeSpanSelectorSub.unsubscribe();
+        removeProfileIdSelectorSub.unsubscribe();
       },
     };
   }
@@ -355,10 +363,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     sceneGraph.findByKeyAndType(this, 'spanSelector', SpanSelectorVariable).reset();
   }
 
+  resetProfileIdSelector() {
+    sceneGraph.findByKeyAndType(this, 'profileIdSelector', ProfileIdSelectorVariable).reset();
+  }
+
   resetVariables(nextExplorationType: string) {
     sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).reset();
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
+    sceneGraph.findByKeyAndType(this, 'profileIdSelector', ProfileIdSelectorVariable).reset();
     this.resetSpanSelector();
 
     // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"

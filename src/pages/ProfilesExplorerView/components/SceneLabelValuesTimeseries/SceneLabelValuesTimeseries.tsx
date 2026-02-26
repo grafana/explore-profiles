@@ -27,7 +27,11 @@ import { getColorByIndex } from '../../helpers/getColorByIndex';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
-import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import {
+  addExemplarLinks,
+  addRefId,
+  addStats,
+} from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { RangeAnnotation } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/domain/RangeAnnotation';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
@@ -62,25 +66,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     annotations?: boolean;
     includeExemplars?: boolean;
   }) {
-    let menuState = {};
-    if (featureToggles.exemplars) {
-      if (includeExemplars) {
-        // when includeExemplers is true, we show Exemplars button in the timeseries header.
-        const headerActionsRef = headerActions;
-        headerActions = (item: GridItemData) => [
-          ...(headerActionsRef(item) as SceneObject[]),
-          new ExemplarToggleAction(true),
-        ];
-      } else {
-        // Otherwise, we keep it on the menu. (Disabled by default)
-        menuState = { showExemplars: false };
-      }
-    }
+    const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(
+      headerActions,
+      includeExemplars
+    );
 
     super({
       key: 'timeseries-label-values',
       item,
-      headerActions: headerActions,
+      headerActions: processedHeaderActions,
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
       overrides,
@@ -96,15 +90,42 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
                 annotations,
                 includeExemplars && featureToggles.exemplars
               ),
-              transformations: [addRefId, addStats],
+              transformations: [],
             })
         )
-        .setHeaderActions(headerActions(item))
+        .setHeaderActions(processedHeaderActions(item))
         .setMenu(new SceneTimeseriesMenu(menuState) as unknown as VizPanelMenu)
         .build(),
     });
 
+    if (!data) {
+      this.addTransformations(item);
+    }
     this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  private static processExemplarsConfig(
+    headerActions: SceneLabelValuesTimeseriesState['headerActions'],
+    includeExemplars?: boolean
+  ): {
+    processedHeaderActions: SceneLabelValuesTimeseriesState['headerActions'];
+    menuState: Record<string, unknown>;
+  } {
+    if (!featureToggles.exemplars) {
+      return { processedHeaderActions: headerActions, menuState: {} };
+    }
+
+    if (includeExemplars) {
+      // when includeExemplers is true, we show Exemplars button in the timeseries header.
+      const processedHeaderActions = (item: GridItemData) => [
+        ...(headerActions(item) as SceneObject[]),
+        new ExemplarToggleAction(true),
+      ];
+      return { processedHeaderActions, menuState: {} };
+    }
+
+    // Otherwise, we keep it on the menu. (Disabled by default)
+    return { processedHeaderActions: headerActions, menuState: { showExemplars: false } };
   }
 
   onActivate() {
@@ -118,6 +139,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       dataSub.unsubscribe();
       profileMetricSub?.unsubscribe();
     };
+  }
+
+  private addTransformations(item: GridItemData) {
+    const bodyData = this.state.body.state.$data as SceneDataTransformer;
+    if (bodyData) {
+      bodyData.setState({
+        transformations: [addRefId, addStats, addExemplarLinks(this, item)],
+      });
+    }
   }
 
   private handleDataStateChange(newState: any, prevState: any) {

@@ -1,6 +1,12 @@
-import { DataFrame } from '@grafana/data';
+import { DataFrame, DataLinkClickEvent, DataTopic, Field } from '@grafana/data';
+import { CustomTransformerDefinition, sceneGraph, SceneObject } from '@grafana/scenes';
 import { merge } from 'lodash';
 import { map, Observable } from 'rxjs';
+
+import { EventViewServiceFlameGraph } from '../../../domain/events/EventViewServiceFlameGraph';
+import { ProfileIdSelectorVariable } from '../../../domain/variables/ProfileIdSelectorVariable';
+import { SceneExploreServiceFlameGraph } from '../../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
+import { GridItemData } from '../types/GridItemData';
 
 // General note: because (e.g.) SceneLabelValuesTimeseries sets the data provider in its constructor, data can come as undefined, hence all the optional chaining operators
 // in the transformers below
@@ -48,3 +54,61 @@ export const addStats = () => (source: Observable<DataFrame[]>) =>
       });
     })
   );
+
+const showExemplarOnClickHandler = (sceneObject: SceneObject, item: GridItemData) => {
+  return (event: DataLinkClickEvent<any>) => {
+    const profileId = event.replaceVariables?.('${__value.raw}');
+
+    if (profileId) {
+      const isFlamegraphView = sceneObject.parent?.parent instanceof SceneExploreServiceFlameGraph;
+      if (isFlamegraphView) {
+        sceneGraph
+          .findByKeyAndType(sceneObject, 'profileIdSelector', ProfileIdSelectorVariable)
+          .changeValueTo(profileId);
+      } else {
+        sceneObject.publishEvent(
+          new EventViewServiceFlameGraph({
+            item: {
+              ...item,
+              queryRunnerParams: {
+                ...item.queryRunnerParams,
+                profileIdSelector: profileId,
+              },
+            },
+          }),
+          true
+        );
+      }
+    }
+  };
+};
+
+export const addExemplarLinks = (sceneObject: SceneObject, item: GridItemData): CustomTransformerDefinition => ({
+  topic: DataTopic.Annotations,
+  operator: () => (source: Observable<DataFrame[]>) => {
+    return source.pipe(
+      map((data: DataFrame[]) =>
+        data.map((frame) => {
+          if (frame.name !== 'exemplar') {
+            return frame;
+          }
+
+          const profileIdField = frame.fields.find((field: Field) => field.name === 'Id');
+          if (!profileIdField) {
+            return frame;
+          }
+
+          profileIdField.config.links = [
+            {
+              title: 'View profile',
+              url: '',
+              onClick: showExemplarOnClickHandler(sceneObject, item),
+            },
+          ];
+
+          return frame;
+        })
+      )
+    );
+  },
+});
