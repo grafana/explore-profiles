@@ -115,6 +115,9 @@ export class ExemplarTransformations {
     };
   }
 
+  // Creates a frame with empty field values that acts as a control frame:
+  // its presence triggers dimming of other series and adds a legend entry,
+  // but it doesn't render any visible data points.
   private static createHighlightedSeriesFrame(firstSeriesFrame: DataFrame): DataFrame {
     const highlightedFrame = createDataFrame({
       ...firstSeriesFrame,
