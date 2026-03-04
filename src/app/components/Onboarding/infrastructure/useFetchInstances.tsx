@@ -5,8 +5,7 @@ export function useFetchInstances(enabled = true) {
   const { isFetching, error, data } = useQuery({
     enabled,
     queryKey: ['instances'],
-    queryFn: () =>
-      fetch(`${PLUGIN_API_URL}/grafanacom-api/instances`).then((response) => response.json()),
+    queryFn: () => fetch(`${PLUGIN_API_URL}/grafanacom-api/instances`).then((response) => response.json()),
   });
 
   return {
