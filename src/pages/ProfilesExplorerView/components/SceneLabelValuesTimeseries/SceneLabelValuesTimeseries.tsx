@@ -1,4 +1,6 @@
+import { css, cx } from '@emotion/css';
 import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
+import { config } from '@grafana/runtime';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -21,6 +23,7 @@ import React from 'react';
 
 import { ExemplarToggleAction } from '../../domain/actions/ExemplarToggleAction';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
@@ -47,6 +50,20 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
   annotations?: boolean;
 }
+
+const styles = {
+  wrapper: css({
+    width: '100%',
+    height: '100%',
+  }),
+  // Grafana renders exemplar markers at 50% opacity by default (ExemplarMarker.tsx).
+  // The highlighted exemplar frame is appended last, so its marker is the last child in the DOM.
+  highlightedExemplar: css({
+    'div:last-child > [data-testid*="Exemplar marker"] svg': {
+      opacity: '1 !important',
+    },
+  }),
+};
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
   constructor({
@@ -344,33 +361,23 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     // Check if highlightedSeries is present
     const hasHighlightedSeries = series.some((s) => s.refId === HIGHLIGHTED_SERIES_REF_ID);
 
+    const getSeriesColor = (index: number) =>
+      hasHighlightedSeries
+        ? { mode: 'fixed', fixedColor: config.theme2.isDark ? '#383838' : '#c7c7c7' }
+        : { mode: 'fixed', fixedColor: getColorByIndex(item.index + index) };
+
     const overrides = series
       .filter((s) => s.refId !== HIGHLIGHTED_SERIES_REF_ID)
       .map((s, i) => {
         const metricField = s.fields[1];
-        let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
-
-        let color;
-        if (hasHighlightedSeries) {
-          color = { mode: 'fixed', fixedColor: '#383838' }; // series become dark gray if there is a highlighted series
-        } else {
-          color = { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) };
-        }
-
-        const properties = [
-          {
-            id: 'displayName',
-            value: formatSingleSeriesDisplayName(displayName, s),
-          },
-          {
-            id: 'color',
-            value: color,
-          },
-        ];
+        const displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
 
         return {
           matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
-          properties,
+          properties: [
+            { id: 'displayName', value: formatSingleSeriesDisplayName(displayName, s) },
+            { id: 'color', value: getSeriesColor(i) },
+          ],
         };
       });
 
@@ -436,9 +443,35 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     });
   }
 
-  static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
-    const { body } = model.useState();
+  static Component = SceneLabelValuesTimeseriesComponent;
+}
 
-    return <body.Component model={body} />;
-  }
+function SceneLabelValuesTimeseriesComponent({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
+  const { body } = model.useState();
+  const hasSelectedExemplar = useHasSelectedExemplar(model);
+
+  return (
+    <div className={cx(styles.wrapper, hasSelectedExemplar && styles.highlightedExemplar)}>
+      <body.Component model={body} />
+    </div>
+  );
+}
+
+function useHasSelectedExemplar(model: SceneObject): boolean {
+  const [hasSelection, setHasSelection] = React.useState(false);
+
+  React.useEffect(() => {
+    let variable: ProfileIdSelectorVariable;
+    try {
+      variable = sceneGraph.findByKeyAndType(model, 'profileIdSelector', ProfileIdSelectorVariable);
+    } catch {
+      return; // profileIdSelector doesn't exist in non-flame-graph views
+    }
+
+    setHasSelection(Boolean(variable.state.value));
+    const sub = variable.subscribeToState((state) => setHasSelection(Boolean(state.value)));
+    return () => sub.unsubscribe();
+  }, [model]);
+
+  return hasSelection;
 }
