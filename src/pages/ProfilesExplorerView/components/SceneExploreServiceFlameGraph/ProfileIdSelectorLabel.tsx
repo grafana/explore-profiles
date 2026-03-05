@@ -3,6 +3,8 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Tag, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
+const noOp = () => {};
+
 type Props = {
   profileIdSelector: string;
   removeProfileIdSelector: () => void;
@@ -11,7 +13,6 @@ type Props = {
 export function ProfileIdSelectorLabel(props: Props) {
   const { profileIdSelector, removeProfileIdSelector } = props;
   const styles = useStyles2(getStyles);
-  const noOp = () => {};
 
   return (
     <div className={styles.container}>
