@@ -11,6 +11,7 @@ import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelec
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
+import { TimeseriesReprocess } from '../SceneLabelValuesTimeseries/domain/events/TimeseriesReprocess';
 import { SceneMainServiceTimeseries } from '../SceneMainServiceTimeseries';
 import { ResolutionBoostExtensionPoint } from './components/ResolutionBoostExtensionPoint';
 import { SceneFlameGraph } from './SceneFlameGraph';
@@ -81,6 +82,10 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
       filtersVariable.setState({ filters });
     }
+  }
+
+  reprocessMainTimeseries() {
+    this.state.mainTimeseries?.state.body?.publishEvent(new TimeseriesReprocess({}), true);
   }
 
   // see SceneProfilesExplorer

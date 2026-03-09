@@ -31,6 +31,7 @@ import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPane
 import { RemoveProfileIdSelector } from './domain/events/RemoveProfileIdSelector';
 import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
 import { ProfileIdSelectorLabel } from './ProfileIdSelectorLabel';
+import { SceneExploreServiceFlameGraph } from './SceneExploreServiceFlameGraph';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
@@ -177,6 +178,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
   removeProfileIdSelector() {
     this.publishEvent(new RemoveProfileIdSelector({}), true);
+    (this.parent as SceneExploreServiceFlameGraph)?.reprocessMainTimeseries();
   }
 
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
