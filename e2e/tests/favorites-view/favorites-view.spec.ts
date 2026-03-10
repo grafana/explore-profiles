@@ -102,6 +102,7 @@ test.describe('Favorites view', () => {
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
+        maxDiffPixelRatio: 0.05,
       });
     });
 

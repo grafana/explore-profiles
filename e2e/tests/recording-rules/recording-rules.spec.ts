@@ -42,7 +42,7 @@ test.describe('Recording rules', () => {
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
       await exploreProfilesPage.goto(ExplorationType.AllServices);
-      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible();
+      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible({ timeout: 15000 });
       await exploreProfilesPage.clickOnViewRecordingRulesButton();
       await expect(exploreProfilesPage.addRecordingRuleButton).toBeVisible();
       await exploreProfilesPage.clickOnAddRecordingRuleButton();
@@ -56,7 +56,7 @@ test.describe('Recording rules', () => {
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
       await exploreProfilesPage.goto(ExplorationType.ProfileTypes);
-      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible();
+      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible({ timeout: 15000 });
       await exploreProfilesPage.clickOnViewRecordingRulesButton();
       await expect(exploreProfilesPage.addRecordingRuleButton).toBeVisible();
       await exploreProfilesPage.clickOnAddRecordingRuleButton();

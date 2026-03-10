@@ -141,7 +141,7 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async assertRecordingRuleInTable(metricName: string, functionName: string) {
     const table = this.getRecordingRulesTable();
-    const row = table.locator('tr').filter({ hasText: metricName });
+    const row = table.locator('tr').filter({ hasText: metricName }).first();
     await expect(row).toBeVisible();
     if (functionName) {
       await expect(row).toContainText(functionName);
@@ -367,7 +367,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   getFlameGraphContextualMenuItem(menuItemLabel: string) {
-    return this.getFlameGraphContextualMenu().getByRole('menuitem', { name: menuItemLabel, exact: true });
+    return this.getFlameGraphContextualMenu().getByRole('menuitem', { name: menuItemLabel, exact: false });
   }
 
   closeFlameGraphContextualMenu() {

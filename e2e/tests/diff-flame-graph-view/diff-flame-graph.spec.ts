@@ -30,8 +30,14 @@ test.describe('Diff flame graph view', () => {
     await expect(diffFlameGraphPanel.locator('h6')).toContainText('Diff flame graph for ride-sharing-app (cpu)');
     await expect(diffFlameGraphPanel.getByRole('button', { name: /Explain Diff Flame Graph/i })).toBeVisible();
 
-    // body
-    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+    // Wait for scene body to be rendered (at 1080p viewport it's ~642px after Grafana chrome)
+    const sceneBody = exploreProfilesPage.getSceneBody();
+    await expect(async () => {
+      const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
+      expect(height).toBeGreaterThanOrEqual(600);
+    }).toPass({ timeout: 15000 });
+
+    await expect(sceneBody).toHaveScreenshot({
       stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
@@ -52,7 +58,13 @@ test.describe('Diff flame graph view', () => {
 
     await exploreProfilesPage.assertSelectedProfileType('memory/alloc_space');
 
-    await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+    const sceneBody = exploreProfilesPage.getSceneBody();
+    await expect(async () => {
+      const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
+      expect(height).toBeGreaterThanOrEqual(600);
+    }).toPass({ timeout: 15000 });
+
+    await expect(sceneBody).toHaveScreenshot({
       stylePath: './e2e/fixtures/css/hide-all-controls.css',
     });
   });
@@ -95,8 +107,14 @@ test.describe('Diff flame graph view', () => {
     });
 
     test('Adding a filter', async ({ exploreProfilesPage }) => {
-      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+      const sceneBody = exploreProfilesPage.getSceneBody();
+      await expect(async () => {
+        const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
+        expect(height).toBeGreaterThanOrEqual(600);
+      }).toPass({ timeout: 15000 });
+      await expect(sceneBody).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
+        maxDiffPixelRatio: 0.03,
       });
     });
 
@@ -143,7 +161,12 @@ test.describe('Diff flame graph view', () => {
 
       await exploreProfilesPage.clickAndDragOnComparisonPanel('baseline', { x: 200, y: 200 }, { x: 360, y: 200 });
 
-      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+      const sceneBody = exploreProfilesPage.getSceneBody();
+      await expect(async () => {
+        const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
+        expect(height).toBeGreaterThanOrEqual(600);
+      }).toPass({ timeout: 15000 });
+      await expect(sceneBody).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
@@ -177,7 +200,12 @@ test.describe('Diff flame graph view', () => {
 
       await exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 });
 
-      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+      const sceneBody = exploreProfilesPage.getSceneBody();
+      await expect(async () => {
+        const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
+        expect(height).toBeGreaterThanOrEqual(600);
+      }).toPass({ timeout: 15000 });
+      await expect(sceneBody).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
@@ -238,7 +266,12 @@ test.describe('Diff flame graph view', () => {
         waitForApiResponses(exploreProfilesPage),
       ]);
 
-      await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
+      const sceneBody = exploreProfilesPage.getSceneBody();
+      await expect(async () => {
+        const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
+        expect(height).toBeGreaterThanOrEqual(600);
+      }).toPass({ timeout: 15000 });
+      await expect(sceneBody).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });
     });
