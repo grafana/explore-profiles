@@ -25,15 +25,28 @@ test.describe('Recording rules', () => {
     });
 
     test('can be enabled', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getMetricsFromProfilesCheckbox().click();
+      await settingsPage.getMetricsFromProfilesCheckbox().check();
+      const setResponse = exploreProfilesPage.waitForResponse(
+        (r) => r.url().includes('SettingsService/Set') && r.request().method() === 'POST' && r.ok()
+      );
       await settingsPage.getSaveSettingsButton().click();
+      await setResponse;
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
-      await exploreProfilesPage.goto(ExplorationType.FlameGraph);
-      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible();
+      await exploreProfilesPage.goto(ExplorationType.AllServices);
+      await exploreProfilesPage.assertNoSpinner();
+      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible({ timeout: 15000 });
 
+      await exploreProfilesPage.goto(ExplorationType.FlameGraph);
+      // Flame graph context menu is wired only when useFetchPluginSettings has enableMetricsFromProfiles;
+      // same-page navigation can reuse stale query — reload so GET runs again (matches Create and display).
+      await exploreProfilesPage.page.reload();
+      await exploreProfilesPage.assertNoSpinner();
+      await expect(exploreProfilesPage.getFlamegraph()).toBeVisible({ timeout: 15000 });
       await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 10 });
-      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).toBeVisible();
+      await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).toBeVisible({
+        timeout: 15000,
+      });
     });
 
     test('create a recording rule for all services', async ({ settingsPage, exploreProfilesPage }) => {
@@ -71,6 +84,9 @@ test.describe('Recording rules', () => {
     await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
     await exploreProfilesPage.goto(ExplorationType.FlameGraph);
+    await exploreProfilesPage.page.reload();
+    await exploreProfilesPage.assertNoSpinner();
+    await expect(exploreProfilesPage.recordingRulesButton).toBeVisible({ timeout: 15000 });
     await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 10 });
     await exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule').click();
 

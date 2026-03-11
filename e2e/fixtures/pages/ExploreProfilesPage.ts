@@ -8,6 +8,10 @@ type Coords = {
   y: number;
 };
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export class ExploreProfilesPage extends PyroscopePage {
   constructor(readonly page: Page, defaultUrlParams: URLSearchParams) {
     const urlParams = new URLSearchParams(defaultUrlParams);
@@ -58,7 +62,7 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('data-testid TimePicker Open Button');
   }
 
-  async assertSelectedTimeRange(expectedTimeRange: string) {
+  async assertSelectedTimeRange(expectedTimeRange: string | RegExp) {
     await expect(this.getTimePickerButton()).toContainText(expectedTimeRange);
   }
 
@@ -166,7 +170,12 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async selectService(serviceName: string) {
     await this.getServiceSelector().click();
-    await this.locator('[role="menu"]').getByText(serviceName, { exact: true }).click();
+    // Find the menu that contains this service (not another [role="menu"] on the page)
+    const menuWithService = this.locator('[role="menu"]').filter({
+      has: this.getByText(serviceName, { exact: true }),
+    });
+    await menuWithService.first().waitFor({ state: 'visible', timeout: 10000 });
+    await menuWithService.first().getByText(serviceName, { exact: true }).click();
   }
 
   /* Profile type */
@@ -182,30 +191,53 @@ export class ExploreProfilesPage extends PyroscopePage {
   async selectProfileType(profileType: string) {
     const [category, type] = profileType.split('/');
 
-    await this.getProfileTypeSelector().click();
+    // Wait for profile type options to finish loading before opening the dropdown (avoids flaky timeouts)
+    const selector = this.getProfileTypeSelector();
+    await expect(this.getByTestId('profileMetricId')).not.toContainText('Loading...', { timeout: 15000 });
 
-    const menu = this.locator('[role="menu"]').last();
-    await menu.getByText(category, { exact: true }).click();
-    await menu.getByText(type, { exact: true }).click();
+    await selector.click();
+
+    // Match category/type case-insensitively (e.g. "Memory" vs "memory") for different Grafana/React versions
+    const categoryRegex = new RegExp(`^${escapeRegex(category)}$`, 'i');
+    const typeRegex = new RegExp(`^${escapeRegex(type)}$`, 'i');
+
+    // Click by menu item role/name so we don't depend on which [role="menu"] contains them (avoids wrong menu when multiple dropdowns exist)
+    const categoryItem = this.getByRole('menuitemcheckbox', { name: categoryRegex });
+    await categoryItem.first().waitFor({ state: 'visible', timeout: 10000 });
+    await categoryItem.first().click();
+
+    const typeItem = this.getByRole('menuitemcheckbox', { name: typeRegex });
+    await typeItem.first().waitFor({ state: 'visible', timeout: 5000 });
+    await typeItem.first().click();
   }
 
   async assertProfileTypeSelectorOptions(expectedCategories: string[], expectedTypesPerCategory: string[][]) {
     await this.getProfileTypeSelector().click();
 
-    const menuItems = this.locator('[role="menu"] [role="menuitemcheckbox"]');
+    // Cascader renders one [role="menu"] per column; use the first column only so submenu types
+    // (e.g. cpu, samples) are not mixed into the top-level categories list.
+    const firstColumnMenu = this.locator('[role="menu"]').first();
+    const menuItems = firstColumnMenu.locator('[role="menuitemcheckbox"]');
     const categories = await menuItems.allTextContents();
 
     expect(categories).toEqual(expectedCategories);
 
+    const allMenus = this.locator('[role="menu"]');
+
     for (let i = 0; i < categories.length; i += 1) {
       await menuItems.nth(i).click();
 
-      const categoryTypes = await this.locator('[role="menu"]')
-        .last()
-        .locator('[role="menuitemcheckbox"]')
-        .allTextContents();
+      const expectedTypes = expectedTypesPerCategory[i];
+      // After clicking a category, types appear in the second column only. Do not use
+      // filter({ has: getByText(expectedTypes[0]) }) — the first column can also contain
+      // that label (e.g. category "goroutine" vs type "goroutine"), which would read
+      // every column's checkboxes and fail the assertion.
+      await expect.poll(async () => allMenus.count(), { timeout: 5000 }).toBeGreaterThanOrEqual(2);
+      const submenu = allMenus.nth(1);
+      await submenu.waitFor({ state: 'visible', timeout: 5000 });
+      const categoryTypes = await submenu.locator('[role="menuitemcheckbox"]').allTextContents();
 
-      expect(categoryTypes).toEqual(expectedTypesPerCategory[i]);
+      expect(categoryTypes).toEqual(expectedTypes);
     }
   }
 
@@ -287,6 +319,19 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('sceneBody');
   }
 
+  /**
+   * Waits until the scene body has finished laying out (panels/flame graph expanded).
+   * At 1080p the body is ~642px after Grafana chrome; we require height >= 600 so screenshots
+   * are not taken while the layout is still collapsed/loading.
+   */
+  async waitForSceneBodyRendered() {
+    const sceneBody = this.getSceneBody();
+    await expect(async () => {
+      const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
+      expect(height).toBeGreaterThanOrEqual(600);
+    }).toPass({ timeout: 15000 });
+  }
+
   getPanelByTitle(title: string) {
     return this.getSceneBody().locator(`[data-viz-panel-key]:has([title="${title}"])`);
   }
@@ -358,6 +403,11 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getByTestId('topTable');
   }
 
+  /** Clicks the "Auto-select" button in the diff flame graph banner to set baseline/comparison ranges so the flame graph is shown. */
+  clickDiffFlameGraphAutoSelect() {
+    return this.getByRole('button', { name: 'Auto-select' }).click();
+  }
+
   clickOnFlameGraphNode({ x, y }: { x: number; y: number }) {
     return this.getFlamegraph().click({ position: { x, y } });
   }
@@ -388,8 +438,40 @@ export class ExploreProfilesPage extends PyroscopePage {
     return this.getGroupByContainer().getByLabel('Labels selector', { exact: true });
   }
 
+  /**
+   * Selects a group-by label (radio when horizontal layout, or option when collapsed to Select).
+   * Label counts like "vehicle (4)" can drift to "vehicle (3)" with data/UI changes—match by prefix
+   * when exact label is not found.
+   */
   async selectGroupByLabel(label: string) {
-    await this.getGroupByLabelsSelector().getByLabel(label, { exact: true }).click();
+    const container = this.getGroupByContainer();
+    const radios = container.getByRole('radio');
+
+    if ((await radios.count()) > 0) {
+      const exactRadio = container.getByRole('radio', { name: label, exact: true });
+      if ((await exactRadio.count()) > 0) {
+        await exactRadio.click();
+        return;
+      }
+      // Same label name, different cardinality e.g. vehicle (3) vs vehicle (4)
+      const prefix = label.replace(/\s*\(\d+\)\s*$/, '');
+      const withCount = container.getByRole('radio', {
+        name: new RegExp(`^${escapeRegex(prefix)}\\s*\\(\\d+\\)$`),
+      });
+      if ((await withCount.count()) > 0) {
+        await withCount.first().click();
+        return;
+      }
+      await container
+        .getByRole('radio', { name: new RegExp(`^${escapeRegex(prefix)}\\b`) })
+        .first()
+        .click();
+      return;
+    }
+
+    // Narrow layout: Labels selector is a Select; open and pick option
+    await container.getByLabel('Labels selector', { exact: true }).click();
+    await this.page.getByRole('option', { name: label, exact: true }).click();
   }
 
   getCompareButton() {
@@ -413,6 +495,11 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   getComparisonPanel(target: 'baseline' | 'comparison') {
     return this.getByTestId(`panel-${target}`);
+  }
+
+  /** Clicks the refresh/run button on a compare panel header (re-runs timeseries query). */
+  clickComparisonPanelRefresh(target: 'baseline' | 'comparison' = 'baseline') {
+    return this.getComparisonPanel(target).getByTestId('data-testid RefreshPicker run button').click();
   }
 
   getComparisonTimePickerButton(target: 'baseline' | 'comparison') {

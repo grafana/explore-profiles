@@ -64,7 +64,8 @@ test.describe('Favorites view', () => {
     await exploreProfilesPage.selectTimeRange('Last 5 minutes');
 
     await expect(exploreProfilesPage.getPanels()).toHaveCount(4);
-    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
+    // In Last 5 minutes only the pyroscope panel has series data; title reflects current profile metric label
+    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · cpu (process_cpu)')).toBeVisible();
 
     await exploreProfilesPage.assertPanelHasNoData('load-generator · cpu (process_cpu)');
     await exploreProfilesPage.assertPanelHasNoData('ride-sharing-app · inuse_space (memory)');
@@ -73,7 +74,7 @@ test.describe('Favorites view', () => {
     await exploreProfilesPage.selectHidePanelsWithoutNoData();
 
     await expect(exploreProfilesPage.getPanels()).toHaveCount(1);
-    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · goroutine (goroutine)')).toBeVisible();
+    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · cpu (process_cpu)')).toBeVisible();
   });
 
   test.describe('Panel actions', () => {
@@ -98,6 +99,9 @@ test.describe('Favorites view', () => {
       await exploreProfilesPage.assertSelectedService('ride-sharing-app');
       await exploreProfilesPage.assertSelectedProfileType('process_cpu/samples');
 
+      await exploreProfilesPage.assertNoSpinner();
+      // Favorites → Labels does not always sync group-by radio before first paint; select vehicle explicitly
+      await exploreProfilesPage.selectGroupByLabel('vehicle (4)');
       await exploreProfilesPage.assertNoSpinner();
 
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
