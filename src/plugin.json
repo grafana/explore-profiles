@@ -6,6 +6,7 @@
   "autoEnabled": true,
   "backend": false,
   "preload": true,
+  "languages": ["en-US"],
   "dependencies": {
     "grafanaDependency": ">=11.5.0",
     "plugins": [],
