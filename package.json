@@ -36,7 +36,7 @@
   },
   "resolutions": {
     "esbuild": ">=0.25.0",
-    "tar": "7.5.8",
+    "tar": "7.5.11",
     "lodash": "4.17.23"
   },
   "dependencies": {
