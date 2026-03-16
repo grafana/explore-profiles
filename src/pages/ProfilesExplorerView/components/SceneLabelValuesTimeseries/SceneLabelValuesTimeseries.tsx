@@ -27,6 +27,7 @@ import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelec
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { deferSceneQueryRunnerRun } from '../../infrastructure/deferSceneQueryRunnerRun';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
@@ -159,10 +160,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       bodyData?.reprocessTransformations();
     });
 
+    const cancelDefer = deferSceneQueryRunnerRun(
+      this.state.body.state.$data?.state.$data as SceneQueryRunner | undefined
+    );
+
     return () => {
       dataSub.unsubscribe();
       profileMetricSub?.unsubscribe();
       timeseriesReprocessSub?.unsubscribe();
+      cancelDefer();
     };
   }
 

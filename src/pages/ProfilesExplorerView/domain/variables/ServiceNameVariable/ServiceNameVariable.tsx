@@ -34,7 +34,10 @@ export class ServiceNameVariable extends QueryVariable {
       label: 'Service',
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ServiceNameVariable.QUERY_DEFAULT,
-      loading: true,
+      // Must be false so SceneByVariableRepeaterGrid.onActivate can call update().
+      // If true, update() returns immediately and never fetches — e.g. when switching
+      // back from flame graph to All services (new instance, grid stuck on spinner).
+      loading: false,
       refresh: VariableRefresh.onTimeRangeChanged,
       ...state,
     });
