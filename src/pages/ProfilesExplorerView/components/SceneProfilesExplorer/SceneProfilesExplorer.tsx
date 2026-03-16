@@ -16,6 +16,7 @@ import {
   SplitLayout,
 } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
+import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScene';
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -62,6 +63,7 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   explorationType?: ExplorationType;
   body?: SplitLayout;
   createRecordingRuleModal: SceneCreateRecordingRuleModal;
+  loadSearchScene: LoadSearchScene;
   isEmbedded?: boolean;
   initialFilters?: AdHocVariableFilter[];
   initialDS?: string;
@@ -154,6 +156,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           ],
         }),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
+      loadSearchScene: new LoadSearchScene(),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -460,16 +463,18 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       isOpen: boolean;
       functionName?: string;
     }>({ isOpen: false });
-    const { createRecordingRuleModal, isEmbedded } = model.useState();
+    const { createRecordingRuleModal, isEmbedded, loadSearchScene } = model.useState();
 
     return (
       <FunctionVersionProvider>
         <GitHubContextProvider dataSourceUid={dataSourceUid}>
           <Header
+            model={model}
             explorationType={explorationType}
             controls={controls}
             body={body}
             $variables={$variables}
+            loadSearchScene={loadSearchScene}
             onChangeExplorationType={actions.onChangeExplorationType}
             isEmbedded={isEmbedded}
             onCreateRecordingRule={() => {

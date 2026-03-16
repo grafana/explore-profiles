@@ -1,7 +1,7 @@
 {
   "extends": "./.config/tsconfig.json",
   "include": ["./src", "./.config/types"],
-  "plugins": [{ "name": "typescript-plugin-css-modules" }],
+  "plugins": [{"name": "typescript-plugin-css-modules"}],
   "compilerOptions": {
     "baseUrl": "",
     "rootDir": ".",
