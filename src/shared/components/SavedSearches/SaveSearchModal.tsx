@@ -28,7 +28,7 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
   const existingSearch = useCheckForExistingSearch(dsUid, query);
 
   useEffect(() => {
-    reportInteraction('grafana_traces_app_save_search_visited');
+    reportInteraction('grafana_profiles_app_save_search_visited');
   }, []);
 
   const handleSubmit = useCallback(
@@ -46,7 +46,7 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
           type: AppEvents.alertSuccess.name,
         });
 
-        reportInteraction('grafana_traces_app_save_search_search_saved');
+        reportInteraction('grafana_profiles_app_save_search_search_saved');
 
         onClose();
       } catch (e) {

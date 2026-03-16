@@ -102,7 +102,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
         const queryStr = pyroscopeQuery.query ?? '';
         const dsUid = query.datasource?.uid ?? '';
         applySavedSearchToScene(model, queryStr, dsUid);
-        reportInteraction('grafana_traces_app_load_search_saved_query_loaded');
+        reportInteraction('grafana_profiles_app_load_search_saved_query_loaded');
       },
       [model]
     );

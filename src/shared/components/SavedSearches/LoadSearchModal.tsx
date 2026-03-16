@@ -33,7 +33,7 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
   }, [selectedSearch, searches]);
 
   useEffect(() => {
-    reportInteraction('grafana_traces_app_load_search_visited');
+    reportInteraction('grafana_profiles_app_load_search_visited');
   }, []);
 
   const formattedTime = useMemo(
@@ -43,7 +43,7 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
 
   const onSelect = useCallback((search: SavedSearch) => {
     setSelectedSearch(search);
-    reportInteraction('grafana_traces_app_load_search_search_toggled');
+    reportInteraction('grafana_profiles_app_load_search_search_toggled');
   }, []);
 
   const onDelete = useCallback(() => {
@@ -51,7 +51,7 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
       return;
     }
     deleteSearch(selectedSearch.uid);
-    reportInteraction('grafana_traces_app_load_search_search_deleted');
+    reportInteraction('grafana_profiles_app_load_search_search_deleted');
   }, [deleteSearch, selectedSearch]);
 
   const onSelectClick = useCallback(() => {
@@ -59,7 +59,7 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
       return;
     }
     applySavedSearchToScene(sceneRef, selectedSearch.query, selectedSearch.dsUid);
-    reportInteraction('grafana_traces_app_load_search_search_loaded');
+    reportInteraction('grafana_profiles_app_load_search_search_loaded');
     onClose();
   }, [onClose, sceneRef, selectedSearch]);
 
