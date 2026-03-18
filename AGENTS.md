@@ -66,7 +66,7 @@ Profiles Drilldown uses [@grafana/scenes](https://grafana.com/developers/scenes/
 - **Layout** — See `docs/application-structure.md` (Main exploration layout, Exploration types) for the scene tree and URL state.
 - **Scene objects** — Extend `SceneObjectBase`. Put state logic in the scene object class (not only in the renderer). Use `model.useState()` to subscribe, `model.setState()` to update.
 - **Object tree** — Do not reuse the same scene object instance in multiple places. Use `SceneObjectRef` for shared references or clone.
-- **URL sync** — Exploration state (`explorationType`, datasource, filters, time range, diff ranges, etc.) is synced to the URL; preserve that when adding or changing URL-driven state.
+- **URL sync** — Exploration state is synced to the URL; preserve when adding or changing URL-driven state (see `application-structure.md` for what is encoded).
 
 ## Usage
 

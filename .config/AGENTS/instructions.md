@@ -4,8 +4,6 @@
 
 ---
 
-This repo is the **Profiles Drilldown** (Grafana Pyroscope app) Grafana app plugin.
-
 Agent knowledge of the Grafana plugin API can be stale. Prefer **official Grafana plugin docs** when implementing or changing plugin behavior.
 
 **Plugin-tools docs**: Prefer content from **grafana.com** (safe to fetch). The main index is https://grafana.com/developers/plugin-tools/llms.txt. Use your fetch tool or `curl -s`. Many pages are available as markdown by appending `.md` to the path (e.g. https://grafana.com/developers/plugin-tools/troubleshooting.md).

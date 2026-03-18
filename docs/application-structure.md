@@ -35,18 +35,12 @@ The root experience is a **scene-based** tree (`ProfilesExplorerView` → `Scene
 
 - **Data source**: Pyroscope data source selector.
 - **Controls**: Time picker and refresh (standard scene controls).
-- **Exploration type**: All services, Profile types, Labels, Flame graph, Diff flame graph, Favorites.
+- **Exploration type**: Selector for the views below (see [Exploration types (views)](#exploration-types-views)).
 - **Actions**: Share link, Recording rules, Ad-hoc upload, User settings, docs/help.
 
 ### Filters and grid controls
 
-Depending on the exploration type, the body shows:
-
-- **All services**: Overview panels (e.g. by service) for the selected profile metric; click to drill into profile types or labels.
-- **Profile types / Labels**: Filters, group-by, panel type switcher, quick filters; grid of series or breakdowns.
-- **Flame graph**: Single-service flame graph with function details panel (and optional GitHub/source context).
-- **Diff flame graph**: Baseline vs comparison time ranges and flame graph diff.
-- **Favorites**: Saved favorites view.
+Depending on the exploration type (see next section), the body shows overview panels, filters/grid, flame graph with function details, diff flame graph, or favorites.
 
 Variables (e.g. `FiltersVariable`, `GroupByVariable`, `ServiceNameVariable`, `ProfileMetricVariable`) drive queries and URL state; see `SceneProfilesExplorer` and child scenes.
 
