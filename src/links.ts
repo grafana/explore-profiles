@@ -85,8 +85,15 @@ function addTimeRangeParams(params: string[], timeRange: RawTimeRange | undefine
 }
 
 function addQueryParams(params: string[], pyroscopeQuery: GrafanaPyroscopeDataQuery): void {
-  if (pyroscopeQuery.spanSelector?.length) {
-    params.push(`var-spanSelector=${pyroscopeQuery.spanSelector.join(',')}`);
+  const rawSpanSelector = pyroscopeQuery.spanSelector as unknown;
+  const normalizedSpanSelector = Array.isArray(rawSpanSelector)
+    ? rawSpanSelector
+    : typeof rawSpanSelector === 'string' && rawSpanSelector.length > 0
+    ? [rawSpanSelector]
+    : [];
+
+  if (normalizedSpanSelector.length) {
+    params.push(`var-spanSelector=${normalizedSpanSelector.join(',')}`);
   }
 
   if (pyroscopeQuery.maxNodes) {

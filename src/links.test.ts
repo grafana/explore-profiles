@@ -145,6 +145,24 @@ describe('buildURL - Original Functionality', () => {
 
       expect(result).not.toContain('var-spanSelector');
     });
+
+    it('should handle string spanSelector values from trace context', () => {
+      const pyroscopeQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{}',
+        groupBy: [],
+        spanSelector: 'single-span-id',
+      } as unknown as GrafanaPyroscopeDataQuery;
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+      });
+
+      expect(result).toContain('var-spanSelector=single-span-id');
+    });
   });
 
   describe('enhanced functionality', () => {
