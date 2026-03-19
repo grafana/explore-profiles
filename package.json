@@ -40,7 +40,8 @@
   "resolutions": {
     "esbuild": ">=0.25.0",
     "tar": "7.5.11",
-    "lodash": "4.17.23"
+    "lodash": "4.17.23",
+    "minimatch@9.0.3": "9.0.9"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.2.3",
