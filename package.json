@@ -43,7 +43,7 @@
     "lodash": "4.17.23",
     "minimatch@9.0.3": "9.0.9",
     "@hono/node-server": "1.19.10",
-    "ajv": "8.18.0",
+    "ajv@^8": "8.18.0",
     "dompurify": "3.3.2",
     "express-rate-limit": "8.2.2",
     "hono": "4.12.7",
