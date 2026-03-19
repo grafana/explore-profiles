@@ -411,18 +411,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   private getSiblingPanel(): SceneComparePanel | null {
-    if (!this.parent) {
+    const siblingKey = this.state.target === CompareTarget.BASELINE ? 'comparison-panel' : 'baseline-panel';
+    try {
+      return sceneGraph.findByKeyAndType(this, siblingKey, SceneComparePanel);
+    } catch {
       return null;
     }
-
-    const parentState = 'state' in this.parent ? this.parent.state : this.parent;
-    if (!('baselinePanel' in parentState && 'comparisonPanel' in parentState)) {
-      return null;
-    }
-
-    return this.state.target === CompareTarget.BASELINE
-      ? (parentState.comparisonPanel as SceneComparePanel)
-      : (parentState.baselinePanel as SceneComparePanel);
   }
 
   private getSiblingData(siblingPanel: SceneComparePanel): DataFrame[] | null {
