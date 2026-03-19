@@ -1,22 +1,20 @@
 ---
-description: Learn how to get started with Explore Profiles
+description: Learn how to get started with Profiles Drilldown
 canonical: https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/get-started/
 keywords:
-  - Explore Profiles
+  - Profiles Drilldown
   - Concepts
-title: Get started with Explore Profiles
+title: Get started with Profiles Drilldown
 menuTitle: Get started
 weight: 300
 ---
 
-# Get started with Explore Profiles
+# Get started with Profiles Drilldown
 
 Profiles can help you identify errors in your apps and services.
 Using this information, you can optimize and streamline your apps.
 
 Your investigation begins with the big picture and then drills down using profile types, labels, and flame graphs to explore your data. To learn more, refer to [Concepts](../concepts/).
-
-To learn more about Explore Profiles, read [The new, queryless UI for Grafana Pyroscope: Introducing Explore Profiles](https://grafana.com/blog/2024/07/18/the-new-queryless-ui-for-grafana-pyroscope-introducing-explore-profiles/).
 
 <!-- Needs to be updated - {{< youtube id="_8SbNN5DRmQ" >}} -->
 
@@ -26,15 +24,17 @@ Expand your observability journey and learn about [Explore Traces](https://grafa
 
 ## Before you begin
 
-To use Explore Profiles with Grafana Cloud, you need:
+To use Profiles Drilldown with Grafana Cloud, you need:
 
 - A Grafana Cloud account
 - A Grafana stack in Grafana Cloud with a configured Hosted profiles or Pyroscope data source
 
-To use Explore Profiles with Grafana open source, you need:
+To use Profiles Drilldown with Grafana open source, you need:
 
+- Grafana 11.5 or later
 - Your own Grafana instance
-- Install [Explore Profiles plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/)
+- Grafana v12 and later includes all Grafana Drilldown apps by default. For Grafana 11.5 through 11.x, install the [Profiles Drilldown plugin](https://grafana.com/grafana/plugins/grafana-pyroscope-app/).
+- A configured Pyroscope data source
 
 ## Explore your profile data
 
@@ -45,6 +45,6 @@ Most investigations follow four general steps:
 1. [Determine your use case](../determine-use-case/).
 1. [Choose a view](../choose-a-view/).
 1. [Investigate trends and spikes](../investigate/).
-1. Identify issues, as the result of your investigation.
+1. Identify issues as a result of your investigation.
 
 {{< docs/play title="the Grafana Play site" url="https://play.grafana.org/a/grafana-pyroscope-app/profiles-explorer" >}}

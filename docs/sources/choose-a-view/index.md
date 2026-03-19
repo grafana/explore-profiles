@@ -20,13 +20,13 @@ After you choose a view, you can [Investigate trends and spikes](../investigate/
 
 ## Select a view
 
-Select a view by choosing an **Exploration**: **All services**, **Profile types**, **Labels**, **Flame graph**, or **Diff flame graph**.
+Select a view by choosing an **Exploration** tab: **All services**, **Profile types**, **Labels**, **Flame graph**, **Diff flame graph**, or **Favorites**.
 
 <!-- screenshots need to be updated -->
 
-![Select an Exploration type to begin](/media/docs/explore-profiles/explore-profiles-exploration-bar.png)
+![Select an Exploration type to begin](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-exploration-bar-v1.17.0.png)
 
-You can refine any selected views by selecting a Profile type, Label, or Flame graph from one of the charts.
+You can refine a selected view by selecting a service, profile type, label, or flame graph from one of the charts.
 Click and drag on an area of interest to see more detail.
 
 ## Available views
@@ -98,7 +98,7 @@ Determining which view to use frames the rest of your investigation.
 
 <li>Analyze the flame graph of a particular service, profile type, and label selection
 
-<li>Use tools like **Explain flame graph**, GitHub code view, and Function details to get deeper insights into performance.
+<li>Use tools like **Analyze with Assistant** (Grafana Cloud) or **Explain Flame Graph** (Grafana open source), GitHub code view, and function details to get deeper insights into performance.
 </li>
 </ul>
    </td>
@@ -137,50 +137,70 @@ Determining which view to use frames the rest of your investigation.
 
 The **All services** view is the default view when you first open Profiles Drilldown.
 
-![The All services view](/media/docs/explore-profiles/explore-profiles-homescreen.png)
+![The All services view](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-homescreen-v1.17.0.png)
 
 ### Profile types
 
-The Profile types shows one chart for each profile available for the selected service.
+The **Profile types** view shows one chart for each profile type available for the selected service.
 You can select to display the charts in a grid or one chart per row.
 
-![Profile types](/media/docs/explore-profiles/explore-profiles-profile-types.png)
+![Profile types](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-profile-types-v1.17.0.png)
 
 ### Labels
 
 The Labels view lets you navigate and analyze performance data through labels.
 This feature is crucial for identifying performance anomalies and understanding the behavior of different application segments under various conditions.
 
-![Labels view](/media/docs/explore-profiles/explore-profiles-labels.png)
+![Labels view](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-labels-v1.17.0.png)
 
 ### Flame graphs
 
-The Flame graph view visualizes profiling data of a single service in a flame graph format, allowing easy identification of resource-intensive functions.
+The Flame graph view visualizes profiling data of a single service in a flame graph format, helping you identify resource-intensive functions.
 
-On views with a flame graph, you can use **Explain flame graph** to provide an AI flame graph analysis that explains the performance bottleneck, root cause, and recommended fixes.
-For more information, refer to [Flame graph AI](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/).
+On views with a flame graph, you can use **Analyze with Assistant** (Grafana Cloud) or **Explain Flame Graph** (Grafana open source) to get an AI-generated analysis of bottlenecks, likely root causes, and recommended fixes.
+For more information, refer to [Flame graph AI](../investigate/flame-graph-ai/).
 
 You can also use line-level insights from the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/).
 
-![Flame graphs](/media/docs/explore-profiles/explore-profiles-flamegraph-2.png)
+In this view, you can also:
+
+- Search for functions in the flame graph.
+- Change the color scheme.
+- Expand or collapse all call stacks.
+- Toggle between top table, flame graph, or both views.
+- Export profile data.
+
+![Flame graphs](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-flamegraph-2-v1.17.0.png)
 
 ### Diff flame graph
 
-The **Diff flame graph** view shows the differences between two profiling data sets.
+The **Diff flame graph** view shows the differences between two profiling datasets.
 It normalizes the data by comparing the percentage of total time spent in each function so that the resulting flame graph is comparing the share of time spent in each function rather than the absolute amount of time spent in each function.
 This lets you compare two different queries that may have different total amounts of time spent in each function.
 
 Similar to a `git diff`, it takes the selected flame graphs and highlights the differences between them.
 
-![Diff flame graph](/media/docs/explore-profiles/explore-profiles-diff-flamegraph.png)
+To configure comparisons more quickly, you can use:
+
+- **Auto-select** to choose a comparison range automatically.
+- **Comparison presets** to apply saved or predefined comparisons.
+- **Sync time ranges** to keep baseline and comparison windows aligned.
+
+![Diff flame graph](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-diff-flamegraph-v1.17.0.png)
 
 <!-- from old screenshot of cpu usage profile Red represents an increase in CPU usage from the baseline to the comparison and green represents a decrease. -->
 
 ### Favorites
 
-The **Favorites** view shows all your favorited visualizations.
+The **Favorites** view shows all your saved favorite visualizations.
 Clicking on the star (⭐️) at the top-right corner of a visualization saves it as a favorite.
 
 Using favorites, you can create an overview of what's important, as well as jump to the **Flame graph** view or the **Labels** view.
 
-![Favorites](/media/docs/explore-profiles/explore-profiles-favorites.png)
+In this view, you can also use:
+
+- **Quick filter** to find saved items.
+- **Grid** or **Rows** layout options.
+- **Hide panels without data** to simplify the display.
+
+![Favorites](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-favorites-v1.17.0.png)

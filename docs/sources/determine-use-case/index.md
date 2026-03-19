@@ -11,25 +11,25 @@ weight: 400
 
 # Determine your use case
 
-When you start investigating, you may either know what's wrong (for example, you know the affected service or that there’s too much CPU usage), or you may want identify resource hotspots so you can address them.
+When you start investigating, you may already know what's wrong or you may want to identify resource hot spots so you can address them.
 
 This can lead you to two different starting points:
 
 - Use case 1 - You want to investigate an issue to determine the root cause.
-- Use case 2 - You want to research resource and performance hotspots to determine areas that can be optimized.
+- Use case 2 - You want to research resource and performance hot spots to determine areas that can be optimized.
 
-Your use case determines what’s most important.
+Your use case determines what's most important.
 For example, in use case 1, if a service is misbehaving, then you might want to see the profile types so you can see the CPU and memory profiles alongside each other.
 
 For either use case, the first step is to identify areas of interest by reviewing profiles or a single service.
-Selecting different profile types lets you focus on memory allocation, CPU processes, allocation sizes, blocks, or mutually exclusive (mutex).
+Selecting different profile types lets you focus on memory allocation, CPU processes, allocation sizes, blocks, or lock contention.
 
-The profile types available depend on how you've instrumented you app to generate your profiling data.
+The available profile types depend on how you have instrumented your app to generate profiling data.
 For more information, refer to [Profiling types](../concepts/#profile-types/) for help selecting a profile type to match your use case.
 Refer to [Understand profile types](https://grafana.com/docs/pyroscope/latest/view-and-analyze-profile-data/profiling-types/) to learn about profile types and instrumentation methods.
 
-After you’ve identified the problem process or service, you can filter and explore using labels and flame graphs to view lower levels.
-With capabilities like the [Flame graph AI interpreter](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/flamegraph-ai/) or the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/), Profiles Drilldown helps you locate the root cause and how to address it.
+After you identify the problem process or service, you can filter and explore using labels and flame graphs to investigate at lower levels.
+With capabilities like the [Flame graph AI](../investigate/flame-graph-ai/) interpreter or the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/), Profiles Drilldown helps you locate the root cause and how to address it.
 
 ## Use case 1: Investigate an issue
 
@@ -48,7 +48,7 @@ Alternatively, you can select the **Profile types** view and then choose the `ch
 ### Example: Know there is an issue, need to investigate
 
 If you only know there is an issue and have to investigate, then your investigation starts by using the **All services** view.
-Using the **Profile type** selector, you can check the services’ CPU processes, memory allocation, blocks, locks, exceptions, and other available profile types.
+Using the **Profile type** selector, you can check services' CPU processes, memory allocation, blocks, locks, exceptions, and other available profile types.
 
 After you locate the profile with a spike, select either **Profile types** view to examine all profile types for that service, or select **Labels** to view the labels (such as `hostname` or `span_name`) for that service.
 
