@@ -1,4 +1,6 @@
+import { css, cx } from '@emotion/css';
 import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
+import { config } from '@grafana/runtime';
 import {
   PanelBuilders,
   SceneComponentProps,
@@ -21,15 +23,23 @@ import React from 'react';
 
 import { ExemplarToggleAction } from '../../domain/actions/ExemplarToggleAction';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { formatSingleSeriesDisplayName } from '../../helpers/formatSingleSeriesDisplayName';
 import { getColorByIndex } from '../../helpers/getColorByIndex';
+import { deferSceneQueryRunnerRun } from '../../infrastructure/deferSceneQueryRunnerRun';
 import { getSeriesLabelFieldName } from '../../infrastructure/helpers/getSeriesLabelFieldName';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { buildTimeSeriesQueryRunner } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { addRefId, addStats } from '../SceneByVariableRepeaterGrid/infrastructure/data-transformations';
+import {
+  addExemplarTransformations,
+  HIGHLIGHTED_SERIES_REF_ID,
+  highlightedSeriesOverrides,
+} from '../SceneByVariableRepeaterGrid/infrastructure/exemplars-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { RangeAnnotation } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/domain/RangeAnnotation';
+import { TimeseriesReprocess } from './domain/events/TimeseriesReprocess';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
 interface SceneLabelValuesTimeseriesState extends SceneObjectState {
@@ -41,6 +51,20 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
   annotations?: boolean;
 }
+
+const styles = {
+  wrapper: css({
+    width: '100%',
+    height: '100%',
+  }),
+  // Grafana renders exemplar markers at 50% opacity by default (ExemplarMarker.tsx).
+  // The highlighted exemplar frame is appended last, so its marker is the last child in the DOM.
+  highlightedExemplar: css({
+    'div:last-child > [data-testid*="Exemplar marker"] svg': {
+      opacity: '1 !important',
+    },
+  }),
+};
 
 export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValuesTimeseriesState> {
   constructor({
@@ -62,25 +86,15 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     annotations?: boolean;
     includeExemplars?: boolean;
   }) {
-    let menuState = {};
-    if (featureToggles.exemplars) {
-      if (includeExemplars) {
-        // when includeExemplers is true, we show Exemplars button in the timeseries header.
-        const headerActionsRef = headerActions;
-        headerActions = (item: GridItemData) => [
-          ...(headerActionsRef(item) as SceneObject[]),
-          new ExemplarToggleAction(true),
-        ];
-      } else {
-        // Otherwise, we keep it on the menu. (Disabled by default)
-        menuState = { showExemplars: false };
-      }
-    }
+    const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(
+      headerActions,
+      includeExemplars
+    );
 
     super({
       key: 'timeseries-label-values',
       item,
-      headerActions: headerActions,
+      headerActions: processedHeaderActions,
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
       overrides,
@@ -96,15 +110,42 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
                 annotations,
                 includeExemplars && featureToggles.exemplars
               ),
-              transformations: [addRefId, addStats],
+              transformations: [],
             })
         )
-        .setHeaderActions(headerActions(item))
+        .setHeaderActions(processedHeaderActions(item))
         .setMenu(new SceneTimeseriesMenu(menuState) as unknown as VizPanelMenu)
         .build(),
     });
 
+    if (!data) {
+      this.addTransformations(item);
+    }
     this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  private static processExemplarsConfig(
+    headerActions: SceneLabelValuesTimeseriesState['headerActions'],
+    includeExemplars?: boolean
+  ): {
+    processedHeaderActions: SceneLabelValuesTimeseriesState['headerActions'];
+    menuState: Record<string, unknown>;
+  } {
+    if (!featureToggles.exemplars) {
+      return { processedHeaderActions: headerActions, menuState: {} };
+    }
+
+    if (includeExemplars) {
+      // when includeExemplers is true, we show Exemplars button in the timeseries header.
+      const processedHeaderActions = (item: GridItemData) => [
+        ...(headerActions(item) as SceneObject[]),
+        new ExemplarToggleAction(true),
+      ];
+      return { processedHeaderActions, menuState: {} };
+    }
+
+    // Otherwise, we keep it on the menu. (Disabled by default)
+    return { processedHeaderActions: headerActions, menuState: { showExemplars: false } };
   }
 
   onActivate() {
@@ -114,10 +155,30 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
     const profileMetricSub = this.subscribeToProfileMetricChanges();
 
+    const timeseriesReprocessSub = this.subscribeToEvent(TimeseriesReprocess, () => {
+      const bodyData = this.state.body.state.$data as SceneDataTransformer | undefined;
+      bodyData?.reprocessTransformations();
+    });
+
+    const cancelDefer = deferSceneQueryRunnerRun(
+      this.state.body.state.$data?.state.$data as SceneQueryRunner | undefined
+    );
+
     return () => {
       dataSub.unsubscribe();
       profileMetricSub?.unsubscribe();
+      timeseriesReprocessSub?.unsubscribe();
+      cancelDefer();
     };
+  }
+
+  private addTransformations(item: GridItemData) {
+    const bodyData = this.state.body.state.$data as SceneDataTransformer;
+    if (bodyData) {
+      bodyData.setState({
+        transformations: [addRefId, addStats, ...addExemplarTransformations(this, item)],
+      });
+    }
   }
 
   private handleDataStateChange(newState: any, prevState: any) {
@@ -183,11 +244,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       const data = ($data as SceneDataProvider)?.state.data;
       if (data?.annotations) {
         // Filter out exemplar annotations
-        const rangeAnnotations = data.annotations.filter((annotation: any) => annotation.name !== 'exemplar');
+        const exemplars = data.annotations.filter((annotation: any) => annotation.name !== 'exemplar');
         ($data as SceneDataProvider)?.setState({
           data: {
             ...data,
-            annotations: rangeAnnotations,
+            annotations: exemplars,
           },
         });
       }
@@ -303,28 +364,30 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { item } = this.state;
     const groupByLabel = item.queryRunnerParams.groupBy?.label;
 
-    return series.map((s, i) => {
-      const metricField = s.fields[1];
-      let displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
+    // Check if highlightedSeries is present
+    const hasHighlightedSeries = series.some((s) => s.refId === HIGHLIGHTED_SERIES_REF_ID);
 
-      displayName = formatSingleSeriesDisplayName(displayName, s);
+    const getSeriesColor = (index: number) =>
+      hasHighlightedSeries
+        ? { mode: 'fixed', fixedColor: config.theme2.isDark ? '#383838' : '#c7c7c7' }
+        : { mode: 'fixed', fixedColor: getColorByIndex(item.index + index) };
 
-      const properties = [
-        {
-          id: 'displayName',
-          value: displayName,
-        },
-        {
-          id: 'color',
-          value: { mode: 'fixed', fixedColor: getColorByIndex(item.index + i) },
-        },
-      ];
+    const overrides = series
+      .filter((s) => s.refId !== HIGHLIGHTED_SERIES_REF_ID)
+      .map((s, i) => {
+        const metricField = s.fields[1];
+        const displayName = groupByLabel ? getSeriesLabelFieldName(metricField, groupByLabel) : metricField.name;
 
-      return {
-        matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
-        properties,
-      };
-    });
+        return {
+          matcher: { id: FieldMatcherID.byFrameRefID, options: s.refId },
+          properties: [
+            { id: 'displayName', value: formatSingleSeriesDisplayName(displayName, s) },
+            { id: 'color', value: getSeriesColor(i) },
+          ],
+        };
+      });
+
+    return [...overrides, highlightedSeriesOverrides];
   }
 
   updateItem(partialItem: Partial<GridItemData>) {
@@ -386,9 +449,35 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     });
   }
 
-  static Component({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
-    const { body } = model.useState();
+  static Component = SceneLabelValuesTimeseriesComponent;
+}
 
-    return <body.Component model={body} />;
-  }
+function SceneLabelValuesTimeseriesComponent({ model }: SceneComponentProps<SceneLabelValuesTimeseries>) {
+  const { body } = model.useState();
+  const hasSelectedExemplar = useHasSelectedExemplar(model);
+
+  return (
+    <div className={cx(styles.wrapper, hasSelectedExemplar && styles.highlightedExemplar)}>
+      <body.Component model={body} />
+    </div>
+  );
+}
+
+function useHasSelectedExemplar(model: SceneObject): boolean {
+  const [hasSelection, setHasSelection] = React.useState(false);
+
+  React.useEffect(() => {
+    let variable: ProfileIdSelectorVariable;
+    try {
+      variable = sceneGraph.findByKeyAndType(model, 'profileIdSelector', ProfileIdSelectorVariable);
+    } catch {
+      return; // profileIdSelector doesn't exist in non-flame-graph views
+    }
+
+    setHasSelection(Boolean(variable.state.value));
+    const sub = variable.subscribeToState((state) => setHasSelection(Boolean(state.value)));
+    return () => sub.unsubscribe();
+  }, [model]);
+
+  return hasSelection;
 }
