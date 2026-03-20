@@ -69,9 +69,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     },
   });
 
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, {
-    keys: ['comparisonFrom', 'comparisonTo'],
-  });
+  protected _urlSync: SceneObjectUrlSyncConfig | undefined;
 
   constructor({
     target,
@@ -99,6 +97,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color, mode }),
       modeSelector: new SwitchTimeRangeSelectionModeAction(),
     });
+
+    if (target === CompareTarget.COMPARISON) {
+      this._urlSync = new SceneObjectUrlSyncConfig(this, {
+        keys: ['comparisonFrom', 'comparisonTo'],
+      });
+    }
 
     this.addActivationHandler(this.onActivate.bind(this, clearDiffRange, filters));
   }
