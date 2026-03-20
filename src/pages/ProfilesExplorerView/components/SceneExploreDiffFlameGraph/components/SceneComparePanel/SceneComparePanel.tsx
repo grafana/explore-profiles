@@ -396,7 +396,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   };
 
   refreshTimeseries() {
-    this.state.$timeRange?.onRefresh();
+    sceneGraph.getTimeRange(this)?.onRefresh();
   }
 
   private syncStepSizeWithSibling(myData: DataFrame[]) {
