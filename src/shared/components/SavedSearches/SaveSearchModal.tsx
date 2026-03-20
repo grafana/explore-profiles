@@ -49,7 +49,7 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
         reportInteraction('grafana_profiles_app_save_search_search_saved');
 
         onClose();
-      } catch (e) {
+      } catch {
         setState('error');
 
         appEvents.publish({
