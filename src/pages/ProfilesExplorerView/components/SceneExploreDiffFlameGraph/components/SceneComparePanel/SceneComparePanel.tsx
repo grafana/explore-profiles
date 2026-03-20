@@ -326,7 +326,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
     const { annotationTimeRange } = $diffTimeRange.state;
     const newAnnotationTimeRange = $diffTimeRange.buildAnnotationTimeRange(options.from, options.to);
-
     if (
       !annotationTimeRange.from.isSame(newAnnotationTimeRange.from) ||
       !annotationTimeRange.to.isSame(newAnnotationTimeRange.to)

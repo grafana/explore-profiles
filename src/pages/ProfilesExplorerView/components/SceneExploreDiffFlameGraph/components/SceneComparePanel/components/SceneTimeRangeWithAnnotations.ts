@@ -6,7 +6,7 @@ import {
   SceneObjectUrlValues,
   SceneTimeRangeLike,
   SceneTimeRangeState,
-  VariableDependencyConfig,
+  SceneVariableValueChangedEvent,
   VizPanel,
 } from '@grafana/scenes';
 import { omit } from 'lodash';
@@ -43,10 +43,6 @@ export class SceneTimeRangeWithAnnotations
   extends SceneObjectBase<SceneTimeRangeWithAnnotationsState>
   implements SceneTimeRangeLike
 {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['dataSource', 'serviceName'],
-  });
-
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['diffFrom', 'diffTo'] });
 
   constructor(options: {
@@ -66,6 +62,7 @@ export class SceneTimeRangeWithAnnotations
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   onActivate() {
     this.setState(omit(this.getAncestorTimeRange().state, 'key'));
 
@@ -93,6 +90,20 @@ export class SceneTimeRangeWithAnnotations
         }
       })
     );
+
+    for (const variableName of ['serviceName', 'dataSource']) {
+      const variable = sceneGraph.lookupVariable(variableName, this);
+      if (!variable) {
+        continue;
+      }
+
+      this._subs.add(
+        variable.subscribeToEvent(SceneVariableValueChangedEvent, () => {
+          this.nullifyAnnotationTimeRange();
+          this.updateTimeseriesAnnotation();
+        })
+      );
+    }
   }
 
   protected getAncestorTimeRange(): SceneTimeRangeLike {
@@ -145,6 +156,10 @@ export class SceneTimeRangeWithAnnotations
     });
   }
 
+  nullifyAnnotationTimeRange() {
+    this.setAnnotationTimeRange(TIMERANGE_NIL);
+  }
+
   setAnnotationTimeRange(annotationTimeRange: TimeRange, updateTimeseries = false) {
     this.setState({ annotationTimeRange });
 
@@ -171,7 +186,8 @@ export class SceneTimeRangeWithAnnotations
   updateFromUrl(values: SceneObjectUrlValues) {
     const { diffFrom, diffTo } = values;
 
-    if (!diffTo && !diffFrom) {
+    if (!diffFrom || !diffTo) {
+      this.nullifyAnnotationTimeRange();
       return;
     }
 
