@@ -1,5 +1,38 @@
 # Changelog
 
+## 2.0.0
+
+##### Chores
+
+* **deps:**
+  *  pin 11 transitive dependencies to fix 15 CVEs (#873) (a58f1e9b)
+  *  pin minimatch@9.0.3 to 9.0.9 to fix CVE (#871) (4d79df99)
+  *  bump undici from 7.18.2 to 7.24.4 (#867) (a7e5cfe1)
+  *  update dependency tar to v7.5.11 [security] (#854) (b2a3b84c)
+  *  bump hono from 4.11.9 to 4.12.0 (#834) (e3e92a16)
+  *  bump ajv from 6.12.6 to 6.14.0 (#835) (6f272630)
+*  React 19 upgrade (#858) (606a7c0a)
+*  Fix codeowners file (#863) (d4d4e5a5)
+*  add other drilldown teams as codeowners (#841) (8985e093)
+* **cd:**  remove github-draft-release (#850) (00bbdcc8)
+
+##### Documentation Changes
+
+*  Updates for the latest release (#869) (8b135fc6)
+
+##### New Features
+
+*  Support Saved Queries (#868) (bb418724)
+*  Add AGENTS.md and surrounding files (#870) (dffe1202)
+*  highlight filtered exemplar on the timeseries for the flame gra… (#802) (7ce57937)
+*  inspect a single exemplar's flamegraph (#796) (01dfcb1e)
+
+##### Refactors
+
+*  remove unused exemplar link helpers from data-transformations (#859) (9b44b15f)
+*  rename exemplars var (#857) (23466603)
+
+
 ## 1.17.0
 
 ##### Chores
