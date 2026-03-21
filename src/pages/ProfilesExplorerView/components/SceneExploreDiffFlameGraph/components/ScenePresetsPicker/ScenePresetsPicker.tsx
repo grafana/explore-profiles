@@ -1,5 +1,4 @@
 import { css } from '@emotion/css';
-import { GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Combobox, ComboboxOption, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -7,13 +6,6 @@ import React from 'react';
 
 import { CompareTarget } from '../../domain/types';
 import { SceneComparePanel } from '../SceneComparePanel/SceneComparePanel';
-
-interface ScenePresetsPickerState extends SceneObjectState {
-  name: string;
-  label: string;
-  isSelectOpen: boolean;
-  value: string | null;
-}
 
 export type Preset = {
   from: string;
@@ -26,6 +18,11 @@ export type PresetOption = {
   baseline: Preset;
   comparison: Preset;
 };
+
+interface ScenePresetsPickerState extends SceneObjectState {
+  name: string;
+  label: string;
+}
 
 export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState> {
   private static OPTIONS: Array<ComboboxOption<string>> = [
@@ -74,24 +71,6 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     super({
       name: 'compare-presets',
       label: 'Comparison presets',
-      value: null,
-      isSelectOpen: false,
-    });
-
-    this.addActivationHandler(this.onActivate.bind(this));
-  }
-
-  onActivate() {
-    [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
-      this._subs.add(
-        sceneGraph
-          .findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel)
-          .state.$timeRange?.subscribeToState((newState, prevState) => {
-            if (newState.from !== prevState.from || newState.to !== prevState.to) {
-              this.setState({ value: null });
-            }
-          })
-      );
     });
   }
 
@@ -105,7 +84,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     });
   };
 
-  static Component({ model }: SceneComponentProps<ScenePresetsPicker & { onChange: any }>) {
+  static Component({ model }: SceneComponentProps<ScenePresetsPicker>) {
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
 
     return (
@@ -121,12 +100,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   }
 }
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = () => ({
   presetsContainer: css`
     display: flex;
-  `,
-  select: css`
-    min-width: ${theme.spacing(24)};
-    text-align: left;
   `,
 });
