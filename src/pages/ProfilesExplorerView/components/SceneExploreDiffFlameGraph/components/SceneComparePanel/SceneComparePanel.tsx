@@ -294,12 +294,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).useState();
   }
 
-  applyPreset({ from, to, diffFrom, diffTo, label }: Preset) {
+  applyPreset({ from, to, diffFrom, diffTo }: Preset) {
     this.setDiffRange({ from: diffFrom, to: diffTo });
 
     this.setTimeRange(buildTimeRange(from, to));
-
-    this.updateTitle(label);
   }
 
   setTimeRange(newTimeRange: SceneTimeRangeState) {
@@ -347,7 +345,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
 
     const { from, to } = timeRange.state.value;
-    this.updateTitle('');
 
     if (selectWholeRange) {
       this.setDiffRange({ from: from.toISOString(), to: to.toISOString() });
@@ -367,13 +364,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       // we have to create a new instance because subtract() mutates the original one
       this.setDiffRange({ from: dateTime(to).subtract(range).toISOString(), to: to.toISOString() });
     }
-  }
-
-  updateTitle(label = '') {
-    const title = this.state.target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
-    const newTitle = label ? `${title} (${label})` : title;
-
-    this.setState({ title: newTitle });
   }
 
   onClickTimeRangeSync = () => {
