@@ -84,8 +84,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     const title = target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
     const color =
       target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString();
-    const mode = TimerangeSelectionMode.FLAMEGRAPH;
-
     super({
       key: `${target}-panel`,
       target,
@@ -94,7 +92,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       color,
       timePicker: new SceneTimePickerWithoutSync({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
-      timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color, mode }),
+      timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
       modeSelector: new SwitchTimeRangeSelectionModeAction(),
     });
 
@@ -181,7 +179,17 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
   }
 
-  static buildTimeSeriesPanel({ target, filterKey, title, color }: any): SceneLabelValuesTimeseries {
+  static buildTimeSeriesPanel({
+    target,
+    filterKey,
+    title,
+    color,
+  }: {
+    target: CompareTarget;
+    filterKey: SceneComparePanelState['filterKey'];
+    title: string;
+    color: string;
+  }): SceneLabelValuesTimeseries {
     const timeseriesPanel: SceneLabelValuesTimeseries = new SceneLabelValuesTimeseries({
       item: {
         index: 0,
