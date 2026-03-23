@@ -311,6 +311,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       timeRange.setState({
         from: newTimeRange.from,
         to: newTimeRange.to,
+        value: newTimeRange.value,
       });
       timeRange.onRefresh();
     }

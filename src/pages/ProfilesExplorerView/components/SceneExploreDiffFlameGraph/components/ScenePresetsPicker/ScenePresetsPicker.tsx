@@ -32,19 +32,14 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       description: '30m window',
     },
     {
-      label: 'Last hour',
-      value: 'last hour (1h-window)',
-      description: '1h window',
-    },
-    {
       label: '6h ago vs now',
       value: '6h ago vs now',
-      description: '30m window',
+      description: '1h window',
     },
     {
       label: '24h ago vs now',
       value: '24h ago vs now',
-      description: '30m window',
+      description: '1h window',
     },
   ];
 
@@ -53,17 +48,13 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       baseline: { from: 'now-1h', to: 'now', diffFrom: 'now-1h', diffTo: 'now-30m' },
       comparison: { from: 'now-1h', to: 'now', diffFrom: 'now-30m', diffTo: 'now' },
     },
-    'last hour (1h-window)': {
-      baseline: { from: 'now-1h', to: 'now', diffFrom: 'now-1h', diffTo: 'now' },
+    '6h ago vs now': {
+      baseline: { from: 'now-6h', to: 'now-5h', diffFrom: 'now-6h', diffTo: 'now-5h' },
       comparison: { from: 'now-1h', to: 'now', diffFrom: 'now-1h', diffTo: 'now' },
     },
-    '6h ago vs now': {
-      baseline: { from: 'now-375m', to: 'now-315m', diffFrom: 'now-375m', diffTo: 'now-345m' },
-      comparison: { from: 'now-1h', to: 'now', diffFrom: 'now-30m', diffTo: 'now' },
-    },
     '24h ago vs now': {
-      baseline: { from: 'now-1455m', to: 'now-1395m', diffFrom: 'now-1455m', diffTo: 'now-1425m' },
-      comparison: { from: 'now-1h', to: 'now', diffFrom: 'now-30m', diffTo: 'now' },
+      baseline: { from: 'now-24h', to: 'now-23h', diffFrom: 'now-24h', diffTo: 'now-23h' },
+      comparison: { from: 'now-1h', to: 'now', diffFrom: 'now-1h', diffTo: 'now' },
     },
   };
 
