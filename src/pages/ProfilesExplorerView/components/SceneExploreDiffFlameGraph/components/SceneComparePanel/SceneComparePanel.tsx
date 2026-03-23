@@ -463,7 +463,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
     const currentQueries = queryRunner.state.queries;
 
-    const updatedQueries = currentQueries.map((query: any) => ({
+    const updatedQueries = currentQueries.map((query) => ({
       ...query,
       step: targetStepSec,
     }));

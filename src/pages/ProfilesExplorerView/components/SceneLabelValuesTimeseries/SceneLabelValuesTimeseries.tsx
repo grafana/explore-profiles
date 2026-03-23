@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, LoadingState, PanelData } from '@grafana/data';
 import { config } from '@grafana/runtime';
 import {
   PanelBuilders,
@@ -181,7 +181,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     }
   }
 
-  private handleDataStateChange(newState: any, prevState: any) {
+  private handleDataStateChange(newState: { data?: PanelData }, prevState: { data?: PanelData }) {
     if (newState.data?.state !== LoadingState.Done) {
       return;
     }
@@ -197,14 +197,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
   }
 
-  private retainPreviousAnnotations(newState: any, prevState: any) {
+  private retainPreviousAnnotations(newState: { data?: PanelData }, prevState: { data?: PanelData }) {
     const rangeAnnotations = prevState?.data?.annotations?.filter(
-      (annotation: any) => annotation instanceof RangeAnnotation
+      (annotation: unknown) => annotation instanceof RangeAnnotation
     );
     if (
       rangeAnnotations?.length &&
       newState?.data &&
-      !newState.data.annotations?.some((annotation: any) => annotation instanceof RangeAnnotation)
+      !newState.data.annotations?.some((annotation: unknown) => annotation instanceof RangeAnnotation)
     ) {
       const $data = this.state.body.state.$data as SceneDataProvider;
       $data.setState({

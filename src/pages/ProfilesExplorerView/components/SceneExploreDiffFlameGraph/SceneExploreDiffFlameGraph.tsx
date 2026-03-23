@@ -39,13 +39,13 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   }) {
     const baselinePanel = new SceneComparePanel({
       target: CompareTarget.BASELINE,
-      clearDiffRange: Boolean(true),
+      clearDiffRange: true,
       filters: baselineFilters || [],
     });
 
     const comparisonPanel = new SceneComparePanel({
       target: CompareTarget.COMPARISON,
-      clearDiffRange: Boolean(true),
+      clearDiffRange: true,
       filters: comparisonFilters || [],
     });
 
@@ -71,7 +71,7 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
                 body: baselinePanel,
               }),
 
-              // Comparsion
+              // Comparison
               new SceneFlexItem({
                 body: comparisonPanel,
               }),
