@@ -7,15 +7,10 @@ import React, { useState } from 'react';
 
 type MissingSelectionsBannerProps = {
   onClickAutoSelect: () => void;
-  onClickChoosePreset: () => void;
   onOpenLearnHow: () => void;
 };
 
-export function MissingSelectionsBanner({
-  onClickAutoSelect,
-  onClickChoosePreset,
-  onOpenLearnHow,
-}: MissingSelectionsBannerProps) {
+export function MissingSelectionsBanner({ onClickAutoSelect, onOpenLearnHow }: MissingSelectionsBannerProps) {
   const styles = useStyles2(getStyles);
 
   const [isCollapseOpen, setIsCollapseOpen] = useState(false);
@@ -33,17 +28,10 @@ export function MissingSelectionsBanner({
       title="Select both the baseline and the comparison flame graph ranges to view the diff flame graph"
       message={
         <div className={styles.infoMsg}>
-          <p>How?</p>
-          <p>
-            <Button variant="primary" onClick={onClickAutoSelect}>
-              Auto-select
-            </Button>{' '}
-            or{' '}
-            <Button variant="primary" fill="text" className={styles.textButton} onClick={onClickChoosePreset}>
-              choose a preset
-            </Button>
-          </p>
-          <p>Alternatively:</p>
+          <Button variant="primary" onClick={onClickAutoSelect}>
+            Auto-select
+          </Button>
+
           <Collapse
             label="Click here to learn how to select the flame graph ranges with the mouse"
             collapsible
@@ -69,10 +57,11 @@ export function MissingSelectionsBanner({
 
 const getStyles = (theme: GrafanaTheme2) => ({
   infoMsg: css`
-    padding: ${theme.spacing(2)} 0 0 0;
-  `,
-  textButton: css`
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: ${theme.spacing(1)};
+    padding-top: ${theme.spacing(2)};
   `,
   collapse: css`
     background: transparent;
