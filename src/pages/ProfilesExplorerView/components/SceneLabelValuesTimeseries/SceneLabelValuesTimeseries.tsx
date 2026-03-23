@@ -202,10 +202,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       (annotation: any) => annotation instanceof RangeAnnotation
     );
     if (
-      rangeAnnotations &&
-      !newState?.data?.annotations?.some((annotation: any) => annotation instanceof RangeAnnotation)
+      rangeAnnotations?.length &&
+      newState?.data &&
+      !newState.data.annotations?.some((annotation: any) => annotation instanceof RangeAnnotation)
     ) {
-      newState?.data?.annotations?.push(...rangeAnnotations);
+      newState.data = {
+        ...newState.data,
+        annotations: [...(newState.data.annotations ?? []), ...rangeAnnotations],
+      };
     }
   }
 
