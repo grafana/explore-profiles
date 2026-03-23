@@ -206,10 +206,13 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       newState?.data &&
       !newState.data.annotations?.some((annotation: any) => annotation instanceof RangeAnnotation)
     ) {
-      newState.data = {
-        ...newState.data,
-        annotations: [...(newState.data.annotations ?? []), ...rangeAnnotations],
-      };
+      const $data = this.state.body.state.$data as SceneDataProvider;
+      $data.setState({
+        data: {
+          ...newState.data,
+          annotations: [...(newState.data.annotations ?? []), ...rangeAnnotations],
+        },
+      });
     }
   }
 
