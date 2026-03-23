@@ -22,13 +22,14 @@ export type PresetOption = {
 interface ScenePresetsPickerState extends SceneObjectState {
   name: string;
   label: string;
+  value: string | null;
 }
 
 export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState> {
   private static OPTIONS: Array<ComboboxOption<string>> = [
     {
-      label: 'Last hour',
-      value: 'last hour (30m-window)',
+      label: '1h ago vs now',
+      value: '1h ago vs now',
       description: '30m window',
     },
     {
@@ -44,7 +45,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   ];
 
   private static PRESETS: Record<string, PresetOption> = {
-    'last hour (30m-window)': {
+    '1h ago vs now': {
       baseline: { from: 'now-1h', to: 'now', diffFrom: 'now-1h', diffTo: 'now-30m' },
       comparison: { from: 'now-1h', to: 'now', diffFrom: 'now-30m', diffTo: 'now' },
     },
@@ -62,6 +63,23 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     super({
       name: 'compare-presets',
       label: 'Comparison presets',
+      value: null,
+    });
+
+    this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  onActivate() {
+    [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
+      const panel = sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel);
+      const timeRange = sceneGraph.getTimeRange(panel);
+      this._subs.add(
+        timeRange.subscribeToState((newState, prevState) => {
+          if (newState.from !== prevState.from || newState.to !== prevState.to) {
+            this.setState({ value: null });
+          }
+        })
+      );
     });
   }
 
@@ -73,16 +91,19 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
       const panel = sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel);
       panel.applyPreset(presets[compareTarget]);
     });
+
+    this.setState({ value: option.value });
   };
 
   static Component({ model }: SceneComponentProps<ScenePresetsPicker>) {
+    const { value } = model.useState(); // eslint-disable-line react-hooks/rules-of-hooks
     const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
 
     return (
       <div className={styles.presetsContainer}>
         <Combobox
           placeholder="Select a preset"
-          value={null}
+          value={value}
           options={ScenePresetsPicker.OPTIONS}
           onChange={model.onChange}
         />
