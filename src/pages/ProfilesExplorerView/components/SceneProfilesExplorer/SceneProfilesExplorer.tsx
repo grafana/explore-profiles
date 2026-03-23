@@ -303,14 +303,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, (event) => {
-      const { useAncestorTimeRange, clearDiffRange, baselineFilters, comparisonFilters } = event.payload;
+      const { baselineFilters, comparisonFilters } = event.payload;
 
       this.setExplorationType({
         type: ExplorationType.DIFF_FLAME_GRAPH,
         comesFromUserAction: true,
         bodySceneOptions: {
-          useAncestorTimeRange,
-          clearDiffRange,
           baselineFilters,
           comparisonFilters,
         },

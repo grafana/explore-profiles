@@ -34,8 +34,6 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
     baselineFilters,
     comparisonFilters,
   }: {
-    useAncestorTimeRange?: boolean;
-    clearDiffRange?: boolean;
     baselineFilters?: AdHocVariableFilter[];
     comparisonFilters?: AdHocVariableFilter[];
   }) {
