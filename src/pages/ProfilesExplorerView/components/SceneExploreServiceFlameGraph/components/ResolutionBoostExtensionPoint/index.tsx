@@ -10,6 +10,7 @@ type ResolutionBoostExtensionProps = {
 };
 
 const SERVICE_NAME_EXPR = '${serviceName}';
+const DATASOURCE_UID_EXPR = '${dataSource}';
 
 export function ResolutionBoostExtensionPoint({ scene }: { scene: SceneExploreServiceFlameGraph }) {
   const { component: ResolutionBoostExtension } = usePluginComponent<ResolutionBoostExtensionProps>(
@@ -29,6 +30,12 @@ export function ResolutionBoostExtensionPoint({ scene }: { scene: SceneExploreSe
   }
 
   const datasourceUID = sceneGraph.interpolate(scene, '${dataSource}');
+  // datasourceUIDUnavailable if the interpolation failed (returning the EXPR back again)
+  const datasourceUIDUnavailable = datasourceUID === DATASOURCE_UID_EXPR;
+
+  if (datasourceUIDUnavailable) {
+    return;
+  }
 
   return <ResolutionBoostExtension serviceName={serviceName} datasourceUID={datasourceUID} />;
 }
