@@ -1,5 +1,178 @@
 # Changelog
 
+## 2.0.1
+
+##### Chores
+
+*  Remove unused / update dependencies (#879) (0c0eb57a)
+* **deps:**
+  *  bump undici from 7.18.2 to 7.24.5 (#878) (91da6ba2)
+  *  bump minimatch from 3.1.2 to 3.1.5 (#877) (03e3b581)
+  *  update grafana/grafana-enterprise:latest docker digest to 8e8fc4c (#849) (fda61e94)
+  *  update dependency flatted to v3.4.2 [security] (#874) (3ad985dc)
+
+
+## 2.0.0
+
+##### Chores
+
+* **deps:**
+  *  pin 11 transitive dependencies to fix 15 CVEs (#873) (a58f1e9b)
+  *  pin minimatch@9.0.3 to 9.0.9 to fix CVE (#871) (4d79df99)
+  *  bump undici from 7.18.2 to 7.24.4 (#867) (a7e5cfe1)
+  *  update dependency tar to v7.5.11 [security] (#854) (b2a3b84c)
+  *  bump hono from 4.11.9 to 4.12.0 (#834) (e3e92a16)
+  *  bump ajv from 6.12.6 to 6.14.0 (#835) (6f272630)
+*  React 19 upgrade (#858) (606a7c0a)
+*  Fix codeowners file (#863) (d4d4e5a5)
+*  add other drilldown teams as codeowners (#841) (8985e093)
+* **cd:**  remove github-draft-release (#850) (00bbdcc8)
+
+##### Documentation Changes
+
+*  Updates for the latest release (#869) (8b135fc6)
+
+##### New Features
+
+*  Support Saved Queries (#868) (bb418724)
+*  Add AGENTS.md and surrounding files (#870) (dffe1202)
+*  highlight filtered exemplar on the timeseries for the flame gra… (#802) (7ce57937)
+*  inspect a single exemplar's flamegraph (#796) (01dfcb1e)
+
+##### Refactors
+
+*  remove unused exemplar link helpers from data-transformations (#859) (9b44b15f)
+*  rename exemplars var (#857) (23466603)
+
+
+## 1.17.0
+
+##### Chores
+
+* **release:**
+  *  publish github release (#825) (0c0d43ee)
+  *  publish the release to github (6554320b)
+* **deps:**
+  *  update dependency tar to v7.5.8 [security] (#829) (e549788b)
+  *  bump esbuild to 0.25.0 (#827) (ec99bdeb)
+  *  update dependency @bufbuild/protoc-gen-es to v2.11.0 (#810) (55e4a194)
+  *  update dependency terser-webpack-plugin to v5.3.16 (#807) (80596259)
+  *  update dependency @types/lodash to v4.17.23 (#806) (46bf6def)
+  *  update dependency webpack to v5.104.1 [security] (#813) (f3bab720)
+*  Upgrade packages (#814) (9879f7b4)
+
+##### Bug Fixes
+
+* **deps:**  update grafana packages (#808) (807f4d8a)
+*  use selected profile's version in function details panel (#801) (5b2a85ea)
+
+##### Other Changes
+
+* **release:**  publish the release to github" (00c520df)
+
+
+## 1.16.0
+
+##### New Features
+
+*  switch cloud-home-app plugin proxy usage to own (#579) (689f4c82)
+
+
+## 1.15.2
+
+##### Chores
+
+* **deps:**
+  *  Upgrade dependencies (#804) (418c922d)
+  *  Upgrade playwright to 1.58.0 (#805) (4a322241)
+
+
+## 1.15.1
+
+
+## 1.15.0
+
+##### Chores
+
+* **deps:**
+  *  bump js-yaml from 3.14.1 to 3.14.2 (#783) (27db8c2c)
+  *  bump form-data from 4.0.0 to 4.0.5 (#781) (d7a8550e)
+  *  bump brace-expansion from 1.1.11 to 1.1.12 (#782) (3bb1e0fb)
+  *  Update react-router-dom to 6.30.3 (#798) (648f0af6)
+  *  bump @modelcontextprotocol/sdk from 1.24.3 to 1.25.2 (#789) (76fe5444)
+  *  bump undici from 7.16.0 to 7.18.2 (#794) (b24186dc)
+  *  bump body-parser from 2.2.0 to 2.2.2 (#788) (5d90c82f)
+  *  bump qs from 6.14.0 to 6.14.1 (#786) (8a9e6002)
+*  Remove investigations (#787) (188f8623)
+
+##### Continuous Integration
+
+*  update workflows (#792) (98baf273)
+
+##### New Features
+
+*  plot exemplars candidates in timeseries panel at the Flame graph view (#748) (9c87a512)
+
+##### Bug Fixes
+
+* **assistant:**  pass origin to openAssistant (#797) (d3a13ab7)
+*  Handle missing location lines from profiles (#785) (9c7616c2)
+
+
+## 1.14.2
+
+##### Chores
+
+*  update llm plugin (#780) (9e097bd5)
+
+
+## 1.14.1
+
+##### Bug Fixes
+
+*  call /render for dot profiles only once Assistant is being opened (#778) (cbb2d764)
+* **DiffFlameGraph:**  prevent API queries with zero time ranges (#777) (665d9f9b)
+
+
+## 1.14.0
+
+##### Chores
+
+*  fix styling (#771) (14655e41)
+
+##### New Features
+
+* **DiffFlameGraph:**  Analyze Diff Flame Graph with Grafana Assistant (#752) (e18b2639)
+
+
+## 1.13.0
+
+##### Chores
+
+* **deps:**
+  *  update dependency @connectrpc/protoc-gen-connect-query to v2.2.0 (#764) (6241abc8)
+  *  update dependency @babel/core to v7.28.5 (#762) (eead60db)
+  *  update dependency @stylistic/eslint-plugin-ts to v2.13.0 (#765) (0c8acd3d)
+  *  update dependency @bufbuild/protoc-gen-es to v2.10.1 (#763) (a3326219)
+  *  update dependency dotenv to v16.6.1 (#766) (11df5159)
+  *  update dependency glob to v10.5.0 [security] (#751) (5cc428be)
+*  Upgrade Playwright to 1.57.0 (#760) (c094d592)
+*  Update Grafana version used locally to match CI (#753) (8acf4daf)
+*  remove unused deps (#742) (4066bdbc)
+*  Add renovate rules (#746) (a06fa858)
+*  update scenes (#733) (7d338e75)
+* **config:**  migrate config renovate.json (#749) (608da61c)
+
+##### New Features
+
+*  Support source code integration for languages without file paths (#747) (a81f7109)
+*  Embed Profiles Drilldown (#621) (b510bd19)
+
+##### Bug Fixes
+
+*  Do not force refresh ServiceName and ProfileMetric variables on time range change (#759) (4450a9ec)
+
+
 ## 1.12.0
 
 ##### Chores

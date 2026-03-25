@@ -12,12 +12,13 @@ permissions: {}
 jobs:
   cd:
     name: CI / CD
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v2
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v6.0.0
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
       id-token: write
       attestations: write
+      pull-requests: read
     with:
       # Checkout/build PR or main branch, depending on event
       branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
@@ -36,7 +37,7 @@ jobs:
       run-playwright-docker: true
       run-playwright-with-skip-grafana-dev-image: true
       upload-playwright-artifacts: true
-      run-playwright-with-grafana-dependency: '>=12.1.0 <12.2.0'
+      run-playwright-with-grafana-dependency: '>=12.2.5'
       playwright-config: e2e/config/playwright.config.ci.ts
       playwright-docker-compose-file: docker-compose.e2e.yaml
       playwright-report-path: 'e2e/test-reports/'

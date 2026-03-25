@@ -1,4 +1,4 @@
-import { PanelMenuItem, PluginExtensionLink } from '@grafana/data';
+import { PanelMenuItem } from '@grafana/data';
 import { reportInteraction } from '@grafana/runtime';
 import {
   SceneComponentProps,
@@ -10,24 +10,16 @@ import {
   VizPanelMenu,
 } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
-import PyroscopeLogo from '@img/logo.svg';
-import { parseQuery } from '@shared/domain/url-params/parseQuery';
-import { nanoid } from 'nanoid';
-import React, { useEffect, useMemo } from 'react';
+import React from 'react';
 
-import {
-  INVESTIGATIONS_APP_ID,
-  INVESTIGATIONS_EXTENSTION_POINT_ID,
-  useGetPluginExtensionLink,
-} from '../../domain/useGetPluginExtensionLink';
 import { getExploreUrl } from '../../helpers/getExploreUrl';
-import { getProfileMetricLabel } from '../../infrastructure/series/helpers/getProfileMetricLabel';
 import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 
 interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
   scaleType?: ScaleDistribution;
+  showExemplars?: boolean; // undefined means that the Exemplars button is not shown in the menu. Otherwise, it's shown and the value is the current state of the Exemplars button.
 }
 
 const SCALE_TYPES = [
@@ -55,8 +47,8 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
     this.setState({ items: this.buildMenuItems() });
   }
 
-  buildMenuItems(addToInvestigationLink?: PluginExtensionLink): PanelMenuItem[] {
-    const { items, scaleType } = this.state;
+  buildMenuItems(): PanelMenuItem[] {
+    const { scaleType, showExemplars } = this.state;
 
     const menuItems: PanelMenuItem[] = [
       {
@@ -78,23 +70,37 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       },
     ];
 
-    if (addToInvestigationLink) {
-      menuItems.push({
-        iconClassName: 'plus-square',
-        text: 'Add to investigation (beta)',
-        onClick: () => {
-          addToInvestigationLink.onClick!();
+    if (showExemplars !== undefined) {
+      menuItems.unshift(
+        {
+          iconClassName: showExemplars ? 'eye' : 'eye-slash',
+          text: 'Exemplars',
+          onClick: () => this.onClickToggleExemplars(),
         },
-      });
-    } else {
-      const existingAddToInvestigationItem = items?.find((i) => i.text.includes('Add to investigation'));
-
-      if (existingAddToInvestigationItem) {
-        menuItems.push({ ...existingAddToInvestigationItem });
-      }
+        {
+          type: 'divider',
+          text: 'new-divider',
+        }
+      );
     }
 
     return menuItems;
+  }
+
+  private onClickToggleExemplars() {
+    const newShowExemplars = !this.state.showExemplars;
+
+    reportInteraction('g_pyroscope_app_exemplars_toggled', {
+      showExemplars: newShowExemplars,
+    });
+
+    this.setState({
+      showExemplars: newShowExemplars,
+      items: this.buildMenuItems(),
+    });
+
+    const timeseries = sceneGraph.getAncestor(this, SceneLabelValuesTimeseries);
+    timeseries.handleExemplarToggleChange(newShowExemplars);
   }
 
   onClickScaleOption(option: PanelMenuItem & { scaleDistribution: ScaleDistributionConfig }) {
@@ -140,64 +146,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       ) as TimeSeriesQuery;
   }
 
-  useGetInvestigationPluginLinkContext() {
-    const { refId, queryType, profileTypeId, labelSelector, groupBy } = this.getInterpolatedQuery();
-
-    const parsedQuery = parseQuery(`${profileTypeId}${labelSelector}`);
-    const titleParts = [parsedQuery.serviceId, getProfileMetricLabel(parsedQuery.profileMetricId)];
-
-    if (groupBy?.length) {
-      titleParts.push(groupBy[0]);
-    }
-
-    if (parsedQuery.labels.length) {
-      titleParts.push(parsedQuery.labels.join(', '));
-    }
-
-    const title = titleParts.join(' · ');
-    const datasource = sceneGraph.interpolate(this, '${dataSource}');
-    const timeRange = sceneGraph.getTimeRange(this).state.value;
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useMemo(() => {
-      return {
-        id: nanoid(),
-        origin: 'Grafana Profiles Drilldown',
-        url: window.location.href,
-        logoPath: PyroscopeLogo,
-        title,
-        type: 'timeseries',
-        timeRange: { ...timeRange },
-        queries: [{ refId, queryType, profileTypeId, labelSelector, groupBy }],
-        datasource,
-      };
-    }, [datasource, groupBy, labelSelector, profileTypeId, queryType, refId, timeRange, title]);
-  }
-
-  useUpdateMenuItems() {
-    const context = this.useGetInvestigationPluginLinkContext();
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const link = useGetPluginExtensionLink({
-      extensionPointId: INVESTIGATIONS_EXTENSTION_POINT_ID,
-      context,
-      pluginId: INVESTIGATIONS_APP_ID,
-    });
-
-    // wrapped in a useEffect to prevent a warning when clicking on the "Add to investigation" link
-    // ("Cannot update a component while rendering a different component")
-
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(() => {
-      if (link) {
-        this.setState({ items: this.buildMenuItems(link) });
-      }
-    }, [link]);
-  }
-
   static Component({ model }: SceneComponentProps<SceneTimeseriesMenu>) {
-    model.useUpdateMenuItems();
-
     return <VizPanelMenu.Component model={model as unknown as VizPanelMenu} />;
   }
 }

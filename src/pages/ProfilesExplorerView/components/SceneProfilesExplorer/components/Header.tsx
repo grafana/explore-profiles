@@ -2,6 +2,7 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
 import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
+import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
@@ -13,10 +14,12 @@ import { useHeader } from './domain/useHeader';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export type HeaderProps = {
+  model: SceneProfilesExplorer;
   explorationType: SceneProfilesExplorerState['explorationType'];
   controls: SceneProfilesExplorerState['controls'];
   body: SceneProfilesExplorerState['body'];
   $variables: SceneProfilesExplorerState['$variables'];
+  loadSearchScene: SceneProfilesExplorerState['loadSearchScene'];
   onChangeExplorationType: (explorationType: string) => void;
   onCreateRecordingRule: () => void;
   isEmbedded?: boolean;
@@ -81,6 +84,11 @@ export function Header(props: HeaderProps) {
                 )
               }
             </ErrorBoundary>
+          )}
+
+          {!props.isEmbedded && <SaveSearchButton sceneRef={props.model} />}
+          {!props.isEmbedded && props.loadSearchScene && (
+            <props.loadSearchScene.Component model={props.loadSearchScene} />
           )}
 
           {timePickerControl && (

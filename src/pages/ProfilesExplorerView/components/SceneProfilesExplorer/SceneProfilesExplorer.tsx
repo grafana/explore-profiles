@@ -16,6 +16,7 @@ import {
   SplitLayout,
 } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
+import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScene';
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -33,6 +34,7 @@ import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabe
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
+import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -49,6 +51,7 @@ import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCr
 import { SceneExploreDiffFlameGraph } from '../SceneExploreDiffFlameGraph/SceneExploreDiffFlameGraph';
 import { GitHubContextProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/components/GitHubContextProvider/GitHubContextProvider';
 import { FunctionVersionProvider } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/domain/FunctionVersionContext';
+import { RemoveProfileIdSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveProfileIdSelector';
 import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
 import { Header } from './components/Header';
@@ -60,6 +63,7 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   explorationType?: ExplorationType;
   body?: SplitLayout;
   createRecordingRuleModal: SceneCreateRecordingRuleModal;
+  loadSearchScene: LoadSearchScene;
   isEmbedded?: boolean;
   initialFilters?: AdHocVariableFilter[];
   initialDS?: string;
@@ -132,14 +136,27 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             new ProfilesDataSourceVariable({ initialDS: state?.initialDS }),
             new ServiceNameVariable({ initialFilters: state?.initialFilters }),
             new ProfileMetricVariable(),
-            new FiltersVariable({ key: 'filters' }),
+            new FiltersVariable({
+              key: 'filters',
+              initialFilters: (() => {
+                if (!state?.initialFilters) {
+                  return undefined;
+                }
+                const filtered = state.initialFilters.filter(
+                  (filter: AdHocVariableFilter) => filter.key !== 'service_name'
+                );
+                return filtered.length > 0 ? filtered : undefined;
+              })(),
+            }),
             new FiltersVariable({ key: 'filtersBaseline' }),
             new FiltersVariable({ key: 'filtersComparison' }),
             new GroupByVariable(),
+            new ProfileIdSelectorVariable(),
             new SpanSelectorVariable(),
           ],
         }),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
+      loadSearchScene: new LoadSearchScene(),
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -307,6 +324,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       this.resetSpanSelector();
     });
 
+    const removeProfileIdSelectorSub = this.subscribeToEvent(RemoveProfileIdSelector, () => {
+      this.resetProfileIdSelector();
+    });
+
     return {
       unsubscribe() {
         diffFlameGraphSub.unsubscribe();
@@ -314,6 +335,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         labelsSub.unsubscribe();
         profilesSub.unsubscribe();
         removeSpanSelectorSub.unsubscribe();
+        removeProfileIdSelectorSub.unsubscribe();
       },
     };
   }
@@ -344,10 +366,15 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     sceneGraph.findByKeyAndType(this, 'spanSelector', SpanSelectorVariable).reset();
   }
 
+  resetProfileIdSelector() {
+    sceneGraph.findByKeyAndType(this, 'profileIdSelector', ProfileIdSelectorVariable).reset();
+  }
+
   resetVariables(nextExplorationType: string) {
     sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter).reset();
     sceneGraph.findByKeyAndType(this, 'groupBy', GroupByVariable).changeValueTo(GroupByVariable.DEFAULT_VALUE);
     sceneGraph.findByKeyAndType(this, 'panel-type-switcher', ScenePanelTypeSwitcher).reset();
+    sceneGraph.findByKeyAndType(this, 'profileIdSelector', ProfileIdSelectorVariable).reset();
     this.resetSpanSelector();
 
     // preserve existing filters only when switching to "Labels", "Flame graph" or "Diff flame graph"
@@ -436,16 +463,18 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       isOpen: boolean;
       functionName?: string;
     }>({ isOpen: false });
-    const { createRecordingRuleModal, isEmbedded } = model.useState();
+    const { createRecordingRuleModal, isEmbedded, loadSearchScene } = model.useState();
 
     return (
       <FunctionVersionProvider>
         <GitHubContextProvider dataSourceUid={dataSourceUid}>
           <Header
+            model={model}
             explorationType={explorationType}
             controls={controls}
             body={body}
             $variables={$variables}
+            loadSearchScene={loadSearchScene}
             onChangeExplorationType={actions.onChangeExplorationType}
             isEmbedded={isEmbedded}
             onCreateRecordingRule={() => {

@@ -4,21 +4,20 @@
  * In order to extend the configuration follow the steps in
  * https://grafana.com/developers/plugin-tools/how-to-guides/extend-configurations#extend-the-webpack-config
  */
-
+import { externals } from '../bundler/externals.ts';
+import { BuildModeWebpackPlugin } from './BuildModeWebpackPlugin.ts';
+import { DIST_DIR, SOURCE_DIR } from './constants.ts';
+import { getCPConfigVersion, getEntries, getPackageJson, getPluginJson, hasReadme, isWSL } from './utils.ts';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import path from 'path';
 import ReplaceInFileWebpackPlugin from 'replace-in-file-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
-import { SubresourceIntegrityPlugin } from "webpack-subresource-integrity";
 import webpack, { type Configuration } from 'webpack';
 import LiveReloadPlugin from 'webpack-livereload-plugin';
+import { SubresourceIntegrityPlugin } from 'webpack-subresource-integrity';
 import VirtualModulesPlugin from 'webpack-virtual-modules';
-
-import { BuildModeWebpackPlugin } from './BuildModeWebpackPlugin.ts';
-import { DIST_DIR, SOURCE_DIR } from './constants.ts';
-import { getCPConfigVersion, getEntries, getPackageJson, getPluginJson, hasReadme, isWSL } from './utils.ts';
 
 const pluginJson = getPluginJson();
 const cpVersion = getCPConfigVersion();
@@ -54,44 +53,7 @@ const config = async (env: Env): Promise<Configuration> => {
 
     entry: await getEntries(),
 
-    externals: [
-      // Required for dynamic publicPath resolution
-      { 'amd-module': 'module' },
-      'lodash',
-      'jquery',
-      'moment',
-      'slate',
-      'emotion',
-      '@emotion/react',
-      '@emotion/css',
-      'prismjs',
-      'slate-plain-serializer',
-      '@grafana/slate-react',
-      'react',
-      'react-dom',
-      'react-redux',
-      'redux',
-      'rxjs',
-      'react-router',
-      'd3',
-      'angular',
-      /^@grafana\/ui/i,
-      /^@grafana\/runtime/i,
-      /^@grafana\/data/i,
-
-      // Mark legacy SDK imports as external if their name starts with the "grafana/" prefix
-      ({ request }, callback) => {
-        const prefix = 'grafana/';
-        const hasPrefix = (request: string) => request.indexOf(prefix) === 0;
-        const stripPrefix = (request: string) => request.substr(prefix.length);
-
-        if (request && hasPrefix(request)) {
-          return callback(undefined, stripPrefix(request));
-        }
-
-        callback();
-      },
-    ],
+    externals,
 
     // Support WebAssembly according to latest spec - makes WebAssembly module async
     experiments: {
@@ -195,7 +157,7 @@ const config = async (env: Env): Promise<Configuration> => {
       virtualPublicPath,
       // Insert create plugin version information into the bundle
       new webpack.BannerPlugin({
-        banner: "/* [create-plugin] version: " + cpVersion + " */",
+        banner: '/* [create-plugin] version: ' + cpVersion + ' */',
         raw: true,
         entryOnly: true,
       }),

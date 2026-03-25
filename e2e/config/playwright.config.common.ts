@@ -57,7 +57,7 @@ export function config(config: CustomEnvConfig) {
     },
     expect: {
       timeout: Number(config.timeout) > 0 ? config.timeout : 5000,
-      toHaveScreenshot: { maxDiffPixelRatio: 0.01 }, // tweak me with experience
+      toHaveScreenshot: { maxDiffPixelRatio: 0.06 }, // tweak me with experience, mostly for differences between Grafana versions in graphs/panels
     },
 
     /* Configure projects for major browsers */

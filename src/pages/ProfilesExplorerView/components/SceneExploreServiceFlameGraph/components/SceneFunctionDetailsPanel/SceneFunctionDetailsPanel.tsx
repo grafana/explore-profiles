@@ -52,11 +52,12 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
       isFetching,
     } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace });
 
-    const { saveOverride, deleteOverride, functionVersion, deleteAllOverrides, functionVersionOrigin } =
-      useFunctionVersion(dataSourceUid, serviceName, functionsDetails[0].version);
-
     const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
     const [currentFunctionDetails, setCurrentFunctionDetails] = useState<FunctionDetails>(functionsDetails[0]);
+
+    const { saveOverride, deleteOverride, functionVersion, deleteAllOverrides, functionVersionOrigin } =
+      useFunctionVersion(dataSourceUid, serviceName, currentFunctionDetails.version);
+
     const [isGitHubBannerDismissed, setIsGitHubBannerDismissed] = useState(
       userStorage.has(userStorage.KEYS.GITHUB_INTEGRATION)
     );

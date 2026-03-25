@@ -1,2 +1,1 @@
-* @grafana/observability-traces-and-profiling
-
+* @grafana/observability-traces-and-profiling @grafana/observability-logs @grafana/observability-metrics

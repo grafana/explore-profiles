@@ -4,6 +4,8 @@ keywords:
   - continuous profiling
   - flame graphs
   - Flame graph AI
+  - Grafana Assistant
+  - LLM plugin
 menuTitle: Use Flame graph AI
 title: Use Flame graph AI
 weight: 100
@@ -17,7 +19,7 @@ refs:
 
 # Use Flame graph AI
 
-Flame graph AI helps you understand your profiling data by using a large-language model (LLM) to assist with data interpretation.
+Flame graph AI helps you understand your profiling data by using a large language model (LLM) to assist with data interpretation.
 
 A flame graph provides a convenient way to visualize performance data.
 These graphs provide a clear, intuitive understanding of resource allocation and bottlenecks within an application.
@@ -34,12 +36,12 @@ To learn more, refer to [AI-powered insights for continuous profiling: introduci
 
 ![Flame graph analysis with performance bottleneck, root cause, and recommended fix](/media/docs/grafana-cloud/profiles/pyorsope-flamegraph-ai-analysis.png)
 
-## Flame graph AI compliments human interpretation
+## Flame graph AI complements human interpretation
 
 Flame graph AI analyzes a flame graph and provides a plain English interpretation of the flame graph.
 
 It only takes using a flame graph successfully once to really move from the beginner to advanced interpretation.
-From a product standpoint, one challenge has been building a user-experience that can span from beginner to expert and still be useful for both.
+From a product standpoint, one challenge has been building a user experience that spans beginner to expert users and is still useful for both.
 
 When compared to volunteers in a limited flame graph interpretation test, the Flame graph AI's interpreter scored 100%. Beginners scored 25% and flame graph experts scored 83%.
 The AI consistently outperformed beginners and advanced users, providing accurate, albeit less detailed/nuanced, interpretations than the experts.
@@ -50,42 +52,53 @@ Refer to the [AI-powered flame graph interpreter](https://pyroscope.io/blog/ai-p
 
 ## Explore your profile data with Flame graph AI
 
-Flame graph AI uses the LLM plugin for Grafana to provide the large-language model using OpenAI API.
-
 You can use Flame graph AI in the Profiles Drilldown app, nested underneath **Drilldown** > **Profiles**.
+
+In Grafana Cloud, Flame graph AI is powered by [Grafana Assistant](https://grafana.com/docs/grafana-cloud/machine-learning/assistant/).
+
+In Grafana open source, Flame graph AI uses the [LLM plugin for Grafana](https://grafana.com/docs/grafana-cloud/alerting-and-irm/machine-learning/configure/llm-plugin/).
 
 ### Before you begin
 
-To use Flame graph AI, you must have:
+To use Flame graph AI with Grafana Cloud, you need:
 
-- Configured a [Grafana Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) that has profiling data
+- A Grafana Cloud account
+- A Grafana stack in Grafana Cloud with a configured [Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) that has profiling data
+- [Grafana Assistant](https://grafana.com/docs/grafana-cloud/machine-learning/assistant/get-started/) enabled for your Grafana instance
+- The [Profiles Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app activated for your Grafana instance
 
-- Enabled the [LLM plugin](https://grafana.com/docs/grafana-cloud/alerting-and-irm/machine-learning/configure/llm-plugin/) for your Grafana instance
-- Activated the [Profiles Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app for your Grafana instance
+To use Flame graph AI with Grafana open source, you need:
+
+- Grafana 11.5 or later
+- A configured [Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) that has profiling data
+- The [LLM plugin](https://grafana.com/docs/grafana-cloud/alerting-and-irm/machine-learning/configure/llm-plugin/) installed and configured for your Grafana instance
+- The [Profiles Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/access/) app installed and activated for your Grafana instance
 
 ### Use Flame graph AI
 
 To use Flame graph AI when viewing a flame graph:
 
-1. Sign on to your Grafana Cloud account and start your Grafana instance.
+1. Sign in to Grafana.
 1. Select **Drilldown** > **Profiles** from the left navigation.
 1. Select **Flame graph** view from the **Exploration** types or select any view or service with an available flame graph. For example, from the **All services** view, select any **Flame graph** link to open the flame graph for that service.
-1. Select **Explain Flame Graph** to view the **Flame graph analysis**.
+1. Select **Analyze with Assistant** (Grafana Cloud) or **Explain Flame Graph** (Grafana open source) to view the flame graph analysis.
 
 ### Use Flame graph AI in Diff flame graph view
 
-The **Diff flame graph** view facilitates side-by-side comparison of profiles either based on different label sets, different time periods, or both. This feature is extremely valuable for understanding the impact of changes or differences between do distinct queries of your application.
+The **Diff flame graph** view supports side-by-side comparison of profiles using different label filters, different time ranges, or both.
 
-The **Diff flame graph** view is an extension of **Comparison view**, crucial for more easily visually showing the differences between two profiling datasets.
-Similar to a `git diff`, the comparison takes the flame graphs from the comparison view and highlights the differences between the two flame graphs.
+Similar to a `git diff`, the comparison highlights where the relative share of time increases or decreases between two flame graphs.
 
 You can use Flame graph AI to interpret the diff view.
 
 To use Flame graph AI when comparing two different flame graphs:
 
-1. Sign on to your Grafana Cloud account and start your Grafana instance.
+1. Sign in to Grafana.
 1. Select **Drilldown** > **Profiles** from the left navigation.
-1. Select a **Service**, **Profile**, and time range (optional; default value is **Last 1 hour**).
-1. Optional: In **Baseline time range**, select one or more labels to use as filters. Select **Execute**.
-1. Optional: In **Comparison time range**, select one or more labels to use as filters. Select **Execute**.
-1. Select **Explain Flame Graph**.
+1. Select **Diff flame graph** in the **Exploration** tabs.
+1. Select a **Service** and **Profile type**.
+1. Configure **Baseline** and **Comparison**:
+   - Set time ranges for each pane, or enable **Sync time ranges**.
+   - Optionally add label filters for each pane.
+   - Optionally use **Auto-select** or a comparison preset.
+1. Select **Analyze with Assistant** (Grafana Cloud) or **Explain Diff Flame Graph** (Grafana open source).
