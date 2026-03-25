@@ -6,6 +6,7 @@ import { SceneExploreServiceFlameGraph } from '../../SceneExploreServiceFlameGra
 
 type ResolutionBoostExtensionProps = {
   serviceName: string;
+  datasourceUID: string;
 };
 
 const SERVICE_NAME_EXPR = '${serviceName}';
@@ -27,5 +28,7 @@ export function ResolutionBoostExtensionPoint({ scene }: { scene: SceneExploreSe
     return;
   }
 
-  return <ResolutionBoostExtension serviceName={serviceName} />;
+  const datasourceUID = sceneGraph.interpolate(scene, '${dataSource}');
+
+  return <ResolutionBoostExtension serviceName={serviceName} datasourceUID={datasourceUID} />;
 }
