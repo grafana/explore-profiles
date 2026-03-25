@@ -6,7 +6,18 @@ import tanstackQuery from '@tanstack/eslint-plugin-query';
 /** @type {Array<import('eslint').Linter.Config>} */
 export default [
   {
-    ignores: ['dist/', 'node_modules/', '.config/', 'coverage/', '**/eslint.config.*'],
+    ignores: [
+      '.config/**',
+      '**/.eslintcache',
+      '.yarn/**',
+      'coverage/**',
+      'dist/**',
+      'e2e/test-reports/**',
+      'e2e/test-results/**',
+      'node_modules/**',
+      'test-results/**',
+      '**/eslint.config.*',
+    ],
   },
   ...baseConfig,
   sonarjs.configs.recommended,
