@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.1
+
+##### Chores
+
+*  Remove unused / update dependencies (#879) (0c0eb57a)
+* **deps:**
+  *  bump undici from 7.18.2 to 7.24.5 (#878) (91da6ba2)
+  *  bump minimatch from 3.1.2 to 3.1.5 (#877) (03e3b581)
+  *  update grafana/grafana-enterprise:latest docker digest to 8e8fc4c (#849) (fda61e94)
+  *  update dependency flatted to v3.4.2 [security] (#874) (3ad985dc)
+
+
 ## 2.0.0
 
 ##### Chores
