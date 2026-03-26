@@ -116,7 +116,7 @@ export class SceneTimeRangeWithAnnotations
       }
 
       return vizPanel;
-    } catch (error) {
+    } catch {
       throw new Error('Ancestor timeseries panel not found!');
     }
   }
