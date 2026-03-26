@@ -154,14 +154,11 @@ test.describe('Diff view uploads', () => {
   test('Mode toggle', async ({ adHocViewPage }) => {
     await adHocViewPage.selectTab('Diff view');
 
-    // upload both files in side-by-side mode (wait for left to complete before uploading right
-    // to avoid the singleton adHocProfileClient aborting the left upload)
+    // upload both files in side-by-side mode
     const leftFilePath = path.join(__dirname, 'profile-files', 'dotnet-cpu-process_cpu-5m.pb');
-    await adHocViewPage.dropFile(leftFilePath, 0);
-    await expect(adHocViewPage.getFlamegraph(0)).toBeVisible();
-
     const rightFilePath = path.join(__dirname, 'profile-files', 'dotnet-cpu-process_cpu-5m.pb.gz');
-    await adHocViewPage.dropFile(rightFilePath, 1);
+    await Promise.all([adHocViewPage.dropFile(leftFilePath, 0), adHocViewPage.dropFile(rightFilePath, 1)]);
+    await expect(adHocViewPage.getFlamegraph(0)).toBeVisible();
     await expect(adHocViewPage.getFlamegraph(1)).toBeVisible();
 
     // switch to diff flamegraph mode — side-by-side flamegraphs should be replaced by a single diff flamegraph

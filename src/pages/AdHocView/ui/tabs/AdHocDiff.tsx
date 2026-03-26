@@ -1,6 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
-import { InlineField, InlineFieldRow, RadioButtonGroup, Select, useStyles2 } from '@grafana/ui';
+import { Alert, InlineField, InlineFieldRow, RadioButtonGroup, Select, useStyles2 } from '@grafana/ui';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { useDiffProfile } from '../../domain/useDiffProfile';
@@ -40,57 +40,108 @@ export function AdHocDiff() {
   const right = useUploadFile();
   const diff = useDiffProfile();
 
-  const profileTypes = useMemo(() => {
-    if (left.profileTypes.length && right.profileTypes.length) {
-      return left.profileTypes.filter((t) => right.profileTypes.includes(t));
+  const leftProfileTypeOptions = useMemo(
+    () => left.profileTypes.map((type) => ({ value: type, label: type })),
+    [left.profileTypes]
+  );
+
+  const rightProfileTypeOptions = useMemo(
+    () => right.profileTypes.map((type) => ({ value: type, label: type })),
+    [right.profileTypes]
+  );
+
+  const commonProfileTypes = useMemo(() => {
+    if (!left.profileTypes.length || !right.profileTypes.length) {
+      return null;
     }
-    return left.profileTypes.length ? left.profileTypes : right.profileTypes;
+    return left.profileTypes.filter((t) => right.profileTypes.includes(t));
   }, [left.profileTypes, right.profileTypes]);
 
-  const profileTypeOptions = useMemo(() => profileTypes.map((type) => ({ value: type, label: type })), [profileTypes]);
+  const hasCommonTypes = commonProfileTypes === null || commonProfileTypes.length > 0;
 
-  const [profileTypeOption, setProfileTypeOption] = useState<SelectableValue<string>>();
-
-  useEffect(() => {
-    setProfileTypeOption(profileTypeOptions[0]);
-  }, [profileTypeOptions]);
+  const [leftProfileTypeOption, setLeftProfileTypeOption] = useState<SelectableValue<string>>();
+  const [rightProfileTypeOption, setRightProfileTypeOption] = useState<SelectableValue<string>>();
 
   useEffect(() => {
-    if (mode === 'diff' && left.id && right.id) {
+    if (!leftProfileTypeOptions.length) {
+      setLeftProfileTypeOption(undefined);
+      return;
+    }
+    const preserved = selectedProfileType
+      ? leftProfileTypeOptions.find((opt) => opt.value === selectedProfileType)
+      : undefined;
+    const next = preserved ?? leftProfileTypeOptions[0];
+    setLeftProfileTypeOption(next);
+    setSelectedProfileType(next.value);
+  }, [leftProfileTypeOptions]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!rightProfileTypeOptions.length) {
+      setRightProfileTypeOption(undefined);
+      return;
+    }
+    const preserved = selectedProfileType
+      ? rightProfileTypeOptions.find((opt) => opt.value === selectedProfileType)
+      : undefined;
+    setRightProfileTypeOption(preserved ?? rightProfileTypeOptions[0]);
+  }, [rightProfileTypeOptions]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (mode === 'diff' && left.id && right.id && hasCommonTypes) {
       diff.fetchDiff(left.id, right.id, selectedProfileType);
     }
+    // Only trigger on new uploads, not on mode/profile type changes (handled by their own callbacks)
   }, [left.id, right.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onChangeProfileType = async (option: SelectableValue<string>) => {
-    const type = option.value;
-    setSelectedProfileType(type);
-    setProfileTypeOption(option);
+  const syncProfileType = (
+    option: SelectableValue<string>,
+    secondary: typeof left,
+    setSecondaryOption: typeof setLeftProfileTypeOption
+  ) => {
+    setSelectedProfileType(option.value);
+    if (secondary.profileTypes.includes(option.value!)) {
+      setSecondaryOption(option);
+    }
+  };
+
+  const applySideBySideChange = async (
+    option: SelectableValue<string>,
+    primary: typeof left,
+    secondary: typeof left
+  ) => {
+    const type = option.value!;
+    const promises = [];
+    if (primary.id) {
+      promises.push(primary.selectProfileType(option));
+    }
+    if (secondary.id && secondary.profileTypes.includes(type)) {
+      promises.push(secondary.selectProfileType(option));
+    }
+    await Promise.all(promises);
+  };
+
+  const applyProfileTypeChange = async (
+    option: SelectableValue<string>,
+    primary: typeof left,
+    secondary: typeof left
+  ) => {
+    const type = option.value!;
 
     if (mode === 'side-by-side') {
-      if (left.id) {
-        await left.selectProfileType(option);
-      }
-      if (right.id) {
-        await right.selectProfileType(option);
-      }
-    } else if (left.id && right.id) {
-      diff.fetchDiff(left.id, right.id, type);
+      await applySideBySideChange(option, primary, secondary);
+    } else if (left.id && right.id && commonProfileTypes?.includes(type)) {
+      await diff.fetchDiff(left.id, right.id, type);
     }
   };
 
   const onModeChange = async (newMode: DiffMode) => {
     setMode(newMode);
 
-    if (newMode === 'diff' && left.id && right.id) {
+    if (newMode === 'diff' && left.id && right.id && hasCommonTypes) {
       diff.fetchDiff(left.id, right.id, selectedProfileType);
     } else if (newMode === 'side-by-side' && selectedProfileType) {
       const option = { value: selectedProfileType };
-      if (left.id) {
-        await left.selectProfileType(option);
-      }
-      if (right.id) {
-        await right.selectProfileType(option);
-      }
+      await applySideBySideChange(option, left, right);
     }
   };
 
@@ -101,12 +152,20 @@ export function AdHocDiff() {
           <>
             <div className={styles.selectorContainer}>
               <InlineFieldRow>
-                <InlineField label="Profile" disabled={!profileTypeOptions.length} data-testid="profile-types-dropdown">
+                <InlineField
+                  label="Profile"
+                  disabled={!leftProfileTypeOptions.length}
+                  data-testid="profile-types-dropdown"
+                >
                   <Select
-                    key={profileTypeOption?.value}
-                    value={profileTypeOption}
-                    options={profileTypeOptions}
-                    onChange={onChangeProfileType}
+                    key={leftProfileTypeOption?.value}
+                    value={leftProfileTypeOption}
+                    options={leftProfileTypeOptions}
+                    onChange={(opt) => {
+                      setLeftProfileTypeOption(opt);
+                      syncProfileType(opt, right, setRightProfileTypeOption);
+                      applyProfileTypeChange(opt, left, right);
+                    }}
                     width={16}
                   />
                 </InlineField>
@@ -125,12 +184,20 @@ export function AdHocDiff() {
           <>
             <div className={styles.selectorContainer}>
               <InlineFieldRow>
-                <InlineField label="Profile" disabled={!profileTypeOptions.length} data-testid="profile-types-dropdown">
+                <InlineField
+                  label="Profile"
+                  disabled={!rightProfileTypeOptions.length}
+                  data-testid="profile-types-dropdown"
+                >
                   <Select
-                    key={profileTypeOption?.value}
-                    value={profileTypeOption}
-                    options={profileTypeOptions}
-                    onChange={onChangeProfileType}
+                    key={rightProfileTypeOption?.value}
+                    value={rightProfileTypeOption}
+                    options={rightProfileTypeOptions}
+                    onChange={(opt) => {
+                      setRightProfileTypeOption(opt);
+                      syncProfileType(opt, left, setLeftProfileTypeOption);
+                      applyProfileTypeChange(opt, right, left);
+                    }}
                     width={16}
                   />
                 </InlineField>
@@ -168,7 +235,13 @@ export function AdHocDiff() {
         />
       )}
 
-      {mode === 'diff' && (
+      {mode === 'diff' && !hasCommonTypes && (
+        <Alert title="Cannot compute diff" severity="warning">
+          The uploaded profiles have no common profile types. Upload profiles with matching types to use the diff view.
+        </Alert>
+      )}
+
+      {mode === 'diff' && hasCommonTypes && (
         <>
           {diff.isLoading && !diff.profile ? <AdHocSpinner /> : null}
           {diff.profile && <AdHocFlameGraph profile={diff.profile} diff={true} />}

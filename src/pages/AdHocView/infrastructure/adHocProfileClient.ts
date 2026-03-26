@@ -86,4 +86,6 @@ class AdHocProfileClient extends ApiClient {
   }
 }
 
-export const adHocProfileClient = new AdHocProfileClient();
+export function createAdHocProfileClient() {
+  return new AdHocProfileClient();
+}
