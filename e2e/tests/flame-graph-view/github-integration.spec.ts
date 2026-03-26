@@ -32,22 +32,51 @@ test.describe('Flame graph view', () => {
       await topTable.getByText('Total').click();
       await expect(topTable.getByText(functionName)).toBeVisible();
 
-      await exploreProfilesPage.clickOnFlameGraphNode(nodePosition);
+      // Fixed {x:30,y:60} can hit a different frame (e.g. runtime.chanrecv2); panel then shows that
+      // frame's name instead of the expected BasicService.main. Try several positions and keep the
+      // first open where the function name row matches (mock + stacktrace must align for assertions).
+      await exploreProfilesPage.route('**/SelectMergeProfile', async (route) => {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(SelectMergeProfileResponse),
+        });
+      });
 
-      await Promise.all([
-        exploreProfilesPage.getFlameGraphContextualMenuItem('Function details').click(),
-        /// we mock the request to ensure the correct UI
-        // TODO: figure out why in CI, without request interception, we don't see all the values on the UI but in a local Docker, yes :man_shrug:
-        exploreProfilesPage.route('**/SelectMergeProfile', async (route) => {
-          await route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify(SelectMergeProfileResponse),
-          });
-        }),
-      ]);
+      const flamegraph = exploreProfilesPage.getFlamegraph();
+      await expect(flamegraph).toBeVisible({ timeout: 15000 });
+      const box = await flamegraph.boundingBox();
+      expect(box).toBeTruthy();
+      const candidates = [
+        nodePosition,
+        { x: Math.round(box!.width * 0.35), y: Math.round(box!.height * 0.2) },
+        { x: Math.round(box!.width * 0.5), y: Math.round(box!.height * 0.35) },
+        { x: Math.round(box!.width * 0.25), y: Math.round(box!.height * 0.45) },
+      ];
 
       const detailsPanel = exploreProfilesPage.getByTestId('function-details-panel');
+      let openedCorrectFrame = false;
+      for (const pos of candidates) {
+        await flamegraph.click({ position: pos });
+        const menuItem = exploreProfilesPage.getFlameGraphContextualMenuItem('Function details');
+        try {
+          await expect(menuItem).toBeVisible({ timeout: 2000 });
+        } catch {
+          await exploreProfilesPage.page.keyboard.press('Escape');
+          continue;
+        }
+        await menuItem.click();
+        await expect(detailsPanel).toBeVisible({ timeout: 10000 });
+        const span = detailsPanel.getByTestId('row-function-name').locator('span');
+        const text = await span.textContent();
+        if (text?.trim() === functionName) {
+          openedCorrectFrame = true;
+          break;
+        }
+        await detailsPanel.getByLabel('close').click();
+        await expect(detailsPanel).not.toBeVisible({ timeout: 5000 });
+      }
+      expect(openedCorrectFrame).toBe(true);
 
       await expect(detailsPanel).toBeVisible();
       await expect(detailsPanel.getByText('Function Details')).toBeVisible();

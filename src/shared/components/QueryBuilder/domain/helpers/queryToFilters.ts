@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid';
 import { FilterKind, Filters, OperatorKind } from '../types';
 import { buildIsEmptyFilter } from './buildIsEmptyFilter';
 
-const parseRawFilters = (rawFilters: string): string[][] => {
+export const parseRawFilters = (rawFilters: string): string[][] => {
   const matches = rawFilters.matchAll(/(\w+)(=|!=|=~|!~)"([^"]*)"/g);
   return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
 };
@@ -11,7 +11,6 @@ const parseRawFilters = (rawFilters: string): string[][] => {
 const LABELS_REGEX = /.+:[^{]+\{(.+)\}$/;
 const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+|\{|\}|\?).*/;
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
   // 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ebpf/gcp-logs-ops/grafana-agent", namespace="gcp-logs-ops"}'
   if (!query) {

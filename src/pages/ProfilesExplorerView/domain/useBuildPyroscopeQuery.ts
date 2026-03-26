@@ -16,8 +16,8 @@ export function useBuildPyroscopeQuery(sceneObject: SceneObject, filterKey: stri
 
   const { filterExpression } = sceneGraph.findByKeyAndType(sceneObject, filterKey, FiltersVariable).useState();
 
-  return useMemo(
-    () => `${profileMetricId}{service_name="${serviceName}",${filterExpression}}`,
-    [filterExpression, profileMetricId, serviceName]
-  );
+  return useMemo(() => {
+    const labels = `{service_name="${serviceName}",${filterExpression}}`;
+    return profileMetricId != null && profileMetricId !== '' ? `${profileMetricId}${labels}` : labels;
+  }, [filterExpression, profileMetricId, serviceName]);
 }

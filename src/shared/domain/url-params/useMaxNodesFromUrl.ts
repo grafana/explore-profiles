@@ -27,15 +27,17 @@ function useSetDefaultMaxNodes(hasMaxNodes: boolean, setMaxNodes: (newMaxNodes: 
   setMaxNodes(settings!.maxNodes);
 }
 
-export function useMaxNodesFromUrl(): [number | null, (newMaxNodes: number) => void] {
+export function useMaxNodesFromUrl(): [number, (newMaxNodes: number) => void] {
   const { searchParams, pushNewUrl } = useUrlSearchParams();
-  const maxNodes = Number(searchParams.get('maxNodes') ?? '');
+  const fromUrl = Number(searchParams.get('maxNodes') ?? '');
 
   const setMaxNodes = (newMaxNodes: number) => {
     pushNewUrl({ maxNodes: String(newMaxNodes) });
   };
 
-  useSetDefaultMaxNodes(maxNodes > 0, setMaxNodes);
+  useSetDefaultMaxNodes(fromUrl > 0, setMaxNodes);
 
+  // URL missing or 0 before settings load would skip building runners; always give a positive value.
+  const maxNodes = fromUrl > 0 ? fromUrl : DEFAULT_SETTINGS.maxNodes;
   return [maxNodes, setMaxNodes];
 }

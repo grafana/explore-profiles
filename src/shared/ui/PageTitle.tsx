@@ -3,8 +3,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { Stack, useStyles2 } from '@grafana/ui';
 import { QueryAnalysisResult } from '@shared/components/QueryAnalysisTooltip/domain/QueryAnalysis';
 import { QueryAnalysisTooltip } from '@shared/components/QueryAnalysisTooltip/QueryAnalysisTooltip';
-import React, { memo, ReactNode } from 'react';
-import { Helmet } from 'react-helmet';
+import React, { memo, ReactNode, useEffect } from 'react';
 
 import { PluginInfo } from './PluginInfo';
 import { PyroscopeLogo } from './PyroscopeLogo';
@@ -18,11 +17,12 @@ function PageTitleComponent({ title, queryAnalysis }: PageTitleProps) {
   const styles = useStyles2(getStyles);
   const fullTitle = typeof title === 'string' ? `${title} | Pyroscope` : 'Pyroscope';
 
+  useEffect(() => {
+    document.title = fullTitle;
+  }, [fullTitle]);
+
   return (
     <>
-      <Helmet>
-        <title>{fullTitle}</title>
-      </Helmet>
       <div className={styles.titleContainer}>
         <Stack justifyContent="space-between">
           <div>
