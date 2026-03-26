@@ -36,6 +36,7 @@ work/
 ci/
 
 # E2E
+test-results/
 e2e/test-reports/
 e2e/test-results/
 e2e/auth/

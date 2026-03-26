@@ -19,6 +19,7 @@ import { Unsubscribable } from 'rxjs';
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { useGrafanaAssistant } from '../../domain/useGrafanaAssistant';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
+import { deferSceneQueryRunnerRun } from '../../infrastructure/deferSceneQueryRunnerRun';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
@@ -118,11 +119,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     }
 
     useEffect(() => {
-      if (maxNodes) {
-        this.setState({
-          $data: buildFlameGraphQueryRunner({ maxNodes, spanSelector, profileIdSelector }),
-        });
-      }
+      const runner = buildFlameGraphQueryRunner({ maxNodes, spanSelector, profileIdSelector });
+      this.setState({ $data: runner });
+      return deferSceneQueryRunnerRun(runner);
     }, [maxNodes, spanSelector, profileIdSelector]);
 
     const $dataState = $data.useState();
@@ -279,6 +278,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                 />
               }
               keepFocusOnDataChange
+              enableNewUI={featureToggles.flameGraphWithCallTree}
             />
           )}
         </Panel>

@@ -13,14 +13,14 @@ aliases:
 
 # Profiles settings
 
-The **Profiles settings** page lets you modify flame graph, export, and function details options used for Profiles and Grafana Profiles Drilldown.
+The **Profiles settings** page lets you modify flame graph and function-details options used by Profiles Drilldown.
 
-![The Profiles Settings page](/media/docs/explore-profiles/explore-profiles-settings-2.png)
+![The Profiles Settings page](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-settings-2-v1.17.0.png)
 
 | Features                    | Options        | Explanation                                                                                                                                                                                                                                               |
 | --------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Collapsed flame graph**   | Default: Off   | When this feature is active, you can collapse flame graphs to minimize their screen space.                                                                                                                                                                |
-| **Maximum number of nodes** | Default: 16384 | This number controls the maximum number of nodes, which controls the depth of the flame graph. The higher the number, the more nodes are used in the flame graph. The flame graphs appear longer.                                                         |
+| **Maximum number of nodes** | Default: 16384 | This setting controls the maximum number of nodes in the flame graph. Higher values render more detail and can increase rendering time.                                                                                                                   |
 | **Enable function details** | Default: On    | Enables mapping of resource usage to lines of source code. If the [GitHub integration](https://grafana.com/docs/grafana-cloud/monitor-applications/profiles/pyroscope-github-integration/) is configured, then the source code is downloaded from GitHub. |
 
 <!-- Commenting out flamegraph.com
@@ -33,8 +33,8 @@ To change the settings for Profiles Drilldown:
 
 1. Sign in to your Grafana instance.
 1. Select **Drilldown** > **Profiles** in the left navigation.
-1. Select the **Settings** (gear) icon in the right corner.
-   ![Access the Settings by selecting the gear icon](/media/docs/explore-profiles/explore-profiles-settings-icon.png)
+1. Select **View/edit tenant settings** in the top toolbar.
+   ![Access tenant settings from the Profiles toolbar](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-settings-icon-v1.17.0.png)
 1. Change any options as desired.
 1. Select **Save settings** to preserve the changes.
 
