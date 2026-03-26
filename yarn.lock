@@ -1238,13 +1238,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/data@npm:13.0.0-22923051024":
-  version: 13.0.0-22923051024
-  resolution: "@grafana/data@npm:13.0.0-22923051024"
+"@grafana/data@npm:13.0.0-23544296566":
+  version: 13.0.0-23544296566
+  resolution: "@grafana/data@npm:13.0.0-23544296566"
   dependencies:
     "@braintree/sanitize-url": "npm:7.0.1"
-    "@grafana/i18n": "npm:13.0.0-22923051024"
-    "@grafana/schema": "npm:13.0.0-22923051024"
+    "@grafana/i18n": "npm:13.0.0-23544296566"
+    "@grafana/schema": "npm:13.0.0-23544296566"
     "@leeoniya/ufuzzy": "npm:1.0.19"
     "@types/d3-interpolate": "npm:^3.0.0"
     "@types/string-hash": "npm:1.1.3"
@@ -1274,7 +1274,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/693e5d39549cfacd136952384f64f932e56d47d955078e1f67ef5169cfe462743cd80582a48cdec1ae45ea6f4a5267d6c55b9a2c6b5a2eab644816f92a0442c2
+  checksum: 10/5bd5b6263132ee69d4f73267f9cff0caff0c2ed6dc595fda87b4a0dede7a55a58693f74ef929442de7979cc3758a0f32572d76f56a809be5fca761f17c720633
   languageName: node
   linkType: hard
 
@@ -1300,14 +1300,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/e2e-selectors@npm:13.0.0-22923051024":
-  version: 13.0.0-22923051024
-  resolution: "@grafana/e2e-selectors@npm:13.0.0-22923051024"
+"@grafana/e2e-selectors@npm:13.0.0-23544296566":
+  version: 13.0.0-23544296566
+  resolution: "@grafana/e2e-selectors@npm:13.0.0-23544296566"
   dependencies:
     semver: "npm:^7.7.0"
     tslib: "npm:2.8.1"
     typescript: "npm:5.9.2"
-  checksum: 10/6909503d9a27fc6933b8f4c24f7366061dd75c05c3c14856a40e0fd89ea8d85f289c79a5247962ffa155315bf78f16c8d1fefa916b5425270959f6cbfbe42480
+  checksum: 10/36cbdf2fcd18c924ec57fe7904d07deed71a7be2dbe02665109d98f37e378b65faba5acda49700108297ddc735b4b2b32975d01121883591f7a030da320709b6
   languageName: node
   linkType: hard
 
@@ -1370,13 +1370,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/flamegraph@npm:13.0.0-22923051024":
-  version: 13.0.0-22923051024
-  resolution: "@grafana/flamegraph@npm:13.0.0-22923051024"
+"@grafana/flamegraph@npm:13.0.0-23544296566":
+  version: 13.0.0-23544296566
+  resolution: "@grafana/flamegraph@npm:13.0.0-23544296566"
   dependencies:
     "@emotion/css": "npm:11.13.5"
-    "@grafana/data": "npm:13.0.0-22923051024"
-    "@grafana/ui": "npm:13.0.0-22923051024"
+    "@grafana/data": "npm:13.0.0-23544296566"
+    "@grafana/ui": "npm:13.0.0-23544296566"
     "@leeoniya/ufuzzy": "npm:1.0.19"
     d3: "npm:^7.8.5"
     lodash: "npm:^4.17.23"
@@ -1390,7 +1390,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-table: ^7.8.0
-  checksum: 10/ff32ed38012056d153c308fb136a9dca7004e8eca5423cbf9d9887708a8ef257e39ec01076d93e892465d67e46f189df429c10f65a6bc4005bb9214e3f77da89
+  checksum: 10/088e0d7aa24a972b7a254a695470a0007650c95dea25b3bbc47a821bf528853522eae6e7d9e91c2d59f7b63b1b8d00b81aa17270f908a10658ad4efb16d160c5
   languageName: node
   linkType: hard
 
@@ -1412,9 +1412,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/i18n@npm:13.0.0-22923051024":
-  version: 13.0.0-22923051024
-  resolution: "@grafana/i18n@npm:13.0.0-22923051024"
+"@grafana/i18n@npm:13.0.0-23544296566":
+  version: 13.0.0-23544296566
+  resolution: "@grafana/i18n@npm:13.0.0-23544296566"
   dependencies:
     "@formatjs/intl-durationformat": "npm:^0.7.0"
     "@typescript-eslint/utils": "npm:^8.33.1"
@@ -1426,7 +1426,7 @@ __metadata:
     react-i18next: "npm:^15.0.0"
   peerDependencies:
     react: ">=18"
-  checksum: 10/10a9de24cc09af9db34b3bb458696f236dedf97794101c0a3d704bf9f2f3dfc624b7b09829b2536cb0e93685c98788eee48d4f2d9015dadef0d2120e6a9828e0
+  checksum: 10/9d59000429c6f3d8b6f114e8892bbe5c3b3c1d17189c36d739be27ded381ec98d62598b0d17d71724ef1cfbaa6931d3df61096ddf95a977b42972d34042022da
   languageName: node
   linkType: hard
 
@@ -1509,12 +1509,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/schema@npm:13.0.0-22923051024":
-  version: 13.0.0-22923051024
-  resolution: "@grafana/schema@npm:13.0.0-22923051024"
+"@grafana/schema@npm:13.0.0-23544296566":
+  version: 13.0.0-23544296566
+  resolution: "@grafana/schema@npm:13.0.0-23544296566"
   dependencies:
     tslib: "npm:2.8.1"
-  checksum: 10/234ad883bb3dfed4ab029a5739d192db0219abc91bad4e2d4cdd0684a231f1a337497d09e0790ea4eb95deeb57c22166d09fcc8ceab89b0eaf4bdacea7363f7e
+  checksum: 10/91b4bcf59eaef3a4e2b3bfcd5c906362acb7c35daef1b3ddcfdb254ae925efc30f7772e3ae59f435a1f0bc1cc0c7cee80c0b98dc954d373ae6c8489509411417
   languageName: node
   linkType: hard
 
@@ -1612,19 +1612,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grafana/ui@npm:13.0.0-22923051024":
-  version: 13.0.0-22923051024
-  resolution: "@grafana/ui@npm:13.0.0-22923051024"
+"@grafana/ui@npm:13.0.0-23544296566":
+  version: 13.0.0-23544296566
+  resolution: "@grafana/ui@npm:13.0.0-23544296566"
   dependencies:
     "@emotion/css": "npm:11.13.5"
     "@emotion/react": "npm:11.14.0"
     "@emotion/serialize": "npm:1.3.3"
     "@floating-ui/react": "npm:0.27.16"
-    "@grafana/data": "npm:13.0.0-22923051024"
-    "@grafana/e2e-selectors": "npm:13.0.0-22923051024"
+    "@grafana/data": "npm:13.0.0-23544296566"
+    "@grafana/e2e-selectors": "npm:13.0.0-23544296566"
     "@grafana/faro-web-sdk": "npm:^2.2.4"
-    "@grafana/i18n": "npm:13.0.0-22923051024"
-    "@grafana/schema": "npm:13.0.0-22923051024"
+    "@grafana/i18n": "npm:13.0.0-23544296566"
+    "@grafana/schema": "npm:13.0.0-23544296566"
     "@hello-pangea/dnd": "npm:18.0.1"
     "@monaco-editor/react": "npm:4.7.0"
     "@popperjs/core": "npm:2.11.8"
@@ -1688,7 +1688,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: 10/d2df8fe53d08ab007b49fc6e7a436ce75b401e7fe25b7c8b24d0389361f44246cd6f6f383e6b2f75007de0fd4e512199a31441bec3ed499a014e5260448677bb
+  checksum: 10/1dd55ad5d7bbf2f2d756e5980bb2139720ea86a066a43524effa59510f7801d0c14b13d1442dbeb1b95232ccf11aa7eb474559aa8ec1be098943877368c187a5
   languageName: node
   linkType: hard
 
@@ -6667,18 +6667,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:3.3.2":
-  version: 3.3.2
-  resolution: "dompurify@npm:3.3.2"
-  dependencies:
-    "@types/trusted-types": "npm:^2.0.7"
-  dependenciesMeta:
-    "@types/trusted-types":
-      optional: true
-  checksum: 10/3ca02559677ce6d9583a500f21ffbb6b9e88f1af99f69fa0d0d9442cddbac98810588c869f8b435addb5115492d6e49870024bca322169b941bafedb99c7f281
-  languageName: node
-  linkType: hard
-
 "domutils@npm:^3.0.1, domutils@npm:^3.2.1, domutils@npm:^3.2.2":
   version: 3.2.2
   resolution: "domutils@npm:3.2.2"
@@ -8776,13 +8764,6 @@ __metadata:
   linkType: hard
 
 "immutable@npm:5.1.5":
-  version: 5.1.5
-  resolution: "immutable@npm:5.1.5"
-  checksum: 10/7aec2740239772ec8e92e793c991bd809203a97694f4ff3a18e50e28f9a6b02393ad033d87b458037bdf8c0ea37d4446d640e825f6171df3405cf6cf300ce028
-  languageName: node
-  linkType: hard
-
-"immutable@npm:^5.1.5":
   version: 5.1.5
   resolution: "immutable@npm:5.1.5"
   checksum: 10/7aec2740239772ec8e92e793c991bd809203a97694f4ff3a18e50e28f9a6b02393ad033d87b458037bdf8c0ea37d4446d640e825f6171df3405cf6cf300ce028
@@ -11942,7 +11923,7 @@ __metadata:
     "@grafana/e2e-selectors": "npm:10.4.19"
     "@grafana/eslint-config": "npm:8.2.0"
     "@grafana/faro-web-sdk": "npm:^1.19.0"
-    "@grafana/flamegraph": "npm:13.0.0-22923051024"
+    "@grafana/flamegraph": "npm:13.0.0-23544296566"
     "@grafana/llm": "npm:1.0.3"
     "@grafana/runtime": "npm:12.3.0"
     "@grafana/scenes": "npm:^6.23.0"
