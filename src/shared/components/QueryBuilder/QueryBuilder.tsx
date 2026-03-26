@@ -163,7 +163,6 @@ function useChicletHandlers(actor: Actor) {
   };
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 function useSelectHandlers(actor: Actor, suggestions: QueryBuilderContext['suggestions'], queryBuilderId: string) {
   /* single & multiple */
   const onFocus = useCallback(() => {
