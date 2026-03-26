@@ -39,6 +39,7 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
+import { getKgSceneProps } from '../../helpers/kgAnnotations';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
@@ -119,6 +120,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   private initialFilters?: AdHocVariableFilter[];
 
   public constructor(state: Partial<SceneProfilesExplorerState>) {
+    const kg = getKgSceneProps('Service', '$serviceName');
+
     super({
       key: 'profiles-explorer',
       explorationType: state.initialFilters && state.initialFilters.length > 0 ? ExplorationType.LABELS : undefined,
@@ -155,9 +158,14 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             new SpanSelectorVariable(),
           ],
         }),
+      ...(kg ? { $data: kg.$data } : {}),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
       loadSearchScene: new LoadSearchScene(),
-      controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
+      controls: [
+        new SceneTimePicker({ isOnCanvas: true }),
+        new SceneRefreshPicker({ isOnCanvas: true }),
+        ...(kg ? [kg.controls] : []),
+      ],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
       gridControls: [
