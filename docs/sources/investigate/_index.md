@@ -25,28 +25,36 @@ When you use Profiles Drilldown, your investigations usually follow these steps.
 1. Choose an **Exploration** tab. **All services** is selected by default. Learn about the [available views](../choose-a-view/).
 
    ![The All services view](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-homescreen-v1.17.0.png)
+
 1. Look for spikes or trends in services to identify where to investigate. Use the **Profile type** drop-down to change profile metrics.
 
    ![Select a profile type](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-select-profile-v1.17.0.png)
+
 1. After you identify the service to explore, you can change views:
+
    - Select **Profile types** to review profile metrics for a service.
    - Select **Labels** to view labels for a service and refine the scope of your investigation.
    - Select **Flame graph** to view the flame graph for a service.
 
      ![Select an Exploration type to begin](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-exploration-bar-v1.17.0.png)
+
 1. Optional: Select filters to focus on problem areas. Each filter is added to the filter expression near the top of the page. You can add filters in the following ways:
+
    - Use filter selectors in the filter bar to add labels and operators.
    - In **Labels** view, use **Include** or **Exclude** on areas of interest.
 
    If **Labels** view shows no data, select a different service, profile type, or group-by label.
 
-     ![Add filters](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-labels-include-exclude-v1.17.0.png)
+   ![Add filters](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-labels-include-exclude-v1.17.0.png)
+
 1. Optional: Click and drag on a chart to zoom to a smaller time range.
 1. To compare two flame graphs, open **Diff flame graph**.
+
    - Configure **Baseline** and **Comparison** using time range selectors, label filters, and chart range selection.
    - Use **Auto-select** or choose a comparison preset to speed up setup.
 
      ![Labels view](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-labels-compare-v1.17.0.png)
+
 1. Use **Diff flame graph** to compare where relative time share changes between baseline and comparison, and then drill into functions to identify likely causes.
 
    ![Viewing a flame graph during an investigation](/media/docs/explore-profiles/v1.17.0/profiles-drilldown-diff-flamegraph-v1.17.0.png)

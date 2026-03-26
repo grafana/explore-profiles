@@ -37,7 +37,6 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
     super({ key: 'function-details-panel' });
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   useSceneFunctionDetailsPanel = (stackTrace: StackTrace, timeRange: TimeRange): DomainHookReturnValue => {
     const dataSourceUid = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
       .value as string;

@@ -53,7 +53,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
   }
 
   // TODO: https://github.com/grafana/profiles-drilldown/issues/614
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   static Component = function ({
     model,
     isModalOpen,

@@ -102,7 +102,7 @@ export const actions: any = {
       ...updateFiltersAndQuery(newFilters, context),
     };
   }),
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   editFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
     if (context.edition === null) {
       throw new Error('Cannot edit filter operator without edition data!');

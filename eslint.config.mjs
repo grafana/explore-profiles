@@ -1,7 +1,8 @@
-import baseConfig from './.config/eslint.config.mjs';
+import tanstackQuery from '@tanstack/eslint-plugin-query';
 import jest from 'eslint-plugin-jest';
 import sonarjs from 'eslint-plugin-sonarjs';
-import tanstackQuery from '@tanstack/eslint-plugin-query';
+
+import baseConfig from './.config/eslint.config.mjs';
 
 /** @type {Array<import('eslint').Linter.Config>} */
 export default [
