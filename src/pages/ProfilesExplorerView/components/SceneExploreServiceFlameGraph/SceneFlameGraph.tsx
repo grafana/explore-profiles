@@ -288,6 +288,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                 />
               }
               keepFocusOnDataChange
+              enableNewUI={featureToggles.flameGraphWithCallTree}
             />
           )}
         </Panel>
