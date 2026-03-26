@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { localeCompare } from '@shared/domain/localeCompare';
@@ -37,7 +38,7 @@ export class ProfileMetricVariable extends QueryVariable {
     super({
       key: 'profileMetricId',
       name: 'profileMetricId',
-      label: 'Profile type',
+      label: t('variables.profile-metric.label', 'Profile type'),
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ProfileMetricVariable.QUERY_DEFAULT,
       loading: true,
@@ -133,11 +134,17 @@ export class ProfileMetricVariable extends QueryVariable {
         // we add a key to ensure that the Cascader selects the initial value or available options properly when landing on the page
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
         key={nanoid(5)}
-        aria-label="Profile metrics list"
+        aria-label={t('variables.profile-metric.aria-label', 'Profile metrics list')}
         width={24}
         separator="/"
         displayAllSelectedLevels
-        placeholder={loading ? 'Loading...' : `Select a profile metric (${options.length})`}
+        placeholder={
+          loading
+            ? t('variables.profile-metric.loading', 'Loading...')
+            : t('variables.profile-metric.placeholder', 'Select a profile metric ({{count}})', {
+                count: options.length,
+              })
+        }
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}

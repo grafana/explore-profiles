@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Button, Space, Tab, TabsBar, useStyles2 } from '@grafana/ui';
 import { BackButton } from '@shared/components/Common/BackButton';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
@@ -23,19 +24,23 @@ export default function SettingsView() {
   useReportPageInitialized('settings');
 
   if (data.isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Trans i18nKey="settings.loading">Loading...</Trans>
+      </div>
+    );
   }
 
   // Define the build in tabs
   const builtInTabs = [
     {
       // Standard UI settings tab
-      title: 'UI Settings',
+      title: t('settings.tabs.ui-settings', 'UI Settings'),
       content: (
         <UISettingsView>
           <div className={styles.buttons}>
             <Button variant="primary" type="submit">
-              Save settings
+              <Trans i18nKey="settings.save-button">Save settings</Trans>
             </Button>
             <BackButton onClick={actions.goBack} />
           </div>
@@ -55,7 +60,8 @@ export default function SettingsView() {
   };
   const pluginTabs = data.components.map((Component) => {
     // get title from plugin meta (works in Grafana 11.6+)
-    const title = (Component as ComponentWithMeta).meta?.title || 'Unknown Extension';
+    const title =
+      (Component as ComponentWithMeta).meta?.title || t('settings.tabs.unknown-extension', 'Unknown Extension');
 
     return {
       title: title,
@@ -67,7 +73,7 @@ export default function SettingsView() {
 
   return (
     <>
-      <PageTitle title="Profiles settings (tenant)" />
+      <PageTitle title={t('settings.title', 'Profiles settings (tenant)')} />
       {/* if there is only one tab, don't render tab bar */}
       {allTabs.length > 1 && (
         <>

@@ -1,3 +1,4 @@
+import grafanaI18nPlugin from '@grafana/i18n/eslint-plugin';
 import tanstackQuery from '@tanstack/eslint-plugin-query';
 import jest from 'eslint-plugin-jest';
 import sonarjs from 'eslint-plugin-sonarjs';
@@ -24,6 +25,15 @@ export default [
   sonarjs.configs.recommended,
   jest.configs['flat/recommended'],
   ...tanstackQuery.configs['flat/recommended'],
+  {
+    name: 'grafana/i18n-rules',
+    ignores: ['**/*.test.*', '**/*.spec.*', '**/__tests__/**'],
+    plugins: { '@grafana/i18n': grafanaI18nPlugin },
+    rules: {
+      '@grafana/i18n/no-untranslated-strings': ['error', { calleesToIgnore: ['^css$', 'use[A-Z].*'] }],
+      '@grafana/i18n/no-translation-top-level': 'error',
+    },
+  },
   {
     rules: {
       'no-console': ['error', { allow: [''] }],

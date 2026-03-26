@@ -1,4 +1,5 @@
 import { PanelMenuItem } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { reportInteraction } from '@grafana/runtime';
 import {
   SceneComponentProps,
@@ -22,17 +23,6 @@ interface SceneTimeseriesMenuState extends SceneObjectState {
   showExemplars?: boolean; // undefined means that the Exemplars button is not shown in the menu. Otherwise, it's shown and the value is the current state of the Exemplars button.
 }
 
-const SCALE_TYPES = [
-  {
-    text: 'Linear',
-    scaleDistribution: { type: ScaleDistribution.Linear },
-  },
-  {
-    text: 'Log2',
-    scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-  },
-];
-
 export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuState> {
   constructor(state: SceneTimeseriesMenuState) {
     super({
@@ -50,11 +40,22 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   buildMenuItems(): PanelMenuItem[] {
     const { scaleType, showExemplars } = this.state;
 
+    const scaleTypes = [
+      {
+        text: t('timeseries.menu.scale-linear', 'Linear'),
+        scaleDistribution: { type: ScaleDistribution.Linear },
+      },
+      {
+        text: t('timeseries.menu.scale-log2', 'Log2'),
+        scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+      },
+    ];
+
     const menuItems: PanelMenuItem[] = [
       {
-        text: 'Scale type',
+        text: t('timeseries.menu.scale-type', 'Scale type'),
         type: 'group',
-        subMenu: SCALE_TYPES.map((option) => ({
+        subMenu: scaleTypes.map((option) => ({
           text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
           onClick: () => this.onClickScaleOption(option),
         })),
@@ -65,7 +66,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       },
       {
         iconClassName: 'compass',
-        text: 'Open in Explore',
+        text: t('timeseries.menu.open-in-explore', 'Open in Explore'),
         onClick: () => this.onClickExplore(),
       },
     ];
@@ -74,12 +75,12 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       menuItems.unshift(
         {
           iconClassName: showExemplars ? 'eye' : 'eye-slash',
-          text: 'Exemplars',
+          text: t('timeseries.menu.exemplars', 'Exemplars'),
           onClick: () => this.onClickToggleExemplars(),
         },
         {
           type: 'divider',
-          text: 'new-divider',
+          text: '',
         }
       );
     }

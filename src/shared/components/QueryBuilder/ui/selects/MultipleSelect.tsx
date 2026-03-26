@@ -4,7 +4,7 @@ import { MultiSelect, useStyles2 } from '@grafana/ui';
 import React, { useCallback, useState } from 'react';
 
 import { Suggestions } from '../../domain/types';
-import { MESSAGES } from '../constants';
+import { getMessages } from '../constants';
 
 type MultipleSelectProps = {
   suggestions: any;
@@ -36,7 +36,7 @@ export function MultipleSelect({ suggestions, onFocus, onKeyDown, onCloseMenu }:
     <MultiSelect
       className={styles.select}
       placeholder={suggestions.placeholder}
-      loadingMessage={MESSAGES.LOADING}
+      loadingMessage={getMessages().LOADING}
       closeMenuOnSelect={false}
       hideSelectedOptions={false}
       backspaceRemovesValue

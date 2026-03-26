@@ -1,7 +1,6 @@
 import { createTheme } from '@grafana/data';
 import { FlameGraph as GrafanaFlameGraph, Props } from '@grafana/flamegraph';
 import { useTheme2 } from '@grafana/ui';
-import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import React, { memo, useMemo } from 'react';
 
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
@@ -51,7 +50,6 @@ function FlameGraphComponent({
       getExtraContextMenuButtons={getExtraContextMenuButtons}
       keepFocusOnDataChange
       showAnalyzeWithAssistant={showAnalyzeWithAssistant}
-      enableNewUI={featureToggles.flameGraphWithCallTree}
     />
   );
 }

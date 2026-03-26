@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Button, Icon, IconButton, Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -37,7 +38,9 @@ export const GitHubRepository = ({ enableIntegration, repository }: GitHubReposi
     return (
       <>
         <Spinner />
-        <span>Connecting to GitHub...</span>
+        <span>
+          <Trans i18nKey="function-details.github.connecting">Connecting to GitHub...</Trans>
+        </span>
       </>
     );
   }
@@ -49,10 +52,15 @@ export const GitHubRepository = ({ enableIntegration, repository }: GitHubReposi
         icon="github"
         variant="primary"
         onClick={login}
-        tooltip="Once connected, the GitHub code will be accessible only from this browser session."
+        tooltip={t(
+          'function-details.github.connect-tooltip',
+          'Once connected, the GitHub code will be accessible only from this browser session.'
+        )}
         tooltipPlacement="top"
       >
-        Connect to {repository.name}
+        <Trans i18nKey="function-details.github.connect-button" values={{ name: repository.name }}>
+          Connect to {{ name: repository.name } as any}
+        </Trans>
       </Button>
     );
   }
@@ -61,7 +69,13 @@ export const GitHubRepository = ({ enableIntegration, repository }: GitHubReposi
   return (
     <>
       <Icon name="github" size="lg" />
-      <a className={styles.ellipsis} href={repository.commitUrl} target="_blank" rel="noreferrer" title="View commit">
+      <a
+        className={styles.ellipsis}
+        href={repository.commitUrl}
+        target="_blank"
+        rel="noreferrer"
+        title={t('function-details.github.view-commit', 'View commit')}
+      >
         <Icon name="external-link-alt" />
         &nbsp;
         {repository.commitName}
@@ -69,8 +83,8 @@ export const GitHubRepository = ({ enableIntegration, repository }: GitHubReposi
       <IconButton
         name="signout"
         onClick={() => logout()}
-        aria-label="Disconnect from GitHub"
-        title="Disconnect from GitHub"
+        aria-label={t('function-details.github.disconnect', 'Disconnect from GitHub')}
+        title={t('function-details.github.disconnect', 'Disconnect from GitHub')}
       />
     </>
   );

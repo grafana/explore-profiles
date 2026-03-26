@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import {
   SceneComponentProps,
   SceneObjectBase,
@@ -24,12 +25,14 @@ export interface ScenePanelTypeSwitcherState extends SceneObjectState {
 export class ScenePanelTypeSwitcher extends SceneObjectBase<ScenePanelTypeSwitcherState> {
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['panelType'] });
 
-  static OPTIONS = [
-    { label: 'Time series', value: PanelType.TIMESERIES, icon: 'heart-rate' },
-    { label: 'Totals', value: PanelType.BARGAUGE, icon: 'align-left' },
-    { label: 'Maxima', value: PanelType.TABLE, icon: 'angle-double-up' },
-    { label: 'Histograms', value: PanelType.HISTOGRAM, icon: 'graph-bar' },
-  ];
+  static getOptions() {
+    return [
+      { label: t('grid.panel-type.time-series', 'Time series'), value: PanelType.TIMESERIES, icon: 'heart-rate' },
+      { label: t('grid.panel-type.totals', 'Totals'), value: PanelType.BARGAUGE, icon: 'align-left' },
+      { label: t('grid.panel-type.maxima', 'Maxima'), value: PanelType.TABLE, icon: 'angle-double-up' },
+      { label: t('grid.panel-type.histograms', 'Histograms'), value: PanelType.HISTOGRAM, icon: 'graph-bar' },
+    ];
+  }
 
   static DEFAULT_PANEL_TYPE = PanelType.TIMESERIES;
 
@@ -73,8 +76,8 @@ export class ScenePanelTypeSwitcher extends SceneObjectBase<ScenePanelTypeSwitch
 
     return (
       <RadioButtonGroup
-        aria-label="Panel type switcher"
-        options={ScenePanelTypeSwitcher.OPTIONS}
+        aria-label={t('grid.panel-type.aria-label', 'Panel type switcher')}
+        options={ScenePanelTypeSwitcher.getOptions()}
         value={panelType}
         onChange={model.onChange}
         fullWidth={false}

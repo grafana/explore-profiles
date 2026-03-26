@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { createAssistantContextItem, useAssistant } from '@grafana/assistant';
+import { t } from '@grafana/i18n';
 import { displayError } from '@shared/domain/displayStatus';
 import React from 'react';
 
@@ -57,17 +58,17 @@ export function AnalyzeDiffFlameGraph({
                 datasourceUid: dataSourceUid,
               }),
               createAssistantContextItem('structured', {
-                title: 'DOT Profiles and instructions',
+                title: t('analyze-diff.context.title', 'DOT Profiles and instructions'),
                 data: { stringifiedData: `${prompts.system}\n${prompts.user}` },
               }),
             ];
 
             return {
-              prompt: 'Analyze the differences between these two performance profiles.',
+              prompt: t('analyze-diff.prompt', 'Analyze the differences between these two performance profiles.'),
               context,
             };
           } catch (error) {
-            displayError(error as Error, ['Failed to fetch DOT profiles for analysis']);
+            displayError(error as Error, [t('analyze-diff.error', 'Failed to fetch DOT profiles for analysis')]);
             return undefined;
           }
         }}
