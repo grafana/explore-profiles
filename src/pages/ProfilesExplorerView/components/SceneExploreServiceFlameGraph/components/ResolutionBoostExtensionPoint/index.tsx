@@ -29,7 +29,7 @@ export function ResolutionBoostExtensionPoint({ scene }: { scene: SceneExploreSe
     return;
   }
 
-  const datasourceUID = sceneGraph.interpolate(scene, '${dataSource}');
+  const datasourceUID = sceneGraph.interpolate(scene, '${DATASOURCE_UID_EXPR}');
   // datasourceUIDUnavailable if the interpolation failed (returning the EXPR back again)
   const datasourceUIDUnavailable = datasourceUID === DATASOURCE_UID_EXPR;
 
