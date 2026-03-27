@@ -101,7 +101,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
   }
 
   static Component({ model }: SceneComponentProps<SceneExploreServiceFlameGraph>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles);
     const { mainTimeseries, body } = model.useState();
 
     // we use CSS here and Scenes Flex layout because we encountered a problem where the Flamegraph would not respect each panel width,

@@ -146,7 +146,7 @@ export class SceneLabelValuesTable extends SceneObjectBase<SceneLabelValuesTable
   }
 
   static Component({ model }: SceneComponentProps<SceneLabelValuesTable>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles);
     const { body } = model.useState();
 
     return (

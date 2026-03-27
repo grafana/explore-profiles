@@ -62,7 +62,6 @@ export class SceneTimeRangeWithAnnotations
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   onActivate() {
     this.setState(omit(this.getAncestorTimeRange().state, 'key'));
 
@@ -123,7 +122,7 @@ export class SceneTimeRangeWithAnnotations
       }
 
       return vizPanel;
-    } catch (error) {
+    } catch {
       throw new Error('Ancestor timeseries panel not found!');
     }
   }

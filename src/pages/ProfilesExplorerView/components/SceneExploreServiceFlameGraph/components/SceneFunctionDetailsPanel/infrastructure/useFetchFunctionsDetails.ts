@@ -37,7 +37,6 @@ const DEFAULT_FUNCTION_VERSION: FunctionVersion = {
   root_path: '',
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace }: FetchParams): FetchResponse {
   const { profileMetricId, labelsSelector, serviceId } = parseQuery(query);
   const [start, end] = [timeRange.from.unix(), timeRange.to.unix()];

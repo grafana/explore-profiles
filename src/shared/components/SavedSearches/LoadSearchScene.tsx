@@ -60,7 +60,6 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
     });
   };
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   static Component = ({ model }: SceneComponentProps<LoadSearchScene>) => {
     const { dsName, dsUid, isOpen } = model.useState();
     const styles = useStyles2(getStyles);

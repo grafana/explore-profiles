@@ -230,7 +230,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           this.handleProfileMetricChange();
         }
       });
-    } catch (error) {
+    } catch {
       return null;
     }
   }

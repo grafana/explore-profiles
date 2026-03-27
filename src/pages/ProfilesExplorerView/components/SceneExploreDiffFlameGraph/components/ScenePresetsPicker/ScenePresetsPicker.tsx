@@ -96,8 +96,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   };
 
   static Component({ model }: SceneComponentProps<ScenePresetsPicker>) {
-    const { value } = model.useState(); // eslint-disable-line react-hooks/rules-of-hooks
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const { value } = model.useState();
+    const styles = useStyles2(getStyles);
 
     return (
       <div className={styles.presetsContainer}>
