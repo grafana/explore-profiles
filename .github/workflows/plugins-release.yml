@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Version bump
-        uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@20fb6712683551af8d4b69e9a35f4bcdff8c2535 # ci-cd-workflows/v5
+        uses: grafana/plugin-ci-workflows/actions/plugins/version-bump-changelog@ci-cd-workflows/v5
         with:
           generate-changelog: true
           version: ${{ inputs.version }}
@@ -32,7 +32,7 @@ jobs:
   cd:
     name: CI / CD
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@a62bf1e995ee4ffb4d42f9bbfd62b718c6045a58 # ci-cd-workflows/v6.0.0
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v6.0.0
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
