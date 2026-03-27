@@ -223,7 +223,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   }
 
   static Component({ model }: SceneComponentProps<ScenePresetsPicker & { onChange: any }>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles);
     const { value, isSelectOpen, isModalOpen } = model.useState();
 
     return (

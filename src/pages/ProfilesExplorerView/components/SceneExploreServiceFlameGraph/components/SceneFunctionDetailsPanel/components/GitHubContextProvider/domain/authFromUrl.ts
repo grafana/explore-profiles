@@ -19,7 +19,7 @@ export async function authFromUrl(
 
   try {
     state = JSON.parse(atob(stateValue));
-  } catch (error) {
+  } catch {
     throw new Error('Invalid state parameter!');
   }
 

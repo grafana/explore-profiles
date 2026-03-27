@@ -7,4 +7,6 @@ export const featureToggles = {
   grafanaAssistantInProfilesDrilldown: !!config.featureToggles['grafanaAssistantInProfilesDrilldown'],
   // @ts-ignore Remove after upgrading grafana/runtime to version including the toggle type
   exemplars: !!config.featureToggles['profilesExemplars'],
+  // @ts-ignore Remove after upgrading grafana/runtime to version including the toggle type
+  flameGraphWithCallTree: !!config.featureToggles['flameGraphWithCallTree'],
 };

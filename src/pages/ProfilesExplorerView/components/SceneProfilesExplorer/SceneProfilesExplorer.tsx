@@ -453,12 +453,11 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles);
 
     const { data, actions } = model.useProfilesExplorer();
     const { explorationType, controls, body, $variables, dataSourceUid } = data;
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [recordingRulesModalState, setRecordingRulesModalState] = useState<{
       isOpen: boolean;
       functionName?: string;
