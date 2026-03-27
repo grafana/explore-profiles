@@ -58,7 +58,7 @@
     "@tootallnate/once": "3.0.1",
     "diff": "4.0.4",
     "flatted": "3.4.2",
-    "serialize-javascript": "7.0.3"
+    "serialize-javascript": "7.0.5"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.2.3",
