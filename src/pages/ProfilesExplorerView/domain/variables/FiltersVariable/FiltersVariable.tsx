@@ -1,4 +1,5 @@
 import { AdHocVariableFilter } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph, SceneObject } from '@grafana/scenes';
 import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
@@ -19,7 +20,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
     super({
       key,
       name: key,
-      label: 'Filters',
+      label: t('variables.filters.label', 'Filters'),
       filters: FiltersVariable.DEFAULT_VALUE,
       expressionBuilder: (filters) => buildFilterExpressionParts(filters),
     });

@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { AppEvents, GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { getAppEvents, reportInteraction, usePluginComponent } from '@grafana/runtime';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { DataQuery } from '@grafana/schema';
@@ -60,7 +61,6 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
     });
   };
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   static Component = ({ model }: SceneComponentProps<LoadSearchScene>) => {
     const { dsName, dsUid, isOpen } = model.useState();
     const styles = useStyles2(getStyles);
@@ -78,7 +78,11 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
             disabled={!hasSavedSearches}
             onClick={model.toggleOpen}
             className={styles.button}
-            tooltip={hasSavedSearches ? 'Load saved search' : 'No saved searches to load'}
+            tooltip={
+              hasSavedSearches
+                ? t('saved-searches.load.tooltip', 'Load saved search')
+                : t('saved-searches.load.no-searches-tooltip', 'No saved searches to load')
+            }
           />
           {isOpen && <LoadSearchModal sceneRef={model} onClose={model.toggleClosed} />}
         </>
@@ -92,7 +96,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
 
         if (query.datasource?.type !== 'grafana-pyroscope-datasource') {
           appEvents.publish({
-            payload: ['Please select a Pyroscope query.'],
+            payload: [t('saved-searches.load.select-pyroscope-query', 'Please select a Pyroscope query.')],
             type: AppEvents.alertError.name,
           });
           return;
@@ -120,7 +124,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
         datasourceFilters={[dsName]}
         icon="folder-open"
         onSelectQuery={onSelectQuery}
-        tooltip="Load saved query"
+        tooltip={t('saved-searches.load.saved-query-tooltip', 'Load saved query')}
       />
     );
   };

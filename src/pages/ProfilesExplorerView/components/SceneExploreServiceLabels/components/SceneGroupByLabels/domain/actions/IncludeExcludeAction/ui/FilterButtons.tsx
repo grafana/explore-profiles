@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Button, useStyles2 } from '@grafana/ui';
 import React, { memo } from 'react';
 
@@ -13,10 +14,14 @@ type FilterButtonsProps = {
 
 function getStatus({ status, label, onInclude, onExclude, onClear }: FilterButtonsProps) {
   const isIncludeSelected = status === 'included';
-  const includeTooltip = !isIncludeSelected ? `Include "${label}" in the filters` : `Clear "${label}" from the filters`;
+  const includeTooltip = !isIncludeSelected
+    ? t('labels.filter.include-tooltip', 'Include "{{label}}" in the filters', { label })
+    : t('labels.filter.clear-tooltip', 'Clear "{{label}}" from the filters', { label });
 
   const isExcludeSelected = status === 'excluded';
-  const excludeTooltip = !isExcludeSelected ? `Exclude "${label}" in the filters` : `Clear "${label}" from the filters`;
+  const excludeTooltip = !isExcludeSelected
+    ? t('labels.filter.exclude-tooltip', 'Exclude "{{label}}" in the filters', { label })
+    : t('labels.filter.clear-tooltip', 'Clear "{{label}}" from the filters', { label });
 
   return {
     include: {
@@ -51,7 +56,7 @@ const FilterButtonsComponent = (props: FilterButtonsProps) => {
         tooltipPlacement="top"
         data-testid="filter-button-include"
       >
-        Include
+        <Trans i18nKey="labels.filter.include">Include</Trans>
       </Button>
       <Button
         size="sm"
@@ -64,7 +69,7 @@ const FilterButtonsComponent = (props: FilterButtonsProps) => {
         tooltipPlacement="top"
         data-testid="filter-button-exclude"
       >
-        Exclude
+        <Trans i18nKey="labels.filter.exclude">Exclude</Trans>
       </Button>
     </div>
   );

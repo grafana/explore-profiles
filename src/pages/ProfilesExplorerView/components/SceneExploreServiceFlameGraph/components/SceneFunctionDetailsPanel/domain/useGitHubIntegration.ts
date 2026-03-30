@@ -1,5 +1,6 @@
 import { IconName } from '@grafana/data';
 import { Props as FlameGraphProps } from '@grafana/flamegraph';
+import { t } from '@grafana/i18n';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
@@ -25,7 +26,7 @@ export function useGitHubIntegration(sidePanel: any): DomainHookReturnValue {
 
       return [
         {
-          label: 'Function details',
+          label: t('function-details.context-menu.label', 'Function details'),
           icon: 'info-circle' as IconName,
           onClick: () => {
             reportInteraction('g_pyroscope_app_function_details_clicked');

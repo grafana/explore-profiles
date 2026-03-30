@@ -14,7 +14,6 @@ export type CodeLine = LineProfile & { line: string };
 
 type CodeContainerDomainValue = DomainHookReturnValue & { data: { snippetLines: CodeLine[]; allLines: CodeLine[] } };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function useCodeContainer(dataSourceUid: string, functionDetails: FunctionDetails): CodeContainerDomainValue {
   const { isLoggedIn } = useGitHubContext();
   const { version } = functionDetails;

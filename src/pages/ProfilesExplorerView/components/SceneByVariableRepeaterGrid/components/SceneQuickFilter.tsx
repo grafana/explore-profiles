@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import {
   SceneComponentProps,
   SceneObjectBase,
@@ -82,7 +83,7 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
       <Input
         type="text"
         className="quick-filter"
-        aria-label="Quick filter"
+        aria-label={t('grid.quick-filter.aria-label', 'Quick filter')}
         placeholder={placeholder}
         value={searchText}
         prefix={<Icon name="search" />}
@@ -96,7 +97,11 @@ export class SceneQuickFilter extends SceneObjectBase<SceneQuickFilterState> {
                 data-testid="quick-filter-results-count"
               />
             )}
-            <IconButton name="times" aria-label="Clear search" onClick={model.clearSearchText} />
+            <IconButton
+              name="times"
+              aria-label={t('grid.quick-filter.clear', 'Clear search')}
+              onClick={model.clearSearchText}
+            />
           </>
         }
         onChange={model.onChange}

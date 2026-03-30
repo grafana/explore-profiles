@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { nanoid } from 'nanoid';
 
 import { FilterKind, Filters, OperatorKind } from '../types';
@@ -11,7 +12,6 @@ export const parseRawFilters = (rawFilters: string): string[][] => {
 const LABELS_REGEX = /.+:[^{]+\{(.+)\}$/;
 const REGEX_CHARS_REGEX = /.*(\^|\$|\*|\+|\{|\}|\?).*/;
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export function queryToFilters(query: string): Filters {
   // 'process_cpu:cpu:nanoseconds:cpu:nanoseconds{service_name="ebpf/gcp-logs-ops/grafana-agent", namespace="gcp-logs-ops"}'
   if (!query) {
@@ -53,8 +53,8 @@ export function queryToFilters(query: string): Filters {
           ...filter,
           operator:
             operator === OperatorKind['=~']
-              ? { value: OperatorKind.in, label: 'in' }
-              : { value: OperatorKind['not-in'], label: 'not in' },
+              ? { value: OperatorKind.in, label: t('query-builder.operators.in', 'in') }
+              : { value: OperatorKind['not-in'], label: t('query-builder.operators.not-in', 'not in') },
           value: {
             value: value,
             label: value

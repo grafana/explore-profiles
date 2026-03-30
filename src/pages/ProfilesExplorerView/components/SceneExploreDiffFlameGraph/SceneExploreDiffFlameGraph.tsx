@@ -185,7 +185,7 @@ export class SceneExploreDiffFlameGraph extends SceneObjectBase<SceneExploreDiff
   };
 
   static Component({ model }: SceneComponentProps<SceneExploreDiffFlameGraph>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles);
 
     const { baselinePanel, comparisonPanel, body } = model.useState();
 

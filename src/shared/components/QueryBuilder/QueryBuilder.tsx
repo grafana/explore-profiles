@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { SelectableValue } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Button, useStyles2 } from '@grafana/ui';
 import { usePrevious } from '@shared/components/QueryBuilder/ui/hooks';
 import React, { memo, useCallback, useEffect } from 'react';
@@ -130,11 +131,15 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
         {!props.autoExecute && (
           <Button
             onClick={onClickExecute}
-            tooltip={!isQueryUpToDate ? 'Execute new query' : 'Nothing to execute, all filters applied'}
+            tooltip={
+              !isQueryUpToDate
+                ? t('query-builder.execute-tooltip', 'Execute new query')
+                : t('query-builder.nothing-to-execute-tooltip', 'Nothing to execute, all filters applied')
+            }
             className={styles.executeButton}
             disabled={isQueryUpToDate}
           >
-            Execute
+            <Trans i18nKey="query-builder.execute">Execute</Trans>
           </Button>
         )}
       </div>
@@ -163,7 +168,6 @@ function useChicletHandlers(actor: Actor) {
   };
 }
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 function useSelectHandlers(actor: Actor, suggestions: QueryBuilderContext['suggestions'], queryBuilderId: string) {
   /* single & multiple */
   const onFocus = useCallback(() => {

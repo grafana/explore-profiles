@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { CustomVariable } from '@grafana/scenes';
 
 export class SpanSelectorVariable extends CustomVariable {
@@ -5,7 +6,7 @@ export class SpanSelectorVariable extends CustomVariable {
     super({
       key: 'spanSelector',
       name: 'spanSelector',
-      label: 'Span selector',
+      label: t('variables.span-selector.label', 'Span selector'),
       value: undefined,
     });
   }
