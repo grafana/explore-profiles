@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { t, Trans } from '@grafana/i18n';
 import { Button, TextArea, useStyles2 } from '@grafana/ui';
 import React, { KeyboardEvent, useCallback, useState } from 'react';
 
@@ -56,14 +57,14 @@ export function FollowUpForm({ onSubmit }: FollowUpFormProps) {
     <div>
       <TextArea
         className={styles.textarea}
-        placeholder="Ask a follow-up question..."
+        placeholder={t('ai-panel.follow-up.placeholder', 'Ask a follow-up question...')}
         value={question}
         onChange={onChangeInput}
         onKeyDown={onKeyDown}
       />
 
       <Button className={styles.sendButton} onClick={onClickSend}>
-        Send
+        <Trans i18nKey="ai-panel.follow-up.send">Send</Trans>
       </Button>
     </div>
   );

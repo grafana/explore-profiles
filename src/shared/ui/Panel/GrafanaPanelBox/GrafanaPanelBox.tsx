@@ -1,6 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, LoadingState } from '@grafana/data';
 import { selectors } from '@grafana/e2e-selectors';
+import { t } from '@grafana/i18n';
 import { Icon, LoadingBar, Tooltip, useStyles2, useTheme2 } from '@grafana/ui';
 import React, { CSSProperties, ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 
@@ -129,7 +130,11 @@ export function GrafanaPanelBox({
       </div>
 
       {loadingState === LoadingState.Streaming && (
-        <Tooltip content={onCancelQuery ? 'Stop streaming' : 'Streaming'}>
+        <Tooltip
+          content={
+            onCancelQuery ? t('panel-box.stop-streaming', 'Stop streaming') : t('panel-box.streaming', 'Streaming')
+          }
+        >
           <TitleItem className={dragClassCancel} data-testid="panel-streaming" onClick={onCancelQuery}>
             <Icon name="circle-mono" size="md" className={styles.streaming} />
           </TitleItem>
@@ -137,7 +142,7 @@ export function GrafanaPanelBox({
       )}
       {loadingState === LoadingState.Loading && onCancelQuery && (
         <DelayRender delay={2000}>
-          <Tooltip content="Cancel query">
+          <Tooltip content={t('panel-box.cancel-query', 'Cancel query')}>
             <TitleItem
               className={cx(dragClassCancel, styles.pointer)}
               data-testid="panel-cancel-query"
@@ -157,7 +162,9 @@ export function GrafanaPanelBox({
   return (
     <div className={styles.container} style={containerStyles} data-testid={testid}>
       <div className={styles.loadingBarContainer}>
-        {loadingState === LoadingState.Loading ? <LoadingBar width={width} ariaLabel="Panel loading bar" /> : null}
+        {loadingState === LoadingState.Loading ? (
+          <LoadingBar width={width} ariaLabel={t('panel-box.loading-bar', 'Panel loading bar')} />
+        ) : null}
       </div>
 
       {hoverHeader && (
@@ -174,7 +181,11 @@ export function GrafanaPanelBox({
 
           {statusMessage && (
             <div className={styles.errorContainerFloating}>
-              <PanelStatus message={statusMessage} onClick={statusMessageOnClick} ariaLabel="Panel status" />
+              <PanelStatus
+                message={statusMessage}
+                onClick={statusMessageOnClick}
+                ariaLabel={t('panel-box.panel-status', 'Panel status')}
+              />
             </div>
           )}
         </>
@@ -184,7 +195,11 @@ export function GrafanaPanelBox({
         <div className={cx(styles.headerContainer, dragClass)} style={headerStyles} data-testid="header-container">
           {statusMessage && (
             <div className={dragClassCancel}>
-              <PanelStatus message={statusMessage} onClick={statusMessageOnClick} ariaLabel="Panel status" />
+              <PanelStatus
+                message={statusMessage}
+                onClick={statusMessageOnClick}
+                ariaLabel={t('panel-box.panel-status', 'Panel status')}
+              />
             </div>
           )}
 

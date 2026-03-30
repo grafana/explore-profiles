@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import {
   EmbeddedSceneState,
   SceneComponentProps,
@@ -79,39 +80,53 @@ export enum ExplorationType {
 }
 
 export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorerState> {
-  static EXPLORATION_TYPE_OPTIONS = [
-    {
-      value: ExplorationType.ALL_SERVICES,
-      label: 'All services',
-      description: 'Overview of all services, for any given profile type',
-    },
-    {
-      value: ExplorationType.PROFILE_TYPES,
-      label: 'Profile types',
-      description: 'Overview of all the profile types for a single service',
-    },
-    {
-      value: ExplorationType.LABELS,
-      label: 'Labels',
-      description: 'Single service label exploration and filtering',
-    },
-    {
-      value: ExplorationType.FLAME_GRAPH,
-      label: 'Flame graph',
-      description: 'Single service flame graph',
-    },
-    {
-      value: ExplorationType.DIFF_FLAME_GRAPH,
-      label: 'Diff flame graph',
-      description: 'Compare the differences between two flame graphs',
-    },
-    {
-      value: ExplorationType.FAVORITES,
-      label: 'Favorites',
-      description: 'Overview of favorited visualizations',
-      icon: 'favorite',
-    },
-  ];
+  static get EXPLORATION_TYPE_OPTIONS() {
+    return [
+      {
+        value: ExplorationType.ALL_SERVICES,
+        label: t('explorer.exploration-type.all-services', 'All services'),
+        description: t(
+          'explorer.exploration-type.all-services-description',
+          'Overview of all services, for any given profile type'
+        ),
+      },
+      {
+        value: ExplorationType.PROFILE_TYPES,
+        label: t('explorer.exploration-type.profile-types', 'Profile types'),
+        description: t(
+          'explorer.exploration-type.profile-types-description',
+          'Overview of all the profile types for a single service'
+        ),
+      },
+      {
+        value: ExplorationType.LABELS,
+        label: t('explorer.exploration-type.labels', 'Labels'),
+        description: t(
+          'explorer.exploration-type.labels-description',
+          'Single service label exploration and filtering'
+        ),
+      },
+      {
+        value: ExplorationType.FLAME_GRAPH,
+        label: t('explorer.exploration-type.flame-graph', 'Flame graph'),
+        description: t('explorer.exploration-type.flame-graph-description', 'Single service flame graph'),
+      },
+      {
+        value: ExplorationType.DIFF_FLAME_GRAPH,
+        label: t('explorer.exploration-type.diff-flame-graph', 'Diff flame graph'),
+        description: t(
+          'explorer.exploration-type.diff-flame-graph-description',
+          'Compare the differences between two flame graphs'
+        ),
+      },
+      {
+        value: ExplorationType.FAVORITES,
+        label: t('explorer.exploration-type.favorites', 'Favorites'),
+        description: t('explorer.exploration-type.favorites-description', 'Overview of favorited visualizations'),
+        icon: 'favorite',
+      },
+    ];
+  }
 
   static DEFAULT_EXPLORATION_TYPE = SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS[0].value;
 

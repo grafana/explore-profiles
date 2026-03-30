@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { nanoid } from 'nanoid';
 import { assign } from 'xstate';
 
@@ -127,7 +128,7 @@ export const actions: any = {
       }
 
       if (previousOperator === OperatorKind['is-empty']) {
-        filter.value = { value: '(no value)', label: '(no value)' };
+        filter.value = { value: '(no value)', label: t('query-builder.no-value', '(no value)') };
       }
 
       if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {

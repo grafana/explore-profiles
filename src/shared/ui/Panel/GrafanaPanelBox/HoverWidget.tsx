@@ -1,6 +1,7 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { selectors as e2eSelectors } from '@grafana/e2e-selectors';
+import { Trans } from '@grafana/i18n';
 import { Icon, useStyles2 } from '@grafana/ui';
 import React, { ReactElement, useCallback, useRef, useState } from 'react';
 
@@ -51,7 +52,11 @@ export function HoverWidget({ menu, title, dragClass, children, offset = -32, on
           <Icon name="expand-arrows" className={styles.draggableIcon} />
         </div>
       )}
-      {!title && <h6 className={cx(styles.untitled, { [styles.draggable]: !!dragClass }, dragClass)}>Untitled</h6>}
+      {!title && (
+        <h6 className={cx(styles.untitled, { [styles.draggable]: !!dragClass }, dragClass)}>
+          <Trans i18nKey="panel-box.untitled">Untitled</Trans>
+        </h6>
+      )}
       {children}
       {menu && (
         <PanelMenu

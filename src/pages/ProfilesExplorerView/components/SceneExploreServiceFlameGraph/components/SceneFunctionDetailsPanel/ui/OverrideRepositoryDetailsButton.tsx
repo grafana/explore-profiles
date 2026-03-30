@@ -1,3 +1,4 @@
+import { t, Trans } from '@grafana/i18n';
 import { DataSourcePicker } from '@grafana/runtime';
 import { Alert, Button, ConfirmButton, Field, Input, Modal, Stack, Text } from '@grafana/ui';
 import React from 'react';
@@ -39,7 +40,7 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
   return (
     <>
       <Button
-        aria-label="override repository settings"
+        aria-label={t('function-details.override.aria-label', 'override repository settings')}
         variant="secondary"
         fill="text"
         size="sm"
@@ -51,7 +52,7 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
       >
         {functionVersionOrigin === FunctionVersionOrigin.USER ? (
           <Text element="span" color="secondary">
-            (user set)
+            <Trans i18nKey="function-details.override.user-set">(user set)</Trans>
           </Text>
         ) : (
           ''
@@ -61,54 +62,73 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
         <Modal
           title={
             functionVersionOrigin === FunctionVersionOrigin.USER
-              ? 'Edit repository details override'
-              : 'Add new repository details override'
+              ? t('function-details.override.edit-title', 'Edit repository details override')
+              : t('function-details.override.add-title', 'Add new repository details override')
           }
           isOpen={open}
           onDismiss={() => setOpen(false)}
         >
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Alert severity="info" title="Github Integration labels">
+            <Alert severity="info" title={t('function-details.override.alert-title', 'Github Integration labels')}>
               <p>
-                To activate GitHub Integration feature, you will need to add two new labels when sending profiles:
-                <code>service_repository</code> and <code>service_git_ref</code>.
+                <Trans i18nKey="function-details.override.alert-labels">
+                  To activate GitHub Integration feature, you will need to add two new labels when sending profiles:
+                  <code>service_repository</code> and <code>service_git_ref</code>.
+                </Trans>
               </p>
               <p>
-                For debugging purposes, you can manually provide repository details using this form. The custom value is
-                saved in your browser local storage for given data source and service name.
+                <Trans i18nKey="function-details.override.alert-debug">
+                  For debugging purposes, you can manually provide repository details using this form. The custom value
+                  is saved in your browser local storage for given data source and service name.
+                </Trans>
               </p>
             </Alert>
 
-            <Field label="Data source">
+            <Field label={t('function-details.override.data-source', 'Data source')}>
               <DataSourcePicker current={datasourceUid} disabled={true}></DataSourcePicker>
             </Field>
-            <Field label="Service name">
+            <Field label={t('function-details.override.service-name', 'Service name')}>
               <Input disabled={true} value={serviceName}></Input>
             </Field>
 
             <Field
-              label="service_repository (repository URL) - required"
+              label={t('function-details.override.repository-label', 'service_repository (repository URL) - required')}
               invalid={!!errors.repository}
               error={errors?.repository?.message?.toString()}
             >
               <Input
-                {...register('repository', { required: 'Repository name is required' })}
-                placeholder="Enter GitHub repo name, https://github.com/org/repo"
+                {...register('repository', {
+                  required: t('function-details.override.repository-required', 'Repository name is required'),
+                })}
+                placeholder={t(
+                  'function-details.override.repository-placeholder',
+                  'Enter GitHub repo name, https://github.com/org/repo'
+                )}
               />
             </Field>
             <Field
-              label="service_git_ref (commit reference)"
+              label={t('function-details.override.git-ref-label', 'service_git_ref (commit reference)')}
               invalid={!!errors.git_ref}
               error={errors?.git_ref?.message?.toString()}
             >
-              <Input {...register('git_ref')} placeholder="HEAD" />
+              <Input
+                {...register('git_ref')}
+                placeholder={t('function-details.override.git-ref-placeholder', 'HEAD')}
+              />
             </Field>
-            <Field label="Path to root">
-              <Input {...register('root_path')} placeholder="Enter root path" />
+            <Field label={t('function-details.override.root-path', 'Path to root')}>
+              <Input
+                {...register('root_path')}
+                placeholder={t('function-details.override.root-path-placeholder', 'Enter root path')}
+              />
             </Field>
 
             <Stack direction="row">
-              <Button type="submit">{functionVersionOrigin === FunctionVersionOrigin.USER ? 'Edit' : 'Add'}</Button>
+              <Button type="submit">
+                {functionVersionOrigin === FunctionVersionOrigin.USER
+                  ? t('function-details.override.edit', 'Edit')
+                  : t('function-details.override.add', 'Add')}
+              </Button>
               {functionVersionOrigin === FunctionVersionOrigin.USER && (
                 <Button
                   type="button"
@@ -119,19 +139,19 @@ export const OverrideRepositoryDetailsButton = (props: Props) => {
                     setOpen(false);
                   }}
                 >
-                  Delete override
+                  <Trans i18nKey="function-details.override.delete">Delete override</Trans>
                 </Button>
               )}
               <ConfirmButton
                 confirmVariant="destructive"
-                confirmText="Remove all"
+                confirmText={t('function-details.override.remove-all-confirm', 'Remove all')}
                 onConfirm={() => {
                   props.deleteAllOverrides();
                   reset();
                   setOpen(false);
                 }}
               >
-                Remove all overrides
+                <Trans i18nKey="function-details.override.remove-all">Remove all overrides</Trans>
               </ConfirmButton>
             </Stack>
           </form>

@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import {
   SceneComponentProps,
   sceneGraph,
@@ -40,109 +41,111 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     },
   });
 
-  static PRESETS = [
-    {
-      label: 'Built-in presets',
-      value: 'built-in',
-      options: [
-        {
-          value: 'last hour (30m-window)',
-          label: 'Last hour (30m-window)',
-          baseline: {
-            from: 'now-1h',
-            to: 'now',
-            diffFrom: 'now-1h',
-            diffTo: 'now-30m',
-            label: 'last hour',
+  static getPresets() {
+    return [
+      {
+        label: t('diff-flame-graph.presets.built-in', 'Built-in presets'),
+        value: 'built-in',
+        options: [
+          {
+            value: 'last hour (30m-window)',
+            label: t('diff-flame-graph.presets.last-hour-30m', 'Last hour (30m-window)'),
+            baseline: {
+              from: 'now-1h',
+              to: 'now',
+              diffFrom: 'now-1h',
+              diffTo: 'now-30m',
+              label: t('diff-flame-graph.presets.last-hour', 'last hour'),
+            },
+            comparison: {
+              from: 'now-1h',
+              to: 'now',
+              diffFrom: 'now-30m',
+              diffTo: 'now',
+              label: t('diff-flame-graph.presets.last-hour', 'last hour'),
+            },
           },
-          comparison: {
-            from: 'now-1h',
-            to: 'now',
-            diffFrom: 'now-30m',
-            diffTo: 'now',
-            label: 'last hour',
+          {
+            value: 'last hour (1h-window)',
+            label: t('diff-flame-graph.presets.last-hour-1h', 'Last hour (1h-window)'),
+            baseline: {
+              from: 'now-1h',
+              to: 'now',
+              diffFrom: 'now-1h',
+              diffTo: 'now',
+              label: t('diff-flame-graph.presets.last-hour', 'last hour'),
+            },
+            comparison: {
+              from: 'now-1h',
+              to: 'now',
+              diffFrom: 'now-1h',
+              diffTo: 'now',
+              label: t('diff-flame-graph.presets.last-hour', 'last hour'),
+            },
           },
-        },
-        {
-          value: 'last hour (1h-window)',
-          label: 'Last hour (1h-window)',
-          baseline: {
-            from: 'now-1h',
-            to: 'now',
-            diffFrom: 'now-1h',
-            diffTo: 'now',
-            label: 'last hour',
+          {
+            value: '6h ago vs now',
+            label: t('diff-flame-graph.presets.6h-ago-vs-now', '6h ago vs now (30m-window)'),
+            baseline: {
+              from: 'now-375m',
+              to: 'now-315m',
+              diffFrom: 'now-375m',
+              diffTo: 'now-345m',
+              label: t('diff-flame-graph.presets.6h-ago', '6h ago'),
+            },
+            comparison: {
+              from: 'now-1h',
+              to: 'now',
+              diffFrom: 'now-30m',
+              diffTo: 'now',
+              label: t('diff-flame-graph.presets.last-hour', 'last hour'),
+            },
           },
-          comparison: {
-            from: 'now-1h',
-            to: 'now',
-            diffFrom: 'now-1h',
-            diffTo: 'now',
-            label: 'last hour',
+          {
+            value: '24h ago vs now',
+            label: t('diff-flame-graph.presets.24h-ago-vs-now', '24h ago vs now (30m-window)'),
+            baseline: {
+              from: 'now-1455m',
+              to: 'now-1395m',
+              diffFrom: 'now-1455m',
+              diffTo: 'now-1425m',
+              label: t('diff-flame-graph.presets.24h-ago', '24h ago'),
+            },
+            comparison: {
+              from: 'now-1h',
+              to: 'now',
+              diffFrom: 'now-30m',
+              diffTo: 'now',
+              label: t('diff-flame-graph.presets.last-hour', 'last hour'),
+            },
           },
-        },
-        {
-          value: '6h ago vs now',
-          label: '6h ago vs now (30m-window)',
-          baseline: {
-            from: 'now-375m',
-            to: 'now-315m',
-            diffFrom: 'now-375m',
-            diffTo: 'now-345m',
-            label: '6h ago',
+          {
+            value: 'auto-select-25',
+            label: t('diff-flame-graph.presets.auto-select-25', 'Auto-select (25% range)'),
           },
-          comparison: {
-            from: 'now-1h',
-            to: 'now',
-            diffFrom: 'now-30m',
-            diffTo: 'now',
-            label: 'last hour',
+          {
+            value: 'auto-select-whole',
+            label: t('diff-flame-graph.presets.auto-select-whole', 'Auto-select (whole range)'),
           },
-        },
-        {
-          value: '24h ago vs now',
-          label: '24h ago vs now (30m-window)',
-          baseline: {
-            from: 'now-1455m',
-            to: 'now-1395m',
-            diffFrom: 'now-1455m',
-            diffTo: 'now-1425m',
-            label: '24h ago',
+        ],
+      },
+      {
+        label: t('diff-flame-graph.presets.my-presets', 'My presets'),
+        value: 'custom',
+        options: [
+          {
+            label: t('diff-flame-graph.presets.dummy', 'Dummy preset saved earlier'),
+            value: 'dummy',
           },
-          comparison: {
-            from: 'now-1h',
-            to: 'now',
-            diffFrom: 'now-30m',
-            diffTo: 'now',
-            label: 'last hour',
-          },
-        },
-        {
-          value: 'auto-select-25',
-          label: 'Auto-select (25% range)',
-        },
-        {
-          value: 'auto-select-whole',
-          label: 'Auto-select (whole range)',
-        },
-      ],
-    },
-    {
-      label: 'My presets',
-      value: 'custom',
-      options: [
-        {
-          label: 'Dummy preset saved earlier',
-          value: 'dummy',
-        },
-      ],
-    },
-  ];
+        ],
+      },
+    ];
+  }
 
   constructor() {
     super({
       name: 'compare-presets',
-      label: 'Comparison presets',
+      label: t('diff-flame-graph.presets.label', 'Comparison presets'),
       value: null,
       isModalOpen: false,
       isSelectOpen: false,
@@ -231,9 +234,9 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
         <div className={styles.presetsContainer}>
           <Select
             className={styles.select}
-            placeholder="Choose a preset"
+            placeholder={t('diff-flame-graph.presets.placeholder', 'Choose a preset')}
             value={value}
-            options={ScenePresetsPicker.PRESETS}
+            options={ScenePresetsPicker.getPresets()}
             onChange={model.onChangePreset}
             isOpen={isSelectOpen}
             onOpenMenu={model.onOpenSelect}
@@ -243,34 +246,43 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
           <Button
             icon="save"
             variant="secondary"
-            tooltip="Save the current time ranges and filters as a custom preset"
+            tooltip={t(
+              'diff-flame-graph.presets.save-tooltip',
+              'Save the current time ranges and filters as a custom preset'
+            )}
             onClick={model.onClickSave}
           />
         </div>
         <Modal
-          title="Custom user presets"
+          title={t('diff-flame-graph.presets.modal-title', 'Custom user presets')}
           isOpen={isModalOpen}
           closeOnEscape={true}
           closeOnBackdropClick={true}
           onDismiss={model.closeModal}
         >
           <p>
-            This feature, which would allow you to save the current time ranges and filters, is currently not
-            implemented.
+            <Trans i18nKey="diff-flame-graph.presets.modal-not-implemented">
+              This feature, which would allow you to save the current time ranges and filters, is currently not
+              implemented.
+            </Trans>
           </p>
           <p>
-            Please let us know if you would be interested to use it by{' '}
-            <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer noopener" className={styles.link}>
-              leaving us your feedback.
-            </a>
+            <Trans i18nKey="diff-flame-graph.presets.modal-feedback">
+              Please let us know if you would be interested to use it by{' '}
+              <a href={FEEDBACK_FORM_URL} target="_blank" rel="noreferrer noopener" className={styles.link}>
+                leaving us your feedback.
+              </a>
+            </Trans>
           </p>
-          <p>Thank you!</p>
+          <p>
+            <Trans i18nKey="diff-flame-graph.presets.modal-thank-you">Thank you!</Trans>
+          </p>
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={model.closeModal}>
-              Cancel
+              <Trans i18nKey="diff-flame-graph.presets.cancel">Cancel</Trans>
             </Button>
             <Button onClick={model.closeModal} disabled>
-              Save
+              <Trans i18nKey="diff-flame-graph.presets.save">Save</Trans>
             </Button>
           </Modal.ButtonRow>
         </Modal>

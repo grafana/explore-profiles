@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, PageLayoutType } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { PluginPage } from '@grafana/runtime';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
@@ -36,10 +37,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
   `,
 });
 
-const pageNav = { text: 'Onboarding' };
-
 export function OnboardingPage({ onCloseModal }: OnboardingPageProps) {
   const styles = useStyles2(getStyles);
+  const pageNav = { text: t('onboarding.page.nav', 'Onboarding') };
 
   return (
     // The use of `PluginPage` is to set a clear "Onboarding" breadcrumb
@@ -49,7 +49,7 @@ export function OnboardingPage({ onCloseModal }: OnboardingPageProps) {
         <button
           className={styles.closeButton}
           onClick={onCloseModal}
-          title="Close"
+          title={t('onboarding.page.close', 'Close')}
           data-testid="close-onboarding-modal"
         >
           &times;

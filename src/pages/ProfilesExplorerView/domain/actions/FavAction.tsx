@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { t } from '@grafana/i18n';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, VariableDependencyConfig } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -97,8 +98,8 @@ export class FavAction extends SceneObjectBase<FavActionState> {
         name={isFav ? 'favorite' : 'star'}
         variant="secondary"
         size="sm"
-        aria-label={isFav ? 'Unfavorite' : 'Favorite'}
-        tooltip={isFav ? 'Unfavorite' : 'Favorite'}
+        aria-label={isFav ? t('actions.fav.unfavorite', 'Unfavorite') : t('actions.fav.favorite', 'Favorite')}
+        tooltip={isFav ? t('actions.fav.unfavorite', 'Unfavorite') : t('actions.fav.favorite', 'Favorite')}
         tooltipPlacement="top"
         onClick={model.onClick}
       />

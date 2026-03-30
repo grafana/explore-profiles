@@ -7,6 +7,7 @@ import {
   TestDataSourceResponse,
   TimeRange,
 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { RuntimeDataSource } from '@grafana/scenes';
 import { isPrivateLabel } from '@shared/components/QueryBuilder/domain/helpers/isPrivateLabel';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
@@ -168,7 +169,7 @@ export class LabelsDataSource extends RuntimeDataSource {
       // we do this here because GroupByVariable may set its default value to the 1st element automatically
       {
         value: 'all',
-        text: 'All',
+        text: t('labels.data-source.all', 'All'),
       },
       ...sortedLabels,
     ];
@@ -177,7 +178,7 @@ export class LabelsDataSource extends RuntimeDataSource {
   async testDatasource(): Promise<TestDataSourceResponse> {
     return {
       status: 'success',
-      message: 'OK',
+      message: t('labels.data-source.test-success', 'OK'),
     };
   }
 }

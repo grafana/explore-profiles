@@ -1,6 +1,6 @@
 import { assign, State, StateNodeConfig } from 'xstate';
 
-import { MESSAGES } from '../../ui/constants';
+import { getMessages } from '../../ui/constants';
 import { defaultContext } from '../stateMachine';
 import { QueryBuilderContext, QueryBuilderEvent, SuggestionKind, Suggestions } from '../types';
 
@@ -57,7 +57,7 @@ export const displayLabels: StateNodeConfig<
       ...context.suggestions,
       type: SuggestionKind.attribute,
       isVisible: true,
-      placeholder: MESSAGES.SELECT_LABEL,
+      placeholder: getMessages().SELECT_LABEL,
     }),
   }),
   on: {

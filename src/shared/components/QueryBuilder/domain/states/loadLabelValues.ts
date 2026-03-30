@@ -1,7 +1,7 @@
 import { assign, State, StateNodeConfig } from 'xstate';
 
 import { invariant } from '../../../../types/helpers/invariant';
-import { MESSAGES } from '../../ui/constants';
+import { getMessages } from '../../ui/constants';
 import { getFilterUnderEdition } from '../helpers/getFilterUnderEdition';
 import { getLastFilter } from '../helpers/getLastFilter';
 import { isMultipleValuesOperator } from '../helpers/isMultipleValuesOperator';
@@ -85,6 +85,8 @@ export const displayLabelValues: StateNodeConfig<
       const multiple = isMultipleValuesOperator(targetOperator);
 
       let placeholder: string;
+
+      const MESSAGES = getMessages();
 
       if (allowCustomValue) {
         placeholder = MESSAGES.TYPE_VALUE;
