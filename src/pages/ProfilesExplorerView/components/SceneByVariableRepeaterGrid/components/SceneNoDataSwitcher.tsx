@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import {
   SceneComponentProps,
   SceneObjectBase,
@@ -57,7 +58,7 @@ export class SceneNoDataSwitcher extends SceneObjectBase<SceneNoDataSwitcherStat
       <InlineSwitch
         data-testid="noDataSwitcher"
         showLabel
-        label="Hide panels without data"
+        label={t('grid.no-data.label', 'Hide panels without data')}
         value={hideNoData === 'on'}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => model.onChange(event.target.checked ? 'on' : 'off')}
       />

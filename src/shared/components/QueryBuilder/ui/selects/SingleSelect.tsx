@@ -3,7 +3,7 @@ import { SelectableValue } from '@grafana/data';
 import { Select, useStyles2 } from '@grafana/ui';
 import React, { useEffect, useState } from 'react';
 
-import { MESSAGES } from '../constants';
+import { getMessages } from '../constants';
 import { SingleEditionInput } from '../inputs/SingleEditionInput';
 
 export const getStyles = () => ({
@@ -62,7 +62,7 @@ export function SingleSelect({ suggestions, onFocus, onChange, onKeyDown, onClos
     <Select
       className={styles.select}
       placeholder={suggestions.placeholder}
-      loadingMessage={MESSAGES.LOADING}
+      loadingMessage={getMessages().LOADING}
       closeMenuOnSelect={false}
       value={null}
       onFocus={onFocus}

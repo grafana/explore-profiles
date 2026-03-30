@@ -1,5 +1,6 @@
 import { cx } from '@emotion/css';
 import { selectors } from '@grafana/e2e-selectors';
+import { t } from '@grafana/i18n';
 import { Dropdown, ToolbarButton } from '@grafana/ui';
 import React, { ReactElement, useCallback } from 'react';
 
@@ -53,13 +54,15 @@ export function PanelMenu({
     [onOpenMenu, onVisibleChange]
   );
 
-  const label = title ? `Menu for panel with title ${title}` : `Menu for panel with no title`;
+  const label = title
+    ? t('panel-menu.aria-label-with-title', 'Menu for panel with title {{title}}', { title })
+    : t('panel-menu.aria-label-no-title', 'Menu for panel with no title');
 
   return (
     <Dropdown overlay={menu} placement={placement} offset={offset} onVisibleChange={handleVisibility}>
       <ToolbarButton
         aria-label={label}
-        title="Menu"
+        title={t('panel-menu.title', 'Menu')}
         icon="ellipsis-v"
         iconSize="md"
         narrow

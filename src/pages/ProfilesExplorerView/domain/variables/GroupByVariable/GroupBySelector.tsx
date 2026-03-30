@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { Field, measureText, RadioButtonGroup, RefreshPicker, Select, useStyles2, useTheme2 } from '@grafana/ui';
 import { useResizeObserver } from '@react-aria/utils';
 import { noOp } from '@shared/domain/noOp';
@@ -48,15 +49,20 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
   }, [mainOptions, theme]);
 
   return (
-    <Field label="Group by labels">
+    <Field label={t('variables.group-by.label', 'Group by labels')}>
       <div ref={controlsContainer} className={styles.container}>
         {useHorizontalLabelSelector ? (
           <>
-            <RadioButtonGroup aria-label="Labels selector" options={mainOptions} value={value} onChange={onChange} />
+            <RadioButtonGroup
+              aria-label={t('variables.group-by.labels-selector', 'Labels selector')}
+              options={mainOptions}
+              value={value}
+              onChange={onChange}
+            />
             <Select
-              aria-label="Other labels selector"
+              aria-label={t('variables.group-by.other-labels-selector', 'Other labels selector')}
               className={styles.select}
-              placeholder="Other labels"
+              placeholder={t('variables.group-by.other-labels-placeholder', 'Other labels')}
               options={otherOptions}
               value={value && otherOptions.some((x) => x.value === value) ? value : null} // remove value from select when radio button clicked
               onChange={(selected) => onChange(selected?.value ?? 'all')}
@@ -65,10 +71,10 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
           </>
         ) : (
           <Select
-            aria-label="Labels selector"
+            aria-label={t('variables.group-by.labels-selector', 'Labels selector')}
             className={styles.select}
             value={value}
-            placeholder="Select label"
+            placeholder={t('variables.group-by.select-label-placeholder', 'Select label')}
             options={options}
             onChange={(selected) => onChange(selected?.value || GroupByVariable.DEFAULT_VALUE)}
             isClearable
@@ -79,7 +85,7 @@ export function GroupBySelector({ options, mainLabels, value, onChange, onRefres
           onRefresh={onRefresh}
           isOnCanvas={false}
           onIntervalChanged={noOp}
-          tooltip="Click to refresh all labels"
+          tooltip={t('variables.group-by.refresh-tooltip', 'Click to refresh all labels')}
         />
       </div>
     </Field>

@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { Button, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { Fragment } from 'react';
@@ -26,7 +27,9 @@ export function ExplorationTypeSelector({ options, value, onChange }: Exploratio
 
   return (
     <div className={styles.explorationTypeContainer} data-testid="exploration-types">
-      <div className={styles.label}>Exploration</div>
+      <div className={styles.label}>
+        <Trans i18nKey="explorer.exploration-type.label">Exploration</Trans>
+      </div>
 
       <div className={styles.breadcrumb}>
         {options.map((option, i) => {

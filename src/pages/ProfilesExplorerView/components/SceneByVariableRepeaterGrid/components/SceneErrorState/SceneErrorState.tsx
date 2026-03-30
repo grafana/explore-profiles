@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Alert } from '@grafana/ui';
 import React from 'react';
@@ -10,7 +11,7 @@ export class SceneErrorState extends SceneObjectBase<SceneErrorStateState> {
   public static Component = ({ model }: SceneComponentProps<SceneErrorState>) => {
     const { message } = model.useState();
     return (
-      <Alert title="Query error!" severity="error">
+      <Alert title={t('grid.error.title', 'Query error!')} severity="error">
         {message}
       </Alert>
     );
