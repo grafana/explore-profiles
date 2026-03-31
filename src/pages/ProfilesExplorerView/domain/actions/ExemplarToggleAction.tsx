@@ -1,3 +1,4 @@
+import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button } from '@grafana/ui';
 import React from 'react';
@@ -27,12 +28,20 @@ export class ExemplarToggleAction extends SceneObjectBase<ExemplarToggleActionSt
         icon={showExemplars ? 'eye' : 'eye-slash'}
         variant="secondary"
         size="sm"
-        aria-label={showExemplars ? 'Hide exemplars' : 'Show exemplars'}
-        tooltip={showExemplars ? 'Hide exemplars' : 'Show exemplars'}
+        aria-label={
+          showExemplars
+            ? t('actions.exemplar-toggle.hide', 'Hide exemplars')
+            : t('actions.exemplar-toggle.show', 'Show exemplars')
+        }
+        tooltip={
+          showExemplars
+            ? t('actions.exemplar-toggle.hide', 'Hide exemplars')
+            : t('actions.exemplar-toggle.show', 'Show exemplars')
+        }
         tooltipPlacement="top"
         onClick={model.onClick}
       >
-        Exemplars
+        <Trans i18nKey="actions.exemplar-toggle.label">Exemplars</Trans>
       </Button>
     );
   };

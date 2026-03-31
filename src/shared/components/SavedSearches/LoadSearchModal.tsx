@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { dateTime, GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { reportInteraction } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
 import { Box, Button, Divider, IconButton, Modal, ScrollContainer, Stack, Text, useStyles2 } from '@grafana/ui';
@@ -64,10 +65,12 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
   }, [onClose, sceneRef, selectedSearch]);
 
   return (
-    <Modal title="Load a previously saved search" isOpen={true} onDismiss={onClose}>
+    <Modal title={t('saved-searches.load.title', 'Load a previously saved search')} isOpen={true} onDismiss={onClose}>
       {!isLoading && searches.length === 0 && (
         <Box backgroundColor="secondary" padding={1.5} marginBottom={2}>
-          <Text variant="body">No saved searches to display.</Text>
+          <Text variant="body">
+            <Trans i18nKey="saved-searches.load.no-searches">No saved searches to display.</Trans>
+          </Text>
         </Box>
       )}
       {searches.length > 0 && (
@@ -114,9 +117,14 @@ export function LoadSearchModal({ onClose, sceneRef }: Props) {
                   <code className={styles.query}>{selectedSearch.query}</code>
                   <Box display="flex" flex={1} justifyContent="flex-end" direction="column">
                     <Stack justifyContent="flex-start">
-                      <IconButton size="xl" name="trash-alt" onClick={onDelete} tooltip="Remove" />
+                      <IconButton
+                        size="xl"
+                        name="trash-alt"
+                        onClick={onDelete}
+                        tooltip={t('saved-searches.load.remove-tooltip', 'Remove')}
+                      />
                       <Button onClick={onSelectClick} variant="primary">
-                        Select
+                        <Trans i18nKey="saved-searches.load.select">Select</Trans>
                       </Button>
                     </Stack>
                   </Box>

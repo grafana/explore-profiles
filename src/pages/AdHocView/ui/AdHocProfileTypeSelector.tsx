@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { InlineField, InlineFieldRow, Select, useStyles2 } from '@grafana/ui';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -39,7 +40,11 @@ export function AdHocProfileTypeSelector({ profileTypes, onChange }: ProfileSele
   return (
     <div className={styles.selectorContainer}>
       <InlineFieldRow>
-        <InlineField label="Profile" disabled={!options.length} data-testid="profile-types-dropdown">
+        <InlineField
+          label={t('ad-hoc.profile-type-selector.label', 'Profile')}
+          disabled={!options.length}
+          data-testid="profile-types-dropdown"
+        >
           {/* added a key to ensure the dropdown is properly reset */}
           <Select key={option?.value} value={option} options={options} onChange={_onChange} width={16} />
         </InlineField>

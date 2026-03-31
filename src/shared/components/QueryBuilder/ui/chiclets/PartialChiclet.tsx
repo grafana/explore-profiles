@@ -1,4 +1,5 @@
 import { cx } from '@emotion/css';
+import { t } from '@grafana/i18n';
 import { Tag, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -19,11 +20,14 @@ export const PartialChiclet = ({ filter, onClick }: PartialChicletProps) => {
   }
 
   return (
-    <div className={cx(styles.chiclet, styles.partialChiclet)} aria-label="Partial filter">
+    <div
+      className={cx(styles.chiclet, styles.partialChiclet)}
+      aria-label={t('query-builder.chiclet.partial-filter', 'Partial filter')}
+    >
       <Tag
         colorIndex={9}
         name={attribute.label}
-        title={`Edit "${attribute.label}"`}
+        title={t('query-builder.chiclet.edit-attribute', 'Edit "{{label}}"', { label: attribute.label })}
         onClick={(name, e) => onClick(e, filter, FilterPartKind.attribute)}
         tabIndex={0}
       />
@@ -32,7 +36,7 @@ export const PartialChiclet = ({ filter, onClick }: PartialChicletProps) => {
         <Tag
           colorIndex={9}
           name={operator.label}
-          title={`Edit "${operator.label}"`}
+          title={t('query-builder.chiclet.edit-operator', 'Edit "{{label}}"', { label: operator.label })}
           className={styles.chicletOperator}
           onClick={(name, e) => onClick(e, filter, FilterPartKind.operator)}
           tabIndex={0}

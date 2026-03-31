@@ -7,6 +7,7 @@ import {
   FieldMatcherID,
   FieldType,
 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { CustomTransformerDefinition, sceneGraph, SceneObject } from '@grafana/scenes';
 import { map, Observable } from 'rxjs';
 
@@ -65,7 +66,7 @@ export class ExemplarTransformations {
 
               profileIdField.config.links = [
                 {
-                  title: 'View profile',
+                  title: t('grid.exemplars.view-profile', 'View profile'),
                   url: '',
                   onClick: ExemplarTransformations.showExemplarOnClickHandler(sceneObject, item),
                 },

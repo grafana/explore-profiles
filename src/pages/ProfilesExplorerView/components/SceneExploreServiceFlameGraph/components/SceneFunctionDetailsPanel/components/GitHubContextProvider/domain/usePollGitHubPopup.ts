@@ -27,7 +27,6 @@ export function usePollGitHubPopup({
   setSessionCookie,
   nonce,
 }: PollGithubPopupParams) {
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
     const checkPopup = async () => {
       if (!externalWindow || externalWindow.closed) {

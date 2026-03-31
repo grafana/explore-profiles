@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { Tag, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -17,16 +18,31 @@ export function ProfileIdSelectorLabel(props: Props) {
   return (
     <div className={styles.container}>
       <Tooltip
-        content={`You have added a profile id selector to the flamegraph query (${profileIdSelector}).`}
+        content={t(
+          'flame-graph.profile-id-selector.tooltip',
+          'You have added a profile id selector to the flamegraph query ({{profileIdSelector}}).',
+          { profileIdSelector }
+        )}
         placement="top"
       >
-        <Tag aria-label="Filter label" className={styles.profileIdSelectorLabel} name="Profile id" onClick={noOp} />
+        <Tag
+          aria-label={t('flame-graph.profile-id-selector.filter-label', 'Filter label')}
+          className={styles.profileIdSelectorLabel}
+          name={t('flame-graph.profile-id-selector.name', 'Profile id')}
+          onClick={noOp}
+        />
       </Tooltip>
 
-      <Tag aria-label="Filter operator" className={styles.noInteraction} name="=" onClick={noOp} tabIndex={0} />
+      <Tag
+        aria-label={t('flame-graph.profile-id-selector.filter-operator', 'Filter operator')}
+        className={styles.noInteraction}
+        name="="
+        onClick={noOp}
+        tabIndex={0}
+      />
 
       <Tag
-        aria-label="Filter value"
+        aria-label={t('flame-graph.profile-id-selector.filter-value', 'Filter value')}
         name={profileIdSelector}
         className={styles.noInteraction}
         onClick={noOp}
@@ -34,7 +50,7 @@ export function ProfileIdSelectorLabel(props: Props) {
       />
 
       <Tag
-        aria-label="Remove profile id selector from query"
+        aria-label={t('flame-graph.profile-id-selector.remove', 'Remove profile id selector from query')}
         className={styles.removeButton}
         icon="times"
         name=""

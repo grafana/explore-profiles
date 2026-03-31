@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { Alert, InlineField, InlineFieldRow, RadioButtonGroup, Select, useStyles2 } from '@grafana/ui';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -153,7 +154,7 @@ export function AdHocDiff() {
             <div className={styles.selectorContainer}>
               <InlineFieldRow>
                 <InlineField
-                  label="Profile"
+                  label={t('ad-hoc.diff.profile', 'Profile')}
                   disabled={!leftProfileTypeOptions.length}
                   data-testid="profile-types-dropdown"
                 >
@@ -185,7 +186,7 @@ export function AdHocDiff() {
             <div className={styles.selectorContainer}>
               <InlineFieldRow>
                 <InlineField
-                  label="Profile"
+                  label={t('ad-hoc.diff.profile', 'Profile')}
                   disabled={!rightProfileTypeOptions.length}
                   data-testid="profile-types-dropdown"
                 >
@@ -236,8 +237,11 @@ export function AdHocDiff() {
       )}
 
       {mode === 'diff' && !hasCommonTypes && (
-        <Alert title="Cannot compute diff" severity="warning">
-          The uploaded profiles have no common profile types. Upload profiles with matching types to use the diff view.
+        <Alert title={t('ad-hoc.diff.cannot-compute-diff', 'Cannot compute diff')} severity="warning">
+          {t(
+            'ad-hoc.diff.no-common-profile-types',
+            'The uploaded profiles have no common profile types. Upload profiles with matching types to use the diff view.'
+          )}
         </Alert>
       )}
 
