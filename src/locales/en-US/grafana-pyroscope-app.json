@@ -20,7 +20,6 @@
       "label": "Profile"
     },
     "tabs": {
-      "comparison-view": "Comparison view",
       "diff-view": "Diff view",
       "single-view": "Single view"
     },
