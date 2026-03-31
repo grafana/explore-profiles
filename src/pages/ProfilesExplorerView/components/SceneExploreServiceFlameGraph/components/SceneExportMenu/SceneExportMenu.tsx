@@ -1,4 +1,5 @@
 import { TimeRange } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, Dropdown, Menu } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
@@ -49,7 +50,10 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
         maxNodes: maxNodes || DEFAULT_SETTINGS.maxNodes,
       });
     } catch (error) {
-      displayError(error as Error, ['Error while loading flamebearer profile data!', (error as Error).message]);
+      displayError(error as Error, [
+        t('export-menu.error-loading-profile', 'Error while loading flamebearer profile data!'),
+        (error as Error).message,
+      ]);
       return null;
     }
 
@@ -74,7 +78,10 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
       });
       profile = await new Response(blob.stream().pipeThrough(new CompressionStream('gzip'))).blob();
     } catch (error) {
-      displayError(error as Error, ['Failed to export to pprof!', (error as Error).message]);
+      displayError(error as Error, [
+        t('export-menu.error-pprof', 'Failed to export to pprof!'),
+        (error as Error).message,
+      ]);
       return null;
     }
 
@@ -96,7 +103,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
       (document.querySelector('canvas[data-testid="flameGraph"]') as HTMLCanvasElement).toBlob((blob) => {
         if (!blob) {
           const error = new Error('Error while creating the image, no blob.');
-          displayError(error, ['Failed to export to png!', error.message]);
+          displayError(error, [t('export-menu.error-png', 'Failed to export to png!'), error.message]);
           return;
         }
 
@@ -153,7 +160,10 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
         dlLink.click();
         document.body.removeChild(dlLink);
       } catch (error) {
-        displayError(error as Error, ['Failed to export to flamegraph.com!', (error as Error).message]);
+        displayError(error as Error, [
+          t('export-menu.error-flamegraph-com', 'Failed to export to flamegraph.com!'),
+          (error as Error).message,
+        ]);
         return;
       }
     };
@@ -178,9 +188,9 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
       <Dropdown
         overlay={
           <Menu>
-            <Menu.Item label="png" onClick={actions.downloadPng} />
-            <Menu.Item label="json" onClick={actions.downloadJson} />
-            <Menu.Item label="pprof" onClick={actions.downloadPprof} />
+            <Menu.Item label={t('export-menu.png', 'png')} onClick={actions.downloadPng} />
+            <Menu.Item label={t('export-menu.json', 'json')} onClick={actions.downloadJson} />
+            <Menu.Item label={t('export-menu.pprof', 'pprof')} onClick={actions.downloadPprof} />
           </Menu>
         }
       >
@@ -189,8 +199,8 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
           size="sm"
           variant="secondary"
           fill="outline"
-          aria-label="Export profile data"
-          tooltip="Export profile data"
+          aria-label={t('export-menu.aria-label', 'Export profile data')}
+          tooltip={t('export-menu.tooltip', 'Export profile data')}
         />
       </Dropdown>
     );

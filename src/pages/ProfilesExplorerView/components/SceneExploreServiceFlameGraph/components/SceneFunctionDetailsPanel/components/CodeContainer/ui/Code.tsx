@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { LinkButton, Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -49,10 +50,14 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.breakdownLabel}>
-            <h6>Breakdown per line</h6>
+            <h6>
+              <Trans i18nKey="function-details.code.breakdown-per-line">Breakdown per line</Trans>
+            </h6>
             <span>
               {isLoadingCode && <Spinner inline />}
-              {!isLoadingCode && noCodeAvailable && '(file information unavailable)'}
+              {!isLoadingCode &&
+                noCodeAvailable &&
+                t('function-details.code.file-unavailable', '(file information unavailable)')}
             </span>
           </div>
 
@@ -64,7 +69,7 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
               icon="github"
               fill="text"
             >
-              View on GitHub
+              <Trans i18nKey="function-details.code.view-on-github">View on GitHub</Trans>
             </LinkButton>
 
             <AIButton
@@ -72,7 +77,7 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
               disabled={isLoadingCode || noCodeAvailable}
               interactionName="g_pyroscope_app_optimize_code_clicked"
             >
-              Optimize Code
+              <Trans i18nKey="function-details.code.optimize">Optimize Code</Trans>
             </AIButton>
           </div>
         </div>

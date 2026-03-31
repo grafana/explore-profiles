@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { CustomVariable } from '@grafana/scenes';
 
 export class ProfileIdSelectorVariable extends CustomVariable {
@@ -5,7 +6,7 @@ export class ProfileIdSelectorVariable extends CustomVariable {
     super({
       key: 'profileIdSelector',
       name: 'profileIdSelector',
-      label: 'Profile Id Selector',
+      label: t('variables.profile-id-selector.label', 'Profile Id Selector'),
       value: undefined,
     });
   }

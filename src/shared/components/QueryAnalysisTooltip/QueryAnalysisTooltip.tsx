@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { formattedValueToString, getValueFormat, GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Divider, IconButton, styleMixins, Toggletip, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
@@ -55,20 +56,28 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
     return (
       <div data-testid="queryAnalysis-popup">
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Data in time range</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.data-in-time-range">Data in time range</Trans>
+          </div>
           <div className={styles.column}>{totalBytesInTimeRange}</div>
           <div className={styles.column}>&nbsp;</div>
         </div>
         {data.queryImpact.totalQueriedSeries !== undefined && (
           <div className={styles.row}>
-            <div className={styles.headerColumn}>Series in query</div>
+            <div className={styles.headerColumn}>
+              <Trans i18nKey="query-analysis.series-in-query">Series in query</Trans>
+            </div>
             <div className={styles.column}>{formatCount(data.queryImpact.totalQueriedSeries)}</div>
             <div className={styles.column}>&nbsp;</div>
           </div>
         )}
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Deduplication</div>
-          <div className={styles.column}>{data.queryImpact.deduplicationNeeded ? 'yes' : 'no'}</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.deduplication">Deduplication</Trans>
+          </div>
+          <div className={styles.column}>
+            {data.queryImpact.deduplicationNeeded ? t('query-analysis.yes', 'yes') : t('query-analysis.no', 'no')}
+          </div>
           <div className={styles.column}>&nbsp;</div>
         </div>
         <Divider />
@@ -81,7 +90,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           ))}
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Replicas</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.replicas">Replicas</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {s.componentCount || '/'}
@@ -89,7 +100,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           ))}
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Blocks</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.blocks">Blocks</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {formatCount(s.blockCount) || '/'}
@@ -97,7 +110,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           ))}
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Series</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.series">Series</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {formatCount(s.seriesCount) || '/'}
@@ -105,7 +120,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           ))}
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Profiles</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.profiles">Profiles</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {formatCount(s.profileCount) || '/'}
@@ -113,7 +130,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           ))}
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Samples</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.samples">Samples</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {formatCount(s.sampleCount) || '/'}
@@ -126,7 +145,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           <div className={styles.column}>&nbsp;</div>
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Index Store</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.index-store">Index Store</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {formatSize(s.indexBytes) || '/'}
@@ -134,7 +155,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           ))}
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Profiles Store</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.profiles-store">Profiles Store</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {formatSize(s.profileBytes) || '/'}
@@ -142,7 +165,9 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
           ))}
         </div>
         <div className={styles.row}>
-          <div className={styles.headerColumn}>Symbols Store</div>
+          <div className={styles.headerColumn}>
+            <Trans i18nKey="query-analysis.symbols-store">Symbols Store</Trans>
+          </div>
           {data.queryScopes.map((s, i) => (
             <div key={i} className={styles.column}>
               {formatSize(s.symbolBytes) || '/'}
@@ -158,9 +183,13 @@ export function QueryAnalysisTooltip(props: QueryAnalysisTooltipProps) {
       {data.queryImpact.totalBytesInTimeRange !== undefined ? (
         <Toggletip content={queryAnalysisTooltip} fitContent={true}>
           <div className={styles.tooltip} data-testid="queryAnalysis-tooltip">
-            <span className={styles.contentWithIcon}>Stored data in time range: {totalBytesInTimeRange}</span>
+            <span className={styles.contentWithIcon}>
+              <Trans i18nKey="query-analysis.stored-data-in-time-range">
+                Stored data in time range: {{ totalBytesInTimeRange }}
+              </Trans>
+            </span>
             &nbsp;
-            <IconButton name="database" aria-label="Query info" />
+            <IconButton name="database" aria-label={t('query-analysis.query-info-aria-label', 'Query info')} />
           </div>
         </Toggletip>
       ) : null}

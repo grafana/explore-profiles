@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -75,7 +76,12 @@ export function CommitOption({ commit }: CommitOptionProps) {
       <div className={styles.secondLine}>
         {commitAuthorAvatarUrl && <img className={styles.avatar} src={commitAuthorAvatarUrl} alt={commitAuthor} />}
         <span>
-          {commitAuthor} on {formatCommitDate(commit.date)}
+          <Trans
+            i18nKey="function-details.commit-option.author-date"
+            values={{ author: commitAuthor, date: formatCommitDate(commit.date) }}
+          >
+            {'{{author}} on {{date}}'}
+          </Trans>
         </span>
       </div>
 

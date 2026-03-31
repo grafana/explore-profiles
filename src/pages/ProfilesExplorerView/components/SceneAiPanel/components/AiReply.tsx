@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { t } from '@grafana/i18n';
 import { useStyles2 } from '@grafana/ui';
 import { logger } from '@shared/infrastructure/tracking/logger';
 import Markdown from 'markdown-to-jsx';
@@ -42,7 +43,11 @@ const SearchTerm = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <code className={styles.searchLink} title="Search for this node" onClick={onClickSearchTerm}>
+    <code
+      className={styles.searchLink}
+      title={t('ai-panel.reply.search-node', 'Search for this node')}
+      onClick={onClickSearchTerm}
+    >
       {children}
     </code>
   );

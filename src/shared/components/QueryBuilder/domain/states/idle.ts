@@ -1,6 +1,6 @@
 import { assign, State, StateNodeConfig } from 'xstate';
 
-import { MESSAGES } from '../../ui/constants';
+import { getMessages } from '../../ui/constants';
 import { getLastFilter } from '../helpers/getLastFilter';
 import { isMultipleValuesOperator } from '../helpers/isMultipleValuesOperator';
 import { isPartialFilter } from '../helpers/isPartialFilter';
@@ -18,6 +18,7 @@ export const idle: StateNodeConfig<
     assign({
       // eslint-disable-next-line sonarjs/cognitive-complexity
       suggestions: (context) => {
+        const MESSAGES = getMessages();
         let placeholder = MESSAGES.FILTER_ADD;
         let allowCustomValue = false;
         const lastFilter = getLastFilter(context.filters);

@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { AppEvents, GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { getAppEvents, reportInteraction } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
 import { Alert, Box, Button, Field, Input, Modal, Stack, useStyles2 } from '@grafana/ui';
@@ -42,7 +43,7 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
         setState('saved');
 
         appEvents.publish({
-          payload: ['Search successfully saved.'],
+          payload: [t('saved-searches.save.success-message', 'Search successfully saved.')],
           type: AppEvents.alertSuccess.name,
         });
 
@@ -53,7 +54,7 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
         setState('error');
 
         appEvents.publish({
-          payload: ['Unexpected error saving this search.'],
+          payload: [t('saved-searches.save.error-message', 'Unexpected error saving this search.')],
           type: AppEvents.alertError.name,
         });
       }
@@ -62,9 +63,11 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
   );
 
   return (
-    <Modal title="Save current search" isOpen={true} onDismiss={onClose}>
+    <Modal title={t('saved-searches.save.title', 'Save current search')} isOpen={true} onDismiss={onClose}>
       <Alert title="" severity="info">
-        Saved searches are stored locally in your browser and will only be available on this device.
+        <Trans i18nKey="saved-searches.save.info-message">
+          Saved searches are stored locally in your browser and will only be available on this device.
+        </Trans>
       </Alert>
       <Box marginBottom={2}>
         <code className={styles.query}>{query}</code>
@@ -75,10 +78,12 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
             <Box flex={1} marginBottom={2}>
               {existingSearch && (
                 <Alert title="" severity="warning">
-                  There is a previously saved search with the same query: {existingSearch.title}
+                  <Trans i18nKey="saved-searches.save.existing-search-warning">
+                    There is a previously saved search with the same query: {{ title: existingSearch.title }}
+                  </Trans>
                 </Alert>
               )}
-              <Field label="Title" noMargin htmlFor="save-search-title">
+              <Field label={t('saved-searches.save.title-label', 'Title')} noMargin htmlFor="save-search-title">
                 <Input
                   id="save-search-title"
                   required
@@ -89,7 +94,11 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
               </Field>
             </Box>
             <Box flex={1} marginBottom={2}>
-              <Field label="Description" noMargin htmlFor="save-search-description">
+              <Field
+                label={t('saved-searches.save.description-label', 'Description')}
+                noMargin
+                htmlFor="save-search-description"
+              >
                 <Input
                   id="save-search-description"
                   value={description}
@@ -101,21 +110,21 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
           </Stack>
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={onClose} disabled={state === 'saving'}>
-              Cancel
+              <Trans i18nKey="saved-searches.save.cancel">Cancel</Trans>
             </Button>
             <Button type="submit" disabled={!title || state === 'saving'}>
-              Save
+              <Trans i18nKey="saved-searches.save.save">Save</Trans>
             </Button>
           </Modal.ButtonRow>
         </form>
       ) : (
         <>
-          <Alert title="Success" severity="success">
-            Search successfully saved.
+          <Alert title={t('saved-searches.save.success-title', 'Success')} severity="success">
+            <Trans i18nKey="saved-searches.save.success-body">Search successfully saved.</Trans>
           </Alert>
           <Modal.ButtonRow>
             <Button variant="secondary" fill="outline" onClick={onClose}>
-              Close
+              <Trans i18nKey="saved-searches.save.close">Close</Trans>
             </Button>
           </Modal.ButtonRow>
         </>

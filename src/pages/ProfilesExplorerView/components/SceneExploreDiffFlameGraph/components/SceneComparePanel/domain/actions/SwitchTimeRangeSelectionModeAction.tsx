@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Icon, RadioButtonGroup, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
@@ -16,10 +17,18 @@ interface SwitchTimeRangeSelectionTypeActionState extends SceneObjectState {
 }
 
 export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTimeRangeSelectionTypeActionState> {
-  static OPTIONS = [
-    { label: 'Time picker', value: TimerangeSelectionMode.TIMEPICKER },
-    { label: 'Flame graph', value: TimerangeSelectionMode.FLAMEGRAPH },
-  ];
+  static getOptions() {
+    return [
+      {
+        label: t('diff-flame-graph.compare-panel.time-picker', 'Time picker'),
+        value: TimerangeSelectionMode.TIMEPICKER,
+      },
+      {
+        label: t('diff-flame-graph.compare-panel.flame-graph', 'Flame graph'),
+        value: TimerangeSelectionMode.FLAMEGRAPH,
+      },
+    ];
+  }
 
   constructor() {
     super({
@@ -41,25 +50,37 @@ export class SwitchTimeRangeSelectionModeAction extends SceneObjectBase<SwitchTi
       <div className={styles.container}>
         <RadioButtonGroup
           size="sm"
-          options={SwitchTimeRangeSelectionModeAction.OPTIONS}
+          options={SwitchTimeRangeSelectionModeAction.getOptions()}
           value={mode}
           onChange={model.onChange}
-          aria-label="Range selection mode"
+          aria-label={t('diff-flame-graph.compare-panel.range-selection-mode', 'Range selection mode')}
         />
         <div>
           <Tooltip
             content={
               <div className={styles.tooltip}>
                 <div>
-                  Use these buttons to change the behaviour when selecting a range with the mouse on the time series:
+                  <Trans i18nKey="diff-flame-graph.compare-panel.tooltip-description">
+                    Use these buttons to change the behaviour when selecting a range with the mouse on the time series:
+                  </Trans>
                 </div>
                 <dl>
-                  <dt>Time picker</dt>
-                  <dd>Time range zoom in (default behaviour)</dd>
-                  <dt>Flame graph</dt>
+                  <dt>
+                    <Trans i18nKey="diff-flame-graph.compare-panel.tooltip-time-picker">Time picker</Trans>
+                  </dt>
                   <dd>
-                    Time range for building the flame graph (the stack traces will be retrieved only for the selected
-                    range)
+                    <Trans i18nKey="diff-flame-graph.compare-panel.tooltip-time-picker-description">
+                      Time range zoom in (default behaviour)
+                    </Trans>
+                  </dd>
+                  <dt>
+                    <Trans i18nKey="diff-flame-graph.compare-panel.tooltip-flame-graph">Flame graph</Trans>
+                  </dt>
+                  <dd>
+                    <Trans i18nKey="diff-flame-graph.compare-panel.tooltip-flame-graph-description">
+                      Time range for building the flame graph (the stack traces will be retrieved only for the selected
+                      range)
+                    </Trans>
                   </dd>
                 </dl>
               </div>

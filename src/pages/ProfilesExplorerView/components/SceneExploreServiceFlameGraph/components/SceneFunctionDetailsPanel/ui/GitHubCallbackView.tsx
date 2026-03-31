@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Modal, Spinner, useStyles2 } from '@grafana/ui';
 import React, { useState } from 'react';
 
@@ -40,7 +41,7 @@ export default function GitHubCallbackView() {
 
   return (
     <Modal
-      title="GitHub Login"
+      title={t('function-details.github-callback.title', 'GitHub Login')}
       isOpen={isModalOpen}
       onDismiss={handleDismiss}
       closeOnEscape={true}
@@ -51,7 +52,9 @@ export default function GitHubCallbackView() {
         <div className={styles.loadingIcon}>
           <Spinner size="xl" />
         </div>
-        <p>Logging in to GitHub...</p>
+        <p>
+          <Trans i18nKey="function-details.github-callback.logging-in">Logging in to GitHub...</Trans>
+        </p>
       </div>
     </Modal>
   );

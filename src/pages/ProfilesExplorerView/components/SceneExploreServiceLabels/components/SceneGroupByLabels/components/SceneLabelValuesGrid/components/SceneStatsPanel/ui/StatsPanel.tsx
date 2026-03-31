@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { getValueFormat, GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import React, { useMemo } from 'react';
 
@@ -44,14 +45,22 @@ export function StatsPanel({
   const options = useMemo(
     () => [
       {
-        label: 'Baseline',
+        label: t('labels.stats-panel.baseline', 'Baseline'),
         value: CompareTarget.BASELINE,
-        description: !compareActionChecks[0] ? `Click to select "${value}" as baseline for comparison` : '',
+        description: !compareActionChecks[0]
+          ? t('labels.stats-panel.baseline-description', 'Click to select "{{value}}" as baseline for comparison', {
+              value,
+            })
+          : '',
       },
       {
-        label: 'Comparison',
+        label: t('labels.stats-panel.comparison', 'Comparison'),
         value: CompareTarget.COMPARISON,
-        description: !compareActionChecks[1] ? `Click to select "${value}" as target for comparison` : '',
+        description: !compareActionChecks[1]
+          ? t('labels.stats-panel.comparison-description', 'Click to select "{{value}}" as target for comparison', {
+              value,
+            })
+          : '',
       },
     ],
     [compareActionChecks, value]
@@ -59,7 +68,11 @@ export function StatsPanel({
 
   return (
     <div className={styles.container} data-testid={`stats-panel-${value}`}>
-      <h1 style={{ color }} className={styles.title} title={`${statsDescription}: ${total}`}>
+      <h1
+        style={{ color }}
+        className={styles.title}
+        title={t('labels.stats-panel.total', '{{statsDescription}}: {{total}}', { statsDescription, total })}
+      >
         {total}
       </h1>
 

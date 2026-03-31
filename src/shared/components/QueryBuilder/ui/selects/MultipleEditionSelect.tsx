@@ -5,7 +5,7 @@ import { localeCompare } from '@shared/domain/localeCompare';
 import React, { useCallback, useMemo, useState } from 'react';
 
 import { Suggestion, Suggestions } from '../../domain/types';
-import { MESSAGES } from '../constants';
+import { getMessages } from '../constants';
 
 type MultipleEditionSelectProps = {
   selection: Suggestion;
@@ -59,7 +59,7 @@ export function MultipleEditionSelect({ selection, suggestions, onCloseMenu }: M
     <MultiSelect
       className={styles.editionSelect}
       placeholder={suggestions.placeholder}
-      loadingMessage={MESSAGES.LOADING}
+      loadingMessage={getMessages().LOADING}
       closeMenuOnSelect={false}
       hideSelectedOptions={false}
       backspaceRemovesValue

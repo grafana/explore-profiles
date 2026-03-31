@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { t, Trans } from '@grafana/i18n';
 import { Column, EmptyState, Icon, InteractiveTable, TagList, Text, Tooltip, useStyles2 } from '@grafana/ui';
 import { BackButton } from '@shared/components/Common/BackButton';
 import { parseQuery } from '@shared/domain/url-params/parseQuery';
@@ -23,7 +24,11 @@ const RecordingRulesDetails = (model: RecordingRuleViewModel) => {
     labels = [...labels, ...p.labels.filter((label) => !label.trim().match(/^__profile_type__/))];
   });
 
-  let matchersContent = <span>No labels</span>;
+  let matchersContent = (
+    <span>
+      <Trans i18nKey="recording-rules.details.no-labels">No labels</Trans>
+    </span>
+  );
 
   if (labels.length !== 0) {
     matchersContent = <span className={css({ fontFamily: 'monospace' })}>{labels.join(', ')}</span>;
@@ -32,10 +37,14 @@ const RecordingRulesDetails = (model: RecordingRuleViewModel) => {
   return (
     <div>
       <dl>
-        <dt>Filters</dt>
+        <dt>
+          <Trans i18nKey="recording-rules.details.filters">Filters</Trans>
+        </dt>
         <dd>{matchersContent}</dd>
-        <dt>Read only</dt>
-        <dd>{readonly ? 'Yes' : 'No'}</dd>
+        <dt>
+          <Trans i18nKey="recording-rules.details.read-only">Read only</Trans>
+        </dt>
+        <dd>{readonly ? t('recording-rules.details.yes', 'Yes') : t('recording-rules.details.no', 'No')}</dd>
       </dl>
     </div>
   );
@@ -53,19 +62,19 @@ export default function RecordingRulesView() {
   const columns: Array<Column<RecordingRuleViewModel>> = [
     {
       id: 'metricName',
-      header: 'Name',
+      header: t('recording-rules.table.name', 'Name'),
       sortType: 'alphanumeric',
     },
     {
       id: 'serviceName',
-      header: 'Service Name',
+      header: t('recording-rules.table.service-name', 'Service Name'),
       sortType: 'alphanumeric',
       cell: (props) => {
         const rule: RecordingRuleViewModel = props.row.original;
         return (
           rule.serviceName || (
             <Text element="span" color="secondary">
-              All services
+              <Trans i18nKey="recording-rules.table.all-services">All services</Trans>
             </Text>
           )
         );
@@ -73,19 +82,19 @@ export default function RecordingRulesView() {
     },
     {
       id: 'profileType',
-      header: 'Profile Type',
+      header: t('recording-rules.table.profile-type', 'Profile Type'),
       sortType: 'alphanumeric',
     },
     {
       id: 'functionName',
-      header: 'Function Name',
+      header: t('recording-rules.table.function-name', 'Function Name'),
       sortType: 'alphanumeric',
       cell: (props) => {
         const rule: RecordingRuleViewModel = props.row.original;
         return (
           rule.functionName || (
             <Text element="span" color="secondary">
-              Total (all functions)
+              <Trans i18nKey="recording-rules.table.total-all-functions">Total (all functions)</Trans>
             </Text>
           )
         );
@@ -93,7 +102,7 @@ export default function RecordingRulesView() {
     },
     {
       id: 'groupBy',
-      header: 'Labels',
+      header: t('recording-rules.table.labels', 'Labels'),
       cell: (props) => {
         // Exclude hidden labels.
         const rule: RecordingRuleViewModel = props.row.original;
@@ -102,7 +111,7 @@ export default function RecordingRulesView() {
         if (!labels || labels.length === 0) {
           return (
             <Text element="span" color="secondary">
-              None
+              <Trans i18nKey="recording-rules.table.none">None</Trans>
             </Text>
           );
         }
@@ -112,13 +121,18 @@ export default function RecordingRulesView() {
     },
     {
       id: 'actions',
-      header: 'Actions',
+      header: t('recording-rules.table.actions', 'Actions'),
       disableGrow: true,
       cell: (props) => {
         const rule: RecordingRuleViewModel = props.row.original;
         if (rule.readonly) {
           return (
-            <Tooltip content="This rule is provisioned with tenant settings and cannot be deleted.">
+            <Tooltip
+              content={t(
+                'recording-rules.table.readonly-tooltip',
+                'This rule is provisioned with tenant settings and cannot be deleted.'
+              )}
+            >
               <Icon name="info-circle" />
             </Tooltip>
           );
@@ -145,9 +159,15 @@ export default function RecordingRulesView() {
     component = <RecordingRulesViewError error={data.fetchError} />;
   } else if (isEmpty) {
     component = (
-      <EmptyState message={'No recording rules'} variant="not-found" button={<BackButton />}>
-        Open a flame graph, click on the &quot;total&quot; block at the top and select &quot;Create recording rule&quot;
-        from the context menu to define a new rule.
+      <EmptyState
+        message={t('recording-rules.empty.message', 'No recording rules')}
+        variant="not-found"
+        button={<BackButton />}
+      >
+        <Trans i18nKey="recording-rules.empty.description">
+          Open a flame graph, click on the &quot;total&quot; block at the top and select &quot;Create recording
+          rule&quot; from the context menu to define a new rule.
+        </Trans>
       </EmptyState>
     );
   } else {
@@ -168,7 +188,7 @@ export default function RecordingRulesView() {
 
   return (
     <>
-      <PageTitle title="Recording rules" />
+      <PageTitle title={t('recording-rules.title', 'Recording rules')} />
       {component}
     </>
   );
@@ -182,14 +202,21 @@ const getStyles = () => ({
 });
 
 function RecordingRulesViewError({ error }: { error: HttpClientError }) {
-  let errorMessage = 'Error while retrieving recording rules';
+  let errorMessage = t('recording-rules.error.message', 'Error while retrieving recording rules');
   if (error.response?.status === 404) {
-    errorMessage = 'This feature requires Pyroscope with recording_rules flag enabled.';
+    errorMessage = t(
+      'recording-rules.error.feature-required',
+      'This feature requires Pyroscope with recording_rules flag enabled.'
+    );
   } else if (error.message) {
     errorMessage = error.message;
   }
   return (
-    <EmptyState message="Error while retrieving recording rules" variant="not-found" button={<BackButton />}>
+    <EmptyState
+      message={t('recording-rules.error.title', 'Error while retrieving recording rules')}
+      variant="not-found"
+      button={<BackButton />}
+    >
       {errorMessage}
     </EmptyState>
   );
