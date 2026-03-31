@@ -58,10 +58,11 @@ interface SceneComparePanelState extends SceneObjectState {
   refreshPicker: SceneRefreshPicker;
   timeseriesPanel: SceneLabelValuesTimeseries;
   lastSyncedStepSec?: number;
-  modeSelector: SwitchTimeRangeSelectionModeAction;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
+  private readonly modeSelector = new SwitchTimeRangeSelectionModeAction();
+
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
     onReferencedVariableValueChanged: () => {
@@ -93,7 +94,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       timePicker: new SceneTimePickerWithoutSync({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
-      modeSelector: new SwitchTimeRangeSelectionModeAction(),
     });
 
     if (target === CompareTarget.COMPARISON) {
@@ -106,7 +106,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   onActivate(clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
-    const { target, timeseriesPanel, filterKey, $timeRange, modeSelector } = this.state;
+    const { target, timeseriesPanel, filterKey, $timeRange } = this.state;
+    const { modeSelector } = this;
 
     if (clearDiffRange) {
       this.setDiffRange(null);
