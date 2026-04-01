@@ -464,6 +464,14 @@
     "title": "",
     "version": ""
   },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
+  },
   "query-analysis": {
     "blocks": "",
     "data-in-time-range": "",
