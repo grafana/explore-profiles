@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter, GrafanaTheme2, VariableRefresh } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
@@ -31,7 +32,7 @@ export class ServiceNameVariable extends QueryVariable {
     super({
       key: 'serviceName',
       name: 'serviceName',
-      label: 'Service',
+      label: t('variables.service-name.label', 'Service'),
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ServiceNameVariable.QUERY_DEFAULT,
       // Must be false so SceneByVariableRepeaterGrid.onActivate can call update().
@@ -124,11 +125,15 @@ export class ServiceNameVariable extends QueryVariable {
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
         // (e.g. in SceneExploreServiceProfileTypes)
         key={nanoid(5)}
-        aria-label="Services list"
+        aria-label={t('variables.service-name.aria-label', 'Services list')}
         width={32}
         separator="/"
         displayAllSelectedLevels
-        placeholder={loading ? 'Loading services...' : `Select a service (${options.length})`}
+        placeholder={
+          loading
+            ? t('variables.service-name.loading', 'Loading services...')
+            : t('variables.service-name.placeholder', 'Select a service ({{count}})', { count: options.length })
+        }
         options={cascaderOptions}
         initialValue={value as string}
         changeOnSelect={false}

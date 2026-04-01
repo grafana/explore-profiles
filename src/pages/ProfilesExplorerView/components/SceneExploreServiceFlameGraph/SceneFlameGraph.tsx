@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
 import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
+import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
@@ -97,7 +98,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     return (
       <>
         <PyroscopeLogo size="small" />
-        Flame graph for {serviceName} ({profileMetricType})
+        <Trans i18nKey="flame-graph.title" values={{ serviceName, profileMetricType }}>
+          Flame graph for {{ serviceName }} ({{ profileMetricType }})
+        </Trans>
       </>
     );
   }
@@ -113,8 +116,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     if (isFetchingSettingsError) {
       displayWarning([
-        'Error while retrieving the plugin settings!',
-        'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.',
+        t('flame-graph.settings-error.title', 'Error while retrieving the plugin settings!'),
+        t(
+          'flame-graph.settings-error.message',
+          'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.'
+        ),
       ]);
     }
 
@@ -254,14 +260,18 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                   onClick={() => sidePanel.open('ai')}
                   interactionName="g_pyroscope_app_explain_flamegraph_clicked"
                 >
-                  Explain Flame Graph
+                  <Trans i18nKey="flame-graph.explain-button">Explain Flame Graph</Trans>
                 </AIButton>
               )}
             </>
           }
         >
           {data.fetchProfileError && (
-            <InlineBanner severity="error" title="Error while loading profile data!" error={data.fetchProfileError} />
+            <InlineBanner
+              severity="error"
+              title={t('flame-graph.error-loading-profile', 'Error while loading profile data!')}
+              error={data.fetchProfileError}
+            />
           )}
 
           {!data.fetchProfileError && (

@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { Button, Dropdown } from '@grafana/ui';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
 import React, { memo } from 'react';
@@ -19,8 +20,8 @@ function ExportDataComponent(props: ExportDataProps) {
         size="sm"
         variant="secondary"
         fill="outline"
-        aria-label="Export profile data"
-        tooltip="Export profile data"
+        aria-label={t('export-data.aria-label', 'Export profile data')}
+        tooltip={t('export-data.tooltip', 'Export profile data')}
       />
     </Dropdown>
   );

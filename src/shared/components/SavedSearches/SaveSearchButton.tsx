@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { usePluginComponent } from '@grafana/runtime';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
 import { GrafanaPyroscopeDataQuery } from '@grafana/schema/dist/esm/raw/composable/grafanapyroscope/dataquery/x/GrafanaPyroscopeDataQuery_types.gen';
@@ -44,7 +45,12 @@ export function SaveSearchButton({ sceneRef }: Props) {
   const fallbackComponent = useMemo(
     () => (
       <>
-        <ToolbarButton variant="canvas" icon="save" onClick={() => setSaving(true)} tooltip="Save search" />
+        <ToolbarButton
+          variant="canvas"
+          icon="save"
+          onClick={() => setSaving(true)}
+          tooltip={t('saved-searches.save.tooltip', 'Save search')}
+        />
         {saving && <SaveSearchModal dsUid={dsUid} sceneRef={sceneRef} onClose={() => setSaving(false)} />}
       </>
     ),
@@ -77,5 +83,11 @@ export function SaveSearchButton({ sceneRef }: Props) {
     return null;
   }
 
-  return <OpenQueryLibraryComponent datasourceFilters={[dsName]} query={query} tooltip="Save in Saved Queries" />;
+  return (
+    <OpenQueryLibraryComponent
+      datasourceFilters={[dsName]}
+      query={query}
+      tooltip={t('saved-searches.save.saved-queries-tooltip', 'Save in Saved Queries')}
+    />
+  );
 }

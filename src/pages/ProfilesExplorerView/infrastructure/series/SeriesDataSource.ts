@@ -7,6 +7,7 @@ import {
   TestDataSourceResponse,
   TimeRange,
 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { RuntimeDataSource } from '@grafana/scenes';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { logger } from '@shared/infrastructure/tracking/logger';
@@ -98,7 +99,7 @@ export class SeriesDataSource extends RuntimeDataSource {
   async testDatasource(): Promise<TestDataSourceResponse> {
     return {
       status: 'success',
-      message: 'OK',
+      message: t('series.data-source.test-success', 'OK'),
     };
   }
 }

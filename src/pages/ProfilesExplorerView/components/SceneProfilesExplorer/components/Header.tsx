@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
 import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
@@ -55,11 +56,15 @@ export function Header(props: HeaderProps) {
   const metricsFromProfilesMenu = (
     <Menu>
       <Menu.Item
-        ariaLabel="View recording rules"
-        label="View recording rules"
+        ariaLabel={t('explorer.header.view-recording-rules', 'View recording rules')}
+        label={t('explorer.header.view-recording-rules', 'View recording rules')}
         onClick={actions.onClickRecordingRules}
       />
-      <Menu.Item ariaLabel="Add recording rule" label="Add recording rule" onClick={props.onCreateRecordingRule} />
+      <Menu.Item
+        ariaLabel={t('explorer.header.add-recording-rule', 'Add recording rule')}
+        label={t('explorer.header.add-recording-rule', 'Add recording rule')}
+        onClick={props.onCreateRecordingRule}
+      />
     </Menu>
   );
 
@@ -104,18 +109,30 @@ export function Header(props: HeaderProps) {
               {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
                 <>
                   <Dropdown overlay={metricsFromProfilesMenu}>
-                    <IconButton name="gf-prometheus" tooltip="Recording rules" aria-label="Recording rules" />
+                    <IconButton
+                      name="gf-prometheus"
+                      tooltip={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                      aria-label={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                    />
                   </Dropdown>
                 </>
               )}
 
-              <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />
+              <IconButton
+                name="upload"
+                tooltip={t('explorer.header.upload-tooltip', 'Upload ad hoc profiles')}
+                onClick={actions.onClickAdHoc}
+              />
 
-              <IconButton name="cog" tooltip="View/edit tenant settings" onClick={actions.onClickUserSettings} />
+              <IconButton
+                name="cog"
+                tooltip={t('explorer.header.settings-tooltip', 'View/edit tenant settings')}
+                onClick={actions.onClickUserSettings}
+              />
 
               <IconButton
                 name="share-alt"
-                tooltip="Copy shareable link to the clipboard"
+                tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
                 onClick={actions.onClickShareLink}
               />
 

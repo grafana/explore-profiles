@@ -1,4 +1,5 @@
 import { DashboardCursorSync, DataFrame, LoadingState } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -168,7 +169,10 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
     }
 
     refreshButton?.addEventListener('click', onClickRefresh);
-    refreshButton?.setAttribute('title', 'Click to completely refresh all the panels present on the screen');
+    refreshButton?.setAttribute(
+      'title',
+      t('labels.grid.refresh-tooltip', 'Click to completely refresh all the panels present on the screen')
+    );
     // end of hack
 
     return {
@@ -400,7 +404,7 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       children: [
         new SceneCSSGridItem({
           body: new SceneEmptyState({
-            message: 'No results',
+            message: t('labels.grid.no-results', 'No results'),
           }),
         }),
       ],

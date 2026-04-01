@@ -1,4 +1,5 @@
 import { VariableRefresh } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { QueryVariable, VariableValueOption } from '@grafana/scenes';
 import { lastValueFrom } from 'rxjs';
 
@@ -8,7 +9,7 @@ export class FavoriteVariable extends QueryVariable {
   constructor() {
     super({
       name: 'favorite',
-      label: '🔖 Favorite',
+      label: t('variables.favorite.label', '🔖 Favorite'),
       datasource: PYROSCOPE_FAVORITES_DATA_SOURCE,
       // "hack": we want to subscribe to changes of dataSource
       query: '$dataSource',

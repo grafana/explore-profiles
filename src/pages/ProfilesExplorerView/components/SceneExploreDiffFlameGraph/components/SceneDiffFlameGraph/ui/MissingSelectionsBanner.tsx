@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Button, Collapse, useStyles2 } from '@grafana/ui';
 import DiffViewHowToImg from '@img/diff-view-how-to.gif';
 import { InlineBanner } from '@shared/ui/InlineBanner';
@@ -30,22 +31,32 @@ export function MissingSelectionsBanner({
   return (
     <InlineBanner
       severity="info"
-      title="Select both the baseline and the comparison flame graph ranges to view the diff flame graph"
+      title={t(
+        'diff-flame-graph.missing-selections.title',
+        'Select both the baseline and the comparison flame graph ranges to view the diff flame graph'
+      )}
       message={
         <div className={styles.infoMsg}>
-          <p>How?</p>
+          <p>
+            <Trans i18nKey="diff-flame-graph.missing-selections.how">How?</Trans>
+          </p>
           <p>
             <Button variant="primary" onClick={onClickAutoSelect}>
-              Auto-select
+              <Trans i18nKey="diff-flame-graph.missing-selections.auto-select">Auto-select</Trans>
             </Button>{' '}
-            or{' '}
+            <Trans i18nKey="diff-flame-graph.missing-selections.or">or</Trans>{' '}
             <Button variant="primary" fill="text" className={styles.textButton} onClick={onClickChoosePreset}>
-              choose a preset
+              <Trans i18nKey="diff-flame-graph.missing-selections.choose-preset">choose a preset</Trans>
             </Button>
           </p>
-          <p>Alternatively:</p>
+          <p>
+            <Trans i18nKey="diff-flame-graph.missing-selections.alternatively">Alternatively:</Trans>
+          </p>
           <Collapse
-            label="Click here to learn how to select the flame graph ranges with the mouse"
+            label={t(
+              'diff-flame-graph.missing-selections.learn-how',
+              'Click here to learn how to select the flame graph ranges with the mouse'
+            )}
             collapsible
             className={styles.collapse}
             isOpen={isCollapseOpen}
@@ -53,12 +64,21 @@ export function MissingSelectionsBanner({
           >
             <div className={styles.collapseContent}>
               <ol>
-                <li>Ensure that the &ldquo;Flame graph&rdquo; range selection mode is selected</li>
                 <li>
-                  Use your mouse to select the desired time ranges on both the baseline and the comparison time series
+                  <Trans i18nKey="diff-flame-graph.missing-selections.step-1">
+                    Ensure that the &ldquo;Flame graph&rdquo; range selection mode is selected
+                  </Trans>
+                </li>
+                <li>
+                  <Trans i18nKey="diff-flame-graph.missing-selections.step-2">
+                    Use your mouse to select the desired time ranges on both the baseline and the comparison time series
+                  </Trans>
                 </li>
               </ol>
-              <img src={DiffViewHowToImg} alt="How to view the diff flame graph" />
+              <img
+                src={DiffViewHowToImg}
+                alt={t('diff-flame-graph.missing-selections.how-to-alt', 'How to view the diff flame graph')}
+              />
             </div>
           </Collapse>
         </div>
