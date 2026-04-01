@@ -42,7 +42,7 @@
   "resolutions": {
     "esbuild": ">=0.25.0",
     "i18next": ">=25.4.0",
-    "tar": "7.5.11",
+    "tar": "7.5.13",
     "lodash": "4.17.23",
     "minimatch@npm:^5.0.1": "5.1.9",
     "minimatch@9.0.3": "9.0.9",
