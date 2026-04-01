@@ -349,6 +349,8 @@
       "tooltip-select-baseline": "",
       "tooltip-select-comparison": "",
       "button_one": "",
+      "button_few": "",
+      "button_many": "",
       "button_other": ""
     },
     "data-source": {
@@ -665,6 +667,8 @@
       "label": "",
       "loading": "",
       "placeholder_one": "",
+      "placeholder_few": "",
+      "placeholder_many": "",
       "placeholder_other": ""
     },
     "service-name": {
@@ -672,6 +676,8 @@
       "label": "",
       "loading": "",
       "placeholder_one": "",
+      "placeholder_few": "",
+      "placeholder_many": "",
       "placeholder_other": ""
     },
     "span-selector": {

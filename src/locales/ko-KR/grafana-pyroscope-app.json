@@ -348,7 +348,6 @@
       "tooltip-ready": "",
       "tooltip-select-baseline": "",
       "tooltip-select-comparison": "",
-      "button_one": "",
       "button_other": ""
     },
     "data-source": {
@@ -664,14 +663,12 @@
       "aria-label": "",
       "label": "",
       "loading": "",
-      "placeholder_one": "",
       "placeholder_other": ""
     },
     "service-name": {
       "aria-label": "",
       "label": "",
       "loading": "",
-      "placeholder_one": "",
       "placeholder_other": ""
     },
     "span-selector": {
