@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { config } from '@grafana/runtime';
 import {
   dataLayers,
@@ -29,10 +30,10 @@ export function isKgAnnotationsAvailable(): boolean {
 
 function createAnnotationLayers(entityType: string, entityName: string) {
   const severities = [
-    { value: 'critical', color: 'red', label: 'Critical' },
-    { value: 'warning', color: 'yellow', label: 'Warning' },
-    { value: 'info', color: 'blue', label: 'Info' },
-  ] as const;
+    { value: 'critical', color: 'red', label: t('profiles.kg-annotations.severity-critical', 'Critical') },
+    { value: 'warning', color: 'yellow', label: t('profiles.kg-annotations.severity-warning', 'Warning') },
+    { value: 'info', color: 'blue', label: t('profiles.kg-annotations.severity-info', 'Info') },
+  ];
 
   const filterCriteria = [
     {
