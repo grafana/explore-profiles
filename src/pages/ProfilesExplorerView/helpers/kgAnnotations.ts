@@ -25,7 +25,7 @@ export function isKgAnnotationsAvailable(): boolean {
   if (!(config.featureToggles as Record<string, boolean | undefined>)['kgAnnotationsInPyroscope']) {
     return false;
   }
-  return Object.values(config.datasources).some((d) => d.uid === KG_DATASOURCE_UID);
+  return Object.values(config.datasources).some((d) => d.type === KG_DATASOURCE_TYPE || d.uid === KG_DATASOURCE_UID);
 }
 
 function createAnnotationLayers(entityType: string, entityName: string) {
@@ -145,6 +145,7 @@ export function getKgSceneProps(entityType: string, serviceNameVarKey: string): 
   const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
 
   const toggle = new KgAnnotationToggle({
+    key: 'kg-annotations-toggle',
     isEnabled: true,
     layerSetRef: new SceneObjectRef(layerSet),
   });
