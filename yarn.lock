@@ -2945,14 +2945,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:1.58.2":
-  version: 1.58.2
-  resolution: "@playwright/test@npm:1.58.2"
+"@playwright/test@npm:1.59.0":
+  version: 1.59.0
+  resolution: "@playwright/test@npm:1.59.0"
   dependencies:
-    playwright: "npm:1.58.2"
+    playwright: "npm:1.59.0"
   bin:
     playwright: cli.js
-  checksum: 10/58bf90139280a0235eeeb6049e9fb4db6425e98be1bf0cc17913b068eef616cf67be57bfb36dc4cb56bcf116f498ffd0225c4916e85db404b343ea6c5efdae13
+  checksum: 10/4a756c257fa9c0edec4ba202edf10e2fab8cf69cd7b5255229977c616390d7cadb03fedf586281693f9886b0e56b197f3810526aca0acbeccb58c1dc1d767dde
   languageName: node
   linkType: hard
 
@@ -3445,19 +3445,19 @@ __metadata:
   linkType: hard
 
 "@react-aria/utils@npm:^3.25.3, @react-aria/utils@npm:^3.31.0, @react-aria/utils@npm:^3.33.0":
-  version: 3.33.0
-  resolution: "@react-aria/utils@npm:3.33.0"
+  version: 3.33.1
+  resolution: "@react-aria/utils@npm:3.33.1"
   dependencies:
     "@react-aria/ssr": "npm:^3.9.10"
     "@react-stately/flags": "npm:^3.1.2"
     "@react-stately/utils": "npm:^3.11.0"
-    "@react-types/shared": "npm:^3.33.0"
+    "@react-types/shared": "npm:^3.33.1"
     "@swc/helpers": "npm:^0.5.0"
     clsx: "npm:^2.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/dea012c0fdcf0d23171ce6cf372ee91ebb965f8640b40913bbdbd4904429cf046ecc9ed952c9e7a53ade6642bc3d73a03b0b99e9b57761d2f802c14a840b3ab2
+  checksum: 10/676de77e907862fc44963657a370a45242bfbec2cd54a2ed0935a709315e31415c7c045e2721f067c315418e9aa8c46aa9bd18cb6010820af357c17e335cba47
   languageName: node
   linkType: hard
 
@@ -3543,12 +3543,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-types/shared@npm:^3.32.1, @react-types/shared@npm:^3.33.0":
-  version: 3.33.0
-  resolution: "@react-types/shared@npm:3.33.0"
+"@react-types/shared@npm:^3.32.1, @react-types/shared@npm:^3.33.0, @react-types/shared@npm:^3.33.1":
+  version: 3.33.1
+  resolution: "@react-types/shared@npm:3.33.1"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/e2bbb014e03b71d7b5743d0ec0754e213dd954724fe8dcdbdca2af752eb59cfac6380f561ee3a7bcef3935963b18f086305994be93936dbc9894cbe18ab22850
+  checksum: 10/18b9586e4d6f1fda82a471bde7e4dec5bcc95d1a7ece58864fe40bcd9dce175b5c76c4285d8aeed1beba2d397e3e89b521519a917aa97e16847edfa3c67b5df5
   languageName: node
   linkType: hard
 
@@ -4132,12 +4132,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/color-convert@npm:*":
-  version: 2.0.3
-  resolution: "@types/color-convert@npm:2.0.3"
+"@types/color-convert@npm:1":
+  version: 1.9.0
+  resolution: "@types/color-convert@npm:1.9.0"
   dependencies:
     "@types/color-name": "npm:*"
-  checksum: 10/39fe4036c0fb27e796f962eb19e4640aaa7f55cdb05cb8d4b21ef48d4a6f82fc281c06a6664ef1dfb11d9d6d2051a988a0ffa0b7a2f71b3a9418ebced12a9f38
+  checksum: 10/d1613d638ef339469cd7182f66356406c8f1d5eadd10984e2d6446e63e5b2998f416668f80bd8626411fe0f5d1f29b829a1453dea5034b6791ebfacbdff02608
   languageName: node
   linkType: hard
 
@@ -4148,12 +4148,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/color@npm:3.0.6":
-  version: 3.0.6
-  resolution: "@types/color@npm:3.0.6"
+"@types/color@npm:3.0.7":
+  version: 3.0.7
+  resolution: "@types/color@npm:3.0.7"
   dependencies:
-    "@types/color-convert": "npm:*"
-  checksum: 10/0f16dcf4e202896d5425019c44a1f99713fca998052ab2fd836cdd38048398a0caf5b79a2efe560e41fca4b9401e8d8f6f02ed541cfea30cca3a8cb1b50b80f7
+    "@types/color-convert": "npm:1"
+  checksum: 10/0530364fed840562da9a7c9488b6a25e7f3406e8be767febdb72410f5d1c5d4b506e1c6af6be8b5a49045fa9831ec00bc1b093fef38c53a187fd9791d95c426f
   languageName: node
   linkType: hard
 
@@ -7200,15 +7200,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dompurify@npm:3.3.2":
-  version: 3.3.2
-  resolution: "dompurify@npm:3.3.2"
+"dompurify@npm:3.3.3":
+  version: 3.3.3
+  resolution: "dompurify@npm:3.3.3"
   dependencies:
     "@types/trusted-types": "npm:^2.0.7"
   dependenciesMeta:
     "@types/trusted-types":
       optional: true
-  checksum: 10/3ca02559677ce6d9583a500f21ffbb6b9e88f1af99f69fa0d0d9442cddbac98810588c869f8b435addb5115492d6e49870024bca322169b941bafedb99c7f281
+  checksum: 10/4cc9c539ed7136d46c6577613b8e20871c2b6165db01dfbd2a3c11c75f9e339c496ac6519a1c3190115def8cadae3720bef0417fc43fa28802c7407bab174da9
   languageName: node
   linkType: hard
 
@@ -12403,27 +12403,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.58.2":
-  version: 1.58.2
-  resolution: "playwright-core@npm:1.58.2"
+"playwright-core@npm:1.59.0":
+  version: 1.59.0
+  resolution: "playwright-core@npm:1.59.0"
   bin:
     playwright-core: cli.js
-  checksum: 10/8a98fcf122167e8703d525db2252de0e3da4ab9110ab6ea9951247e52d846310eb25ea2c805e1b7ccb54b4010c44e5adc3a76aae6da02f34324ccc3e76683bb1
+  checksum: 10/6df95346fc9512915e75fba3752c67e5acb18832801b9496d6cfea32500d3a6dab1056c75789e9a26cabfbefceb21241ca45351af5ad3f02b45afb2af91698d7
   languageName: node
   linkType: hard
 
-"playwright@npm:1.58.2":
-  version: 1.58.2
-  resolution: "playwright@npm:1.58.2"
+"playwright@npm:1.59.0":
+  version: 1.59.0
+  resolution: "playwright@npm:1.59.0"
   dependencies:
     fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.58.2"
+    playwright-core: "npm:1.59.0"
   dependenciesMeta:
     fsevents:
       optional: true
   bin:
     playwright: cli.js
-  checksum: 10/d89d6c8a32388911b9aff9ee0f1a90076219f15c804f2b287db048b9e9cde182aea3131fac1959051d25189ed4218ec4272b137c83cd7f9cd24781cbc77edd86
+  checksum: 10/2415646868de2f1e20be5c52d17738f4347c3d9fda4b166034d790897dde42374eb715fdd94e60536c6b19bd17f6361c213093e70158d602fd496eb81cd01888
   languageName: node
   linkType: hard
 
@@ -12776,7 +12776,7 @@ __metadata:
     "@grafana/schema": "npm:12.3.0"
     "@grafana/tsconfig": "npm:2.0.1"
     "@grafana/ui": "npm:12.3.0"
-    "@playwright/test": "npm:1.58.2"
+    "@playwright/test": "npm:1.59.0"
     "@react-aria/utils": "npm:^3.25.3"
     "@stylistic/eslint-plugin-ts": "npm:2.13.0"
     "@swc/core": "npm:1.10.1"
@@ -12786,7 +12786,7 @@ __metadata:
     "@testing-library/jest-dom": "npm:6.1.4"
     "@testing-library/react": "npm:14.0.0"
     "@trivago/prettier-plugin-sort-imports": "npm:4.3.0"
-    "@types/color": "npm:3.0.6"
+    "@types/color": "npm:3.0.7"
     "@types/file-saver": "npm:2.0.7"
     "@types/jest": "npm:29.5.14"
     "@types/lodash": "npm:4.17.23"
