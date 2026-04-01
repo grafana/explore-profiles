@@ -100,6 +100,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       overrides,
       annotations,
       body: PanelBuilders.timeseries()
+
+        .setOption('annotations' as any, { multiLane: true })
         .setTitle(item.label)
         .setData(
           data ||

@@ -41,6 +41,7 @@ export function Header(props: HeaderProps) {
     sceneVariables,
     gridControls,
     serviceName,
+    extraControls,
   } = data;
 
   type InsightsLauncherProps = {
@@ -159,6 +160,10 @@ export function Header(props: HeaderProps) {
           <Field key={control.state.key} id={control.state.key} className={styles.gridControl} label="">
             <control.Component model={control} />
           </Field>
+        ))}
+
+        {extraControls?.map((control) => (
+          <control.Component key={control.state.key} model={control} />
         ))}
       </div>
     </div>

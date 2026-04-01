@@ -1,5 +1,12 @@
 import { config } from '@grafana/runtime';
-import { dataLayers, SceneDataLayerSet } from '@grafana/scenes';
+import {
+  dataLayers,
+  SceneDataLayerSet,
+  sceneGraph,
+  SceneObjectBase,
+  SceneObjectRef,
+  SceneObjectState,
+} from '@grafana/scenes';
 import { DataQuery } from '@grafana/schema';
 
 import { KgAnnotationToggle } from './KgAnnotationToggle';
@@ -9,37 +16,32 @@ const KG_DATASOURCE_UID = 'grafanacloud-knowledgegraph';
 
 interface KgSceneProps {
   $data: SceneDataLayerSet;
+  behaviors: KgAnnotationBehavior[];
   controls: KgAnnotationToggle;
 }
 
-function isKgAnnotationsAvailable(): boolean {
+export function isKgAnnotationsAvailable(): boolean {
   if (!(config.featureToggles as Record<string, boolean | undefined>)['kgAnnotationsInPyroscope']) {
     return false;
   }
   return Object.values(config.datasources).some((d) => d.uid === KG_DATASOURCE_UID);
 }
 
-export function getKgSceneProps(entityType: string, entityName?: string): KgSceneProps | undefined {
-  if (!isKgAnnotationsAvailable()) {
-    return undefined;
-  }
-
+function createAnnotationLayers(entityType: string, entityName: string) {
   const severities = [
     { value: 'critical', color: 'red', label: 'Critical' },
-    { value: 'warning', color: 'orange', label: 'Warning' },
+    { value: 'warning', color: 'yellow', label: 'Warning' },
     { value: 'info', color: 'blue', label: 'Info' },
   ] as const;
 
   const filterCriteria = [
     {
       entityType,
-      ...(entityName
-        ? { propertyMatchers: [{ id: -1, name: 'name', op: '=', value: entityName, type: 'String' }] }
-        : {}),
+      propertyMatchers: [{ id: -1, name: 'name', op: '=', value: entityName, type: 'String' }],
     },
   ];
 
-  const layers = severities.map(
+  return severities.map(
     (s) =>
       new dataLayers.AnnotationsDataLayer({
         name: `Insights - ${s.label}`,
@@ -60,11 +62,102 @@ export function getKgSceneProps(entityType: string, entityName?: string): KgScen
         },
       })
   );
+}
 
-  const layerSet = new SceneDataLayerSet({ name: 'Insights', layers });
+/** Exploration types where a single service is selected and annotations are relevant. */
+const SERVICE_EXPLORATION_TYPES = new Set(['profiles', 'labels', 'flame-graph', 'diff-flame-graph']);
+
+interface KgAnnotationBehaviorState extends SceneObjectState {
+  layerSet: SceneObjectRef<SceneDataLayerSet>;
+  toggle: SceneObjectRef<KgAnnotationToggle>;
+  entityType: string;
+  serviceNameVarKey: string;
+}
+
+class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
+  private currentLookupKey: string | undefined;
+
+  constructor(state: KgAnnotationBehaviorState) {
+    super(state);
+    this.addActivationHandler(this._onActivate);
+  }
+
+  private _onActivate = () => {
+    const serviceNameVar = sceneGraph.lookupVariable(this.state.serviceNameVarKey, this);
+    if (!serviceNameVar) {
+      return;
+    }
+
+    this.updateLayers(serviceNameVar);
+
+    const subs = [
+      serviceNameVar.subscribeToState(() => {
+        this.updateLayers(serviceNameVar);
+      }),
+    ];
+
+    // Subscribe to the parent scene's explorationType to clear layers on views without a single service
+    const parent = this.parent;
+    if (parent) {
+      subs.push(
+        parent.subscribeToState(() => {
+          this.updateLayers(serviceNameVar);
+        })
+      );
+    }
+
+    return () => {
+      subs.forEach((s) => s.unsubscribe());
+    };
+  };
+
+  private updateLayers(serviceNameVar: ReturnType<typeof sceneGraph.lookupVariable>) {
+    const serviceName = serviceNameVar?.getValue() as string;
+    const explorationType = (this.parent?.state as { explorationType?: string })?.explorationType;
+    const isServiceView = explorationType != null && SERVICE_EXPLORATION_TYPES.has(explorationType);
+
+    const lookupKey = isServiceView ? serviceName || '' : '';
+
+    if (lookupKey === this.currentLookupKey) {
+      return;
+    }
+    this.currentLookupKey = lookupKey;
+
+    const layerSet = this.state.layerSet.resolve();
+    const toggle = this.state.toggle.resolve();
+
+    if (isServiceView && serviceName) {
+      const layers = createAnnotationLayers(this.state.entityType, serviceName);
+      layerSet.setState({ layers });
+      toggle.syncLayerEnabledState();
+    } else {
+      layerSet.setState({ layers: [] });
+    }
+  }
+}
+
+export function getKgSceneProps(entityType: string, serviceNameVarKey: string): KgSceneProps | undefined {
+  if (!isKgAnnotationsAvailable()) {
+    return undefined;
+  }
+
+  const layerSet = new SceneDataLayerSet({ name: 'Insights', layers: [] });
+
+  const toggle = new KgAnnotationToggle({
+    isEnabled: true,
+    layerSetRef: new SceneObjectRef(layerSet),
+  });
+
+  const behavior = new KgAnnotationBehavior({
+    layerSet: new SceneObjectRef(layerSet),
+    toggle: new SceneObjectRef(toggle),
+    entityType,
+    serviceNameVarKey,
+  });
 
   return {
     $data: layerSet,
-    controls: new KgAnnotationToggle({ layerSet, isEnabled: true }),
+    behaviors: [behavior],
+    controls: toggle,
   };
 }

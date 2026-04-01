@@ -120,7 +120,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   private initialFilters?: AdHocVariableFilter[];
 
   public constructor(state: Partial<SceneProfilesExplorerState>) {
-    const kg = getKgSceneProps('Service', '$serviceName');
+    const kg = getKgSceneProps('Service', 'serviceName');
 
     super({
       key: 'profiles-explorer',
@@ -158,7 +158,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             new SpanSelectorVariable(),
           ],
         }),
-      ...(kg ? { $data: kg.$data } : {}),
+      ...(kg ? { $data: kg.$data, $behaviors: kg.behaviors } : {}),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
       loadSearchScene: new LoadSearchScene(),
       controls: [
