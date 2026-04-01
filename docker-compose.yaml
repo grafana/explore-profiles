@@ -19,7 +19,7 @@ services:
       GF_FEATURE_TOGGLES_ENABLE: ${GF_FEATURE_TOGGLES_ENABLE:-metricsFromProfiles,localizationForPlugins}
 
   qdrant:
-    image: qdrant/qdrant@sha256:0fb8897412abc81d1c0430a899b9a81eb8328aa634e7242d1bc804c1fe8fe863
+    image: qdrant/qdrant@sha256:94728574965d17c6485dd361aa3c0818b325b9016dac5ea6afec7b4b2700865f
     volumes:
       - qdrant-storage:/qdrant/storage
 
