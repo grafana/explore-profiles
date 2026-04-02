@@ -15,12 +15,14 @@ import {
   SceneTimeRange,
   SceneTimeRangeLike,
   SceneTimeRangeState,
+  SceneVariableValueChangedEvent,
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
 import { SceneTimePickerWithoutSync } from '@shared/components/SceneTimePickerWithoutSync/SceneTimePickerWithoutSync';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
+import { Unsubscribable } from 'rxjs';
 
 import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
@@ -289,10 +291,32 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }
     });
 
+    // Reset the comparison time range if the service name or data source changes.
+    const variableSubs: Unsubscribable[] = [];
+    if (this.state.target === CompareTarget.COMPARISON) {
+      for (const name of ['serviceName', 'dataSource']) {
+        const variable = sceneGraph.lookupVariable(name, this);
+        if (!variable) {
+          continue;
+        }
+
+        const sub = variable.subscribeToEvent(SceneVariableValueChangedEvent, () => {
+          if (!this.state.$timeRange || !this.parent) {
+            return;
+          }
+
+          const globalTimeRange = sceneGraph.getTimeRange(this.parent);
+          this.setTimeRange(globalTimeRange.state);
+        });
+        variableSubs.push(sub);
+      }
+    }
+
     return {
       unsubscribe() {
         switchSub.unsubscribe();
         dataSub?.unsubscribe();
+        variableSubs.forEach((s) => s.unsubscribe());
       },
     };
   }

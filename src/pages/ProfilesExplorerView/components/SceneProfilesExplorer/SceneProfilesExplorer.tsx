@@ -400,6 +400,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         diffTo: '',
         'diffFrom-2': '',
         'diffTo-2': '',
+        comparisonFrom: '',
+        comparisonTo: '',
       },
       true
     );
