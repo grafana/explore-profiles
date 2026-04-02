@@ -501,66 +501,66 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bufbuild/buf-darwin-arm64@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf-darwin-arm64@npm:1.50.0"
+"@bufbuild/buf-darwin-arm64@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf-darwin-arm64@npm:1.66.1"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@bufbuild/buf-darwin-x64@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf-darwin-x64@npm:1.50.0"
+"@bufbuild/buf-darwin-x64@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf-darwin-x64@npm:1.66.1"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@bufbuild/buf-linux-aarch64@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf-linux-aarch64@npm:1.50.0"
+"@bufbuild/buf-linux-aarch64@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf-linux-aarch64@npm:1.66.1"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@bufbuild/buf-linux-armv7@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf-linux-armv7@npm:1.50.0"
+"@bufbuild/buf-linux-armv7@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf-linux-armv7@npm:1.66.1"
   conditions: os=linux & cpu=arm
   languageName: node
   linkType: hard
 
-"@bufbuild/buf-linux-x64@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf-linux-x64@npm:1.50.0"
+"@bufbuild/buf-linux-x64@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf-linux-x64@npm:1.66.1"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@bufbuild/buf-win32-arm64@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf-win32-arm64@npm:1.50.0"
+"@bufbuild/buf-win32-arm64@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf-win32-arm64@npm:1.66.1"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@bufbuild/buf-win32-x64@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf-win32-x64@npm:1.50.0"
+"@bufbuild/buf-win32-x64@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf-win32-x64@npm:1.66.1"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"@bufbuild/buf@npm:1.50.0":
-  version: 1.50.0
-  resolution: "@bufbuild/buf@npm:1.50.0"
+"@bufbuild/buf@npm:1.66.1":
+  version: 1.66.1
+  resolution: "@bufbuild/buf@npm:1.66.1"
   dependencies:
-    "@bufbuild/buf-darwin-arm64": "npm:1.50.0"
-    "@bufbuild/buf-darwin-x64": "npm:1.50.0"
-    "@bufbuild/buf-linux-aarch64": "npm:1.50.0"
-    "@bufbuild/buf-linux-armv7": "npm:1.50.0"
-    "@bufbuild/buf-linux-x64": "npm:1.50.0"
-    "@bufbuild/buf-win32-arm64": "npm:1.50.0"
-    "@bufbuild/buf-win32-x64": "npm:1.50.0"
+    "@bufbuild/buf-darwin-arm64": "npm:1.66.1"
+    "@bufbuild/buf-darwin-x64": "npm:1.66.1"
+    "@bufbuild/buf-linux-aarch64": "npm:1.66.1"
+    "@bufbuild/buf-linux-armv7": "npm:1.66.1"
+    "@bufbuild/buf-linux-x64": "npm:1.66.1"
+    "@bufbuild/buf-win32-arm64": "npm:1.66.1"
+    "@bufbuild/buf-win32-x64": "npm:1.66.1"
   dependenciesMeta:
     "@bufbuild/buf-darwin-arm64":
       optional: true
@@ -580,7 +580,7 @@ __metadata:
     buf: bin/buf
     protoc-gen-buf-breaking: bin/protoc-gen-buf-breaking
     protoc-gen-buf-lint: bin/protoc-gen-buf-lint
-  checksum: 10/f755f2edc71ba38315344822285c5b1643b9015623fe266c1086035844713543fd6c1f932771831bf019c3ba8b83c2e44679f27cc72f81cf785eee8de6b923e7
+  checksum: 10/c5841c1d5c7fcce82067e7c26967f86a3010edda4ed10675cc42f47ba05368dd325ccccd2d96a37cd6c239e4f37ee5979eb0bf385764007b052c366fc7ac14eb
   languageName: node
   linkType: hard
 
@@ -2566,14 +2566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfeature/core@npm:^1.9.0":
-  version: 1.9.1
-  resolution: "@openfeature/core@npm:1.9.1"
-  checksum: 10/6099e16b1b4cd6e3c45c05ab4acd44c9cb4ab501b676ab6f3e77f0be1b56abc7506c5629187381333a02975d315d831e0905582435b356d9676255e72a465899
-  languageName: node
-  linkType: hard
-
-"@openfeature/core@npm:^1.9.2":
+"@openfeature/core@npm:^1.9.0, @openfeature/core@npm:^1.9.2":
   version: 1.9.2
   resolution: "@openfeature/core@npm:1.9.2"
   checksum: 10/935736b2a3d199fcf85068c40f87ea4db108a475982562851d016a36e00898a9ae37ba90fe4562c6952d1951c7dc9b0ee2d35dceaf3be489e0d27eff2c395663
@@ -12707,7 +12700,7 @@ __metadata:
   resolution: "pyroscope-app-plugin@workspace:."
   dependencies:
     "@babel/core": "npm:7.28.5"
-    "@bufbuild/buf": "npm:1.50.0"
+    "@bufbuild/buf": "npm:1.66.1"
     "@bufbuild/protobuf": "npm:^2.2.3"
     "@bufbuild/protoc-gen-es": "npm:2.11.0"
     "@connectrpc/protoc-gen-connect-query": "npm:2.2.0"
