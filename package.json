@@ -92,7 +92,7 @@
     "xstate": "^4.38.3"
   },
   "devDependencies": {
-    "@babel/core": "7.28.5",
+    "@babel/core": "7.29.0",
     "@bufbuild/buf": "1.50.0",
     "@bufbuild/protoc-gen-es": "2.11.0",
     "@connectrpc/protoc-gen-connect-query": "2.2.0",
