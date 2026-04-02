@@ -20,17 +20,22 @@
     {
       "description": "Group React and matching type packages",
       "groupName": "React",
-      "matchPackageNames": ["react", "react-dom", "@types/react", "@types/react-dom"]
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ]
     },
     {
       "description": "Group TanStack packages",
       "groupName": "TanStack",
-      "matchPackagePatterns": ["^@tanstack/"]
+      "matchPackageNames": ["/^@tanstack//"]
     },
     {
       "description": "Group TypeScript ESLint packages",
       "groupName": "typescript-eslint",
-      "matchPackagePatterns": ["^@typescript-eslint/"]
+      "matchPackageNames": ["/^@typescript-eslint//"]
     },
     {
       "description": "Group Testing Library packages",
@@ -49,7 +54,11 @@
     {
       "description": "Group Prettier and plugins",
       "groupName": "Prettier",
-      "matchPackageNames": ["prettier", "prettier-package-json", "@trivago/prettier-plugin-sort-imports"]
+      "matchPackageNames": [
+        "prettier",
+        "prettier-package-json",
+        "@trivago/prettier-plugin-sort-imports"
+      ]
     },
     {
       "description": "Group ESLint core and plugins (not eslint-webpack-plugin; see Webpack group)",
@@ -93,12 +102,12 @@
     {
       "description": "Group Buf/protobuf codegen packages",
       "groupName": "Buf",
-      "matchPackagePatterns": ["^@bufbuild/"]
+      "matchPackageNames": ["/^@bufbuild//"]
     },
     {
       "description": "Group OpenFeature packages",
       "groupName": "OpenFeature",
-      "matchPackagePatterns": ["^@openfeature/"]
+      "matchPackageNames": ["/^@openfeature//"]
     }
   ]
 }
