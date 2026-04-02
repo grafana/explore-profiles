@@ -6,6 +6,7 @@ import {
   MetricFindValue,
   TestDataSourceResponse,
 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { RuntimeDataSource } from '@grafana/scenes';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { isEqual } from 'lodash';
@@ -112,7 +113,7 @@ export class FavoritesDataSource extends RuntimeDataSource {
   async testDatasource(): Promise<TestDataSourceResponse> {
     return {
       status: 'success',
-      message: 'OK',
+      message: t('favorites.data-source.test-success', 'OK'),
     };
   }
 }

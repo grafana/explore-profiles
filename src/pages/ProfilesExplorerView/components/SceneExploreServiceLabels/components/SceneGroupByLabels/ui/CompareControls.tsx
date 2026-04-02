@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Button, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { useMemo } from 'react';
@@ -21,17 +22,25 @@ export function CompareControls({ compare, onClickCompare, onClickClear }: Compa
 
   const tooltip = useMemo(() => {
     if (compare.size === 2) {
-      return `Compare "${compare.get(CompareTarget.BASELINE)?.label}" vs "${
-        compare.get(CompareTarget.COMPARISON)?.label
-      }"`;
+      return t('labels.compare.tooltip-ready', 'Compare "{{baseline}}" vs "{{comparison}}"', {
+        baseline: compare.get(CompareTarget.BASELINE)?.label,
+        comparison: compare.get(CompareTarget.COMPARISON)?.label,
+      });
     }
     if (compare.size === 0) {
-      return 'Select both a baseline and a comparison panel to compare their flame graphs';
+      return t(
+        'labels.compare.tooltip-empty',
+        'Select both a baseline and a comparison panel to compare their flame graphs'
+      );
     }
 
     return compare.has(CompareTarget.BASELINE)
-      ? `Select another panel to compare against "${compare.get(CompareTarget.BASELINE)?.label}"`
-      : `Select another panel to compare against "${compare.get(CompareTarget.COMPARISON)?.label}"`;
+      ? t('labels.compare.tooltip-select-comparison', 'Select another panel to compare against "{{label}}"', {
+          label: compare.get(CompareTarget.BASELINE)?.label,
+        })
+      : t('labels.compare.tooltip-select-baseline', 'Select another panel to compare against "{{label}}"', {
+          label: compare.get(CompareTarget.COMPARISON)?.label,
+        });
   }, [compare]);
 
   return (
@@ -44,7 +53,9 @@ export function CompareControls({ compare, onClickCompare, onClickClear }: Compa
         onClick={compareIsDisabled ? noOp : onClickCompare}
         tooltip={tooltip}
       >
-        Compare ({compare.size}/2)
+        <Trans i18nKey="labels.compare.button" values={{ count: compare.size }}>
+          Compare ({{ count: compare.size }}/2)
+        </Trans>
       </Button>
 
       <Button
@@ -52,7 +63,7 @@ export function CompareControls({ compare, onClickCompare, onClickClear }: Compa
         className={cx(styles.clearButton, !compareIsDisabled ? styles.clearButtonActive : undefined)}
         icon="times"
         variant="secondary"
-        tooltip={hasSelection ? 'Clear comparison selection' : ''}
+        tooltip={hasSelection ? t('labels.compare.clear-tooltip', 'Clear comparison selection') : ''}
         disabled={!hasSelection}
         onClick={!hasSelection ? noOp : onClickClear}
       />

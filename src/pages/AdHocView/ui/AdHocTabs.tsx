@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { Tab, TabContent, TabsBar, useStyles2 } from '@grafana/ui';
 import React, { useState } from 'react';
 
@@ -22,8 +23,16 @@ export function AdHocTabs() {
   return (
     <div>
       <TabsBar>
-        <Tab label=" Single view" active={activeTabIndex === 0} onChangeTab={() => setActiveTabIndex(0)} />
-        <Tab label=" Comparison view" active={activeTabIndex === 1} onChangeTab={() => setActiveTabIndex(1)} />
+        <Tab
+          label={t('ad-hoc.tabs.single-view', 'Single view')}
+          active={activeTabIndex === 0}
+          onChangeTab={() => setActiveTabIndex(0)}
+        />
+        <Tab
+          label={t('ad-hoc.tabs.comparison-view', 'Comparison view')}
+          active={activeTabIndex === 1}
+          onChangeTab={() => setActiveTabIndex(1)}
+        />
         {/* <Tab
           label=" Diff view"
           active={activeTabIndex === 2}

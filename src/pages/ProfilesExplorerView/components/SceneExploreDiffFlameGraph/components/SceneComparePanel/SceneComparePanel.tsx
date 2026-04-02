@@ -1,5 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { AdHocVariableFilter, DataFrame, dateTime, FieldMatcherID, getValueFormat, GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import {
   SceneComponentProps,
   SceneDataTransformer,
@@ -82,7 +83,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     filters: AdHocVariableFilter[];
   }) {
     const filterKey = target === CompareTarget.BASELINE ? 'filtersBaseline' : 'filtersComparison';
-    const title = target === CompareTarget.BASELINE ? 'Baseline' : 'Comparison';
+    const title =
+      target === CompareTarget.BASELINE
+        ? t('diff-flame-graph.compare-panel.baseline', 'Baseline')
+        : t('diff-flame-graph.compare-panel.comparison', 'Comparison');
     const color =
       target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString();
     super({
@@ -257,7 +261,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         mode: TimeRangeWithAnnotationsMode.ANNOTATIONS,
         annotationColor:
           target === CompareTarget.BASELINE ? BASELINE_COLORS.OVERLAY.toString() : COMPARISON_COLORS.OVERLAY.toString(),
-        annotationTitle: `${title} flame graph range`,
+        annotationTitle: t('diff-flame-graph.compare-panel.annotation-title', '{{title}} flame graph range', { title }),
       }),
     });
   }
@@ -506,8 +510,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
             <IconButton
               className={cx(styles.syncButton)}
               name="link"
-              aria-label="Sync time ranges"
-              tooltip="Sync time ranges"
+              aria-label={t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')}
+              tooltip={t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')}
               onClick={model.onClickTimeRangeSync}
             />
           </div>

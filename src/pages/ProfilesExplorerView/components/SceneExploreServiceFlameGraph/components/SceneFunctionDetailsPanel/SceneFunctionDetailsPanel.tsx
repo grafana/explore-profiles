@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, TimeRange } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { IconButton, InlineLabel, TextLink, Tooltip, useStyles2 } from '@grafana/ui';
 import { displaySuccess } from '@shared/domain/displayStatus';
@@ -121,7 +122,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
           try {
             if (currentFunctionDetails?.fileName) {
               await navigator.clipboard.writeText(currentFunctionDetails.fileName);
-              displaySuccess(['File path copied to clipboard!']);
+              displaySuccess([t('function-details.file-path-copied', 'File path copied to clipboard!')]);
             }
           } catch {}
         },
@@ -149,23 +150,32 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
     return (
       <Panel
         className={styles.sidePanel}
-        title="Function Details"
+        title={t('function-details.title', 'Function Details')}
         isLoading={false}
-        headerActions={<IconButton name="times-circle" variant="secondary" aria-label="close" onClick={onClose} />}
+        headerActions={
+          <IconButton
+            name="times-circle"
+            variant="secondary"
+            aria-label={t('function-details.close', 'close')}
+            onClick={onClose}
+          />
+        }
         dataTestId="function-details-panel"
       >
         <div className={styles.content}>
           {data.fetchFunctionDetailsError && (
             <InlineBanner
               severity="error"
-              title="Error while fetching function details!"
+              title={t('function-details.fetch-error', 'Error while fetching function details!')}
               error={data.fetchFunctionDetailsError}
             />
           )}
 
           <div className={styles.container}>
             <div className={styles.row} data-testid="row-function-name">
-              <InlineLabel width={SceneFunctionDetailsPanel.LABEL_WIDTH}>Function name</InlineLabel>
+              <InlineLabel width={SceneFunctionDetailsPanel.LABEL_WIDTH}>
+                <Trans i18nKey="function-details.function-name">Function name</Trans>
+              </InlineLabel>
               <Tooltip content={data.functionDetails.name} placement="top">
                 <span className={styles.textValue}>{data.functionDetails.name}</span>
               </Tooltip>
@@ -173,24 +183,26 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
 
             <div className={styles.row} data-testid="row-start-line">
               <InlineLabel
-                tooltip="The line where this function definition starts"
+                tooltip={t('function-details.start-line-tooltip', 'The line where this function definition starts')}
                 width={SceneFunctionDetailsPanel.LABEL_WIDTH}
               >
-                Start line
+                <Trans i18nKey="function-details.start-line">Start line</Trans>
               </InlineLabel>
               <span className={styles.textValue}>
                 <InlineSpinner isLoading={data.isLoading}>
-                  {data.functionDetails.startLine !== undefined ? data.functionDetails.startLine : '-'}
+                  {data.functionDetails.startLine !== undefined
+                    ? data.functionDetails.startLine
+                    : t('function-details.not-available', '-')}
                 </InlineSpinner>
               </span>
             </div>
 
             <div className={styles.row} data-testid="row-file-path">
               <InlineLabel
-                tooltip="File path where that function is defined"
+                tooltip={t('function-details.file-tooltip', 'File path where that function is defined')}
                 width={SceneFunctionDetailsPanel.LABEL_WIDTH}
               >
-                File
+                <Trans i18nKey="function-details.file">File</Trans>
               </InlineLabel>
               <InlineSpinner isLoading={data.isLoading}>
                 {data.functionDetails.fileName ? (
@@ -201,12 +213,12 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                     </Tooltip>
                     <IconButton
                       name="clipboard-alt"
-                      tooltip="Copy to clipboard"
+                      tooltip={t('function-details.copy-to-clipboard', 'Copy to clipboard')}
                       onClick={actions.copyFilePathToClipboard}
                     />
                   </>
                 ) : (
-                  '-'
+                  t('function-details.not-available', '-')
                 )}
               </InlineSpinner>
             </div>
@@ -219,10 +231,10 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
 
             <div className={styles.row} data-testid="row-repository">
               <InlineLabel
-                tooltip="The repository configured for the selected service"
+                tooltip={t('function-details.repository-tooltip', 'The repository configured for the selected service')}
                 width={SceneFunctionDetailsPanel.LABEL_WIDTH}
               >
-                Repository
+                <Trans i18nKey="function-details.repository">Repository</Trans>
               </InlineLabel>
               <InlineSpinner isLoading={data.isLoading}>
                 {data.repository ? (
@@ -234,7 +246,7 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                     </TextLink>
                   )
                 ) : (
-                  '-'
+                  t('function-details.not-available', '-')
                 )}
               </InlineSpinner>
               {!data.isLoading && (
@@ -254,9 +266,12 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
             <div className={styles.row} data-testid="row-commit">
               <InlineLabel
                 width={SceneFunctionDetailsPanel.LABEL_WIDTH}
-                tooltip="The version of the application (commit) where the function is defined. Use the dropdown menu to target a specific commit."
+                tooltip={t(
+                  'function-details.commit-tooltip',
+                  'The version of the application (commit) where the function is defined. Use the dropdown menu to target a specific commit.'
+                )}
               >
-                Commit
+                <Trans i18nKey="function-details.commit">Commit</Trans>
               </InlineLabel>
               <InlineSpinner isLoading={data.isLoading}>
                 <CommitSelect

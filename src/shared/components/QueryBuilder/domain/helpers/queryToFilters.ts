@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { nanoid } from 'nanoid';
 
 import { FilterKind, Filters, OperatorKind } from '../types';
@@ -52,8 +53,8 @@ export function queryToFilters(query: string): Filters {
           ...filter,
           operator:
             operator === OperatorKind['=~']
-              ? { value: OperatorKind.in, label: 'in' }
-              : { value: OperatorKind['not-in'], label: 'not in' },
+              ? { value: OperatorKind.in, label: t('query-builder.operators.in', 'in') }
+              : { value: OperatorKind['not-in'], label: t('query-builder.operators.not-in', 'not in') },
           value: {
             value: value,
             label: value

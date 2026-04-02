@@ -1,4 +1,5 @@
 import { cx } from '@emotion/css';
+import { t } from '@grafana/i18n';
 import { Tag, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -20,11 +21,16 @@ export const ChicletAttributeOperatorValue = ({ filter, onClick, onRemove }: Chi
   const className = active ? styles.chiclet : cx(styles.chiclet, styles.inactiveChiclet);
 
   return (
-    <div className={className} aria-label="Filter">
-      <Tag aria-label="Filter label" className={styles.chicletAttribute} name={attribute.label} onClick={noOp} />
+    <div className={className} aria-label={t('query-builder.chiclet.filter', 'Filter')}>
+      <Tag
+        aria-label={t('query-builder.chiclet.filter-label', 'Filter label')}
+        className={styles.chicletAttribute}
+        name={attribute.label}
+        onClick={noOp}
+      />
 
       <Tag
-        aria-label="Filter operator"
+        aria-label={t('query-builder.chiclet.filter-operator', 'Filter operator')}
         className={styles.chicletOperator}
         name={operator.label}
         onClick={(name, e) => onClick(e, filter, FilterPartKind.operator)}
@@ -33,7 +39,7 @@ export const ChicletAttributeOperatorValue = ({ filter, onClick, onRemove }: Chi
 
       <Tooltip content={value.label}>
         <Tag
-          aria-label="Filter value"
+          aria-label={t('query-builder.chiclet.filter-value', 'Filter value')}
           name={value.label}
           className={styles.chicletValue}
           onClick={(name, e) => onClick(e, filter, FilterPartKind.value)}
@@ -42,7 +48,7 @@ export const ChicletAttributeOperatorValue = ({ filter, onClick, onRemove }: Chi
       </Tooltip>
 
       <Tag
-        aria-label="Remove filter"
+        aria-label={t('query-builder.chiclet.remove-filter', 'Remove filter')}
         className={styles.chicletRemoveButton}
         icon="times"
         name=""

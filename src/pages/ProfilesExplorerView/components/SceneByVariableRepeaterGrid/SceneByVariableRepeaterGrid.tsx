@@ -1,4 +1,5 @@
 import { DashboardCursorSync } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import {
   behaviors,
   EmbeddedSceneState,
@@ -331,7 +332,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       children: [
         new SceneCSSGridItem({
           body: new SceneEmptyState({
-            message: 'No results',
+            message: t('grid.empty-state.no-results', 'No results'),
           }),
         }),
       ],

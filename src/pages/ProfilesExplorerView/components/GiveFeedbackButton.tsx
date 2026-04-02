@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { Icon, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
@@ -14,11 +15,11 @@ export const GiveFeedbackButton = () => {
       <a
         href={FEEDBACK_FORM_URL}
         className={styles.feedback}
-        title="Share your thoughts about Profiles in Grafana."
+        title={t('give-feedback.tooltip', 'Share your thoughts about Profiles in Grafana.')}
         target="_blank"
         rel="noreferrer noopener"
       >
-        <Icon name="comment-alt-message" /> Give feedback
+        <Icon name="comment-alt-message" /> <Trans i18nKey="give-feedback.button">Give feedback</Trans>
       </a>
     </div>
   );

@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { t } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Combobox, ComboboxOption, useStyles2 } from '@grafana/ui';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -28,19 +29,19 @@ interface ScenePresetsPickerState extends SceneObjectState {
 export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState> {
   private static OPTIONS: Array<ComboboxOption<string>> = [
     {
-      label: '1h ago vs now',
+      label: t('diff-flame-graph.presets.1h-ago-vs-now', '1h ago vs now'),
       value: '1h ago vs now',
-      description: '30m window',
+      description: t('diff-flame-graph.presets.1h-ago-vs-now-description', '30m window'),
     },
     {
-      label: '6h ago vs now',
+      label: t('diff-flame-graph.presets.6h-ago-vs-now', '6h ago vs now'),
       value: '6h ago vs now',
-      description: '1h window',
+      description: t('diff-flame-graph.presets.6h-ago-vs-now', '1h window'),
     },
     {
-      label: '24h ago vs now',
+      label: t('diff-flame-graph.presets.24h-ago-vs-now', '24h ago vs now'),
       value: '24h ago vs now',
-      description: '1h window',
+      description: t('diff-flame-graph.presets.24h-ago-vs-now', '1h window'),
     },
   ];
 
@@ -62,7 +63,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   constructor() {
     super({
       name: 'compare-presets',
-      label: 'Comparison presets',
+      label: t('diff-flame-graph.presets.label', 'Comparison presets'),
       value: null,
     });
 
@@ -102,7 +103,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
     return (
       <div className={styles.presetsContainer}>
         <Combobox
-          placeholder="Select a preset"
+          placeholder={t('diff-flame-graph.presets.placeholder', 'Choose a preset')}
           value={value}
           options={ScenePresetsPicker.OPTIONS}
           onChange={model.onChange}
