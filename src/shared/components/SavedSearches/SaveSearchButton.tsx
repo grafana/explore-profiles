@@ -70,6 +70,7 @@ export function SaveSearchButton({ sceneRef }: Props) {
       profileTypeId: profileMetricId != null ? String(profileMetricId) : '',
       labelSelector,
       groupBy: [],
+      includeExemplars: false,
     };
   }, [filters, dsUid, profileMetricId]);
 
