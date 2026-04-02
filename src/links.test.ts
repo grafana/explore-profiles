@@ -254,6 +254,26 @@ describe('buildURL - Original Functionality', () => {
       expect(decodedUrl).toContain('var-filters=region|!=|test,version|=~|1.*,env|!~|dev.*');
     });
 
+    it('should handle UTF-8 / quoted label names in filters', () => {
+      const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{service_name="payment","http.method"="GET","k8s.node.name"!="node-1"}',
+        groupBy: [],
+        includeExemplars: false,
+      };
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+        explorationType: 'labels',
+      });
+
+      const decodedUrl = decodeURIComponent(result);
+      expect(decodedUrl).toContain('var-filters=http.method|=|GET,k8s.node.name|!=|node-1');
+    });
+
     it('should add filters for flame-graph exploration type', () => {
       const pyroscopeQuery: GrafanaPyroscopeDataQuery = {
         refId: 'A',
