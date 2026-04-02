@@ -2573,6 +2573,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@openfeature/core@npm:^1.9.2":
+  version: 1.9.2
+  resolution: "@openfeature/core@npm:1.9.2"
+  checksum: 10/935736b2a3d199fcf85068c40f87ea4db108a475982562851d016a36e00898a9ae37ba90fe4562c6952d1951c7dc9b0ee2d35dceaf3be489e0d27eff2c395663
+  languageName: node
+  linkType: hard
+
 "@openfeature/ofrep-core@npm:^2.0.0":
   version: 2.0.0
   resolution: "@openfeature/ofrep-core@npm:2.0.0"
@@ -2600,6 +2607,15 @@ __metadata:
     "@openfeature/web-sdk": ^1.5.0
     react: ">=16.8.0"
   checksum: 10/a85242e8e57540b05bce91e8deaeccac5de8da3f2ff8246bdbfe03350397c614fc7248b6018264016644837d2b47c6e34695a8ac334880251ead03ec8428263c
+  languageName: node
+  linkType: hard
+
+"@openfeature/web-sdk@npm:^1.5.0":
+  version: 1.7.3
+  resolution: "@openfeature/web-sdk@npm:1.7.3"
+  peerDependencies:
+    "@openfeature/core": ^1.9.2
+  checksum: 10/0789b251e2354d898ba5d1b4548ab10eee3474b508e756722431d2b3d66916e5da9e7996a78f02e7cbc9e5534e891931c6fed2dac07f6f60bb42c2c3f6a0487b
   languageName: node
   linkType: hard
 
@@ -12727,6 +12743,8 @@ __metadata:
     "@grafana/schema": "npm:12.4.2"
     "@grafana/tsconfig": "npm:2.0.1"
     "@grafana/ui": "npm:12.4.2"
+    "@openfeature/core": "npm:^1.9.2"
+    "@openfeature/web-sdk": "npm:^1.5.0"
     "@playwright/test": "npm:1.59.0"
     "@react-aria/utils": "npm:^3.25.3"
     "@stylistic/eslint-plugin-ts": "npm:2.13.0"
