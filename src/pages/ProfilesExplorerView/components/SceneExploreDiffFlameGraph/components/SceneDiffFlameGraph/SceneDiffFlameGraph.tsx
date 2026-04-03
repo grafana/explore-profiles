@@ -24,7 +24,6 @@ import { AnalyzeDiffFlameGraph } from '../../../AnalyzeDiffFlameGraph';
 import { AIButton } from '../../../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../../../SceneAiPanel/SceneAiPanel';
 import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
-import { EventDiffChoosePreset } from '../../domain/events/EventDiffChoosePreset';
 import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 import { MissingSelectionsBanner } from './ui/MissingSelectionsBanner';
@@ -58,7 +57,10 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
 
   useSceneDiffFlameGraph = (): DomainHookReturnValue => {
     const { aiPanel } = this.useState();
-    const { baselineTimeRange, comparisonTimeRange } = (this.parent as SceneExploreDiffFlameGraph).useDiffTimeRanges();
+
+    const { baselineTimeRange, comparisonTimeRange } = sceneGraph
+      .findByKeyAndType(this, 'explore-diff-flame-graph', SceneExploreDiffFlameGraph)
+      .useDiffTimeRanges();
 
     const baselineQuery = useBuildPyroscopeQuery(this, 'filtersBaseline');
     const comparisonQuery = useBuildPyroscopeQuery(this, 'filtersComparison');
@@ -127,12 +129,6 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     reportInteraction('g_pyroscope_app_diff_auto_select_clicked');
 
     this.publishEvent(new EventDiffAutoSelect({ wholeRange: false }), true);
-  };
-
-  onClickChoosePreset = () => {
-    reportInteraction('g_pyroscope_app_diff_choose_preset_clicked');
-
-    this.publishEvent(new EventDiffChoosePreset({}), true);
   };
 
   onOpenLearnHow = () => {
@@ -208,7 +204,6 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
           {data.hasMissingSelections && (
             <MissingSelectionsBanner
               onClickAutoSelect={model.onClickAutoSelect}
-              onClickChoosePreset={model.onClickChoosePreset}
               onOpenLearnHow={model.onOpenLearnHow}
             />
           )}
