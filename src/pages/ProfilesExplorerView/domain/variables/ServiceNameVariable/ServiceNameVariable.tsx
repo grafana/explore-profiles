@@ -49,6 +49,7 @@ export class ServiceNameVariable extends QueryVariable {
       // back from flame graph to All services (new instance, grid stuck on spinner).
       loading: false,
       refresh: VariableRefresh.onTimeRangeChanged,
+      // Used by the custom renderer to avoid showing "selected service missing from catalog" before the first fetch finishes.
       serviceCatalogFetched: false,
       ...restState,
     } as QueryVariableInitialState);
@@ -69,6 +70,10 @@ export class ServiceNameVariable extends QueryVariable {
     });
   }
 
+  /**
+   * Precedence: `service_name` with `=` from embed/initialFilters wins over userStorage.
+   * If there is no such filter and the variable is still empty, restore the last service from userStorage.
+   */
   setInitialValue() {
     const { serviceName: serviceNameFromStorage } = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER) || {};
 
@@ -83,6 +88,12 @@ export class ServiceNameVariable extends QueryVariable {
     }
   }
 
+  /**
+   * MultiValueVariable validation replaces a value that is not in the new options with the first option.
+   * For serviceName we keep the previous selection when it drops out of the catalog (time range, DS, etc.)
+   * so URL/deep links stay stable and the UI can warn instead of silently switching services.
+   * Capture prev from this.state before super — stateUpdate already reflects the "corrected" value.
+   */
   protected interceptStateUpdateAfterValidation(stateUpdate: Partial<MultiValueVariableState>): void {
     const options = stateUpdate.options ?? this.state.options;
     const prev = ServiceNameVariable.nameStr(this.state.value);
@@ -116,6 +127,7 @@ export class ServiceNameVariable extends QueryVariable {
     }
   }
 
+  /** Normalizes variable value (string vs legacy array) for comparisons and tooltip copy. */
   private static nameStr(v: unknown): string {
     if (typeof v === 'string') {
       return v;
@@ -143,6 +155,7 @@ export class ServiceNameVariable extends QueryVariable {
       [options]
     );
     const name = ServiceNameVariable.nameStr(value);
+    // After at least one successful options load: show warning if the current selection is not in the catalog (and not while loading).
     const warn = Boolean(serviceCatalogFetched) && !loading && !!name && !options.some((o) => String(o.value) === name);
 
     if (error) {
