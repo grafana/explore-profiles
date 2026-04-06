@@ -323,14 +323,13 @@
   },
   "labels": {
     "compare": {
-      "button_one": "",
-      "button_many": "",
-      "button_other": "",
       "clear-tooltip": "",
       "tooltip-empty": "",
       "tooltip-ready": "",
       "tooltip-select-baseline": "",
-      "tooltip-select-comparison": ""
+      "tooltip-select-comparison": "",
+      "button_one": "",
+      "button_other": ""
     },
     "data-source": {
       "all": "",
@@ -646,7 +645,6 @@
       "label": "",
       "loading": "",
       "placeholder_one": "",
-      "placeholder_many": "",
       "placeholder_other": ""
     },
     "service-name": {
@@ -654,7 +652,6 @@
       "label": "",
       "loading": "",
       "placeholder_one": "",
-      "placeholder_many": "",
       "placeholder_other": ""
     },
     "span-selector": {
