@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter } from '@grafana/data';
 import { t } from '@grafana/i18n';
+import { locationService } from '@grafana/runtime';
 import {
   EmbeddedSceneState,
   SceneComponentProps,
@@ -259,6 +260,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          this.resetDiffTimeRangeAnnotations();
           this.resetSpanSelector();
         }
       });
@@ -268,6 +270,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          this.resetDiffTimeRangeAnnotations();
+
           // This is to prevent removing the span selector if the previous service name was not correct
           // This way a user can still select the service name for selected span in case there's a mismatch
           // in the service name that was provided from the trace
@@ -329,14 +333,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, (event) => {
-      const { useAncestorTimeRange, clearDiffRange, baselineFilters, comparisonFilters } = event.payload;
+      const { baselineFilters, comparisonFilters } = event.payload;
 
       this.setExplorationType({
         type: ExplorationType.DIFF_FLAME_GRAPH,
         comesFromUserAction: true,
         bodySceneOptions: {
-          useAncestorTimeRange,
-          clearDiffRange,
           baselineFilters,
           comparisonFilters,
         },
@@ -377,6 +379,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     if (comesFromUserAction) {
       prepareHistoryEntry();
       this.resetVariables(type);
+
+      // Only reset diff time ranges if a panel from "All services" was
+      // selected.
+      if (item) {
+        this.resetDiffTimeRangeAnnotations();
+      }
     }
 
     this.setState({
@@ -391,6 +399,20 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   resetProfileIdSelector() {
     sceneGraph.findByKeyAndType(this, 'profileIdSelector', ProfileIdSelectorVariable).reset();
+  }
+
+  resetDiffTimeRangeAnnotations() {
+    locationService.partial(
+      {
+        diffFrom: '',
+        diffTo: '',
+        'diffFrom-2': '',
+        'diffTo-2': '',
+        comparisonFrom: '',
+        comparisonTo: '',
+      },
+      true
+    );
   }
 
   resetVariables(nextExplorationType: string) {

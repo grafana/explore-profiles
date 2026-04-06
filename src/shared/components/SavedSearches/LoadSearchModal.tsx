@@ -4,7 +4,7 @@ import { t, Trans } from '@grafana/i18n';
 import { reportInteraction } from '@grafana/runtime';
 import { SceneObject } from '@grafana/scenes';
 import { Box, Button, Divider, IconButton, Modal, ScrollContainer, Stack, Text, useStyles2 } from '@grafana/ui';
-import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { applySavedSearchToScene, SavedSearch, useSavedSearches } from './saveSearch';
 import { getDatasourceVariable } from './utils';
@@ -147,7 +147,7 @@ interface SavedSearchItemProps {
 function SavedSearchItem({ onSelect, search, selected }: SavedSearchItemProps) {
   const styles = useStyles2(getStyles);
 
-  const id = useId();
+  const id = `saved-search-${search.uid}`;
   return (
     <label className={styles.label} htmlFor={id} aria-label={search.title}>
       <input

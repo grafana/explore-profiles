@@ -15,7 +15,99 @@
     {
       "description": "Group all Grafana packages together",
       "groupName": "Grafana packages",
-      "matchPackageNames": ["/^@grafana//"]
+      "matchPackageNames": ["/^@grafana\\//"]
+    },
+    {
+      "description": "Group React and matching type packages",
+      "groupName": "React",
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ]
+    },
+    {
+      "description": "Group TanStack packages",
+      "groupName": "TanStack",
+      "matchPackageNames": ["/^@tanstack//"]
+    },
+    {
+      "description": "Group TypeScript ESLint packages",
+      "groupName": "typescript-eslint",
+      "matchPackageNames": ["/^@typescript-eslint//"]
+    },
+    {
+      "description": "Group Testing Library packages",
+      "groupName": "Testing Library",
+      "matchPackageNames": [
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@types/testing-library__jest-dom",
+        "jest",
+        "jest-environment-jsdom",
+        "jest-css-modules-transform",
+        "ts-jest",
+        "@types/jest"
+      ]
+    },
+    {
+      "description": "Group Prettier and plugins",
+      "groupName": "Prettier",
+      "matchPackageNames": [
+        "prettier",
+        "prettier-package-json",
+        "@trivago/prettier-plugin-sort-imports"
+      ]
+    },
+    {
+      "description": "Group ESLint core and plugins (not eslint-webpack-plugin; see Webpack group)",
+      "groupName": "ESLint",
+      "matchPackageNames": [
+        "eslint",
+        "eslint-config-prettier",
+        "eslint-plugin-jest",
+        "eslint-plugin-jsdoc",
+        "eslint-plugin-react",
+        "eslint-plugin-react-hooks",
+        "eslint-plugin-sonarjs",
+        "@stylistic/eslint-plugin-ts"
+      ]
+    },
+    {
+      "description": "Group webpack, CLI, loaders, and webpack plugins",
+      "groupName": "Webpack",
+      "matchPackageNames": [
+        "webpack",
+        "webpack-cli",
+        "copy-webpack-plugin",
+        "css-loader",
+        "style-loader",
+        "sass-loader",
+        "imports-loader",
+        "terser-webpack-plugin",
+        "eslint-webpack-plugin",
+        "fork-ts-checker-webpack-plugin",
+        "replace-in-file-webpack-plugin",
+        "webpack-livereload-plugin",
+        "webpack-subresource-integrity",
+        "webpack-virtual-modules"
+      ]
+    },
+    {
+      "description": "Group SWC toolchain",
+      "groupName": "SWC",
+      "matchPackageNames": ["@swc/core", "@swc/jest", "swc-loader"]
+    },
+    {
+      "description": "Group Buf/protobuf codegen packages",
+      "groupName": "Buf",
+      "matchPackageNames": ["/^@bufbuild//"]
+    },
+    {
+      "description": "Group OpenFeature packages",
+      "groupName": "OpenFeature",
+      "matchPackageNames": ["/^@openfeature//"]
     }
   ]
 }

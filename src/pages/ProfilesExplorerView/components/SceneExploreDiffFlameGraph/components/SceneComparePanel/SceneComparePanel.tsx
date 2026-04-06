@@ -7,19 +7,22 @@ import {
   sceneGraph,
   SceneObjectBase,
   SceneObjectState,
+  SceneObjectUrlSyncConfig,
+  SceneObjectUrlValues,
   SceneQueryRunner,
   SceneRefreshPicker,
   SceneTimePicker,
   SceneTimeRange,
   SceneTimeRangeLike,
   SceneTimeRangeState,
+  SceneVariableValueChangedEvent,
   VariableDependencyConfig,
 } from '@grafana/scenes';
 import { IconButton, useStyles2 } from '@grafana/ui';
 import { SceneTimePickerWithoutSync } from '@shared/components/SceneTimePickerWithoutSync/SceneTimePickerWithoutSync';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { omit } from 'lodash';
 import React from 'react';
+import { Unsubscribable } from 'rxjs';
 
 import { buildTimeRange } from '../../../../domain/buildTimeRange';
 import { FiltersVariable } from '../../../../domain/variables/FiltersVariable/FiltersVariable';
@@ -40,11 +43,9 @@ import {
   SwitchTimeRangeSelectionModeAction,
   TimerangeSelectionMode,
 } from './domain/actions/SwitchTimeRangeSelectionModeAction';
-import { EventEnableSyncTimeRanges } from './domain/events/EventEnableSyncTimeRanges';
 import { EventSwitchTimerangeSelectionMode } from './domain/events/EventSwitchTimerangeSelectionMode';
 import { EventSyncRefresh } from './domain/events/EventSyncRefresh';
 import { EventSyncTimeRanges } from './domain/events/EventSyncTimeRanges';
-import { RangeAnnotation } from './domain/RangeAnnotation';
 import { buildCompareTimeSeriesQueryRunner } from './infrastructure/buildCompareTimeSeriesQueryRunner';
 import { BASELINE_COLORS, COMPARISON_COLORS } from './ui/colors';
 
@@ -55,15 +56,16 @@ interface SceneComparePanelState extends SceneObjectState {
   filterKey: 'filtersBaseline' | 'filtersComparison';
   title: string;
   color: string;
+  $timeRange?: SceneTimeRangeLike;
   timePicker: SceneTimePicker;
   refreshPicker: SceneRefreshPicker;
-  $timeRange: SceneTimeRange;
   timeseriesPanel: SceneLabelValuesTimeseries;
-  timeRangeSyncEnabled: boolean;
   lastSyncedStepSec?: number;
 }
 
 export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
+  private readonly modeSelector = new SwitchTimeRangeSelectionModeAction();
+
   protected _variableDependency = new VariableDependencyConfig(this, {
     variableNames: ['profileMetricId'],
     onReferencedVariableValueChanged: () => {
@@ -71,14 +73,14 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     },
   });
 
+  protected _urlSync: SceneObjectUrlSyncConfig | undefined;
+
   constructor({
     target,
-    useAncestorTimeRange,
     clearDiffRange,
     filters,
   }: {
     target: SceneComparePanelState['target'];
-    useAncestorTimeRange: boolean;
     clearDiffRange: boolean;
     filters: AdHocVariableFilter[];
   }) {
@@ -89,32 +91,42 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         : t('diff-flame-graph.compare-panel.comparison', 'Comparison');
     const color =
       target === CompareTarget.BASELINE ? BASELINE_COLORS.COLOR.toString() : COMPARISON_COLORS.COLOR.toString();
-
     super({
       key: `${target}-panel`,
       target,
       filterKey,
       title,
       color,
-      $timeRange: new SceneTimeRange({ key: `${target}-panel-timerange`, ...buildTimeRange('now-1h', 'now') }),
       timePicker: new SceneTimePickerWithoutSync({ isOnCanvas: true }),
       refreshPicker: new SceneRefreshPicker({ isOnCanvas: true }),
       timeseriesPanel: SceneComparePanel.buildTimeSeriesPanel({ target, filterKey, title, color }),
-      timeRangeSyncEnabled: false,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, useAncestorTimeRange, clearDiffRange, filters));
+    if (target === CompareTarget.COMPARISON) {
+      this._urlSync = new SceneObjectUrlSyncConfig(this, {
+        keys: ['comparisonFrom', 'comparisonTo'],
+      });
+    }
+
+    this.addActivationHandler(this.onActivate.bind(this, clearDiffRange, filters));
   }
 
-  onActivate(useAncestorTimeRange: boolean, clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
-    const { $timeRange, timeseriesPanel, filterKey } = this.state;
+  onActivate(clearDiffRange: boolean, filters: AdHocVariableFilter[]) {
+    const { target, timeseriesPanel, filterKey, $timeRange } = this.state;
+    const { modeSelector } = this;
 
     if (clearDiffRange) {
       this.setDiffRange(null);
     }
 
-    if (useAncestorTimeRange) {
-      $timeRange.setState(omit(this.getAncestorTimeRange().state, 'key'));
+    if (target === CompareTarget.COMPARISON && !$timeRange) {
+      const globalTimeRange = sceneGraph.getTimeRange(this);
+      this.setState({
+        $timeRange: new SceneTimeRange({
+          from: globalTimeRange.state.from,
+          to: globalTimeRange.state.to,
+        }),
+      });
     }
 
     if (filters.length) {
@@ -123,6 +135,9 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       filtersVariable.setState({ filters });
     }
 
+    timeseriesPanel.setState({
+      headerActions: () => [modeSelector],
+    });
     timeseriesPanel.updateItem({ label: this.buildTimeseriesTitle() });
 
     const eventSub = this.subscribeToEvents();
@@ -132,7 +147,56 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     };
   }
 
-  static buildTimeSeriesPanel({ target, filterKey, title, color }: any): SceneLabelValuesTimeseries {
+  getUrlState() {
+    const { target, $timeRange } = this.state;
+
+    if (target !== CompareTarget.COMPARISON || !$timeRange) {
+      return {};
+    }
+
+    return {
+      comparisonFrom: $timeRange.state.from,
+      comparisonTo: $timeRange.state.to,
+    };
+  }
+
+  updateFromUrl(values: SceneObjectUrlValues): void {
+    const { target, $timeRange } = this.state;
+    if (target !== CompareTarget.COMPARISON) {
+      return;
+    }
+
+    const { comparisonFrom, comparisonTo } = values;
+    if (!comparisonFrom || !comparisonTo) {
+      return;
+    }
+
+    if ($timeRange) {
+      $timeRange.setState({
+        from: comparisonFrom as string,
+        to: comparisonTo as string,
+      });
+    } else {
+      this.setState({
+        $timeRange: new SceneTimeRange({
+          from: comparisonFrom as string,
+          to: comparisonTo as string,
+        }),
+      });
+    }
+  }
+
+  static buildTimeSeriesPanel({
+    target,
+    filterKey,
+    title,
+    color,
+  }: {
+    target: CompareTarget;
+    filterKey: SceneComparePanelState['filterKey'];
+    title: string;
+    color: string;
+  }): SceneLabelValuesTimeseries {
     const timeseriesPanel: SceneLabelValuesTimeseries = new SceneLabelValuesTimeseries({
       item: {
         index: 0,
@@ -146,7 +210,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
         transformations: [addRefId, addStats],
       }),
       overrides: (series: DataFrame[]) => SceneComparePanel.buildSeriesOverrides(series, color),
-      headerActions: () => [new SwitchTimeRangeSelectionModeAction()],
+      headerActions: () => [],
     });
 
     SceneComparePanel.configureTimeRange(timeseriesPanel, target, title);
@@ -204,33 +268,8 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     });
   }
 
-  static getDiffRange(
-    timeseriesPanel: SceneLabelValuesTimeseries
-  ): [number | undefined, number | undefined, string | undefined] {
-    let diffFrom: number | undefined;
-    let diffTo: number | undefined;
-
-    const annotation = timeseriesPanel.state.body.state.$data?.state.data?.annotations?.[0] as RangeAnnotation;
-
-    annotation?.fields.some(({ name, values }) => {
-      diffFrom = name === 'time' ? values[0] : diffFrom;
-      diffTo = name === 'timeEnd' ? values[0] : diffTo;
-      return diffFrom && diffTo;
-    });
-
-    return [diffFrom, diffTo, timeseriesPanel.state.$timeRange?.state.timeZone];
-  }
-
-  protected getAncestorTimeRange(): SceneTimeRangeLike {
-    if (!this.parent || !this.parent.parent) {
-      throw new Error(typeof this + ' must be used within $timeRange scope');
-    }
-
-    return sceneGraph.getTimeRange(this.parent.parent);
-  }
-
   subscribeToEvents() {
-    const { target, timeseriesPanel, $timeRange } = this.state;
+    const { timeseriesPanel } = this.state;
 
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
 
@@ -245,25 +284,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       });
     });
 
-    const annotationTimeRangeSub = $annotationTimeRange.subscribeToState((newState, prevState) => {
-      if (this.state.timeRangeSyncEnabled && newState.annotationTimeRange !== prevState.annotationTimeRange) {
-        this.publishEvent(
-          new EventSyncTimeRanges({ source: target, annotationTimeRange: newState.annotationTimeRange }),
-          true
-        );
-      }
-    });
-
-    const timeRangeSub = $timeRange.subscribeToState((newState, prevState) => {
-      if (newState.from !== prevState.from || newState.to !== prevState.to) {
-        this.updateTitle('');
-
-        if (this.state.timeRangeSyncEnabled) {
-          this.publishEvent(new EventSyncTimeRanges({ source: target, timeRange: newState }), true);
-        }
-      }
-    });
-
     // Subscribe to data changes for step synchronization
     const dataSub = timeseriesPanel.state.body.state.$data?.subscribeToState((newState) => {
       if (newState.data?.state === 'Done' && newState.data.series?.length) {
@@ -271,12 +291,32 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       }
     });
 
+    // Reset the comparison time range if the service name or data source changes.
+    const variableSubs: Unsubscribable[] = [];
+    if (this.state.target === CompareTarget.COMPARISON) {
+      for (const name of ['serviceName', 'dataSource']) {
+        const variable = sceneGraph.lookupVariable(name, this);
+        if (!variable) {
+          continue;
+        }
+
+        const sub = variable.subscribeToEvent(SceneVariableValueChangedEvent, () => {
+          if (!this.state.$timeRange || !this.parent) {
+            return;
+          }
+
+          const globalTimeRange = sceneGraph.getTimeRange(this.parent);
+          this.setTimeRange(globalTimeRange.state);
+        });
+        variableSubs.push(sub);
+      }
+    }
+
     return {
       unsubscribe() {
-        timeRangeSub.unsubscribe();
-        annotationTimeRangeSub.unsubscribe();
         switchSub.unsubscribe();
         dataSub?.unsubscribe();
+        variableSubs.forEach((s) => s.unsubscribe());
       },
     };
   }
@@ -291,33 +331,37 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     return (this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations).useState();
   }
 
-  applyPreset({ from, to, diffFrom, diffTo, label }: Preset) {
+  applyPreset({ from, to, diffFrom, diffTo }: Preset) {
     this.setDiffRange({ from: diffFrom, to: diffTo });
 
     this.setTimeRange(buildTimeRange(from, to));
-
-    this.updateTitle(label);
   }
 
   setTimeRange(newTimeRange: SceneTimeRangeState) {
-    const { from, to } = this.state.$timeRange.state.value;
+    const timeRange = sceneGraph.getTimeRange(this);
+    if (!timeRange) {
+      return;
+    }
 
+    const { from, to } = timeRange.state.value;
     if (!from.isSame(newTimeRange.value.from) || !to.isSame(newTimeRange.value.to)) {
-      this.state.$timeRange.setState({ from: newTimeRange.from, to: newTimeRange.to, value: newTimeRange.value });
+      timeRange.setState({
+        from: newTimeRange.from,
+        to: newTimeRange.to,
+        value: newTimeRange.value,
+      });
+      timeRange.onRefresh();
     }
   }
 
   setDiffRange(options: { from: string; to: string } | null) {
-    const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
-
     if (options === null) {
-      $diffTimeRange.nullifyAnnotationTimeRange();
       return;
     }
 
+    const $diffTimeRange = this.state.timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
     const { annotationTimeRange } = $diffTimeRange.state;
     const newAnnotationTimeRange = $diffTimeRange.buildAnnotationTimeRange(options.from, options.to);
-
     if (
       !annotationTimeRange.from.isSame(newAnnotationTimeRange.from) ||
       !annotationTimeRange.to.isSame(newAnnotationTimeRange.to)
@@ -333,10 +377,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
    * the region with the highest consumption on the comparison panel.
    */
   autoSelectDiffRange(selectWholeRange: boolean) {
-    const { $timeRange, target } = this.state;
-    const { from, to } = $timeRange.state.value;
+    const timeRange = sceneGraph.getTimeRange(this);
+    if (!timeRange) {
+      return;
+    }
 
-    this.updateTitle('');
+    const { from, to } = timeRange.state.value;
 
     if (selectWholeRange) {
       this.setDiffRange({ from: from.toISOString(), to: to.toISOString() });
@@ -348,6 +394,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     // ensure that we don't kill the backend when selecting long periods like 7d
     const range = Math.min(Math.round(diff * 0.25), ONE_DAY_IN_MS);
 
+    const { target } = this.state;
     if (target === CompareTarget.BASELINE) {
       // we have to create a new instance because add() mutates the original one
       this.setDiffRange({ from: from.toISOString(), to: dateTime(from).add(range).toISOString() });
@@ -357,41 +404,27 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
     }
   }
 
-  updateTitle(label = '') {
-    const title =
-      this.state.target === CompareTarget.BASELINE
-        ? t('diff-flame-graph.compare-panel.baseline', 'Baseline')
-        : t('diff-flame-graph.compare-panel.comparison', 'Comparison');
-    const newTitle = label ? `${title} (${label})` : title;
-
-    this.setState({ title: newTitle });
-  }
-
   onClickTimeRangeSync = () => {
-    const { target, timeRangeSyncEnabled, $timeRange, timeseriesPanel } = this.state;
+    const { target, timeseriesPanel } = this.state;
     const $annotationTimeRange = timeseriesPanel.state.body.state.$timeRange as SceneTimeRangeWithAnnotations;
+    const timeRange = sceneGraph.getTimeRange(this);
 
     this.publishEvent(
-      new EventEnableSyncTimeRanges({
+      new EventSyncTimeRanges({
         source: target,
-        enable: !timeRangeSyncEnabled,
-        timeRange: $timeRange.state,
+        timeRange: timeRange.state,
         annotationTimeRange: $annotationTimeRange.state.annotationTimeRange,
       }),
       true
     );
   };
 
-  toggleTimeRangeSync(timeRangeSyncEnabled: boolean) {
-    this.setState({ timeRangeSyncEnabled });
-  }
-
   onClickRefresh = () => {
     this.publishEvent(new EventSyncRefresh({ source: this.state.target }), true);
   };
 
   refreshTimeseries() {
-    this.state.$timeRange.onRefresh();
+    sceneGraph.getTimeRange(this)?.onRefresh();
   }
 
   private syncStepSizeWithSibling(myData: DataFrame[]) {
@@ -409,18 +442,12 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
   }
 
   private getSiblingPanel(): SceneComparePanel | null {
-    if (!this.parent) {
+    const siblingKey = this.state.target === CompareTarget.BASELINE ? 'comparison-panel' : 'baseline-panel';
+    try {
+      return sceneGraph.findByKeyAndType(this, siblingKey, SceneComparePanel);
+    } catch {
       return null;
     }
-
-    const parentState = 'state' in this.parent ? this.parent.state : this.parent;
-    if (!('baselinePanel' in parentState && 'comparisonPanel' in parentState)) {
-      return null;
-    }
-
-    return this.state.target === CompareTarget.BASELINE
-      ? (parentState.comparisonPanel as SceneComparePanel)
-      : (parentState.baselinePanel as SceneComparePanel);
   }
 
   private getSiblingData(siblingPanel: SceneComparePanel): DataFrame[] | null {
@@ -465,7 +492,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
 
     const currentQueries = queryRunner.state.queries;
 
-    const updatedQueries = currentQueries.map((query: any) => ({
+    const updatedQueries = currentQueries.map((query) => ({
       ...query,
       step: targetStepSec,
     }));
@@ -483,7 +510,6 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
       timePicker,
       refreshPicker,
       filterKey,
-      timeRangeSyncEnabled,
     } = model.useState();
 
     const styles = useStyles2(getStyles, color);
@@ -506,18 +532,10 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
             </div>
 
             <IconButton
-              className={cx(styles.syncButton, timeRangeSyncEnabled && 'active')}
+              className={cx(styles.syncButton)}
               name="link"
-              aria-label={
-                timeRangeSyncEnabled
-                  ? t('diff-flame-graph.compare-panel.unsync-time-ranges', 'Unsync time ranges')
-                  : t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')
-              }
-              tooltip={
-                timeRangeSyncEnabled
-                  ? t('diff-flame-graph.compare-panel.unsync-time-ranges', 'Unsync time ranges')
-                  : t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')
-              }
+              aria-label={t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')}
+              tooltip={t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')}
               onClick={model.onClickTimeRangeSync}
             />
           </div>
@@ -539,6 +557,7 @@ const getStyles = (theme: GrafanaTheme2, color: string) => ({
     padding: ${theme.spacing(1)} ${theme.spacing(1)} 0 ${theme.spacing(1)};
     border: 1px solid ${theme.colors.border.weak};
     border-radius: 2px;
+    width: 100%;
   `,
   panelHeader: css`
     display: flex;
@@ -577,11 +596,6 @@ const getStyles = (theme: GrafanaTheme2, color: string) => ({
 
     &:hover {
       background: ${theme.colors.secondary.shade};
-    }
-
-    &.active {
-      color: ${theme.colors.primary.text};
-      border: 1px solid ${theme.colors.primary.text};
     }
   `,
   filter: css`
