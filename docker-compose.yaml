@@ -55,7 +55,7 @@ services:
       context: ./samples/rideshare
       dockerfile: Dockerfile.load-generator
     environment:
-      - HOST_PREFIX=pyroscope-app-plugin_rideshare
+      - HOST_PREFIX=profiles-drilldown-rideshare
       # This should be the same as the rideshare replica count.
       - REPLICAS=5
       # Set this to 1 to turn on debug logging.
