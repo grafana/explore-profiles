@@ -8,15 +8,10 @@ import React, { useState } from 'react';
 
 type MissingSelectionsBannerProps = {
   onClickAutoSelect: () => void;
-  onClickChoosePreset: () => void;
   onOpenLearnHow: () => void;
 };
 
-export function MissingSelectionsBanner({
-  onClickAutoSelect,
-  onClickChoosePreset,
-  onOpenLearnHow,
-}: MissingSelectionsBannerProps) {
+export function MissingSelectionsBanner({ onClickAutoSelect, onOpenLearnHow }: MissingSelectionsBannerProps) {
   const styles = useStyles2(getStyles);
 
   const [isCollapseOpen, setIsCollapseOpen] = useState(false);
@@ -37,21 +32,10 @@ export function MissingSelectionsBanner({
       )}
       message={
         <div className={styles.infoMsg}>
-          <p>
-            <Trans i18nKey="diff-flame-graph.missing-selections.how">How?</Trans>
-          </p>
-          <p>
-            <Button variant="primary" onClick={onClickAutoSelect}>
-              <Trans i18nKey="diff-flame-graph.missing-selections.auto-select">Auto-select</Trans>
-            </Button>{' '}
-            <Trans i18nKey="diff-flame-graph.missing-selections.or">or</Trans>{' '}
-            <Button variant="primary" fill="text" className={styles.textButton} onClick={onClickChoosePreset}>
-              <Trans i18nKey="diff-flame-graph.missing-selections.choose-preset">choose a preset</Trans>
-            </Button>
-          </p>
-          <p>
-            <Trans i18nKey="diff-flame-graph.missing-selections.alternatively">Alternatively:</Trans>
-          </p>
+          <Button variant="primary" onClick={onClickAutoSelect}>
+            <Trans i18nKey="diff-flame-graph.missing-selections.auto-select">Auto-select</Trans>
+          </Button>
+
           <Collapse
             label={t(
               'diff-flame-graph.missing-selections.learn-how',
@@ -89,10 +73,11 @@ export function MissingSelectionsBanner({
 
 const getStyles = (theme: GrafanaTheme2) => ({
   infoMsg: css`
-    padding: ${theme.spacing(2)} 0 0 0;
-  `,
-  textButton: css`
-    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: ${theme.spacing(1)};
+    padding-top: ${theme.spacing(2)};
   `,
   collapse: css`
     background: transparent;

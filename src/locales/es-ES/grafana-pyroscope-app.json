@@ -102,19 +102,14 @@
       "tooltip-flame-graph": "",
       "tooltip-flame-graph-description": "",
       "tooltip-time-picker": "",
-      "tooltip-time-picker-description": "",
-      "unsync-time-ranges": ""
+      "tooltip-time-picker-description": ""
     },
     "error-loading-profile": "",
     "explain-button": "",
     "missing-selections": {
-      "alternatively": "",
       "auto-select": "",
-      "choose-preset": "",
-      "how": "",
       "how-to-alt": "",
       "learn-how": "",
-      "or": "",
       "step-1": "",
       "step-2": "",
       "title": ""
@@ -122,27 +117,12 @@
     "no-profile-data": "",
     "no-profile-data-message": "",
     "presets": {
-      "24h-ago": "",
+      "1h-ago-vs-now": "",
+      "1h-ago-vs-now-description": "",
       "24h-ago-vs-now": "",
-      "6h-ago": "",
       "6h-ago-vs-now": "",
-      "auto-select-25": "",
-      "auto-select-whole": "",
-      "built-in": "",
-      "cancel": "",
-      "dummy": "",
       "label": "",
-      "last-hour": "",
-      "last-hour-1h": "",
-      "last-hour-30m": "",
-      "modal-feedback": "",
-      "modal-not-implemented": "",
-      "modal-thank-you": "",
-      "modal-title": "",
-      "my-presets": "",
-      "placeholder": "",
-      "save": "",
-      "save-tooltip": ""
+      "placeholder": ""
     },
     "settings-error": {
       "message": "",
@@ -675,7 +655,8 @@
       "loading": "",
       "placeholder_one": "",
       "placeholder_many": "",
-      "placeholder_other": ""
+      "placeholder_other": "",
+      "unmatched-tooltip": ""
     },
     "span-selector": {
       "label": ""
