@@ -9,4 +9,6 @@ export const featureToggles = {
   exemplars: !!config.featureToggles['profilesExemplars'],
   // @ts-ignore Remove after upgrading grafana/runtime to version including the toggle type
   flameGraphWithCallTree: !!config.featureToggles['flameGraphWithCallTree'],
+  // @ts-ignore Remove after upgrading grafana/runtime to version including the toggle type
+  pyroscopeUTF8LabelNames: !!config.featureToggles['pyroscopeUTF8LabelNames'],
 };

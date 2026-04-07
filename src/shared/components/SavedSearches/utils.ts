@@ -1,5 +1,6 @@
 import { AdHocVariableFilter } from '@grafana/data';
 import { sceneGraph, SceneObject } from '@grafana/scenes';
+import { quoteLabelName } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
 import { OperatorKind } from '@shared/components/QueryBuilder/domain/types';
 
 import { SceneProfilesExplorer } from '../../../pages/ProfilesExplorerView/components/SceneProfilesExplorer/SceneProfilesExplorer';
@@ -27,7 +28,11 @@ const isValidFilter = (f: AdHocVariableFilter): boolean =>
 export function buildFilterExpressionParts(filters: AdHocVariableFilter[]): string {
   return filters
     .filter(isValidFilter)
-    .map((f) => (f.operator === OperatorKind['is-empty'] ? `${f.key}=""` : `${f.key}${f.operator}"${f.value ?? ''}"`))
+    .map((f) =>
+      f.operator === OperatorKind['is-empty']
+        ? `${quoteLabelName(f.key)}=""`
+        : `${quoteLabelName(f.key)}${f.operator}"${f.value ?? ''}"`
+    )
     .join(',');
 }
 

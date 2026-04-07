@@ -1,4 +1,5 @@
 import { SceneQueryRunner } from '@grafana/scenes';
+import { quoteLabelName } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
 
 import { PYROSCOPE_DATA_SOURCE } from '../pyroscope-data-sources';
 import { TimeSeriesQueryRunnerParams } from '../timeseries/TimeSeriesQueryRunnerParams';
@@ -19,7 +20,9 @@ export function buildFlameGraphQueryRunner({
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: '$serviceName' });
 
-  const selector = completeFilters.map(({ key, operator, value }) => `${key}${operator}"${value}"`).join(',');
+  const selector = completeFilters
+    .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}"${value}"`)
+    .join(',');
 
   const queryRunner = new SceneQueryRunner({
     datasource: PYROSCOPE_DATA_SOURCE,
