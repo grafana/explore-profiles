@@ -1526,8 +1526,8 @@ __metadata:
   linkType: hard
 
 "@grafana/scenes@npm:^6.23.0":
-  version: 6.57.2
-  resolution: "@grafana/scenes@npm:6.57.2"
+  version: 6.52.13
+  resolution: "@grafana/scenes@npm:6.52.13"
   dependencies:
     "@floating-ui/react": "npm:^0.26.16"
     "@leeoniya/ufuzzy": "npm:^1.0.16"
@@ -1538,16 +1538,16 @@ __metadata:
     react-virtualized-auto-sizer: "npm:1.0.24"
     uuid: "npm:^9.0.0"
   peerDependencies:
-    "@grafana/data": ">=11.6"
-    "@grafana/e2e-selectors": ">=11.6"
+    "@grafana/data": ">=10.4"
+    "@grafana/e2e-selectors": ">=10.4"
     "@grafana/i18n": "*"
-    "@grafana/runtime": ">=11.6"
-    "@grafana/schema": ">=11.6"
-    "@grafana/ui": ">=11.6"
+    "@grafana/runtime": ">=10.4"
+    "@grafana/schema": ">=10.4"
+    "@grafana/ui": ">=10.4"
     react: ^18.0.0
     react-dom: ^18.0.0
     react-router-dom: ^6.28.0
-  checksum: 10/11fe39e4f4f0bc072f926d162dfb7207898fce1c3abb8ce8da9173b6a78e46504a9c07300e05985db8411e66521b005866fc3b2a049751f8aa6426fcd194e2da
+  checksum: 10/d49894f9fc4e4cf4af0ab4a308b282457b3602c4a421e8335300252124dd72f1bc418bafb0af16bf103844200df47037cd238b9f82e92aef7fe568bd3d4dec98
   languageName: node
   linkType: hard
 
@@ -2543,7 +2543,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfeature/core@npm:^1.9.0, @openfeature/core@npm:^1.9.2":
+"@openfeature/core@npm:^1.9.0":
+  version: 1.9.1
+  resolution: "@openfeature/core@npm:1.9.1"
+  checksum: 10/6099e16b1b4cd6e3c45c05ab4acd44c9cb4ab501b676ab6f3e77f0be1b56abc7506c5629187381333a02975d315d831e0905582435b356d9676255e72a465899
+  languageName: node
+  linkType: hard
+
+"@openfeature/core@npm:^1.9.2":
   version: 1.9.2
   resolution: "@openfeature/core@npm:1.9.2"
   checksum: 10/935736b2a3d199fcf85068c40f87ea4db108a475982562851d016a36e00898a9ae37ba90fe4562c6952d1951c7dc9b0ee2d35dceaf3be489e0d27eff2c395663
@@ -2559,7 +2566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openfeature/ofrep-web-provider@npm:^0.3.3":
+"@openfeature/ofrep-web-provider@npm:0.3.5, @openfeature/ofrep-web-provider@npm:^0.3.3":
   version: 0.3.5
   resolution: "@openfeature/ofrep-web-provider@npm:0.3.5"
   dependencies:
@@ -4265,7 +4272,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:22.19.15, @types/node@npm:>=13.7.0":
+"@types/node@npm:*, @types/node@npm:>=13.7.0":
+  version: 22.7.4
+  resolution: "@types/node@npm:22.7.4"
+  dependencies:
+    undici-types: "npm:~6.19.2"
+  checksum: 10/19ddab80c4eba2253c855ed67c9bbc47417183049d01e59010a738bd80d47338bab79fd1f44ae51516bd63a1db4bf21ddb38b16bf6401a2e93252068ec52e88b
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:22.19.15":
   version: 22.19.15
   resolution: "@types/node@npm:22.19.15"
   dependencies:
@@ -5624,20 +5640,20 @@ __metadata:
   linkType: hard
 
 "brace-expansion@npm:^2.0.1":
-  version: 2.0.3
-  resolution: "brace-expansion@npm:2.0.3"
+  version: 2.0.2
+  resolution: "brace-expansion@npm:2.0.2"
   dependencies:
     balanced-match: "npm:^1.0.0"
-  checksum: 10/e9dd66caaf0784126e1654f1bc19adb28f3ef86f39f2226f833f7700ec727c141f6cd85eaa47bacf3426beda01c9fbc3a2f28174cf59330dc9b58ffaf9e09d96
+  checksum: 10/01dff195e3646bc4b0d27b63d9bab84d2ebc06121ff5013ad6e5356daa5a9d6b60fa26cf73c74797f2dc3fbec112af13578d51f75228c1112b26c790a87b0488
   languageName: node
   linkType: hard
 
 "brace-expansion@npm:^5.0.2":
-  version: 5.0.5
-  resolution: "brace-expansion@npm:5.0.5"
+  version: 5.0.4
+  resolution: "brace-expansion@npm:5.0.4"
   dependencies:
     balanced-match: "npm:^4.0.2"
-  checksum: 10/f259b2ddf04489da9512ad637ba6b4ef2d77abd4445d20f7f1714585f153435200a53fa6a2e4a5ee974df14ddad4cd16421f6f803e96e8b452bd48598878d0ee
+  checksum: 10/cfd57e20d8ded9578149e47ae4d3fff2b2f78d06b54a32a73057bddff65c8e9b930613f0cbcfefedf12dd117151e19d4da16367d5127c54f3bff02d8a4479bb2
   languageName: node
   linkType: hard
 
@@ -11625,11 +11641,11 @@ __metadata:
   linkType: hard
 
 "nanoid@npm:^5.0.9":
-  version: 5.1.7
-  resolution: "nanoid@npm:5.1.7"
+  version: 5.1.6
+  resolution: "nanoid@npm:5.1.6"
   bin:
     nanoid: bin/nanoid.js
-  checksum: 10/9ca13b1e87c61b21afaa578f40afbb6488fbc24609c34bba744941f9f56feb5b416ea7dfcc1ec4927a8c0f52e5ea755633662dbd58b9e87fd7899c1d7b242ed6
+  checksum: 10/4109dbcf596d7f297a9b42f459b8f01694a03ebbdd2f41408d963ad54e5ec7234cbe7b4acad137751f31add11bb4fb3415a3e688082516745812811f05570014
   languageName: node
   linkType: hard
 
@@ -12237,9 +12253,9 @@ __metadata:
   linkType: hard
 
 "path-to-regexp@npm:^8.0.0":
-  version: 8.4.2
-  resolution: "path-to-regexp@npm:8.4.2"
-  checksum: 10/70fd2cbce0b962cbcf4d312af07818bfce2bae11c09cf3bd86be99c0e30168238a1a7b02b18b452e73f075897df04597d30d63e56da7be41eecfc37998693389
+  version: 8.2.0
+  resolution: "path-to-regexp@npm:8.2.0"
+  checksum: 10/23378276a172b8ba5f5fb824475d1818ca5ccee7bbdb4674701616470f23a14e536c1db11da9c9e6d82b82c556a817bbf4eee6e41b9ed20090ef9427cbb38e13
   languageName: node
   linkType: hard
 
@@ -12283,9 +12299,9 @@ __metadata:
   linkType: hard
 
 "picomatch@npm:^4.0.1, picomatch@npm:^4.0.3":
-  version: 4.0.4
-  resolution: "picomatch@npm:4.0.4"
-  checksum: 10/f6ef80a3590827ce20378ae110ac78209cc4f74d39236370f1780f957b7ee41c12acde0e4651b90f39983506fd2f5e449994716f516db2e9752924aff8de93ce
+  version: 4.0.3
+  resolution: "picomatch@npm:4.0.3"
+  checksum: 10/57b99055f40b16798f2802916d9c17e9744e620a0db136554af01d19598b96e45e2f00014c91d1b8b13874b80caa8c295b3d589a3f72373ec4aaf54baa5962d5
   languageName: node
   linkType: hard
 
@@ -12695,6 +12711,7 @@ __metadata:
     "@grafana/tsconfig": "npm:2.0.1"
     "@grafana/ui": "npm:12.4.2"
     "@openfeature/core": "npm:^1.9.2"
+    "@openfeature/ofrep-web-provider": "npm:0.3.5"
     "@openfeature/web-sdk": "npm:^1.5.0"
     "@playwright/test": "npm:1.59.0"
     "@react-aria/utils": "npm:^3.25.3"
@@ -15569,6 +15586,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:~6.19.2":
+  version: 6.19.8
+  resolution: "undici-types@npm:6.19.8"
+  checksum: 10/cf0b48ed4fc99baf56584afa91aaffa5010c268b8842f62e02f752df209e3dea138b372a60a963b3b2576ed932f32329ce7ddb9cb5f27a6c83040d8cd74b7a70
+  languageName: node
+  linkType: hard
+
 "undici-types@npm:~6.21.0":
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
@@ -16341,9 +16365,9 @@ __metadata:
   linkType: hard
 
 "yaml@npm:^1.10.0":
-  version: 1.10.3
-  resolution: "yaml@npm:1.10.3"
-  checksum: 10/e2ef2feb92c708138f016c69777a0f1e45f6d3c5e7cbcda30807a98a37eda2e008bd4fa57352b043c65245a4c799d0c99d1f9b3425de40e70929e26d2ea38215
+  version: 1.10.2
+  resolution: "yaml@npm:1.10.2"
+  checksum: 10/e088b37b4d4885b70b50c9fa1b7e54bd2e27f5c87205f9deaffd1fb293ab263d9c964feadb9817a7b129a5bf30a06582cb08750f810568ecc14f3cdbabb79cb3
   languageName: node
   linkType: hard
 

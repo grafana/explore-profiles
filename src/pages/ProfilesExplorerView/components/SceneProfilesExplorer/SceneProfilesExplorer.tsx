@@ -22,6 +22,7 @@ import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScen
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { evaluateFeatureFlag } from '@shared/infrastructure/featureFlags/openFeature';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useState } from 'react';
 
@@ -134,10 +135,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
   private initialFilters?: AdHocVariableFilter[];
+  private kgInitialized = false;
 
   public constructor(state: Partial<SceneProfilesExplorerState>) {
-    const kg = getKgSceneProps('Service', 'serviceName');
-
     super({
       key: 'profiles-explorer',
       explorationType: state.initialFilters && state.initialFilters.length > 0 ? ExplorationType.LABELS : undefined,
@@ -174,14 +174,9 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             new SpanSelectorVariable(),
           ],
         }),
-      ...(kg ? { $data: kg.$data, $behaviors: kg.behaviors } : {}),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
       loadSearchScene: new LoadSearchScene(),
-      controls: [
-        new SceneTimePicker({ isOnCanvas: true }),
-        new SceneRefreshPicker({ isOnCanvas: true }),
-        ...(kg ? [kg.controls] : []),
-      ],
+      controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
       gridControls: [
@@ -202,6 +197,22 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
+
+    if (!this.kgInitialized) {
+      this.kgInitialized = true;
+      evaluateFeatureFlag('kgAnnotationsInPyroscope').then((enabled) => {
+        if (enabled) {
+          const kg = getKgSceneProps('Service', 'serviceName');
+          if (kg) {
+            this.setState({
+              $data: this.state.$data ?? kg.$data,
+              $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
+              controls: [...(this.state.controls ?? []), kg.controls],
+            });
+          }
+        }
+      });
+    }
 
     if (!this.state.explorationType) {
       this.setExplorationType({

@@ -22,27 +22,19 @@ interface KgSceneProps {
 }
 
 export function isKgAnnotationsAvailable(): boolean {
-  if (!(config.featureToggles as Record<string, boolean | undefined>)['kgAnnotationsInPyroscope']) {
-    return false;
-  }
-  return Object.values(config.datasources).some((d) => d.type === KG_DATASOURCE_TYPE || d.uid === KG_DATASOURCE_UID);
+  return Object.values(config.datasources).some((d) => d.uid === KG_DATASOURCE_UID && d.type === KG_DATASOURCE_TYPE);
 }
 
-function createAnnotationLayers(entityType: string, entityName: string) {
-  const severities = [
+function getSeverities() {
+  return [
     { value: 'critical', color: 'red', label: t('profiles.kg-annotations.severity-critical', 'Critical') },
     { value: 'warning', color: 'yellow', label: t('profiles.kg-annotations.severity-warning', 'Warning') },
     { value: 'info', color: 'blue', label: t('profiles.kg-annotations.severity-info', 'Info') },
   ];
+}
 
-  const filterCriteria = [
-    {
-      entityType,
-      propertyMatchers: [{ id: -1, name: 'name', op: '=', value: entityName, type: 'String' }],
-    },
-  ];
-
-  return severities.map(
+function createAdvancedAnnotationLayers(entityType: string, entityName: string) {
+  return getSeverities().map(
     (s) =>
       new dataLayers.AnnotationsDataLayer({
         name: `Insights - ${s.label}`,
@@ -58,7 +50,43 @@ function createAnnotationLayers(entityType: string, entityName: string) {
             queryType: 'annotations',
             queryMode: 'advanced',
             severityFilter: [s.value],
-            advancedQuery: { filterCriteria },
+            advancedQuery: {
+              filterCriteria: [
+                {
+                  entityType,
+                  propertyMatchers: [{ name: 'name', value: entityName, op: '=' }],
+                  havingAssertion: true,
+                },
+              ],
+            },
+          } as unknown as DataQuery,
+        },
+      })
+  );
+}
+
+function createFromLabelsAnnotationLayers(labels: Record<string, string>, datasourceUid: string) {
+  return getSeverities().map(
+    (s) =>
+      new dataLayers.AnnotationsDataLayer({
+        name: `Insights - ${s.label}`,
+        isEnabled: true,
+        isHidden: true,
+        query: {
+          datasource: { type: KG_DATASOURCE_TYPE, uid: KG_DATASOURCE_UID },
+          enable: true,
+          iconColor: s.color,
+          name: `KG Assertions - ${s.label}`,
+          target: {
+            refId: `kgAnnotations-${s.value}`,
+            queryType: 'annotations',
+            queryMode: 'fromLabels',
+            severityFilter: [s.value],
+            fromLabelsQuery: {
+              telemetryType: 'profile',
+              datasourceUid,
+              labels,
+            },
           } as unknown as DataQuery,
         },
       })
@@ -76,8 +104,6 @@ interface KgAnnotationBehaviorState extends SceneObjectState {
 }
 
 class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
-  private currentLookupKey: string | undefined;
-
   constructor(state: KgAnnotationBehaviorState) {
     super(state);
     this.addActivationHandler(this._onActivate);
@@ -89,20 +115,30 @@ class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
       return;
     }
 
-    this.updateLayers(serviceNameVar);
+    const dsVar = sceneGraph.lookupVariable('dataSource', this);
+
+    this.updateLayers(serviceNameVar, dsVar);
 
     const subs = [
       serviceNameVar.subscribeToState(() => {
-        this.updateLayers(serviceNameVar);
+        this.updateLayers(serviceNameVar, dsVar);
       }),
     ];
+
+    if (dsVar) {
+      subs.push(
+        dsVar.subscribeToState(() => {
+          this.updateLayers(serviceNameVar, dsVar);
+        })
+      );
+    }
 
     // Subscribe to the parent scene's explorationType to clear layers on views without a single service
     const parent = this.parent;
     if (parent) {
       subs.push(
         parent.subscribeToState(() => {
-          this.updateLayers(serviceNameVar);
+          this.updateLayers(serviceNameVar, dsVar);
         })
       );
     }
@@ -112,28 +148,38 @@ class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
     };
   };
 
-  private updateLayers(serviceNameVar: ReturnType<typeof sceneGraph.lookupVariable>) {
+  private updateLayers(
+    serviceNameVar: ReturnType<typeof sceneGraph.lookupVariable>,
+    dsVar: ReturnType<typeof sceneGraph.lookupVariable> | undefined
+  ) {
     const serviceName = serviceNameVar?.getValue() as string;
     const explorationType = (this.parent?.state as { explorationType?: string })?.explorationType;
     const isServiceView = explorationType != null && SERVICE_EXPLORATION_TYPES.has(explorationType);
 
-    const lookupKey = isServiceView ? serviceName || '' : '';
-
-    if (lookupKey === this.currentLookupKey) {
-      return;
-    }
-    this.currentLookupKey = lookupKey;
-
     const layerSet = this.state.layerSet.resolve();
     const toggle = this.state.toggle.resolve();
 
-    if (isServiceView && serviceName) {
-      const layers = createAnnotationLayers(this.state.entityType, serviceName);
-      layerSet.setState({ layers });
-      toggle.syncLayerEnabledState();
+    if (!isServiceView) {
+      layerSet.setState({ layers: [] });
+      return;
+    }
+
+    const datasourceUid = (dsVar?.getValue() as string) || '';
+    let layers: ReturnType<typeof createAdvancedAnnotationLayers>;
+
+    if (serviceName) {
+      // When we have a known service name, use the deterministic advanced query
+      layers = createAdvancedAnnotationLayers(this.state.entityType, serviceName);
+    } else if (datasourceUid) {
+      // Fall back to fromLabels and let KG resolve entities
+      layers = createFromLabelsAnnotationLayers({ service_name: serviceName }, datasourceUid);
     } else {
       layerSet.setState({ layers: [] });
+      return;
     }
+
+    layerSet.setState({ layers });
+    toggle.syncLayerEnabledState();
   }
 }
 

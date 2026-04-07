@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, PageLayoutType } from '@grafana/data';
 import { PluginPage } from '@grafana/runtime';
 import { ErrorBoundary, useStyles2 } from '@grafana/ui';
+import { initOpenFeatureProvider } from '@shared/infrastructure/featureFlags/openFeature';
 import { queryClient } from '@shared/infrastructure/react-query/queryClient';
 import { initFaro } from '@shared/infrastructure/tracking/faro/faro';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -12,6 +13,7 @@ import { Routes } from './Routes';
 import { ErrorPage } from './ui/ErrorPage';
 
 initFaro();
+initOpenFeatureProvider();
 
 export function App() {
   const styles = useStyles2(getStyles);
