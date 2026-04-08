@@ -1,4 +1,5 @@
 import { ProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 
 import { DataSourceProxyClient } from './DataSourceProxyClient';
 import { formatSeriesResponse } from './formatSeriesResponse';
@@ -27,6 +28,7 @@ export class SeriesApiClient extends DataSourceProxyClient {
         labelNames: ['service_name', '__profile_type__'],
         matchers: [],
       }),
+      headers: featureToggles.pyroscopeUTF8LabelNames ? { accept: 'application/json; allow-utf8-labelnames=true' } : {},
     })
       .then((response) => response.json())
       .then(formatSeriesResponse);
