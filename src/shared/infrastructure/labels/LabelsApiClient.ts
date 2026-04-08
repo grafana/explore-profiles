@@ -1,4 +1,5 @@
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 
 export class LabelsApiClient extends ApiClient {
   static queryToMatchers(query: string) {
@@ -39,6 +40,7 @@ export class LabelsApiClient extends ApiClient {
     return super.fetch(pathname, {
       method: 'POST',
       body: JSON.stringify(body),
+      headers: featureToggles.pyroscopeUTF8LabelNames ? { accept: 'application/json; allow-utf8-labelnames=true' } : {},
     });
   }
 }

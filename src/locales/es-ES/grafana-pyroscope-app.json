@@ -663,7 +663,8 @@
       "loading": "",
       "placeholder_one": "",
       "placeholder_many": "",
-      "placeholder_other": ""
+      "placeholder_other": "",
+      "unmatched-tooltip": ""
     },
     "span-selector": {
       "label": ""

@@ -1,4 +1,5 @@
 import { CompleteFilter, FilterKind, Filters, OperatorKind } from '../types';
+import { quoteLabelName } from './quoteLabelName';
 
 export function filtersToQuery(query: string, filters: Filters) {
   const labelsList = filters
@@ -6,18 +7,20 @@ export function filtersToQuery(query: string, filters: Filters) {
     .map((filter) => {
       const { attribute, operator, value } = filter as CompleteFilter;
 
+      const quotedAttr = quoteLabelName(attribute.value);
+
       switch (operator.value) {
         case OperatorKind.in:
-          return `${attribute.value}=~"${value.value}"`;
+          return `${quotedAttr}=~"${value.value}"`;
 
         case OperatorKind['not-in']:
-          return `${attribute.value}!~"${value.value}"`;
+          return `${quotedAttr}!~"${value.value}"`;
 
         case OperatorKind['is-empty']:
-          return `${attribute.value}=""`;
+          return `${quotedAttr}=""`;
 
         default:
-          return `${attribute.value}${operator.value}"${value.value}"`;
+          return `${quotedAttr}${operator.value}"${value.value}"`;
       }
     });
 
