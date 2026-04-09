@@ -11,6 +11,7 @@ import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profil
 import React from 'react';
 
 import { FiltersVariable } from '../domain/variables/FiltersVariable/FiltersVariable';
+import { SpanExemplarToggleAction } from '../domain/actions/SpanExemplarToggleAction';
 import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -35,26 +36,40 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     headerActions,
     supportGroupBy,
     includeExemplars,
+    includeSpanExemplars,
+    spanExemplarToggleAction,
   }: {
     item?: GridItemData;
     headerActions: SceneMainServiceTimeseriesState['headerActions'];
     supportGroupBy?: boolean;
     includeExemplars?: boolean;
+    includeSpanExemplars?: boolean;
+    spanExemplarToggleAction?: SpanExemplarToggleAction;
   }) {
     super({
       headerActions,
       body: undefined,
     });
 
-    this.addActivationHandler(this.onActivate.bind(this, item, supportGroupBy, includeExemplars));
+    this.addActivationHandler(
+      this.onActivate.bind(this, item, supportGroupBy, includeExemplars, includeSpanExemplars, spanExemplarToggleAction)
+    );
   }
 
-  onActivate(item?: GridItemData, supportGroupBy?: boolean, includeExemplars?: boolean) {
+  onActivate(
+    item?: GridItemData,
+    supportGroupBy?: boolean,
+    includeExemplars?: boolean,
+    includeSpanExemplars?: boolean,
+    spanExemplarToggleAction?: SpanExemplarToggleAction
+  ) {
     if (item) {
       this.initVariables(item);
     }
 
-    this.setState({ body: this.buildTimeseries(item, supportGroupBy, includeExemplars) });
+    this.setState({
+      body: this.buildTimeseries(item, supportGroupBy, includeExemplars, includeSpanExemplars, spanExemplarToggleAction),
+    });
 
     if (supportGroupBy) {
       this.subscribeToGroupByStateChanges(item);
@@ -99,7 +114,13 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     }
   }
 
-  buildTimeseries(item?: GridItemData, supportGroupBy?: boolean, includeExemplars?: boolean) {
+  buildTimeseries(
+    item?: GridItemData,
+    supportGroupBy?: boolean,
+    includeExemplars?: boolean,
+    includeSpanExemplars?: boolean,
+    spanExemplarToggleAction?: SpanExemplarToggleAction
+  ) {
     const { headerActions } = this.state;
 
     const timeseriesItem: GridItemData = {
@@ -121,6 +142,8 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       headerActions,
       annotations: true,
       includeExemplars: includeExemplars,
+      includeSpanExemplars: includeSpanExemplars,
+      spanExemplarToggleAction,
       // we pass data for the scenarios where we land on the page from a shared link
       // we do this to prevent rendering a timeseries without groupBy for a second then with groupBy
       // and also to directly render something when there's no groupBy in the URL

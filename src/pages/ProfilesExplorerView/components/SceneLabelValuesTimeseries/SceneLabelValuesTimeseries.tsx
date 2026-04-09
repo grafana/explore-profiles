@@ -22,6 +22,7 @@ import { isEqual, merge } from 'lodash';
 import React from 'react';
 
 import { ExemplarToggleAction } from '../../domain/actions/ExemplarToggleAction';
+import { SpanExemplarToggleAction } from '../../domain/actions/SpanExemplarToggleAction';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -39,6 +40,7 @@ import {
 } from '../SceneByVariableRepeaterGrid/infrastructure/exemplars-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { RangeAnnotation } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/domain/RangeAnnotation';
+import { SpanProfilesToggled } from '../SceneExploreServiceFlameGraph/domain/events/SpanProfilesToggled';
 import { TimeseriesReprocess } from './domain/events/TimeseriesReprocess';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
@@ -76,6 +78,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     overrides,
     annotations,
     includeExemplars,
+    includeSpanExemplars,
+    spanExemplarToggleAction,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
@@ -85,12 +89,16 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
     annotations?: boolean;
     includeExemplars?: boolean;
+    includeSpanExemplars?: boolean;
+    spanExemplarToggleAction?: SpanExemplarToggleAction;
   }) {
     const profilesExemplarsEnabled = getProfilesExemplarsFromOpenFeature();
     const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(
       headerActions,
       includeExemplars,
-      profilesExemplarsEnabled
+      profilesExemplarsEnabled,
+      includeSpanExemplars,
+      spanExemplarToggleAction
     );
 
     super({
@@ -131,26 +139,37 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   private static processExemplarsConfig(
     headerActions: SceneLabelValuesTimeseriesState['headerActions'],
     includeExemplars: boolean | undefined,
-    profilesExemplarsEnabled: boolean
+    profilesExemplarsEnabled: boolean,
+    includeSpanExemplars?: boolean,
+    spanExemplarToggleAction?: SpanExemplarToggleAction
   ): {
     processedHeaderActions: SceneLabelValuesTimeseriesState['headerActions'];
     menuState: Record<string, unknown>;
   } {
-    if (!profilesExemplarsEnabled) {
-      return { processedHeaderActions: headerActions, menuState: {} };
+    let processedHeaderActions = headerActions;
+    const menuState: Record<string, unknown> = {};
+
+    if (profilesExemplarsEnabled) {
+      if (includeExemplars) {
+        const prev = processedHeaderActions;
+        processedHeaderActions = (item: GridItemData) => [
+          ...(prev(item) as SceneObject[]),
+          new ExemplarToggleAction(true),
+        ];
+      } else {
+        menuState.showExemplars = false;
+      }
     }
 
-    if (includeExemplars) {
-      // when includeExemplers is true, we show Exemplars button in the timeseries header.
-      const processedHeaderActions = (item: GridItemData) => [
-        ...(headerActions(item) as SceneObject[]),
-        new ExemplarToggleAction(true),
+    if (includeSpanExemplars) {
+      const prev = processedHeaderActions;
+      processedHeaderActions = (item: GridItemData) => [
+        ...(prev(item) as SceneObject[]),
+        spanExemplarToggleAction ?? new SpanExemplarToggleAction(false),
       ];
-      return { processedHeaderActions, menuState: {} };
     }
 
-    // Otherwise, we keep it on the menu. (Disabled by default)
-    return { processedHeaderActions: headerActions, menuState: { showExemplars: false } };
+    return { processedHeaderActions, menuState };
   }
 
   onActivate() {
@@ -280,6 +299,10 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       queryRunner.setState({ queries });
       queryRunner.runQueries();
     }
+  }
+
+  handleSpanExemplarToggleChange(enabled: boolean) {
+    this.publishEvent(new SpanProfilesToggled({ enabled }), true);
   }
 
   getConfig(series: DataFrame[]) {

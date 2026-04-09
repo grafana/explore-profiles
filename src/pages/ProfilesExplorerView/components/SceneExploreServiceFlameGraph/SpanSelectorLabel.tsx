@@ -1,7 +1,10 @@
 import { css } from '@emotion/css';
-import { t, Trans } from '@grafana/i18n';
-import { Button, Tooltip, useStyles2 } from '@grafana/ui';
+import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
+import { Tag, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
+
+const noOp = () => {};
 
 type Props = {
   spanSelector: string;
@@ -22,27 +25,97 @@ export function SpanSelectorLabel(props: Props) {
         )}
         placement="top"
       >
-        <span>
-          <Trans i18nKey="flame-graph.span-selector.added">Span selector added</Trans>
-        </span>
+        <Tag
+          aria-label={t('flame-graph.span-selector.filter-label', 'Filter label')}
+          className={styles.spanSelectorLabel}
+          name={t('flame-graph.span-selector.name', 'Span')}
+          onClick={noOp}
+        />
       </Tooltip>
-      <Button
-        size="md"
-        fill="text"
-        variant="secondary"
+
+      <Tag
+        aria-label={t('flame-graph.span-selector.filter-operator', 'Filter operator')}
+        className={styles.noInteraction}
+        name="="
+        onClick={noOp}
+        tabIndex={0}
+      />
+
+      <Tag
+        aria-label={t('flame-graph.span-selector.filter-value', 'Filter value')}
+        name={spanSelector}
+        className={styles.noInteraction}
+        onClick={noOp}
+        tabIndex={0}
+      />
+
+      <Tag
+        aria-label={t('flame-graph.span-selector.remove', 'Remove span selector from query')}
+        className={styles.removeButton}
         icon="times"
-        tooltip={t('flame-graph.span-selector.remove', 'Remove span selector from query')}
-        tooltipPlacement="top"
-        onClick={() => {
-          removeSpanSelector();
-        }}
+        name=""
+        onClick={() => removeSpanSelector()}
+        tabIndex={0}
       />
     </div>
   );
 }
 
-const getStyles = () => ({
+const activeBackgroundColor = 'rgb(61, 113, 217)';
+const activeTextColor = '#fff';
+
+const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
-    padding: 0 4px;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    border: 1px solid ${activeBackgroundColor};
+    border-radius: 2px;
+
+    & > button {
+      height: 30px;
+      background-color: ${theme.colors.background.primary};
+      color: ${theme.colors.text.maxContrast};
+    }
+
+    & > :first-child {
+      background-color: ${activeBackgroundColor};
+      color: ${activeTextColor};
+      border-radius: 0;
+
+      &:hover {
+        cursor: not-allowed !important;
+      }
+    }
+
+    & > :last-child {
+      border-left: 1px solid ${activeBackgroundColor};
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  `,
+
+  removeButton: css`
+    &:hover {
+      background-color: ${theme.colors.background.secondary};
+    }
+
+    & svg {
+      width: 12px;
+      height: 12px;
+    }
+  `,
+
+  spanSelectorLabel: css`
+    &:hover {
+      opacity: 1 !important;
+    }
+  `,
+
+  noInteraction: css`
+    &:hover {
+      background-color: ${theme.colors.background.secondary};
+      cursor: not-allowed !important;
+    }
   `,
 });

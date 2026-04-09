@@ -15,6 +15,7 @@ export type GridItemData = {
     };
     filters?: AdHocVariableFilter[];
     profileIdSelector?: string;
+    spanSelector?: string;
   };
   panelType: PanelType;
 };
