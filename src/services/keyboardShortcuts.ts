@@ -14,7 +14,8 @@ export function setupKeyboardShortcuts(scene: SceneProfilesExplorer) {
   keybindings.addBinding({
     key: 't c',
     onTrigger: () => {
-      const timeRange = sceneGraph.getTimeRange(scene);
+      const picker = getTimePicker(scene);
+      const timeRange = picker ? sceneGraph.getTimeRange(picker) : sceneGraph.getTimeRange(scene);
       const restoreContext = setWindowGrafanaSceneContext(timeRange);
       appEvents.publish(new CopyTimeEvent());
       restoreContext();
@@ -43,11 +44,7 @@ export function setupKeyboardShortcuts(scene: SceneProfilesExplorer) {
   // Refresh
   keybindings.addBinding({
     key: 'd r',
-    onTrigger: () => {
-      const picker = getTimePicker(scene);
-      const timeRange = picker ? sceneGraph.getTimeRange(picker) : sceneGraph.getTimeRange(scene);
-      timeRange.onRefresh();
-    },
+    onTrigger: () => sceneGraph.getTimeRange(scene).onRefresh(),
   });
 
   // Zoom out
@@ -91,17 +88,16 @@ export function setActiveTimePicker(picker: SceneTimePicker) {
   lastInteractedPicker = picker;
 }
 
+function getActiveTimePickers(scene: SceneProfilesExplorer): SceneTimePicker[] {
+  return sceneGraph.findAllObjects(scene, (o) => o instanceof SceneTimePicker && o.isActive) as SceneTimePicker[];
+}
+
 function getTimePicker(scene: SceneProfilesExplorer): SceneTimePicker | undefined {
   if (lastInteractedPicker?.isActive) {
     return lastInteractedPicker;
   }
 
-  const pickers = sceneGraph.findAllObjects(
-    scene,
-    (o) => o instanceof SceneTimePicker && o.isActive
-  ) as SceneTimePicker[];
-
-  return pickers[0];
+  return getActiveTimePickers(scene)[0];
 }
 
 // Copied from https://github.com/grafana/grafana/blob/main/public/app/types/events.ts
