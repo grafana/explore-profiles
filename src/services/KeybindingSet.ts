@@ -22,12 +22,12 @@ export class KeybindingSet {
       },
       'keydown'
     );
-    this._binds.push(item);
+    this._binds.push({ ...item, type: 'keydown' });
   }
 
   removeAll() {
     this._binds.forEach((item) => {
-      mousetrap.unbind(item.key, item.type);
+      mousetrap.unbind(item.key, item.type!);
     });
     this._binds = [];
   }

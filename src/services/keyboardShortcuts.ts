@@ -1,4 +1,4 @@
-import { BusEventBase, BusEventWithPayload } from '@grafana/data';
+import { BusEventBase, rangeUtil, RawTimeRange } from '@grafana/data';
 import { getAppEvents } from '@grafana/runtime';
 import { sceneGraph, SceneObject, SceneTimePicker } from '@grafana/scenes';
 
@@ -15,18 +15,28 @@ export function setupKeyboardShortcuts(scene: SceneProfilesExplorer) {
     key: 't c',
     onTrigger: () => {
       const timeRange = sceneGraph.getTimeRange(scene);
-      setWindowGrafanaSceneContext(timeRange);
+      const restoreContext = setWindowGrafanaSceneContext(timeRange);
       appEvents.publish(new CopyTimeEvent());
+      restoreContext();
     },
   });
 
   // Paste time range
   keybindings.addBinding({
     key: 't v',
-    onTrigger: () => {
-      const event = new PasteTimeEvent({ updateUrl: false });
-      scene.publishEvent(event);
-      appEvents.publish(event);
+    onTrigger: async () => {
+      const copiedRange = await getCopiedTimeRange();
+      if (!copiedRange) {
+        return;
+      }
+      const picker = getTimePicker(scene);
+      const timeRange = picker ? sceneGraph.getTimeRange(picker) : sceneGraph.getTimeRange(scene);
+      const newRange = rangeUtil.convertRawToRange(copiedRange);
+      timeRange.setState({
+        from: typeof copiedRange.from === 'string' ? copiedRange.from : undefined,
+        to: typeof copiedRange.to === 'string' ? copiedRange.to : undefined,
+        value: newRange,
+      });
     },
   });
 
@@ -99,13 +109,24 @@ export class CopyTimeEvent extends BusEventBase {
   static type = 'copy-time';
 }
 
-interface PasteTimeEventPayload {
-  timeRange?: string;
-  updateUrl?: boolean;
-}
-
-export class PasteTimeEvent extends BusEventWithPayload<PasteTimeEventPayload> {
-  static type = 'paste-time';
+async function getCopiedTimeRange(): Promise<RawTimeRange | undefined> {
+  try {
+    const raw = await navigator.clipboard.readText();
+    const parsed = JSON.parse(raw);
+    if (
+      typeof parsed === 'object' &&
+      parsed !== null &&
+      'from' in parsed &&
+      'to' in parsed &&
+      typeof parsed.from === 'string' &&
+      typeof parsed.to === 'string'
+    ) {
+      return { from: parsed.from, to: parsed.to };
+    }
+  } catch {
+    // clipboard empty, not JSON, or no permission
+  }
+  return undefined;
 }
 
 function setWindowGrafanaSceneContext(activeScene: SceneObject) {
