@@ -1,4 +1,4 @@
-import { ExplorationType } from '../../config/constants';
+import { ExplorationType, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS } from '../../config/constants';
 import { expect, test } from '../../fixtures';
 
 function parseTimeRange(text: string): { from: Date; to: Date } {
@@ -100,6 +100,74 @@ test.describe('Keyboard shortcuts', () => {
 
       // Verify that a new request was made (the refresh triggered new data fetching)
       await expect(requestPromise).resolves.toBeTruthy();
+    });
+  });
+
+  test.describe('Diff flame graph view - multiple time pickers', () => {
+    test('"t left" after clicking baseline picker shifts only baseline time range', async ({
+      exploreProfilesPage,
+      page,
+    }) => {
+      await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
+
+      const baselineBefore = parseTimeRange(
+        (await exploreProfilesPage.getComparisonTimePickerButton('baseline').textContent())!
+      );
+      const comparisonBefore = await exploreProfilesPage.getComparisonTimePickerButton('comparison').textContent();
+
+      // Click the baseline time picker to mark it as the active one
+      await exploreProfilesPage.getComparisonTimePickerButton('baseline').click();
+      await page.keyboard.press('Escape');
+
+      // Press "t left" to shift backward
+      await page.keyboard.press('t');
+      await page.keyboard.press('ArrowLeft');
+
+      // The baseline time range should have shifted backward
+      await expect(async () => {
+        const baselineAfter = parseTimeRange(
+          (await exploreProfilesPage.getComparisonTimePickerButton('baseline').textContent())!
+        );
+        expect(baselineAfter.from.getTime()).toBeLessThan(baselineBefore.from.getTime());
+        expect(baselineAfter.to.getTime()).toBeLessThan(baselineBefore.to.getTime());
+      }).toPass({ timeout: 5000 });
+
+      // The comparison time range should be unchanged
+      const comparisonAfter = await exploreProfilesPage.getComparisonTimePickerButton('comparison').textContent();
+      expect(comparisonAfter).toBe(comparisonBefore);
+    });
+
+    test('"t left" after clicking comparison picker shifts only comparison time range', async ({
+      exploreProfilesPage,
+      page,
+    }) => {
+      await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
+
+      const baselineBefore = await exploreProfilesPage.getComparisonTimePickerButton('baseline').textContent();
+      const comparisonBefore = parseTimeRange(
+        (await exploreProfilesPage.getComparisonTimePickerButton('comparison').textContent())!
+      );
+
+      // Click the comparison time picker to mark it as the active one
+      await exploreProfilesPage.getComparisonTimePickerButton('comparison').click();
+      await page.keyboard.press('Escape');
+
+      // Press "t left" to shift backward
+      await page.keyboard.press('t');
+      await page.keyboard.press('ArrowLeft');
+
+      // The comparison time range should have shifted backward
+      await expect(async () => {
+        const comparisonAfter = parseTimeRange(
+          (await exploreProfilesPage.getComparisonTimePickerButton('comparison').textContent())!
+        );
+        expect(comparisonAfter.from.getTime()).toBeLessThan(comparisonBefore.from.getTime());
+        expect(comparisonAfter.to.getTime()).toBeLessThan(comparisonBefore.to.getTime());
+      }).toPass({ timeout: 5000 });
+
+      // The baseline time range should be unchanged
+      const baselineAfter = await exploreProfilesPage.getComparisonTimePickerButton('baseline').textContent();
+      expect(baselineAfter).toBe(baselineBefore);
     });
   });
 });

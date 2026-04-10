@@ -33,47 +33,41 @@ export function setupKeyboardShortcuts(scene: SceneProfilesExplorer) {
   // Refresh
   keybindings.addBinding({
     key: 'd r',
-    onTrigger: () => sceneGraph.getTimeRange(scene).onRefresh(),
+    onTrigger: () => {
+      const picker = getTimePicker(scene);
+      const timeRange = picker ? sceneGraph.getTimeRange(picker) : sceneGraph.getTimeRange(scene);
+      timeRange.onRefresh();
+    },
   });
 
   // Zoom out
   keybindings.addBinding({
     key: 't z',
-    onTrigger: () => {
-      getTimePicker(scene)?.onZoom();
-    },
+    onTrigger: () => getTimePicker(scene)?.onZoom(),
   });
 
   // Zoom out alias
   keybindings.addBinding({
     key: 'ctrl+z',
-    onTrigger: () => {
-      getTimePicker(scene)?.onZoom();
-    },
+    onTrigger: () => getTimePicker(scene)?.onZoom(),
   });
 
   // Relative -> Absolute time range
   keybindings.addBinding({
     key: 't a',
-    onTrigger: () => {
-      getTimePicker(scene)?.toAbsolute();
-    },
+    onTrigger: () => getTimePicker(scene)?.toAbsolute(),
   });
 
   // Shift time range left
   keybindings.addBinding({
     key: 't left',
-    onTrigger: () => {
-      getTimePicker(scene)?.onMoveBackward();
-    },
+    onTrigger: () => getTimePicker(scene)?.onMoveBackward(),
   });
 
   // Shift time range right
   keybindings.addBinding({
     key: 't right',
-    onTrigger: () => {
-      getTimePicker(scene)?.onMoveForward();
-    },
+    onTrigger: () => getTimePicker(scene)?.onMoveForward(),
   });
 
   return () => {
@@ -81,8 +75,23 @@ export function setupKeyboardShortcuts(scene: SceneProfilesExplorer) {
   };
 }
 
-function getTimePicker(scene: SceneProfilesExplorer) {
-  return scene.state.controls?.find((s) => s instanceof SceneTimePicker) as SceneTimePicker | undefined;
+let lastInteractedPicker: SceneTimePicker | null = null;
+
+export function setActiveTimePicker(picker: SceneTimePicker) {
+  lastInteractedPicker = picker;
+}
+
+function getTimePicker(scene: SceneProfilesExplorer): SceneTimePicker | undefined {
+  if (lastInteractedPicker?.isActive) {
+    return lastInteractedPicker;
+  }
+
+  const pickers = sceneGraph.findAllObjects(
+    scene,
+    (o) => o instanceof SceneTimePicker && o.isActive
+  ) as SceneTimePicker[];
+
+  return pickers[0];
 }
 
 // Copied from https://github.com/grafana/grafana/blob/main/public/app/types/events.ts
