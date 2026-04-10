@@ -169,5 +169,19 @@ test.describe('Keyboard shortcuts', () => {
       const baselineAfter = await exploreProfilesPage.getComparisonTimePickerButton('baseline').textContent();
       expect(baselineAfter).toBe(baselineBefore);
     });
+
+    test('time picker history is shared between baseline and comparison', async ({ exploreProfilesPage, page }) => {
+      await exploreProfilesPage.goto(ExplorationType.DiffFlameGraph, EXPLORE_PROFILES_DIFF_RANGES_URL_PARAMS);
+
+      // Set an absolute time range on baseline via the time picker form
+      await exploreProfilesPage.selectComparisonTimeRange('baseline', '2024-03-13 19:10', '2024-03-13 19:30');
+
+      // Open the comparison time picker
+      await exploreProfilesPage.getComparisonTimePickerButton('comparison').click();
+
+      // The history section should contain the range we just set on baseline
+      const overlay = exploreProfilesPage.getByTestId('data-testid TimePicker Overlay Content');
+      await expect(overlay.getByText('2024-03-13 19:10:00 to 2024-03-13 19:30:00')).toBeVisible();
+    });
   });
 });
