@@ -4,9 +4,108 @@ import { nanoid } from 'nanoid';
 import { FilterKind, Filters, OperatorKind } from '../types';
 import { buildIsEmptyFilter } from './buildIsEmptyFilter';
 
+type TokenKind = 'name' | 'quoted' | 'op' | 'comma' | 'unknown';
+type Token = { kind: TokenKind; value: string };
+
+type LexResult = { token: Token; end: number };
+
+function lexQuotedString(input: string, start: number): LexResult {
+  let i = start + 1; // skip opening quote
+  let s = '';
+  while (i < input.length && input[i] !== '"') {
+    if (input[i] === '\\' && i + 1 < input.length) {
+      s += input[i + 1];
+      i += 2;
+    } else {
+      s += input[i++];
+    }
+  }
+  return { token: { kind: 'quoted', value: s }, end: i + 1 }; // +1 for closing quote
+}
+
+function lexOperator(input: string, start: number): LexResult {
+  let op = input[start];
+  let i = start + 1;
+  if (i < input.length && (input[i] === '=' || input[i] === '~')) {
+    op += input[i++];
+  }
+  return { token: { kind: 'op', value: op }, end: i };
+}
+
+function lexWord(input: string, start: number, kind: TokenKind): LexResult {
+  let word = '';
+  let i = start;
+  while (i < input.length && /[a-zA-Z0-9_]/.test(input[i])) {
+    word += input[i++];
+  }
+  return { token: { kind, value: word }, end: i };
+}
+
+function lexToken(input: string, pos: number): LexResult {
+  const ch = input[pos];
+
+  if (ch === ',') {
+    return { token: { kind: 'comma', value: ',' }, end: pos + 1 };
+  }
+  if (ch === '"') {
+    return lexQuotedString(input, pos);
+  }
+  if (ch === '=' || ch === '!') {
+    return lexOperator(input, pos);
+  }
+  if (/[a-zA-Z_]/.test(ch)) {
+    return lexWord(input, pos, 'name');
+  }
+  if (/[0-9]/.test(ch)) {
+    return lexWord(input, pos, 'unknown');
+  }
+  return { token: { kind: 'unknown', value: ch }, end: pos + 1 };
+}
+
+export function lex(input: string): Token[] {
+  const tokens: Token[] = [];
+  let i = 0;
+
+  while (i < input.length) {
+    if (input[i] === ' ') {
+      i++;
+      continue;
+    }
+    const result = lexToken(input, i);
+    tokens.push(result.token);
+    i = result.end;
+  }
+
+  return tokens;
+}
+
 export const parseRawFilters = (rawFilters: string): string[][] => {
-  const matches = rawFilters.matchAll(/(\w+)(=|!=|=~|!~)"([^"]*)"/g);
-  return Array.from(matches).map(([, attribute, operator, value]) => [attribute, operator, value]);
+  const tokens = lex(rawFilters);
+  const results: string[][] = [];
+  let i = 0;
+
+  while (i < tokens.length) {
+    while (i < tokens.length && tokens[i].kind === 'comma') {
+      i++;
+    }
+
+    const nameToken = tokens[i];
+    const opToken = tokens[i + 1];
+    const valueToken = tokens[i + 2];
+
+    if (
+      (nameToken?.kind === 'name' || nameToken?.kind === 'quoted') &&
+      opToken?.kind === 'op' &&
+      valueToken?.kind === 'quoted'
+    ) {
+      results.push([nameToken.value, opToken.value, valueToken.value]);
+      i += 3;
+    } else {
+      i++;
+    }
+  }
+
+  return results;
 };
 
 const LABELS_REGEX = /.+:[^{]+\{(.+)\}$/;

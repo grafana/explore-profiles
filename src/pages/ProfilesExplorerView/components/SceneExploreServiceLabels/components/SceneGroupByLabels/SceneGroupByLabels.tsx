@@ -337,8 +337,6 @@ export class SceneGroupByLabels extends SceneObjectBase<SceneGroupByLabelsState>
 
     this.publishEvent(
       new EventViewDiffFlameGraph({
-        useAncestorTimeRange: true,
-        clearDiffRange: true,
         baselineFilters,
         comparisonFilters,
       }),

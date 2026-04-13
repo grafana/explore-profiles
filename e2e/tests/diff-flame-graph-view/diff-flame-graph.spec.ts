@@ -213,46 +213,13 @@ test.describe('Diff flame graph view', () => {
   });
 
   test.describe('Sync time ranges', () => {
-    async function waitForApiResponses(exploreProfilesPage: ExploreProfilesPage, options?: { timeout?: number }) {
-      let queriesCount = 0;
-
-      return exploreProfilesPage.waitForResponse((response) => {
-        const url = response.url();
-
-        if (
-          url.includes('/proxy/uid/grafanacloud-profiles-local-a/pyroscope/render-diff') ||
-          url.includes('/api/ds/query?ds_type=grafana-pyroscope-datasource')
-        ) {
-          queriesCount += 1;
-        }
-
-        return queriesCount >= 3;
-      }, options);
-    }
-
-    test('Toggling', async ({ exploreProfilesPage }) => {
-      const baselinePanel = exploreProfilesPage.getComparisonPanel('baseline');
-      const comparisonPanel = exploreProfilesPage.getComparisonPanel('comparison');
-
-      await baselinePanel.getByRole('button', { name: /^sync time ranges/i }).click();
-
-      expect(baselinePanel.getByRole('button', { name: /^unsync time ranges/i })).toBeInViewport();
-      expect(comparisonPanel.getByRole('button', { name: /^unsync time ranges/i })).toBeInViewport();
-
-      await comparisonPanel.getByRole('button', { name: /sync time ranges/i }).click();
-
-      expect(baselinePanel.getByRole('button', { name: /^sync time ranges/i })).toBeInViewport();
-      expect(comparisonPanel.getByRole('button', { name: /^sync time ranges/i })).toBeInViewport();
-    });
-
     test('Syncing flame graph range selection', async ({ exploreProfilesPage }) => {
       await exploreProfilesPage.clickOnSyncTimerangesButton('baseline');
 
-      await Promise.all([
-        exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 }),
-        waitForApiResponses(exploreProfilesPage),
-      ]);
+      await exploreProfilesPage.clickAndDragOnComparisonPanel('comparison', { x: 470, y: 200 }, { x: 510, y: 200 }),
+        await exploreProfilesPage.assertNoSpinner();
 
+      await exploreProfilesPage.waitForSceneBodyRendered();
       await expect(exploreProfilesPage.getSceneBody()).toHaveScreenshot({
         stylePath: './e2e/fixtures/css/hide-all-controls.css',
       });

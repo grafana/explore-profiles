@@ -10,7 +10,7 @@ keywords:
   - Profiles
 title: Profiles Drilldown
 menuTitle: Profiles Drilldown
-weight: 100
+weight: 200
 hero:
   title: Profiles Drilldown
   level: 1
