@@ -10,6 +10,7 @@ import React from 'react';
 import { SceneByVariableRepeaterGrid } from '../../components/SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
+import { AllServicesFilterVariable } from '../../domain/variables/FiltersVariable/AllServicesFilterVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SceneLayoutSwitcher } from '../SceneByVariableRepeaterGrid/components/SceneLayoutSwitcher';
@@ -65,7 +66,10 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
   // see SceneProfilesExplorer
   getVariablesAndGridControls() {
     return {
-      variables: [sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable)],
+      variables: [
+        sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
+        sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable),
+      ],
       gridControls: [
         sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter),
         sceneGraph.findByKeyAndType(this, 'layout-switcher', SceneLayoutSwitcher),
