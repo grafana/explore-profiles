@@ -342,7 +342,7 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async clickOnPanelAction(panelTitle: string, actionLabel: string) {
     const panel = await this.getPanelByTitle(panelTitle);
-    await panel.getByLabel(actionLabel).click();
+    await panel.getByRole('button', { name: actionLabel, exact: true }).click();
 
     // we have to move the mouse to prevent the action tooltip to cover (e.g.) the profile type selector
     await this.mouse.move(0, 0);
