@@ -215,6 +215,7 @@ export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<any> = {
       spanSelector,
       datasource: context.datasource,
       groupBy: ['service_name'],
+      includeExemplars: false,
     };
 
     if (pyroscopeQuery.datasource) {
