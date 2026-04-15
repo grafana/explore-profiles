@@ -14,7 +14,8 @@ class SeriesRepository extends AbstractRepository<SeriesApiClient, MemoryCacheCl
     const { from, to } = computeRoundedTimeRange(options.timeRange);
     const { matchers } = options;
 
-    const cacheParams = [this.apiClient!.baseUrl, from, to];
+    const matchersCacheKey = matchers?.join(',') ?? '';
+    const cacheParams = [this.apiClient!.baseUrl, from, to, matchersCacheKey];
 
     const responseFromCacheP = this.cacheClient!.get(cacheParams);
     if (responseFromCacheP) {

@@ -27,7 +27,7 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
         variables: [
           // we use a custom instance of ServiceNameVariable to display only the services associated to the selected profile metric
           new ServiceNameVariable({
-            query: ServiceNameVariable.QUERY_PROFILE_METRIC_DEPENDENT,
+            query: ServiceNameVariable.QUERY_PROFILE_METRIC_AND_FILTERS,
             skipUrlSync: true,
           }),
         ],
