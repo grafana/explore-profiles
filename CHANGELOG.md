@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.3
+
+##### Chores
+
+* **ci:**  fix flaky tests (#939) (afd7acbe)
+
+
 ## 2.0.2
 
 ##### Chores
