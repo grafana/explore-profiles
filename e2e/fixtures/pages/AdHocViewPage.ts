@@ -57,4 +57,12 @@ export class AdHocViewPage extends PyroscopePage {
 
     return index !== undefined ? locator.nth(index) : locator;
   }
+
+  selectMode(name: string) {
+    return this.page.getByRole('radio', { name }).click();
+  }
+
+  getModeToggle(name: string) {
+    return this.page.getByRole('radio', { name });
+  }
 }

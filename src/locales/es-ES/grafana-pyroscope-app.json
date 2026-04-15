@@ -11,11 +11,16 @@
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
     "profile-type-selector": {
       "label": ""
     },
     "tabs": {
-      "comparison-view": "",
+      "diff-view": "",
       "single-view": ""
     },
     "view": {
