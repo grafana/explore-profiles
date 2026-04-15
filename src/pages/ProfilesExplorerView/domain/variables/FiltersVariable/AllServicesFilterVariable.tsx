@@ -3,6 +3,7 @@ import { t } from '@grafana/i18n';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph } from '@grafana/scenes';
 import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
+import { buildFilterExpressionParts } from '@shared/components/SavedSearches/utils';
 import React, { useMemo } from 'react';
 
 import { ProfileMetricVariable } from '../ProfileMetricVariable';
@@ -16,6 +17,7 @@ export class AllServicesFilterVariable extends AdHocFiltersVariable {
       name: key,
       label: t('variables.filters.label', 'Filters'),
       filters: initialFilters ?? [],
+      expressionBuilder: (filters) => buildFilterExpressionParts(filters),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));

@@ -42,6 +42,7 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
           queryRunnerParams: {
             serviceName: option.value as string,
             profileMetricId,
+            extraFilterVariables: ['filtersAllServices'],
           },
           panelType: PanelType.TIMESERIES,
         }),

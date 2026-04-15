@@ -14,7 +14,7 @@ export type TimeSeriesQuery = {
 };
 
 export function buildTimeSeriesQueryRunner(
-  { serviceName, profileMetricId, groupBy, filters }: TimeSeriesQueryRunnerParams,
+  { serviceName, profileMetricId, groupBy, filters, extraFilterVariables }: TimeSeriesQueryRunnerParams,
   limit?: number,
   annotations?: boolean,
   includeExemplars?: boolean
@@ -22,6 +22,7 @@ export function buildTimeSeriesQueryRunner(
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: serviceName || '$serviceName' });
 
+  const extraVars = extraFilterVariables?.map((f) => `$${f}`).join(',');
   const selector = completeFilters
     .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}"${value}"`)
     .join(',');
@@ -33,7 +34,7 @@ export function buildTimeSeriesQueryRunner(
         refId: `${profileMetricId || '$profileMetricId'}-${selector}-${groupBy?.label || 'no-group-by'}`,
         queryType: 'metrics',
         profileTypeId: profileMetricId || '$profileMetricId',
-        labelSelector: `{${selector},$filters}`,
+        labelSelector: `{${selector},$filters${extraVars}}`,
         groupBy: groupBy?.label ? [groupBy.label] : [],
         limit,
         annotations,
