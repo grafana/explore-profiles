@@ -73,8 +73,10 @@ test.describe('Favorites view', () => {
 
     await exploreProfilesPage.selectHidePanelsWithoutNoData();
 
+    // Wait for the panel with data to be visible first (the grid re-renders all items and then
+    // removes no-data panels as queries complete), then verify the final count.
+    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · cpu (process_cpu)')).toBeVisible({ timeout: 15000 });
     await expect(exploreProfilesPage.getPanels()).toHaveCount(1);
-    await expect(exploreProfilesPage.getPanelByTitle('pyroscope · cpu (process_cpu)')).toBeVisible();
   });
 
   test.describe('Panel actions', () => {
