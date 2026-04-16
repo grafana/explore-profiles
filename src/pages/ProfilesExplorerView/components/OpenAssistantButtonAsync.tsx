@@ -37,7 +37,7 @@ export function OpenAssistantButtonAsync(props: OpenAssistantButtonProps) {
   return <OpenAssistantButtonView {...props} openAssistant={openAssistant} />;
 }
 
-type ContextProviderResults = {
+export type ContextProviderResults = {
   /** Prompt to pass to the openAssistant function. */
   prompt: string;
   /** Context to pass to the openAssistant function. Optional, defaults to undefined. Created with `createAssistantContextItem`. */

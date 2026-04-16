@@ -76,7 +76,7 @@ export function validateFetchParams(isDiff: boolean, fetchParams: FetchParams) {
   // Validate time ranges - ensure all have non-zero from and to values
   // Sending zero parameter values to the API can cause issues
   const hasInvalidTimeRanges = params.some(({ timeRange }) => {
-    return timeRange.from.unix() === 0 || timeRange.to.unix() === 0;
+    return !timeRange || timeRange.from.unix() === 0 || timeRange.to.unix() === 0;
   });
 
   if (hasInvalidTimeRanges) {
