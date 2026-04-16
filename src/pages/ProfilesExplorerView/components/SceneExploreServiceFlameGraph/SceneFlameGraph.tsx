@@ -132,7 +132,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
         maxNodes,
         spanSelector,
         profileIdSelector,
-        extraFilterVariables: ['filtersAllServices'],
       });
       this.setState({ $data: runner });
       return deferSceneQueryRunnerRun(runner);

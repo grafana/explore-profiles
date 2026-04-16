@@ -46,14 +46,30 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       this.initVariables(item);
     }
 
-    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
+    const allServicesFilters = sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable);
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+    if (allServicesFilters.state.filters.length > 0) {
+      filtersVariable.updateFilters([...allServicesFilters.state.filters, ...filtersVariable.state.filters]);
+    }
 
+    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
     return () => {
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
       profileMetricVariable.update(true);
+
+      const withoutAllServicesFilters = filtersVariable.state.filters.filter((filter) => {
+        return !allServicesFilters.state.filters.some((allServicesFilter) => {
+          return (
+            filter.key === allServicesFilter.key &&
+            filter.operator === allServicesFilter.operator &&
+            filter.value === allServicesFilter.value
+          );
+        });
+      });
+      filtersVariable.updateFilters([...withoutAllServicesFilters]);
     };
   }
 
@@ -95,7 +111,6 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       variables: [
         sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
         sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
-        sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable),
         sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable),
       ],
       gridControls: [],
