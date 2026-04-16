@@ -62,6 +62,19 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
     sceneGraph
       .findByKeyAndType(this, 'quick-filter', SceneQuickFilter)
       .setPlaceholder('Search services (comma-separated regexes are supported)');
+
+    const localServiceNameVar = sceneGraph.lookupVariable('serviceName', this) as ServiceNameVariable;
+    const mainServiceNameVar = sceneGraph.lookupVariable('serviceName', this.parent!) as ServiceNameVariable;
+
+    const sub = localServiceNameVar.subscribeToState((newState, prevState) => {
+      if (!newState.loading && prevState.loading && newState.options.length > 0) {
+        mainServiceNameVar.changeValueTo(newState.options[0].value as string);
+      }
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
   }
 
   // see SceneProfilesExplorer
