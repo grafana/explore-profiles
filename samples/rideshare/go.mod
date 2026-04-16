@@ -1,6 +1,6 @@
 module rideshare
 
-go 1.25.0
+go 1.26.2
 
 require (
 	github.com/grafana/otel-profiling-go v0.5.1
