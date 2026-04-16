@@ -16,10 +16,12 @@ export function buildFlameGraphQueryRunner({
   maxNodes,
   spanSelector,
   profileIdSelector,
+  extraFilterVariables,
 }: FlameGraphQueryRunnerParams) {
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: '$serviceName' });
 
+  const extraVars = extraFilterVariables?.map((f) => `$${f}`).join(',') ?? '';
   const selector = completeFilters
     .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}"${value}"`)
     .join(',');
@@ -31,7 +33,7 @@ export function buildFlameGraphQueryRunner({
         refId: 'profile',
         queryType: 'profile',
         profileTypeId: '$profileMetricId',
-        labelSelector: `{${selector},$filters}`,
+        labelSelector: `{${selector},$filters${extraVars}}`,
         maxNodes,
         ...(spanSelector && { spanSelector: [spanSelector] }),
         ...(profileIdSelector && { profileIdSelector: [profileIdSelector] }),

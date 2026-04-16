@@ -6,6 +6,7 @@ import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
+import { AllServicesFilterVariable } from '../../domain/variables/FiltersVariable/AllServicesFilterVariable';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -94,6 +95,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       variables: [
         sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
         sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
+        sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable),
         sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable),
       ],
       gridControls: [],
