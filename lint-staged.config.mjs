@@ -1,5 +1,5 @@
 export default {
   './package.json': ['prettier-package-json --write'],
-  '*.{ts,tsx}': () => ['yarn format:fix', 'yarn lint:fix', 'yarn typecheck'],
-  '*.{js,jsx}': ['yarn format:fix', 'yarn lint:fix'],
+  '*.{ts,tsx}': () => ['pnpm run format:fix', 'pnpm run lint:fix', 'pnpm run typecheck'],
+  '*.{js,jsx}': ['pnpm run format:fix', 'pnpm run lint:fix'],
 };
