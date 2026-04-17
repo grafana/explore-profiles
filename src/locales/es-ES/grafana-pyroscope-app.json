@@ -52,6 +52,13 @@
     "error": "",
     "prompt": ""
   },
+  "analyze-flame-graph": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
   "back-button": {
     "aria-label": "",
     "label": ""
@@ -423,6 +430,13 @@
       "close": "",
       "nav": ""
     }
+  },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
   },
   "panel-box": {
     "cancel-query": "",

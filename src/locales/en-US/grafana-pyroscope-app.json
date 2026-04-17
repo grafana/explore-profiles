@@ -52,6 +52,13 @@
     "error": "Failed to fetch DOT profiles for analysis",
     "prompt": "Analyze the differences between these two performance profiles."
   },
+  "analyze-flame-graph": {
+    "context": {
+      "title": "DOT Profile and instructions"
+    },
+    "error": "Failed to fetch DOT profile for analysis",
+    "prompt": "Analyze this performance profile."
+  },
   "back-button": {
     "aria-label": "Back to Profiles Drilldown",
     "label": "Back to Profiles Drilldown"
@@ -422,6 +429,13 @@
       "close": "Close",
       "nav": "Onboarding"
     }
+  },
+  "optimize-code": {
+    "context": {
+      "title": "Annotated source code and optimization instructions"
+    },
+    "error": "Failed to build optimization context",
+    "prompt": "Optimize this code based on the profiling annotations."
   },
   "panel-box": {
     "cancel-query": "Cancel query",
