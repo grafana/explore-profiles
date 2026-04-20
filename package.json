@@ -59,7 +59,11 @@
     "@tootallnate/once": "3.0.1",
     "diff": "4.0.4",
     "flatted": "3.4.2",
-    "serialize-javascript": "7.0.5"
+    "serialize-javascript": "7.0.5",
+    "protobufjs@npm:^7.3.0": "7.5.5",
+    "protobufjs@npm:8.0.0": "8.0.1",
+    "protocol-buffers-schema": "3.6.1",
+    "smol-toml": "1.6.1"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.2.3",
