@@ -60,7 +60,7 @@
     "markdown-to-jsx": "^7.3.2",
     "nanoid": "^5.0.9",
     "p-limit": "^6.1.0",
-    "protobufjs": "^7.2.6",
+    "protobufjs": "^8.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.54.2",
@@ -159,8 +159,13 @@
       "immutable": "~5.1.5",
       "qs": "~6.14.2",
       "@tootallnate/once": "~3.0.1",
+      "diff": "~4.0.4",
       "flatted": "~3.4.2",
-      "serialize-javascript": "~7.0.5"
+      "protobufjs@^7.3.0": "~7.5.5",
+      "protobufjs@8.0.0": "~8.0.1",
+      "protocol-buffers-schema": "~3.6.1",
+      "serialize-javascript": "~7.0.5",
+      "smol-toml": "~1.6.1"
     }
   }
 }
