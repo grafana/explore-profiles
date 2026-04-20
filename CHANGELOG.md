@@ -1,5 +1,26 @@
 # Changelog
 
+## 2.0.4
+
+##### Chores
+
+* **deps:**
+  *  update dependency dompurify to v3.4.0 [security] (#942) (0487f527)
+  *  update dependency hono to v4.12.14 [security] (#941) (2c403fcf)
+
+##### New Features
+
+* **adhoc:**  add diff view with side-by-side and computed diff modes (#842) (d4461470)
+
+##### Bug Fixes
+
+* **deps:**
+  *  patch CVEs via yarn resolutions (#948) (5624f69b)
+  *  update dependency protobufjs to v8 [security] (#946) (04b77a2f)
+  *  update module go.opentelemetry.io/otel/sdk to v1.43.0 [security] (#933) (63e52289)
+* **samples:**  upgrade otel/sdk to v1.43.0 to address CVE (#940) (fbf87a0c)
+
+
 ## 2.0.3
 
 ##### Chores
