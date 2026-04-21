@@ -34,7 +34,7 @@ export function AIButton({ children, onClick, disabled, interactionName }: AIBut
   return (
     <Button
       className={styles.aiButton}
-      size="md"
+      size="sm"
       fill="text"
       icon={icon}
       disabled={!isEnabled || disabled}
