@@ -2559,6 +2559,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@openfeature/ofrep-core@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@openfeature/ofrep-core@npm:2.1.0"
+  peerDependencies:
+    "@openfeature/core": ^1.6.0
+  checksum: 10/9a8dbb6def3040aecc3f51110742b9cc5a83faad633273db3425c61b4a6819e26f05aad6cdb02d89d1e8c73ec58f04077c02b613d5f9f106e20bc6eed22c8e73
+  languageName: node
+  linkType: hard
+
 "@openfeature/ofrep-web-provider@npm:^0.3.3":
   version: 0.3.5
   resolution: "@openfeature/ofrep-web-provider@npm:0.3.5"
@@ -2567,6 +2576,17 @@ __metadata:
   peerDependencies:
     "@openfeature/web-sdk": ^1.4.0
   checksum: 10/699a9d2591e9d5834f02baa3d68972e52d37efed3866e2c06ad5deb071447c68fdd8afdc2e66e9808f7be162358a338f69cb7912fcb70320f7a7bc6abd00d3d6
+  languageName: node
+  linkType: hard
+
+"@openfeature/ofrep-web-provider@npm:^0.3.6":
+  version: 0.3.6
+  resolution: "@openfeature/ofrep-web-provider@npm:0.3.6"
+  dependencies:
+    "@openfeature/ofrep-core": "npm:^2.1.0"
+  peerDependencies:
+    "@openfeature/web-sdk": ^1.4.0
+  checksum: 10/ffe9ef27a8f297f1a416f88b49b25810d19b05e70bea5e94858d077d34bff51c04971174ac74d17b7809e817812d4c66b013d27acd91bc555358a3d38892ff53
   languageName: node
   linkType: hard
 
@@ -12715,6 +12735,8 @@ __metadata:
     "@grafana/tsconfig": "npm:2.0.1"
     "@grafana/ui": "npm:12.4.2"
     "@openfeature/core": "npm:^1.9.2"
+    "@openfeature/ofrep-web-provider": "npm:^0.3.6"
+    "@openfeature/react-sdk": "npm:^1.2.0"
     "@openfeature/web-sdk": "npm:^1.5.0"
     "@playwright/test": "npm:1.59.0"
     "@react-aria/utils": "npm:^3.25.3"
