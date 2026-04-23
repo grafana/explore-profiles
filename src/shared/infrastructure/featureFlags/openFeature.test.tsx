@@ -2,12 +2,11 @@ import { logWarning } from '@grafana/runtime';
 import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
 import { OpenFeature } from '@openfeature/web-sdk';
 import { render, renderHook, screen, waitFor } from '@testing-library/react';
-import React, { createElement, type ReactElement, type ReactNode } from 'react';
+import React from 'react';
 
 import { getQueryLibraryFromOpenFeature, QUERY_LIBRARY_FEATURE_FLAG_KEY } from './featureFlags';
 import {
   ensureOpenFeaturePluginInitialized,
-  getPluginOpenFeatureBoolean,
   OpenFeaturePluginScope,
   PLUGIN_OPEN_FEATURE_DOMAIN,
   resetOpenFeaturePluginStateForTesting,
@@ -34,21 +33,6 @@ jest.mock('@openfeature/ofrep-web-provider', () => ({
     runsOn = 'client';
   },
 }));
-
-const TEST_BOOLEAN_FLAG = 'getPluginOpenFeatureBoolean-test-boolean';
-
-function openFeatureTestWrapperForFlag(
-  booleanFlag: string,
-  value: boolean
-): (props: { children: ReactNode }) => ReactElement {
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return createElement(
-      OpenFeatureTestProvider,
-      { domain: PLUGIN_OPEN_FEATURE_DOMAIN, flagValueMap: { [booleanFlag]: value } },
-      children
-    );
-  };
-}
 
 describe('openFeature', () => {
   let setProviderAndWaitSpy: jest.SpiedFunction<(typeof OpenFeature)['setProviderAndWait']>;
@@ -109,29 +93,6 @@ describe('openFeature', () => {
             {children}
           </OpenFeatureTestProvider>
         ),
-      });
-      expect(result.current).toBe(true);
-    });
-  });
-
-  describe('getPluginOpenFeatureBoolean', () => {
-    it('resolves to true from OpenFeatureTestProvider flag value map', () => {
-      const { result } = renderHook(() => getPluginOpenFeatureBoolean(TEST_BOOLEAN_FLAG, false), {
-        wrapper: openFeatureTestWrapperForFlag(TEST_BOOLEAN_FLAG, true),
-      });
-      expect(result.current).toBe(true);
-    });
-
-    it('resolves to false from OpenFeatureTestProvider flag value map', () => {
-      const { result } = renderHook(() => getPluginOpenFeatureBoolean(TEST_BOOLEAN_FLAG, true), {
-        wrapper: openFeatureTestWrapperForFlag(TEST_BOOLEAN_FLAG, false),
-      });
-      expect(result.current).toBe(false);
-    });
-
-    it('uses the default when the flag is not in the in-memory config', () => {
-      const { result } = renderHook(() => getPluginOpenFeatureBoolean('flag-not-in-config', true), {
-        wrapper: openFeatureTestWrapperForFlag(TEST_BOOLEAN_FLAG, false),
       });
       expect(result.current).toBe(true);
     });

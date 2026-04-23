@@ -1,7 +1,6 @@
 import { config } from '@grafana/runtime';
-import { StandardResolutionReasons } from '@openfeature/core';
 import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
-import { OpenFeature, type Provider, type ResolutionDetails } from '@openfeature/web-sdk';
+import { QUERY_LIBRARY_FEATURE_FLAG_KEY } from '@shared/infrastructure/featureFlags/featureFlags';
 import { PLUGIN_OPEN_FEATURE_DOMAIN } from '@shared/infrastructure/featureFlags/openFeature';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
@@ -17,25 +16,6 @@ import {
   useSavedSearches,
 } from './saveSearch';
 import { asSceneObject, getUtilsMock } from './testHelpers';
-
-function defaultDetailsForOpenFeatureTest<T>(value: T): ResolutionDetails<T> {
-  return { value, reason: StandardResolutionReasons.DEFAULT };
-}
-
-const defaultPluginDomainOpenFeatureTestProvider: Provider = {
-  metadata: { name: 'grafana-pyroscope-app-default-flags' },
-  runsOn: 'client',
-  resolveBooleanEvaluation(_flagKey, defaultValue): ResolutionDetails<boolean> {
-    return { value: defaultValue, reason: StandardResolutionReasons.DEFAULT };
-  },
-  resolveStringEvaluation: (_k, defaultValue) => defaultDetailsForOpenFeatureTest(defaultValue),
-  resolveNumberEvaluation: (_k, defaultValue) => defaultDetailsForOpenFeatureTest(defaultValue),
-  resolveObjectEvaluation: (_k, defaultValue) => defaultDetailsForOpenFeatureTest(defaultValue),
-};
-
-function restoreDefaultPluginOpenFeatureDomainInSaveSearchTest(): void {
-  OpenFeature.setProvider(PLUGIN_OPEN_FEATURE_DOMAIN, defaultPluginDomainOpenFeatureTestProvider);
-}
 
 jest.mock('@grafana/runtime', () => ({
   ...jest.requireActual('@grafana/runtime'),
@@ -73,15 +53,13 @@ jest.mock('./utils', () => {
 
 const utilsMock = getUtilsMock();
 
-const QUERY_LIBRARY_FLAG = 'queryLibrary' as const;
-
 function openFeatureTestWrapper(queryLibrary: boolean) {
   return function Wrapper({ children }: { children: ReactNode }) {
     return createElement(
       OpenFeatureTestProvider,
       {
         domain: PLUGIN_OPEN_FEATURE_DOMAIN,
-        flagValueMap: { [QUERY_LIBRARY_FLAG]: queryLibrary },
+        flagValueMap: { [QUERY_LIBRARY_FEATURE_FLAG_KEY]: queryLibrary },
       },
       children
     );
@@ -208,7 +186,6 @@ describe('useHasSavedSearches', () => {
 describe('isQueryLibrarySupported', () => {
   afterEach(() => {
     config.buildInfo.version = '12.4.0';
-    restoreDefaultPluginOpenFeatureDomainInSaveSearchTest();
   });
 
   test('Returns true when supported', () => {
