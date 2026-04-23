@@ -14,7 +14,8 @@ const metricsFromProfilesKey = 'metricsFromProfiles' as keyof FeatureToggles;
 const grafanaAssistantInProfilesDrilldownKey = 'grafanaAssistantInProfilesDrilldown' as keyof FeatureToggles;
 const profilesExemplarsKey = 'profilesExemplars' as keyof FeatureToggles;
 const pyroscopeUTF8LabelNamesKey = 'pyroscopeUTF8LabelNames' as keyof FeatureToggles;
-const queryLibraryKey = 'queryLibrary' as keyof FeatureToggles;
+export const QUERY_LIBRARY_FEATURE_FLAG_KEY = 'queryLibrary' as const;
+const queryLibraryKey: keyof FeatureToggles = QUERY_LIBRARY_FEATURE_FLAG_KEY;
 
 export function useFlagFlameGraphWithCallTree(): boolean {
   return useBooleanFlagDetails(flameGraphWithCallTreeKey, false).value;
