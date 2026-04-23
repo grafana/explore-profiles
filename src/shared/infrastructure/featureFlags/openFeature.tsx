@@ -8,6 +8,11 @@ import React, { useEffect } from 'react';
 /** OpenFeature domain for this plugin’s evaluations (OFREP to Grafana’s feature API). */
 export const PLUGIN_OPEN_FEATURE_DOMAIN = 'grafana-pyroscope-app';
 
+/** Synchronous read of a boolean flag for non-React code (evaluates current provider state). */
+export function getPluginOpenFeatureBoolean(flagKey: string, defaultValue: boolean): boolean {
+  return OpenFeature.getClient(PLUGIN_OPEN_FEATURE_DOMAIN).getBooleanValue(flagKey, defaultValue);
+}
+
 /** OFREP base URL for Grafana’s feature API (same host as the app, respects `appSubUrl`). Browser-only. */
 function getFeaturesOfrepBaseUrl(): string | undefined {
   if (typeof window === 'undefined') {

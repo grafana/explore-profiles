@@ -3,13 +3,14 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { t, Trans } from '@grafana/i18n';
 import { Alert, FieldSet, InlineField, InlineFieldRow, InlineSwitch, Input, useStyles2 } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
-import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
+import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import React from 'react';
 
 import { useUISettingsView } from './domain/useUISettingsView';
 
 export function UISettingsView({ children }: { children: React.ReactNode }) {
   const styles = useStyles2(getStyles);
+  const metricsFromProfiles = useFlagMetricsFromProfiles();
   const { data, actions } = useUISettingsView();
 
   if (data.fetchError) {
@@ -82,7 +83,7 @@ export function UISettingsView({ children }: { children: React.ReactNode }) {
         </InlineFieldRow>
       </FieldSet>
 
-      {featureToggles.metricsFromProfiles && (
+      {metricsFromProfiles && (
         <FieldSet
           label={t('settings.ui.metrics-from-profiles.label', 'Metrics from profiles')}
           data-testid="metrics-from-profiles"
