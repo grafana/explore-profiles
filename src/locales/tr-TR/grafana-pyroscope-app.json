@@ -1,46 +1,58 @@
 {
   "actions": {
     "exemplar-toggle": {
-      "hide": "",
-      "label": "",
-      "show": ""
+      "hide": "Temsilî verileri gizle",
+      "label": "Temsilî veriler",
+      "show": "Temsilî verileri göster"
     },
     "fav": {
-      "favorite": "",
-      "unfavorite": ""
+      "favorite": "Favori",
+      "unfavorite": "Favorilerden çıkar"
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
     "profile-type-selector": {
-      "label": ""
+      "label": "Profil"
     },
     "tabs": {
-      "comparison-view": "",
-      "single-view": ""
+      "diff-view": "",
+      "single-view": "Tekli görünüm"
     },
     "view": {
-      "title": ""
+      "title": "Geçici görünüm"
     }
   },
   "ai-panel": {
-    "analyzing": "",
-    "close": "",
-    "fetch-error": "",
-    "fetch-error-message": "",
+    "analyzing": "Analiz ediliyor...",
+    "close": "Paneli kapat",
+    "fetch-error": "Profil verileri yüklenirken hata oluştu.",
+    "fetch-error-message": "Yaşanan aksaklık için özür dileriz, lütfen daha sonra tekrar deneyin.",
     "follow-up": {
-      "placeholder": "",
-      "send": ""
+      "placeholder": "Bir takip sorusu sorun...",
+      "send": "Gönder"
     },
-    "llm-error": "",
-    "llm-error-message": "",
+    "llm-error": "OpenAI kullanılarak içerik oluşturulurken bir hata oluştu!",
+    "llm-error-message": "Yaşanan aksaklık için özür dileriz, lütfen tekrar deneyin veya sorun devam ederse kuruluş yöneticinizle iletişime geçin.",
     "reply": {
-      "search-node": ""
+      "search-node": "Bu düğümü ara"
     },
-    "retry": "",
-    "title": "",
-    "validation-error": ""
+    "retry": "Yeniden dene",
+    "title": "Alev grafiği analizi",
+    "validation-error": "Doğrulama hatası!"
   },
   "analyze-diff": {
+    "context": {
+      "title": "DOT Profilleri ve talimatları"
+    },
+    "error": "Analiz için DOT profilleri getirilemedi",
+    "prompt": "Bu iki performans profili arasındaki farkları analiz edin."
+  },
+  "analyze-flame-graph": {
     "context": {
       "title": ""
     },
@@ -48,614 +60,622 @@
     "prompt": ""
   },
   "back-button": {
-    "aria-label": "",
-    "label": ""
+    "aria-label": "Profiles Drilldown'a dön",
+    "label": "Profiles Drilldown'a dön"
   },
   "create-recording-rule": {
-    "cancel": "",
-    "create": "",
+    "cancel": "İptal et",
+    "create": "Oluştur",
     "filters": {
-      "description": "",
-      "label": "",
-      "none": ""
+      "description": "Ana görünümde seçilen filtreler bu kurala uygulanacaktır",
+      "label": "Filtreler",
+      "none": "Filtre seçilmedi"
     },
     "function-name": {
-      "aria-label": "",
-      "description": "",
-      "label": "",
-      "placeholder": ""
+      "aria-label": "İşlev adı",
+      "description": "Kayıt kuralını filtrelemek için isteğe bağlı işlev adı",
+      "label": "İşlev adı",
+      "placeholder": "Genel toplama için boş bırakın"
     },
     "labels": {
-      "description": "",
-      "label": ""
+      "description": "Metriğe iletilecek ek profilleme etiketleri",
+      "label": "Ek etiketler"
     },
-    "menu-option": "",
+    "menu-option": "Kayıt kuralı oluştur",
     "metric-name": {
-      "aria-label": "",
+      "aria-label": "Metrik adı",
       "description": "",
-      "invalid": "",
-      "label": "",
-      "pattern-alphanumeric": "",
-      "pattern-error": "",
-      "pattern-no-number": "",
-      "required": ""
+      "invalid": "Geçersiz metrik adı.",
+      "label": "Metrik adı",
+      "pattern-alphanumeric": "Yalnızca alfanümerik karakterler veya alt çizgi içermelidir",
+      "pattern-error": "Metrik adı geçersiz, şu özelliklere sahip olmalıdır:",
+      "pattern-no-number": "Sayı ile başlamamalıdır",
+      "required": "Metrik adı gereklidir."
     },
     "profile-type": {
-      "label": ""
+      "label": "Profil türü"
     },
     "service-name": {
-      "all": "",
-      "label": ""
+      "all": "Tüm hizmetler",
+      "label": "Hizmet adı"
     },
-    "title": ""
+    "title": "Kayıt kuralı oluştur"
   },
   "diff-flame-graph": {
     "compare-panel": {
-      "annotation-title": "",
-      "baseline": "",
-      "comparison": "",
-      "flame-graph": "",
-      "range-selection-mode": "",
-      "sync-time-ranges": "",
-      "time-picker": "",
-      "tooltip-description": "",
-      "tooltip-flame-graph": "",
-      "tooltip-flame-graph-description": "",
-      "tooltip-time-picker": "",
-      "tooltip-time-picker-description": ""
+      "annotation-title": "{{title}} alev grafiği aralığı",
+      "baseline": "Referans",
+      "comparison": "Karşılaştırma",
+      "flame-graph": "Alev grafiği",
+      "range-selection-mode": "Aralık seçme modu",
+      "sync-time-ranges": "Zaman aralıklarını senkronize et",
+      "time-picker": "Zaman seçici",
+      "tooltip-description": "Zaman serisi üzerinde fareyle bir aralık seçerken davranışı değiştirmek için bu düğmeleri kullanın:",
+      "tooltip-flame-graph": "Alev grafiği",
+      "tooltip-flame-graph-description": "Alev grafiğini oluşturmak için zaman aralığı (yığın izleri yalnızca seçilen aralık için alınacaktır)",
+      "tooltip-time-picker": "Zaman seçici",
+      "tooltip-time-picker-description": "Zaman aralığını büyüt (varsayılan davranış)"
     },
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Profil verileri yüklenirken hata oluştu.",
+    "explain-button": "Alev Grafiği Farklarını Açıkla",
     "missing-selections": {
-      "auto-select": "",
-      "how-to-alt": "",
-      "learn-how": "",
-      "step-1": "",
-      "step-2": "",
-      "title": ""
+      "auto-select": "Otomatik seçim",
+      "how-to-alt": "Alev grafiği farkları nasıl görüntülenir?",
+      "learn-how": "Fareyle alev grafiği aralıklarını nasıl seçeceğinizi öğrenmek için buraya tıklayın",
+      "step-1": "\"Alev grafiği\" aralık seçme modunun seçili olduğundan emin olun",
+      "step-2": "Hem referans hem de karşılaştırma zaman serilerinde istenen zaman aralıklarını seçmek için farenizi kullanın",
+      "title": "Alev grafiği farklarını görüntülemek için hem referans hem de karşılaştırma alev grafiği aralıklarını seçin"
     },
-    "no-profile-data": "",
-    "no-profile-data-message": "",
+    "no-profile-data": "Profil verisi yok",
+    "no-profile-data-message": "Lütfen uygun filtreleri ve zaman aralıklarını seçtiğinizi kontrol edin.",
     "presets": {
-      "1h-ago-vs-now": "",
-      "1h-ago-vs-now-description": "",
-      "24h-ago-vs-now": "",
-      "6h-ago-vs-now": "",
-      "label": "",
-      "placeholder": ""
+      "1h-ago-vs-now": "1 saat öncesi ve şimdi",
+      "1h-ago-vs-now-description": "30 dakikalık aralık",
+      "24h-ago-vs-now": "24 saat öncesi ve şimdi",
+      "6h-ago-vs-now": "6 saat öncesi ve şimdi",
+      "label": "Karşılaştırma ön ayarları",
+      "placeholder": "Bir ön ayar seçin"
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Bazı özellikler (ör. alev grafiği dışa aktarma seçenekleri) beklendiği gibi çalışmayabilir. Lütfen sayfayı yeniden yüklemeyi deneyin, aksaklık için özür dileriz.",
+      "title": "Eklenti ayarları alınırken hata oluştu."
     },
-    "title": ""
+    "title": "{{serviceName}} için alev grafiği farkları ({{profileMetricType}})"
   },
   "error-page": {
-    "banner-message": "",
-    "banner-title": "",
-    "title": ""
+    "banner-message": "Lütfen sayfayı yeniden yüklemeyi deneyin veya sorun devam ederse kuruluş yöneticinizle iletişime geçin. Yaşanan aksaklıktan dolayı özür dileriz.",
+    "banner-title": "Önemli hata!",
+    "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
     "exploration-type": {
-      "all-services": "",
-      "all-services-description": "",
-      "diff-flame-graph": "",
-      "diff-flame-graph-description": "",
-      "favorites": "",
-      "favorites-description": "",
-      "flame-graph": "",
-      "flame-graph-description": "",
-      "label": "",
-      "labels": "",
-      "labels-description": "",
-      "profile-types": "",
-      "profile-types-description": ""
+      "all-services": "Tüm hizmetler",
+      "all-services-description": "Belirli bir profil türü için tüm hizmetlerin genel görünümü",
+      "diff-flame-graph": "Alev grafiği farkları",
+      "diff-flame-graph-description": "İki alev grafiği arasındaki farkları karşılaştırın",
+      "favorites": "Favoriler",
+      "favorites-description": "Favorilere eklenen görselleştirmelere genel bakış",
+      "flame-graph": "Alev grafiği",
+      "flame-graph-description": "Tek hizmetli alev grafiği",
+      "label": "Keşif",
+      "labels": "Etiketler",
+      "labels-description": "Tek hizmetli etiket inceleme ve filtreleme",
+      "profile-types": "Profil türleri",
+      "profile-types-description": "Tek bir hizmet için tüm profil türlerinin genel görünümü"
     },
     "header": {
-      "add-recording-rule": "",
-      "recording-rules-tooltip": "",
-      "settings-tooltip": "",
-      "share-tooltip": "",
-      "upload-tooltip": "",
-      "view-recording-rules": ""
+      "add-recording-rule": "Kayıt kuralı ekle",
+      "recording-rules-tooltip": "Kayıt kuralları",
+      "settings-tooltip": "Kiracı ayarlarını göster/düzenle",
+      "share-tooltip": "Paylaşılabilir bağlantıyı panoya kopyala",
+      "upload-tooltip": "Geçici profilleri yükle",
+      "view-recording-rules": "Kayıt kurallarını göster"
     }
   },
   "export-data": {
-    "aria-label": "",
-    "tooltip": ""
+    "aria-label": "Profil verilerini dışa aktar",
+    "tooltip": "Profil verilerini dışa aktar"
   },
   "export-menu": {
-    "aria-label": "",
-    "error-flamegraph-com": "",
-    "error-loading-profile": "",
-    "error-png": "",
-    "error-pprof": "",
-    "json": "",
-    "json-label": "",
-    "png": "",
-    "png-label": "",
-    "pprof": "",
-    "tooltip": ""
+    "aria-label": "Profil verilerini dışa aktar",
+    "error-flamegraph-com": "flamegraph.com'a dışa aktarılamadı.",
+    "error-loading-profile": "Flamebearer profil verileri yüklenirken hata oluştu.",
+    "error-png": "png biçiminde dışa aktarılamadı.",
+    "error-pprof": "pprof biçiminde dışa aktarılamadı.",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "Profil verilerini dışa aktar"
   },
   "exposed-components": {
-    "loading": ""
+    "loading": "Yükleniyor..."
   },
   "favorites": {
     "data-source": {
-      "test-success": ""
+      "test-success": "Tamam"
     }
   },
   "flame-graph": {
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Profil verileri yüklenirken hata oluştu.",
+    "explain-button": "Alev Grafiğini Açıkla",
     "profile-id-selector": {
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "name": "",
-      "remove": "",
-      "tooltip": ""
+      "filter-label": "Filtre etiketi",
+      "filter-operator": "Filtre işleci",
+      "filter-value": "Filtre değeri",
+      "name": "Profil kimliği",
+      "remove": "Profil kimliği seçiciyi sorgudan kaldır",
+      "tooltip": "Alev grafiği sorgusuna bir profil kimliği seçici eklediniz ({{profileIdSelector}})."
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Bazı özellikler (ör. daraltılmış alev grafikleri) beklendiği gibi çalışmayabilir. Lütfen sayfayı yeniden yüklemeyi deneyin, aksaklık için özür dileriz.",
+      "title": "Eklenti ayarları alınırken hata oluştu."
     },
     "span-selector": {
-      "added": "",
-      "remove": "",
-      "tooltip": ""
+      "added": "Zaman aralığı seçici eklendi",
+      "remove": "Zaman aralığı seçiciyi sorgudan kaldır",
+      "tooltip": "Alev grafiği sorgusuna bir zaman aralığı seçici eklediniz ({{spanSelector}})."
     },
-    "title": ""
+    "title": "{{serviceName}} alev grafiği ({{profileMetricType}})"
   },
   "function-details": {
     "ai-suggestions": {
-      "analyzing": "",
-      "fetch-error": "",
-      "fetch-error-message": "",
-      "llm-error": "",
-      "llm-error-message": "",
-      "title": ""
+      "analyzing": "Analiz ediliyor...",
+      "fetch-error": "Profiller alınırken hata oluştu.",
+      "fetch-error-message": "Yaşanan aksaklık için özür dileriz, lütfen daha sonra tekrar deneyin.",
+      "llm-error": "OpenAI kullanılarak içerik oluşturulamadı!",
+      "llm-error-message": "Yaşanan aksaklık için özür dileriz, lütfen daha sonra tekrar deneyin veya sorun devam ederse kuruluş yöneticinizle iletişime geçin.",
+      "title": "Kod Optimizasyonu Önerileri"
     },
-    "close": "",
+    "close": "kapat",
     "code": {
-      "breakdown-per-line": "",
-      "file-unavailable": "",
-      "optimize": "",
-      "view-on-github": ""
+      "breakdown-per-line": "Satır başına kırılım",
+      "file-unavailable": "(dosya bilgileri mevcut değil)",
+      "optimize": "Kodu Optimize Et",
+      "view-on-github": "GitHub'da göster"
     },
-    "commit": "",
+    "commit": "Yürüt",
     "commit-option": {
-      "author-date": ""
+      "author-date": "{{author}}, Tarih: {{date}}"
     },
     "commit-select": {
-      "no-options": ""
+      "no-options": "Yürütme bulunamadı"
     },
-    "commit-tooltip": "",
+    "commit-tooltip": "İşlevin tanımlandığı uygulamanın sürümü (yürütme). Belirli bir yürütmeyi hedeflemek için açılır menüyü kullanın.",
     "context-menu": {
-      "label": ""
+      "label": "İşlev ayrıntıları"
     },
-    "copy-to-clipboard": "",
-    "fetch-error": "",
-    "file": "",
-    "file-path-copied": "",
-    "file-tooltip": "",
-    "function-name": "",
+    "copy-to-clipboard": "Panoya kopyala",
+    "fetch-error": "İşlev ayrıntıları alınırken hata oluştu.",
+    "file": "Dosya",
+    "file-path-copied": "Dosya yolu panoya kopyalandı!",
+    "file-tooltip": "Bu işlevin tanımlandığı dosya yolu",
+    "function-name": "İşlev adı",
     "github": {
-      "banner-dismiss": "",
-      "banner-git-ref": "",
-      "banner-labels": "",
-      "banner-language-support": "",
-      "banner-learn-more": "",
-      "banner-title": "",
-      "connect-button": "",
-      "connect-tooltip": "",
-      "connecting": "",
-      "disconnect": "",
-      "view-commit": ""
+      "banner-dismiss": "Kapat",
+      "banner-git-ref": "Bunlar sırasıyla tam depo GitHub URL'sine ve çalışan hizmetin geçerli <2>git ref</2> değerine ayarlanmalıdır.",
+      "banner-labels": "Bu özelliği etkinleştirmek için profilleri gönderirken iki yeni etiket eklemeniz gerekir: <2>service_repository</2> ve <4>service_git_ref</4>. ",
+      "banner-language-support": "Bu dil, <1></1> GitHub ile entegrasyonu destekler.",
+      "banner-learn-more": "Daha fazla bilgi edinin",
+      "banner-title": "Github ile entegre edin",
+      "connect-button": "{{name}} platformuna bağlan",
+      "connect-tooltip": "Bağlantı kurulduktan sonra GitHub koduna yalnızca bu tarayıcı oturumundan erişilebilir.",
+      "connecting": "GitHub'a bağlanılıyor...",
+      "disconnect": "GitHub bağlantısını kes",
+      "view-commit": "Yürütmeyi göster"
     },
     "github-callback": {
-      "logging-in": "",
-      "title": ""
+      "logging-in": "GitHub'a giriş yapılıyor...",
+      "title": "GitHub'a giriş yapma"
     },
-    "not-available": "",
+    "not-available": "-",
     "override": {
-      "add": "",
-      "add-title": "",
-      "alert-debug": "",
-      "alert-labels": "",
-      "alert-title": "",
-      "aria-label": "",
-      "data-source": "",
-      "delete": "",
-      "edit": "",
-      "edit-title": "",
-      "git-ref-label": "",
-      "git-ref-placeholder": "",
-      "remove-all": "",
-      "remove-all-confirm": "",
-      "repository-label": "",
-      "repository-placeholder": "",
-      "repository-required": "",
-      "root-path": "",
-      "root-path-placeholder": "",
-      "service-name": "",
-      "user-set": ""
+      "add": "Ekle",
+      "add-title": "Yeni depo ayrıntılarını geçersiz kılma kuralı ekle",
+      "alert-debug": "Hata ayıklama amacıyla, bu formu kullanarak depo ayrıntılarını manuel olarak sağlayabilirsiniz. Özel değer, belirtilen veri kaynağı ve hizmet adı için tarayıcınızın yerel depolama alanına kaydedilir.",
+      "alert-labels": "GitHub Entegrasyonu özelliğini etkinleştirmek için profilleri gönderirken iki yeni etiket eklemeniz gerekir: <1>service_repository</1> ve <3>service_git_ref</3>.",
+      "alert-title": "Github Entegrasyon etiketleri",
+      "aria-label": "depo ayarlarını geçersiz kıl",
+      "data-source": "Veri kaynağı",
+      "delete": "Geçersiz kılmayı sil",
+      "edit": "Düzenle",
+      "edit-title": "Depo ayrıntılarını geçersiz kılma kuralını düzenle",
+      "git-ref-label": "service_git_ref (yürütme referansı)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Tüm geçersiz kılmaları kaldır",
+      "remove-all-confirm": "Tümünü kaldır",
+      "repository-label": "service_repository (depo URL'si): Zorunlu",
+      "repository-placeholder": "GitHub depo adını girin, https://github.com/org/repo",
+      "repository-required": "Depo adı gereklidir",
+      "root-path": "Kök yolu",
+      "root-path-placeholder": "Kök yolunu girin",
+      "service-name": "Hizmet adı",
+      "user-set": "(kullanıcı tarafından ayarlanır)"
     },
-    "repository": "",
-    "repository-tooltip": "",
-    "start-line": "",
-    "start-line-tooltip": "",
-    "title": ""
+    "repository": "Depo",
+    "repository-tooltip": "Seçili hizmet için yapılandırılan depo",
+    "start-line": "Başlangıç satırı",
+    "start-line-tooltip": "Bu işlev tanımının başladığı satır",
+    "title": "İşlev Ayrıntıları"
   },
   "give-feedback": {
-    "button": "",
-    "tooltip": ""
+    "button": "Geri bildirim gönder",
+    "tooltip": "Grafana'daki Profiller hakkındaki düşüncelerinizi paylaşın."
   },
   "grid": {
     "empty-state": {
-      "no-results": ""
+      "no-results": "Sonuç yok"
     },
     "error": {
-      "title": ""
+      "title": "Sorgu hatası!"
     },
     "exemplars": {
-      "view-profile": ""
+      "view-profile": "Profili göster"
     },
     "layout": {
-      "aria-label": "",
-      "grid": "",
-      "rows": ""
+      "aria-label": "Düzen değiştirici",
+      "grid": "Izgara",
+      "rows": "Satırlar"
     },
     "no-data": {
-      "label": ""
+      "label": "Verisi olmayan panelleri gizle"
     },
     "panel-type": {
-      "aria-label": "",
-      "histograms": "",
-      "maxima": "",
-      "time-series": "",
-      "totals": ""
+      "aria-label": "Panel tipi değiştirici",
+      "histograms": "Histogramlar",
+      "maxima": "Maksimum değerler",
+      "time-series": "Zaman serileri",
+      "totals": "Toplamlar"
     },
     "quick-filter": {
-      "aria-label": "",
-      "clear": ""
+      "aria-label": "Hızlı filtre",
+      "clear": "Aramayı temizle"
     }
   },
   "labels": {
     "compare": {
-      "clear-tooltip": "",
-      "tooltip-empty": "",
-      "tooltip-ready": "",
-      "tooltip-select-baseline": "",
-      "tooltip-select-comparison": "",
-      "button_one": "",
-      "button_other": ""
+      "clear-tooltip": "Karşılaştırma seçimini temizle",
+      "tooltip-empty": "Alev grafiklerini karşılaştırmak için hem bir referans hem de bir karşılaştırma panelini seçin",
+      "tooltip-ready": "\"{{baseline}}\" ve \"{{comparison}}\" karşılaştırması",
+      "tooltip-select-baseline": "\"{{label}}\" ile karşılaştırmak için başka bir panel seçin",
+      "tooltip-select-comparison": "\"{{label}}\" ile karşılaştırmak için başka bir panel seçin",
+      "button_one": "Karşılaştır ({{count}}/2)",
+      "button_other": "Karşılaştır ({{count}}/2)"
     },
     "data-source": {
-      "all": "",
-      "test-success": ""
+      "all": "Tümü",
+      "test-success": "Tamam"
     },
     "filter": {
-      "clear-tooltip": "",
-      "exclude": "",
-      "exclude-tooltip": "",
-      "include": "",
-      "include-tooltip": ""
+      "clear-tooltip": "Filtrelerden \"{{label}}\" etiketini temizle",
+      "exclude": "Hariç",
+      "exclude-tooltip": "Filtrelerde \"{{label}}\" etiketini hariç tut",
+      "include": "Dâhil et",
+      "include-tooltip": "Filtrelerde \"{{label}}\" etiketini dâhil et"
     },
     "grid": {
-      "no-results": "",
-      "refresh-tooltip": ""
+      "no-results": "Sonuç yok",
+      "refresh-tooltip": "Ekrandaki tüm panelleri tamamen yenilemek için tıklayın"
     },
     "stats-panel": {
-      "baseline": "",
-      "baseline-description": "",
-      "comparison": "",
-      "comparison-description": "",
-      "total": ""
+      "baseline": "Referans",
+      "baseline-description": "Karşılaştırma referansı olarak \"{{value}}\" değerini seçmek için tıklayın",
+      "comparison": "Karşılaştırma",
+      "comparison-description": "Karşılaştırma hedefi olarak \"{{value}}\" değerini seçmek için tıklayın",
+      "total": "{{statsDescription}}: {{total}}"
     }
   },
   "onboarding": {
     "empty-loading": {
-      "title": ""
+      "title": "Yükleniyor..."
     },
     "modal": {
       "billing": {
-        "description": "",
-        "title": ""
+        "description": "Grafana Cloud Profillerinin kullanımı, Profiller için geçerli olan <2>Grafana Cloud Fiyatlandırmasına</2> tabidir.<br/>Daha fazla bilgi için duyuru <6>blog yazısını</6> okuyun.",
+        "title": "Faturalandırma Süreci"
       },
       "cloud": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Uygulamalarınızdan Grafana Cloud'a profilleri göndermek için <2>Grafana Alloy</2> veya <6>Pyroscope SDK'larını</6> kullanın.",
+          "title": "Uygulamanıza Profil Oluşturma Özelliğini Ekleyin"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Grafana Cloud Kimlik Bilgilerinizi bulmak için <1>Grafana Cloud Stack ayarlarına</1> gidin.",
+          "title": "Uygulamalarınızı Yapılandırma"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "İlk kurulumu tamamladıktan sonra, profil oluşturma verilerinizi görmek için bu sayfayı yenileyin.",
+          "title": "Performans İçgörüleri Almaya Başlayın"
         }
       },
       "decrease-latency": {
-        "description": "",
-        "title": ""
+        "description": "Yüksek hızı ve verimliliği koruyun ve uygulama performansını artırın. Rekabetçi bir dijital dünyada gecikmeyi azaltmak, geliri artırmak anlamına gelir.",
+        "title": "Gecikme Süresini Azaltın"
       },
-      "how-to-get-started": "",
+      "how-to-get-started": "Nasıl Başlanır?",
       "reduce-costs": {
-        "description": "",
-        "title": ""
+        "description": "Kaynak kullanımına ilişkin kod düzeyinde görünürlük ile CPU sıçramalarını, bellek sızıntılarını ve diğer verimsizlikleri tespit edin. Ekipler böylece kodlarını optimize edebilir ve altyapı maliyetlerini düşürebilir.",
+        "title": "Maliyetleri Düşürün"
       },
       "resolve-incidents": {
-        "description": "",
-        "title": ""
+        "description": "Herhangi bir sorunun temel nedenini hızlıca belirlemek amacıyla, sürekli profil oluşturma verilerini metrikler, günlük kayıtları ve izlerle ilişkilendirerek ortalama çözüm süresini (MTTR) kısaltın.",
+        "title": "Olayları Daha Hızlı Çözün"
       },
       "self-hosted": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Altyapınıza <1>Pyroscope Server</1> kurun. Alternatif olarak barındırılan bir hizmet kullanmak isterseniz Grafana Cloud Kimlik Bilgilerinizi bulmak için <5>Grafana Cloud Stack ayarlarına</5> gidin.",
+          "title": "Pyroscope Sunucunuzu Kurun"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Yeni bir <1>Pyroscope veri kaynağı</1> ekleyin. Grafana Cloud Profillerini kullanıyorsanız Pyroscope sunucu URL'nizi ve uygun güvenlik kimlik bilgilerinizi kullanın.",
+          "title": "Grafana'yı Yapılandırma"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Uygulamalarınızdan Grafana Cloud'a profilleri göndermek için <2>Grafana Alloy</2> veya <6>Pyroscope SDK'larını</6> kullanın.",
+          "title": "Uygulamanıza Profil Oluşturma Özelliğini Ekleyin"
         }
       },
-      "subtitle": "",
-      "title": "",
-      "what-you-can-do": ""
+      "subtitle": "Altyapı harcamalarını optimize edin, hata ayıklamayı basitleştirin ve uygulama performansını artırın",
+      "title": "Grafana Profiles Drilldown'a hoş geldiniz",
+      "what-you-can-do": "Neler Yapabilirsiniz?"
     },
     "no-data-source": {
-      "alert-message": "",
-      "alert-title": "",
-      "title": ""
+      "alert-message": "Bu eklenti için bir Pyroscope veri kaynağı gerekir. Lütfen Grafana örneğinize <2>bir Pyroscope veri kaynağı ekleyin ve yapılandırın</2>.",
+      "alert-title": "Pyroscope veri kaynağı eksik.",
+      "title": "Grafana Profiles Drilldown"
     },
     "page": {
-      "close": "",
-      "nav": ""
+      "close": "Kapat",
+      "nav": "Başlangıç kurulumu"
     }
   },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
   "panel-box": {
-    "cancel-query": "",
-    "loading-bar": "",
-    "panel-status": "",
-    "stop-streaming": "",
-    "streaming": "",
-    "untitled": ""
+    "cancel-query": "Sorguyu iptal et",
+    "loading-bar": "Panel yükleme çubuğu",
+    "panel-status": "Panel durumu",
+    "stop-streaming": "Akışı durdur",
+    "streaming": "Akış",
+    "untitled": "Başlıksız"
   },
   "panel-menu": {
-    "aria-label-no-title": "",
-    "aria-label-with-title": "",
-    "title": ""
+    "aria-label-no-title": "Başlıksız panel menüsü",
+    "aria-label-with-title": "{{title}} başlıklı panel menüsü",
+    "title": "Menü"
   },
   "plugin-info": {
-    "aria-label": "",
-    "changelog": "",
-    "commit-sha": "",
-    "contribute": "",
-    "documentation": "",
-    "grafana-version": "",
-    "last-update": "",
-    "report-issue": "",
-    "title": "",
-    "version": ""
+    "aria-label": "Eklenti bilgileri",
+    "changelog": "Değişiklik günlüğü",
+    "commit-sha": "SHA yürütme: {{shortCommitSha}}",
+    "contribute": "Katkıda bulunun",
+    "documentation": "Belgeler",
+    "grafana-version": "Grafana {{edition}} {{version}} sürümü ({{env}})",
+    "last-update": "Son güncelleme: {{updated}}",
+    "report-issue": "Sorun bildir",
+    "title": "Eklenti bilgileri",
+    "version": "Grafana Profiles Drilldown {{version}} sürümü"
   },
   "query-analysis": {
-    "blocks": "",
-    "data-in-time-range": "",
-    "deduplication": "",
-    "index-store": "",
-    "no": "",
-    "profiles": "",
-    "profiles-store": "",
-    "query-info-aria-label": "",
-    "replicas": "",
-    "samples": "",
-    "series": "",
-    "series-in-query": "",
-    "stored-data-in-time-range": "",
-    "symbols-store": "",
-    "yes": ""
+    "blocks": "Bloklar",
+    "data-in-time-range": "Zaman aralığındaki veriler",
+    "deduplication": "Yinelenenleri kaldırma",
+    "index-store": "Dizin Deposu",
+    "no": "hayır",
+    "profiles": "Profiller",
+    "profiles-store": "Profil Deposu",
+    "query-info-aria-label": "Sorgu bilgileri",
+    "replicas": "Çoğaltmalar",
+    "samples": "Örnekler",
+    "series": "Seri",
+    "series-in-query": "Sorgudaki seriler",
+    "stored-data-in-time-range": "Zaman aralığında depolanan veriler: {{totalBytesInTimeRange}}",
+    "symbols-store": "Sembol Deposu",
+    "yes": "evet"
   },
   "query-builder": {
     "chiclet": {
-      "edit-attribute": "",
-      "edit-operator": "",
-      "filter": "",
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "partial-filter": "",
-      "remove-filter": ""
+      "edit-attribute": "\"{{label}}\" ögesini düzenle",
+      "edit-operator": "\"{{label}}\" ögesini düzenle",
+      "filter": "Filtre",
+      "filter-label": "Filtre etiketi",
+      "filter-operator": "Filtre işleci",
+      "filter-value": "Filtre değeri",
+      "partial-filter": "Kısmi filtre",
+      "remove-filter": "Filtreyi kaldır"
     },
-    "error-load": "",
-    "execute": "",
-    "execute-tooltip": "",
-    "loading": "",
-    "no-value": "",
-    "nothing-to-execute-tooltip": "",
+    "error-load": "Yüklenirken beklenmedik bir hata oluştu. Lütfen tekrar deneyin.",
+    "execute": "Yürüt",
+    "execute-tooltip": "Yeni sorguyu yürüt",
+    "loading": "Yükleniyor...",
+    "no-value": "(değer yok)",
+    "nothing-to-execute-tooltip": "Yürütülecek bir şey yok, tüm filtreler uygulandı",
     "operators": {
-      "in": "",
-      "in-description": "",
-      "is-empty": "",
-      "not-in": "",
-      "not-in-description": "",
-      "regex-match-description": "",
-      "regex-not-match-description": ""
+      "in": "içinde",
+      "in-description": "şunlardan biri",
+      "is-empty": "boş",
+      "not-in": "şunun içinde değil",
+      "not-in-description": "şunlardan biri değil",
+      "regex-match-description": "Düzenli ifade (regex) ile eşleşiyor",
+      "regex-not-match-description": "Düzenli ifadeyle (regex) eşleşmiyor"
     },
     "placeholder": {
-      "filter-add": "",
-      "select-label": "",
-      "select-operator": "",
-      "select-value": "",
-      "select-values": "",
-      "type-value": ""
+      "filter-add": "Etiket değerlerine göre filtreleyin...",
+      "select-label": "Bir etiket seçin...",
+      "select-operator": "Bir işleç seçin...",
+      "select-value": "Bir değer seçin...",
+      "select-values": "Değerler seçin...",
+      "type-value": "Bir düzenli ifade (regex) yazın..."
     },
-    "suggestions-disabled": "",
-    "suggestions-none": ""
+    "suggestions-disabled": "Bu etiket için öneriler devre dışı bırakıldı.",
+    "suggestions-none": "Öneri yok."
   },
   "recording-rules": {
     "delete": {
-      "aria-label": "",
-      "body": "",
-      "confirm": "",
-      "title": ""
+      "aria-label": "Kayıt kuralını sil",
+      "body": "{{metricName}} kayıt kuralını silmek istediğinizden emin misiniz?",
+      "confirm": "Evet",
+      "title": "Kayıt kuralını sil"
     },
     "details": {
-      "filters": "",
-      "no": "",
-      "no-labels": "",
-      "read-only": "",
-      "yes": ""
+      "filters": "Filtreler",
+      "no": "Hayır",
+      "no-labels": "Etiket yok",
+      "read-only": "Salt okunur",
+      "yes": "Evet"
     },
     "empty": {
-      "description": "",
-      "message": ""
+      "description": "Yeni bir kural tanımlamak için bir alev grafiği açın, üstteki \"total\" (toplam) bloğuna tıklayın ve bağlam menüsünden \"Kayıt kuralı oluştur\" öğesini seçin.",
+      "message": "Kayıt kuralı yok"
     },
     "error": {
-      "feature-required": "",
-      "message": "",
-      "title": ""
+      "feature-required": "Bu özellik, recording_rules bayrağı (flag) etkinleştirilmiş bir Pyroscope gerektirir.",
+      "message": "Kayıt kuralları alınırken hata oluştu",
+      "title": "Kayıt kuralları alınırken hata oluştu"
     },
     "table": {
-      "actions": "",
-      "all-services": "",
-      "function-name": "",
-      "labels": "",
-      "name": "",
-      "none": "",
-      "profile-type": "",
-      "readonly-tooltip": "",
-      "service-name": "",
-      "total-all-functions": ""
+      "actions": "İşlemler",
+      "all-services": "Tüm hizmetler",
+      "function-name": "İşlev Adı",
+      "labels": "Etiketler",
+      "name": "Ad",
+      "none": "Yok",
+      "profile-type": "Profil Türü",
+      "readonly-tooltip": "Bu kural kiracı ayarlarıyla sağlanmıştır ve silinemez.",
+      "service-name": "Hizmet Adı",
+      "total-all-functions": "Toplam (tüm işlevler)"
     },
-    "title": ""
+    "title": "Kayıt kuralları"
   },
   "saved-searches": {
     "load": {
-      "no-searches": "",
-      "no-searches-tooltip": "",
-      "remove-tooltip": "",
-      "saved-query-tooltip": "",
-      "select": "",
-      "select-pyroscope-query": "",
-      "title": "",
-      "tooltip": ""
+      "no-searches": "Gösterilecek kayıtlı arama yok.",
+      "no-searches-tooltip": "Yüklenecek kayıtlı arama yok",
+      "remove-tooltip": "Kaldır",
+      "saved-query-tooltip": "Kaydedilen sorguyu yükle",
+      "select": "Seçin",
+      "select-pyroscope-query": "Lütfen bir Pyroscope sorgusu seçin.",
+      "title": "Önceden kaydedilmiş bir aramayı yükleyin",
+      "tooltip": "Kayıtlı aramayı yükle"
     },
     "save": {
-      "cancel": "",
-      "close": "",
-      "description-label": "",
-      "error-message": "",
-      "existing-search-warning": "",
-      "info-message": "",
-      "save": "",
-      "saved-queries-tooltip": "",
-      "success-body": "",
-      "success-message": "",
-      "success-title": "",
-      "title": "",
-      "title-label": "",
-      "tooltip": ""
+      "cancel": "İptal et",
+      "close": "Kapat",
+      "description-label": "Açıklama",
+      "error-message": "Bu arama kaydedilirken beklenmeyen bir hata oluştu.",
+      "existing-search-warning": "Aynı sorguya sahip, daha önceden kaydedilmiş bir arama var: {{title}}",
+      "info-message": "Kayıtlı aramalar tarayıcınızda yerel olarak depolanır ve yalnızca bu cihazda kullanılabilir.",
+      "save": "Kaydet",
+      "saved-queries-tooltip": "Kayıtlı Sorgular'a kaydet",
+      "success-body": "Arama başarıyla kaydedildi.",
+      "success-message": "Arama başarıyla kaydedildi.",
+      "success-title": "Başarılı",
+      "title": "Mevcut aramayı kaydet",
+      "title-label": "Başlık",
+      "tooltip": "Aramayı kaydet"
     }
   },
   "series": {
     "data-source": {
-      "test-success": ""
+      "test-success": "Tamam"
     }
   },
   "settings": {
-    "loading": "",
-    "save-button": "",
+    "loading": "Yükleniyor...",
+    "save-button": "Ayarları kaydet",
     "tabs": {
-      "ui-settings": "",
-      "unknown-extension": ""
+      "ui-settings": "Kullanıcı Arayüzü Ayarları",
+      "unknown-extension": "Bilinmeyen Uzantı"
     },
-    "title": "",
+    "title": "Profil ayarları (kiracı)",
     "ui": {
       "collapsed-flame-graphs": {
-        "label": "",
-        "toggle": ""
+        "label": "Daraltılmış alev grafikleri",
+        "toggle": "Daraltılmış alev grafiklerini aç/kapat"
       },
       "enable-function-details": {
-        "label": "",
-        "learn-more": "",
-        "toggle": "",
-        "tooltip": ""
+        "label": "İşlev ayrıntılarını etkinleştir",
+        "learn-more": "Daha fazla bilgi edinin",
+        "toggle": "İşlev ayrıntılarını aç/kapat",
+        "tooltip": "İşlev ayrıntıları özelliği, kaynak kullanımının kaynak kodu satırlarıyla eşleştirilmesini sağlar. GitHub entegrasyonu yapılandırılmışsa kaynak kodu GitHub'dan indirilecektir."
       },
       "fetch-error": {
-        "message": "",
-        "title": ""
+        "message": "Lütfen sayfayı yeniden yüklemeyi deneyin, aksaklık için özür dileriz.",
+        "title": "Eklenti ayarları alınırken hata oluştu."
       },
       "flame-graph": {
-        "label": ""
+        "label": "Alev grafiği"
       },
       "function-details": {
-        "label": ""
+        "label": "İşlev ayrıntıları"
       },
       "max-nodes": {
-        "label": ""
+        "label": "Maksimum düğüm sayısı"
       },
       "metrics-from-profiles": {
-        "disable-hint": "",
-        "disable-warning": "",
-        "enable-warning": "",
-        "label": "",
-        "toggle": "",
-        "toggle-label": "",
-        "tooltip": ""
+        "disable-hint": "Veri dışa aktarmayı durdurmak için bu özelliği devre dışı bırakmadan önce ilgili tüm kayıt kurallarını silin.",
+        "disable-warning": "Bu özellik devre dışı bırakıldığında yalnızca kullanıcı arayüzünde gizlenir. Mevcut kayıt kurallarından hiçbiri kaldırılmaz. Bu kurallar etkin kalacak ve metrikleri dışa aktarmaya devam edecektir, bu da faturanızı etkilemeyi sürdürecektir.",
+        "enable-warning": "Bu özelliğin etkinleştirilmesi, Profiles Drilldown'dan kayıt kuralları tanımlamanıza olanak tanır. Oluşturduğunuz tüm kayıt kuralları Grafana Cloud örneğinize yeni metrikler göndererek Grafana Mimir'deki veri kullanımınızı artıracak ve faturanızı etkileyebilecektir.",
+        "label": "Profillerden metrikler",
+        "toggle": "Profillerden metrikleri etkinleştir",
+        "toggle-label": "Profillerden metrikleri etkinleştir",
+        "tooltip": "Profiller üzerinden kayıt kuralları oluşturmaya olanak tanır"
       }
     }
   },
   "timeseries": {
     "menu": {
-      "exemplars": "",
-      "open-in-explore": "",
-      "scale-linear": "",
-      "scale-log2": "",
-      "scale-type": ""
+      "exemplars": "Temsilî veriler",
+      "open-in-explore": "Keşfet'te aç",
+      "scale-linear": "Doğrusal",
+      "scale-log2": "Günlük Kaydı2",
+      "scale-type": "Ölçek türü"
     }
   },
   "variables": {
     "data-source": {
-      "label": ""
+      "label": "Veri kaynağı"
     },
     "favorite": {
-      "label": ""
+      "label": "🔖 Favori"
     },
     "filters": {
-      "label": ""
+      "label": "Filtreler"
     },
     "group-by": {
-      "label": "",
-      "labels-selector": "",
-      "other-labels-placeholder": "",
-      "other-labels-selector": "",
-      "refresh-tooltip": "",
-      "select-label-placeholder": ""
+      "label": "Etiketlere göre grupla",
+      "labels-selector": "Etiket seçici",
+      "other-labels-placeholder": "Diğer etiketler",
+      "other-labels-selector": "Diğer etiketler seçici",
+      "refresh-tooltip": "Tüm etiketleri yenilemek için tıklayın",
+      "select-label-placeholder": "Etiket seçin"
     },
     "profile-id-selector": {
-      "label": ""
+      "label": "Profil Kimliği Seçici"
     },
     "profile-metric": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Profil metrikleri listesi",
+      "label": "Profil türü",
+      "loading": "Yükleniyor...",
+      "placeholder_one": "Bir profil metriği seçin ({{count}})",
+      "placeholder_other": "Bir profil metriği seçin ({{count}})"
     },
     "service-name": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Hizmetler listesi",
+      "label": "Hizmet",
+      "loading": "Hizmetler yükleniyor...",
+      "unmatched-tooltip": "",
+      "placeholder_one": "Bir hizmet seçin ({{count}})",
+      "placeholder_other": "Bir hizmet seçin ({{count}})"
     },
     "span-selector": {
-      "label": ""
+      "label": "Zaman aralığı seçici"
     }
   }
 }
