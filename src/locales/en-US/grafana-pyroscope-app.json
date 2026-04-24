@@ -11,11 +11,16 @@
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "Cannot compute diff",
+      "no-common-profile-types": "The uploaded profiles have no common profile types. Upload profiles with matching types to use the diff view.",
+      "profile": "Profile"
+    },
     "profile-type-selector": {
       "label": "Profile"
     },
     "tabs": {
-      "comparison-view": "Comparison view",
+      "diff-view": "Diff view",
       "single-view": "Single view"
     },
     "view": {
@@ -46,6 +51,13 @@
     },
     "error": "Failed to fetch DOT profiles for analysis",
     "prompt": "Analyze the differences between these two performance profiles."
+  },
+  "analyze-flame-graph": {
+    "context": {
+      "title": "DOT Profile and instructions"
+    },
+    "error": "Failed to fetch DOT profile for analysis",
+    "prompt": "Analyze this performance profile."
   },
   "back-button": {
     "aria-label": "Back to Profiles Drilldown",
@@ -102,19 +114,14 @@
       "tooltip-flame-graph": "Flame graph",
       "tooltip-flame-graph-description": "Time range for building the flame graph (the stack traces will be retrieved only for the selected range)",
       "tooltip-time-picker": "Time picker",
-      "tooltip-time-picker-description": "Time range zoom in (default behaviour)",
-      "unsync-time-ranges": "Unsync time ranges"
+      "tooltip-time-picker-description": "Time range zoom in (default behaviour)"
     },
     "error-loading-profile": "Error while loading profile data!",
     "explain-button": "Explain Diff Flame Graph",
     "missing-selections": {
-      "alternatively": "Alternatively:",
       "auto-select": "Auto-select",
-      "choose-preset": "choose a preset",
-      "how": "How?",
       "how-to-alt": "How to view the diff flame graph",
       "learn-how": "Click here to learn how to select the flame graph ranges with the mouse",
-      "or": "",
       "step-1": "Ensure that the “Flame graph” range selection mode is selected",
       "step-2": "Use your mouse to select the desired time ranges on both the baseline and the comparison time series",
       "title": "Select both the baseline and the comparison flame graph ranges to view the diff flame graph"
@@ -122,27 +129,12 @@
     "no-profile-data": "No profile data available",
     "no-profile-data-message": "Please verify that you've selected adequate filters and time ranges.",
     "presets": {
-      "24h-ago": "24h ago",
-      "24h-ago-vs-now": "24h ago vs now (30m-window)",
-      "6h-ago": "6h ago",
-      "6h-ago-vs-now": "6h ago vs now (30m-window)",
-      "auto-select-25": "Auto-select (25% range)",
-      "auto-select-whole": "Auto-select (whole range)",
-      "built-in": "Built-in presets",
-      "cancel": "Cancel",
-      "dummy": "Dummy preset saved earlier",
+      "1h-ago-vs-now": "1h ago vs now",
+      "1h-ago-vs-now-description": "30m window",
+      "24h-ago-vs-now": "24h ago vs now",
+      "6h-ago-vs-now": "6h ago vs now",
       "label": "Comparison presets",
-      "last-hour": "last hour",
-      "last-hour-1h": "Last hour (1h-window)",
-      "last-hour-30m": "Last hour (30m-window)",
-      "modal-feedback": "Please let us know if you would be interested to use it by <2>leaving us your feedback.</2>",
-      "modal-not-implemented": "This feature, which would allow you to save the current time ranges and filters, is currently not implemented.",
-      "modal-thank-you": "Thank you!",
-      "modal-title": "Custom user presets",
-      "my-presets": "My presets",
-      "placeholder": "Choose a preset",
-      "save": "Save",
-      "save-tooltip": "Save the current time ranges and filters as a custom preset"
+      "placeholder": "Choose a preset"
     },
     "settings-error": {
       "message": "Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.",
@@ -438,6 +430,13 @@
       "nav": "Onboarding"
     }
   },
+  "optimize-code": {
+    "context": {
+      "title": "Annotated source code and optimization instructions"
+    },
+    "error": "Failed to build optimization context",
+    "prompt": "Optimize this code based on the profiling annotations."
+  },
   "panel-box": {
     "cancel-query": "Cancel query",
     "loading-bar": "Panel loading bar",
@@ -672,7 +671,8 @@
       "label": "Service",
       "loading": "Loading services...",
       "placeholder_one": "Select a service ({{count}})",
-      "placeholder_other": "Select a service ({{count}})"
+      "placeholder_other": "Select a service ({{count}})",
+      "unmatched-tooltip": "\"{{serviceName}}\" does not appear in the list of services returned for this data source and time range. Please select a different service from the dropdown."
     },
     "span-selector": {
       "label": "Span selector"

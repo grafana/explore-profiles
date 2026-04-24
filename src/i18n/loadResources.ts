@@ -4,6 +4,10 @@ export const loadResources: ResourceLoader = async (language: string) => {
   const fallbackLanguage = 'en-US';
   const locale = language || fallbackLanguage;
 
+  if (locale === fallbackLanguage) {
+    return {};
+  }
+
   try {
     return await import(`../locales/${locale}/grafana-pyroscope-app.json`);
   } catch (error) {

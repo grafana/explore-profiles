@@ -1,8 +1,6 @@
 import { AdHocVariableFilter, BusEventWithPayload } from '@grafana/data';
 
 interface EventViewDiffFlameGraphPayload {
-  useAncestorTimeRange: boolean;
-  clearDiffRange: boolean;
   baselineFilters: AdHocVariableFilter[];
   comparisonFilters: AdHocVariableFilter[];
 }

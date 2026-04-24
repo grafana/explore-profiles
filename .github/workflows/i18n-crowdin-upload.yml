@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "src/locales/en-US/grafana-pyroscope-app.json"
+      - 'src/locales/en-US/grafana-pyroscope-app.json'
     branches:
       - main
 

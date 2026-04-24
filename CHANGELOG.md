@@ -1,5 +1,100 @@
 # Changelog
 
+## 2.0.4
+
+##### Chores
+
+* **deps:**
+  *  update dependency dompurify to v3.4.0 [security] (#942) (0487f527)
+  *  update dependency hono to v4.12.14 [security] (#941) (2c403fcf)
+
+##### New Features
+
+* **adhoc:**  add diff view with side-by-side and computed diff modes (#842) (d4461470)
+
+##### Bug Fixes
+
+* **deps:**
+  *  patch CVEs via yarn resolutions (#948) (5624f69b)
+  *  update dependency protobufjs to v8 [security] (#946) (04b77a2f)
+  *  update module go.opentelemetry.io/otel/sdk to v1.43.0 [security] (#933) (63e52289)
+* **samples:**  upgrade otel/sdk to v1.43.0 to address CVE (#940) (fbf87a0c)
+
+
+## 2.0.3
+
+##### Chores
+
+* **ci:**  fix flaky tests (#939) (afd7acbe)
+
+
+## 2.0.2
+
+##### Chores
+
+*  fix docker compose setup (#928) (30ba539f)
+*  Warning for missing service names (#924) (0815b4ac)
+*  Add more Renovate groups (#919) (b54139d1)
+* **deps:**
+  *  update dependency @hono/node-server to v1.19.13 [security] (#930) (693a90c3)
+  *  update dependency hono to v4.12.12 [security] (#931) (ad2d87fc)
+  *  update dependency lodash to v4.18.1 [security] (#921) (23fbc2b6)
+  *  update dependency lodash to v4.18.1 [security] (#920) (5f0445c5)
+  *  update dependency @types/node to v22.19.15 (#917) (d51853aa)
+  *  update dependency @babel/core to v7.29.0 (#915) (e82681ea)
+  *  update dependency tar to v7.5.13 (#913) (30192d02)
+  *  update dependency semver to v7.7.4 (#912) (19d23060)
+  *  update dependency nanoid to v5.1.7 (#911) (e349f466)
+  *  update dependency i18next-cli to v1.51.4 (#910) (a2ed6c79)
+  *  update dependency eslint-plugin-jsdoc to v62.8.1 (#907) (b99184b1)
+  *  update dependency hono to v4.12.9 (#909) (5d3aa217)
+  *  update dependency hono to v4.12.9 (#908) (3f0a50fe)
+  *  update dependency eslint-plugin-jest to v29.15.1 (#906) (2348000f)
+  *  update qdrant/qdrant docker digest to 9472857 (#896) (3fc040e6)
+  *  update dependency esbuild to v0.27.4 (#905) (3999a247)
+  *  update dependency @hono/node-server to v1.19.11 (#897) (6370f737)
+  *  update dependency @types/lodash to v4.17.24 (#902) (87f9cca9)
+  *  update dependency dompurify to v3.3.3 (#903) (0e90e176)
+  *  update dependency @react-aria/utils to v3.33.1 (#900) (191768c9)
+  *  update dependency @types/color to v3.0.7 (#901) (ed7b3a03)
+  *  update grafana/grafana-enterprise:latest docker digest to 8b65309 (#895) (d04d330c)
+  *  bump undici from 7.18.2 to 7.24.6 (#892) (162bfc66)
+  *  update actions/checkout digest to 34e1148 (#847) (4bf70e2f)
+  *  bump brace-expansion from 1.1.12 to 1.1.13 (#887) (c39dd9d7)
+  *  update dependency serialize-javascript to v7.0.5 [security] (#888) (513129b6)
+  *  pin dependencies (#846) (a851ae51)
+  *  bump picomatch from 2.3.1 to 2.3.2 (#881) (a913aae0)
+  *  update alpine:latest docker digest to 2510918 (#848) (f71200bb)
+* **config:**  migrate config renovate.json (#922) (2f3a4847)
+* **i18n:**
+  *  add Crowdin GitHub Actions (#889) (694b0dd1)
+  *  add ESLint rules and translate all user-facing strings (#885) (95a9b848)
+  *  add @grafana/i18n infrastructure (#865) (b1a208a9)
+* **eslint:**  migrate to ESLint 9 flat config (#876) (e7d6f2c7)
+
+##### Documentation Changes
+
+*  add exemplars documentation (#890) (591fe58b)
+*  Increase weight of Profiles Drilldown to 200 (#923) (1f4fb7fc)
+
+##### New Features
+
+* **labels:**  support UTF-8 label names in label matchers (#925) (2521cffa)
+* **ResolutionBoostExtensionPoint:**  pass datasourceUID to Adaptive Profiles extension (#880) (7a1b2f6f)
+* **call-tree:**  enable the call tree visualization (#862) (7cfcb89c)
+
+##### Bug Fixes
+
+*  Sync time range sync between Diff page and the other pages (#784) (fce256a5)
+* **deps:**  update grafana packages (#914) (53f1c84f)
+* **ci:**  add permissions to PR validation workflow for Dependabot PRs (#883) (db27bf06)
+
+##### Other Changes
+
+*  Download translations from Crowdin (#918) (9578b975)
+*  Download translations from Crowdin (#893) (5d3e1434)
+
+
 ## 2.0.1
 
 ##### Chores
