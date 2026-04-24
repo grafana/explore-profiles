@@ -41,6 +41,8 @@ const config = async (env): Promise<Configuration> => {
 
   /* FINAL CONFIG */
 
+  baseConfig.externals = [...(baseConfig.externals || []), 'i18next'];
+
   const finalConfig = merge(baseConfig, {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json'],
