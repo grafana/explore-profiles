@@ -7,8 +7,11 @@ import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
+import {
+  useFlagFlameGraphWithCallTree,
+  useFlagMetricsFromProfiles,
+} from '@shared/infrastructure/featureFlags/featureFlags';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { InlineBanner } from '@shared/ui/InlineBanner';
@@ -190,6 +193,8 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
+    const flameGraphWithCallTree = useFlagFlameGraphWithCallTree();
+    const metricsFromProfiles = useFlagMetricsFromProfiles();
 
     const spanSelector = getSceneVariableValue(model, 'spanSelector');
     const profileIdSelector = getSceneVariableValue(model, 'profileIdSelector');
@@ -235,7 +240,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const extraContextMenuButtons: FlameGraphProps['getExtraContextMenuButtons'] = (clickedItemData, data) => {
       const ghButtons = gitHubIntegration.actions.getExtraFlameGraphMenuItems(clickedItemData, data);
       const recordingRulesButtons =
-        settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles
+        settings?.enableMetricsFromProfiles && metricsFromProfiles
           ? recordingRulesMenu.actions.getExtraFlameGraphMenuItems(clickedItemData, data)
           : [];
 
@@ -300,7 +305,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                 />
               }
               keepFocusOnDataChange
-              enableNewUI={featureToggles.flameGraphWithCallTree}
+              enableNewUI={flameGraphWithCallTree}
             />
           )}
         </Panel>

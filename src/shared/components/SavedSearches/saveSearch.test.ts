@@ -1,5 +1,9 @@
 import { config } from '@grafana/runtime';
+import { OpenFeatureTestProvider } from '@openfeature/react-sdk';
+import { QUERY_LIBRARY_FEATURE_FLAG_KEY } from '@shared/infrastructure/featureFlags/featureFlags';
+import { PLUGIN_OPEN_FEATURE_DOMAIN } from '@shared/infrastructure/featureFlags/openFeature';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { createElement, type ReactNode } from 'react';
 
 import {
   applySavedSearchToScene,
@@ -18,9 +22,6 @@ jest.mock('@grafana/runtime', () => ({
   config: {
     buildInfo: {
       version: '12.4.0',
-    },
-    featureToggles: {
-      queryLibrary: true,
     },
   },
 }));
@@ -51,6 +52,19 @@ jest.mock('./utils', () => {
 });
 
 const utilsMock = getUtilsMock();
+
+function openFeatureTestWrapper(queryLibrary: boolean) {
+  return function Wrapper({ children }: { children: ReactNode }) {
+    return createElement(
+      OpenFeatureTestProvider,
+      {
+        domain: PLUGIN_OPEN_FEATURE_DOMAIN,
+        flagValueMap: { [QUERY_LIBRARY_FEATURE_FLAG_KEY]: queryLibrary },
+      },
+      children
+    );
+  };
+}
 
 const localSearches = [
   {
@@ -170,19 +184,32 @@ describe('useHasSavedSearches', () => {
 });
 
 describe('isQueryLibrarySupported', () => {
+  afterEach(() => {
+    config.buildInfo.version = '12.4.0';
+  });
+
   test('Returns true when supported', () => {
-    expect(isQueryLibrarySupported()).toBe(true);
+    config.buildInfo.version = '12.4.0';
+    const { result } = renderHook(() => isQueryLibrarySupported(), {
+      wrapper: openFeatureTestWrapper(true),
+    });
+    expect(result.current).toBe(true);
   });
 
   test('Returns false if the feature is not enabled', () => {
-    config.featureToggles.queryLibrary = false;
-    expect(isQueryLibrarySupported()).toBe(false);
+    config.buildInfo.version = '12.4.0';
+    const { result } = renderHook(() => isQueryLibrarySupported(), {
+      wrapper: openFeatureTestWrapper(false),
+    });
+    expect(result.current).toBe(false);
   });
 
   test('Returns false if the Grafana version is not supported', () => {
-    config.featureToggles.queryLibrary = true;
     config.buildInfo.version = '12.3.0';
-    expect(isQueryLibrarySupported()).toBe(false);
+    const { result } = renderHook(() => isQueryLibrarySupported(), {
+      wrapper: openFeatureTestWrapper(true),
+    });
+    expect(result.current).toBe(false);
   });
 });
 
