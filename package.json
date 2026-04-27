@@ -52,6 +52,8 @@
     "@grafana/scenes": "^6.23.0",
     "@grafana/schema": "12.4.2",
     "@grafana/ui": "12.4.2",
+    "@openfeature/ofrep-web-provider": "^0.3.6",
+    "@openfeature/react-sdk": "^1.2.0",
     "@react-aria/utils": "^3.25.3",
     "@tanstack/react-query": "^5.17.19",
     "color": "^4.2.3",
