@@ -11,7 +11,7 @@ function setup(appSubUrl?: string) {
 
 describe('getExploreUrl(rawTimeRange, query, datasource)', () => {
   test('If "appSubUrl" is not defined in the Grafana runtime config', () => {
-    const { getExploreUrl } = setup(undefined);
+    const { getExploreUrl } = setup();
 
     const rawTimeRange = { from: 'now-5m', to: 'now' };
     const query = {
