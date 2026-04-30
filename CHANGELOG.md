@@ -1,5 +1,36 @@
 # Changelog
 
+## 2.0.5
+
+##### Build System / Dependencies
+
+*  migrate to pnpm (#949) (c26b6a84)
+
+##### Chores
+
+*  Update @grafana/flamegraph to 13.1.0-25141410377 (#957) (0464d5bf)
+*  Use OpenFeature for all feature flags (#950) (75caf58d)
+* **deps:**  bump postcss from 8.4.39 to 8.5.12 (#954) (bbe86aaf)
+* **i18n:**  Expose all supported languages in plugin.json (#904) (37bdb2b6)
+
+##### New Features
+
+*  Use Grafana Assistant for Optimize Code button when available (#943) (284dc66f)
+
+##### Bug Fixes
+
+*  Revert changes to analyze flame graph button in SceneFlameGraph (#955) (c3d03d93)
+*  consolidate CI/CD into single workflow to fix broken `workflow_run` chaining (#956) (218f43eb)
+
+##### Other Changes
+
+*  Download translations from Crowdin (#951) (4ff76d61)
+
+##### Performance Improvements
+
+* **i18n:**  prevent loading en-US translations at runtime (#938) (be0806e6)
+
+
 ## 2.0.4
 
 ##### Chores
