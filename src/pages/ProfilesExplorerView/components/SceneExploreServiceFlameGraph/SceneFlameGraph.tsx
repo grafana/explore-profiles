@@ -2,7 +2,7 @@ import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
 import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { t, Trans } from '@grafana/i18n';
-import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
+import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
@@ -22,12 +22,10 @@ import { Unsubscribable } from 'rxjs';
 
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { useGrafanaAssistant } from '../../domain/useGrafanaAssistant';
-import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { deferSceneQueryRunnerRun } from '../../infrastructure/deferSceneQueryRunnerRun';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
 import { PYROSCOPE_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
-import { AnalyzeFlameGraph } from '../AnalyzeFlameGraph';
 import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { useCreateRecordingRulesMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
@@ -215,10 +213,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const { hideAIButton } = useGrafanaAssistant();
 
-    const dataSourceUid = sceneGraph.findByKeyAndType(model, 'dataSource', ProfilesDataSourceVariable).useState()
-      .value as string;
-    const profileMetricId = getSceneVariableValue(model, 'profileMetricId');
-
     const isAiButtonDisabled = data.isLoading || !data.hasProfileData;
 
     useEffect(() => {
@@ -265,13 +259,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                   removeProfileIdSelector={() => model.removeProfileIdSelector()}
                 />
               )}
-              {hideAIButton ? (
-                <AnalyzeFlameGraph
-                  dataSourceUid={dataSourceUid}
-                  profileMetricId={profileMetricId}
-                  fetchParams={data.ai.fetchParams}
-                />
-              ) : (
+              {!hideAIButton && (
                 <AIButton
                   disabled={isAiButtonDisabled || sidePanel.isOpen('ai')}
                   onClick={() => sidePanel.open('ai')}

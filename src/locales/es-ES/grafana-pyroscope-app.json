@@ -52,13 +52,6 @@
     "error": "Error al obtener los perfiles DOT para el análisis",
     "prompt": "Analiza las diferencias entre estos dos perfiles de rendimiento."
   },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
-  },
   "back-button": {
     "aria-label": "Volver a Profiles Drilldown",
     "label": "Volver a Profiles Drilldown"
