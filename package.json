@@ -45,7 +45,7 @@
     "@grafana/assistant": "0.1.24",
     "@grafana/data": "12.4.2",
     "@grafana/faro-web-sdk": "^1.19.0",
-    "@grafana/flamegraph": "13.0.0-23733339067",
+    "@grafana/flamegraph": "13.1.0-25141410377",
     "@grafana/i18n": "12.4.2",
     "@grafana/llm": "1.0.3",
     "@grafana/runtime": "12.4.2",
