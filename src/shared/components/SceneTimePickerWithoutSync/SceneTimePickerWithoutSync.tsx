@@ -53,7 +53,7 @@ export class SceneTimePickerWithoutSync extends SceneTimePicker {
 
     const [, setRenderCount] = useState(0);
 
-    const handleClick = useCallback(() => {
+    const handleActivate = useCallback(() => {
       setActiveTimePicker(model);
       setRenderCount((n) => n + 1);
     }, [model]);
@@ -63,7 +63,7 @@ export class SceneTimePickerWithoutSync extends SceneTimePicker {
     }
 
     return (
-      <div onClick={handleClick}>
+      <div onClick={handleActivate} onFocusCapture={handleActivate}>
         <TimeRangePicker
           isOnCanvas={isOnCanvas ?? true}
           value={timeRangeState.value}
