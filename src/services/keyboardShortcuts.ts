@@ -17,8 +17,11 @@ export function setupKeyboardShortcuts(scene: SceneProfilesExplorer) {
       const picker = getTimePicker(scene);
       const timeRange = picker ? sceneGraph.getTimeRange(picker) : sceneGraph.getTimeRange(scene);
       const restoreContext = setWindowGrafanaSceneContext(timeRange);
-      appEvents.publish(new CopyTimeEvent());
-      restoreContext();
+      try {
+        appEvents.publish(new CopyTimeEvent());
+      } finally {
+        restoreContext();
+      }
     },
   });
 
