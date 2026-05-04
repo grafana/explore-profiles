@@ -24,18 +24,22 @@ function readHistory(): TimeRange[] {
 }
 
 function writeHistory(values: TimeRange[]) {
-  localStorage.setItem(
-    HISTORY_LOCAL_STORAGE_KEY,
-    JSON.stringify(
-      uniqBy(
-        values.map((v) => ({
-          from: typeof v.raw.from === 'string' ? v.raw.from : v.raw.from.toISOString(),
-          to: typeof v.raw.to === 'string' ? v.raw.to : v.raw.to.toISOString(),
-        })),
-        (v) => v.from + v.to
-      ).slice(0, 4)
-    )
-  );
+  try {
+    localStorage.setItem(
+      HISTORY_LOCAL_STORAGE_KEY,
+      JSON.stringify(
+        uniqBy(
+          values.map((v) => ({
+            from: typeof v.raw.from === 'string' ? v.raw.from : v.raw.from.toISOString(),
+            to: typeof v.raw.to === 'string' ? v.raw.to : v.raw.to.toISOString(),
+          })),
+          (v) => v.from + v.to
+        ).slice(0, 4)
+      )
+    );
+  } catch {
+    // storage unavailable (private mode, quota exceeded) — drop history silently
+  }
 }
 
 export class SceneTimePickerWithoutSync extends SceneTimePicker {
