@@ -1,46 +1,58 @@
 {
   "actions": {
     "exemplar-toggle": {
-      "hide": "",
-      "label": "",
-      "show": ""
+      "hide": "Mintapéldányok elrejtése",
+      "label": "Mintapéldányok",
+      "show": "Mintapéldányok megjelenítése"
     },
     "fav": {
-      "favorite": "",
-      "unfavorite": ""
+      "favorite": "Kedvenc",
+      "unfavorite": "Eltávolítás a kedvencek közül"
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
     "profile-type-selector": {
-      "label": ""
+      "label": "Profil"
     },
     "tabs": {
-      "comparison-view": "",
-      "single-view": ""
+      "diff-view": "",
+      "single-view": "Egyszeres nézet"
     },
     "view": {
-      "title": ""
+      "title": "Eseti nézet"
     }
   },
   "ai-panel": {
-    "analyzing": "",
-    "close": "",
-    "fetch-error": "",
-    "fetch-error-message": "",
+    "analyzing": "Elemzés folyamatban…",
+    "close": "Panel bezárása",
+    "fetch-error": "Hiba történt a profiladatok betöltésekor!",
+    "fetch-error-message": "Elnézést a kellemetlenségért. Kérjük, próbálkozzon újra később.",
     "follow-up": {
-      "placeholder": "",
-      "send": ""
+      "placeholder": "Tegyen fel egy újabb kérdést…",
+      "send": "Küldés"
     },
-    "llm-error": "",
-    "llm-error-message": "",
+    "llm-error": "Hiba történt a tartalom OpenAI segítségével történő generálása során!",
+    "llm-error-message": "Elnézést kérünk az esetleges kellemetlenségekért. Próbálja újra, vagy ha a probléma továbbra is fennáll, lépjen kapcsolatba a szervezete rendszergazdájával.",
     "reply": {
-      "search-node": ""
+      "search-node": "Keresés erre a csomópontra"
     },
-    "retry": "",
-    "title": "",
-    "validation-error": ""
+    "retry": "Újra",
+    "title": "Lángdiagramos elemzés",
+    "validation-error": "Validációs hiba!"
   },
   "analyze-diff": {
+    "context": {
+      "title": "DOT-profilok és utasítások"
+    },
+    "error": "Nem sikerült lekérni a DOT-profilokat az elemzéshez",
+    "prompt": "Elemezze a két teljesítményprofil közötti különbségeket."
+  },
+  "analyze-flame-graph": {
     "context": {
       "title": ""
     },
@@ -48,614 +60,622 @@
     "prompt": ""
   },
   "back-button": {
-    "aria-label": "",
-    "label": ""
+    "aria-label": "Vissza a profilrészletezéshez",
+    "label": "Vissza a profilrészletezéshez"
   },
   "create-recording-rule": {
-    "cancel": "",
-    "create": "",
+    "cancel": "Mégse",
+    "create": "Létrehozás",
     "filters": {
-      "description": "",
-      "label": "",
-      "none": ""
+      "description": "A főnézetben kiválasztott szűrők erre a szabályra is érvényesek lesznek",
+      "label": "Szűrők",
+      "none": "Nincsenek kiválasztott szűrők"
     },
     "function-name": {
-      "aria-label": "",
-      "description": "",
-      "label": "",
-      "placeholder": ""
+      "aria-label": "Függvénynév",
+      "description": "Opcionális függvénynév a rögzítési szabály szűréséhez",
+      "label": "Függvénynév",
+      "placeholder": "Hagyja üresen a teljes összesítéshez"
     },
     "labels": {
-      "description": "",
-      "label": ""
+      "description": "További profilalkotási címkék a metrikához való továbbításhoz",
+      "label": "További címkék"
     },
-    "menu-option": "",
+    "menu-option": "Rögzítési szabály létrehozása",
     "metric-name": {
-      "aria-label": "",
+      "aria-label": "Metrika neve",
       "description": "",
-      "invalid": "",
-      "label": "",
-      "pattern-alphanumeric": "",
-      "pattern-error": "",
-      "pattern-no-number": "",
-      "required": ""
+      "invalid": "Érvénytelen metrikanév.",
+      "label": "Metrika neve",
+      "pattern-alphanumeric": "Csak alfanumerikus karaktereket vagy alulvonást tartalmazhat",
+      "pattern-error": "A metrikanév érvénytelen. Az alábbi feltételeknek kell megfelelnie:",
+      "pattern-no-number": "Nem kezdődhet számmal",
+      "required": "A metrikanév megadása kötelező."
     },
     "profile-type": {
-      "label": ""
+      "label": "Profil típusa"
     },
     "service-name": {
-      "all": "",
-      "label": ""
+      "all": "Minden szolgáltatás",
+      "label": "Szolgáltatásnév"
     },
-    "title": ""
+    "title": "Rögzítési szabály létrehozása"
   },
   "diff-flame-graph": {
     "compare-panel": {
-      "annotation-title": "",
-      "baseline": "",
-      "comparison": "",
-      "flame-graph": "",
-      "range-selection-mode": "",
-      "sync-time-ranges": "",
-      "time-picker": "",
-      "tooltip-description": "",
-      "tooltip-flame-graph": "",
-      "tooltip-flame-graph-description": "",
-      "tooltip-time-picker": "",
-      "tooltip-time-picker-description": ""
+      "annotation-title": "{{title}} lángdiagram tartománya",
+      "baseline": "Alapvonal",
+      "comparison": "Összehasonlítás",
+      "flame-graph": "Lángdiagram",
+      "range-selection-mode": "Tartománykijelölési mód",
+      "sync-time-ranges": "Időtartományok szinkronizálása",
+      "time-picker": "Időkiválasztó",
+      "tooltip-description": "Ezekkel a gombokkal módosíthatja, hogyan viselkedjen a rendszer, amikor az egérrel kijelöl egy tartományt az idősoron:",
+      "tooltip-flame-graph": "Lángdiagram",
+      "tooltip-flame-graph-description": "A lángdiagram elkészítéséhez használt időintervallum (a veremkivonatok csak a kiválasztott tartományra lesznek lekérve)",
+      "tooltip-time-picker": "Időkiválasztó",
+      "tooltip-time-picker-description": "Nagyítás az időintervallumra (alapértelmezett működés)"
     },
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Hiba történt a profiladatok betöltésekor!",
+    "explain-button": "Eltérési lángdiagram magyarázata",
     "missing-selections": {
-      "auto-select": "",
-      "how-to-alt": "",
-      "learn-how": "",
-      "step-1": "",
-      "step-2": "",
-      "title": ""
+      "auto-select": "Automatikus kijelölés",
+      "how-to-alt": "Az eltérési lángdiagram megtekintésének módja",
+      "learn-how": "Kattintson ide, ha szeretné megtudni, hogyan jelölheti ki az egérrel a lángdiagram tartományait",
+      "step-1": "Győződjön meg róla, hogy a „Lángdiagram” tartománykijelölési mód van kiválasztva",
+      "step-2": "Az egérrel jelölje ki a kívánt időintervallumokat mind az alapvonali, mind az összehasonlítási idősoron",
+      "title": "Az eltérési lángdiagram megjelenítéséhez jelölje ki mind az alapvonali, mind az összehasonlítási tartományt"
     },
-    "no-profile-data": "",
-    "no-profile-data-message": "",
+    "no-profile-data": "Nem állnak rendelkezésre profiladatok",
+    "no-profile-data-message": "Ellenőrizze, hogy megfelelő szűrőket és időintervallumokat állított-e be.",
     "presets": {
-      "1h-ago-vs-now": "",
-      "1h-ago-vs-now-description": "",
-      "24h-ago-vs-now": "",
-      "6h-ago-vs-now": "",
-      "label": "",
-      "placeholder": ""
+      "1h-ago-vs-now": "1 órával ezelőtt és most",
+      "1h-ago-vs-now-description": "30 perces intervallum",
+      "24h-ago-vs-now": "24 órája és most",
+      "6h-ago-vs-now": "6 órája és most",
+      "label": "Összehasonlítási sablonok",
+      "placeholder": "Válasszon egy sablont"
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Előfordulhat, hogy egyes funkciók nem működnek megfelelően (pl. a lángdiagram exportálási beállításai). Próbálja meg újratölteni az oldalt. Elnézést kérünk a kellemetlenségért.",
+      "title": "Hiba történt a bővítmény beállításainak lekérésekor!"
     },
-    "title": ""
+    "title": "Eltérési lángdiagram a következőhöz: {{serviceName}} ({{profileMetricType}})"
   },
   "error-page": {
-    "banner-message": "",
-    "banner-title": "",
-    "title": ""
+    "banner-message": "Próbálja meg frissíteni az oldalt, vagy ha a hiba továbbra is fennáll, keresse fel a szervezete rendszergazdáját. Elnézést kérünk a kellemetlenségért.",
+    "banner-title": "Végzetes hiba!",
+    "title": "Grafana profilrészletezés"
   },
   "explorer": {
     "exploration-type": {
-      "all-services": "",
-      "all-services-description": "",
-      "diff-flame-graph": "",
-      "diff-flame-graph-description": "",
-      "favorites": "",
-      "favorites-description": "",
-      "flame-graph": "",
-      "flame-graph-description": "",
-      "label": "",
-      "labels": "",
-      "labels-description": "",
-      "profile-types": "",
-      "profile-types-description": ""
+      "all-services": "Minden szolgáltatás",
+      "all-services-description": "Az összes szolgáltatás áttekintése bármely profiltípus esetén",
+      "diff-flame-graph": "Eltérési lángdiagram",
+      "diff-flame-graph-description": "Összehasonlíthatja a két lángdiagram közötti eltéréseket",
+      "favorites": "Kedvencek",
+      "favorites-description": "A kedvenc vizualizációk áttekintése",
+      "flame-graph": "Lángdiagram",
+      "flame-graph-description": "Egyetlen szolgáltatás lángdiagramja",
+      "label": "Felfedezés",
+      "labels": "Címkék",
+      "labels-description": "Egyetlen szolgáltatás címkéinek böngészése és szűrése",
+      "profile-types": "Profiltípusok",
+      "profile-types-description": "Egy adott szolgáltatáshoz tartozó összes profiltípus áttekintése"
     },
     "header": {
-      "add-recording-rule": "",
-      "recording-rules-tooltip": "",
-      "settings-tooltip": "",
-      "share-tooltip": "",
-      "upload-tooltip": "",
-      "view-recording-rules": ""
+      "add-recording-rule": "Rögzítési szabály hozzáadása",
+      "recording-rules-tooltip": "Rögzítési szabályok",
+      "settings-tooltip": "Bérlői beállítások megtekintése/szerkesztése",
+      "share-tooltip": "Megosztható hivatkozás másolása a vágólapra",
+      "upload-tooltip": "Eseti profilok feltöltése",
+      "view-recording-rules": "Rögzítési szabályok megtekintése"
     }
   },
   "export-data": {
-    "aria-label": "",
-    "tooltip": ""
+    "aria-label": "Profiladatok exportálása",
+    "tooltip": "Profiladatok exportálása"
   },
   "export-menu": {
-    "aria-label": "",
-    "error-flamegraph-com": "",
-    "error-loading-profile": "",
-    "error-png": "",
-    "error-pprof": "",
-    "json": "",
-    "json-label": "",
-    "png": "",
-    "png-label": "",
-    "pprof": "",
-    "tooltip": ""
+    "aria-label": "Profiladatok exportálása",
+    "error-flamegraph-com": "A flamegraph.com webhelyre történő exportálás nem sikerült!",
+    "error-loading-profile": "Hiba történt a flamebearer-profiladatok betöltésekor!",
+    "error-png": "A PNG-fájlba történő exportálás nem sikerült!",
+    "error-pprof": "A pprof-fájlba történő exportálás nem sikerült!",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "Profiladatok exportálása"
   },
   "exposed-components": {
-    "loading": ""
+    "loading": "Betöltés…"
   },
   "favorites": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "flame-graph": {
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Hiba történt a profiladatok betöltésekor!",
+    "explain-button": "Lángdiagram magyarázata",
     "profile-id-selector": {
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "name": "",
-      "remove": "",
-      "tooltip": ""
+      "filter-label": "Szűrőcímke",
+      "filter-operator": "Szűrőoperátor",
+      "filter-value": "Szűrőérték",
+      "name": "Profilazonosító",
+      "remove": "Profilazonosító-választó eltávolítása a lekérdezésből",
+      "tooltip": "Egy profilazonosító-választót adott a lángdiagram-lekérdezéshez ({{profileIdSelector}})."
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Előfordulhat, hogy egyes funkciók nem működnek megfelelően (pl. az összecsukott lángdiagramok). Próbálja meg újratölteni az oldalt. Elnézést kérünk a kellemetlenségért.",
+      "title": "Hiba történt a bővítmény beállításainak lekérésekor!"
     },
     "span-selector": {
-      "added": "",
-      "remove": "",
-      "tooltip": ""
+      "added": "Időegység-választó hozzáadva",
+      "remove": "Időegység-választó eltávolítása a lekérdezésből",
+      "tooltip": "Időegység-választót adott a lángdiagram-lekérdezéshez ({{spanSelector}})."
     },
-    "title": ""
+    "title": "{{serviceName}} lángdiagramja ({{profileMetricType}})"
   },
   "function-details": {
     "ai-suggestions": {
-      "analyzing": "",
-      "fetch-error": "",
-      "fetch-error-message": "",
-      "llm-error": "",
-      "llm-error-message": "",
-      "title": ""
+      "analyzing": "Elemzés folyamatban…",
+      "fetch-error": "Hiba történt a profilok lekérése során!",
+      "fetch-error-message": "Elnézést a kellemetlenségért. Kérjük, próbálkozzon újra később.",
+      "llm-error": "A tartalom OpenAI segítségével történő generálása sikertelen volt!",
+      "llm-error-message": "Elnézést kérünk az esetleges kellemetlenségekért. Próbálja újra később, vagy ha a probléma továbbra is fennáll, lépjen kapcsolatba a szervezete rendszergazdájával.",
+      "title": "Kódoptimalizálási javaslatok"
     },
-    "close": "",
+    "close": "bezárás",
     "code": {
-      "breakdown-per-line": "",
-      "file-unavailable": "",
-      "optimize": "",
-      "view-on-github": ""
+      "breakdown-per-line": "Soronkénti részletezés",
+      "file-unavailable": "(a fájlinformációk nem érhetők el)",
+      "optimize": "Kód optimalizálása",
+      "view-on-github": "Megtekintés GitHubon"
     },
-    "commit": "",
+    "commit": "Véglegesítés",
     "commit-option": {
-      "author-date": ""
+      "author-date": "{{author}}, {{date}}"
     },
     "commit-select": {
-      "no-options": ""
+      "no-options": "Nem találhatók véglegesítések"
     },
-    "commit-tooltip": "",
+    "commit-tooltip": "Az alkalmazás azon véglegesített verziója, amelyben a függvény definiálva van. Használja a legördülő menüt egy adott véglegesítés kiválasztásához.",
     "context-menu": {
-      "label": ""
+      "label": "Függvény részletei"
     },
-    "copy-to-clipboard": "",
-    "fetch-error": "",
-    "file": "",
-    "file-path-copied": "",
-    "file-tooltip": "",
-    "function-name": "",
+    "copy-to-clipboard": "Másolás vágólapra",
+    "fetch-error": "Hiba történt a függvény részleteinek lekérésekor!",
+    "file": "Fájl",
+    "file-path-copied": "Fájl elérési útja a vágólapra másolva!",
+    "file-tooltip": "A fájl elérési útja, ahol a függvény definiálva van",
+    "function-name": "Függvénynév",
     "github": {
-      "banner-dismiss": "",
-      "banner-git-ref": "",
-      "banner-labels": "",
-      "banner-language-support": "",
-      "banner-learn-more": "",
-      "banner-title": "",
-      "connect-button": "",
-      "connect-tooltip": "",
-      "connecting": "",
-      "disconnect": "",
-      "view-commit": ""
+      "banner-dismiss": "Elvetés",
+      "banner-git-ref": "Ezeket értelemszerűen a teljes GitHub-kódtár URL-címére, valamint a futó szolgáltatás aktuális <2>git-hivatkozására</2> kell beállítani.",
+      "banner-labels": "A funkció aktiválásához két új címkét kell hozzáadnia a profilok küldésekor: <2>service_repository</2> és <4>service_git_ref</4>. ",
+      "banner-language-support": "Ez a nyelv támogatja <1></1>a GitHub-integrációt.",
+      "banner-learn-more": "További információk",
+      "banner-title": "Integráció a GitHubbal",
+      "connect-button": "Kapcsolódás a következőhöz: {{name}}",
+      "connect-tooltip": "A kapcsolódás után a GitHub-kód csak a böngészőnek ezen munkamenetéből lesz elérhető.",
+      "connecting": "Kapcsolódás a GitHubhoz…",
+      "disconnect": "Kapcsolat bontása a GitHubbal",
+      "view-commit": "Véglegesítés megtekintése"
     },
     "github-callback": {
-      "logging-in": "",
-      "title": ""
+      "logging-in": "Bejelentkezés a GitHubra…",
+      "title": "GitHub-bejelentkezés"
     },
-    "not-available": "",
+    "not-available": "-",
     "override": {
-      "add": "",
-      "add-title": "",
-      "alert-debug": "",
-      "alert-labels": "",
-      "alert-title": "",
-      "aria-label": "",
-      "data-source": "",
-      "delete": "",
-      "edit": "",
-      "edit-title": "",
-      "git-ref-label": "",
-      "git-ref-placeholder": "",
-      "remove-all": "",
-      "remove-all-confirm": "",
-      "repository-label": "",
-      "repository-placeholder": "",
-      "repository-required": "",
-      "root-path": "",
-      "root-path-placeholder": "",
-      "service-name": "",
-      "user-set": ""
+      "add": "Hozzáadás",
+      "add-title": "Új kódtáradatok felülbírálása",
+      "alert-debug": "Hibakeresési célból manuálisan is megadhatja a kódtár adatait ezen az űrlapon. Az egyedi érték a böngésző helyi tárolójába lesz mentve az adott adatforráshoz és szolgáltatásnévhez.",
+      "alert-labels": "A GitHub-integráció aktiválásához két új címkét kell hozzáadnia a profilok küldésekor: <1>service_repository</1> és <3>service_git_ref</3>.",
+      "alert-title": "GitHub-integrációs címkék",
+      "aria-label": "adattár beállításainak felülbírálása",
+      "data-source": "Adatforrás",
+      "delete": "Felülbírálás törlése",
+      "edit": "Szerkesztés",
+      "edit-title": "Adattárrészletek felülbírálásának szerkesztése",
+      "git-ref-label": "service_git_ref (véglegesítési hivatkozás)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Minden felülbírálás eltávolítása",
+      "remove-all-confirm": "Összes eltávolítása",
+      "repository-label": "service_repository (adattár URL-címe) – kötelező",
+      "repository-placeholder": "Adja meg a GitHub-adattár nevét (pl.: https://github.com/szervezet/adattar)",
+      "repository-required": "Az adattár nevének megadása kötelező",
+      "root-path": "Gyökérkönyvtár elérési útja",
+      "root-path-placeholder": "Adja meg a gyökérkönyvtár elérési útját",
+      "service-name": "Szolgáltatásnév",
+      "user-set": "(felhasználó által beállítva)"
     },
-    "repository": "",
-    "repository-tooltip": "",
-    "start-line": "",
-    "start-line-tooltip": "",
-    "title": ""
+    "repository": "Adattár",
+    "repository-tooltip": "A kiválasztott szolgáltatáshoz konfigurált adattár",
+    "start-line": "Kezdősor",
+    "start-line-tooltip": "A sor, ahol a függvény definíciója kezdődik",
+    "title": "Függvény részletei"
   },
   "give-feedback": {
-    "button": "",
-    "tooltip": ""
+    "button": "Visszajelzés küldése",
+    "tooltip": "Ossza meg véleményét a Grafana profilozási funkciójáról."
   },
   "grid": {
     "empty-state": {
-      "no-results": ""
+      "no-results": "Nincs találat"
     },
     "error": {
-      "title": ""
+      "title": "Lekérdezési hiba!"
     },
     "exemplars": {
-      "view-profile": ""
+      "view-profile": "Profil megtekintése"
     },
     "layout": {
-      "aria-label": "",
-      "grid": "",
-      "rows": ""
+      "aria-label": "Elrendezésváltó",
+      "grid": "Rács",
+      "rows": "Sorok"
     },
     "no-data": {
-      "label": ""
+      "label": "Adat nélküli panelek elrejtése"
     },
     "panel-type": {
-      "aria-label": "",
-      "histograms": "",
-      "maxima": "",
-      "time-series": "",
-      "totals": ""
+      "aria-label": "Paneltípusváltó",
+      "histograms": "Hisztogramok",
+      "maxima": "Maximumok",
+      "time-series": "Idősor",
+      "totals": "Összesítések"
     },
     "quick-filter": {
-      "aria-label": "",
-      "clear": ""
+      "aria-label": "Gyorsszűrő",
+      "clear": "Keresés törlése"
     }
   },
   "labels": {
     "compare": {
-      "clear-tooltip": "",
-      "tooltip-empty": "",
-      "tooltip-ready": "",
-      "tooltip-select-baseline": "",
-      "tooltip-select-comparison": "",
-      "button_one": "",
-      "button_other": ""
+      "clear-tooltip": "Összehasonlítási kijelölés törlése",
+      "tooltip-empty": "A lángdiagramok összehasonlításához jelöljön ki egy referencia- és egy összehasonlítási panelt is",
+      "tooltip-ready": "„{{baseline}}” és „{{comparison}}” összehasonlítása",
+      "tooltip-select-baseline": "Válasszon ki egy másik panelt a(z) „{{label}}” elemmel való összehasonlításhoz",
+      "tooltip-select-comparison": "Válasszon ki egy másik panelt a(z) „{{label}}” elemmel való összehasonlításhoz",
+      "button_one": "Összehasonlítás ({{count}}/2)",
+      "button_other": "Összehasonlítás ({{count}}/2)"
     },
     "data-source": {
-      "all": "",
-      "test-success": ""
+      "all": "Összes",
+      "test-success": "OK"
     },
     "filter": {
-      "clear-tooltip": "",
-      "exclude": "",
-      "exclude-tooltip": "",
-      "include": "",
-      "include-tooltip": ""
+      "clear-tooltip": "„{{label}}” törlése a szűrőkből",
+      "exclude": "Kizárás",
+      "exclude-tooltip": "„{{label}}” kizárása a szűrőkből",
+      "include": "Tartalmazza",
+      "include-tooltip": "„{{label}}” belefoglalása a szűrőkbe"
     },
     "grid": {
-      "no-results": "",
-      "refresh-tooltip": ""
+      "no-results": "Nincs találat",
+      "refresh-tooltip": "Kattintson ide a képernyőn lévő összes panel teljes frissítéséhez"
     },
     "stats-panel": {
-      "baseline": "",
-      "baseline-description": "",
-      "comparison": "",
-      "comparison-description": "",
-      "total": ""
+      "baseline": "Alapvonal",
+      "baseline-description": "Kattintson ide a(z) „{{value}}” kiválasztásához referenciaként az összehasonlításhoz",
+      "comparison": "Összehasonlítás",
+      "comparison-description": "Kattintson ide a(z) „{{value}}” kiválasztásához célként az összehasonlításhoz",
+      "total": "{{statsDescription}}: {{total}}"
     }
   },
   "onboarding": {
     "empty-loading": {
-      "title": ""
+      "title": "Betöltés…"
     },
     "modal": {
       "billing": {
-        "description": "",
-        "title": ""
+        "description": "A Grafana Cloud Profiles használatára a <2>Grafana Cloud profilozásra vonatkozó díjszabása</2> vonatkozik.<br/>További információért olvassa el a bejelentésről szóló <6>blogbejegyzést</6>.",
+        "title": "A számlázás menete"
       },
       "cloud": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Használja a <2>Grafana Alloyt</2> vagy a <6>Pyroscope SDK-kat</6>, hogy elküldje alkalmazásainak profilozási adatait a Grafana Cloudba.",
+          "title": "Profilozás hozzáadása az alkalmazáshoz"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "A Grafana Cloud hitelesítő adatait a <1>Grafana Cloud Stack beállításaiban</1> találja meg.",
+          "title": "Alkalmazások konfigurálása"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Ha végzett a kezdeti beállításokkal, frissítse az oldalt a profilozási adatok megtekintéséhez.",
+          "title": "Nyerjen betekintést a teljesítménybe"
         }
       },
       "decrease-latency": {
-        "description": "",
-        "title": ""
+        "description": "Őrizze meg a sebességet és a hatékonyságot, és javítsa az alkalmazások teljesítményét. A mai versenyközpontú digitális világban a késleltetés csökkentése közvetlenül növeli a bevételt.",
+        "title": "Késleltetés csökkentése"
       },
-      "how-to-get-started": "",
+      "how-to-get-started": "Első lépések",
       "reduce-costs": {
-        "description": "",
-        "title": ""
+        "description": "Az erőforrás-használat kódszintű átláthatóságának köszönhetően felismerheti a CPU-csúcsokat, a memóriaszivárgásokat és az egyéb hatékonysági problémákat. A csapatok így optimalizálhatják a kódot, és csökkenthetik az infrastruktúra költségeit.",
+        "title": "Költségek csökkentése"
       },
       "resolve-incidents": {
-        "description": "",
-        "title": ""
+        "description": "Rövidítse le a hibajavítás átlagos idejét (MTTR) azáltal, hogy a folyamatos profilozási adatokat metrikákkal, naplófájlokkal és nyomkövetésekkel kapcsolja össze a kiváltó okok gyors azonosításához.",
+        "title": "Incidensek gyorsabb elhárítása"
       },
       "self-hosted": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Telepítse a <1>Pyroscope-kiszolgálót</1> a saját infrastruktúráján. Vagy ha felhőalapú szolgáltatást szeretne használni, keresse meg a Grafana Cloud hitelesítő adatait a <5>Grafana Cloud Stack beállításaiban</5>.",
+          "title": "Pyroscope-kiszolgáló beállítása"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Adjon hozzá egy új <1>Pyroscope-adatforrást</1>. Használja a Pyroscope-kiszolgáló URL-címét és a megfelelő biztonsági hitelesítő adatokat, ha Grafana Cloud-profilokat használ.",
+          "title": "A Grafana konfigurálása"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Használja a <2>Grafana Alloyt</2> vagy a <6>Pyroscope SDK-kat</6>, hogy elküldje alkalmazásainak profilozási adatait a Grafana Cloudba.",
+          "title": "Profilozás hozzáadása az alkalmazáshoz"
         }
       },
-      "subtitle": "",
-      "title": "",
-      "what-you-can-do": ""
+      "subtitle": "Optimalizálja az infrastruktúra-költségeket, egyszerűsítse a hibakeresést, és növelje az alkalmazások teljesítményét",
+      "title": "Üdvözöljük a Grafana profilrészletezőjében",
+      "what-you-can-do": "Mire használható?"
     },
     "no-data-source": {
-      "alert-message": "",
-      "alert-title": "",
-      "title": ""
+      "alert-message": "Ehhez a bővítményhez Pyroscope-adatforrás szükséges. Kérjük, <2>adjon hozzá a Grafana-példányához egy Pyroscope-adatforrást, és konfigurálja</2>.",
+      "alert-title": "Hiányzó Pyroscope-adatforrás!",
+      "title": "Grafana profilrészletezés"
     },
     "page": {
-      "close": "",
-      "nav": ""
+      "close": "Bezárás",
+      "nav": "Bevezetés"
     }
   },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
   "panel-box": {
-    "cancel-query": "",
-    "loading-bar": "",
-    "panel-status": "",
-    "stop-streaming": "",
-    "streaming": "",
-    "untitled": ""
+    "cancel-query": "A lekérdezés megszakítása",
+    "loading-bar": "Panel betöltési sávja",
+    "panel-status": "Panel állapota",
+    "stop-streaming": "Adatfolyam leállítása",
+    "streaming": "Adatfolyam",
+    "untitled": "Névtelen"
   },
   "panel-menu": {
-    "aria-label-no-title": "",
-    "aria-label-with-title": "",
-    "title": ""
+    "aria-label-no-title": "Elnevezés nélküli panel menüje",
+    "aria-label-with-title": "{{title}} elnevezésű panel menüje",
+    "title": "Menü"
   },
   "plugin-info": {
-    "aria-label": "",
-    "changelog": "",
-    "commit-sha": "",
-    "contribute": "",
-    "documentation": "",
-    "grafana-version": "",
-    "last-update": "",
-    "report-issue": "",
-    "title": "",
-    "version": ""
+    "aria-label": "Bővítményinformáció",
+    "changelog": "Változásnapló",
+    "commit-sha": "Véglegesítési azonosító (SHA): {{shortCommitSha}}",
+    "contribute": "Hozzájárulás",
+    "documentation": "Dokumentáció",
+    "grafana-version": "Grafana {{edition}}, verzió: {{version}} ({{env}})",
+    "last-update": "Legutóbbi frissítés: {{updated}}",
+    "report-issue": "Probléma bejelentése",
+    "title": "Bővítményinformáció",
+    "version": "Grafana profilrészletező, verzió: {{version}}"
   },
   "query-analysis": {
-    "blocks": "",
-    "data-in-time-range": "",
-    "deduplication": "",
-    "index-store": "",
-    "no": "",
-    "profiles": "",
-    "profiles-store": "",
-    "query-info-aria-label": "",
-    "replicas": "",
-    "samples": "",
-    "series": "",
-    "series-in-query": "",
-    "stored-data-in-time-range": "",
-    "symbols-store": "",
-    "yes": ""
+    "blocks": "Blokkok",
+    "data-in-time-range": "Időtartomány adatai",
+    "deduplication": "Duplikátumok törlése",
+    "index-store": "Indextárhely",
+    "no": "nem",
+    "profiles": "Profilok",
+    "profiles-store": "Profiltárhely",
+    "query-info-aria-label": "Lekérdezési információk",
+    "replicas": "Replikák",
+    "samples": "Minták",
+    "series": "Idősorok",
+    "series-in-query": "Idősorok a lekérdezésben",
+    "stored-data-in-time-range": "Tárolt adatok az időintervallumban: {{totalBytesInTimeRange}}",
+    "symbols-store": "Szimbólumtárhely",
+    "yes": "igen"
   },
   "query-builder": {
     "chiclet": {
-      "edit-attribute": "",
-      "edit-operator": "",
-      "filter": "",
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "partial-filter": "",
-      "remove-filter": ""
+      "edit-attribute": "„{{label}}” szerkesztése",
+      "edit-operator": "„{{label}}” szerkesztése",
+      "filter": "Szűrő",
+      "filter-label": "Szűrőcímke",
+      "filter-operator": "Szűrőoperátor",
+      "filter-value": "Szűrőérték",
+      "partial-filter": "Részleges szűrő",
+      "remove-filter": "Szűrő eltávolítása"
     },
-    "error-load": "",
-    "execute": "",
-    "execute-tooltip": "",
-    "loading": "",
-    "no-value": "",
-    "nothing-to-execute-tooltip": "",
+    "error-load": "Váratlan hiba történt a betöltés során! Próbálkozzon újra.",
+    "execute": "Végrehajtás",
+    "execute-tooltip": "Új lekérdezés végrehajtása",
+    "loading": "Betöltés…",
+    "no-value": "(nincs érték)",
+    "nothing-to-execute-tooltip": "Nincs végrehajtandó művelet, minden szűrő alkalmazva lett",
     "operators": {
-      "in": "",
-      "in-description": "",
-      "is-empty": "",
-      "not-in": "",
-      "not-in-description": "",
-      "regex-match-description": "",
-      "regex-not-match-description": ""
+      "in": "benne van",
+      "in-description": "A következők egyike",
+      "is-empty": "üres",
+      "not-in": "nincs benne",
+      "not-in-description": "Nem a következők egyike",
+      "regex-match-description": "Illeszkedik a reguláris kifejezésre",
+      "regex-not-match-description": "Nem illeszkedik a reguláris kifejezésre"
     },
     "placeholder": {
-      "filter-add": "",
-      "select-label": "",
-      "select-operator": "",
-      "select-value": "",
-      "select-values": "",
-      "type-value": ""
+      "filter-add": "Szűrés címkeértékek alapján…",
+      "select-label": "Válasszon címkét…",
+      "select-operator": "Válasszon operátort…",
+      "select-value": "Válasszon értéket…",
+      "select-values": "Válasszon értékeket…",
+      "type-value": "Írjon be egy reguláris kifejezést…"
     },
-    "suggestions-disabled": "",
-    "suggestions-none": ""
+    "suggestions-disabled": "Ehhez a címkéhez a javaslatok le vannak tiltva.",
+    "suggestions-none": "Nem érhető el javaslat."
   },
   "recording-rules": {
     "delete": {
-      "aria-label": "",
-      "body": "",
-      "confirm": "",
-      "title": ""
+      "aria-label": "Rögzítési szabály törlése",
+      "body": "Biztosan törölni szeretné a(z) {{metricName}} rögzítési szabályt?",
+      "confirm": "Igen",
+      "title": "Rögzítési szabály törlése"
     },
     "details": {
-      "filters": "",
-      "no": "",
-      "no-labels": "",
-      "read-only": "",
-      "yes": ""
+      "filters": "Szűrők",
+      "no": "Nem",
+      "no-labels": "Nincs címke",
+      "read-only": "Csak olvasható",
+      "yes": "Igen"
     },
     "empty": {
-      "description": "",
-      "message": ""
+      "description": "Nyisson meg egy lángdiagramot, kattintson a tetején lévő „összesen” blokkra, majd az új szabály meghatározásához válassza a környezeti menü „Rögzítési szabály létrehozása” pontját.",
+      "message": "Nincsenek rögzítési szabályok"
     },
     "error": {
-      "feature-required": "",
-      "message": "",
-      "title": ""
+      "feature-required": "Ehhez a funkcióhoz engedélyezett „recording_rules” jelzővel futó Pyroscope szükséges.",
+      "message": "Hiba történt a rögzítési szabályok lekérésekor",
+      "title": "Hiba történt a rögzítési szabályok lekérésekor"
     },
     "table": {
-      "actions": "",
-      "all-services": "",
-      "function-name": "",
-      "labels": "",
-      "name": "",
-      "none": "",
-      "profile-type": "",
-      "readonly-tooltip": "",
-      "service-name": "",
-      "total-all-functions": ""
+      "actions": "Műveletek",
+      "all-services": "Minden szolgáltatás",
+      "function-name": "Függvénynév",
+      "labels": "Címkék",
+      "name": "Név",
+      "none": "Nincs",
+      "profile-type": "Profil típusa",
+      "readonly-tooltip": "Ez a szabály a bérlői beállításokkal lett létrehozva, így nem törölhető.",
+      "service-name": "Szolgáltatás neve",
+      "total-all-functions": "Összesen (minden függvény)"
     },
-    "title": ""
+    "title": "Rögzítési szabályok"
   },
   "saved-searches": {
     "load": {
-      "no-searches": "",
-      "no-searches-tooltip": "",
-      "remove-tooltip": "",
-      "saved-query-tooltip": "",
-      "select": "",
-      "select-pyroscope-query": "",
-      "title": "",
-      "tooltip": ""
+      "no-searches": "Nincsenek megjeleníthető mentett keresések.",
+      "no-searches-tooltip": "Nincsenek betölthető mentett keresések",
+      "remove-tooltip": "Eltávolítás",
+      "saved-query-tooltip": "Mentett lekérdezés betöltése",
+      "select": "Kiválasztás",
+      "select-pyroscope-query": "Válasszon egy Pyroscope-lekérdezést.",
+      "title": "Korábban mentett keresés betöltése",
+      "tooltip": "Mentett keresés betöltése"
     },
     "save": {
-      "cancel": "",
-      "close": "",
-      "description-label": "",
-      "error-message": "",
-      "existing-search-warning": "",
-      "info-message": "",
-      "save": "",
-      "saved-queries-tooltip": "",
-      "success-body": "",
-      "success-message": "",
-      "success-title": "",
-      "title": "",
-      "title-label": "",
-      "tooltip": ""
+      "cancel": "Mégse",
+      "close": "Bezárás",
+      "description-label": "Leírás",
+      "error-message": "Váratlan hiba történt a keresés mentése közben.",
+      "existing-search-warning": "Már létezik egy korábban mentett keresés ugyanezzel a lekérdezéssel: {{title}}",
+      "info-message": "A mentett kereséseket a böngésző helyileg tárolja, így azok csak ezen az eszközön lesznek elérhetőek.",
+      "save": "Mentés",
+      "saved-queries-tooltip": "Mentés a mentett lekérdezések közé",
+      "success-body": "Keresés sikeresen mentve.",
+      "success-message": "Keresés sikeresen mentve.",
+      "success-title": "Sikerült",
+      "title": "Aktuális keresés mentése",
+      "title-label": "Cím",
+      "tooltip": "Keresés mentése"
     }
   },
   "series": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "settings": {
-    "loading": "",
-    "save-button": "",
+    "loading": "Betöltés…",
+    "save-button": "Beállítások mentése",
     "tabs": {
-      "ui-settings": "",
-      "unknown-extension": ""
+      "ui-settings": "Felhasználói felület beállításai",
+      "unknown-extension": "Ismeretlen kiterjesztés"
     },
-    "title": "",
+    "title": "Profilbeállítások (bérlői)",
     "ui": {
       "collapsed-flame-graphs": {
-        "label": "",
-        "toggle": ""
+        "label": "Összecsukott lángdiagramok",
+        "toggle": "Összecsukott lángdiagramok be- és kikapcsolása"
       },
       "enable-function-details": {
-        "label": "",
-        "learn-more": "",
-        "toggle": "",
-        "tooltip": ""
+        "label": "Függvényrészletek engedélyezése",
+        "learn-more": "További információk",
+        "toggle": "Függvényrészletek be- és kikapcsolása",
+        "tooltip": "A függvényrészletek funkciója lehetővé teszi az erőforrás-használat forráskódsorokhoz való rendelését. Ha a GitHub-integráció konfigurálva van, a forráskód letöltődik a GitHubról."
       },
       "fetch-error": {
-        "message": "",
-        "title": ""
+        "message": "Próbálja meg újratölteni az oldalt. Elnézést kérünk a kellemetlenségért.",
+        "title": "Hiba történt a bővítmény beállításainak lekérésekor!"
       },
       "flame-graph": {
-        "label": ""
+        "label": "Lángdiagram"
       },
       "function-details": {
-        "label": ""
+        "label": "Függvény részletei"
       },
       "max-nodes": {
-        "label": ""
+        "label": "Csomópontok maximális száma"
       },
       "metrics-from-profiles": {
-        "disable-hint": "",
-        "disable-warning": "",
-        "enable-warning": "",
-        "label": "",
-        "toggle": "",
-        "toggle-label": "",
-        "tooltip": ""
+        "disable-hint": "Az adatexportálás leállításához a funkció letiltása előtt törölje az összes kapcsolódó rögzítési szabályt.",
+        "disable-warning": "A funkció letiltása csak elrejti azt a felhasználói felületről. A meglévő rögzítési szabályok nem törlődnek. Ezek a szabályok aktívak maradnak, és továbbra is exportálják a metrikákat, ami hatással lesz a számlájára.",
+        "enable-warning": "A funkció engedélyezésével rögzítési szabályokat határozhat meg a profilrészletezőben. Minden létrehozott rögzítési szabály új metrikákat küld a Grafana Cloud-példányába, ami növeli a Grafana Mimir adathasználatát, és hatással lehet a számlájára.",
+        "label": "Metrikák profilokból",
+        "toggle": "Profilalapú metrikák engedélyezése",
+        "toggle-label": "Profilalapú metrikák engedélyezése",
+        "tooltip": "Lehetővé teszi rögzítési szabályok létrehozását profilokból"
       }
     }
   },
   "timeseries": {
     "menu": {
-      "exemplars": "",
-      "open-in-explore": "",
-      "scale-linear": "",
-      "scale-log2": "",
-      "scale-type": ""
+      "exemplars": "Mintapéldányok",
+      "open-in-explore": "Megnyitás az Explore-ban",
+      "scale-linear": "Lineáris",
+      "scale-log2": "Log2",
+      "scale-type": "Skála típusa"
     }
   },
   "variables": {
     "data-source": {
-      "label": ""
+      "label": "Adatforrás"
     },
     "favorite": {
-      "label": ""
+      "label": "🔖 Kedvenc"
     },
     "filters": {
-      "label": ""
+      "label": "Szűrők"
     },
     "group-by": {
-      "label": "",
-      "labels-selector": "",
-      "other-labels-placeholder": "",
-      "other-labels-selector": "",
-      "refresh-tooltip": "",
-      "select-label-placeholder": ""
+      "label": "Csoportosítás címkék szerint",
+      "labels-selector": "Címkeválasztó",
+      "other-labels-placeholder": "Egyéb címkék",
+      "other-labels-selector": "Egyéb címkék választója",
+      "refresh-tooltip": "Kattintson az összes címke frissítéséhez",
+      "select-label-placeholder": "Címke kiválasztása"
     },
     "profile-id-selector": {
-      "label": ""
+      "label": "Profilazonosító-választó"
     },
     "profile-metric": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Profilmetrikák listája",
+      "label": "Profil típusa",
+      "loading": "Betöltés…",
+      "placeholder_one": "Válasszon egy profilmetrikát ({{count}})",
+      "placeholder_other": "Válasszon egy profilmetrikát ({{count}})"
     },
     "service-name": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Szolgáltatások listája",
+      "label": "Szolgáltatás",
+      "loading": "Szolgáltatások betöltése…",
+      "unmatched-tooltip": "",
+      "placeholder_one": "Válasszon egy szolgáltatást ({{count}})",
+      "placeholder_other": "Válasszon egy szolgáltatást ({{count}})"
     },
     "span-selector": {
-      "label": ""
+      "label": "Időegység-választó"
     }
   }
 }

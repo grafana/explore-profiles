@@ -54,7 +54,7 @@
 
 **Plugin (build, .config, E2E):** See **`.config/AGENTS/instructions.md`** — do not modify `.config`.
 
-- **Commands** — After code changes: `yarn lint`, `yarn typecheck`.
+- **Commands** — After code changes: `pnpm run lint`, `pnpm run typecheck`.
 - **Edits** — Large replacements (many lines) are fewer tool calls when they succeed but often fail on whitespace/formatting. Smaller, incremental steps match more reliably. Prefer smaller steps for big or multi-part changes; one large replace is fine when the snippet is short and you have the exact content from the file.
 - **Avoid** — Reading whole large files for a small change (see Code anchors; grep first). One giant multi-file replace without verifying exact content.
 - **Frontend security** — Follow workspace rules: HTML sanitization (DOMPurify), safe URL APIs / `textUtil.sanitizeUrl` and whatever else you think is necessary.

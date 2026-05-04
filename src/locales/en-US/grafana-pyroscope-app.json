@@ -11,11 +11,16 @@
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "Cannot compute diff",
+      "no-common-profile-types": "The uploaded profiles have no common profile types. Upload profiles with matching types to use the diff view.",
+      "profile": "Profile"
+    },
     "profile-type-selector": {
       "label": "Profile"
     },
     "tabs": {
-      "comparison-view": "Comparison view",
+      "diff-view": "Diff view",
       "single-view": "Single view"
     },
     "view": {
@@ -417,6 +422,13 @@
       "close": "Close",
       "nav": "Onboarding"
     }
+  },
+  "optimize-code": {
+    "context": {
+      "title": "Annotated source code and optimization instructions"
+    },
+    "error": "Failed to build optimization context",
+    "prompt": "Optimize this code based on the profiling annotations."
   },
   "panel-box": {
     "cancel-query": "Cancel query",

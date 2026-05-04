@@ -1,8 +1,8 @@
 import { SelectableValue } from '@grafana/data';
 import { displayError } from '@shared/domain/displayStatus';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { adHocProfileClient } from '../infrastructure/adHocProfileClient';
+import { createAdHocProfileClient } from '../infrastructure/adHocProfileClient';
 import { AdHocProfile } from './AdHocProfile';
 
 const DEFAULT_PROFILE_DATA: AdHocProfile = {
@@ -15,19 +15,20 @@ const DEFAULT_PROFILE_DATA: AdHocProfile = {
 export function useUploadFile() {
   const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState(DEFAULT_PROFILE_DATA);
+  const client = useMemo(() => createAdHocProfileClient(), []);
 
   useEffect(() => {
     return () => {
-      adHocProfileClient.abort();
+      client.abort();
     };
-  }, []);
+  }, [client]);
 
   const removeFile = useCallback(() => {
-    adHocProfileClient.abort();
+    client.abort();
 
     setIsLoading(false);
     setProfileData(DEFAULT_PROFILE_DATA);
-  }, []);
+  }, [client]);
 
   const processFile = useCallback(
     async (file: File) => {
@@ -36,28 +37,21 @@ export function useUploadFile() {
       try {
         setIsLoading(true);
 
-        const data = await adHocProfileClient.uploadSingle(file);
+        const data = await client.uploadSingle(file);
 
         setProfileData(data);
       } catch (error) {
         setProfileData(DEFAULT_PROFILE_DATA);
 
-        if (!adHocProfileClient.isAbortError(error)) {
+        if (!client.isAbortError(error)) {
           displayError(error as Error, ['Error while uploading profile!', (error as Error).message]);
         }
       }
 
       setIsLoading(false);
     },
-    [removeFile]
+    [client, removeFile]
   );
-
-  const removeProfile = () => {
-    adHocProfileClient.abort();
-
-    setIsLoading(false);
-    setProfileData((prevData) => ({ ...prevData, profile: null }));
-  };
 
   const selectProfileType = useCallback(
     async (option: SelectableValue<string>) => {
@@ -67,29 +61,32 @@ export function useUploadFile() {
         return;
       }
 
-      removeProfile();
+      client.abort();
+      setIsLoading(false);
+      setProfileData((prevData) => ({ ...prevData, profile: null }));
 
       setIsLoading(true);
 
       try {
-        const data = await adHocProfileClient.get(profileData.id, profileType);
+        const data = await client.get(profileData.id, profileType);
 
         setProfileData((prevData) => ({
           ...prevData,
           profile: data.profile,
         }));
       } catch (error) {
-        if (!adHocProfileClient.isAbortError(error)) {
+        if (!client.isAbortError(error)) {
           displayError(error as Error, ['Error while fetching profile!', (error as Error).message]);
         }
       }
 
       setIsLoading(false);
     },
-    [profileData.id, profileData.profileTypes]
+    [client, profileData.id, profileData.profileTypes]
   );
 
   return {
+    id: profileData.id,
     processFile,
     profileTypes: profileData.profileTypes,
     selectProfileType,

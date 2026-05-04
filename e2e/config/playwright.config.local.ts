@@ -7,6 +7,22 @@ import { config } from './playwright.config.common';
 const shouldAuthenticate = !ENV_VARS.E2E_BASE_URL.startsWith('http://localhost');
 const failOnUncaughtExceptions = false;
 
+// Recording-rules tests modify shared plugin settings and must not run in parallel
+// with settings-view tests (which reset all settings in afterEach). We isolate them
+// into a separate project that runs after the main tests complete.
+const recordingRulesProject = (deps: string[]) => ({
+  name: 'recording-rules',
+  dependencies: deps,
+  testDir: path.join(process.cwd(), 'e2e', 'tests'),
+  testMatch: ['recording-rules/**'],
+  use: {
+    ...devices['Desktop Chrome'],
+    viewport: CHROMIUM_VIEWPORT,
+    failOnUncaughtExceptions,
+    ...(shouldAuthenticate ? { storageState: AUTH_FILE } : {}),
+  },
+});
+
 const projects = shouldAuthenticate
   ? [
       {
@@ -17,6 +33,7 @@ const projects = shouldAuthenticate
         name: 'chromium',
         dependencies: ['authenticate'],
         testDir: path.join(process.cwd(), 'e2e', 'tests'),
+        testIgnore: ['recording-rules/**'],
         use: {
           ...devices['Desktop Chrome'],
           viewport: CHROMIUM_VIEWPORT,
@@ -24,16 +41,19 @@ const projects = shouldAuthenticate
           failOnUncaughtExceptions,
         },
       },
+      recordingRulesProject(['chromium']),
     ]
   : [
       {
         name: 'chromium',
+        testIgnore: ['recording-rules/**'],
         use: {
           ...devices['Desktop Chrome'],
           viewport: CHROMIUM_VIEWPORT,
           failOnUncaughtExceptions,
         },
       },
+      recordingRulesProject(['chromium']),
     ];
 
 export default config({

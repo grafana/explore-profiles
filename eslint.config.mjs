@@ -11,7 +11,6 @@ export default [
     ignores: [
       '.config/**',
       '**/.eslintcache',
-      '.yarn/**',
       'coverage/**',
       'dist/**',
       'e2e/test-reports/**',
