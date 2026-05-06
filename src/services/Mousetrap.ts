@@ -2,6 +2,14 @@
 /**
  * Originally from https://github.com/ccampbell/mousetrap
  *
+ * Vendored (rather than imported from npm) because the upstream package is
+ * unmaintained (last release 1.6.5, 2017) and we rely on Grafana-specific
+ * behavioral changes from https://github.com/grafana/grafana/pull/88904:
+ *   - sequence chaining (e.g. `t left left right` without re-pressing `t`)
+ *   - ignoring held-key repeats (`event.repeat`)
+ *   - a sequence-reset timing fix
+ * Mirrors the pattern used by Grafana core and logs drilldown.
+ *
  * Copyright 2012-2017 Craig Campbell
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
