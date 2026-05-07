@@ -295,7 +295,7 @@ export class ExploreProfilesPage extends PyroscopePage {
     // weirdly the mouse is on the "Flame graph" panel action at this point
     // so we have to move it for the label to become actionable
     await this.mouse.move(0, 0);
-    await this.getByLabel('Hide panels without data').click();
+    await this.getHideNoDataSwitcher().check({ force: true });
   }
 
   /* Panel type switcher */
