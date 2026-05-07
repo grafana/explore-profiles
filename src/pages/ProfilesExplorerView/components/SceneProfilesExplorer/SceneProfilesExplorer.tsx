@@ -25,6 +25,7 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useState } from 'react';
 
+import { setupKeyboardShortcuts } from '../../../../services/keyboardShortcuts';
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
@@ -194,6 +195,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
+    const clearKeyBindings = setupKeyboardShortcuts(this);
 
     if (!this.state.explorationType) {
       this.setExplorationType({
@@ -202,6 +204,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
 
     return () => {
+      clearKeyBindings();
       eventsSub.unsubscribe();
       varSub.unsubscribe();
     };
