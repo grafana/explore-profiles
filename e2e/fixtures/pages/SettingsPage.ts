@@ -62,15 +62,13 @@ export class SettingsPage extends PyroscopePage {
   }
 
   getMetricsFromProfilesCheckbox() {
-    return this.page.getByTestId('metrics-from-profiles').getByLabel('Enable metrics from profiles');
+    return this.page.getByTestId('metrics-from-profiles').getByRole('switch', {
+      name: 'Enable metrics from profiles',
+    });
   }
 
   getEnableFlamegraphDotComCheckbox() {
     return this.getExportSettings().getByLabel('Toggle export to flamegraph.com');
-  }
-
-  getEnableFunctionDetailsCheckbox() {
-    return this.getFunctionDetailsSettings().getByLabel('Toggle function details');
   }
 
   getSaveSettingsButton() {
