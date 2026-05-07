@@ -67,6 +67,18 @@ export class SettingsPage extends PyroscopePage {
     });
   }
 
+  async setMetricsFromProfilesEnabled(enabled: boolean) {
+    const checkbox = this.getMetricsFromProfilesCheckbox();
+    const isChecked = await checkbox.isChecked();
+
+    if (isChecked !== enabled) {
+      await this.page
+        .getByTestId('metrics-from-profiles')
+        .locator('label[aria-label="Enable metrics from profiles"]')
+        .click();
+    }
+  }
+
   getEnableFlamegraphDotComCheckbox() {
     return this.getExportSettings().getByLabel('Toggle export to flamegraph.com');
   }
