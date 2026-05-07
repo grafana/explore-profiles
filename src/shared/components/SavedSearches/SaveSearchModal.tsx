@@ -78,9 +78,11 @@ export function SaveSearchModal({ dsUid, onClose, sceneRef }: Props) {
             <Box flex={1} marginBottom={2}>
               {existingSearch && (
                 <Alert title="" severity="warning">
-                  <Trans i18nKey="saved-searches.save.existing-search-warning">
-                    There is a previously saved search with the same query: {{ title: existingSearch.title }}
-                  </Trans>
+                  {t(
+                    'saved-searches.save.existing-search-warning',
+                    'There is a previously saved search with the same query: {{title}}',
+                    { title: existingSearch.title }
+                  )}
                 </Alert>
               )}
               <Field label={t('saved-searches.save.title-label', 'Title')} noMargin htmlFor="save-search-title">
