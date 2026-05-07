@@ -12,6 +12,8 @@ import { useBuildPyroscopeQuery } from '../../useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
 import { convertPyroscopeToVariableFilter } from './filters-ops';
 
+const FILTERS_LABEL_DEFAULT = 'Filters';
+
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
   private initialFilters?: AdHocVariableFilter[];
@@ -20,7 +22,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
     super({
       key,
       name: key,
-      label: t('variables.filters.label', 'Filters'),
+      label: FILTERS_LABEL_DEFAULT,
       filters: FiltersVariable.DEFAULT_VALUE,
       expressionBuilder: (filters) => buildFilterExpressionParts(filters),
     });
@@ -39,6 +41,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
   }
 
   onActivate() {
+    this.setState({ label: t('variables.filters.label', FILTERS_LABEL_DEFAULT) });
     this.setInitialValue();
 
     // VariableDependencyConfig does not work :man_shrug: (never called)

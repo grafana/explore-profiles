@@ -13,6 +13,8 @@ import { lastValueFrom } from 'rxjs';
 
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../infrastructure/pyroscope-data-sources';
 
+const PROFILE_METRIC_LABEL_DEFAULT = 'Profile type';
+
 type ProfileMetricOptions = Array<{
   value: string;
   label: string;
@@ -38,7 +40,7 @@ export class ProfileMetricVariable extends QueryVariable {
     super({
       key: 'profileMetricId',
       name: 'profileMetricId',
-      label: t('variables.profile-metric.label', 'Profile type'),
+      label: PROFILE_METRIC_LABEL_DEFAULT,
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ProfileMetricVariable.QUERY_DEFAULT,
       loading: true,
@@ -52,9 +54,10 @@ export class ProfileMetricVariable extends QueryVariable {
   }
 
   onActivate() {
-    if (!this.state.value) {
-      this.setState({ value: ProfileMetricVariable.DEFAULT_VALUE });
-    }
+    this.setState({
+      label: t('variables.profile-metric.label', PROFILE_METRIC_LABEL_DEFAULT),
+      ...(!this.state.value ? { value: ProfileMetricVariable.DEFAULT_VALUE } : {}),
+    });
   }
 
   async update(force = false) {

@@ -328,6 +328,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "button_one": "Comparar ({{count}}/2)",
       "button_many": "",
       "button_other": "Comparar ({{count}}/2)",

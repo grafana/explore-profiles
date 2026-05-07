@@ -130,7 +130,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     ];
   }
 
-  static DEFAULT_EXPLORATION_TYPE = SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS[0].value;
+  /** Must not read `EXPLORATION_TYPE_OPTIONS` here — that getter calls `t()` and runs while the class body initializes (before i18n in embedded lazy chunks). */
+  static DEFAULT_EXPLORATION_TYPE = ExplorationType.ALL_SERVICES;
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
   private initialFilters?: AdHocVariableFilter[];

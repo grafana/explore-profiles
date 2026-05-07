@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
-import { t, Trans } from '@grafana/i18n';
+import { t } from '@grafana/i18n';
 import { Button, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
 import React, { useMemo } from 'react';
@@ -46,16 +46,14 @@ export function CompareControls({ compare, onClickCompare, onClickClear }: Compa
   return (
     <div className={styles.container}>
       <Button
-        arial-label="Compare"
+        aria-label={t('labels.compare.aria-label', 'Compare')}
         className={styles.compareButton}
         variant="primary"
         disabled={compareIsDisabled}
         onClick={compareIsDisabled ? noOp : onClickCompare}
         tooltip={tooltip}
       >
-        <Trans i18nKey="labels.compare.button" values={{ count: compare.size }}>
-          Compare ({{ count: compare.size }}/2)
-        </Trans>
+        {t('labels.compare.button', 'Compare ({{count}}/2)', { count: compare.size })}
       </Button>
 
       <Button
