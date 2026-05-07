@@ -10,6 +10,8 @@ function parseTimeRange(text: string): { from: Date; to: Date } {
 }
 
 test.describe('Keyboard shortcuts', () => {
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
+
   test.describe('Time picker shortcuts', () => {
     test('"t a" converts relative time range to absolute', async ({ exploreProfilesPage, page }) => {
       // Navigate with a relative time range
@@ -79,6 +81,40 @@ test.describe('Keyboard shortcuts', () => {
         const updated = parseTimeRange(newText!);
         expect(updated.from.getTime()).toBeGreaterThan(original.from.getTime());
         expect(updated.to.getTime()).toBeGreaterThan(original.to.getTime());
+      }).toPass({ timeout: 5000 });
+    });
+
+    test('"t c" then "t v" roundtrips the time range via the clipboard', async ({ exploreProfilesPage, page }) => {
+      await exploreProfilesPage.goto(ExplorationType.FlameGraph, new URLSearchParams({ from: 'now-1h', to: 'now' }));
+
+      // Lock down a stable absolute reference range
+      await page.keyboard.press('t');
+      await page.keyboard.press('a');
+
+      const originalText = (await exploreProfilesPage.getTimePickerButton().textContent())!;
+      const original = parseTimeRange(originalText);
+
+      // Copy
+      await page.keyboard.press('t');
+      await page.keyboard.press('c');
+
+      // Shift so paste has something to revert
+      await page.keyboard.press('t');
+      await page.keyboard.press('ArrowLeft');
+
+      await expect(async () => {
+        const shifted = parseTimeRange((await exploreProfilesPage.getTimePickerButton().textContent())!);
+        expect(shifted.from.getTime()).toBeLessThan(original.from.getTime());
+      }).toPass({ timeout: 5000 });
+
+      // Paste — should restore the copied range
+      await page.keyboard.press('t');
+      await page.keyboard.press('v');
+
+      await expect(async () => {
+        const restored = parseTimeRange((await exploreProfilesPage.getTimePickerButton().textContent())!);
+        expect(restored.from.getTime()).toBe(original.from.getTime());
+        expect(restored.to.getTime()).toBe(original.to.getTime());
       }).toPass({ timeout: 5000 });
     });
 
