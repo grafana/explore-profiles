@@ -26,7 +26,7 @@ export function useFlagMetricsFromProfiles(): boolean {
 }
 
 export function useFlagGrafanaAssistantInProfilesDrilldown(): boolean {
-  return useBooleanFlagDetails(grafanaAssistantInProfilesDrilldownKey, false).value;
+  return useBooleanFlagDetails(grafanaAssistantInProfilesDrilldownKey, true).value;
 }
 
 export function getProfilesExemplarsFromOpenFeature(): boolean {
@@ -34,7 +34,7 @@ export function getProfilesExemplarsFromOpenFeature(): boolean {
 }
 
 export function getPyroscopeUTF8LabelNamesFromOpenFeature(): boolean {
-  return getPluginOpenFeatureBoolean(pyroscopeUTF8LabelNamesKey, false);
+  return getPluginOpenFeatureBoolean(pyroscopeUTF8LabelNamesKey, true);
 }
 
 export function getQueryLibraryFromOpenFeature(): boolean {
