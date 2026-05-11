@@ -36,7 +36,7 @@
       "placeholder": "Ask a follow-up question...",
       "send": "Send"
     },
-    "llm-error": "An error occured while generating content using OpenAI!",
+    "llm-error": "An error occurred while generating content using OpenAI!",
     "llm-error-message": "Sorry for any inconvenience, please retry or if the problem persists, contact your organization admin.",
     "reply": {
       "search-node": "Search for this node"
