@@ -1,6 +1,6 @@
 import { PanelMenuItem } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { reportInteraction } from '@grafana/runtime';
+import { reportInteraction, usePluginComponent } from '@grafana/runtime';
 import {
   SceneComponentProps,
   SceneDataQuery,
@@ -8,19 +8,34 @@ import {
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
+  VizPanel,
   VizPanelMenu,
 } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import {
+  ADD_TO_DASHBOARD_COMPONENT_ID,
+  EventOpenAddToDashboard,
+  getPanelData,
+} from '../../domain/actions/addToDashboard';
 import { getExploreUrl } from '../../helpers/getExploreUrl';
 import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
+
+/**
+ * Divider rows must use distinct `text` values: `VizPanelMenu` keys list children from `text`, and
+ * multiple `text: ''` dividers produce duplicate React keys. These are zero-width Unicode
+ * (U+200B / U+200C) so labels stay visually empty while keys stay unique.
+ */
+const MENU_DIVIDER_AFTER_EXEMPLARS = '\u200B';
+const MENU_DIVIDER_BEFORE_ACTIONS = '\u200C';
 
 interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
   scaleType?: ScaleDistribution;
   showExemplars?: boolean; // undefined means that the Exemplars button is not shown in the menu. Otherwise, it's shown and the value is the current state of the Exemplars button.
+  includeAddToDashboard?: boolean;
 }
 
 export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuState> {
@@ -34,11 +49,12 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   onActivate() {
-    this.setState({ items: this.buildMenuItems() });
+    this.setState({ includeAddToDashboard: false, items: this.buildMenuItems(false) });
   }
 
-  buildMenuItems(): PanelMenuItem[] {
+  buildMenuItems(includeAddOverride?: boolean): PanelMenuItem[] {
     const { scaleType, showExemplars } = this.state;
+    const includeAddToDashboard = includeAddOverride ?? this.state.includeAddToDashboard ?? false;
 
     const scaleTypes = [
       {
@@ -62,7 +78,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
       },
       {
         type: 'divider',
-        text: '',
+        text: MENU_DIVIDER_BEFORE_ACTIONS,
       },
       {
         iconClassName: 'compass',
@@ -70,6 +86,14 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
         onClick: () => this.onClickExplore(),
       },
     ];
+
+    if (includeAddToDashboard) {
+      menuItems.push({
+        iconClassName: 'apps',
+        text: t('timeseries.menu.add-to-dashboard', 'Add to dashboard'),
+        onClick: () => this.onClickAddToDashboard(),
+      });
+    }
 
     if (showExemplars !== undefined) {
       menuItems.unshift(
@@ -80,7 +104,7 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
         },
         {
           type: 'divider',
-          text: '',
+          text: MENU_DIVIDER_AFTER_EXEMPLARS,
         }
       );
     }
@@ -119,6 +143,14 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
     });
   }
 
+  private onClickAddToDashboard() {
+    const vizPanel = sceneGraph.findObject(this, (o) => o instanceof VizPanel);
+    if (!(vizPanel instanceof VizPanel)) {
+      return;
+    }
+    this.publishEvent(new EventOpenAddToDashboard({ panelData: getPanelData(vizPanel) }), true);
+  }
+
   onClickExplore() {
     reportInteraction('g_pyroscope_app_open_in_explore_clicked');
 
@@ -148,6 +180,23 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   static Component({ model }: SceneComponentProps<SceneTimeseriesMenu>) {
+    const { component: addToDashboardForm, isLoading: isLoadingAddToDashboardForm } =
+      usePluginComponent(ADD_TO_DASHBOARD_COMPONENT_ID);
+
+    useEffect(() => {
+      if (isLoadingAddToDashboardForm) {
+        return;
+      }
+      const includeAdd = Boolean(addToDashboardForm);
+      if (model.state.includeAddToDashboard === includeAdd) {
+        return;
+      }
+      model.setState({
+        includeAddToDashboard: includeAdd,
+        items: model.buildMenuItems(includeAdd),
+      });
+    }, [model, isLoadingAddToDashboardForm, addToDashboardForm]);
+
     return <VizPanelMenu.Component model={model as unknown as VizPanelMenu} />;
   }
 }
