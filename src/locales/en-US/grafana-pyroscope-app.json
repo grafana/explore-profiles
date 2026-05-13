@@ -150,7 +150,6 @@
       "favorites-description": "Overview of favorited visualizations",
       "flame-graph": "Flame graph",
       "flame-graph-description": "Single service flame graph",
-      "label": "Exploration",
       "labels": "Labels",
       "labels-description": "Single service label exploration and filtering",
       "profile-types": "Profile types",
