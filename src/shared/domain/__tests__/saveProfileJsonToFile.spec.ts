@@ -1,26 +1,23 @@
-/* file-saver `saveAs` is flagged deprecated in typings; still used for downloads. */
-/* eslint-disable-next-line @typescript-eslint/no-deprecated */
-import saveAs from 'file-saver';
-
 import { saveProfileJsonToFile } from '../saveProfileJsonToFile';
 
 jest.mock('file-saver', () => ({
   __esModule: true,
   default: jest.fn(),
-  default: jest.fn(),
 }));
+
+const saveAsMock = jest.requireMock<{ default: jest.Mock }>('file-saver').default;
 
 describe('saveProfileJsonToFile', () => {
   beforeEach(() => {
-    jest.mocked(saveAs).mockClear();
+    saveAsMock.mockClear();
   });
 
   it('calls saveAs with a UTF-8 JSON blob and the given filename', async () => {
     const profile = { version: 1, nested: { label: 'café' } };
     saveProfileJsonToFile(profile, 'profile-export.json');
 
-    expect(saveAs).toHaveBeenCalledTimes(1);
-    const [blob, filename] = jest.mocked(saveAs).mock.calls[0] as [Blob, string];
+    expect(saveAsMock).toHaveBeenCalledTimes(1);
+    const [blob, filename] = saveAsMock.mock.calls[0] as [Blob, string];
 
     expect(filename).toBe('profile-export.json');
     expect(blob).toBeInstanceOf(Blob);
@@ -40,6 +37,6 @@ describe('saveProfileJsonToFile', () => {
     circular.self = circular;
 
     expect(() => saveProfileJsonToFile(circular, 'bad.json')).toThrow();
-    expect(saveAs).not.toHaveBeenCalled();
+    expect(saveAsMock).not.toHaveBeenCalled();
   });
 });
