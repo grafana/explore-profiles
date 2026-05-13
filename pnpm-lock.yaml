@@ -6780,8 +6780,9 @@ packages:
     engines: { node: '>=12.0.0' }
 
   protobufjs@8.2.0:
-    resolution: {integrity: sha512-oI+GC9iPxrQEr6wragljFKH46/r3rNsm6eg7F2fp6kBUMnf6/mesDRdBuF4gK+OyaKJ8N4C1B9s9cCeYdqFikg==}
-    engines: {node: '>=12.0.0'}
+    resolution:
+      { integrity: sha512-oI+GC9iPxrQEr6wragljFKH46/r3rNsm6eg7F2fp6kBUMnf6/mesDRdBuF4gK+OyaKJ8N4C1B9s9cCeYdqFikg== }
+    engines: { node: '>=12.0.0' }
 
   protocol-buffers-schema@3.6.1:
     resolution:
