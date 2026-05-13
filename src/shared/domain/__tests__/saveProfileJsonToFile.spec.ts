@@ -1,12 +1,12 @@
+/* file-saver `saveAs` is flagged deprecated in typings; still used for downloads. */
+/* eslint-disable-next-line @typescript-eslint/no-deprecated */
 import saveAs from 'file-saver';
 
 import { saveProfileJsonToFile } from '../saveProfileJsonToFile';
 
-/* file-saver `saveAs` is flagged deprecated in typings; still used for downloads. */
-/* eslint-disable @typescript-eslint/no-deprecated */
-
 jest.mock('file-saver', () => ({
   __esModule: true,
+  default: jest.fn(),
   default: jest.fn(),
 }));
 
