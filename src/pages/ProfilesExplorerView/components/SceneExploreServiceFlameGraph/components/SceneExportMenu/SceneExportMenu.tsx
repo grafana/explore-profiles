@@ -4,6 +4,7 @@ import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } fr
 import { Button, Dropdown, Menu } from '@grafana/ui';
 import { displayError } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { saveProfileJsonToFile } from '@shared/domain/saveProfileJsonToFile';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -120,9 +121,11 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
       }
 
       const filename = `${getExportFilename(query, timeRange)}.json`;
-      const data = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(profile))}`;
-
-      saveAs(data, filename);
+      try {
+        saveProfileJsonToFile(profile, filename);
+      } catch (error) {
+        displayError(error as Error, ['Failed to export to JSON!', (error as Error).message]);
+      }
     };
 
     const downloadPprof = async () => {
