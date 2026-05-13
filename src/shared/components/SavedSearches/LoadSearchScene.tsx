@@ -1,10 +1,9 @@
-import { css } from '@emotion/css';
-import { AppEvents, GrafanaTheme2 } from '@grafana/data';
+import { AppEvents } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { getAppEvents, reportInteraction, usePluginComponent } from '@grafana/runtime';
 import { SceneComponentProps, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { DataQuery } from '@grafana/schema';
-import { ToolbarButton, useStyles2 } from '@grafana/ui';
+import { ToolbarButton } from '@grafana/ui';
 import React, { useCallback, useMemo } from 'react';
 
 import { LoadSearchModal } from './LoadSearchModal';
@@ -63,7 +62,6 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
 
   static Component = ({ model }: SceneComponentProps<LoadSearchScene>) => {
     const { dsName, dsUid, isOpen } = model.useState();
-    const styles = useStyles2(getStyles);
     const hasSavedSearches = useHasSavedSearches(dsUid);
 
     const { component: OpenQueryLibraryComponent, isLoading: isLoadingExposedComponent } =
@@ -77,7 +75,6 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
             variant="canvas"
             disabled={!hasSavedSearches}
             onClick={model.toggleOpen}
-            className={styles.button}
             tooltip={
               hasSavedSearches
                 ? t('saved-searches.load.tooltip', 'Load saved search')
@@ -87,7 +84,7 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
           {isOpen && <LoadSearchModal sceneRef={model} onClose={model.toggleClosed} />}
         </>
       ),
-      [hasSavedSearches, isOpen, model, styles.button]
+      [hasSavedSearches, isOpen, model]
     );
 
     const onSelectQuery = useCallback(
@@ -119,7 +116,6 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
 
     return (
       <OpenQueryLibraryComponent
-        className={styles.button}
         context="drilldown"
         datasourceFilters={[dsName]}
         icon="folder-open"
@@ -129,12 +125,3 @@ export class LoadSearchScene extends SceneObjectBase<LoadSearchSceneState> {
     );
   };
 }
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  button: css({
-    [theme.breakpoints.down('lg')]: {
-      alignSelf: 'flex-start',
-    },
-    alignSelf: 'flex-end',
-  }),
-});
