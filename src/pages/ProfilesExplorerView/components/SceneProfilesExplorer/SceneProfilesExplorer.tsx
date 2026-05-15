@@ -76,7 +76,7 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   isEmbedded?: boolean;
   initialFilters?: AdHocVariableFilter[];
   initialDS?: string;
-  isAddToDashboardModalOpen: boolean;
+  isAddToDashboardModalOpen?: boolean;
   addToDashboardPanelData?: PanelDataRequestPayload;
 }
 
