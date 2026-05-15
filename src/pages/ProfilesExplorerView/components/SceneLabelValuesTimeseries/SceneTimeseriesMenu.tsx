@@ -50,7 +50,8 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   onActivate() {
-    this.setState({ includeAddToDashboard: false, items: this.buildMenuItems(false) });
+    const includeAddToDashboard = this.state.includeAddToDashboard ?? false;
+    this.setState({ includeAddToDashboard, items: this.buildMenuItems(includeAddToDashboard) });
   }
 
   buildMenuItems(includeAddOverride?: boolean): PanelMenuItem[] {
