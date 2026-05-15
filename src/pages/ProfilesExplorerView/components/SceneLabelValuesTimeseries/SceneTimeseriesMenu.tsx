@@ -24,12 +24,13 @@ import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeries
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
 
 /**
- * Divider rows must use distinct `text` values: `VizPanelMenu` keys list children from `text`, and
- * multiple `text: ''` dividers produce duplicate React keys. These are zero-width Unicode
- * (U+200B / U+200C) so labels stay visually empty while keys stay unique.
+ * Divider rows must use distinct non-empty `text` values because `VizPanelMenu` keys list children
+ * from `text`, and multiple `text: ''` dividers produce duplicate React keys. Use explicit sentinel
+ * values instead of zero-width Unicode characters so the behavior is easier to understand and less
+ * fragile if the menu implementation changes.
  */
-const MENU_DIVIDER_AFTER_EXEMPLARS = '\u200B';
-const MENU_DIVIDER_BEFORE_ACTIONS = '\u200C';
+const MENU_DIVIDER_AFTER_EXEMPLARS = 'divider-after-exemplars';
+const MENU_DIVIDER_BEFORE_ACTIONS = 'divider-before-actions';
 
 interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
