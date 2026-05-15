@@ -148,6 +148,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "すべてのサービス",
       "all-services-description": "任意のプロファイルタイプに対する、すべてのサービスの概要",
@@ -630,6 +633,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "エグゼンプラー",
       "open-in-explore": "Exploreで開く",
       "scale-linear": "線形",

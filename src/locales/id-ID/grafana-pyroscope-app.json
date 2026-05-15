@@ -148,6 +148,9 @@
     "title": "Drilldown Profil Grafana"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Semua service",
       "all-services-description": "Ikhtisar semua service, untuk jenis profil tertentu",
@@ -630,6 +633,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Contoh",
       "open-in-explore": "Buka di Telusuri",
       "scale-linear": "Linier",

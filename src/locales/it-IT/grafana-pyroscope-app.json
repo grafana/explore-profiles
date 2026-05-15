@@ -148,6 +148,9 @@
     "title": "Profiles Drilldown di Grafana"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Tutti i servizi",
       "all-services-description": "Panoramica di tutti i servizi, per qualsiasi tipo di profilo",
@@ -631,6 +634,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Esemplari",
       "open-in-explore": "Apri in Esplora",
       "scale-linear": "Lineare",
