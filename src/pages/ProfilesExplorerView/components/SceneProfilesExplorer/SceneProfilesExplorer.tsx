@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { locationService, usePluginComponent } from '@grafana/runtime';
+import { locationService } from '@grafana/runtime';
 import {
   EmbeddedSceneState,
   SceneComponentProps,
@@ -17,7 +17,7 @@ import {
   SceneVariableSet,
   SplitLayout,
 } from '@grafana/scenes';
-import { Modal, useStyles2 } from '@grafana/ui';
+import { useStyles2 } from '@grafana/ui';
 import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScene';
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
@@ -30,12 +30,8 @@ import { SceneExploreAllServices } from '../../components/SceneExploreAllService
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
-import {
-  ADD_TO_DASHBOARD_COMPONENT_ID,
-  type AddToDashboardFormProps,
-  EventOpenAddToDashboard,
-  type PanelDataRequestPayload,
-} from '../../domain/actions/addToDashboard';
+import { EventOpenAddToDashboard, type PanelDataRequestPayload } from '../../domain/actions/addToDashboard';
+import { AddToDashboardModal } from '../../domain/actions/AddToDashboardModal';
 import { getDefaultTimeRange } from '../../domain/buildTimeRange';
 import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameGraph';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
@@ -540,9 +536,6 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       addToDashboardPanelData,
     } = model.useState();
 
-    const { component: AddToDashboardComponent } =
-      usePluginComponent<AddToDashboardFormProps>(ADD_TO_DASHBOARD_COMPONENT_ID);
-
     return (
       <FunctionVersionProvider>
         <GitHubContextProvider dataSourceUid={dataSourceUid}>
@@ -576,19 +569,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
             />
           )}
 
-          {isAddToDashboardModalOpen && AddToDashboardComponent && addToDashboardPanelData && (
-            <Modal
-              title={t('explorer.add-to-dashboard.modal-title', 'Add to dashboard')}
-              isOpen
-              onDismiss={() => model.closeAddToDashboardModal()}
-            >
-              <AddToDashboardComponent
-                onClose={() => model.closeAddToDashboardModal()}
-                buildPanel={() => addToDashboardPanelData.panel}
-                timeRange={addToDashboardPanelData.range}
-                options={{ useAbsolutePath: true }}
-              />
-            </Modal>
+          {isAddToDashboardModalOpen && addToDashboardPanelData && (
+            <AddToDashboardModal panelData={addToDashboardPanelData} onClose={() => model.closeAddToDashboardModal()} />
           )}
         </GitHubContextProvider>
       </FunctionVersionProvider>

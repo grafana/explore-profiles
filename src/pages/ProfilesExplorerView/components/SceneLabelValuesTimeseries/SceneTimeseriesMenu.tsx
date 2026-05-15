@@ -1,6 +1,6 @@
 import { PanelMenuItem } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { reportInteraction, usePluginComponent } from '@grafana/runtime';
+import { reportInteraction } from '@grafana/runtime';
 import {
   SceneComponentProps,
   SceneDataQuery,
@@ -12,13 +12,9 @@ import {
   VizPanelMenu,
 } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import {
-  ADD_TO_DASHBOARD_COMPONENT_ID,
-  EventOpenAddToDashboard,
-  getPanelData,
-} from '../../domain/actions/addToDashboard';
+import { EventOpenAddToDashboard, getPanelData } from '../../domain/actions/addToDashboard';
 import { getExploreUrl } from '../../helpers/getExploreUrl';
 import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
@@ -36,7 +32,6 @@ interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
   scaleType?: ScaleDistribution;
   showExemplars?: boolean; // undefined means that the Exemplars button is not shown in the menu. Otherwise, it's shown and the value is the current state of the Exemplars button.
-  includeAddToDashboard?: boolean;
 }
 
 export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuState> {
@@ -50,13 +45,11 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   onActivate() {
-    const includeAddToDashboard = this.state.includeAddToDashboard ?? false;
-    this.setState({ includeAddToDashboard, items: this.buildMenuItems(includeAddToDashboard) });
+    this.setState({ items: this.buildMenuItems() });
   }
 
-  buildMenuItems(includeAddOverride?: boolean): PanelMenuItem[] {
+  buildMenuItems(): PanelMenuItem[] {
     const { scaleType, showExemplars } = this.state;
-    const includeAddToDashboard = includeAddOverride ?? this.state.includeAddToDashboard ?? false;
 
     const scaleTypes = [
       {
@@ -87,15 +80,12 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
         text: t('timeseries.menu.open-in-explore', 'Open in Explore'),
         onClick: () => this.onClickExplore(),
       },
-    ];
-
-    if (includeAddToDashboard) {
-      menuItems.push({
+      {
         iconClassName: 'apps',
         text: t('timeseries.menu.add-to-dashboard', 'Add to dashboard'),
         onClick: () => this.onClickAddToDashboard(),
-      });
-    }
+      },
+    ];
 
     if (showExemplars !== undefined) {
       menuItems.unshift(
@@ -182,23 +172,6 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   static Component({ model }: SceneComponentProps<SceneTimeseriesMenu>) {
-    const { component: addToDashboardForm, isLoading: isLoadingAddToDashboardForm } =
-      usePluginComponent(ADD_TO_DASHBOARD_COMPONENT_ID);
-
-    useEffect(() => {
-      if (isLoadingAddToDashboardForm) {
-        return;
-      }
-      const includeAdd = Boolean(addToDashboardForm);
-      if (model.state.includeAddToDashboard === includeAdd) {
-        return;
-      }
-      model.setState({
-        includeAddToDashboard: includeAdd,
-        items: model.buildMenuItems(includeAdd),
-      });
-    }, [model, isLoadingAddToDashboardForm, addToDashboardForm]);
-
     return <VizPanelMenu.Component model={model as unknown as VizPanelMenu} />;
   }
 }
