@@ -148,9 +148,6 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
-    "add-to-dashboard": {
-      "modal-title": ""
-    },
     "exploration-type": {
       "all-services": "Wszystkie usługi",
       "all-services-description": "Przegląd wszystkich usług dla dowolnego typu profilu",
@@ -636,7 +633,6 @@
   },
   "timeseries": {
     "menu": {
-      "add-to-dashboard": "",
       "exemplars": "Przykłady",
       "open-in-explore": "Otwórz w widoku Eksploruj",
       "scale-linear": "Liniowe",

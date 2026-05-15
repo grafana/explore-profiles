@@ -142,7 +142,7 @@
   },
   "explorer": {
     "add-to-dashboard": {
-      "modal-title": ""
+      "modal-title": "Añadir al panel de control"
     },
     "exploration-type": {
       "all-services": "Todos los servicios",
@@ -629,7 +629,7 @@
   },
   "timeseries": {
     "menu": {
-      "add-to-dashboard": "",
+      "add-to-dashboard": "Añadir al panel de control",
       "exemplars": "Ejemplos",
       "open-in-explore": "Abrir en Explorar",
       "scale-linear": "Lineal",

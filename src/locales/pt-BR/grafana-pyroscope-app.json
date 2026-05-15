@@ -148,9 +148,6 @@
     "title": "Detalhamento de perfis da Grafana"
   },
   "explorer": {
-    "add-to-dashboard": {
-      "modal-title": ""
-    },
     "exploration-type": {
       "all-services": "Todos os serviços",
       "all-services-description": "Visão geral de todos os serviços, para qualquer tipo de perfil em particular",
@@ -634,7 +631,6 @@
   },
   "timeseries": {
     "menu": {
-      "add-to-dashboard": "",
       "exemplars": "Exemplares",
       "open-in-explore": "Abrir no Explore",
       "scale-linear": "Linear",

@@ -148,9 +148,6 @@
     "title": "Podrobný rozpis profilů Grafana"
   },
   "explorer": {
-    "add-to-dashboard": {
-      "modal-title": ""
-    },
     "exploration-type": {
       "all-services": "Všechny služby",
       "all-services-description": "Přehled všech služeb pro libovolný typ profilu",
@@ -636,7 +633,6 @@
   },
   "timeseries": {
     "menu": {
-      "add-to-dashboard": "",
       "exemplars": "Příklady",
       "open-in-explore": "Otevřít v Prozkoumat",
       "scale-linear": "Lineární",

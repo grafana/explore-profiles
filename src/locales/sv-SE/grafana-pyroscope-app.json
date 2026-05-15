@@ -148,9 +148,6 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
-    "add-to-dashboard": {
-      "modal-title": ""
-    },
     "exploration-type": {
       "all-services": "Alla tjänster",
       "all-services-description": "Översikt över alla tjänster, för valfri profiltyp",
@@ -634,7 +631,6 @@
   },
   "timeseries": {
     "menu": {
-      "add-to-dashboard": "",
       "exemplars": "Exemplar",
       "open-in-explore": "Öppna i Utforskaren",
       "scale-linear": "Linjär",
