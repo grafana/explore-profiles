@@ -1,5 +1,37 @@
 # Changelog
 
+## 2.0.6
+
+##### Chores
+
+* **deps:**
+  *  bump protobufjs from 8.0.1 to 8.0.3 (#976) (9fdea055)
+  *  update dependency protobufjs@^7.3.0 to v8 [security] (#972) (f4a4eea9)
+  *  lock file maintenance (#969) (6b3f68a2)
+  *  bump hono from 4.12.16 to 4.12.18 (#966) (b6edc18f)
+  *  bump fast-uri from 3.1.1 to 3.1.2 (#967) (107f6c96)
+  *  pin dependencies (#958) (8ac3c790)
+  *  lock file maintenance (#926) (8ff0c056)
+  *  update alpine:latest docker digest to 5b10f43 (#959) (4115a9ef)
+  *  update golang:1.26 docker digest to b54cbf5 (#960) (7fcafe6c)
+*  Update rideshare mod (#971) (f92c3079)
+*  Update which feature flags are on by default (#965) (fd0ee099)
+*  Fix loading translations before i18n available (#963) (87519cbf)
+*  fix tests (#962) (1dc0d256)
+
+##### New Features
+
+* **time picker:**  add support for keyboard shortcuts (#936) (2965dbb3)
+
+##### Bug Fixes
+
+*  Download json (#975) (e7fdec78)
+
+##### Other Changes
+
+*  occured -> occurred in AI panel error message (#968) (dcb321f9)
+
+
 ## 2.0.5
 
 ##### Build System / Dependencies

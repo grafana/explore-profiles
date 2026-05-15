@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-app-plugin",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Grafana Pyroscope app plugin (profiles)",
   "license": "AGPL-3.0-only",
   "author": "Grafana",
@@ -163,7 +163,7 @@
       "@tootallnate/once": "~3.0.1",
       "diff": "~4.0.4",
       "flatted": "~3.4.2",
-      "protobufjs@^7.3.0": "~7.5.5",
+      "protobufjs@^7.3.0": "~8.2.0",
       "protobufjs@8.0.0": "~8.0.1",
       "protocol-buffers-schema": "~3.6.1",
       "serialize-javascript": "~7.0.5",
