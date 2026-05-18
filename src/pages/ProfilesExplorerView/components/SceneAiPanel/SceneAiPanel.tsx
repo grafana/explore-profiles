@@ -113,7 +113,7 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
 
           {data.llmError && (
             <Alert
-              title={t('ai-panel.llm-error', 'An error occured while generating content using OpenAI!')}
+              title={t('ai-panel.llm-error', 'An error occurred while generating content using OpenAI!')}
               severity="warning"
             >
               <div>

@@ -1,46 +1,58 @@
 {
   "actions": {
     "exemplar-toggle": {
-      "hide": "",
-      "label": "",
-      "show": ""
+      "hide": "Skrýt příklady",
+      "label": "Příklady",
+      "show": "Zobrazit příklady"
     },
     "fav": {
-      "favorite": "",
-      "unfavorite": ""
+      "favorite": "Oblíbené",
+      "unfavorite": "Odstranit z oblíbených"
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
     "profile-type-selector": {
-      "label": ""
+      "label": "Profil"
     },
     "tabs": {
-      "comparison-view": "",
-      "single-view": ""
+      "diff-view": "",
+      "single-view": "Jednotné zobrazení"
     },
     "view": {
-      "title": ""
+      "title": "Ad hoc zobrazení"
     }
   },
   "ai-panel": {
-    "analyzing": "",
-    "close": "",
-    "fetch-error": "",
-    "fetch-error-message": "",
+    "analyzing": "Probíhá analýza…",
+    "close": "Zavřít panel",
+    "fetch-error": "Při načítání dat profilu došlo k chybě!",
+    "fetch-error-message": "Omlouváme se za případné nepříjemnosti. Zkuste to znovu později.",
     "follow-up": {
-      "placeholder": "",
-      "send": ""
+      "placeholder": "Položte doplňující otázku…",
+      "send": "Odeslat"
     },
-    "llm-error": "",
-    "llm-error-message": "",
+    "llm-error": "Při generování obsahu pomocí OpenAI došlo k chybě!",
+    "llm-error-message": "Omlouváme se za případné nepříjemnosti. Zkuste to znovu nebo, pokud problém přetrvává, kontaktujte správce organizace.",
     "reply": {
-      "search-node": ""
+      "search-node": "Hledat tento uzel"
     },
-    "retry": "",
-    "title": "",
-    "validation-error": ""
+    "retry": "Zkusit znovu",
+    "title": "Analýza flame grafu",
+    "validation-error": "Chyba ověření!"
   },
   "analyze-diff": {
+    "context": {
+      "title": "Profily DOT a pokyny"
+    },
+    "error": "Nepodařilo se načíst profily DOT pro analýzu",
+    "prompt": "Analyzujte rozdíly mezi těmito dvěma výkonnostními profily."
+  },
+  "analyze-flame-graph": {
     "context": {
       "title": ""
     },
@@ -48,620 +60,628 @@
     "prompt": ""
   },
   "back-button": {
-    "aria-label": "",
-    "label": ""
+    "aria-label": "Zpět na Podrobný rozpis profilů",
+    "label": "Zpět na Podrobný rozpis profilů"
   },
   "create-recording-rule": {
-    "cancel": "",
-    "create": "",
+    "cancel": "Zrušit",
+    "create": "Vytvořit",
     "filters": {
-      "description": "",
-      "label": "",
-      "none": ""
+      "description": "Filtry vybrané v hlavním zobrazení budou použity na toto pravidlo",
+      "label": "Filtry",
+      "none": "Nejsou vybrány žádné filtry"
     },
     "function-name": {
-      "aria-label": "",
-      "description": "",
-      "label": "",
-      "placeholder": ""
+      "aria-label": "Název funkce",
+      "description": "Volitelný název funkce pro filtrování pravidla nahrávání",
+      "label": "Název funkce",
+      "placeholder": "Ponechte prázdné pro celkovou agregaci"
     },
     "labels": {
-      "description": "",
-      "label": ""
+      "description": "Dodatečné profilovací štítky, které mají být přeposlány do metriky",
+      "label": "Dodatečné štítky"
     },
-    "menu-option": "",
+    "menu-option": "Vytvořit pravidlo nahrávání",
     "metric-name": {
-      "aria-label": "",
+      "aria-label": "Název metriky",
       "description": "",
-      "invalid": "",
-      "label": "",
-      "pattern-alphanumeric": "",
-      "pattern-error": "",
-      "pattern-no-number": "",
-      "required": ""
+      "invalid": "Neplatný název metriky.",
+      "label": "Název metriky",
+      "pattern-alphanumeric": "Obsahuje pouze alfanumerické znaky nebo podtržítka",
+      "pattern-error": "Název metriky je neplatný, musí mít následující vlastnosti:",
+      "pattern-no-number": "Nesmí začínat číslem",
+      "required": "Název metriky je povinný."
     },
     "profile-type": {
-      "label": ""
+      "label": "Typ profilu"
     },
     "service-name": {
-      "all": "",
-      "label": ""
+      "all": "Všechny služby",
+      "label": "Název služby"
     },
-    "title": ""
+    "title": "Vytvořit pravidlo nahrávání"
   },
   "diff-flame-graph": {
     "compare-panel": {
-      "annotation-title": "",
-      "baseline": "",
-      "comparison": "",
-      "flame-graph": "",
-      "range-selection-mode": "",
-      "sync-time-ranges": "",
-      "time-picker": "",
-      "tooltip-description": "",
-      "tooltip-flame-graph": "",
-      "tooltip-flame-graph-description": "",
-      "tooltip-time-picker": "",
-      "tooltip-time-picker-description": ""
+      "annotation-title": "Rozsah flame grafu {{title}}",
+      "baseline": "Výchozí hodnota",
+      "comparison": "Srovnání",
+      "flame-graph": "Flame graf",
+      "range-selection-mode": "Režim výběru rozsahu",
+      "sync-time-ranges": "Synchronizovat časové rozsahy",
+      "time-picker": "Volič času",
+      "tooltip-description": "Pomocí těchto tlačítek můžete změnit chování při výběru rozsahu myší na časové řadě:",
+      "tooltip-flame-graph": "Flame graf",
+      "tooltip-flame-graph-description": "Časový rozsah pro vytvoření flame grafu (trasování stacků bude načteno pouze pro vybraný rozsah)",
+      "tooltip-time-picker": "Volič času",
+      "tooltip-time-picker-description": "Přiblížení časového rozsahu (výchozí chování)"
     },
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Při načítání dat profilu došlo k chybě!",
+    "explain-button": "Vysvětlit rozdílový flame graf",
     "missing-selections": {
-      "auto-select": "",
-      "how-to-alt": "",
-      "learn-how": "",
-      "step-1": "",
-      "step-2": "",
-      "title": ""
+      "auto-select": "Automatický výběr",
+      "how-to-alt": "Jak zobrazit rozdílový flame graf",
+      "learn-how": "Kliknutím sem se dozvíte, jak pomocí myši vybrat rozsahy flame grafu.",
+      "step-1": "Ujistěte se, že je vybrán režim výběru rozsahu „Flame graf“",
+      "step-2": "Pomocí myši vyberte požadované časové rozsahy jak na základní časové řadě, tak na srovnávací časové řadě",
+      "title": "Pro zobrazení rozdílového flame grafu vyberte rozsahy jak pro základní, tak pro srovnávací flame graf."
     },
-    "no-profile-data": "",
-    "no-profile-data-message": "",
+    "no-profile-data": "Nejsou k dispozici žádná data profilu",
+    "no-profile-data-message": "Ověřte, že jste vybrali odpovídající filtry a časové rozsahy.",
     "presets": {
-      "1h-ago-vs-now": "",
-      "1h-ago-vs-now-description": "",
-      "24h-ago-vs-now": "",
-      "6h-ago-vs-now": "",
-      "label": "",
-      "placeholder": ""
+      "1h-ago-vs-now": "Před 1 hodinou vs. teď",
+      "1h-ago-vs-now-description": "30minutové okno",
+      "24h-ago-vs-now": "Před 24 hodinami vs. teď",
+      "6h-ago-vs-now": "Před 6 hodinami vs. teď",
+      "label": "Předvolby srovnání",
+      "placeholder": "Vyberte předvolbu"
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Některé funkce nemusí fungovat podle očekávání (např. možnosti exportu flame grafu). Zkuste prosím znovu načíst stránku. Omlouváme se za nepříjemnosti.",
+      "title": "Při načítání nastavení pluginu došlo k chybě!"
     },
-    "title": ""
+    "title": "Rozdílový flame graf pro {{serviceName}} ({{profileMetricType}})"
   },
   "error-page": {
-    "banner-message": "",
-    "banner-title": "",
-    "title": ""
+    "banner-message": "Zkuste stránku znovu načíst nebo, pokud problém přetrvává, kontaktujte správce organizace. Omlouváme se za nepříjemnosti.",
+    "banner-title": "Závažná chyba!",
+    "title": "Podrobný rozpis profilů Grafana"
   },
   "explorer": {
     "exploration-type": {
-      "all-services": "",
-      "all-services-description": "",
-      "diff-flame-graph": "",
-      "diff-flame-graph-description": "",
-      "favorites": "",
-      "favorites-description": "",
-      "flame-graph": "",
-      "flame-graph-description": "",
-      "label": "",
-      "labels": "",
-      "labels-description": "",
-      "profile-types": "",
-      "profile-types-description": ""
+      "all-services": "Všechny služby",
+      "all-services-description": "Přehled všech služeb pro libovolný typ profilu",
+      "diff-flame-graph": "Rozdílový flame graf",
+      "diff-flame-graph-description": "Porovnejte rozdíly mezi dvěma flame grafy",
+      "favorites": "Oblíbené",
+      "favorites-description": "Přehled oblíbených vizualizací",
+      "flame-graph": "Flame graf",
+      "flame-graph-description": "Flame graf jednotné služby",
+      "label": "Prozkoumání",
+      "labels": "Štítky",
+      "labels-description": "Prozkoumávání a filtrování štítků jednotné služby",
+      "profile-types": "Typy profilů",
+      "profile-types-description": "Přehled všech typů profilů pro jednu službu"
     },
     "header": {
-      "add-recording-rule": "",
-      "recording-rules-tooltip": "",
-      "settings-tooltip": "",
-      "share-tooltip": "",
-      "upload-tooltip": "",
-      "view-recording-rules": ""
+      "add-recording-rule": "Přidat pravidlo nahrávání",
+      "recording-rules-tooltip": "Pravidla nahrávání",
+      "settings-tooltip": "Zobrazit/upravit nastavení tenanta",
+      "share-tooltip": "Kopírovat sdílitelný odkaz do schránky",
+      "upload-tooltip": "Nahrát ad hoc profily",
+      "view-recording-rules": "Zobrazit pravidla nahrávání"
     }
   },
   "export-data": {
-    "aria-label": "",
-    "tooltip": ""
+    "aria-label": "Exportovat data profilu",
+    "tooltip": "Exportovat data profilu"
   },
   "export-menu": {
-    "aria-label": "",
-    "error-flamegraph-com": "",
-    "error-loading-profile": "",
-    "error-png": "",
-    "error-pprof": "",
-    "json": "",
-    "json-label": "",
-    "png": "",
-    "png-label": "",
-    "pprof": "",
-    "tooltip": ""
+    "aria-label": "Exportovat data profilu",
+    "error-flamegraph-com": "Export na flamegraph.com se nezdařil!",
+    "error-loading-profile": "Při načítání dat profilu flamebearer došlo k chybě!",
+    "error-png": "Export do formátu PNG se nezdařil!",
+    "error-pprof": "Export do formátu pprof se nezdařil!",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "Exportovat data profilu"
   },
   "exposed-components": {
-    "loading": ""
+    "loading": "Načítání…"
   },
   "favorites": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "flame-graph": {
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Při načítání dat profilu došlo k chybě!",
+    "explain-button": "Vysvětlit flame graf",
     "profile-id-selector": {
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "name": "",
-      "remove": "",
-      "tooltip": ""
+      "filter-label": "Štítek filtru",
+      "filter-operator": "Operátor filtru",
+      "filter-value": "Hodnota filtru",
+      "name": "ID profilu",
+      "remove": "Odebrat volič ID profilu z dotazu",
+      "tooltip": "Do dotazu s flame grafem ({{profileIdSelector}}) jste přidali výběr ID profilu."
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Některé funkce nemusí fungovat podle očekávání (např. sbalené flame grafy). Zkuste prosím znovu načíst stránku. Omlouváme se za nepříjemnosti.",
+      "title": "Při načítání nastavení pluginu došlo k chybě!"
     },
     "span-selector": {
-      "added": "",
-      "remove": "",
-      "tooltip": ""
+      "added": "Volič rozsahu byl přidán",
+      "remove": "Odebrat volič rozpětí z dotazu",
+      "tooltip": "Do dotazu s flame grafem ({{spanSelector}}) jste přidali výběr rozpětí."
     },
-    "title": ""
+    "title": "Flame graf pro {{serviceName}} ({{profileMetricType}})"
   },
   "function-details": {
     "ai-suggestions": {
-      "analyzing": "",
-      "fetch-error": "",
-      "fetch-error-message": "",
-      "llm-error": "",
-      "llm-error-message": "",
-      "title": ""
+      "analyzing": "Probíhá analýza…",
+      "fetch-error": "Při načítání profilů došlo k chybě!",
+      "fetch-error-message": "Omlouváme se za případné nepříjemnosti. Zkuste to znovu později.",
+      "llm-error": "Obsah se nepodařilo vygenerovat pomocí OpenAI!",
+      "llm-error-message": "Omlouváme se za případné nepříjemnosti. Zkuste to znovu později nebo, pokud problém přetrvává, kontaktujte správce organizace.",
+      "title": "Návrhy na optimalizaci kódu"
     },
-    "close": "",
+    "close": "zavřít",
     "code": {
-      "breakdown-per-line": "",
-      "file-unavailable": "",
-      "optimize": "",
-      "view-on-github": ""
+      "breakdown-per-line": "Rozpis podle řádku",
+      "file-unavailable": "(informace o souboru nejsou k dispozici)",
+      "optimize": "Optimalizovat kód",
+      "view-on-github": "Zobrazit na GitHubu"
     },
-    "commit": "",
+    "commit": "Závazek",
     "commit-option": {
-      "author-date": ""
+      "author-date": "{{author}} dne {{date}}"
     },
     "commit-select": {
-      "no-options": ""
+      "no-options": "Nebyly nalezeny žádné závazky"
     },
-    "commit-tooltip": "",
+    "commit-tooltip": "Verze aplikace (závazek), ve které je funkce definována. Pomocí rozevíracího seznamu vyberte konkrétní závazek.",
     "context-menu": {
-      "label": ""
+      "label": "Podrobnosti o funkci"
     },
-    "copy-to-clipboard": "",
-    "fetch-error": "",
-    "file": "",
-    "file-path-copied": "",
-    "file-tooltip": "",
-    "function-name": "",
+    "copy-to-clipboard": "Kopírovat do schránky",
+    "fetch-error": "Při načítání podrobností o funkci došlo k chybě!",
+    "file": "Soubor",
+    "file-path-copied": "Cesta k souboru byla zkopírována do schránky!",
+    "file-tooltip": "Cesta k souboru, ve kterém je tato funkce definována",
+    "function-name": "Název funkce",
     "github": {
-      "banner-dismiss": "",
-      "banner-git-ref": "",
-      "banner-labels": "",
-      "banner-language-support": "",
-      "banner-learn-more": "",
-      "banner-title": "",
-      "connect-button": "",
-      "connect-tooltip": "",
-      "connecting": "",
-      "disconnect": "",
-      "view-commit": ""
+      "banner-dismiss": "Zamítnout",
+      "banner-git-ref": "Měly by být nastaveny na úplnou adresu URL úložiště GitHub a na aktuální <2>reference Gitu</2> spuštěné služby.",
+      "banner-labels": "Chcete-li tuto funkci aktivovat, budete muset při odesílání profilů přidat dva nové štítky: <2>service_repository</2> a <4>service_git_ref</4>. ",
+      "banner-language-support": "Tento jazyk podporuje integraci s <1></1>GitHubem.",
+      "banner-learn-more": "Další informace",
+      "banner-title": "Integrace s Githubem",
+      "connect-button": "Připojit k {{name}}",
+      "connect-tooltip": "Po připojení bude kód GitHub přístupný pouze z této relace prohlížeče.",
+      "connecting": "Připojování ke GitHubu…",
+      "disconnect": "Odpojit od GitHubu",
+      "view-commit": "Zobrazit závazek"
     },
     "github-callback": {
-      "logging-in": "",
-      "title": ""
+      "logging-in": "Přihlašování na GitHub…",
+      "title": "Přihlášení na GitHub"
     },
-    "not-available": "",
+    "not-available": "-",
     "override": {
-      "add": "",
-      "add-title": "",
-      "alert-debug": "",
-      "alert-labels": "",
-      "alert-title": "",
-      "aria-label": "",
-      "data-source": "",
-      "delete": "",
-      "edit": "",
-      "edit-title": "",
-      "git-ref-label": "",
-      "git-ref-placeholder": "",
-      "remove-all": "",
-      "remove-all-confirm": "",
-      "repository-label": "",
-      "repository-placeholder": "",
-      "repository-required": "",
-      "root-path": "",
-      "root-path-placeholder": "",
-      "service-name": "",
-      "user-set": ""
+      "add": "Přidat",
+      "add-title": "Přidat nové přepsání podrobností o úložišti",
+      "alert-debug": "Pro účely ladění můžete ručně zadat podrobnosti o úložišti pomocí tohoto formuláře. Vlastní hodnota se uloží do místního úložiště vašeho prohlížeče pro daný zdroj dat a název služby.",
+      "alert-labels": "Chcete-li aktivovat funkci integrace GitHubu, budete muset při odesílání profilů přidat dva nové štítky: <1>service_repository</1> a <3>service_git_ref</3>.",
+      "alert-title": "Štítky integrace s Githubem",
+      "aria-label": "přepsat nastavení úložiště",
+      "data-source": "Zdroj dat",
+      "delete": "Odstranit přepsání",
+      "edit": "Upravit",
+      "edit-title": "Upravit přepsání podrobností o úložišti",
+      "git-ref-label": "service_git_ref (odkaz na závazek)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Odebrat všechna přepsání",
+      "remove-all-confirm": "Odebrat vše",
+      "repository-label": "service_repository (adresa URL úložiště) – povinné",
+      "repository-placeholder": "Zadejte název úložiště GitHub, https://github.com/org/repo",
+      "repository-required": "Název úložiště je povinný",
+      "root-path": "Cesta ke kořenu",
+      "root-path-placeholder": "Zadejte cestu ke kořenu",
+      "service-name": "Název služby",
+      "user-set": "(nastaveno uživatelem)"
     },
-    "repository": "",
-    "repository-tooltip": "",
-    "start-line": "",
-    "start-line-tooltip": "",
-    "title": ""
+    "repository": "Úložiště",
+    "repository-tooltip": "Úložiště nakonfigurované pro vybranou službu",
+    "start-line": "Počáteční řádek",
+    "start-line-tooltip": "Řádek, na kterém začíná definice této funkce",
+    "title": "Podrobnosti o funkci"
   },
   "give-feedback": {
-    "button": "",
-    "tooltip": ""
+    "button": "Poskytnout zpětnou vazbu",
+    "tooltip": "Podělte se o svůj názor na profily v Grafaně."
   },
   "grid": {
     "empty-state": {
-      "no-results": ""
+      "no-results": "Žádné výsledky"
     },
     "error": {
-      "title": ""
+      "title": "Chyba dotazu!"
     },
     "exemplars": {
-      "view-profile": ""
+      "view-profile": "Zobrazit profil"
     },
     "layout": {
-      "aria-label": "",
-      "grid": "",
-      "rows": ""
+      "aria-label": "Přepínač rozvržení",
+      "grid": "Mřížka",
+      "rows": "Řádky"
     },
     "no-data": {
-      "label": ""
+      "label": "Skrýt panely bez dat"
     },
     "panel-type": {
-      "aria-label": "",
-      "histograms": "",
-      "maxima": "",
-      "time-series": "",
-      "totals": ""
+      "aria-label": "Přepínač typu panelu",
+      "histograms": "Histogramy",
+      "maxima": "Maxima",
+      "time-series": "Časové řady",
+      "totals": "Celkem"
     },
     "quick-filter": {
-      "aria-label": "",
-      "clear": ""
+      "aria-label": "Rychlý filtr",
+      "clear": "Vymazat vyhledávání"
     }
   },
   "labels": {
     "compare": {
-      "clear-tooltip": "",
-      "tooltip-empty": "",
-      "tooltip-ready": "",
-      "tooltip-select-baseline": "",
-      "tooltip-select-comparison": "",
-      "button_one": "",
-      "button_few": "",
-      "button_many": "",
-      "button_other": ""
+      "clear-tooltip": "Vymazat výběr pro porovnání",
+      "tooltip-empty": "Pro porovnání flame grafů vyberte jak základní, tak srovnávací panel.",
+      "tooltip-ready": "Porovnat „{{baseline}}“ vs. „{{comparison}}“",
+      "tooltip-select-baseline": "Vyberte další panel pro porovnání s „{{label}}“",
+      "tooltip-select-comparison": "Vyberte další panel pro porovnání s „{{label}}“",
+      "button_one": "Porovnat ({{count}}/2)",
+      "button_few": "Porovnat ({{count}}/2)",
+      "button_many": "Porovnat ({{count}}/2)",
+      "button_other": "Porovnat ({{count}}/2)"
     },
     "data-source": {
-      "all": "",
-      "test-success": ""
+      "all": "Vše",
+      "test-success": "OK"
     },
     "filter": {
-      "clear-tooltip": "",
-      "exclude": "",
-      "exclude-tooltip": "",
-      "include": "",
-      "include-tooltip": ""
+      "clear-tooltip": "Vymazat „{{label}}“ z filtrů",
+      "exclude": "Vyloučit",
+      "exclude-tooltip": "Vyloučit „{{label}}“ z filtrů",
+      "include": "Zahrnout",
+      "include-tooltip": "Zahrnout „{{label}}“ do filtrů"
     },
     "grid": {
-      "no-results": "",
-      "refresh-tooltip": ""
+      "no-results": "Žádné výsledky",
+      "refresh-tooltip": "Kliknutím zcela obnovíte všechny panely zobrazené na obrazovce"
     },
     "stats-panel": {
-      "baseline": "",
-      "baseline-description": "",
-      "comparison": "",
-      "comparison-description": "",
-      "total": ""
+      "baseline": "Výchozí hodnota",
+      "baseline-description": "Kliknutím vyberte „{{value}}“ jako výchozí hodnotu pro srovnání",
+      "comparison": "Srovnání",
+      "comparison-description": "Kliknutím vyberte „{{value}}“ jako cíl pro srovnání",
+      "total": "{{statsDescription}}: {{total}}"
     }
   },
   "onboarding": {
     "empty-loading": {
-      "title": ""
+      "title": "Načítání…"
     },
     "modal": {
       "billing": {
-        "description": "",
-        "title": ""
+        "description": "Na používání profilů Grafana Cloud se vztahují <2>ceny Grafana Cloud</2> pro profily.<br/>Další informace naleznete v <6>příspěvku na blogu</6> s oznámením.",
+        "title": "Jak funguje fakturace"
       },
       "cloud": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Pomocí <2>Grafana Alloy</2> nebo <6>SDK Pyroscope</6> můžete posílat profily ze svých aplikací do Grafana Cloud.",
+          "title": "Přidejte do své aplikace profilování"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Přihlašovací údaje ke Grafana Cloud najdete v <1>nastaveních Grafana Cloud Stack</1>.",
+          "title": "Nakonfigurujte své aplikace"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Po dokončení počátečního nastavení obnovte tuto stránku, abyste viděli svá profilovací data.",
+          "title": "Začněte získávat poznatky o výkonu"
         }
       },
       "decrease-latency": {
-        "description": "",
-        "title": ""
+        "description": "Udržujte vysokou rychlost a efektivitu a zlepšujte výkon aplikací. V konkurenčním digitálním světě se snižování latence promítá do zvyšování příjmů.",
+        "title": "Snižte latenci"
       },
-      "how-to-get-started": "",
+      "how-to-get-started": "Jak začít",
       "reduce-costs": {
-        "description": "",
-        "title": ""
+        "description": "Odhalte špičky využití CPU, úniky paměti a další neefektivnosti díky přehledu o využití zdrojů na úrovni kódu. Týmy pak mohou optimalizovat svůj kód a snížit náklady na infrastrukturu.",
+        "title": "Snižte náklady"
       },
       "resolve-incidents": {
-        "description": "",
-        "title": ""
+        "description": "Snižte průměrnou dobu potřebnou k vyřešení problému (MTTR) díky korelaci dat z průběžného profilování s metrikami, logy a trasováním, abyste mohli rychle identifikovat hlavní příčinu jakéhokoli problému.",
+        "title": "Rychlejší řešení incidentů"
       },
       "self-hosted": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Nainstalujte si do své infrastruktury <1>server Pyroscope</1>. Pokud chcete používat hostovanou službu, přihlašovací údaje ke Grafana Cloud najdete v <5>nastaveních Grafana Cloud Stack</5>.",
+          "title": "Nastavte si server Pyroscope"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Přidejte nový <1>zdroj dat Pyroscope</1>. Pokud používáte profily Grafana Cloud, použijte adresu URL svého serveru Pyroscope a příslušné bezpečnostní přihlašovací údaje.",
+          "title": "Konfigurovat Grafanu"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Pomocí <2>Grafana Alloy</2> nebo <6>SDK Pyroscope</6> můžete posílat profily ze svých aplikací do Grafana Cloud.",
+          "title": "Přidejte do své aplikace profilování"
         }
       },
-      "subtitle": "",
-      "title": "",
-      "what-you-can-do": ""
+      "subtitle": "Optimalizujte výdaje na infrastrukturu, zjednodušte ladění a zvyšte výkon aplikací",
+      "title": "Vítejte v Podrobném rozpisu profilů Grafana",
+      "what-you-can-do": "Co můžete dělat"
     },
     "no-data-source": {
-      "alert-message": "",
-      "alert-title": "",
-      "title": ""
+      "alert-message": "Tento plugin vyžaduje zdroj dat Pyroscope. <2>Přidejte a nakonfigurujte zdroj dat Pyroscope</2> do své instance Grafana.",
+      "alert-title": "Chybí zdroj dat Pyroscope!",
+      "title": "Podrobný rozpis profilů Grafana"
     },
     "page": {
-      "close": "",
-      "nav": ""
+      "close": "Zavřít",
+      "nav": "Zaškolení uživatelů a nastavení prostředí"
     }
   },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
   "panel-box": {
-    "cancel-query": "",
-    "loading-bar": "",
-    "panel-status": "",
-    "stop-streaming": "",
-    "streaming": "",
-    "untitled": ""
+    "cancel-query": "Zrušit dotaz",
+    "loading-bar": "Lišta načítání panelu",
+    "panel-status": "Stav panelu",
+    "stop-streaming": "Zastavit streamování",
+    "streaming": "Streamování",
+    "untitled": "Bez názvu"
   },
   "panel-menu": {
-    "aria-label-no-title": "",
-    "aria-label-with-title": "",
-    "title": ""
+    "aria-label-no-title": "Nabídka pro panel bez názvu",
+    "aria-label-with-title": "Nabídka pro panel s názvem {{title}}",
+    "title": "Nabídka"
   },
   "plugin-info": {
-    "aria-label": "",
-    "changelog": "",
-    "commit-sha": "",
-    "contribute": "",
-    "documentation": "",
-    "grafana-version": "",
-    "last-update": "",
-    "report-issue": "",
-    "title": "",
-    "version": ""
+    "aria-label": "Informace o pluginu",
+    "changelog": "Seznam změn",
+    "commit-sha": "SHA závazku: {{shortCommitSha}}",
+    "contribute": "Přispět",
+    "documentation": "Dokumentace",
+    "grafana-version": "Grafana {{edition}} verze {{version}} ({{env}})",
+    "last-update": "Poslední aktualizace: {{updated}}",
+    "report-issue": "Nahlásit problém",
+    "title": "Informace o pluginu",
+    "version": "Podrobný rozpis profilů Grafana, verze {{version}}"
   },
   "query-analysis": {
-    "blocks": "",
-    "data-in-time-range": "",
-    "deduplication": "",
-    "index-store": "",
-    "no": "",
-    "profiles": "",
-    "profiles-store": "",
-    "query-info-aria-label": "",
-    "replicas": "",
-    "samples": "",
-    "series": "",
-    "series-in-query": "",
-    "stored-data-in-time-range": "",
-    "symbols-store": "",
-    "yes": ""
+    "blocks": "Bloky",
+    "data-in-time-range": "Data v časovém rozsahu",
+    "deduplication": "Deduplikace",
+    "index-store": "Úložiště indexů",
+    "no": "ne",
+    "profiles": "Profily",
+    "profiles-store": "Úložiště profilů",
+    "query-info-aria-label": "Informace o dotazu",
+    "replicas": "Repliky",
+    "samples": "Vzorky",
+    "series": "Řady",
+    "series-in-query": "Řady v dotazu",
+    "stored-data-in-time-range": "Uložená data v časovém rozsahu: {{totalBytesInTimeRange}}",
+    "symbols-store": "Úložiště symbolů",
+    "yes": "ano"
   },
   "query-builder": {
     "chiclet": {
-      "edit-attribute": "",
-      "edit-operator": "",
-      "filter": "",
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "partial-filter": "",
-      "remove-filter": ""
+      "edit-attribute": "Upravit „{{label}}“",
+      "edit-operator": "Upravit „{{label}}“",
+      "filter": "Filtr",
+      "filter-label": "Štítek filtru",
+      "filter-operator": "Operátor filtru",
+      "filter-value": "Hodnota filtru",
+      "partial-filter": "Částečný filtr",
+      "remove-filter": "Odebrat filtr"
     },
-    "error-load": "",
-    "execute": "",
-    "execute-tooltip": "",
-    "loading": "",
-    "no-value": "",
-    "nothing-to-execute-tooltip": "",
+    "error-load": "Při načítání došlo k neočekávané chybě! Zkuste to znovu.",
+    "execute": "Spustit",
+    "execute-tooltip": "Spustit nový dotaz",
+    "loading": "Načítání…",
+    "no-value": "(žádná hodnota)",
+    "nothing-to-execute-tooltip": "Není nic ke spuštění, byly použity všechny filtry",
     "operators": {
-      "in": "",
-      "in-description": "",
-      "is-empty": "",
-      "not-in": "",
-      "not-in-description": "",
-      "regex-match-description": "",
-      "regex-not-match-description": ""
+      "in": "v",
+      "in-description": "Je jedním z",
+      "is-empty": "je prázdné",
+      "not-in": "není v",
+      "not-in-description": "Není jedním z",
+      "regex-match-description": "Odpovídá regulárnímu výrazu",
+      "regex-not-match-description": "Neodpovídá regulárnímu výrazu"
     },
     "placeholder": {
-      "filter-add": "",
-      "select-label": "",
-      "select-operator": "",
-      "select-value": "",
-      "select-values": "",
-      "type-value": ""
+      "filter-add": "Filtrovat podle hodnot štítků…",
+      "select-label": "Vyberte štítek…",
+      "select-operator": "Vyberte operátor…",
+      "select-value": "Vyberte hodnotu…",
+      "select-values": "Vyberte hodnoty…",
+      "type-value": "Zadejte regulární výraz…"
     },
-    "suggestions-disabled": "",
-    "suggestions-none": ""
+    "suggestions-disabled": "Pro tento štítek jsou návrhy zakázány.",
+    "suggestions-none": "Nejsou k dispozici žádné návrhy."
   },
   "recording-rules": {
     "delete": {
-      "aria-label": "",
-      "body": "",
-      "confirm": "",
-      "title": ""
+      "aria-label": "Odstranit pravidlo nahrávání",
+      "body": "Opravdu chcete odstranit pravidlo nahrávání {{metricName}}?",
+      "confirm": "Ano",
+      "title": "Odstranit pravidlo nahrávání"
     },
     "details": {
-      "filters": "",
-      "no": "",
-      "no-labels": "",
-      "read-only": "",
-      "yes": ""
+      "filters": "Filtry",
+      "no": "Ne",
+      "no-labels": "Žádné štítky",
+      "read-only": "Jen pro čtení",
+      "yes": "Ano"
     },
     "empty": {
-      "description": "",
-      "message": ""
+      "description": "Otevřete flame graf, klikněte nahoře na blok „Celkem“ a v kontextové nabídce vyberte možnost „Vytvořit pravidlo nahrávání“, abyste definovali nové pravidlo.",
+      "message": "Žádná pravidla nahrávání"
     },
     "error": {
-      "feature-required": "",
-      "message": "",
-      "title": ""
+      "feature-required": "Tato funkce vyžaduje Pyroscope se zapnutým příznakem recording_rules.",
+      "message": "Při načítání pravidel nahrávání došlo k chybě",
+      "title": "Při načítání pravidel nahrávání došlo k chybě"
     },
     "table": {
-      "actions": "",
-      "all-services": "",
-      "function-name": "",
-      "labels": "",
-      "name": "",
-      "none": "",
-      "profile-type": "",
-      "readonly-tooltip": "",
-      "service-name": "",
-      "total-all-functions": ""
+      "actions": "Akce",
+      "all-services": "Všechny služby",
+      "function-name": "Název funkce",
+      "labels": "Štítky",
+      "name": "Název",
+      "none": "Žádné",
+      "profile-type": "Typ profilu",
+      "readonly-tooltip": "Toto pravidlo je zajištěno nastavením tenanta a nelze ho odstranit.",
+      "service-name": "Název služby",
+      "total-all-functions": "Celkem (všechny funkce)"
     },
-    "title": ""
+    "title": "Pravidla nahrávání"
   },
   "saved-searches": {
     "load": {
-      "no-searches": "",
-      "no-searches-tooltip": "",
-      "remove-tooltip": "",
-      "saved-query-tooltip": "",
-      "select": "",
-      "select-pyroscope-query": "",
-      "title": "",
-      "tooltip": ""
+      "no-searches": "Žádná uložená vyhledávání k zobrazení.",
+      "no-searches-tooltip": "Žádná uložená vyhledávání k načtení",
+      "remove-tooltip": "Odebrat",
+      "saved-query-tooltip": "Načíst uložený dotaz",
+      "select": "Vybrat",
+      "select-pyroscope-query": "Vyberte dotaz Pyroscope.",
+      "title": "Načíst dříve uložené vyhledávání",
+      "tooltip": "Načíst uložené vyhledávání"
     },
     "save": {
-      "cancel": "",
-      "close": "",
-      "description-label": "",
-      "error-message": "",
-      "existing-search-warning": "",
-      "info-message": "",
-      "save": "",
-      "saved-queries-tooltip": "",
-      "success-body": "",
-      "success-message": "",
-      "success-title": "",
-      "title": "",
-      "title-label": "",
-      "tooltip": ""
+      "cancel": "Zrušit",
+      "close": "Zavřít",
+      "description-label": "Popis",
+      "error-message": "Při ukládání tohoto vyhledávání došlo k neočekávané chybě.",
+      "existing-search-warning": "Existuje dříve uložené vyhledávání se stejným dotazem: {{title}}",
+      "info-message": "Uložená vyhledávání se ukládají místně do vašeho prohlížeče a budou k dispozici pouze na tomto zařízení.",
+      "save": "Uložit",
+      "saved-queries-tooltip": "Uložit do uložených dotazů",
+      "success-body": "Vyhledávání bylo úspěšně uloženo.",
+      "success-message": "Vyhledávání bylo úspěšně uloženo.",
+      "success-title": "Úspěch",
+      "title": "Uložit současné vyhledávání",
+      "title-label": "Název",
+      "tooltip": "Uložit vyhledávání"
     }
   },
   "series": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "settings": {
-    "loading": "",
-    "save-button": "",
+    "loading": "Načítání…",
+    "save-button": "Uložit nastavení",
     "tabs": {
-      "ui-settings": "",
-      "unknown-extension": ""
+      "ui-settings": "Nastavení uživatelského rozhraní",
+      "unknown-extension": "Neznámé rozšíření"
     },
-    "title": "",
+    "title": "Nastavení profilů (tenanta)",
     "ui": {
       "collapsed-flame-graphs": {
-        "label": "",
-        "toggle": ""
+        "label": "Sbalené flame grafy",
+        "toggle": "Přepnout sbalené flame grafy"
       },
       "enable-function-details": {
-        "label": "",
-        "learn-more": "",
-        "toggle": "",
-        "tooltip": ""
+        "label": "Povolit podrobnosti o funkci",
+        "learn-more": "Další informace",
+        "toggle": "Přepnout podrobnosti o funkci",
+        "tooltip": "Funkce Podrobnosti o funkci umožňuje přiřadit využití zdrojů k řádkům zdrojového kódu. Pokud je nakonfigurována integrace s GitHubem, zdrojový kód se stáhne z GitHubu."
       },
       "fetch-error": {
-        "message": "",
-        "title": ""
+        "message": "Zkuste prosím znovu načíst stránku. Omlouváme se za nepříjemnosti.",
+        "title": "Při načítání nastavení pluginu došlo k chybě!"
       },
       "flame-graph": {
-        "label": ""
+        "label": "Flame graf"
       },
       "function-details": {
-        "label": ""
+        "label": "Podrobnosti o funkci"
       },
       "max-nodes": {
-        "label": ""
+        "label": "Maximální počet uzlů"
       },
       "metrics-from-profiles": {
-        "disable-hint": "",
-        "disable-warning": "",
-        "enable-warning": "",
-        "label": "",
-        "toggle": "",
-        "toggle-label": "",
-        "tooltip": ""
+        "disable-hint": "Chcete-li zastavit exportování dat, před zakázáním této funkce odstraňte všechna související pravidla nahrávání.",
+        "disable-warning": "Vypnutím funkce ji pouze skryjete z uživatelského rozhraní. Žádná stávající pravidla nahrávání nejsou odebrána. Tato pravidla zůstanou aktivní a budou i nadále exportovat metriky, což se stále projeví na vaší faktuře.",
+        "enable-warning": "Povolení této funkce vám umožní definovat pravidla nahrávání z Podrobného rozpisu profilů. Jakákoli pravidla nahrávání, která vytvoříte, budou odesílat nové metriky do vaší instance Grafana Cloud, což zvýší vaše využití dat v Grafana Mimir a potenciálně ovlivní váš účet.",
+        "label": "Metriky z profilů",
+        "toggle": "Povolit metriky z profilů",
+        "toggle-label": "Povolit metriky z profilů",
+        "tooltip": "Umožňuje vytvářet pravidla nahrávání z profilů"
       }
     }
   },
   "timeseries": {
     "menu": {
-      "exemplars": "",
-      "open-in-explore": "",
-      "scale-linear": "",
-      "scale-log2": "",
-      "scale-type": ""
+      "exemplars": "Příklady",
+      "open-in-explore": "Otevřít v Prozkoumat",
+      "scale-linear": "Lineární",
+      "scale-log2": "Log2",
+      "scale-type": "Typ rozsahu"
     }
   },
   "variables": {
     "data-source": {
-      "label": ""
+      "label": "Zdroj dat"
     },
     "favorite": {
-      "label": ""
+      "label": "🔖 Oblíbené"
     },
     "filters": {
-      "label": ""
+      "label": "Filtry"
     },
     "group-by": {
-      "label": "",
-      "labels-selector": "",
-      "other-labels-placeholder": "",
-      "other-labels-selector": "",
-      "refresh-tooltip": "",
-      "select-label-placeholder": ""
+      "label": "Seřadit podle štítků",
+      "labels-selector": "Volič štítků",
+      "other-labels-placeholder": "Ostatní štítky",
+      "other-labels-selector": "Volič ostatních štítků",
+      "refresh-tooltip": "Kliknutím obnovíte všechny štítky",
+      "select-label-placeholder": "Vybrat štítek"
     },
     "profile-id-selector": {
-      "label": ""
+      "label": "Volič ID profilu"
     },
     "profile-metric": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_few": "",
-      "placeholder_many": "",
-      "placeholder_other": ""
+      "aria-label": "Seznam metrik profilu",
+      "label": "Typ profilu",
+      "loading": "Načítání…",
+      "placeholder_one": "Vyberte metriku profilu ({{count}})",
+      "placeholder_few": "Vyberte metriku profilu ({{count}})",
+      "placeholder_many": "Vyberte metriku profilu ({{count}})",
+      "placeholder_other": "Vyberte metriku profilu ({{count}})"
     },
     "service-name": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_few": "",
-      "placeholder_many": "",
-      "placeholder_other": ""
+      "aria-label": "Seznam služeb",
+      "label": "Služba",
+      "loading": "Načítání služeb…",
+      "unmatched-tooltip": "",
+      "placeholder_one": "Vyberte službu ({{count}})",
+      "placeholder_few": "Vyberte službu ({{count}})",
+      "placeholder_many": "Vyberte službu ({{count}})",
+      "placeholder_other": "Vyberte službu ({{count}})"
     },
     "span-selector": {
-      "label": ""
+      "label": "Volič rozsahu"
     }
   }
 }

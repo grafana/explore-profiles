@@ -1,46 +1,58 @@
 {
   "actions": {
     "exemplar-toggle": {
-      "hide": "",
-      "label": "",
-      "show": ""
+      "hide": "Voorbeelden verbergen",
+      "label": "Voorbeelden",
+      "show": "Voorbeelden weergeven"
     },
     "fav": {
-      "favorite": "",
-      "unfavorite": ""
+      "favorite": "Favoriet",
+      "unfavorite": "Maak los van favorieten"
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
     "profile-type-selector": {
-      "label": ""
+      "label": "Profiel"
     },
     "tabs": {
-      "comparison-view": "",
-      "single-view": ""
+      "diff-view": "",
+      "single-view": "Enkele weergave"
     },
     "view": {
-      "title": ""
+      "title": "Ad-hocweergave"
     }
   },
   "ai-panel": {
-    "analyzing": "",
-    "close": "",
-    "fetch-error": "",
-    "fetch-error-message": "",
+    "analyzing": "Aan het analyseren...",
+    "close": "Paneel sluiten",
+    "fetch-error": "Er is een fout opgetreden bij het laden van profielgegevens!",
+    "fetch-error-message": "Onze excuses voor het ongemak. Probeer het later opnieuw.",
     "follow-up": {
-      "placeholder": "",
-      "send": ""
+      "placeholder": "Stel een vervolgvraag...",
+      "send": "Verzenden"
     },
-    "llm-error": "",
-    "llm-error-message": "",
+    "llm-error": "Er is een fout opgetreden bij het genereren van inhoud met OpenAI!",
+    "llm-error-message": "Onze excuses voor het ongemak. Probeer het opnieuw. Blijft het probleem zich voordoen, neem dan contact op met de beheerder van je organisatie.",
     "reply": {
-      "search-node": ""
+      "search-node": "Deze node zoeken"
     },
-    "retry": "",
-    "title": "",
-    "validation-error": ""
+    "retry": "Opnieuw proberen",
+    "title": "Flame graph-analyse",
+    "validation-error": "Validatiefout!"
   },
   "analyze-diff": {
+    "context": {
+      "title": "DOT-profielen en -instructies"
+    },
+    "error": "Kan DOT-profielen niet ophalen voor analyse",
+    "prompt": "Analyseer de verschillen tussen deze twee prestatieprofielen."
+  },
+  "analyze-flame-graph": {
     "context": {
       "title": ""
     },
@@ -48,614 +60,622 @@
     "prompt": ""
   },
   "back-button": {
-    "aria-label": "",
-    "label": ""
+    "aria-label": "Terug naar Profiles Drilldown",
+    "label": "Terug naar Profiles Drilldown"
   },
   "create-recording-rule": {
-    "cancel": "",
-    "create": "",
+    "cancel": "Annuleren",
+    "create": "Aanmaken",
     "filters": {
-      "description": "",
-      "label": "",
-      "none": ""
+      "description": "Filters die in de hoofdweergave zijn geselecteerd, zullen op deze regel worden toegepast",
+      "label": "Filters",
+      "none": "Geen filters geselecteerd"
     },
     "function-name": {
-      "aria-label": "",
-      "description": "",
-      "label": "",
-      "placeholder": ""
+      "aria-label": "Functienaam",
+      "description": "Optionele functienaam om de opnameregel te filteren",
+      "label": "Functienaam",
+      "placeholder": "Laat leeg voor totale aggregatie"
     },
     "labels": {
-      "description": "",
-      "label": ""
+      "description": "Aanvullende profilinglabels om door te sturen naar de metric",
+      "label": "Extra labels"
     },
-    "menu-option": "",
+    "menu-option": "Opnameregel aanmaken",
     "metric-name": {
-      "aria-label": "",
+      "aria-label": "Metricnaam",
       "description": "",
-      "invalid": "",
-      "label": "",
-      "pattern-alphanumeric": "",
-      "pattern-error": "",
-      "pattern-no-number": "",
-      "required": ""
+      "invalid": "Ongeldige metricnaam.",
+      "label": "Metricnaam",
+      "pattern-alphanumeric": "Mag alleen alfanumerieke tekens of underscores bevatten",
+      "pattern-error": "De metricnaam is ongeldig; deze moet de volgende eigenschappen hebben:",
+      "pattern-no-number": "Mag niet met een cijfer beginnen",
+      "required": "Metricnaam is vereist."
     },
     "profile-type": {
-      "label": ""
+      "label": "Profieltype"
     },
     "service-name": {
-      "all": "",
-      "label": ""
+      "all": "Alle services",
+      "label": "Servicenaam"
     },
-    "title": ""
+    "title": "Opnameregel aanmaken"
   },
   "diff-flame-graph": {
     "compare-panel": {
-      "annotation-title": "",
-      "baseline": "",
-      "comparison": "",
-      "flame-graph": "",
-      "range-selection-mode": "",
-      "sync-time-ranges": "",
-      "time-picker": "",
-      "tooltip-description": "",
-      "tooltip-flame-graph": "",
-      "tooltip-flame-graph-description": "",
-      "tooltip-time-picker": "",
-      "tooltip-time-picker-description": ""
+      "annotation-title": "{{title}} flame graph-bereik",
+      "baseline": "Uitgangswaarde",
+      "comparison": "Vergelijking",
+      "flame-graph": "Flame graph",
+      "range-selection-mode": "Bereikselectiemodus",
+      "sync-time-ranges": "Tijdsbereiken synchroniseren",
+      "time-picker": "Tijdkiezer",
+      "tooltip-description": "Gebruik deze knoppen om het gedrag te wijzigen bij het selecteren van een bereik met de muis op de tijdreeks:",
+      "tooltip-flame-graph": "Flame graph",
+      "tooltip-flame-graph-description": "Tijdsbereik voor het samenstellen van de flame graph (de stacktraces worden alleen voor het geselecteerde bereik opgehaald)",
+      "tooltip-time-picker": "Tijdkiezer",
+      "tooltip-time-picker-description": "Tijdsbereik inzoomen (standaardgedrag)"
     },
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Er is een fout opgetreden bij het laden van profielgegevens!",
+    "explain-button": "Leg de Diff Flame Graph uit",
     "missing-selections": {
-      "auto-select": "",
-      "how-to-alt": "",
-      "learn-how": "",
-      "step-1": "",
-      "step-2": "",
-      "title": ""
+      "auto-select": "Automatisch selecteren",
+      "how-to-alt": "Hoe de diff flame graph te bekijken",
+      "learn-how": "Klik hier voor meer informatie over het selecteren van de flame graph-bereiken met de muis",
+      "step-1": "Zorg ervoor dat de bereikselectiemodus 'Flame graph' is geselecteerd",
+      "step-2": "Gebruik je muis om de gewenste tijdsbereiken te selecteren op zowel de basislijn als de vergelijkende tijdreeks",
+      "title": "Selecteer zowel het baseline- als het vergelijkingsbereik van de flame graph om de diff flame graph te bekijken"
     },
-    "no-profile-data": "",
-    "no-profile-data-message": "",
+    "no-profile-data": "Geen profielgegevens beschikbaar",
+    "no-profile-data-message": "Controleer of je de juiste filters en tijdsbereiken hebt geselecteerd.",
     "presets": {
-      "1h-ago-vs-now": "",
-      "1h-ago-vs-now-description": "",
-      "24h-ago-vs-now": "",
-      "6h-ago-vs-now": "",
-      "label": "",
-      "placeholder": ""
+      "1h-ago-vs-now": "1u geleden vs. nu",
+      "1h-ago-vs-now-description": "Venster van 30min",
+      "24h-ago-vs-now": "24u geleden vs. nu",
+      "6h-ago-vs-now": "6u geleden vs. nu",
+      "label": "Vergelijkingsvoorinstellingen",
+      "placeholder": "Kies een voorinstelling"
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Sommige functies werken mogelijk niet zoals verwacht (bijv. exportopties voor flame graphs). Probeer de pagina opnieuw te laden. Sorry voor het ongemak.",
+      "title": "Er is een fout opgetreden bij het ophalen van de plug-ininstellingen!"
     },
-    "title": ""
+    "title": "Diff flame Graph voor {{serviceName}} ({{profileMetricType}})"
   },
   "error-page": {
-    "banner-message": "",
-    "banner-title": "",
-    "title": ""
+    "banner-message": "Probeer de pagina opnieuw te laden of neem contact op met de beheerder van je organisatie als het probleem zich blijft voordoen. Sorry voor het ongemak.",
+    "banner-title": "Fatale fout!",
+    "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
     "exploration-type": {
-      "all-services": "",
-      "all-services-description": "",
-      "diff-flame-graph": "",
-      "diff-flame-graph-description": "",
-      "favorites": "",
-      "favorites-description": "",
-      "flame-graph": "",
-      "flame-graph-description": "",
-      "label": "",
-      "labels": "",
-      "labels-description": "",
-      "profile-types": "",
-      "profile-types-description": ""
+      "all-services": "Alle services",
+      "all-services-description": "Overzicht van alle services, voor elk profieltype",
+      "diff-flame-graph": "Diff flame graph",
+      "diff-flame-graph-description": "De verschillen tussen twee flame graphs vergelijken",
+      "favorites": "Favorieten",
+      "favorites-description": "Overzicht van favoriete visualisaties",
+      "flame-graph": "Flame graph",
+      "flame-graph-description": "Flame graph voor één service",
+      "label": "Verkenning",
+      "labels": "Labels",
+      "labels-description": "Verkenning en filtering van labels voor één service",
+      "profile-types": "Profieltypes",
+      "profile-types-description": "Overzicht van alle profieltypen voor één service"
     },
     "header": {
-      "add-recording-rule": "",
-      "recording-rules-tooltip": "",
-      "settings-tooltip": "",
-      "share-tooltip": "",
-      "upload-tooltip": "",
-      "view-recording-rules": ""
+      "add-recording-rule": "Opnameregel toevoegen",
+      "recording-rules-tooltip": "Opnameregels",
+      "settings-tooltip": "Tenantinstellingen bekijken/bewerken",
+      "share-tooltip": "Deelbare link naar het klembord kopiëren",
+      "upload-tooltip": "Ad-hocprofielen uploaden",
+      "view-recording-rules": "Opnameregels bekijken"
     }
   },
   "export-data": {
-    "aria-label": "",
-    "tooltip": ""
+    "aria-label": "Profielgegevens exporteren",
+    "tooltip": "Profielgegevens exporteren"
   },
   "export-menu": {
-    "aria-label": "",
-    "error-flamegraph-com": "",
-    "error-loading-profile": "",
-    "error-png": "",
-    "error-pprof": "",
-    "json": "",
-    "json-label": "",
-    "png": "",
-    "png-label": "",
-    "pprof": "",
-    "tooltip": ""
+    "aria-label": "Profielgegevens exporteren",
+    "error-flamegraph-com": "Kan niet exporteren naar flamegraph.com!",
+    "error-loading-profile": "Er is een fout opgetreden bij het laden van flamebearer-profielgegevens!",
+    "error-png": "Kan niet exporteren naar png!",
+    "error-pprof": "Kan niet exporteren naar pprof!",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "Profielgegevens exporteren"
   },
   "exposed-components": {
-    "loading": ""
+    "loading": "Laden..."
   },
   "favorites": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "flame-graph": {
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Er is een fout opgetreden bij het laden van profielgegevens!",
+    "explain-button": "Leg de Flame Graph uit",
     "profile-id-selector": {
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "name": "",
-      "remove": "",
-      "tooltip": ""
+      "filter-label": "Filterlabel",
+      "filter-operator": "Filteroperator",
+      "filter-value": "Filterwaarde",
+      "name": "Profiel-ID",
+      "remove": "Profiel-ID-kiezer uit query verwijderen",
+      "tooltip": "Je hebt een profiel-ID-selector toegevoegd aan de Flamegraph-query ({{profileIdSelector}})."
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Sommige functies werken mogelijk niet zoals verwacht (bijv. ingeklapte flame graphs). Probeer de pagina opnieuw te laden. Sorry voor het ongemak.",
+      "title": "Er is een fout opgetreden bij het ophalen van de plug-ininstellingen!"
     },
     "span-selector": {
-      "added": "",
-      "remove": "",
-      "tooltip": ""
+      "added": "Span-selector toegevoegd",
+      "remove": "Span-selector uit query verwijderen",
+      "tooltip": "Je hebt een span-selector toegevoegd aan de Flamegraph-query ({{spanSelector}})."
     },
-    "title": ""
+    "title": "Flame graph voor {{serviceName}} ({{profileMetricType}})"
   },
   "function-details": {
     "ai-suggestions": {
-      "analyzing": "",
-      "fetch-error": "",
-      "fetch-error-message": "",
-      "llm-error": "",
-      "llm-error-message": "",
-      "title": ""
+      "analyzing": "Aan het analyseren...",
+      "fetch-error": "Er is een fout opgetreden bij het ophalen van profielen!",
+      "fetch-error-message": "Onze excuses voor het ongemak. Probeer het later opnieuw.",
+      "llm-error": "Kan inhoud niet genereren met OpenAI!",
+      "llm-error-message": "Onze excuses voor het ongemak. Probeer het later opnieuw. Blijft het probleem zich voordoen, neem dan contact op met de beheerder van je organisatie.",
+      "title": "Suggesties voor code-optimalisatie"
     },
-    "close": "",
+    "close": "sluiten",
     "code": {
-      "breakdown-per-line": "",
-      "file-unavailable": "",
-      "optimize": "",
-      "view-on-github": ""
+      "breakdown-per-line": "Opsplitsing per regel",
+      "file-unavailable": "(bestandsinformatie niet beschikbaar)",
+      "optimize": "Code optimaliseren",
+      "view-on-github": "Bekijk op GitHub"
     },
-    "commit": "",
+    "commit": "Commit",
     "commit-option": {
-      "author-date": ""
+      "author-date": "{{author}} op {{date}}"
     },
     "commit-select": {
-      "no-options": ""
+      "no-options": "Geen commits gevonden"
     },
-    "commit-tooltip": "",
+    "commit-tooltip": "De versie van de applicatie (commit) waarin de functie is gedefinieerd. Gebruik de keuzelijst om een specifieke commit te selecteren.",
     "context-menu": {
-      "label": ""
+      "label": "Functiedetails"
     },
-    "copy-to-clipboard": "",
-    "fetch-error": "",
-    "file": "",
-    "file-path-copied": "",
-    "file-tooltip": "",
-    "function-name": "",
+    "copy-to-clipboard": "Kopiëren naar klembord",
+    "fetch-error": "Er is een fout opgetreden bij het ophalen van functiedetails!",
+    "file": "Bestand",
+    "file-path-copied": "Bestandspad naar klembord gekopieerd!",
+    "file-tooltip": "Bestandspad waarin die functie is gedefinieerd",
+    "function-name": "Functienaam",
     "github": {
-      "banner-dismiss": "",
-      "banner-git-ref": "",
-      "banner-labels": "",
-      "banner-language-support": "",
-      "banner-learn-more": "",
-      "banner-title": "",
-      "connect-button": "",
-      "connect-tooltip": "",
-      "connecting": "",
-      "disconnect": "",
-      "view-commit": ""
+      "banner-dismiss": "Sluiten",
+      "banner-git-ref": "Ze moeten respectievelijk worden ingesteld op de volledige GitHub-URL van de repository en op de huidige <2>git-ref</2> van de actieve service.",
+      "banner-labels": "Om deze functie te activeren, moet je bij het verzenden van profielen twee nieuwe labels toevoegen: <2>service_repository</2> en <4>service_git_ref</4>. ",
+      "banner-language-support": "Deze taal ondersteunt integratie met <1></1> GitHub.",
+      "banner-learn-more": "Meer informatie",
+      "banner-title": "Integreren met Github",
+      "connect-button": "Verbinden met {{name}}",
+      "connect-tooltip": "Na het verbinden is de GitHub-code alleen toegankelijk vanuit deze browsersessie.",
+      "connecting": "Aan het verbinden met GitHub...",
+      "disconnect": "Verbinding met GitHub verbreken",
+      "view-commit": "Commit bekijken"
     },
     "github-callback": {
-      "logging-in": "",
-      "title": ""
+      "logging-in": "Aan het inloggen bij GitHub...",
+      "title": "GitHub-login"
     },
-    "not-available": "",
+    "not-available": "-",
     "override": {
-      "add": "",
-      "add-title": "",
-      "alert-debug": "",
-      "alert-labels": "",
-      "alert-title": "",
-      "aria-label": "",
-      "data-source": "",
-      "delete": "",
-      "edit": "",
-      "edit-title": "",
-      "git-ref-label": "",
-      "git-ref-placeholder": "",
-      "remove-all": "",
-      "remove-all-confirm": "",
-      "repository-label": "",
-      "repository-placeholder": "",
-      "repository-required": "",
-      "root-path": "",
-      "root-path-placeholder": "",
-      "service-name": "",
-      "user-set": ""
+      "add": "Toevoegen",
+      "add-title": "Nieuwe override voor repositorygegevens toevoegen",
+      "alert-debug": "Voor debugdoeleinden kun je via dit formulier handmatig repositorygegevens opgeven. De aangepaste waarde wordt voor de betreffende databron en servicenaam opgeslagen in de lokale opslag van je browser.",
+      "alert-labels": "Om de GitHub-integratiefunctie te activeren, moet je bij het verzenden van profielen twee nieuwe labels toevoegen: <1>service_repository</1> en <3>service_git_ref</3>.",
+      "alert-title": "Labels voor Github-integratie",
+      "aria-label": "repository-instellingen overschrijven",
+      "data-source": "Databron",
+      "delete": "Overschrijving verwijderen",
+      "edit": "Bewerken",
+      "edit-title": "Override voor repositorygegevens bewerken",
+      "git-ref-label": "service_git_ref (commitreferentie)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Alle overschrijvingen verwijderen",
+      "remove-all-confirm": "Alles verwijderen",
+      "repository-label": "service_repository (repository-URL) - verplicht",
+      "repository-placeholder": "Voer de naam van de GitHub-repository in, https://github.com/org/repo",
+      "repository-required": "Repository-naam is vereist",
+      "root-path": "Pad naar root",
+      "root-path-placeholder": "Voer het rootpad in",
+      "service-name": "Servicenaam",
+      "user-set": "(ingesteld door gebruiker)"
     },
-    "repository": "",
-    "repository-tooltip": "",
-    "start-line": "",
-    "start-line-tooltip": "",
-    "title": ""
+    "repository": "Repository",
+    "repository-tooltip": "De repository die is geconfigureerd voor de geselecteerde service",
+    "start-line": "Startregel",
+    "start-line-tooltip": "De regel waar deze functiedefinitie begint",
+    "title": "Functiedetails"
   },
   "give-feedback": {
-    "button": "",
-    "tooltip": ""
+    "button": "Feedback geven",
+    "tooltip": "Deel je mening over Profielen in Grafana."
   },
   "grid": {
     "empty-state": {
-      "no-results": ""
+      "no-results": "Geen resultaten"
     },
     "error": {
-      "title": ""
+      "title": "Queryfout!"
     },
     "exemplars": {
-      "view-profile": ""
+      "view-profile": "Profiel bekijken"
     },
     "layout": {
-      "aria-label": "",
-      "grid": "",
-      "rows": ""
+      "aria-label": "Layoutwisselaar",
+      "grid": "Raster",
+      "rows": "Rijen"
     },
     "no-data": {
-      "label": ""
+      "label": "Panelen zonder gegevens verbergen"
     },
     "panel-type": {
-      "aria-label": "",
-      "histograms": "",
-      "maxima": "",
-      "time-series": "",
-      "totals": ""
+      "aria-label": "Paneeltypewisselaar",
+      "histograms": "Histogrammen",
+      "maxima": "Maxima",
+      "time-series": "Tijdreeks",
+      "totals": "Totalen"
     },
     "quick-filter": {
-      "aria-label": "",
-      "clear": ""
+      "aria-label": "Snelfilter",
+      "clear": "Zoekopdracht wissen"
     }
   },
   "labels": {
     "compare": {
-      "clear-tooltip": "",
-      "tooltip-empty": "",
-      "tooltip-ready": "",
-      "tooltip-select-baseline": "",
-      "tooltip-select-comparison": "",
-      "button_one": "",
-      "button_other": ""
+      "clear-tooltip": "Vergelijkingsselectie wissen",
+      "tooltip-empty": "Selecteer zowel een baseline- als een vergelijkingspaneel om hun flame graphs te vergelijken",
+      "tooltip-ready": "'{{baseline}}' vs. '{{comparison}}' vergelijken",
+      "tooltip-select-baseline": "Selecteer een ander paneel om te vergelijken met '{{label}}'",
+      "tooltip-select-comparison": "Selecteer een ander paneel om te vergelijken met '{{label}}'",
+      "button_one": "Vergelijken ({{count}}/2)",
+      "button_other": "Vergelijken ({{count}}/2)"
     },
     "data-source": {
-      "all": "",
-      "test-success": ""
+      "all": "Alle",
+      "test-success": "OK"
     },
     "filter": {
-      "clear-tooltip": "",
-      "exclude": "",
-      "exclude-tooltip": "",
-      "include": "",
-      "include-tooltip": ""
+      "clear-tooltip": "'{{label}}' uit de filters wissen",
+      "exclude": "Uitsluiten",
+      "exclude-tooltip": "'{{label}}' uitsluiten in de filters",
+      "include": "Opnemen",
+      "include-tooltip": "'{{label}}' opnemen in de filters"
     },
     "grid": {
-      "no-results": "",
-      "refresh-tooltip": ""
+      "no-results": "Geen resultaten",
+      "refresh-tooltip": "Klik om alle panelen op het scherm volledig te vernieuwen"
     },
     "stats-panel": {
-      "baseline": "",
-      "baseline-description": "",
-      "comparison": "",
-      "comparison-description": "",
-      "total": ""
+      "baseline": "Uitgangswaarde",
+      "baseline-description": "Klik om '{{value}}' te selecteren als uitgangspunt voor vergelijking",
+      "comparison": "Vergelijking",
+      "comparison-description": "Klik om '{{value}}' te selecteren als doel voor vergelijking",
+      "total": "{{statsDescription}}: {{total}}"
     }
   },
   "onboarding": {
     "empty-loading": {
-      "title": ""
+      "title": "Laden..."
     },
     "modal": {
       "billing": {
-        "description": "",
-        "title": ""
+        "description": "Voor het gebruik van Grafana Cloud-profielen gelden de <2>Grafana Cloud-tarieven</2> voor profielen.<br/>Lees voor meer informatie de <6>blogpost</6> over de aankondiging.",
+        "title": "Hoe facturering werkt"
       },
       "cloud": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Gebruik <2>Grafana Alloy</2> of <6>Pyroscope-SDK's</6> om profielen vanuit je applicaties naar Grafana Cloud te pushen.",
+          "title": "Profilering toevoegen aan je applicatie"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Ga naar de <1>Grafana Cloud-stackinstellingen</1> om je Grafana Cloud-inloggegevens te vinden.",
+          "title": "Je applicaties configureren"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Zodra je klaar bent met de eerste instellingen, vernieuw je deze pagina om je profileringsgegevens te zien.",
+          "title": "Begin met het verkrijgen van prestatie-inzichten"
         }
       },
       "decrease-latency": {
-        "description": "",
-        "title": ""
+        "description": "Behoud een hoge snelheid en efficiëntie en verbeter de prestaties van je toepassingen. In een concurrerende digitale wereld leidt een lagere latentie tot hogere inkomsten.",
+        "title": "Latentie verminderen"
       },
-      "how-to-get-started": "",
+      "how-to-get-started": "Aan de slag",
       "reduce-costs": {
-        "description": "",
-        "title": ""
+        "description": "Signaleer CPU-pieken, geheugenlekken en andere inefficiënties dankzij inzicht op codeniveau in het bronnengebruik. Teams kunnen vervolgens hun code optimaliseren en de infrastructuurkosten verlagen.",
+        "title": "Kosten verlagen"
       },
       "resolve-incidents": {
-        "description": "",
-        "title": ""
+        "description": "Verkort de gemiddelde oplostijd (MTTR) door continue profilinggegevens te correleren met metrics, logs en traces, zodat je snel de hoofdoorzaak van elk probleem kunt identificeren.",
+        "title": "Incidenten sneller oplossen"
       },
       "self-hosted": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Installeer <1>Pyroscope Server</1> op je infrastructuur. Of, als je een gehoste dienst wilt gebruiken, ga je naar de <5>Grafana Cloud-stackinstellingen</5> om je Grafana Cloud-inloggegevens te vinden.",
+          "title": "Je Pyroscope-server instellen"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Voeg een nieuwe <1>Pyroscope-databron</1> toe. Gebruik de URL van je Pyroscope-server en de juiste beveiligingsreferenties als je Grafana Cloud-profielen gebruikt.",
+          "title": "Grafana configureren"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Gebruik <2>Grafana Alloy</2> of <6>Pyroscope-SDK's</6> om profielen vanuit je applicaties naar Grafana Cloud te pushen.",
+          "title": "Profilering toevoegen aan je applicatie"
         }
       },
-      "subtitle": "",
-      "title": "",
-      "what-you-can-do": ""
+      "subtitle": "Optimaliseer de infrastructuuruitgaven, vereenvoudig het debuggen en verbeter de prestaties van je toepassingen",
+      "title": "Welkom bij Grafana Profiles Drilldown",
+      "what-you-can-do": "Wat je kunt doen"
     },
     "no-data-source": {
-      "alert-message": "",
-      "alert-title": "",
-      "title": ""
+      "alert-message": "Voor deze plug-in is een Pyroscope-databron vereist. <2>Voeg een Pyroscope-databron toe aan je Grafana-instantie en configureer deze</2>.",
+      "alert-title": "Pyroscope-databron ontbreekt!",
+      "title": "Grafana Profiles Drilldown"
     },
     "page": {
-      "close": "",
-      "nav": ""
+      "close": "Sluiten",
+      "nav": "Onboarding"
     }
   },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
   "panel-box": {
-    "cancel-query": "",
-    "loading-bar": "",
-    "panel-status": "",
-    "stop-streaming": "",
-    "streaming": "",
-    "untitled": ""
+    "cancel-query": "Query annuleren",
+    "loading-bar": "Laadbalk van paneel",
+    "panel-status": "Paneelstatus",
+    "stop-streaming": "Streamen stoppen",
+    "streaming": "Streamen",
+    "untitled": "Zonder titel"
   },
   "panel-menu": {
-    "aria-label-no-title": "",
-    "aria-label-with-title": "",
-    "title": ""
+    "aria-label-no-title": "Menu voor paneel zonder titel",
+    "aria-label-with-title": "Menu voor paneel met titel {{title}}",
+    "title": "Menu"
   },
   "plugin-info": {
-    "aria-label": "",
-    "changelog": "",
-    "commit-sha": "",
-    "contribute": "",
-    "documentation": "",
-    "grafana-version": "",
-    "last-update": "",
-    "report-issue": "",
-    "title": "",
-    "version": ""
+    "aria-label": "Plugin-informatie",
+    "changelog": "Changelog",
+    "commit-sha": "Commit-SHA: {{shortCommitSha}}",
+    "contribute": "Bijdragen",
+    "documentation": "Documentatie",
+    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "last-update": "Laatste update: {{updated}}",
+    "report-issue": "Een probleem melden",
+    "title": "Plugin-informatie",
+    "version": "Grafana Profiles Drilldown v{{version}}"
   },
   "query-analysis": {
-    "blocks": "",
-    "data-in-time-range": "",
-    "deduplication": "",
-    "index-store": "",
-    "no": "",
-    "profiles": "",
-    "profiles-store": "",
-    "query-info-aria-label": "",
-    "replicas": "",
-    "samples": "",
-    "series": "",
-    "series-in-query": "",
-    "stored-data-in-time-range": "",
-    "symbols-store": "",
-    "yes": ""
+    "blocks": "Blokken",
+    "data-in-time-range": "Gegevens binnen tijdsbereik",
+    "deduplication": "Dedupliceren",
+    "index-store": "Indexopslag",
+    "no": "nee",
+    "profiles": "Profielen",
+    "profiles-store": "Profielenopslag",
+    "query-info-aria-label": "Query-informatie",
+    "replicas": "Replica's",
+    "samples": "Samples",
+    "series": "Reeks",
+    "series-in-query": "Reeksen in query",
+    "stored-data-in-time-range": "Opgeslagen gegevens binnen tijdsbereik: {{totalBytesInTimeRange}}",
+    "symbols-store": "Symbols Store",
+    "yes": "ja"
   },
   "query-builder": {
     "chiclet": {
-      "edit-attribute": "",
-      "edit-operator": "",
-      "filter": "",
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "partial-filter": "",
-      "remove-filter": ""
+      "edit-attribute": "'{{label}}' bewerken",
+      "edit-operator": "'{{label}}' bewerken",
+      "filter": "Filter",
+      "filter-label": "Filterlabel",
+      "filter-operator": "Filteroperator",
+      "filter-value": "Filterwaarde",
+      "partial-filter": "Gedeeltelijke filter",
+      "remove-filter": "Filter verwijderen"
     },
-    "error-load": "",
-    "execute": "",
-    "execute-tooltip": "",
-    "loading": "",
-    "no-value": "",
-    "nothing-to-execute-tooltip": "",
+    "error-load": "Er is een onverwachte fout opgetreden bij het laden! Probeer het opnieuw.",
+    "execute": "Uitvoeren",
+    "execute-tooltip": "Nieuwe query uitvoeren",
+    "loading": "Laden...",
+    "no-value": "(geen waarde)",
+    "nothing-to-execute-tooltip": "Niets om uit te voeren, alle filters toegepast",
     "operators": {
-      "in": "",
-      "in-description": "",
-      "is-empty": "",
-      "not-in": "",
-      "not-in-description": "",
-      "regex-match-description": "",
-      "regex-not-match-description": ""
+      "in": "in",
+      "in-description": "Is een van",
+      "is-empty": "is leeg",
+      "not-in": "niet in",
+      "not-in-description": "Is niet een van",
+      "regex-match-description": "Komt overeen met regex",
+      "regex-not-match-description": "Komt niet overeen met regex"
     },
     "placeholder": {
-      "filter-add": "",
-      "select-label": "",
-      "select-operator": "",
-      "select-value": "",
-      "select-values": "",
-      "type-value": ""
+      "filter-add": "Filteren op labelwaarden...",
+      "select-label": "Een label selecteren...",
+      "select-operator": "Een operator selecteren...",
+      "select-value": "Een waarde selecteren...",
+      "select-values": "Waarden selecteren...",
+      "type-value": "Een regex typen..."
     },
-    "suggestions-disabled": "",
-    "suggestions-none": ""
+    "suggestions-disabled": "Suggesties zijn uitgeschakeld voor dit label.",
+    "suggestions-none": "Geen suggesties beschikbaar."
   },
   "recording-rules": {
     "delete": {
-      "aria-label": "",
-      "body": "",
-      "confirm": "",
-      "title": ""
+      "aria-label": "Opnameregel verwijderen",
+      "body": "Weet je zeker dat je de {{metricName}} opnameregel wilt verwijderen?",
+      "confirm": "Ja",
+      "title": "Opnameregel verwijderen"
     },
     "details": {
-      "filters": "",
-      "no": "",
-      "no-labels": "",
-      "read-only": "",
-      "yes": ""
+      "filters": "Filters",
+      "no": "Nee",
+      "no-labels": "Geen labels",
+      "read-only": "Alleen lezen",
+      "yes": "Ja"
     },
     "empty": {
-      "description": "",
-      "message": ""
+      "description": "Open een flame graphic, klik bovenaan op het blok 'Totaal' en selecteer 'Opnameregel aanmaken' in het contextmenu om een nieuwe regel te definiëren.",
+      "message": "Geen opnameregels"
     },
     "error": {
-      "feature-required": "",
-      "message": "",
-      "title": ""
+      "feature-required": "Voor deze functie is Pyroscope vereist, met de vlag recording_rules ingeschakeld.",
+      "message": "Er is een fout opgetreden bij het ophalen van opnameregels",
+      "title": "Er is een fout opgetreden bij het ophalen van opnameregels"
     },
     "table": {
-      "actions": "",
-      "all-services": "",
-      "function-name": "",
-      "labels": "",
-      "name": "",
-      "none": "",
-      "profile-type": "",
-      "readonly-tooltip": "",
-      "service-name": "",
-      "total-all-functions": ""
+      "actions": "Acties",
+      "all-services": "Alle services",
+      "function-name": "Functienaam",
+      "labels": "Labels",
+      "name": "Naam",
+      "none": "Geen",
+      "profile-type": "Profieltype",
+      "readonly-tooltip": "Deze regel is geprovisioneerd met tenantinstellingen en kan niet worden verwijderd.",
+      "service-name": "Servicenaam",
+      "total-all-functions": "Totaal (alle functies)"
     },
-    "title": ""
+    "title": "Opnameregels"
   },
   "saved-searches": {
     "load": {
-      "no-searches": "",
-      "no-searches-tooltip": "",
-      "remove-tooltip": "",
-      "saved-query-tooltip": "",
-      "select": "",
-      "select-pyroscope-query": "",
-      "title": "",
-      "tooltip": ""
+      "no-searches": "Geen opgeslagen zoekopdrachten om weer te geven.",
+      "no-searches-tooltip": "Geen opgeslagen zoekopdrachten om te laden",
+      "remove-tooltip": "Verwijderen",
+      "saved-query-tooltip": "Opgeslagen query laden",
+      "select": "Selecteren",
+      "select-pyroscope-query": "Selecteer een Pyroscope-query.",
+      "title": "Een eerder opgeslagen zoekopdracht laden",
+      "tooltip": "Opgeslagen zoekopdracht laden"
     },
     "save": {
-      "cancel": "",
-      "close": "",
-      "description-label": "",
-      "error-message": "",
-      "existing-search-warning": "",
-      "info-message": "",
-      "save": "",
-      "saved-queries-tooltip": "",
-      "success-body": "",
-      "success-message": "",
-      "success-title": "",
-      "title": "",
-      "title-label": "",
-      "tooltip": ""
+      "cancel": "Annuleren",
+      "close": "Sluiten",
+      "description-label": "Beschrijving",
+      "error-message": "Er is een onverwachte fout opgetreden bij het opslaan van deze zoekopdracht.",
+      "existing-search-warning": "Er is al een eerder opgeslagen zoekopdracht met dezelfde zoekterm: {{title}}",
+      "info-message": "Opgeslagen zoekopdrachten worden lokaal in je browser opgeslagen en zijn alleen op dit apparaat beschikbaar.",
+      "save": "Opslaan",
+      "saved-queries-tooltip": "Opslaan in Opgeslagen queries",
+      "success-body": "Zoekopdracht is opgeslagen.",
+      "success-message": "Zoekopdracht is opgeslagen.",
+      "success-title": "Succes",
+      "title": "Huidige zoekopdracht opslaan",
+      "title-label": "Titel",
+      "tooltip": "Zoekopdracht opslaan"
     }
   },
   "series": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "settings": {
-    "loading": "",
-    "save-button": "",
+    "loading": "Laden...",
+    "save-button": "Instellingen opslaan",
     "tabs": {
-      "ui-settings": "",
-      "unknown-extension": ""
+      "ui-settings": "UI-instellingen",
+      "unknown-extension": "Onbekende extensie"
     },
-    "title": "",
+    "title": "Profielinstellingen (tenant)",
     "ui": {
       "collapsed-flame-graphs": {
-        "label": "",
-        "toggle": ""
+        "label": "Ingeklapte flame graphs",
+        "toggle": "Ingeklapte flame graphs in-/uitschakelen"
       },
       "enable-function-details": {
-        "label": "",
-        "learn-more": "",
-        "toggle": "",
-        "tooltip": ""
+        "label": "Functiedetails inschakelen",
+        "learn-more": "Meer informatie",
+        "toggle": "Functiedetails in-/uitschakelen",
+        "tooltip": "Met de functiedetailsfunctie kan het bronnengebruik worden gekoppeld aan regels broncode. Als de GitHub-integratie is geconfigureerd, wordt de broncode van GitHub gedownload."
       },
       "fetch-error": {
-        "message": "",
-        "title": ""
+        "message": "Probeer de pagina opnieuw te laden. Sorry voor het ongemak.",
+        "title": "Er is een fout opgetreden bij het ophalen van de plug-ininstellingen!"
       },
       "flame-graph": {
-        "label": ""
+        "label": "Flame graph"
       },
       "function-details": {
-        "label": ""
+        "label": "Functiedetails"
       },
       "max-nodes": {
-        "label": ""
+        "label": "Maximumaantal nodes"
       },
       "metrics-from-profiles": {
-        "disable-hint": "",
-        "disable-warning": "",
-        "enable-warning": "",
-        "label": "",
-        "toggle": "",
-        "toggle-label": "",
-        "tooltip": ""
+        "disable-hint": "Om te stoppen met het exporteren van gegevens, moet je alle gerelateerde opnameregels verwijderen voordat je deze functie uitschakelt.",
+        "disable-warning": "Als je deze functie uitschakelt, wordt ze alleen verborgen in de gebruikersinterface. Er worden geen bestaande opnameregels verwijderd. Deze regels blijven actief en blijven statistieken exporteren, wat nog steeds van invloed is op je factuur.",
+        "enable-warning": "Als je deze functie inschakelt, kun je opnameregels definiëren vanuit Profiles Drilldown. Alle opnameregels die je aanmaakt, sturen nieuwe metrics naar je Grafana Cloud-instantie, waardoor je datagebruik in Grafana Mimir toeneemt en je factuur mogelijk wordt beïnvloed.",
+        "label": "Metrics uit profielen",
+        "toggle": "Metrics uit profielen inschakelen",
+        "toggle-label": "Metrics uit profielen inschakelen",
+        "tooltip": "Maakt het mogelijk om opnameregels aan te maken vanuit profielen"
       }
     }
   },
   "timeseries": {
     "menu": {
-      "exemplars": "",
-      "open-in-explore": "",
-      "scale-linear": "",
-      "scale-log2": "",
-      "scale-type": ""
+      "exemplars": "Voorbeelden",
+      "open-in-explore": "Openen in Verkennen",
+      "scale-linear": "Lineair",
+      "scale-log2": "Log2",
+      "scale-type": "Schaaltype"
     }
   },
   "variables": {
     "data-source": {
-      "label": ""
+      "label": "Databron"
     },
     "favorite": {
-      "label": ""
+      "label": "🔖 Favoriet"
     },
     "filters": {
-      "label": ""
+      "label": "Filters"
     },
     "group-by": {
-      "label": "",
-      "labels-selector": "",
-      "other-labels-placeholder": "",
-      "other-labels-selector": "",
-      "refresh-tooltip": "",
-      "select-label-placeholder": ""
+      "label": "Groeperen op labels",
+      "labels-selector": "Labelselector",
+      "other-labels-placeholder": "Andere labels",
+      "other-labels-selector": "Selector voor andere labels",
+      "refresh-tooltip": "Klik om alle labels te vernieuwen",
+      "select-label-placeholder": "Selecteer label"
     },
     "profile-id-selector": {
-      "label": ""
+      "label": "Profiel-ID-kiezer"
     },
     "profile-metric": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Lijst met profielmetrics",
+      "label": "Profieltype",
+      "loading": "Laden...",
+      "placeholder_one": "Selecteer een profielmetric ({{count}})",
+      "placeholder_other": "Selecteer een profielmetric ({{count}})"
     },
     "service-name": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Servicelijst",
+      "label": "Service",
+      "loading": "Services laden...",
+      "unmatched-tooltip": "",
+      "placeholder_one": "Een service selecteren ({{count}})",
+      "placeholder_other": "Een service selecteren ({{count}})"
     },
     "span-selector": {
-      "label": ""
+      "label": "Span-selector"
     }
   }
 }

@@ -1,46 +1,58 @@
 {
   "actions": {
     "exemplar-toggle": {
-      "hide": "",
-      "label": "",
-      "show": ""
+      "hide": "Exemplare ausblenden",
+      "label": "Exemplare",
+      "show": "Exemplare anzeigen"
     },
     "fav": {
-      "favorite": "",
-      "unfavorite": ""
+      "favorite": "Favorisieren",
+      "unfavorite": "Favorisieren rückgängig"
     }
   },
   "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
     "profile-type-selector": {
-      "label": ""
+      "label": "Profil"
     },
     "tabs": {
-      "comparison-view": "",
-      "single-view": ""
+      "diff-view": "",
+      "single-view": "Einzelansicht"
     },
     "view": {
-      "title": ""
+      "title": "Ad-hoc-Ansicht"
     }
   },
   "ai-panel": {
-    "analyzing": "",
-    "close": "",
-    "fetch-error": "",
-    "fetch-error-message": "",
+    "analyzing": "Analysieren ...",
+    "close": "Panel schließen",
+    "fetch-error": "Beim Laden der Profildaten ist ein Fehler aufgetreten!",
+    "fetch-error-message": "Wir entschuldigen uns für etwaige Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
     "follow-up": {
-      "placeholder": "",
-      "send": ""
+      "placeholder": "Folgefrage stellen …",
+      "send": "Senden"
     },
-    "llm-error": "",
-    "llm-error-message": "",
+    "llm-error": "Beim Generieren von Inhalten mit OpenAI ist ein Fehler aufgetreten!",
+    "llm-error-message": "Wir entschuldigen uns für etwaige Unannehmlichkeiten. Bitte versuchen Sie es erneut oder wenden Sie sich an Ihren Organisationsadministrator, wenn das Problem weiterhin besteht.",
     "reply": {
-      "search-node": ""
+      "search-node": "Nach diesem Knoten suchen"
     },
-    "retry": "",
-    "title": "",
-    "validation-error": ""
+    "retry": "Erneut versuchen",
+    "title": "Flammendiagramm-Analyse",
+    "validation-error": "Validierungsfehler!"
   },
   "analyze-diff": {
+    "context": {
+      "title": "DOT-Profile und -Anweisungen"
+    },
+    "error": "Abrufen der DOT-Profile zur Analyse fehlgeschlagen",
+    "prompt": "Analysieren Sie die Unterschiede zwischen diesen beiden Leistungsprofilen."
+  },
+  "analyze-flame-graph": {
     "context": {
       "title": ""
     },
@@ -48,614 +60,622 @@
     "prompt": ""
   },
   "back-button": {
-    "aria-label": "",
-    "label": ""
+    "aria-label": "Zurück zu Profiles Drilldown",
+    "label": "Zurück zu Profiles Drilldown"
   },
   "create-recording-rule": {
-    "cancel": "",
-    "create": "",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
     "filters": {
-      "description": "",
-      "label": "",
-      "none": ""
+      "description": "In der Hauptansicht ausgewählte Filter werden auf diese Regel angewendet",
+      "label": "Filter",
+      "none": "Keine Filter ausgewählt"
     },
     "function-name": {
-      "aria-label": "",
-      "description": "",
-      "label": "",
-      "placeholder": ""
+      "aria-label": "Funktionsname",
+      "description": "Optionaler Funktionsname zum Filtern der Aufnahmeregel",
+      "label": "Funktionsname",
+      "placeholder": "Für die Gesamtaggregation leer lassen"
     },
     "labels": {
-      "description": "",
-      "label": ""
+      "description": "Zusätzliche Profiling-Labels, die an die Metrik weitergeleitet werden sollen",
+      "label": "Zusätzliche Labels"
     },
-    "menu-option": "",
+    "menu-option": "Aufnahmeregel erstellen",
     "metric-name": {
-      "aria-label": "",
+      "aria-label": "Metrikname",
       "description": "",
-      "invalid": "",
-      "label": "",
-      "pattern-alphanumeric": "",
-      "pattern-error": "",
-      "pattern-no-number": "",
-      "required": ""
+      "invalid": "Ungültiger Metrikname.",
+      "label": "Metrikname",
+      "pattern-alphanumeric": "Darf nur alphanumerische Zeichen oder Unterstriche enthalten",
+      "pattern-error": "Der Metrikname ist ungültig. Er muss die folgenden Eigenschaften aufweisen:",
+      "pattern-no-number": "Darf nicht mit einer Zahl beginnen",
+      "required": "Metrikname ist erforderlich."
     },
     "profile-type": {
-      "label": ""
+      "label": "Profiltyp"
     },
     "service-name": {
-      "all": "",
-      "label": ""
+      "all": "Alle Dienste",
+      "label": "Dienstname"
     },
-    "title": ""
+    "title": "Aufnahmeregel erstellen"
   },
   "diff-flame-graph": {
     "compare-panel": {
-      "annotation-title": "",
-      "baseline": "",
-      "comparison": "",
-      "flame-graph": "",
-      "range-selection-mode": "",
-      "sync-time-ranges": "",
-      "time-picker": "",
-      "tooltip-description": "",
-      "tooltip-flame-graph": "",
-      "tooltip-flame-graph-description": "",
-      "tooltip-time-picker": "",
-      "tooltip-time-picker-description": ""
+      "annotation-title": "Flammendiagramm-Bereich für {{title}}",
+      "baseline": "Basislinie",
+      "comparison": "Vergleich",
+      "flame-graph": "Flammendiagramm",
+      "range-selection-mode": "Bereichsauswahlmodus",
+      "sync-time-ranges": "Zeitbereiche synchronisieren",
+      "time-picker": "Zeitauswahl",
+      "tooltip-description": "Nutzen Sie diese Schaltflächen, um das Verhalten bei der Auswahl eines Bereichs mit der Maus in der Zeitreihe zu ändern:",
+      "tooltip-flame-graph": "Flammendiagramm",
+      "tooltip-flame-graph-description": "Zeitbereich für die Erstellung des Flammendiagramms (die Stack-Traces werden nur für den ausgewählten Bereich abgerufen)",
+      "tooltip-time-picker": "Zeitauswahl",
+      "tooltip-time-picker-description": "Zeitbereich vergrößern (Standardverhalten)"
     },
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Beim Laden der Profildaten ist ein Fehler aufgetreten!",
+    "explain-button": "Diff-Flammendiagramm erklären",
     "missing-selections": {
-      "auto-select": "",
-      "how-to-alt": "",
-      "learn-how": "",
-      "step-1": "",
-      "step-2": "",
-      "title": ""
+      "auto-select": "Automatische Auswahl",
+      "how-to-alt": "So zeigen Sie das Diff-Flammendiagramm an",
+      "learn-how": "Klicken Sie hier, um zu erfahren, wie Sie die Flammendiagramm-Bereiche mit der Maus auswählen",
+      "step-1": "Achten Sie darauf, dass der Bereichsauswahlmodus „Flammendiagramm“ ausgewählt ist",
+      "step-2": "Nutzen Sie Ihre Maus, um die gewünschten Zeitbereiche sowohl in der Basis- als auch in der Vergleichszeitreihe auszuwählen",
+      "title": "Wählen Sie sowohl den Basis- als auch den Vergleichsbereich im Flammendiagramm aus, um das Diff-Flammendiagramm anzuzeigen"
     },
-    "no-profile-data": "",
-    "no-profile-data-message": "",
+    "no-profile-data": "Keine Profildaten verfügbar",
+    "no-profile-data-message": "Bitte vergewissern Sie sich, dass Sie die richtigen Filter und Zeitbereiche ausgewählt haben.",
     "presets": {
-      "1h-ago-vs-now": "",
-      "1h-ago-vs-now-description": "",
-      "24h-ago-vs-now": "",
-      "6h-ago-vs-now": "",
-      "label": "",
-      "placeholder": ""
+      "1h-ago-vs-now": "Vor 1 Stunde vs. jetzt",
+      "1h-ago-vs-now-description": "30-Minuten-Fenster",
+      "24h-ago-vs-now": "Vor 24 Stunden vs. jetzt",
+      "6h-ago-vs-now": "Vor 6 Stunden vs. jetzt",
+      "label": "Voreinstellungen für Vergleich",
+      "placeholder": "Voreinstellung auswählen"
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Einige Funktionen funktionieren möglicherweise nicht wie erwartet (z. B. Exportoptionen für Flammendiagramme). Bitte versuchen Sie, die Seite neu zu laden. Entschuldigen Sie die Unannehmlichkeiten.",
+      "title": "Beim Abrufen der Plugin-Einstellungen ist ein Fehler aufgetreten!"
     },
-    "title": ""
+    "title": "Diff-Flammendiagramm für {{serviceName}} ({{profileMetricType}})"
   },
   "error-page": {
-    "banner-message": "",
-    "banner-title": "",
-    "title": ""
+    "banner-message": "Bitte versuchen Sie, die Seite neu zu laden, oder wenden Sie sich an Ihren Organisationsadministrator, wenn das Problem weiterhin besteht. Entschuldigen Sie die Unannehmlichkeiten.",
+    "banner-title": "Schwerwiegender Fehler!",
+    "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
     "exploration-type": {
-      "all-services": "",
-      "all-services-description": "",
-      "diff-flame-graph": "",
-      "diff-flame-graph-description": "",
-      "favorites": "",
-      "favorites-description": "",
-      "flame-graph": "",
-      "flame-graph-description": "",
-      "label": "",
-      "labels": "",
-      "labels-description": "",
-      "profile-types": "",
-      "profile-types-description": ""
+      "all-services": "Alle Dienste",
+      "all-services-description": "Überblick über alle Dienste für jeden Profiltyp",
+      "diff-flame-graph": "Diff-Flammendiagramm",
+      "diff-flame-graph-description": "Vergleichen Sie die Unterschiede zwischen zwei Flammendiagrammen",
+      "favorites": "Favoriten",
+      "favorites-description": "Übersicht über favorisierte Visualisierungen",
+      "flame-graph": "Flammendiagramm",
+      "flame-graph-description": "Flammendiagramm für einen einzelnen Dienst",
+      "label": "Erkundung",
+      "labels": "Labels",
+      "labels-description": "Erkundung und Filterung von Labels für einen einzelnen Dienst",
+      "profile-types": "Profiltypen",
+      "profile-types-description": "Überblick über alle Profiltypen für einen einzelnen Dienst"
     },
     "header": {
-      "add-recording-rule": "",
-      "recording-rules-tooltip": "",
-      "settings-tooltip": "",
-      "share-tooltip": "",
-      "upload-tooltip": "",
-      "view-recording-rules": ""
+      "add-recording-rule": "Aufnahmeregel hinzufügen",
+      "recording-rules-tooltip": "Aufnahmeregeln",
+      "settings-tooltip": "Mandanteneinstellungen anzeigen/bearbeiten",
+      "share-tooltip": "Teilbaren Link in die Zwischenablage kopieren",
+      "upload-tooltip": "Ad-hoc-Profile hochladen",
+      "view-recording-rules": "Aufnahmeregeln anzeigen"
     }
   },
   "export-data": {
-    "aria-label": "",
-    "tooltip": ""
+    "aria-label": "Profildaten exportieren",
+    "tooltip": "Profildaten exportieren"
   },
   "export-menu": {
-    "aria-label": "",
-    "error-flamegraph-com": "",
-    "error-loading-profile": "",
-    "error-png": "",
-    "error-pprof": "",
-    "json": "",
-    "json-label": "",
-    "png": "",
-    "png-label": "",
-    "pprof": "",
-    "tooltip": ""
+    "aria-label": "Profildaten exportieren",
+    "error-flamegraph-com": "Export nach flamegraph.com fehlgeschlagen!",
+    "error-loading-profile": "Beim Laden der Flamebearer-Profildaten ist ein Fehler aufgetreten!",
+    "error-png": "Export nach PNG fehlgeschlagen!",
+    "error-pprof": "Export nach PPROF fehlgeschlagen!",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "Profildaten exportieren"
   },
   "exposed-components": {
-    "loading": ""
+    "loading": "Wird geladen …"
   },
   "favorites": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "flame-graph": {
-    "error-loading-profile": "",
-    "explain-button": "",
+    "error-loading-profile": "Beim Laden der Profildaten ist ein Fehler aufgetreten!",
+    "explain-button": "Flammendiagramm erklären",
     "profile-id-selector": {
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "name": "",
-      "remove": "",
-      "tooltip": ""
+      "filter-label": "Filterlabel",
+      "filter-operator": "Filteroperator",
+      "filter-value": "Filterwert",
+      "name": "Profil-ID",
+      "remove": "Profil-ID-Selektor aus der Abfrage entfernen",
+      "tooltip": "Sie haben der Flammendiagramm-Abfrage ({{profileIdSelector}}) einen Profil-ID-Selektor hinzugefügt."
     },
     "settings-error": {
-      "message": "",
-      "title": ""
+      "message": "Einige Funktionen funktionieren möglicherweise nicht wie erwartet (z. B. eingeklappte Flammendiagramme). Bitte versuchen Sie, die Seite neu zu laden. Entschuldigen Sie die Unannehmlichkeiten.",
+      "title": "Beim Abrufen der Plugin-Einstellungen ist ein Fehler aufgetreten!"
     },
     "span-selector": {
-      "added": "",
-      "remove": "",
-      "tooltip": ""
+      "added": "Span-Selektor hinzugefügt",
+      "remove": "Span-Selektor aus der Abfrage entfernen",
+      "tooltip": "Sie haben der Flammendiagramm-Abfrage ({{spanSelector}}) einen Span-Selektor hinzugefügt."
     },
-    "title": ""
+    "title": "Flammendiagramm für {{serviceName}} ({{profileMetricType}})"
   },
   "function-details": {
     "ai-suggestions": {
-      "analyzing": "",
-      "fetch-error": "",
-      "fetch-error-message": "",
-      "llm-error": "",
-      "llm-error-message": "",
-      "title": ""
+      "analyzing": "Analysieren ...",
+      "fetch-error": "Beim Abrufen der Profile ist ein Fehler aufgetreten!",
+      "fetch-error-message": "Wir entschuldigen uns für etwaige Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
+      "llm-error": "Es konnten keine Inhalte mit OpenAI generiert werden!",
+      "llm-error-message": "Wir entschuldigen uns für etwaige Unannehmlichkeiten. Bitte versuchen Sie es später erneut oder wenden Sie sich an Ihren Organisationsadministrator, wenn das Problem weiterhin besteht.",
+      "title": "Vorschläge zur Code-Optimierung"
     },
-    "close": "",
+    "close": "schließen",
     "code": {
-      "breakdown-per-line": "",
-      "file-unavailable": "",
-      "optimize": "",
-      "view-on-github": ""
+      "breakdown-per-line": "Aufschlüsselung pro Zeile",
+      "file-unavailable": "(Dateiinformationen nicht verfügbar)",
+      "optimize": "Code optimieren",
+      "view-on-github": "Auf GitHub anzeigen"
     },
-    "commit": "",
+    "commit": "Commit",
     "commit-option": {
-      "author-date": ""
+      "author-date": "{{author}} am {{date}}"
     },
     "commit-select": {
-      "no-options": ""
+      "no-options": "Keine Commits gefunden"
     },
-    "commit-tooltip": "",
+    "commit-tooltip": "Die Version der Anwendung (Commit), in der die Funktion festgelegt ist. Verwenden Sie das Dropdown-Menü, um einen bestimmten Commit auszuwählen.",
     "context-menu": {
-      "label": ""
+      "label": "Funktionsdetails"
     },
-    "copy-to-clipboard": "",
-    "fetch-error": "",
-    "file": "",
-    "file-path-copied": "",
-    "file-tooltip": "",
-    "function-name": "",
+    "copy-to-clipboard": "In die Zwischenablage kopieren",
+    "fetch-error": "Beim Abrufen der Funktionsdetails ist ein Fehler aufgetreten!",
+    "file": "Datei",
+    "file-path-copied": "Dateipfad in die Zwischenablage kopiert!",
+    "file-tooltip": "Dateipfad, in dem diese Funktion festgelegt ist",
+    "function-name": "Funktionsname",
     "github": {
-      "banner-dismiss": "",
-      "banner-git-ref": "",
-      "banner-labels": "",
-      "banner-language-support": "",
-      "banner-learn-more": "",
-      "banner-title": "",
-      "connect-button": "",
-      "connect-tooltip": "",
-      "connecting": "",
-      "disconnect": "",
-      "view-commit": ""
+      "banner-dismiss": "Verwerfen",
+      "banner-git-ref": "Sie sollten jeweils auf die vollständige GitHub-URL des Repositorys und die aktuelle <2>Git-Referenz</2> des laufenden Dienstes festgelegt werden.",
+      "banner-labels": "Um diese Funktion zu aktivieren, müssen Sie beim Senden von Profilen zwei neue Labels hinzufügen: <2>service_repository</2> und <4>service_git_ref</4>. ",
+      "banner-language-support": "Diese Sprache unterstützt die Integration mit <1></1> GitHub.",
+      "banner-learn-more": "Mehr erfahren",
+      "banner-title": "Mit Github integrieren",
+      "connect-button": "Verbinden mit {{name}}",
+      "connect-tooltip": "Nach der Verbindung ist der GitHub-Code nur über diese Browsersitzung zugänglich.",
+      "connecting": "Verbindung zu GitHub wird hergestellt …",
+      "disconnect": "Verbindung zu GitHub trennen",
+      "view-commit": "Commit anzeigen"
     },
     "github-callback": {
-      "logging-in": "",
-      "title": ""
+      "logging-in": "Anmeldung bei GitHub …",
+      "title": "GitHub-Anmeldung"
     },
-    "not-available": "",
+    "not-available": "-",
     "override": {
-      "add": "",
-      "add-title": "",
-      "alert-debug": "",
-      "alert-labels": "",
-      "alert-title": "",
-      "aria-label": "",
-      "data-source": "",
-      "delete": "",
-      "edit": "",
-      "edit-title": "",
-      "git-ref-label": "",
-      "git-ref-placeholder": "",
-      "remove-all": "",
-      "remove-all-confirm": "",
-      "repository-label": "",
-      "repository-placeholder": "",
-      "repository-required": "",
-      "root-path": "",
-      "root-path-placeholder": "",
-      "service-name": "",
-      "user-set": ""
+      "add": "Hinzufügen",
+      "add-title": "Neue Überschreibung der Repository-Details hinzufügen",
+      "alert-debug": "Zu Debugging-Zwecken können Sie über dieses Formular manuell Repository-Details angeben. Der benutzerdefinierte Wert wird für die angegebene Datenquelle und den angegebenen Dienstnamen im lokalen Speicher Ihres Browsers gespeichert.",
+      "alert-labels": "Um die GitHub-Integrationsfunktion zu aktivieren, müssen Sie beim Senden von Profilen zwei neue Labels hinzufügen: <1>service_repository</1> und <3>service_git_ref</3>.",
+      "alert-title": "Labels für die Github-Integration",
+      "aria-label": "Repository-Einstellungen überschreiben",
+      "data-source": "Datenquelle",
+      "delete": "Überschreibung löschen",
+      "edit": "Bearbeiten",
+      "edit-title": "Überschreibung der Repository-Details bearbeiten",
+      "git-ref-label": "service_git_ref (Commit-Referenz)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Alle Überschreibungen entfernen",
+      "remove-all-confirm": "Alle entfernen",
+      "repository-label": "service_repository (Repository-URL) – erforderlich",
+      "repository-placeholder": "Geben Sie den Namen des GitHub-Repositorys ein, https://github.com/org/repo",
+      "repository-required": "Repository-Name erforderlich",
+      "root-path": "Pfad zum Stammverzeichnis",
+      "root-path-placeholder": "Root-Pfad eingeben",
+      "service-name": "Dienstname",
+      "user-set": "(vom Nutzer festgelegt)"
     },
-    "repository": "",
-    "repository-tooltip": "",
-    "start-line": "",
-    "start-line-tooltip": "",
-    "title": ""
+    "repository": "Repository",
+    "repository-tooltip": "Das für den ausgewählten Dienst konfigurierte Repository",
+    "start-line": "Startzeile",
+    "start-line-tooltip": "Die Zeile, in der diese Funktionsdefinition beginnt",
+    "title": "Funktionsdetails"
   },
   "give-feedback": {
-    "button": "",
-    "tooltip": ""
+    "button": "Feedback geben",
+    "tooltip": "Sagen Sie Ihre Meinung zu Profilen in Grafana."
   },
   "grid": {
     "empty-state": {
-      "no-results": ""
+      "no-results": "Keine Ergebnisse"
     },
     "error": {
-      "title": ""
+      "title": "Abfragefehler!"
     },
     "exemplars": {
-      "view-profile": ""
+      "view-profile": "Profil anzeigen"
     },
     "layout": {
-      "aria-label": "",
-      "grid": "",
-      "rows": ""
+      "aria-label": "Layout-Umschalter",
+      "grid": "Raster",
+      "rows": "Zeilen"
     },
     "no-data": {
-      "label": ""
+      "label": "Panels ohne Daten ausblenden"
     },
     "panel-type": {
-      "aria-label": "",
-      "histograms": "",
-      "maxima": "",
-      "time-series": "",
-      "totals": ""
+      "aria-label": "Panel-Typ-Umschalter",
+      "histograms": "Histogramme",
+      "maxima": "Maxima",
+      "time-series": "Zeitreihen",
+      "totals": "Gesamtbeträge"
     },
     "quick-filter": {
-      "aria-label": "",
-      "clear": ""
+      "aria-label": "Schnellfilter",
+      "clear": "Suche löschen"
     }
   },
   "labels": {
     "compare": {
-      "clear-tooltip": "",
-      "tooltip-empty": "",
-      "tooltip-ready": "",
-      "tooltip-select-baseline": "",
-      "tooltip-select-comparison": "",
-      "button_one": "",
-      "button_other": ""
+      "clear-tooltip": "Vergleichsauswahl löschen",
+      "tooltip-empty": "Wählen Sie sowohl ein Basis- als auch ein Vergleichspanel für den Vergleich ihrer Flammendiagramme aus",
+      "tooltip-ready": "„{{baseline}}“ vs. „{{comparison}}“ vergleichen",
+      "tooltip-select-baseline": "Weiteres Panel zum Vergleich mit „{{label}}“ auswählen",
+      "tooltip-select-comparison": "Weiteres Panel zum Vergleich mit „{{label}}“ auswählen",
+      "button_one": "({{count}}/2) vergleichen",
+      "button_other": "({{count}}/2) vergleichen"
     },
     "data-source": {
-      "all": "",
-      "test-success": ""
+      "all": "Alles",
+      "test-success": "OK"
     },
     "filter": {
-      "clear-tooltip": "",
-      "exclude": "",
-      "exclude-tooltip": "",
-      "include": "",
-      "include-tooltip": ""
+      "clear-tooltip": "„{{label}}“ aus den Filtern löschen",
+      "exclude": "Ausschließen",
+      "exclude-tooltip": "„{{label}}“ aus den Filtern ausschließen",
+      "include": "Einschließen",
+      "include-tooltip": "„{{label}}“ in die Filter aufnehmen"
     },
     "grid": {
-      "no-results": "",
-      "refresh-tooltip": ""
+      "no-results": "Keine Ergebnisse",
+      "refresh-tooltip": "Klicken Sie hier, um alle auf dem Bildschirm angezeigten Panels vollständig zu aktualisieren"
     },
     "stats-panel": {
-      "baseline": "",
-      "baseline-description": "",
-      "comparison": "",
-      "comparison-description": "",
-      "total": ""
+      "baseline": "Basislinie",
+      "baseline-description": "Klicken Sie hier, um „{{value}}“ als Basisline für den Vergleich auszuwählen",
+      "comparison": "Vergleich",
+      "comparison-description": "Klicken Sie hier, um „{{value}}“ als Ziel für den Vergleich auszuwählen",
+      "total": "{{statsDescription}}: {{total}}"
     }
   },
   "onboarding": {
     "empty-loading": {
-      "title": ""
+      "title": "Wird geladen …"
     },
     "modal": {
       "billing": {
-        "description": "",
-        "title": ""
+        "description": "Die Nutzung von Grafana Cloud Profiles unterliegt den <2>Grafana-Cloud-Preisen</2> für Profiles.<br/>Weitere Informationen finden Sie im <6>Blogbeitrag</6> zur Ankündigung.",
+        "title": "So funktioniert die Abrechnung"
       },
       "cloud": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Verwenden Sie <2>Grafana Alloy</2> oder <6>Pyroscope-SDKs</6>, um Profile aus Ihren Anwendungen in Grafana Cloud zu übertragen.",
+          "title": "Profiling zu Ihrer Anwendung hinzufügen"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Gehen Sie zu den <1>Grafana-Cloud-Stack-Einstellungen</1>, um Ihre Anmeldedaten für Grafana Cloud zu finden.",
+          "title": "Konfigurieren Ihrer Anwendungen"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Wenn Sie mit der Ersteinrichtung fertig sind, aktualisieren Sie diese Seite, um Ihre Profilerstellungsdaten anzuzeigen.",
+          "title": "Erhalten Sie ab sofort Performance-Insights"
         }
       },
       "decrease-latency": {
-        "description": "",
-        "title": ""
+        "description": "Sorgen Sie für eine hohe Geschwindigkeit und Effizienz und verbessern Sie die Anwendungsleistung. In einer wettbewerbsintensiven digitalen Welt führt eine geringere Latenz zu höheren Umsätzen.",
+        "title": "Latenz verringern"
       },
-      "how-to-get-started": "",
+      "how-to-get-started": "Erste Schritte",
       "reduce-costs": {
-        "description": "",
-        "title": ""
+        "description": "Erkennen Sie CPU-Spitzen, Speicherlecks und andere Ineffizienzen dank Einblicken in die Ressourcennutzung auf Codeebene. Anschließend können die Teams ihren Code optimieren und die Infrastrukturkosten senken.",
+        "title": "Kosten senken"
       },
       "resolve-incidents": {
-        "description": "",
-        "title": ""
+        "description": "Verkürzen Sie die durchschnittliche Behebungszeit (Mean Time to Resolution, MTTR), indem Sie kontinuierliche Profildaten mit Metriken, Logs und Traces korrelieren, um die Grundursache eines Problems schnell zu ermitteln.",
+        "title": "Incidents schneller beheben"
       },
       "self-hosted": {
         "step1": {
-          "description": "",
-          "title": ""
+          "description": "Installieren Sie einen <1>Pyroscope-Server</1> in Ihrer Infrastruktur. Wenn Sie einen gehosteten Dienst nutzen möchten, gehen Sie alternativ zu den <5>Grafana-Cloud-Stack-Einstellungen</5>, um Ihre Anmeldedaten für Grafana Cloud zu finden.",
+          "title": "Richten Sie Ihren Pyroscope-Server ein"
         },
         "step2": {
-          "description": "",
-          "title": ""
+          "description": "Fügen Sie eine neue <1>Datenquelle von Pyroscope</1> hinzu. Verwenden Sie die URL Ihres Pyroscope-Servers und die entsprechenden Sicherheitsanmeldedaten, wenn Sie Grafana Cloud Profiles nutzen.",
+          "title": "Grafana konfigurieren"
         },
         "step3": {
-          "description": "",
-          "title": ""
+          "description": "Verwenden Sie <2>Grafana Alloy</2> oder <6>Pyroscope-SDKs</6>, um Profile aus Ihren Anwendungen in Grafana Cloud zu übertragen.",
+          "title": "Profiling zu Ihrer Anwendung hinzufügen"
         }
       },
-      "subtitle": "",
-      "title": "",
-      "what-you-can-do": ""
+      "subtitle": "Optimieren Sie die Infrastrukturausgaben, vereinfachen Sie das Debugging und verbessern Sie die Anwendungsleistung",
+      "title": "Willkommen bei Grafana Profiles Drilldown",
+      "what-you-can-do": "Was Sie tun können"
     },
     "no-data-source": {
-      "alert-message": "",
-      "alert-title": "",
-      "title": ""
+      "alert-message": "Für dieses Plugin ist eine Pyroscope-Datenquelle erforderlich. Bitte fügen Sie Ihrer Grafana-Instanz <2>eine Pyroscope-Datenquelle hinzu und konfigurieren Sie sie</2>.",
+      "alert-title": "Pyroscope-Datenquelle fehlt!",
+      "title": "Grafana Profiles Drilldown"
     },
     "page": {
-      "close": "",
-      "nav": ""
+      "close": "Schließen",
+      "nav": "Onboarding"
     }
   },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
   "panel-box": {
-    "cancel-query": "",
-    "loading-bar": "",
-    "panel-status": "",
-    "stop-streaming": "",
-    "streaming": "",
-    "untitled": ""
+    "cancel-query": "Abfrage abbrechen",
+    "loading-bar": "Panel-Ladebalken",
+    "panel-status": "Panel-Status",
+    "stop-streaming": "Streaming anhalten",
+    "streaming": "Streaming",
+    "untitled": "Ohne Titel"
   },
   "panel-menu": {
-    "aria-label-no-title": "",
-    "aria-label-with-title": "",
-    "title": ""
+    "aria-label-no-title": "Menü für das Panel ohne Titel",
+    "aria-label-with-title": "Menü für das Panel mit Titel {{title}}",
+    "title": "Menü"
   },
   "plugin-info": {
-    "aria-label": "",
-    "changelog": "",
-    "commit-sha": "",
-    "contribute": "",
-    "documentation": "",
-    "grafana-version": "",
-    "last-update": "",
-    "report-issue": "",
-    "title": "",
-    "version": ""
+    "aria-label": "Plugin-Info",
+    "changelog": "Changelog",
+    "commit-sha": "Commit SHA: {{shortCommitSha}}",
+    "contribute": "Beitragen",
+    "documentation": "Dokumentation",
+    "grafana-version": "Grafana {{edition}} Ver. {{version}} ({{env}})",
+    "last-update": "Letztes Update: {{updated}}",
+    "report-issue": "Problem melden",
+    "title": "Plugin-Info",
+    "version": "Grafana Profiles Drilldown Ver. {{version}}"
   },
   "query-analysis": {
-    "blocks": "",
-    "data-in-time-range": "",
-    "deduplication": "",
-    "index-store": "",
-    "no": "",
-    "profiles": "",
-    "profiles-store": "",
-    "query-info-aria-label": "",
-    "replicas": "",
-    "samples": "",
-    "series": "",
-    "series-in-query": "",
-    "stored-data-in-time-range": "",
-    "symbols-store": "",
-    "yes": ""
+    "blocks": "Blöcke",
+    "data-in-time-range": "Daten im Zeitbereich",
+    "deduplication": "Deduplizierung",
+    "index-store": "Indexspeicher",
+    "no": "Nein",
+    "profiles": "Profile",
+    "profiles-store": "Profilspeicher",
+    "query-info-aria-label": "Abfrageinformationen",
+    "replicas": "Replikate",
+    "samples": "Beispiele",
+    "series": "Reihe",
+    "series-in-query": "Reihe in Abfrage",
+    "stored-data-in-time-range": "Gespeicherte Daten im Zeitbereich: {{totalBytesInTimeRange}}",
+    "symbols-store": "Symbolspeicher",
+    "yes": "Ja"
   },
   "query-builder": {
     "chiclet": {
-      "edit-attribute": "",
-      "edit-operator": "",
-      "filter": "",
-      "filter-label": "",
-      "filter-operator": "",
-      "filter-value": "",
-      "partial-filter": "",
-      "remove-filter": ""
+      "edit-attribute": "„{{label}}“ bearbeiten",
+      "edit-operator": "„{{label}}“ bearbeiten",
+      "filter": "Filter",
+      "filter-label": "Filterlabel",
+      "filter-operator": "Filteroperator",
+      "filter-value": "Filterwert",
+      "partial-filter": "Teilweiser Filter",
+      "remove-filter": "Filter entfernen"
     },
-    "error-load": "",
-    "execute": "",
-    "execute-tooltip": "",
-    "loading": "",
-    "no-value": "",
-    "nothing-to-execute-tooltip": "",
+    "error-load": "Beim Laden ist ein unerwarteter Fehler aufgetreten! Bitte versuchen Sie es erneut.",
+    "execute": "Ausführen",
+    "execute-tooltip": "Neue Abfrage ausführen",
+    "loading": "Wird geladen …",
+    "no-value": "(kein Wert)",
+    "nothing-to-execute-tooltip": "Nichts zum Ausführen, alle Filter angewendet",
     "operators": {
-      "in": "",
-      "in-description": "",
-      "is-empty": "",
-      "not-in": "",
-      "not-in-description": "",
-      "regex-match-description": "",
-      "regex-not-match-description": ""
+      "in": "in",
+      "in-description": "Ist einer von",
+      "is-empty": "ist leer",
+      "not-in": "nicht in",
+      "not-in-description": "Ist nicht einer von",
+      "regex-match-description": "Stimmt mit regulärem Ausdruck überein",
+      "regex-not-match-description": "Stimmt nicht mit dem regulären Ausdruck überein"
     },
     "placeholder": {
-      "filter-add": "",
-      "select-label": "",
-      "select-operator": "",
-      "select-value": "",
-      "select-values": "",
-      "type-value": ""
+      "filter-add": "Nach Label-Werten filtern …",
+      "select-label": "Label auswählen …",
+      "select-operator": "Operator auswählen …",
+      "select-value": "Wert auswählen …",
+      "select-values": "Werte auswählen …",
+      "type-value": "Geben Sie einen regulären Ausdruck ein …"
     },
-    "suggestions-disabled": "",
-    "suggestions-none": ""
+    "suggestions-disabled": "Vorschläge sind für dieses Label deaktiviert.",
+    "suggestions-none": "Keine Vorschläge verfügbar."
   },
   "recording-rules": {
     "delete": {
-      "aria-label": "",
-      "body": "",
-      "confirm": "",
-      "title": ""
+      "aria-label": "Aufnahmeregel löschen",
+      "body": "Sind Sie sicher, dass Sie die Aufnahmeregel „{{metricName}}“ löschen möchten?",
+      "confirm": "Ja",
+      "title": "Aufnahmeregel löschen"
     },
     "details": {
-      "filters": "",
-      "no": "",
-      "no-labels": "",
-      "read-only": "",
-      "yes": ""
+      "filters": "Filter",
+      "no": "Nein",
+      "no-labels": "Keine Labels",
+      "read-only": "Schreibgeschützt",
+      "yes": "Ja"
     },
     "empty": {
-      "description": "",
-      "message": ""
+      "description": "Öffnen Sie ein Flammendiagramm, klicken Sie oben auf den Block „Gesamt“ und wählen Sie im Kontextmenü „Aufnahmeregel erstellen“ aus, um eine neue Regel festzulegen.",
+      "message": "Keine Aufnahmeregeln"
     },
     "error": {
-      "feature-required": "",
-      "message": "",
-      "title": ""
+      "feature-required": "Diese Funktion erfordert Pyroscope mit aktivierter recording_rules-Flag.",
+      "message": "Beim Abrufen der Aufnahmeregeln ist ein Fehler aufgetreten",
+      "title": "Beim Abrufen der Aufnahmeregeln ist ein Fehler aufgetreten"
     },
     "table": {
-      "actions": "",
-      "all-services": "",
-      "function-name": "",
-      "labels": "",
-      "name": "",
-      "none": "",
-      "profile-type": "",
-      "readonly-tooltip": "",
-      "service-name": "",
-      "total-all-functions": ""
+      "actions": "Aktionen",
+      "all-services": "Alle Dienste",
+      "function-name": "Funktionsname",
+      "labels": "Labels",
+      "name": "Name",
+      "none": "Keine",
+      "profile-type": "Profiltyp",
+      "readonly-tooltip": "Diese Regel wird mit Mandanteneinstellungen bereitgestellt und kann nicht gelöscht werden.",
+      "service-name": "Dienstname",
+      "total-all-functions": "Gesamt (alle Funktionen)"
     },
-    "title": ""
+    "title": "Aufnahmeregeln"
   },
   "saved-searches": {
     "load": {
-      "no-searches": "",
-      "no-searches-tooltip": "",
-      "remove-tooltip": "",
-      "saved-query-tooltip": "",
-      "select": "",
-      "select-pyroscope-query": "",
-      "title": "",
-      "tooltip": ""
+      "no-searches": "Keine gespeicherten Suchen zum Anzeigen vorhanden.",
+      "no-searches-tooltip": "Keine gespeicherten Suchen zum Laden vorhanden",
+      "remove-tooltip": "Entfernen",
+      "saved-query-tooltip": "Gespeicherte Abfrage laden",
+      "select": "Auswählen",
+      "select-pyroscope-query": "Bitte wählen Sie eine Pyroscope-Abfrage aus.",
+      "title": "Zuvor gespeicherte Suche laden",
+      "tooltip": "Gespeicherte Suche laden"
     },
     "save": {
-      "cancel": "",
-      "close": "",
-      "description-label": "",
-      "error-message": "",
-      "existing-search-warning": "",
-      "info-message": "",
-      "save": "",
-      "saved-queries-tooltip": "",
-      "success-body": "",
-      "success-message": "",
-      "success-title": "",
-      "title": "",
-      "title-label": "",
-      "tooltip": ""
+      "cancel": "Abbrechen",
+      "close": "Schließen",
+      "description-label": "Beschreibung",
+      "error-message": "Beim Speichern dieser Suche ist ein unerwarteter Fehler aufgetreten.",
+      "existing-search-warning": "Es gibt eine zuvor gespeicherte Suche mit derselben Abfrage: {{title}}",
+      "info-message": "Gespeicherte Suchen werden lokal in Ihrem Browser gespeichert und sind nur auf diesem Gerät verfügbar.",
+      "save": "Speichern",
+      "saved-queries-tooltip": "In „Gespeicherte Abfragen“ speichern",
+      "success-body": "Suche erfolgreich gespeichert.",
+      "success-message": "Suche erfolgreich gespeichert.",
+      "success-title": "Erfolg",
+      "title": "Aktuelle Suche speichern",
+      "title-label": "Titel",
+      "tooltip": "Suche speichern"
     }
   },
   "series": {
     "data-source": {
-      "test-success": ""
+      "test-success": "OK"
     }
   },
   "settings": {
-    "loading": "",
-    "save-button": "",
+    "loading": "Wird geladen …",
+    "save-button": "Einstellungen speichern",
     "tabs": {
-      "ui-settings": "",
-      "unknown-extension": ""
+      "ui-settings": "Einstellungen für Benutzeroberfläche",
+      "unknown-extension": "Unbekannte Erweiterung"
     },
-    "title": "",
+    "title": "Profileinstellungen (Tenant)",
     "ui": {
       "collapsed-flame-graphs": {
-        "label": "",
-        "toggle": ""
+        "label": "Eingeklappte Flammendiagramme",
+        "toggle": "Eingeklappte Flammendiagramme umschalten"
       },
       "enable-function-details": {
-        "label": "",
-        "learn-more": "",
-        "toggle": "",
-        "tooltip": ""
+        "label": "Funktionsdetails aktivieren",
+        "learn-more": "Mehr erfahren",
+        "toggle": "Funktionsdetails umschalten",
+        "tooltip": "Die Funktionsdetails-Funktion ermöglicht die Zuordnung der Ressourcennutzung zu Quellcodezeilen. Wenn die GitHub-Integration konfiguriert ist, wird der Quellcode von GitHub heruntergeladen."
       },
       "fetch-error": {
-        "message": "",
-        "title": ""
+        "message": "Bitte versuchen Sie, die Seite neu zu laden. Entschuldigen Sie die Unannehmlichkeiten.",
+        "title": "Beim Abrufen der Plugin-Einstellungen ist ein Fehler aufgetreten!"
       },
       "flame-graph": {
-        "label": ""
+        "label": "Flammendiagramm"
       },
       "function-details": {
-        "label": ""
+        "label": "Funktionsdetails"
       },
       "max-nodes": {
-        "label": ""
+        "label": "Höchstzahl von Knoten"
       },
       "metrics-from-profiles": {
-        "disable-hint": "",
-        "disable-warning": "",
-        "enable-warning": "",
-        "label": "",
-        "toggle": "",
-        "toggle-label": "",
-        "tooltip": ""
+        "disable-hint": "Um den Datenexport zu beenden, löschen Sie alle zugehörigen Aufnahmeregeln, bevor Sie diese Funktion deaktivieren.",
+        "disable-warning": "Wenn Sie diese Funktion deaktivieren, wird sie lediglich in der Benutzeroberfläche ausgeblendet. Es werden keine vorhandenen Aufnahmeregeln entfernt. Diese Regeln bleiben aktiv und exportieren weiter Metriken, was sich weiterhin auf Ihre Rechnung auswirkt.",
+        "enable-warning": "Wenn Sie diese Funktion aktivieren, können Sie Aufnahmeregeln über Profiles Drilldown festlegen. Alle Aufnahmeregeln, die Sie erstellen, senden neue Metriken an Ihre Grafana-Cloud-Instanz, wodurch sich Ihre Datennutzung in Grafana Mimir erhöht und sich dies möglicherweise auf Ihre Rechnung auswirkt.",
+        "label": "Metriken aus Profilen",
+        "toggle": "Metriken aus Profilen aktivieren",
+        "toggle-label": "Metriken aus Profilen aktivieren",
+        "tooltip": "Ermöglicht das Erstellen von Aufnahmeregeln über Profile"
       }
     }
   },
   "timeseries": {
     "menu": {
-      "exemplars": "",
-      "open-in-explore": "",
-      "scale-linear": "",
-      "scale-log2": "",
-      "scale-type": ""
+      "exemplars": "Exemplare",
+      "open-in-explore": "In Explore öffnen",
+      "scale-linear": "Linear",
+      "scale-log2": "Log2",
+      "scale-type": "Skalierungstyp"
     }
   },
   "variables": {
     "data-source": {
-      "label": ""
+      "label": "Datenquelle"
     },
     "favorite": {
-      "label": ""
+      "label": "🔖 Favorisieren"
     },
     "filters": {
-      "label": ""
+      "label": "Filter"
     },
     "group-by": {
-      "label": "",
-      "labels-selector": "",
-      "other-labels-placeholder": "",
-      "other-labels-selector": "",
-      "refresh-tooltip": "",
-      "select-label-placeholder": ""
+      "label": "Nach Labels gruppieren",
+      "labels-selector": "Label-Selektor",
+      "other-labels-placeholder": "Andere Labels",
+      "other-labels-selector": "Selektor für andere Labels",
+      "refresh-tooltip": "Klicken Sie hier, um alle Labels zu aktualisieren",
+      "select-label-placeholder": "Label auswählen"
     },
     "profile-id-selector": {
-      "label": ""
+      "label": "Profil-ID-Selektor"
     },
     "profile-metric": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Liste der Profilmetriken",
+      "label": "Profiltyp",
+      "loading": "Wird geladen …",
+      "placeholder_one": "({{count}}) Profilmetrik auswählen",
+      "placeholder_other": "({{count}}) Profilmetriken auswählen"
     },
     "service-name": {
-      "aria-label": "",
-      "label": "",
-      "loading": "",
-      "placeholder_one": "",
-      "placeholder_other": ""
+      "aria-label": "Liste der Dienste",
+      "label": "Dienst",
+      "loading": "Dienste werden geladen …",
+      "unmatched-tooltip": "",
+      "placeholder_one": "({{count}}) Dienst auswählen",
+      "placeholder_other": "({{count}}) Dienste auswählen"
     },
     "span-selector": {
-      "label": ""
+      "label": "Span-Selektor"
     }
   }
 }

@@ -17,7 +17,7 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
-import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
+import { getProfilesExemplarsFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
 import { isEqual, merge } from 'lodash';
 import React from 'react';
 
@@ -86,9 +86,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     annotations?: boolean;
     includeExemplars?: boolean;
   }) {
+    const profilesExemplarsEnabled = getProfilesExemplarsFromOpenFeature();
     const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(
       headerActions,
-      includeExemplars
+      includeExemplars,
+      profilesExemplarsEnabled
     );
 
     super({
@@ -110,7 +112,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
                 annotations,
-                includeExemplars && featureToggles.exemplars
+                includeExemplars && profilesExemplarsEnabled
               ),
               transformations: [],
             })
@@ -128,12 +130,13 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   private static processExemplarsConfig(
     headerActions: SceneLabelValuesTimeseriesState['headerActions'],
-    includeExemplars?: boolean
+    includeExemplars: boolean | undefined,
+    profilesExemplarsEnabled: boolean
   ): {
     processedHeaderActions: SceneLabelValuesTimeseriesState['headerActions'];
     menuState: Record<string, unknown>;
   } {
-    if (!featureToggles.exemplars) {
+    if (!profilesExemplarsEnabled) {
       return { processedHeaderActions: headerActions, menuState: {} };
     }
 

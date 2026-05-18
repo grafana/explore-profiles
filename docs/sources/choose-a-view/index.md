@@ -99,6 +99,8 @@ Determining which view to use frames the rest of your investigation.
 <li>Analyze the flame graph of a particular service, profile type, and label selection
 
 <li>Use tools like **Analyze with Assistant** (Grafana Cloud) or **Explain Flame Graph** (Grafana open source), GitHub code view, and function details to get deeper insights into performance.
+
+<li>Enable **Exemplars** to see individual profile markers on the timeseries and click one to inspect a single individual profile.
 </li>
 </ul>
    </td>

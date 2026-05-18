@@ -4,7 +4,7 @@ import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
 import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
-import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
+import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
@@ -33,6 +33,7 @@ export function Header(props: HeaderProps) {
   const { data, actions } = useHeader(props);
 
   const { settings } = useFetchPluginSettings();
+  const metricsFromProfiles = useFlagMetricsFromProfiles();
 
   const {
     explorationType,
@@ -106,7 +107,7 @@ export function Header(props: HeaderProps) {
 
           {!props.isEmbedded && (
             <div className={styles.appMiscButtons}>
-              {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
+              {settings?.enableMetricsFromProfiles && metricsFromProfiles && (
                 <>
                   <Dropdown overlay={metricsFromProfilesMenu}>
                     <IconButton

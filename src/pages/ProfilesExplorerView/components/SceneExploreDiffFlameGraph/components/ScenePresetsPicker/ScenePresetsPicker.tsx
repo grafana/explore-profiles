@@ -26,24 +26,31 @@ interface ScenePresetsPickerState extends SceneObjectState {
   value: string | null;
 }
 
+// Shared English defaults (same string appears in multiple `t(...)` or fallback + `t()`).
+const PRESETS_LABEL_DEFAULT = 'Comparison presets';
+const PRESET_DESCRIPTION_1H_WINDOW_DEFAULT = '1h window';
+
 export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState> {
-  private static OPTIONS: Array<ComboboxOption<string>> = [
-    {
-      label: t('diff-flame-graph.presets.1h-ago-vs-now', '1h ago vs now'),
-      value: '1h ago vs now',
-      description: t('diff-flame-graph.presets.1h-ago-vs-now-description', '30m window'),
-    },
-    {
-      label: t('diff-flame-graph.presets.6h-ago-vs-now', '6h ago vs now'),
-      value: '6h ago vs now',
-      description: t('diff-flame-graph.presets.6h-ago-vs-now', '1h window'),
-    },
-    {
-      label: t('diff-flame-graph.presets.24h-ago-vs-now', '24h ago vs now'),
-      value: '24h ago vs now',
-      description: t('diff-flame-graph.presets.24h-ago-vs-now', '1h window'),
-    },
-  ];
+  /** Must not call `t()` at module load — embedded extensions initialize i18n after lazy chunks run. */
+  private static getOptions(): Array<ComboboxOption<string>> {
+    return [
+      {
+        label: t('diff-flame-graph.presets.1h-ago-vs-now', '1h ago vs now'),
+        value: '1h ago vs now',
+        description: t('diff-flame-graph.presets.1h-ago-vs-now-description', '30m window'),
+      },
+      {
+        label: t('diff-flame-graph.presets.6h-ago-vs-now', '6h ago vs now'),
+        value: '6h ago vs now',
+        description: t('diff-flame-graph.presets.6h-ago-vs-now', PRESET_DESCRIPTION_1H_WINDOW_DEFAULT),
+      },
+      {
+        label: t('diff-flame-graph.presets.24h-ago-vs-now', '24h ago vs now'),
+        value: '24h ago vs now',
+        description: t('diff-flame-graph.presets.24h-ago-vs-now', PRESET_DESCRIPTION_1H_WINDOW_DEFAULT),
+      },
+    ];
+  }
 
   private static PRESETS: Record<string, PresetOption> = {
     '1h ago vs now': {
@@ -63,7 +70,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   constructor() {
     super({
       name: 'compare-presets',
-      label: t('diff-flame-graph.presets.label', 'Comparison presets'),
+      // English fallback until `onActivate` runs `t()` — constructors run before i18n in embedded lazy chunks (same default as PRESETS_LABEL_DEFAULT).
+      label: PRESETS_LABEL_DEFAULT,
       value: null,
     });
 
@@ -71,6 +79,8 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
   }
 
   onActivate() {
+    this.setState({ label: t('diff-flame-graph.presets.label', PRESETS_LABEL_DEFAULT) });
+
     [CompareTarget.BASELINE, CompareTarget.COMPARISON].forEach((compareTarget) => {
       const panel = sceneGraph.findByKeyAndType(this, `${compareTarget}-panel`, SceneComparePanel);
       const timeRange = sceneGraph.getTimeRange(panel);
@@ -105,7 +115,7 @@ export class ScenePresetsPicker extends SceneObjectBase<ScenePresetsPickerState>
         <Combobox
           placeholder={t('diff-flame-graph.presets.placeholder', 'Choose a preset')}
           value={value}
-          options={ScenePresetsPicker.OPTIONS}
+          options={ScenePresetsPicker.getOptions()}
           onChange={model.onChange}
         />
       </div>

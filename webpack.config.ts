@@ -41,12 +41,17 @@ const config = async (env): Promise<Configuration> => {
 
   /* FINAL CONFIG */
 
+  baseConfig.externals = [...(baseConfig.externals || []), 'i18next'];
+
   const finalConfig = merge(baseConfig, {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json'],
       alias: {
         '@shared': path.resolve(__dirname, './src/shared'),
         '@img': path.resolve(__dirname, './src/img'),
+        // Ensure single instances of these packages when using pnpm
+        // This prevents module duplication issues with i18n state
+        '@grafana/i18n': path.resolve(process.cwd(), 'node_modules/@grafana/i18n'),
       },
     },
     module: {

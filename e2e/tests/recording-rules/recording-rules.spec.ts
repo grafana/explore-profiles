@@ -25,7 +25,7 @@ test.describe('Recording rules', () => {
     });
 
     test('can be enabled', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getMetricsFromProfilesCheckbox().check();
+      await settingsPage.setMetricsFromProfilesEnabled(true);
       const setResponse = exploreProfilesPage.waitForResponse(
         (r) => r.url().includes('SettingsService/Set') && r.request().method() === 'POST' && r.ok()
       );
@@ -43,6 +43,7 @@ test.describe('Recording rules', () => {
       await exploreProfilesPage.page.reload();
       await exploreProfilesPage.assertNoSpinner();
       await expect(exploreProfilesPage.getFlamegraph()).toBeVisible({ timeout: 15000 });
+      await expect(exploreProfilesPage.recordingRulesButton).toBeVisible({ timeout: 15000 });
       await exploreProfilesPage.clickOnFlameGraphNode({ x: 250, y: 10 });
       await expect(exploreProfilesPage.getFlameGraphContextualMenuItem('Create recording rule')).toBeVisible({
         timeout: 15000,
@@ -50,7 +51,7 @@ test.describe('Recording rules', () => {
     });
 
     test('create a recording rule for all services', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getMetricsFromProfilesCheckbox().click();
+      await settingsPage.setMetricsFromProfilesEnabled(true);
       await settingsPage.getSaveSettingsButton().click();
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
@@ -64,7 +65,7 @@ test.describe('Recording rules', () => {
     });
 
     test('create a recording rule for a single service', async ({ settingsPage, exploreProfilesPage }) => {
-      await settingsPage.getMetricsFromProfilesCheckbox().click();
+      await settingsPage.setMetricsFromProfilesEnabled(true);
       await settingsPage.getSaveSettingsButton().click();
       await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 
@@ -79,7 +80,7 @@ test.describe('Recording rules', () => {
   });
 
   test('Create and display', async ({ settingsPage, exploreProfilesPage }) => {
-    await settingsPage.getMetricsFromProfilesCheckbox().click();
+    await settingsPage.setMetricsFromProfilesEnabled(true);
     await settingsPage.getSaveSettingsButton().click();
     await expect(settingsPage.getSuccessAlertDialog()).toBeVisible();
 

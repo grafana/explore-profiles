@@ -19,6 +19,8 @@ import { lastValueFrom } from 'rxjs';
 import { PYROSCOPE_SERIES_DATA_SOURCE } from '../../../infrastructure/pyroscope-data-sources';
 import { buildServiceNameCascaderOptions } from './domain/useBuildServiceNameOptions';
 
+const SERVICE_NAME_LABEL_DEFAULT = 'Service';
+
 type QueryVariableInitialState = ConstructorParameters<typeof QueryVariable>[0];
 
 type ServiceNameVariableState = {
@@ -41,7 +43,7 @@ export class ServiceNameVariable extends QueryVariable {
     super({
       key: 'serviceName',
       name: 'serviceName',
-      label: t('variables.service-name.label', 'Service'),
+      label: SERVICE_NAME_LABEL_DEFAULT,
       datasource: PYROSCOPE_SERIES_DATA_SOURCE,
       query: ServiceNameVariable.QUERY_DEFAULT,
       // Must be false so SceneByVariableRepeaterGrid.onActivate can call update().
@@ -59,6 +61,7 @@ export class ServiceNameVariable extends QueryVariable {
   }
 
   onActivate() {
+    this.setState({ label: t('variables.service-name.label', SERVICE_NAME_LABEL_DEFAULT) });
     this.setInitialValue();
 
     this.subscribeToState((newState, prevState) => {

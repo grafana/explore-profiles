@@ -22,10 +22,12 @@ import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScen
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { evaluateFeatureFlag } from '@shared/infrastructure/featureFlags/openFeature';
+import { getKgAnnotationsInPyroscopeFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
+import { ensureOpenFeaturePluginInitialized } from '@shared/infrastructure/featureFlags/openFeature';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useState } from 'react';
 
+import { setupKeyboardShortcuts } from '../../../../services/keyboardShortcuts';
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
@@ -131,7 +133,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     ];
   }
 
-  static DEFAULT_EXPLORATION_TYPE = SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS[0].value;
+  /** Must not read `EXPLORATION_TYPE_OPTIONS` here — that getter calls `t()` and runs while the class body initializes (before i18n in embedded lazy chunks). */
+  static DEFAULT_EXPLORATION_TYPE = ExplorationType.ALL_SERVICES;
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
   private initialFilters?: AdHocVariableFilter[];
@@ -197,11 +200,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
+    const clearKeyBindings = setupKeyboardShortcuts(this);
 
     if (!this.kgInitialized) {
       this.kgInitialized = true;
-      evaluateFeatureFlag('kgAnnotationsInPyroscope').then((enabled) => {
-        if (enabled) {
+      void ensureOpenFeaturePluginInitialized().then(() => {
+        if (getKgAnnotationsInPyroscopeFromOpenFeature()) {
           const kg = getKgSceneProps('Service', 'serviceName');
           if (kg) {
             this.setState({
@@ -221,6 +225,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
 
     return () => {
+      clearKeyBindings();
       eventsSub.unsubscribe();
       varSub.unsubscribe();
     };

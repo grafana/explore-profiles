@@ -4,10 +4,8 @@ import { t } from '@grafana/i18n';
 import { Tab, TabContent, TabsBar, useStyles2 } from '@grafana/ui';
 import React, { useState } from 'react';
 
-import { AdHocComparison } from './tabs/AdHocComparison';
+import { AdHocDiff } from './tabs/AdHocDiff';
 import { AdHocSingle } from './tabs/AdHocSingle';
-
-// import { AdHocDiff } from './tabs/AdHocDiff';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   tabContent: css`
@@ -29,20 +27,14 @@ export function AdHocTabs() {
           onChangeTab={() => setActiveTabIndex(0)}
         />
         <Tab
-          label={t('ad-hoc.tabs.comparison-view', 'Comparison view')}
+          label={t('ad-hoc.tabs.diff-view', 'Diff view')}
           active={activeTabIndex === 1}
           onChangeTab={() => setActiveTabIndex(1)}
         />
-        {/* <Tab
-          label=" Diff view"
-          active={activeTabIndex === 2}
-          onChangeTab={onChangeTab(2)}
-        /> */}
       </TabsBar>
       <TabContent className={styles.tabContent}>
         {activeTabIndex === 0 && <AdHocSingle />}
-        {activeTabIndex === 1 && <AdHocComparison />}
-        {/* {activeTabIndex === 2 && <AdHocDiff  />} */}
+        {activeTabIndex === 1 && <AdHocDiff />}
       </TabContent>
     </div>
   );

@@ -1,5 +1,6 @@
 import { displayError } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { saveProfileJsonToFile } from '@shared/domain/saveProfileJsonToFile';
 import 'compression-streams-polyfill';
 import saveAs from 'file-saver';
 
@@ -34,13 +35,11 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
 
     const customExportName = getExportFilename(profile.metadata.appName);
     const filename = `${customExportName}.json`;
-    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(profile))}`;
 
     try {
-      saveAs(dataStr, filename);
+      saveProfileJsonToFile(profile, filename);
     } catch (error) {
       displayError(error as Error, ['Failed to export to JSON!', (error as Error).message]);
-      return;
     }
   };
 
