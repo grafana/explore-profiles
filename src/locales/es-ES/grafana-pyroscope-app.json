@@ -36,7 +36,7 @@
       "placeholder": "Haz una pregunta de seguimiento...",
       "send": "Enviar"
     },
-    "llm-error": "¡Se ha producido un error al generar contenido con OpenAI!",
+    "llm-error": "",
     "llm-error-message": "Sentimos las molestias. Vuelve a intentarlo o, si el problema persiste, ponte en contacto con el administrador de tu organización.",
     "reply": {
       "search-node": "Buscar este nodo"
