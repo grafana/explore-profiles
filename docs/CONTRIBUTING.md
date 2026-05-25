@@ -21,10 +21,24 @@ Before a piece of work is finished, it should:
 - pnpm
 - [Docker](https://www.docker.com/get-started/) or [OrbStack](https://orbstack.dev/download) (lighter alternative)
 
+### Dependency install (supply-chain)
+
+Always install with lifecycle scripts disabled:
+
+```shell
+pnpm install --ignore-scripts
+```
+
+The repo `.npmrc` also sets `ignore-scripts=true`, so `pnpm install` without the flag behaves the same. Git hooks are not installed automatically; run `pnpm exec husky install` once after clone if you need them.
+
+Review `pnpm.overrides` in `package.json` when security advisories land, and run `pnpm audit` after dependency changes.
+
+CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`). When bumping that reusable workflow, confirm installs still skip lifecycle scripts (`--ignore-scripts` or repo `.npmrc` copied into the job).
+
 ## Get started
 
 1. Clone the repository `git clone git@github.com:grafana/profiles-drilldown.git`
-2. Install the dependencies: `pnpm install`
+2. Install the dependencies: `pnpm install --ignore-scripts`
 3. Build the plugin in dev mode: `pnpm run dev`
 4. Start the Grafana server (with static data): `pnpm run server:static`
 5. Optionally, to enable the **GitHub integration feature**, read the "Enable GitHub integration" section below.
