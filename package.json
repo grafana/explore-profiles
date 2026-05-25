@@ -60,7 +60,6 @@
     "compression-streams-polyfill": "^0.1.7",
     "file-saver": "^2.0.5",
     "markdown-to-jsx": "^7.3.2",
-    "nanoid": "^5.0.9",
     "p-limit": "^6.1.0",
     "protobufjs": "^8.0.0",
     "react": "18.2.0",
@@ -72,7 +71,6 @@
     "rxjs": "7.8.2",
     "semver": "^7.7.3",
     "tslib": "2.5.3",
-    "uuid": "^14.0.0",
     "xstate": "^4.38.3"
   },
   "devDependencies": {
