@@ -1,5 +1,6 @@
 import { SelectableValue } from '@grafana/data';
 import { displayError } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { createAdHocProfileClient } from '../infrastructure/adHocProfileClient';
@@ -33,6 +34,7 @@ export function useUploadFile() {
   const processFile = useCallback(
     async (file: File) => {
       removeFile();
+      reportInteraction('g_pyroscope_app_ad_hoc_file_dropped', { fileType: file.type });
 
       try {
         setIsLoading(true);
@@ -40,11 +42,20 @@ export function useUploadFile() {
         const data = await client.uploadSingle(file);
 
         setProfileData(data);
+        reportInteraction('g_pyroscope_app_ad_hoc_profile_upload_success', {
+          fileType: file.type,
+          profileTypeCount: data.profileTypes.length,
+        });
       } catch (error) {
         setProfileData(DEFAULT_PROFILE_DATA);
 
         if (!client.isAbortError(error)) {
-          displayError(error as Error, ['Error while uploading profile!', (error as Error).message]);
+          const err = error as Error;
+          reportInteraction('g_pyroscope_app_ad_hoc_profile_upload_failed', {
+            fileType: file.type,
+            errorName: err.name,
+          });
+          displayError(err, ['Error while uploading profile!', err.message]);
         }
       }
 

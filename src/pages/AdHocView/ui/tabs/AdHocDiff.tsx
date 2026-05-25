@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { Alert, InlineField, InlineFieldRow, RadioButtonGroup, Select, useStyles2 } from '@grafana/ui';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { useDiffProfile } from '../../domain/useDiffProfile';
@@ -175,6 +176,7 @@ export function AdHocDiff() {
             <AdHocFileDropZone
               onFileDropped={left.processFile}
               onFileRemove={() => {
+                reportInteraction('g_pyroscope_app_ad_hoc_file_removed');
                 left.removeFile();
                 diff.reset();
               }}
@@ -207,6 +209,7 @@ export function AdHocDiff() {
             <AdHocFileDropZone
               onFileDropped={right.processFile}
               onFileRemove={() => {
+                reportInteraction('g_pyroscope_app_ad_hoc_file_removed');
                 right.removeFile();
                 diff.reset();
               }}
