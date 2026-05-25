@@ -150,15 +150,13 @@
       "ajv@^8": "~8.18.0",
       "dompurify": "~3.4.0",
       "immutable": "~5.1.5",
-      "qs": "~6.14.2",
-      "@tootallnate/once": "~3.0.1",
-      "diff": "~4.0.4",
-      "flatted": "~3.4.2",
-      "protobufjs@^7.3.0": "~8.2.0",
-      "protobufjs@8.0.0": "~8.0.1",
+      "js-cookie": ">=3.0.7",
+      "protobufjs": ">=8.0.2",
       "protocol-buffers-schema": "~3.6.1",
+      "qs": "~6.15.2",
       "serialize-javascript": "~7.0.5",
-      "smol-toml": "~1.6.1"
+      "uuid": ">=11.1.1",
+      "ws": ">=8.20.1"
     }
   }
 }
