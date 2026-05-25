@@ -14,7 +14,7 @@ overrides:
   dompurify: ~3.4.0
   immutable: ~5.1.5
   js-cookie: '>=3.0.7'
-  protobufjs: '>=8.0.2'
+  protobufjs: '>=8.2.0'
   protocol-buffers-schema: ~3.6.1
   qs: ~6.15.2
   serialize-javascript: ~7.0.5
@@ -86,7 +86,7 @@ importers:
         specifier: ^6.1.0
         version: 6.2.0
       protobufjs:
-        specifier: '>=8.0.2'
+        specifier: '>=8.2.0'
         version: 8.2.0
       react:
         specifier: 18.2.0
