@@ -38,11 +38,9 @@
       "matchPackageNames": [
         "@testing-library/jest-dom",
         "@testing-library/react",
-        "@types/testing-library__jest-dom",
         "jest",
         "jest-environment-jsdom",
         "jest-css-modules-transform",
-        "ts-jest",
         "@types/jest"
       ]
     },
