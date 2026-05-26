@@ -27,10 +27,10 @@ overrides:
   # Map the package name to @grafana/react-data-grid on npm so resolution stays on the registry.
   # Keep in sync with the optional root dependency in package.json. The npm version may differ from
   # UI's pinned git commit; re-check when upgrading @grafana/ui.
-  react-data-grid: npm:@grafana/react-data-grid@7.0.0-beta.58
+  react-data-grid: npm:@grafana/react-data-grid@7.0.0-beta.57
   chokidar: '>=5.0.0'
-  semver@6: 7.8.1
-  ua-parser-js: '>=2.0.10'
+  semver@6: 7.8.0
+  ua-parser-js: '2.0.9'
   react-redux: '>=9.3.0'
   undici-types: '>=6.25.0'
   esbuild: ~0.28.0
