@@ -29,11 +29,11 @@ Always install with lifecycle scripts disabled:
 pnpm install --ignore-scripts
 ```
 
-The repo `.npmrc` also sets `ignore-scripts=true`, so `pnpm install` without the flag behaves the same. Git hooks are not installed automatically; run `pnpm exec husky install` once after clone if you need them.
+`pnpm-workspace.yaml` also sets `ignoreScripts: true`, so `pnpm install` without the flag behaves the same. Git hooks are not installed automatically; run `pnpm exec husky install` once after clone if you need them.
 
-Review `pnpm.overrides` in `package.json` when security advisories land, and run `pnpm audit` after dependency changes.
+Review `overrides` in `pnpm-workspace.yaml` when security advisories land, and run `pnpm audit` after dependency changes.
 
-CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`). When bumping that reusable workflow, confirm installs still skip lifecycle scripts (`--ignore-scripts` or repo `.npmrc` copied into the job).
+CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`). When bumping that reusable workflow, confirm installs still skip lifecycle scripts (`--ignore-scripts` or `pnpm-workspace.yaml` / copied config in the job).
 
 ## Get started
 
