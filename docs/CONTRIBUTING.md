@@ -37,8 +37,6 @@ When you change dependencies and need to update `pnpm-lock.yaml`, run:
 pnpm install --no-frozen-lockfile --ignore-scripts
 ```
 
-Git hooks are not installed automatically; run `pnpm exec husky install` once after clone if you need them.
-
 Review `overrides` in `pnpm-workspace.yaml` when security advisories land, and run `pnpm audit` after dependency changes.
 
 CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`), which runs the package manager’s frozen install command (`pnpm install --frozen-lockfile` for this repo). When bumping that reusable workflow, confirm installs still use a frozen lockfile and skip lifecycle scripts (`pnpm-workspace.yaml` is copied into the job).

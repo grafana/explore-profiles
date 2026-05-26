@@ -47,7 +47,7 @@
     {
       "description": "Group Prettier and plugins",
       "groupName": "Prettier",
-      "matchPackageNames": ["prettier", "prettier-package-json", "@trivago/prettier-plugin-sort-imports"]
+      "matchPackageNames": ["prettier", "@trivago/prettier-plugin-sort-imports"]
     },
     {
       "description": "Group ESLint core and plugins (not eslint-webpack-plugin; see Webpack group)",

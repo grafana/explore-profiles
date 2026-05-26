@@ -4,7 +4,7 @@ packages:
 # https://pnpm.io/supply-chain-security
 # Same as passing --frozen-lockfile on every pnpm install (CI uses this via plugin-ci-workflows too).
 frozenLockfile: true
-# Disable lifecycle scripts like husky git hooks such as postinstall.
+# Disable package lifecycle scripts (postinstall, etc.) on install.
 ignoreScripts: true
 # One week in minutes (7 × 24 × 60).
 minimumReleaseAge: 10080
