@@ -23,22 +23,30 @@ Before a piece of work is finished, it should:
 
 ### Dependency install (supply-chain)
 
-Always install with lifecycle scripts disabled:
+Always install with a frozen lockfile and lifecycle scripts disabled:
 
 ```shell
-pnpm install --ignore-scripts
+pnpm install --frozen-lockfile --ignore-scripts
 ```
 
-`pnpm-workspace.yaml` also sets `ignoreScripts: true`, so `pnpm install` without the flag behaves the same. Git hooks are not installed automatically; run `pnpm exec husky install` once after clone if you need them.
+Or run `pnpm run deps` (same command). `pnpm-workspace.yaml` sets `frozenLockfile: true` and `ignoreScripts: true`, so plain `pnpm install` enforces both even without flags.
+
+When you change dependencies and need to update `pnpm-lock.yaml`, run:
+
+```shell
+pnpm install --no-frozen-lockfile --ignore-scripts
+```
+
+Git hooks are not installed automatically; run `pnpm exec husky install` once after clone if you need them.
 
 Review `overrides` in `pnpm-workspace.yaml` when security advisories land, and run `pnpm audit` after dependency changes.
 
-CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`). When bumping that reusable workflow, confirm installs still skip lifecycle scripts (`--ignore-scripts` or `pnpm-workspace.yaml` / copied config in the job).
+CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`), which runs the package manager’s frozen install command (`pnpm install --frozen-lockfile` for this repo). When bumping that reusable workflow, confirm installs still use a frozen lockfile and skip lifecycle scripts (`pnpm-workspace.yaml` is copied into the job).
 
 ## Get started
 
 1. Clone the repository `git clone git@github.com:grafana/profiles-drilldown.git`
-2. Install the dependencies: `pnpm install --ignore-scripts`
+2. Install the dependencies: `pnpm install --frozen-lockfile --ignore-scripts`
 3. Build the plugin in dev mode: `pnpm run dev`
 4. Start the Grafana server (with static data): `pnpm run server:static`
 5. Optionally, to enable the **GitHub integration feature**, read the "Enable GitHub integration" section below.

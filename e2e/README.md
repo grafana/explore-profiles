@@ -34,7 +34,7 @@ E2E_PASSWORD=pass
 Start the app, in one terminal window:
 
 ```shell
-pnpm install --ignore-scripts && pnpm run dev
+pnpm install --frozen-lockfile --ignore-scripts && pnpm run dev
 ```
 
 And in another terminal tab, start the server:

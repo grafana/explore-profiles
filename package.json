@@ -34,6 +34,7 @@
     "server:remote": "docker compose down --remove-orphans && docker compose -f docker-compose.remote.yaml up --build --abort-on-container-exit",
     "server:static": "docker compose down --remove-orphans && docker compose -f docker-compose.e2e.yaml up --build --abort-on-container-exit",
     "sign": "pnpm dlx @grafana/sign-plugin@latest",
+    "start": "pnpm install --frozen-lockfile --ignore-scripts && pnpm dev",
     "tdd": "jest --watch --onlyChanged",
     "test": "jest --onlyChanged",
     "test:ci": "jest --passWithNoTests --maxWorkers 4 --coverage",
