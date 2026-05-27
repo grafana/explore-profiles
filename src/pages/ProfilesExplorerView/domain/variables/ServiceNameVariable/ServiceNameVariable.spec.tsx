@@ -5,8 +5,6 @@ import React from 'react';
 
 import { ServiceNameVariable } from './ServiceNameVariable';
 
-jest.mock('@shared/domain/randomId', () => ({ randomId: () => 'mockid' }));
-
 jest.mock('@shared/infrastructure/userStorage', () => ({
   userStorage: {
     KEYS: { PROFILES_EXPLORER: 'profilesExplorer.test' },

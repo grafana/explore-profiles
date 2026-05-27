@@ -10,7 +10,6 @@ import {
 } from '@grafana/scenes';
 import { Cascader, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
-import { randomId } from '@shared/domain/randomId';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import React, { useMemo } from 'react';
@@ -187,7 +186,7 @@ export class ServiceNameVariable extends QueryVariable {
             // we add a key to ensure that the Cascader selects the initial value properly when landing on the page
             // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
             // (e.g. in SceneExploreServiceProfileTypes)
-            key={randomId(5)}
+            key={crypto.randomUUID()}
             aria-label={t('variables.service-name.aria-label', 'Services list')}
             width={32}
             separator="/"
