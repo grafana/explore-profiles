@@ -150,7 +150,6 @@
       "favorites-description": "お気に入りの視覚化の概要",
       "flame-graph": "フレームグラフ",
       "flame-graph-description": "単一サービスのフレームグラフ",
-      "label": "探索",
       "labels": "ラベル",
       "labels-description": "単一サービスのラベルの探索とフィルタリング",
       "profile-types": "プロファイルタイプ",

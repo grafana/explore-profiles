@@ -150,7 +150,6 @@
       "favorites-description": "Übersicht über favorisierte Visualisierungen",
       "flame-graph": "Flammendiagramm",
       "flame-graph-description": "Flammendiagramm für einen einzelnen Dienst",
-      "label": "Erkundung",
       "labels": "Labels",
       "labels-description": "Erkundung und Filterung von Labels für einen einzelnen Dienst",
       "profile-types": "Profiltypen",
