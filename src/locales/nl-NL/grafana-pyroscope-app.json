@@ -150,7 +150,6 @@
       "favorites-description": "Overzicht van favoriete visualisaties",
       "flame-graph": "Flame graph",
       "flame-graph-description": "Flame graph voor één service",
-      "label": "Verkenning",
       "labels": "Labels",
       "labels-description": "Verkenning en filtering van labels voor één service",
       "profile-types": "Profieltypes",

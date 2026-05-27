@@ -150,7 +150,6 @@
       "favorites-description": "已收藏可视化的概览",
       "flame-graph": "火焰图",
       "flame-graph-description": "单个服务的火焰图",
-      "label": "探索",
       "labels": "标签",
       "labels-description": "单个服务的标签探索和筛选",
       "profile-types": "配置文件类型",
