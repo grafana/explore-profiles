@@ -3,6 +3,7 @@ import { GrafanaTheme2 } from '@grafana/data';
 import { useStyles2 } from '@grafana/ui';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
 import { FlamebearerProfile } from '@shared/types/FlamebearerProfile';
+import { DataSourceType } from '@shared/types/DataSourceType';
 import React from 'react';
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -16,7 +17,7 @@ export function AdHocFlameGraph({ profile, diff }: { profile: FlamebearerProfile
 
   return (
     <div className={styles.flamegraph} data-testid="flamegraph">
-      <FlameGraph profile={profile} diff={diff} />
+      <FlameGraph profile={profile} diff={diff} dataSource={DataSourceType.PprofPyroscope}/>
     </div>
   );
 }

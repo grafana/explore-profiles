@@ -38,6 +38,7 @@ import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
 import { ProfileIdSelectorLabel } from './ProfileIdSelectorLabel';
 import { SceneExploreServiceFlameGraph } from './SceneExploreServiceFlameGraph';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
+import { DataSourceType } from "@shared/types/DataSourceType";
 
 interface SceneFlameGraphState extends SceneObjectState {
   $data: SceneQueryRunner;
@@ -294,6 +295,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
               }
               keepFocusOnDataChange
               enableNewUI={flameGraphWithCallTree}
+              dataSource={DataSourceType.PprofPyroscope}
             />
           )}
         </Panel>

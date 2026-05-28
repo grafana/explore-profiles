@@ -5,6 +5,7 @@ import { useFlagFlameGraphWithCallTree } from '@shared/infrastructure/featureFla
 import React, { memo, useMemo } from 'react';
 
 import type { FlamebearerProfile } from '../../types/FlamebearerProfile';
+import { DataSourceType } from '../../types/DataSourceType';
 import { ExportData } from './components/ExportData';
 import { flamebearerToDataFrameDTO } from './domain/flamebearerToDataFrameDTO';
 
@@ -16,6 +17,7 @@ type FlameGraphProps = {
   collapsedFlamegraphs?: boolean;
   getExtraContextMenuButtons?: Props['getExtraContextMenuButtons'];
   showAnalyzeWithAssistant?: boolean;
+  dataSource?: DataSourceType;
 };
 
 function FlameGraphComponent({
@@ -53,6 +55,7 @@ function FlameGraphComponent({
       keepFocusOnDataChange
       showAnalyzeWithAssistant={showAnalyzeWithAssistant}
       enableNewUI={flameGraphWithCallTree}
+      dataSource={dataSource}
     />
   );
 }
