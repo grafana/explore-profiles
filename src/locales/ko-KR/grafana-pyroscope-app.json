@@ -150,7 +150,6 @@
       "favorites-description": "즐겨 찾는 시각화 개요",
       "flame-graph": "플레임 그래프",
       "flame-graph-description": "단일 서비스 플레임 그래프",
-      "label": "탐색",
       "labels": "라벨",
       "labels-description": "단일 서비스 라벨 탐색 및 필터링",
       "profile-types": "프로필 유형",
