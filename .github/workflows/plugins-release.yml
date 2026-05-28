@@ -33,7 +33,7 @@ jobs:
   cd:
     name: CI / CD
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v8.0.1
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v9.0.0
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
