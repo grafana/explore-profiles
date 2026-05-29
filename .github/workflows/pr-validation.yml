@@ -1,27 +1,20 @@
-name: PR Title Validation
+name: 'PR Conventional Commit Validation'
 
 on:
   pull_request:
-    types:
-      - opened
-      - reopened
-      - edited
-      - synchronize
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
-  contents: read
-  pull-requests: read
+  issues: write
+  pull-requests: write
 
 jobs:
-  check-title:
+  validate-pr-title:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2 (2026-01-09)
+      - name: PR Conventional Commit Validation
+        uses: ytanikin/pr-conventional-commits@fda730cb152c05a849d6d84325e50c6182d9d1e9 # 1.5.1
         with:
-          persist-credentials: false
-      - uses: grafana/shared-workflows/actions/lint-pr-title@0239db2665246f3b078d8d9166e4d8f09c071cae # lint-pr-title/v1.2.2 (2026-05-04)
-        with:
-          config-path: ${{ github.workspace }}/.github/commitlint.config.js
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+          task_types: '["feat","fix","docs","test","ci","refactor","perf","chore","revert","build","I18n"]'
+          add_label: 'true'
+          custom_labels: '{"docs": "type/docs", "I18n": "i18n"}'
