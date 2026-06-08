@@ -328,13 +328,14 @@
   "labels": {
     "compare": {
       "aria-label": "",
+      "button_one": "Comparar ({{count}}/2)",
+      "button_many": "",
+      "button_other": "Comparar ({{count}}/2)",
       "clear-tooltip": "Borrar selección de comparación",
       "tooltip-empty": "Selecciona un panel de referencia y un panel de comparación para comparar sus gráficos de llama.",
       "tooltip-ready": "Comparar «{{baseline}}» con «{{comparison}}»",
       "tooltip-select-baseline": "Seleccionar otro panel para compararlo con «{{label}}»",
-      "tooltip-select-comparison": "Seleccionar otro panel para compararlo con «{{label}}»",
-      "button_one": "Comparar ({{count}}/2)",
-      "button_other": "Comparar ({{count}}/2)"
+      "tooltip-select-comparison": "Seleccionar otro panel para compararlo con «{{label}}»"
     },
     "data-source": {
       "all": "Todo",
@@ -657,15 +658,17 @@
       "label": "Tipo de perfil",
       "loading": "Cargando...",
       "placeholder_one": "Seleccionar una métrica de perfil ({{count}})",
+      "placeholder_many": "",
       "placeholder_other": "Seleccionar una métrica de perfil ({{count}})"
     },
     "service-name": {
       "aria-label": "Lista de servicios",
       "label": "Servicio",
       "loading": "Cargando servicios...",
-      "unmatched-tooltip": "",
       "placeholder_one": "Seleccionar un servicio ({{count}})",
-      "placeholder_other": "Seleccionar un servicio ({{count}})"
+      "placeholder_many": "",
+      "placeholder_other": "Seleccionar un servicio ({{count}})",
+      "unmatched-tooltip": ""
     },
     "span-selector": {
       "label": "Selector de intervalo"
