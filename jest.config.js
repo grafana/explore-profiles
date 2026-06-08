@@ -1,10 +1,19 @@
-const { pathsToModuleNameMapper } = require('ts-jest');
-
 // force timezone to UTC to allow tests to work regardless of local timezone
 // generally used by snapshots, but can affect specific tests
 process.env.TZ = 'UTC';
 
 const { compilerOptions } = require('./tsconfig');
+
+/** Maps tsconfig `paths` entries to Jest `moduleNameMapper` (replaces ts-jest helper). */
+function pathsToModuleNameMapper(paths, { prefix = '' } = {}) {
+  return Object.entries(paths).reduce((mapper, [from, to]) => {
+    const [target] = Array.isArray(to) ? to : [to];
+    const normalizedTarget = target.replace(/^\.\//, '');
+    const jestPattern = `^${from.replace(/\*/g, '(.*)')}$`;
+    mapper[jestPattern] = `${prefix}${normalizedTarget.replace(/\*/g, '$1')}`;
+    return mapper;
+  }, {});
+}
 
 const copyCompilerOptionsPath = {
   ...compilerOptions.paths,

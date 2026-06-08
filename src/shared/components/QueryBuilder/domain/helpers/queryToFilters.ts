@@ -1,5 +1,4 @@
 import { t } from '@grafana/i18n';
-import { nanoid } from 'nanoid';
 
 import { FilterKind, Filters, OperatorKind } from '../types';
 import { buildIsEmptyFilter } from './buildIsEmptyFilter';
@@ -131,7 +130,7 @@ export function queryToFilters(query: string): Filters {
     .filter(([attribute]) => attribute !== 'service_name')
     .map(([attribute, operator, value]) => {
       const filter = {
-        id: nanoid(10),
+        id: crypto.randomUUID(),
         type: FilterKind['attribute-operator-value'],
         active: true,
         attribute: { value: attribute, label: attribute },
