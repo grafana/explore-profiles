@@ -69,9 +69,8 @@ function InfoMenu() {
       />
       <Menu.Divider />
       <Menu.Item
-        label={t('plugin-info.grafana-version', 'Grafana {{edition}} v{{version}} ({{env}})', {
+        label={t('plugin-info.grafana-version', 'Grafana {{edition}} ({{env}})', {
           edition: grafanaBuildInfo.edition,
-          version: grafanaBuildInfo.version,
           env: grafanaBuildInfo.env,
         })}
         icon="github"
