@@ -30,6 +30,8 @@ import { SceneExploreAllServices } from '../../components/SceneExploreAllService
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { EventOpenAddToDashboard, type PanelDataRequestPayload } from '../../domain/actions/addToDashboard';
+import { AddToDashboardModal } from '../../domain/actions/AddToDashboardModal';
 import { getDefaultTimeRange } from '../../domain/buildTimeRange';
 import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameGraph';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
@@ -70,6 +72,8 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   isEmbedded?: boolean;
   initialFilters?: AdHocVariableFilter[];
   initialDS?: string;
+  isAddToDashboardModalOpen?: boolean;
+  addToDashboardPanelData?: PanelDataRequestPayload;
 }
 
 export enum ExplorationType {
@@ -175,6 +179,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         }),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
       loadSearchScene: new LoadSearchScene(),
+      isAddToDashboardModalOpen: false,
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -349,6 +354,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       this.resetProfileIdSelector();
     });
 
+    const addToDashboardSub = this.subscribeToEvent(EventOpenAddToDashboard, (event) => {
+      this.openAddToDashboardModal(event.payload.panelData);
+    });
+
     return {
       unsubscribe() {
         diffFlameGraphSub.unsubscribe();
@@ -357,8 +366,24 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         profilesSub.unsubscribe();
         removeSpanSelectorSub.unsubscribe();
         removeProfileIdSelectorSub.unsubscribe();
+        addToDashboardSub.unsubscribe();
       },
     };
+  }
+
+  public openAddToDashboardModal(panelData: PanelDataRequestPayload) {
+    reportInteraction('g_pyroscope_app_add_to_dashboard_modal_opened');
+    this.setState({
+      isAddToDashboardModalOpen: true,
+      addToDashboardPanelData: panelData,
+    });
+  }
+
+  public closeAddToDashboardModal() {
+    this.setState({
+      isAddToDashboardModalOpen: false,
+      addToDashboardPanelData: undefined,
+    });
   }
 
   setExplorationType({
@@ -503,7 +528,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       isOpen: boolean;
       functionName?: string;
     }>({ isOpen: false });
-    const { createRecordingRuleModal, isEmbedded, loadSearchScene } = model.useState();
+    const {
+      createRecordingRuleModal,
+      isEmbedded,
+      loadSearchScene,
+      isAddToDashboardModalOpen,
+      addToDashboardPanelData,
+    } = model.useState();
 
     return (
       <FunctionVersionProvider>
@@ -536,6 +567,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 setRecordingRulesModalState({ isOpen: false });
               }}
             />
+          )}
+
+          {isAddToDashboardModalOpen && addToDashboardPanelData && (
+            <AddToDashboardModal panelData={addToDashboardPanelData} onClose={() => model.closeAddToDashboardModal()} />
           )}
         </GitHubContextProvider>
       </FunctionVersionProvider>
