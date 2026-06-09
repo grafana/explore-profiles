@@ -36,7 +36,7 @@
       "placeholder": "Haz una pregunta de seguimiento...",
       "send": "Enviar"
     },
-    "llm-error": "¡Se ha producido un error al generar contenido con OpenAI!",
+    "llm-error": "",
     "llm-error-message": "Sentimos las molestias. Vuelve a intentarlo o, si el problema persiste, ponte en contacto con el administrador de tu organización.",
     "reply": {
       "search-node": "Buscar este nodo"
@@ -153,7 +153,6 @@
       "favorites-description": "Resumen de las visualizaciones favoritas",
       "flame-graph": "Gráfico de llama",
       "flame-graph-description": "Gráfico de llama de un solo servicio",
-      "label": "Exploración",
       "labels": "Etiquetas",
       "labels-description": "Exploración y filtrado de etiquetas de un único servicio",
       "profile-types": "Tipos de perfil",

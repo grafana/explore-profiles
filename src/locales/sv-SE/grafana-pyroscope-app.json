@@ -36,7 +36,7 @@
       "placeholder": "Ställ en uppföljningsfråga …",
       "send": "Skicka"
     },
-    "llm-error": "Ett fel uppstod vid generering av innehåll med OpenAI!",
+    "llm-error": "",
     "llm-error-message": "Vi ber om ursäkt för eventuella besvär. Försök igen eller kontakta din organisationsadministratör om problemet kvarstår.",
     "reply": {
       "search-node": "Sök efter den här noden"
@@ -51,13 +51,6 @@
     },
     "error": "Det gick inte att hämta DOT-profiler för analys",
     "prompt": "Analysera skillnaderna mellan dessa två prestandaprofiler."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Tillbaka till Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Översikt över favoritvisualiseringar",
       "flame-graph": "Flamgraf",
       "flame-graph-description": "Flamgraf för enskild tjänst",
-      "label": "Utforskning",
       "labels": "Etiketter",
       "labels-description": "Utforskning och filtrering av etiketter för enskild tjänst",
       "profile-types": "Profiltyper",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Rensa jämförelseval",
       "tooltip-empty": "Välj både en baslinje- och en jämförelsepanel för att jämföra deras flamgrafer",
       "tooltip-ready": "Jämför ”{{baseline}}” med ”{{comparison}}”",

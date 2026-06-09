@@ -204,6 +204,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
   `,
   appControlsRight: css`
     display: flex;
+    align-items: center;
     gap: ${theme.spacing(1)};
   `,
   appMiscButtons: css`

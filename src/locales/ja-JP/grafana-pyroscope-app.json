@@ -36,7 +36,7 @@
       "placeholder": "フォローアップの質問をする...",
       "send": "送信"
     },
-    "llm-error": "OpenAIを使用したコンテンツの生成中にエラーが発生しました！",
+    "llm-error": "",
     "llm-error-message": "ご不便をおかけして申し訳ございません。もう一度お試しください。それでも問題が解決しない場合は、組織の管理者に連絡してください。",
     "reply": {
       "search-node": "このノードを検索"
@@ -51,13 +51,6 @@
     },
     "error": "分析用のDOTプロファイルの取得に失敗しました",
     "prompt": "これら2つのパフォーマンスプロファイルの違いを分析してください。"
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Profiles Drilldownに戻る",
@@ -157,7 +150,6 @@
       "favorites-description": "お気に入りの視覚化の概要",
       "flame-graph": "フレームグラフ",
       "flame-graph-description": "単一サービスのフレームグラフ",
-      "label": "探索",
       "labels": "ラベル",
       "labels-description": "単一サービスのラベルの探索とフィルタリング",
       "profile-types": "プロファイルタイプ",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "比較の選択をクリア",
       "tooltip-empty": "ベースラインと比較パネルの両方を選択して、それぞれのフレームグラフを比較します",
       "tooltip-ready": "「{{baseline}}」と「{{comparison}}」を比較",

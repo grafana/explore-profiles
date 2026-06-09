@@ -36,7 +36,7 @@
       "placeholder": "Folgefrage stellen …",
       "send": "Senden"
     },
-    "llm-error": "Beim Generieren von Inhalten mit OpenAI ist ein Fehler aufgetreten!",
+    "llm-error": "",
     "llm-error-message": "Wir entschuldigen uns für etwaige Unannehmlichkeiten. Bitte versuchen Sie es erneut oder wenden Sie sich an Ihren Organisationsadministrator, wenn das Problem weiterhin besteht.",
     "reply": {
       "search-node": "Nach diesem Knoten suchen"
@@ -51,13 +51,6 @@
     },
     "error": "Abrufen der DOT-Profile zur Analyse fehlgeschlagen",
     "prompt": "Analysieren Sie die Unterschiede zwischen diesen beiden Leistungsprofilen."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Zurück zu Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Übersicht über favorisierte Visualisierungen",
       "flame-graph": "Flammendiagramm",
       "flame-graph-description": "Flammendiagramm für einen einzelnen Dienst",
-      "label": "Erkundung",
       "labels": "Labels",
       "labels-description": "Erkundung und Filterung von Labels für einen einzelnen Dienst",
       "profile-types": "Profiltypen",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Vergleichsauswahl löschen",
       "tooltip-empty": "Wählen Sie sowohl ein Basis- als auch ein Vergleichspanel für den Vergleich ihrer Flammendiagramme aus",
       "tooltip-ready": "„{{baseline}}“ vs. „{{comparison}}“ vergleichen",

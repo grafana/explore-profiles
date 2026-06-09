@@ -36,7 +36,7 @@
       "placeholder": "Bir takip sorusu sorun...",
       "send": "Gönder"
     },
-    "llm-error": "OpenAI kullanılarak içerik oluşturulurken bir hata oluştu!",
+    "llm-error": "",
     "llm-error-message": "Yaşanan aksaklık için özür dileriz, lütfen tekrar deneyin veya sorun devam ederse kuruluş yöneticinizle iletişime geçin.",
     "reply": {
       "search-node": "Bu düğümü ara"
@@ -51,13 +51,6 @@
     },
     "error": "Analiz için DOT profilleri getirilemedi",
     "prompt": "Bu iki performans profili arasındaki farkları analiz edin."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Profiles Drilldown'a dön",
@@ -157,7 +150,6 @@
       "favorites-description": "Favorilere eklenen görselleştirmelere genel bakış",
       "flame-graph": "Alev grafiği",
       "flame-graph-description": "Tek hizmetli alev grafiği",
-      "label": "Keşif",
       "labels": "Etiketler",
       "labels-description": "Tek hizmetli etiket inceleme ve filtreleme",
       "profile-types": "Profil türleri",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Karşılaştırma seçimini temizle",
       "tooltip-empty": "Alev grafiklerini karşılaştırmak için hem bir referans hem de bir karşılaştırma panelini seçin",
       "tooltip-ready": "\"{{baseline}}\" ve \"{{comparison}}\" karşılaştırması",

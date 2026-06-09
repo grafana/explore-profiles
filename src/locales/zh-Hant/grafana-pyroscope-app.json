@@ -36,7 +36,7 @@
       "placeholder": "提出後續問題…",
       "send": "傳送"
     },
-    "llm-error": "使用 OpenAI 產生內容時發生錯誤！",
+    "llm-error": "",
     "llm-error-message": "很抱歉造成您的不便，請重試；如果問題仍然存在，請聯絡您的組織管理員。",
     "reply": {
       "search-node": "搜尋此節點"
@@ -51,13 +51,6 @@
     },
     "error": "無法擷取 DOT 設定檔以供分析",
     "prompt": "分析這兩個效能設定檔之間的差異。"
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "返回設定檔深入分析",
@@ -157,7 +150,6 @@
       "favorites-description": "我的最愛視覺化呈現概覽",
       "flame-graph": "火焰圖",
       "flame-graph-description": "單項服務火焰圖",
-      "label": "探索",
       "labels": "標籤",
       "labels-description": "單項服務標籤探索和篩選",
       "profile-types": "設定檔類型",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "清除比較選項",
       "tooltip-empty": "同時選擇基準面板和比較面板，即可比較它們的火焰圖",
       "tooltip-ready": "比較「{{baseline}}」與「{{comparison}}」",

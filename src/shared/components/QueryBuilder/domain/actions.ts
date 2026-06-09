@@ -1,5 +1,4 @@
 import { t } from '@grafana/i18n';
-import { nanoid } from 'nanoid';
 import { assign } from 'xstate';
 
 import { LabelsApiClient } from '../../../../pages/ProfilesExplorerView/infrastructure/labels/http/LabelsApiClient';
@@ -43,7 +42,7 @@ export const actions: any = {
   setFilterAttribute: assign((context: QueryBuilderContext, event: SelectEvent) => {
     const newFilters = [
       ...context.filters,
-      { id: nanoid(10), type: FilterKind.partial, active: false, attribute: event.data },
+      { id: crypto.randomUUID(), type: FilterKind.partial, active: false, attribute: event.data },
     ] as Filters;
 
     return {

@@ -7,7 +7,6 @@ import { localeCompare } from '@shared/domain/localeCompare';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import { nanoid } from 'nanoid';
 import React, { useMemo } from 'react';
 import { lastValueFrom } from 'rxjs';
 
@@ -136,7 +135,7 @@ export class ProfileMetricVariable extends QueryVariable {
       <Cascader
         // we add a key to ensure that the Cascader selects the initial value or available options properly when landing on the page
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
-        key={nanoid(5)}
+        key={crypto.randomUUID()}
         aria-label={t('variables.profile-metric.aria-label', 'Profile metrics list')}
         width={24}
         separator="/"

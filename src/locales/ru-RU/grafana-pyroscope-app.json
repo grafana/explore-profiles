@@ -36,7 +36,7 @@
       "placeholder": "Задать уточняющий вопрос...",
       "send": "Отправить"
     },
-    "llm-error": "Ошибка при создании контента с помощью OpenAI",
+    "llm-error": "",
     "llm-error-message": "Приносим извинения за неудобства. Повторите попытку. Если проблема не исчезнет, обратитесь к администратору организации.",
     "reply": {
       "search-node": "Найти этот узел"
@@ -51,13 +51,6 @@
     },
     "error": "Не удалось получить профили DOT для анализа",
     "prompt": "Проанализируйте различия между этими двумя профилями производительности."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Назад в Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Обзор избранных визуализаций",
       "flame-graph": "Flame-график",
       "flame-graph-description": "Flame-график для одной службы",
-      "label": "Просмотр",
       "labels": "Метки",
       "labels-description": "Просмотр и фильтрация меток для одной службы",
       "profile-types": "Типы профилей",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Очистить выбор для сравнения",
       "tooltip-empty": "Чтобы сравнить flame-графики, выберите базовую и сравниваемую панели",
       "tooltip-ready": "Сравнить «{{baseline}}» и «{{comparison}}»",

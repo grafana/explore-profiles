@@ -36,7 +36,7 @@
       "placeholder": "Fai una domanda di follow-up...",
       "send": "Invia"
     },
-    "llm-error": "Si è verificato un errore durante la generazione del contenuto tramite OpenAI!",
+    "llm-error": "",
     "llm-error-message": "Ci scusiamo per l'inconveniente. Riprova oppure, se il problema persiste, contatta l'amministratore della tua organizzazione.",
     "reply": {
       "search-node": "Cerca questo nodo"
@@ -51,13 +51,6 @@
     },
     "error": "Impossibile recuperare i profili DOT per l'analisi",
     "prompt": "Analizza le differenze tra questi due profili di rendimento."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Torna a Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Panoramica delle visualizzazioni preferite",
       "flame-graph": "Grafico di fiamma",
       "flame-graph-description": "Grafico di fiamma di un singolo servizio",
-      "label": "Esplorazione",
       "labels": "Etichette",
       "labels-description": "Esplorazione e filtraggio delle etichette per un singolo servizio",
       "profile-types": "Tipi di profilo",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Cancella selezione di confronto",
       "tooltip-empty": "Seleziona sia un pannello di riferimento che un pannello di confronto per confrontare i rispettivi grafici di fiamma",
       "tooltip-ready": "Confronta \"{{baseline}}\" con \"{{comparison}}\"",

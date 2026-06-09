@@ -36,7 +36,7 @@
       "placeholder": "Zadaj pytanie uzupełniające…",
       "send": "Wyślij"
     },
-    "llm-error": "Podczas generowania treści za pomocą OpenAI wystąpił błąd.",
+    "llm-error": "",
     "llm-error-message": "Przepraszamy za niedogodności. Spróbuj ponownie, a jeśli problem będzie się powtarzał, skontaktuj się z administratorem organizacji.",
     "reply": {
       "search-node": "Szukaj tego węzła"
@@ -51,13 +51,6 @@
     },
     "error": "Nie udało się pobrać profili DOT do analizy",
     "prompt": "Przeanalizuj różnice między tymi dwoma profilami wydajności."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Wróć do Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Przegląd ulubionych wizualizacji",
       "flame-graph": "Wykres płomieniowy",
       "flame-graph-description": "Wykres płomieniowy pojedynczej usługi",
-      "label": "Eksploracja",
       "labels": "Etykiety",
       "labels-description": "Eksploracja i filtrowanie etykiet pojedynczej usługi",
       "profile-types": "Typy profili",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Wyczyść wybór porównania",
       "tooltip-empty": "Wybierz zarówno panel odniesienia, jak i panel porównawczy, aby porównać ich wykresy płomieniowe",
       "tooltip-ready": "Porównaj „{{baseline}}” z „{{comparison}}”",

@@ -36,7 +36,7 @@
       "placeholder": "Položte doplňující otázku…",
       "send": "Odeslat"
     },
-    "llm-error": "Při generování obsahu pomocí OpenAI došlo k chybě!",
+    "llm-error": "",
     "llm-error-message": "Omlouváme se za případné nepříjemnosti. Zkuste to znovu nebo, pokud problém přetrvává, kontaktujte správce organizace.",
     "reply": {
       "search-node": "Hledat tento uzel"
@@ -51,13 +51,6 @@
     },
     "error": "Nepodařilo se načíst profily DOT pro analýzu",
     "prompt": "Analyzujte rozdíly mezi těmito dvěma výkonnostními profily."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Zpět na Podrobný rozpis profilů",
@@ -157,7 +150,6 @@
       "favorites-description": "Přehled oblíbených vizualizací",
       "flame-graph": "Flame graf",
       "flame-graph-description": "Flame graf jednotné služby",
-      "label": "Prozkoumání",
       "labels": "Štítky",
       "labels-description": "Prozkoumávání a filtrování štítků jednotné služby",
       "profile-types": "Typy profilů",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Vymazat výběr pro porovnání",
       "tooltip-empty": "Pro porovnání flame grafů vyberte jak základní, tak srovnávací panel.",
       "tooltip-ready": "Porovnat „{{baseline}}“ vs. „{{comparison}}“",

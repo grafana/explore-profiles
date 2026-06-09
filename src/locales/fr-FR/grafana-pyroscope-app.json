@@ -36,7 +36,7 @@
       "placeholder": "Poser une question complémentaire…",
       "send": "Envoyer"
     },
-    "llm-error": "Une erreur s’est produite lors de la génération du contenu à l’aide d’OpenAI.",
+    "llm-error": "",
     "llm-error-message": "Nous vous prions de nous excuser pour ce désagrément. Veuillez réessayer ou, si le problème persiste, contactez l’administrateur de votre organisation.",
     "reply": {
       "search-node": "Rechercher ce nœud"
@@ -51,13 +51,6 @@
     },
     "error": "Échec de la récupération des profils DOT pour l’analyse",
     "prompt": "Analysez les différences entre ces deux profils de performance."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Retour à Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Vue d’ensemble des visualisations favorites",
       "flame-graph": "Graphique en flammes",
       "flame-graph-description": "Graphique en flammes pour un seul service",
-      "label": "Exploration",
       "labels": "Étiquettes",
       "labels-description": "Exploration et filtrage des étiquettes pour un seul service",
       "profile-types": "Types de profil",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Effacer la sélection de comparaison",
       "tooltip-empty": "Sélectionnez un panneau de référence et un panneau de comparaison pour comparer leurs graphiques en flamme",
       "tooltip-ready": "Comparer « {{baseline}} » avec « {{comparison}} »",
