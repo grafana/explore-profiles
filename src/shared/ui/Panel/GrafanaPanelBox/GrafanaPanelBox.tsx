@@ -7,7 +7,6 @@ import React, { CSSProperties, ReactElement, ReactNode, useEffect, useRef, useSt
 
 import { DelayRender } from './DelayRender';
 import { HoverWidget } from './HoverWidget';
-import { PanelDescription } from './PanelDescription';
 import { PanelMenu } from './PanelMenu';
 import { PanelStatus } from './PanelStatus';
 import { TitleItem } from './TitleItem';
@@ -28,7 +27,6 @@ interface PanelChromeProps {
   padding?: PanelPadding;
   hoverHeaderOffset?: number;
   title?: string;
-  description?: string | (() => string);
   titleItems?: ReactNode;
   menu?: ReactElement | (() => ReactElement);
   dragClass?: string;
@@ -68,7 +66,6 @@ export function GrafanaPanelBox({
   children,
   padding = 'md',
   title = '',
-  description = '',
   displayMode = 'default',
   titleItems,
   menu,
@@ -125,7 +122,6 @@ export function GrafanaPanelBox({
       )}
 
       <div className={cx(styles.titleItems, dragClassCancel)} data-testid="title-items-container">
-        <PanelDescription description={description} className={dragClassCancel} />
         {titleItems}
       </div>
 

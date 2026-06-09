@@ -14,7 +14,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
 type PanelProps = {
   isLoading: boolean;
   title?: ReactNode;
-  description?: ReactNode;
   children: ReactNode;
   className?: string;
   headerActions?: ReactNode;
@@ -24,7 +23,6 @@ type PanelProps = {
 export function Panel({
   isLoading,
   title,
-  description,
   children,
   className = '',
   headerActions,
@@ -39,7 +37,6 @@ export function Panel({
       <GrafanaPanelBox
         loadingState={loadingState}
         title={title as unknown as string}
-        description={description as unknown as string}
         actions={headerActions}
       >
         {children}
