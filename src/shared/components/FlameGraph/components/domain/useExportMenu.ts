@@ -17,7 +17,16 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
     const filename = `${customExportName}.png`;
 
     // TODO use ref, this won't work for comparison side by side (??!)
-    const canvasElement = document.querySelector('canvas[data-testid="flameGraph"]') as HTMLCanvasElement;
+    const canvasElement = document.querySelector('canvas[data-testid="flameGraph"]') as HTMLCanvasElement | null;
+
+    if (!canvasElement) {
+      const error = new Error('No flame graph canvas found, the image cannot be created.');
+      displayError(error, [
+        'Failed to export to png!',
+        'Please ensure the flame graph is visible before exporting to png.',
+      ]);
+      return;
+    }
 
     canvasElement.toBlob((blob) => {
       if (!blob) {
@@ -65,9 +74,13 @@ export function useExportMenu({ profile, enableFlameGraphDotComExport }: ExportD
     document.body.removeChild(dlLink);
   };
 
+  // png export captures the flame graph <canvas>, which is not rendered in the "Top table" view
+  const isPngExportDisabled = !document.querySelector('canvas[data-testid="flameGraph"]');
+
   return {
     data: {
       shouldDisplayFlamegraphDotCom: Boolean(enableFlameGraphDotComExport),
+      isPngExportDisabled,
     },
     actions: {
       downloadPng,
