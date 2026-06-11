@@ -141,6 +141,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": "Add to dashboard"
+    },
     "exploration-type": {
       "all-services": "All services",
       "all-services-description": "Overview of all services, for any given profile type",
@@ -150,7 +153,6 @@
       "favorites-description": "Overview of favorited visualizations",
       "flame-graph": "Flame graph",
       "flame-graph-description": "Single service flame graph",
-      "label": "Exploration",
       "labels": "Labels",
       "labels-description": "Single service label exploration and filtering",
       "profile-types": "Profile types",
@@ -450,7 +452,7 @@
     "commit-sha": "Commit SHA: {{shortCommitSha}}",
     "contribute": "Contribute",
     "documentation": "Documentation",
-    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "grafana-version": "Grafana {{edition}} ({{env}})",
     "last-update": "Last update: {{updated}}",
     "report-issue": "Report an issue",
     "title": "Plugin info",
@@ -552,7 +554,7 @@
       "no-searches": "No saved searches to display.",
       "no-searches-tooltip": "No saved searches to load",
       "remove-tooltip": "Remove",
-      "saved-query-tooltip": "Load saved query",
+      "saved-query-tooltip": "Load Saved query",
       "select": "Select",
       "select-pyroscope-query": "Please select a Pyroscope query.",
       "title": "Load a previously saved search",
@@ -566,7 +568,7 @@
       "existing-search-warning": "There is a previously saved search with the same query: {{title}}",
       "info-message": "Saved searches are stored locally in your browser and will only be available on this device.",
       "save": "Save",
-      "saved-queries-tooltip": "Save in Saved Queries",
+      "saved-queries-tooltip": "Save in Saved queries",
       "success-body": "Search successfully saved.",
       "success-message": "Search successfully saved.",
       "success-title": "Success",
@@ -625,6 +627,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "Add to dashboard",
       "exemplars": "Exemplars",
       "open-in-explore": "Open in Explore",
       "scale-linear": "Linear",

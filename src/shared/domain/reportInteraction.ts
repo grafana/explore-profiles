@@ -15,6 +15,8 @@ export type Interactions = {
     page: PageName;
   };
 
+  g_pyroscope_app_add_to_dashboard_modal_opened: {};
+
   g_pyroscope_app_ad_hoc_file_dropped: {
     fileType: string;
   };

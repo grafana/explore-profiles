@@ -150,7 +150,6 @@
       "favorites-description": "Visão geral das visualizações favoritas",
       "flame-graph": "Gráfico de chama",
       "flame-graph-description": "Gráfico de chama de serviço único",
-      "label": "Exploração",
       "labels": "Rótulos",
       "labels-description": "Exploração e filtragem de rótulos de um único serviço",
       "profile-types": "Tipos de perfil",

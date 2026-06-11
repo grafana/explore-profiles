@@ -150,7 +150,6 @@
       "favorites-description": "Обзор избранных визуализаций",
       "flame-graph": "Flame-график",
       "flame-graph-description": "Flame-график для одной службы",
-      "label": "Просмотр",
       "labels": "Метки",
       "labels-description": "Просмотр и фильтрация меток для одной службы",
       "profile-types": "Типы профилей",
