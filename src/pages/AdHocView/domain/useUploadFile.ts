@@ -47,16 +47,18 @@ export function useUploadFile() {
           profileTypeCount: data.profileTypes.length,
         });
       } catch (error) {
+        if (client.isAbortError(error)) {
+          return;
+        }
+
         setProfileData(DEFAULT_PROFILE_DATA);
 
-        if (!client.isAbortError(error)) {
-          const err = error as Error;
-          reportInteraction('g_pyroscope_app_ad_hoc_profile_upload_failed', {
-            fileType: file.type,
-            errorName: err.name,
-          });
-          displayError(err, ['Error while uploading profile!', err.message]);
-        }
+        const err = error as Error;
+        reportInteraction('g_pyroscope_app_ad_hoc_profile_upload_failed', {
+          fileType: file.type,
+          errorName: err.name,
+        });
+        displayError(err, ['Error while uploading profile!', err.message]);
       }
 
       setIsLoading(false);
@@ -86,9 +88,11 @@ export function useUploadFile() {
           profile: data.profile,
         }));
       } catch (error) {
-        if (!client.isAbortError(error)) {
-          displayError(error as Error, ['Error while fetching profile!', (error as Error).message]);
+        if (client.isAbortError(error)) {
+          return;
         }
+
+        displayError(error as Error, ['Error while fetching profile!', (error as Error).message]);
       }
 
       setIsLoading(false);
