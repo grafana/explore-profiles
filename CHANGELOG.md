@@ -1,5 +1,30 @@
 # Changelog
 
+## 2.0.7
+
+##### Chores
+
+*  Update ci-cd-workflows (#987) (3de7b007)
+*  update Saved queries texts (#1006) (500d8d73)
+*  Harden package use and workspace environment (#984) (1ace8a94)
+*  Fix translations (#986) (b58dea2d)
+*  Use tabs instead of custom menu navigation (#974) (59c90d52)
+
+##### New Features
+
+*  Support add to dashboard (#970) (667d2a21)
+
+##### Bug Fixes
+
+*  update Crowdin workflows for get-vault-secrets breaking change (#1008) (86eabe59)
+* **Recording Rules:**  Stop dropping profile type, service name, and function name on submit (#979) (c1d75858)
+
+##### Other Changes
+
+*  Download translations from Crowdin (#993) (5e02932b)
+*  Download translations from Crowdin (#953) (ff04cc53)
+
+
 ## 2.0.6
 
 ##### Chores
