@@ -16,11 +16,6 @@ function AdHocSingleComponent() {
     selectProfileType(options);
   };
 
-  const onFileDropped = (file: File) => {
-    reportInteraction('g_pyroscope_app_ad_hoc_file_dropped', { fileType: file.type });
-    processFile(file);
-  };
-
   const onFileRemoved = () => {
     reportInteraction('g_pyroscope_app_ad_hoc_file_removed');
     removeFile();
@@ -29,7 +24,7 @@ function AdHocSingleComponent() {
   return (
     <div>
       <AdHocProfileTypeSelector profileTypes={profileTypes} onChange={onChangeProfileType} />
-      <AdHocFileDropZone onFileDropped={onFileDropped} onFileRemove={onFileRemoved} />
+      <AdHocFileDropZone onFileDropped={processFile} onFileRemove={onFileRemoved} />
       {isLoading && !profile ? <AdHocSpinner /> : null}
       {profile && <AdHocFlameGraph profile={profile} />}
     </div>
