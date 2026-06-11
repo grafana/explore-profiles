@@ -43,7 +43,7 @@ const SafeLink = ({ children, href, ...props }: AnchorHTMLAttributes<HTMLAnchorE
   }
 
   return (
-    <a href={safeHref} target="_blank" rel="noopener noreferrer" {...props}>
+    <a {...props} href={safeHref} target="_blank" rel="noopener noreferrer">
       {children}
     </a>
   );
