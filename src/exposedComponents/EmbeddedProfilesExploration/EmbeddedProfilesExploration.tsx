@@ -26,7 +26,7 @@ function buildProfilesExplorationFromState({
 
   const exploration = new SceneProfilesExplorer({
     $timeRange,
-    isEmbedded: false,
+    isEmbedded: true,
     initialFilters: initialFilters,
     initialDS,
   });
