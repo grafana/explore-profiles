@@ -48,6 +48,3 @@ overrides:
   serialize-javascript: ~7.0.5
   uuid: '>=11.1.1'
   ws: '>=8.20.1'
-minimumReleaseAgeExclude:
-  # Renovate security update: ua-parser-js@2.0.10
-  - ua-parser-js@2.0.10
