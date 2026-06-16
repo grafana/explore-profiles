@@ -5,7 +5,7 @@ services:
       context: ./.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
-        grafana_version: ${GRAFANA_VERSION:-12.3.0}
+        grafana_version: ${GRAFANA_VERSION:-12.3.0@sha256:96a793a92c9a77cf543d6e5c55100cd296ed9e22487dc3d069331364c456247b}
     ports:
       - ${GRAFANA_PORT:-3000}:3000/tcp
     volumes:
@@ -19,7 +19,7 @@ services:
       GF_FEATURE_TOGGLES_ENABLE: ${GF_FEATURE_TOGGLES_ENABLE:-metricsFromProfiles,flameGraphWithCallTree,localizationForPlugins}
 
   qdrant:
-    image: qdrant/qdrant@sha256:94728574965d17c6485dd361aa3c0818b325b9016dac5ea6afec7b4b2700865f
+    image: qdrant/qdrant:v1.17.0@sha256:f1c7272cdac52b38c1a0e89313922d940ba50afd90d593a1605dbbc214e66ffb
     volumes:
       - qdrant-storage:/qdrant/storage
 
