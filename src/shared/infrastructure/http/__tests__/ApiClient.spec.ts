@@ -47,24 +47,6 @@ describe('ApiClient', () => {
   });
 
   describe('base URL', () => {
-    let originalWindowLocation = window.location;
-
-    beforeEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        enumerable: true,
-        value: new URL(window.location.href),
-      });
-    });
-
-    afterEach(() => {
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        enumerable: true,
-        value: originalWindowLocation,
-      });
-    });
-
     describe.each([
       ['/', '/api/datasources/proxy/uid/grafanacloud-profiles-test'],
       ['', '/api/datasources/proxy/uid/grafanacloud-profiles-test'],
@@ -101,8 +83,9 @@ describe('ApiClient', () => {
 
           const { ApiClient } = require('../ApiClient');
 
-          window.location.href =
-            'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=grafanacloud-profiles-test-bis';
+          setWindowLocation(
+            new URL('http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=grafanacloud-profiles-test-bis')
+          );
 
           const apiClient = new ApiClient();
 
@@ -140,7 +123,7 @@ describe('ApiClient', () => {
 
           const { ApiClient } = require('../ApiClient');
 
-          window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
+          setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource='));
 
           const apiClient = new ApiClient();
 
@@ -173,7 +156,7 @@ describe('ApiClient', () => {
 
           const { ApiClient } = require('../ApiClient');
 
-          window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
+          setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource='));
 
           const apiClient = new ApiClient();
 
@@ -198,7 +181,7 @@ describe('ApiClient', () => {
 
           const { ApiClient } = require('../ApiClient');
 
-          window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
+          setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource='));
 
           const apiClient = new ApiClient();
 
@@ -231,7 +214,7 @@ describe('ApiClient', () => {
 
           const { ApiClient } = require('../ApiClient');
 
-          window.location.href = 'http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource=';
+          setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/single?var-dataSource='));
 
           const apiClient = new ApiClient();
 

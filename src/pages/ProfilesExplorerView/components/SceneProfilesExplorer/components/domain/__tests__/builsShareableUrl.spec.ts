@@ -3,7 +3,6 @@ import { builsShareableUrl } from '../builsShareableUrl';
 const BASE_URL = 'http://localhost:3000/a/grafana-pyroscope-app/profiles-explorer?explorationType=diff-flame-graph';
 
 describe('builsShareableUrl()', () => {
-  const originalLocation = window.location;
   const originalNow = Date.now;
 
   beforeEach(() => {
@@ -14,7 +13,6 @@ describe('builsShareableUrl()', () => {
 
   afterEach(() => {
     Date.now = originalNow;
-    window.location = originalLocation;
   });
 
   test.each([
@@ -41,10 +39,7 @@ describe('builsShareableUrl()', () => {
       `${BASE_URL}&from=1729165933247&to=1729253024687`,
     ],
   ])('%s (%s)', (msg, location, expectedUrl) => {
-    Object.defineProperty(window, 'location', {
-      value: location,
-      writable: true,
-    });
+    setWindowLocation(location);
 
     expect(builsShareableUrl().toString()).toBe(expectedUrl);
   });
