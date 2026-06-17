@@ -90,7 +90,6 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
       formState: { errors },
     } = useForm<RecordingRuleForm>({
       mode: 'onChange',
-      shouldUnregister: true,
       values: {
         functionName,
         metricName: '',

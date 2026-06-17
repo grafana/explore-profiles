@@ -36,7 +36,7 @@
       "placeholder": "Stel een vervolgvraag...",
       "send": "Verzenden"
     },
-    "llm-error": "Er is een fout opgetreden bij het genereren van inhoud met OpenAI!",
+    "llm-error": "",
     "llm-error-message": "Onze excuses voor het ongemak. Probeer het opnieuw. Blijft het probleem zich voordoen, neem dan contact op met de beheerder van je organisatie.",
     "reply": {
       "search-node": "Deze node zoeken"
@@ -51,13 +51,6 @@
     },
     "error": "Kan DOT-profielen niet ophalen voor analyse",
     "prompt": "Analyseer de verschillen tussen deze twee prestatieprofielen."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Terug naar Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Overzicht van favoriete visualisaties",
       "flame-graph": "Flame graph",
       "flame-graph-description": "Flame graph voor één service",
-      "label": "Verkenning",
       "labels": "Labels",
       "labels-description": "Verkenning en filtering van labels voor één service",
       "profile-types": "Profieltypes",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Vergelijkingsselectie wissen",
       "tooltip-empty": "Selecteer zowel een baseline- als een vergelijkingspaneel om hun flame graphs te vergelijken",
       "tooltip-ready": "'{{baseline}}' vs. '{{comparison}}' vergelijken",

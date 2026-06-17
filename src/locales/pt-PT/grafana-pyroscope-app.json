@@ -36,7 +36,7 @@
       "placeholder": "Faça uma pergunta de seguimento...",
       "send": "Enviar"
     },
-    "llm-error": "Ocorreu um erro ao gerar conteúdo com OpenAI!",
+    "llm-error": "",
     "llm-error-message": "Lamentamos qualquer incómodo. Tente novamente ou, se o problema persistir, contacte o administrador da sua organização.",
     "reply": {
       "search-node": "Pesquisar por este nó"
@@ -51,13 +51,6 @@
     },
     "error": "Falha ao obter perfis DOT para análise",
     "prompt": "Analise as diferenças entre estes dois perfis de desempenho."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Voltar a Profiles Drilldown",
@@ -157,7 +150,6 @@
       "favorites-description": "Visão geral das visualizações favoritas",
       "flame-graph": "Gráfico de chamas",
       "flame-graph-description": "Gráfico de chamas de um único serviço",
-      "label": "Exploração",
       "labels": "Etiquetas",
       "labels-description": "Exploração e filtragem de etiquetas de um único serviço",
       "profile-types": "Tipos de perfil",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Limpar a seleção de comparação",
       "tooltip-empty": "Selecione um painel de referência e um painel de comparação para comparar os respetivos gráficos de chamas",
       "tooltip-ready": "Comparar \"{{baseline}}\" vs. \"{{comparison}}\"",

@@ -36,7 +36,7 @@
       "placeholder": "提出后续问题……",
       "send": "发送"
     },
-    "llm-error": "使用 OpenAI 生成内容时发生错误！",
+    "llm-error": "",
     "llm-error-message": "对于给您带来的不便，我们深表歉意。请重试；如果问题仍然存在，请联系您的组织管理员。",
     "reply": {
       "search-node": "搜索此节点"
@@ -51,13 +51,6 @@
     },
     "error": "获取用于分析的 DOT 配置文件失败",
     "prompt": "分析这两个性能配置文件之间的差异。"
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "返回配置文件深入分析",
@@ -157,7 +150,6 @@
       "favorites-description": "已收藏可视化的概览",
       "flame-graph": "火焰图",
       "flame-graph-description": "单个服务的火焰图",
-      "label": "探索",
       "labels": "标签",
       "labels-description": "单个服务的标签探索和筛选",
       "profile-types": "配置文件类型",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "清除比较选择",
       "tooltip-empty": "同时选择基准面板和对比面板，以便比较它们的火焰图",
       "tooltip-ready": "比较“{{baseline}}”与“{{comparison}}”",

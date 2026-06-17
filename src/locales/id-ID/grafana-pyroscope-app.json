@@ -36,7 +36,7 @@
       "placeholder": "Ajukan pertanyaan lanjutan...",
       "send": "Kirim"
     },
-    "llm-error": "Terjadi kesalahan saat membuat konten menggunakan OpenAI!",
+    "llm-error": "",
     "llm-error-message": "Mohon maaf atas ketidaknyamanan ini. Silakan coba lagi atau, jika masalah berlanjut, hubungi admin organisasi Anda.",
     "reply": {
       "search-node": "Cari node ini"
@@ -51,13 +51,6 @@
     },
     "error": "Gagal mengambil profil DOT untuk analisis",
     "prompt": "Analisis perbedaan antara dua profil kinerja ini."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Kembali ke Drilldown Profil",
@@ -157,7 +150,6 @@
       "favorites-description": "Ikhtisar visualisasi favorit",
       "flame-graph": "Flame graph",
       "flame-graph-description": "Flame graph satu service",
-      "label": "Eksplorasi",
       "labels": "Label",
       "labels-description": "Eksplorasi dan pemfilteran label satu service",
       "profile-types": "Jenis profil",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Hapus pilihan perbandingan",
       "tooltip-empty": "Pilih panel baseline dan panel perbandingan untuk membandingkan flame graph keduanya",
       "tooltip-ready": "Bandingkan \"{{baseline}}\" vs \"{{comparison}}\"",

@@ -36,7 +36,7 @@
       "placeholder": "Tegyen fel egy újabb kérdést…",
       "send": "Küldés"
     },
-    "llm-error": "Hiba történt a tartalom OpenAI segítségével történő generálása során!",
+    "llm-error": "",
     "llm-error-message": "Elnézést kérünk az esetleges kellemetlenségekért. Próbálja újra, vagy ha a probléma továbbra is fennáll, lépjen kapcsolatba a szervezete rendszergazdájával.",
     "reply": {
       "search-node": "Keresés erre a csomópontra"
@@ -51,13 +51,6 @@
     },
     "error": "Nem sikerült lekérni a DOT-profilokat az elemzéshez",
     "prompt": "Elemezze a két teljesítményprofil közötti különbségeket."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Vissza a profilrészletezéshez",
@@ -157,7 +150,6 @@
       "favorites-description": "A kedvenc vizualizációk áttekintése",
       "flame-graph": "Lángdiagram",
       "flame-graph-description": "Egyetlen szolgáltatás lángdiagramja",
-      "label": "Felfedezés",
       "labels": "Címkék",
       "labels-description": "Egyetlen szolgáltatás címkéinek böngészése és szűrése",
       "profile-types": "Profiltípusok",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "Összehasonlítási kijelölés törlése",
       "tooltip-empty": "A lángdiagramok összehasonlításához jelöljön ki egy referencia- és egy összehasonlítási panelt is",
       "tooltip-ready": "„{{baseline}}” és „{{comparison}}” összehasonlítása",

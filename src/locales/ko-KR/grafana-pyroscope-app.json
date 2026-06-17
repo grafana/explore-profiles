@@ -36,7 +36,7 @@
       "placeholder": "후속 질문하기...",
       "send": "전송"
     },
-    "llm-error": "OpenAI를 사용하여 콘텐츠를 생성하는 동안 오류가 발생했습니다!",
+    "llm-error": "",
     "llm-error-message": "불편을 드려 죄송합니다. 다시 시도하거나 문제가 지속되면 조직 관리자에게 문의하세요.",
     "reply": {
       "search-node": "이 노드 검색하기"
@@ -51,13 +51,6 @@
     },
     "error": "분석을 위한 DOT 프로필 가져오기 실패",
     "prompt": "이 두 성능 프로필 간의 차이점을 분석하세요."
-  },
-  "analyze-flame-graph": {
-    "context": {
-      "title": ""
-    },
-    "error": "",
-    "prompt": ""
   },
   "back-button": {
     "aria-label": "Profiles Drilldown으로 돌아가기",
@@ -157,7 +150,6 @@
       "favorites-description": "즐겨 찾는 시각화 개요",
       "flame-graph": "플레임 그래프",
       "flame-graph-description": "단일 서비스 플레임 그래프",
-      "label": "탐색",
       "labels": "라벨",
       "labels-description": "단일 서비스 라벨 탐색 및 필터링",
       "profile-types": "프로필 유형",
@@ -335,6 +327,7 @@
   },
   "labels": {
     "compare": {
+      "aria-label": "",
       "clear-tooltip": "비교 선택 항목 지우기",
       "tooltip-empty": "플레임 그래프를 비교하려면 기준 패널과 비교 패널을 모두 선택하세요.",
       "tooltip-ready": "'{{baseline}}'과(와) '{{comparison}}' 비교",
