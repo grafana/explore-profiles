@@ -17,10 +17,7 @@ describe('getEnvironment()', () => {
     ['foobar.grafana.net', 'prod'],
     ['grafana.net', 'prod'],
   ])('when the host is "%s" → %s', (host, expectedEnvironment) => {
-    Object.defineProperty(window, 'location', {
-      value: { host },
-      writable: true,
-    });
+    setWindowLocation({ host });
 
     expect(getEnvironment()).toBe(expectedEnvironment);
   });

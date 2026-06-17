@@ -31,10 +31,7 @@ function setup(location: Partial<Location>) {
   (initializeFaro as jest.Mock).mockReturnValue({});
   (getWebInstrumentations as jest.Mock).mockReturnValue([{}]);
 
-  Object.defineProperty(window, 'location', {
-    value: location,
-    writable: true,
-  });
+  setWindowLocation(location);
 
   return {
     initializeFaro: initializeFaro as jest.Mock,

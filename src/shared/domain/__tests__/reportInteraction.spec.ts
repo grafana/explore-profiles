@@ -14,17 +14,8 @@ jest.mock('@grafana/runtime', () => ({
 }));
 
 describe('reportInteraction(interactionName, properties)', () => {
-  const originalLocation = window.location;
-
-  afterEach(() => {
-    window.location = originalLocation;
-  });
-
   it('calls Grafana\'s reportInteraction with a new "meta" property', () => {
-    Object.defineProperty(window, 'location', {
-      value: new URL('http://localhost:3000/a/grafana-pyroscope-app/test-page-1'),
-      writable: true,
-    });
+    setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/test-page-1'));
 
     reportInteraction('g_pyroscope_app_exploration_type_clicked');
 
@@ -39,10 +30,7 @@ describe('reportInteraction(interactionName, properties)', () => {
   });
   describe('if the current URL corresponds to the "profiles-explorer" page', () => {
     it('adds a "view" meta', () => {
-      Object.defineProperty(window, 'location', {
-        value: new URL('http://localhost:3000/a/grafana-pyroscope-app/explore?explorationType=flame-graph'),
-        writable: true,
-      });
+      setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/explore?explorationType=flame-graph'));
 
       reportInteraction('g_pyroscope_app_exploration_type_clicked');
 
@@ -60,10 +48,7 @@ describe('reportInteraction(interactionName, properties)', () => {
 
   describe('if some extra properties are passed', () => {
     it('calls Grafana\'s reportInteraction with these properties as well as a new "page" property', () => {
-      Object.defineProperty(window, 'location', {
-        value: new URL('http://localhost:3000/a/grafana-pyroscope-app/test-page-2'),
-        writable: true,
-      });
+      setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/test-page-2'));
 
       reportInteraction('g_pyroscope_app_exploration_type_clicked', { explorationType: 'unit-tests' });
 

@@ -27,6 +27,10 @@ copyCompilerOptionsPath['react'] = ['./node_modules/react'];
 module.exports = {
   // Jest configuration provided by Grafana scaffolding
   ...require('./.config/jest.config'),
+  testEnvironment: '<rootDir>/.config/jest/ProfilesDrilldownJsdomEnvironment.js',
+  testEnvironmentOptions: {
+    url: 'http://localhost:3000/',
+  },
   modulePaths: [compilerOptions.baseUrl], // <-- This will be set to 'baseUrl' value
   moduleNameMapper: pathsToModuleNameMapper(copyCompilerOptionsPath, { prefix: '<rootDir>/' }),
   transform: {
