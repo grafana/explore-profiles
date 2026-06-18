@@ -25,8 +25,8 @@ async function onClickShareLink() {
 }
 
 export function useHeader({ explorationType, controls, body, $variables, onChangeExplorationType }: HeaderProps) {
-  const [timePickerControl, refreshPickerControl] =
-    explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as [SceneObject, SceneObject]);
+  const [timePickerControl, refreshPickerControl, ...extraControls] =
+    explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as SceneObject[]);
 
   const dataSourceVariable = $variables.state.variables[0] as ProfilesDataSourceVariable;
 
@@ -63,6 +63,7 @@ export function useHeader({ explorationType, controls, body, $variables, onChang
       body,
       dataSourceUid,
       serviceName,
+      extraControls,
     },
     actions: {
       onChangeExplorationType,

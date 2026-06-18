@@ -458,6 +458,14 @@
     "title": "Plugin info",
     "version": "Grafana Profiles Drilldown v{{version}}"
   },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "Insights",
+      "severity-critical": "Critical",
+      "severity-info": "Info",
+      "severity-warning": "Warning"
+    }
+  },
   "query-analysis": {
     "blocks": "Blocks",
     "data-in-time-range": "Data in time range",

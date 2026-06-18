@@ -16,6 +16,7 @@ const profilesExemplarsKey = 'profilesExemplars' as keyof FeatureToggles;
 const pyroscopeUTF8LabelNamesKey = 'pyroscopeUTF8LabelNames' as keyof FeatureToggles;
 export const QUERY_LIBRARY_FEATURE_FLAG_KEY = 'queryLibrary' as const;
 const queryLibraryKey: keyof FeatureToggles = QUERY_LIBRARY_FEATURE_FLAG_KEY;
+const kgAnnotationsInPyroscopeKey = 'kgAnnotationsInPyroscope' as keyof FeatureToggles;
 
 export function useFlagFlameGraphWithCallTree(): boolean {
   return useBooleanFlagDetails(flameGraphWithCallTreeKey, false).value;
@@ -39,4 +40,8 @@ export function getPyroscopeUTF8LabelNamesFromOpenFeature(): boolean {
 
 export function getQueryLibraryFromOpenFeature(): boolean {
   return getPluginOpenFeatureBoolean(queryLibraryKey, false);
+}
+
+export function getKgAnnotationsInPyroscopeFromOpenFeature(): boolean {
+  return getPluginOpenFeatureBoolean(kgAnnotationsInPyroscopeKey, false);
 }
