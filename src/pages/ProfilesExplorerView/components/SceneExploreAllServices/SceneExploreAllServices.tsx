@@ -68,7 +68,11 @@ export class SceneExploreAllServices extends SceneObjectBase<SceneExploreAllServ
 
     const sub = localServiceNameVar.subscribeToState((newState, prevState) => {
       if (!newState.loading && prevState.loading && newState.options.length > 0) {
-        mainServiceNameVar.changeValueTo(newState.options[0].value as string);
+        const currentValue = String(mainServiceNameVar.state.value ?? '');
+        const isCurrentValid = currentValue && newState.options.some((o) => String(o.value) === currentValue);
+        if (!isCurrentValid) {
+          mainServiceNameVar.changeValueTo(newState.options[0].value as string);
+        }
       }
     });
 
