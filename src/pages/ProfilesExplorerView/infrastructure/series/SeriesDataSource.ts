@@ -81,10 +81,10 @@ export class SeriesDataSource extends RuntimeDataSource {
 
     switch (query) {
       // queries that depend only on the selected data source
-      case '$dataSource and all services':
+      case '$dataSource $filtersAllServices and all services':
         return formatSeriesToServices(pyroscopeSeries);
 
-      case '$dataSource and all profile metrics':
+      case '$dataSource $filtersAllServices and all profile metrics':
         return formatSeriesToProfileMetrics(pyroscopeSeries);
 
       // queries that depend on the selected profile metric, selected service, or filters

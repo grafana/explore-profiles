@@ -30,8 +30,8 @@ type ServiceNameVariableState = {
 };
 
 export class ServiceNameVariable extends QueryVariable {
-  // hack: subscribe to changes of dataSource only
-  static QUERY_DEFAULT = '$dataSource and all services';
+  // hack: subscribe to changes of dataSource and filtersAllServices
+  static QUERY_DEFAULT = '$dataSource $filtersAllServices and all services';
 
   // hack: subscribe to changes of dataSource and profileMetricId
   static QUERY_PROFILE_METRIC_DEPENDENT = '$dataSource and only $profileMetricId services';
