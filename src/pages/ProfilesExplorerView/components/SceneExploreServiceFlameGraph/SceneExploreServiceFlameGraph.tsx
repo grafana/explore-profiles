@@ -2,6 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, SceneReactObject } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
+import { uniqBy } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
@@ -49,7 +50,11 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     const allServicesFilters = sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable);
     const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
     if (allServicesFilters.state.filters.length > 0) {
-      filtersVariable.updateFilters([...allServicesFilters.state.filters, ...filtersVariable.state.filters]);
+      const merged = uniqBy(
+        [...allServicesFilters.state.filters, ...filtersVariable.state.filters],
+        ({ key, operator, value }) => `${key}${operator}${value}`
+      );
+      filtersVariable.updateFilters(merged);
     }
 
     const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
