@@ -141,6 +141,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Все службы",
       "all-services-description": "Обзор всех служб для любого типа профиля",
@@ -451,11 +454,19 @@
     "commit-sha": "Выполнить SHA-хеширование: {{shortCommitSha}}",
     "contribute": "Внести вклад",
     "documentation": "Документация",
-    "grafana-version": "Grafana {{edition}}, версия {{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Последнее обновление: {{updated}}",
     "report-issue": "Сообщить о проблеме",
     "title": "О плагине",
     "version": "Grafana Profiles Drilldown, версия {{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Блоки",
@@ -553,7 +564,7 @@
       "no-searches": "Нет сохраненных поисковых запросов для отображения.",
       "no-searches-tooltip": "Нет сохраненных поисковых запросов для загрузки",
       "remove-tooltip": "Удалить",
-      "saved-query-tooltip": "Загрузить сохраненный запрос",
+      "saved-query-tooltip": "",
       "select": "Выбрать",
       "select-pyroscope-query": "Выберите запрос Pyroscope.",
       "title": "Загрузить ранее сохраненный поисковый запрос",
@@ -567,7 +578,7 @@
       "existing-search-warning": "Ранее был сохранен поисковый запрос с таким же содержанием: {{title}}",
       "info-message": "Сохраненные поисковые запросы хранятся локально в вашем браузере и будут доступны только на этом устройстве.",
       "save": "Сохранить",
-      "saved-queries-tooltip": "Сохранить в сохраненных запросах",
+      "saved-queries-tooltip": "",
       "success-body": "Поисковый запрос сохранен.",
       "success-message": "Поисковый запрос сохранен.",
       "success-title": "Выполнено",
@@ -626,6 +637,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Образцы",
       "open-in-explore": "Открыть в Explore",
       "scale-linear": "Линейная",

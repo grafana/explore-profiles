@@ -141,6 +141,9 @@
     "title": "Grafana profilrészletezés"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Minden szolgáltatás",
       "all-services-description": "Az összes szolgáltatás áttekintése bármely profiltípus esetén",
@@ -449,11 +452,19 @@
     "commit-sha": "Véglegesítési azonosító (SHA): {{shortCommitSha}}",
     "contribute": "Hozzájárulás",
     "documentation": "Dokumentáció",
-    "grafana-version": "Grafana {{edition}}, verzió: {{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Legutóbbi frissítés: {{updated}}",
     "report-issue": "Probléma bejelentése",
     "title": "Bővítményinformáció",
     "version": "Grafana profilrészletező, verzió: {{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Blokkok",
@@ -551,7 +562,7 @@
       "no-searches": "Nincsenek megjeleníthető mentett keresések.",
       "no-searches-tooltip": "Nincsenek betölthető mentett keresések",
       "remove-tooltip": "Eltávolítás",
-      "saved-query-tooltip": "Mentett lekérdezés betöltése",
+      "saved-query-tooltip": "",
       "select": "Kiválasztás",
       "select-pyroscope-query": "Válasszon egy Pyroscope-lekérdezést.",
       "title": "Korábban mentett keresés betöltése",
@@ -565,7 +576,7 @@
       "existing-search-warning": "Már létezik egy korábban mentett keresés ugyanezzel a lekérdezéssel: {{title}}",
       "info-message": "A mentett kereséseket a böngésző helyileg tárolja, így azok csak ezen az eszközön lesznek elérhetőek.",
       "save": "Mentés",
-      "saved-queries-tooltip": "Mentés a mentett lekérdezések közé",
+      "saved-queries-tooltip": "",
       "success-body": "Keresés sikeresen mentve.",
       "success-message": "Keresés sikeresen mentve.",
       "success-title": "Sikerült",
@@ -624,6 +635,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Mintapéldányok",
       "open-in-explore": "Megnyitás az Explore-ban",
       "scale-linear": "Lineáris",

@@ -141,6 +141,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "모든 서비스",
       "all-services-description": "특정 프로필 유형에 대한 모든 서비스의 개요",
@@ -448,11 +451,19 @@
     "commit-sha": "SHA 커밋: {{shortCommitSha}}",
     "contribute": "기여",
     "documentation": "문서",
-    "grafana-version": "Grafana {{edition}} v{{version}}({{env}})",
+    "grafana-version": "",
     "last-update": "마지막 업데이트: {{updated}}",
     "report-issue": "문제 보고",
     "title": "플러그인 정보",
     "version": "Grafana Profiles Drilldown v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "블록",
@@ -550,7 +561,7 @@
       "no-searches": "표시할 저장된 검색이 없습니다.",
       "no-searches-tooltip": "불러올 저장된 검색이 없습니다.",
       "remove-tooltip": "제거",
-      "saved-query-tooltip": "저장된 쿼리 불러오기",
+      "saved-query-tooltip": "",
       "select": "선택",
       "select-pyroscope-query": "Pyroscope 쿼리를 선택하세요.",
       "title": "이전에 저장된 검색 불러오기",
@@ -564,7 +575,7 @@
       "existing-search-warning": "동일한 쿼리로 이전에 저장된 검색이 있음: {{title}}",
       "info-message": "저장된 검색은 브라우저에 로컬로 저장되며 이 기기에서만 사용할 수 있습니다.",
       "save": "저장",
-      "saved-queries-tooltip": "저장된 쿼리에 저장",
+      "saved-queries-tooltip": "",
       "success-body": "검색이 성공적으로 저장되었습니다.",
       "success-message": "검색이 성공적으로 저장되었습니다.",
       "success-title": "성공",
@@ -623,6 +634,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "예제",
       "open-in-explore": "탐색에서 열기",
       "scale-linear": "직선형",

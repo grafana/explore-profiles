@@ -142,7 +142,7 @@
   },
   "explorer": {
     "add-to-dashboard": {
-      "modal-title": "Añadir al panel de control"
+      "modal-title": ""
     },
     "exploration-type": {
       "all-services": "Todos los servicios",
@@ -331,14 +331,13 @@
   "labels": {
     "compare": {
       "aria-label": "",
-      "button_one": "Comparar ({{count}}/2)",
-      "button_many": "",
-      "button_other": "Comparar ({{count}}/2)",
       "clear-tooltip": "Borrar selección de comparación",
       "tooltip-empty": "Selecciona un panel de referencia y un panel de comparación para comparar sus gráficos de llama.",
       "tooltip-ready": "Comparar «{{baseline}}» con «{{comparison}}»",
       "tooltip-select-baseline": "Seleccionar otro panel para compararlo con «{{label}}»",
-      "tooltip-select-comparison": "Seleccionar otro panel para compararlo con «{{label}}»"
+      "tooltip-select-comparison": "Seleccionar otro panel para compararlo con «{{label}}»",
+      "button_one": "Comparar ({{count}}/2)",
+      "button_other": "Comparar ({{count}}/2)"
     },
     "data-source": {
       "all": "Todo",
@@ -453,7 +452,7 @@
     "commit-sha": "Confirmar SHA: {{shortCommitSha}}",
     "contribute": "Contribuir",
     "documentation": "Documentación",
-    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Última actualización: {{updated}}",
     "report-issue": "Notificar un problema",
     "title": "Información del plugin",
@@ -563,7 +562,7 @@
       "no-searches": "No hay búsquedas guardadas para mostrar.",
       "no-searches-tooltip": "No hay búsquedas guardadas para cargar.",
       "remove-tooltip": "Eliminar",
-      "saved-query-tooltip": "Cargar consulta guardada",
+      "saved-query-tooltip": "",
       "select": "Seleccionar",
       "select-pyroscope-query": "Selecciona una consulta de Pyroscope.",
       "title": "Carga una búsqueda guardada anteriormente",
@@ -577,7 +576,7 @@
       "existing-search-warning": "Hay una búsqueda guardada anteriormente con la misma consulta: {{title}}",
       "info-message": "Las búsquedas guardadas se almacenan localmente en tu navegador y solo estarán disponibles en este dispositivo.",
       "save": "Guardar",
-      "saved-queries-tooltip": "Guardar en Consultas guardadas",
+      "saved-queries-tooltip": "",
       "success-body": "Búsqueda guardada correctamente.",
       "success-message": "Búsqueda guardada correctamente.",
       "success-title": "Completado con éxito",
@@ -636,7 +635,7 @@
   },
   "timeseries": {
     "menu": {
-      "add-to-dashboard": "Añadir al panel de control",
+      "add-to-dashboard": "",
       "exemplars": "Ejemplos",
       "open-in-explore": "Abrir en Explorar",
       "scale-linear": "Lineal",
@@ -670,17 +669,15 @@
       "label": "Tipo de perfil",
       "loading": "Cargando...",
       "placeholder_one": "Seleccionar una métrica de perfil ({{count}})",
-      "placeholder_many": "",
       "placeholder_other": "Seleccionar una métrica de perfil ({{count}})"
     },
     "service-name": {
       "aria-label": "Lista de servicios",
       "label": "Servicio",
       "loading": "Cargando servicios...",
+      "unmatched-tooltip": "",
       "placeholder_one": "Seleccionar un servicio ({{count}})",
-      "placeholder_many": "",
-      "placeholder_other": "Seleccionar un servicio ({{count}})",
-      "unmatched-tooltip": ""
+      "placeholder_other": "Seleccionar un servicio ({{count}})"
     },
     "span-selector": {
       "label": "Selector de intervalo"

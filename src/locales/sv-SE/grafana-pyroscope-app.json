@@ -141,6 +141,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Alla tjänster",
       "all-services-description": "Översikt över alla tjänster, för valfri profiltyp",
@@ -449,11 +452,19 @@
     "commit-sha": "Commit-SHA: {{shortCommitSha}}",
     "contribute": "Bidra",
     "documentation": "Dokumentation",
-    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Senaste uppdatering: {{updated}}",
     "report-issue": "Rapportera ett problem",
     "title": "Information om tillägg",
     "version": "Grafana Profiles Drilldown v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Block",
@@ -551,7 +562,7 @@
       "no-searches": "Inga sparade sökningar att visa.",
       "no-searches-tooltip": "Inga sparade sökningar att läsa in",
       "remove-tooltip": "Ta bort",
-      "saved-query-tooltip": "Läs in sparad fråga",
+      "saved-query-tooltip": "",
       "select": "Välj",
       "select-pyroscope-query": "Välj en Pyroscope-fråga.",
       "title": "Läs in en tidigare sparad sökning",
@@ -565,7 +576,7 @@
       "existing-search-warning": "Det finns en tidigare sparad sökning med samma fråga: {{title}}",
       "info-message": "Sparade sökningar lagras lokalt i din webbläsare och kommer endast att vara tillgängliga på den här enheten.",
       "save": "Spara",
-      "saved-queries-tooltip": "Spara i Sparade frågor",
+      "saved-queries-tooltip": "",
       "success-body": "Sökningen har sparats.",
       "success-message": "Sökningen har sparats.",
       "success-title": "Lyckades",
@@ -624,6 +635,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Exemplar",
       "open-in-explore": "Öppna i Utforskaren",
       "scale-linear": "Linjär",

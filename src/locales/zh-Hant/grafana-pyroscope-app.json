@@ -141,6 +141,9 @@
     "title": "Grafana 設定檔深入分析"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "所有服務",
       "all-services-description": "任何指定設定檔類型的所有服務概覽",
@@ -448,11 +451,19 @@
     "commit-sha": "提交 SHA：{{shortCommitSha}}",
     "contribute": "貢獻",
     "documentation": "文件",
-    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "上次更新：{{updated}}",
     "report-issue": "回報問題",
     "title": "外掛程式資訊",
     "version": "Grafana 設定檔深入分析 v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "區塊",
@@ -550,7 +561,7 @@
       "no-searches": "沒有要顯示的已儲存搜尋結果。",
       "no-searches-tooltip": "沒有要載入的已儲存搜尋結果",
       "remove-tooltip": "移除",
-      "saved-query-tooltip": "載入已儲存查詢",
+      "saved-query-tooltip": "",
       "select": "選取",
       "select-pyroscope-query": "請選擇一個 Pyroscope 查詢。",
       "title": "載入先前已儲存的搜尋",
@@ -564,7 +575,7 @@
       "existing-search-warning": "之前已儲存了一個具有相同查詢的搜尋：{{title}}",
       "info-message": "已儲存的搜尋會儲存在瀏覽器的本機資料中，且僅能在此裝置上使用。",
       "save": "儲存",
-      "saved-queries-tooltip": "儲存在「已儲存的查詢」中",
+      "saved-queries-tooltip": "",
       "success-body": "搜尋已成功儲存。",
       "success-message": "搜尋已成功儲存。",
       "success-title": "成功",
@@ -623,6 +634,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "範例",
       "open-in-explore": "在「探索」中開啟",
       "scale-linear": "線性",

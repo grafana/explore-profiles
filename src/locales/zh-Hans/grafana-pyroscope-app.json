@@ -141,6 +141,9 @@
     "title": "Grafana 配置文件深入分析"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "所有服务",
       "all-services-description": "针对任何给定配置文件类型的所有服务概览",
@@ -448,11 +451,19 @@
     "commit-sha": "提交 SHA：{{shortCommitSha}}",
     "contribute": "贡献",
     "documentation": "文档",
-    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "上次更新：{{updated}}",
     "report-issue": "报告问题",
     "title": "插件信息",
     "version": "Grafana 配置文件深入分析 v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "区块",
@@ -550,7 +561,7 @@
       "no-searches": "没有要显示的已保存搜索。",
       "no-searches-tooltip": "没有要加载的已保存搜索",
       "remove-tooltip": "移除",
-      "saved-query-tooltip": "加载已保存的查询",
+      "saved-query-tooltip": "",
       "select": "选择",
       "select-pyroscope-query": "请选择一个 Pyroscope 查询。",
       "title": "加载之前保存的搜索",
@@ -564,7 +575,7 @@
       "existing-search-warning": "之前保存的一个搜索具有相同查询：{{title}}",
       "info-message": "已保存的搜索会存储在您的浏览器本地，并且只能在此设备上使用。",
       "save": "保存",
-      "saved-queries-tooltip": "保存在“已保存的查询”中",
+      "saved-queries-tooltip": "",
       "success-body": "已成功保存搜索。",
       "success-message": "已成功保存搜索。",
       "success-title": "成功",
@@ -623,6 +634,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "范例",
       "open-in-explore": "在 Explore 中打开",
       "scale-linear": "线性",

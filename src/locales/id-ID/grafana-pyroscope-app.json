@@ -141,6 +141,9 @@
     "title": "Drilldown Profil Grafana"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Semua service",
       "all-services-description": "Ikhtisar semua service, untuk jenis profil tertentu",
@@ -448,11 +451,19 @@
     "commit-sha": "Commit SHA: {{shortCommitSha}}",
     "contribute": "Berkontribusi",
     "documentation": "Dokumentasi",
-    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Terakhir diperbarui: {{updated}}",
     "report-issue": "Laporkan masalah",
     "title": "Info plugin",
     "version": "Drilldown Profil Grafana v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Blok",
@@ -550,7 +561,7 @@
       "no-searches": "Tidak ada pencarian tersimpan untuk ditampilkan.",
       "no-searches-tooltip": "Tidak ada pencarian tersimpan untuk dimuat",
       "remove-tooltip": "Hapus",
-      "saved-query-tooltip": "Muat kueri tersimpan",
+      "saved-query-tooltip": "",
       "select": "Pilih",
       "select-pyroscope-query": "Pilih kueri Pyroscope.",
       "title": "Muat pencarian yang sudah disimpan sebelumnya",
@@ -564,7 +575,7 @@
       "existing-search-warning": "Ada pencarian yang sudah disimpan sebelumnya dengan kueri yang sama: {{title}}",
       "info-message": "Pencarian tersimpan disimpan secara lokal di browser Anda dan hanya akan tersedia di perangkat ini.",
       "save": "Simpan",
-      "saved-queries-tooltip": "Simpan di Kueri Tersimpan",
+      "saved-queries-tooltip": "",
       "success-body": "Pencarian berhasil disimpan.",
       "success-message": "Pencarian berhasil disimpan.",
       "success-title": "Berhasil",
@@ -623,6 +634,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Contoh",
       "open-in-explore": "Buka di Telusuri",
       "scale-linear": "Linier",

@@ -141,6 +141,9 @@
     "title": "Profiles Drilldown di Grafana"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Tutti i servizi",
       "all-services-description": "Panoramica di tutti i servizi, per qualsiasi tipo di profilo",
@@ -449,11 +452,19 @@
     "commit-sha": "Commit SHA: {{shortCommitSha}}",
     "contribute": "Contribuisci",
     "documentation": "Documentazione",
-    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Ultimo aggiornamento: {{updated}}",
     "report-issue": "Segnala un problema",
     "title": "Informazioni sul plug-in",
     "version": "Drilldown Profiles di Grafana v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Blocchi",
@@ -551,7 +562,7 @@
       "no-searches": "Nessuna ricerca salvata da visualizzare.",
       "no-searches-tooltip": "Nessuna ricerca salvata da caricare",
       "remove-tooltip": "Rimuovi",
-      "saved-query-tooltip": "Carica query salvata",
+      "saved-query-tooltip": "",
       "select": "Seleziona",
       "select-pyroscope-query": "Seleziona una query Pyroscope.",
       "title": "Carica una ricerca salvata in precedenza",
@@ -565,7 +576,7 @@
       "existing-search-warning": "È presente una ricerca salvata in precedenza con la stessa query: {{title}}",
       "info-message": "Le ricerche salvate vengono archiviate localmente nel browser e saranno disponibili solo su questo dispositivo.",
       "save": "Salva",
-      "saved-queries-tooltip": "Salva in Query salvate",
+      "saved-queries-tooltip": "",
       "success-body": "Ricerca salvata correttamente.",
       "success-message": "Ricerca salvata correttamente.",
       "success-title": "Operazione riuscita",
@@ -624,6 +635,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Esemplari",
       "open-in-explore": "Apri in Esplora",
       "scale-linear": "Lineare",

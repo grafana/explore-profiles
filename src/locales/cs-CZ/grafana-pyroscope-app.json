@@ -141,6 +141,9 @@
     "title": "Podrobný rozpis profilů Grafana"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Všechny služby",
       "all-services-description": "Přehled všech služeb pro libovolný typ profilu",
@@ -451,11 +454,19 @@
     "commit-sha": "SHA závazku: {{shortCommitSha}}",
     "contribute": "Přispět",
     "documentation": "Dokumentace",
-    "grafana-version": "Grafana {{edition}} verze {{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Poslední aktualizace: {{updated}}",
     "report-issue": "Nahlásit problém",
     "title": "Informace o pluginu",
     "version": "Podrobný rozpis profilů Grafana, verze {{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Bloky",
@@ -553,7 +564,7 @@
       "no-searches": "Žádná uložená vyhledávání k zobrazení.",
       "no-searches-tooltip": "Žádná uložená vyhledávání k načtení",
       "remove-tooltip": "Odebrat",
-      "saved-query-tooltip": "Načíst uložený dotaz",
+      "saved-query-tooltip": "",
       "select": "Vybrat",
       "select-pyroscope-query": "Vyberte dotaz Pyroscope.",
       "title": "Načíst dříve uložené vyhledávání",
@@ -567,7 +578,7 @@
       "existing-search-warning": "Existuje dříve uložené vyhledávání se stejným dotazem: {{title}}",
       "info-message": "Uložená vyhledávání se ukládají místně do vašeho prohlížeče a budou k dispozici pouze na tomto zařízení.",
       "save": "Uložit",
-      "saved-queries-tooltip": "Uložit do uložených dotazů",
+      "saved-queries-tooltip": "",
       "success-body": "Vyhledávání bylo úspěšně uloženo.",
       "success-message": "Vyhledávání bylo úspěšně uloženo.",
       "success-title": "Úspěch",
@@ -626,6 +637,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Příklady",
       "open-in-explore": "Otevřít v Prozkoumat",
       "scale-linear": "Lineární",
