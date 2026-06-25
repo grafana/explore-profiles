@@ -33,7 +33,7 @@ jobs:
   cd:
     name: CI / CD
     needs: bump-version
-    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v9.0.0
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v10.1.0
     # These are maximum permissions for the job and should match the permissions defined in the workflow
     permissions:
       contents: write
@@ -43,7 +43,8 @@ jobs:
     with:
       environment: prod
       auto-merge-environments: dev,ops
-      attestation: true
+      # Publish the github release automatically, turn draft off
+      github-draft-release: false
 
       # Deploy provisioned plugin to Grafana Cloud
       grafana-cloud-deployment-type: provisioned
