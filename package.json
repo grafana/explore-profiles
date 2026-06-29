@@ -47,7 +47,7 @@
     "@grafana/faro-web-sdk": "2.7.1",
     "@grafana/flamegraph": "13.0.2",
     "@grafana/i18n": "13.0.2",
-    "@grafana/llm": "1.0.8",
+    "@grafana/llm": "1.0.9",
     "@grafana/react-data-grid": "7.0.0-beta.57",
     "@grafana/runtime": "13.0.2",
     "@grafana/scenes": "7.4.0",
