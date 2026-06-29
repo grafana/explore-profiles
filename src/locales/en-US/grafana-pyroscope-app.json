@@ -244,7 +244,6 @@
     "copy-to-clipboard": "Copy to clipboard",
     "fetch-error": "Error while fetching function details!",
     "file": "File",
-    "file-path-copied": "File path copied to clipboard!",
     "file-tooltip": "File path where that function is defined",
     "function-name": "Function name",
     "github": {

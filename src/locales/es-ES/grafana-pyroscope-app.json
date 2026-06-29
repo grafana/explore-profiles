@@ -244,7 +244,6 @@
     "copy-to-clipboard": "Copiar al portapapeles",
     "fetch-error": "¡Error al obtener los detalles de la función!",
     "file": "Archivo",
-    "file-path-copied": "¡Ruta del archivo copiada al portapapeles!",
     "file-tooltip": "Ruta del archivo en el que se define esa función",
     "function-name": "Nombre de la función",
     "github": {
