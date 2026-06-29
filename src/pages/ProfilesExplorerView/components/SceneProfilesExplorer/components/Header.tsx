@@ -2,7 +2,9 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
-import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
+import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, ClipboardButton, useStyles2 } from '@grafana/ui';
+import { displayError } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -12,6 +14,7 @@ import React from 'react';
 import { GiveFeedbackButton } from '../../GiveFeedbackButton';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { useHeader } from './domain/useHeader';
+import { builsShareableUrl } from './domain/builsShareableUrl';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export type HeaderProps = {
@@ -131,10 +134,19 @@ export function Header(props: HeaderProps) {
                 onClick={actions.onClickUserSettings}
               />
 
-              <IconButton
-                name="share-alt"
+              <ClipboardButton
+                icon="share-alt"
+                variant="secondary"
+                fill="text"
+                size="sm"
+                className={styles.clipboardIconButton}
                 tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
-                onClick={actions.onClickShareLink}
+                getText={() => builsShareableUrl().toString()}
+                onClipboardCopy={() => reportInteraction('g_pyroscope_app_share_link_clicked')}
+                onClipboardError={(_text, error) => {
+                  reportInteraction('g_pyroscope_app_share_link_clicked');
+                  displayError(error as Error, ['Error while copying the shareable link to the clipboard!']);
+                }}
               />
 
               <PluginInfo />
@@ -224,6 +236,17 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
     & svg {
       width: 18px;
       height: 18px;
+    }
+  `,
+  clipboardIconButton: css`
+    && {
+      padding: 0;
+      min-height: unset;
+      height: auto;
+      min-width: unset;
+      width: auto;
+      line-height: 1;
+      margin: 0;
     }
   `,
   sceneControls: css`

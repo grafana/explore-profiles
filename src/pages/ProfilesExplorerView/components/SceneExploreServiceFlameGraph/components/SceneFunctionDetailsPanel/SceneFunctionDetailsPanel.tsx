@@ -2,8 +2,7 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, TimeRange } from '@grafana/data';
 import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { IconButton, InlineLabel, TextLink, Tooltip, useStyles2 } from '@grafana/ui';
-import { displaySuccess } from '@shared/domain/displayStatus';
+import { IconButton, InlineLabel, TextLink, Tooltip, ClipboardButton, useStyles2 } from '@grafana/ui';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { InlineBanner } from '@shared/ui/InlineBanner';
@@ -118,14 +117,6 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
           const details = functionsDetails.find(({ commit }) => commit.sha === selectedCommit.sha);
           setCurrentFunctionDetails(details as FunctionDetails);
         },
-        async copyFilePathToClipboard() {
-          try {
-            if (currentFunctionDetails?.fileName) {
-              await navigator.clipboard.writeText(currentFunctionDetails.fileName);
-              displaySuccess([t('function-details.file-path-copied', 'File path copied to clipboard!')]);
-            }
-          } catch {}
-        },
         dismissGitHubBanner() {
           userStorage.set(userStorage.KEYS.GITHUB_INTEGRATION, {});
           setIsGitHubBannerDismissed(true);
@@ -211,10 +202,14 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                       {/* adding LRM to prevent ellipsis with RTL to fail when the file name starts with non-alpha chars (e.g. "$")  */}
                       <span className={styles.textValue}>&lrm;{formatFileName(data.functionDetails.fileName)}</span>
                     </Tooltip>
-                    <IconButton
-                      name="clipboard-alt"
+                    <ClipboardButton
+                      icon="clipboard-alt"
+                      variant="secondary"
+                      fill="text"
+                      size="sm"
+                      className={styles.clipboardIconButton}
                       tooltip={t('function-details.copy-to-clipboard', 'Copy to clipboard')}
-                      onClick={actions.copyFilePathToClipboard}
+                      getText={() => data.functionDetails.fileName ?? ''}
                     />
                   </>
                 ) : (
@@ -324,5 +319,16 @@ const getStyles = (theme: GrafanaTheme2) => ({
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
+  `,
+  clipboardIconButton: css`
+    && {
+      padding: 0;
+      min-height: unset;
+      height: auto;
+      min-width: unset;
+      width: auto;
+      line-height: 1;
+      margin: 0;
+    }
   `,
 });
