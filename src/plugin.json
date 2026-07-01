@@ -64,7 +64,7 @@
       },
       {
         "name": "Report bug",
-        "url": "https://github.com/grafana/profiles-drilldown/issues/new"
+        "url": "https://github.com/grafana/profiles-drilldown/issues/new?template=bug_report.md"
       }
     ]
   },
