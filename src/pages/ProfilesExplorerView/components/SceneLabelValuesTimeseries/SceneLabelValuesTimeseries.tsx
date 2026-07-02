@@ -102,6 +102,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       overrides,
       annotations,
       body: PanelBuilders.timeseries()
+        // TODO: remove `as any` once @grafana/scenes exposes `multiLane` on the annotations option type
+        .setOption('annotations' as any, { multiLane: true })
         .setTitle(item.label)
         .setData(
           data ||

@@ -22,6 +22,8 @@ import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScen
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { getKgAnnotationsInPyroscopeFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
+import { ensureOpenFeaturePluginInitialized } from '@shared/infrastructure/featureFlags/openFeature';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useState } from 'react';
 
@@ -44,6 +46,7 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
+import { getKgSceneProps } from '../../helpers/kgAnnotations';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
@@ -139,6 +142,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
   private initialFilters?: AdHocVariableFilter[];
+  private kgInitialized = false;
 
   public constructor(state: Partial<SceneProfilesExplorerState>) {
     super({
@@ -202,6 +206,22 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
     const clearKeyBindings = setupKeyboardShortcuts(this);
+
+    if (!this.kgInitialized) {
+      this.kgInitialized = true;
+      void ensureOpenFeaturePluginInitialized().then(() => {
+        if (getKgAnnotationsInPyroscopeFromOpenFeature()) {
+          const kg = getKgSceneProps('Service', 'serviceName');
+          if (kg) {
+            this.setState({
+              $data: this.state.$data ?? kg.$data,
+              $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
+              controls: [...(this.state.controls ?? []), kg.controls],
+            });
+          }
+        }
+      });
+    }
 
     if (!this.state.explorationType) {
       this.setExplorationType({

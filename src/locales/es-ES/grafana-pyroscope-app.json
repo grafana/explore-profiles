@@ -459,6 +459,14 @@
     "title": "Información del plugin",
     "version": "Profiles Drilldown de Grafana v{{version}}"
   },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
+  },
   "query-analysis": {
     "blocks": "Bloques",
     "data-in-time-range": "Datos en el intervalo de tiempo",

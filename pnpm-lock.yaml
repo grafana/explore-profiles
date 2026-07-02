@@ -16,7 +16,7 @@ overrides:
   minimatch@^5: ~5.1.9
   minimatch@^9: ~9.0.9
   ajv@^8: ~8.18.0
-  dompurify: ~3.4.9
+  dompurify: ~3.4.11
   hono: '>=4.12.25'
   js-yaml: '>=4.2.0'
   '@opentelemetry/core': '>=2.8.0'
@@ -55,8 +55,8 @@ importers:
         specifier: 13.0.2
         version: 13.0.2(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2)
       '@grafana/llm':
-        specifier: 1.0.8
-        version: 1.0.8(@grafana/data@13.0.2(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(@grafana/runtime@13.0.2(@babel/core@7.29.7)(@react-spectrum/provider@3.11.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.3.28)(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(rxjs@7.8.2)(zod@4.4.3)
+        specifier: 1.0.9
+        version: 1.0.9(@grafana/data@13.0.2(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(@grafana/runtime@13.0.2(@babel/core@7.29.7)(@react-spectrum/provider@3.11.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.3.28)(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(rxjs@7.8.2)(zod@4.4.3)
       '@grafana/react-data-grid':
         specifier: 7.0.0-beta.57
         version: 7.0.0-beta.57(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -881,8 +881,8 @@ packages:
     peerDependencies:
       react: '>=18'
 
-  '@grafana/llm@1.0.8':
-    resolution: {integrity: sha512-Qzan+nhuHU85BB1Wv3sgjoMjqP8oIdd6zXT90KIAUVJ3mpaDoUpHNJixQRMEjDEDxkQrVfe7zvPmpufPz4JnWg==}
+  '@grafana/llm@1.0.9':
+    resolution: {integrity: sha512-6bChcL28sovqR+oi275L6UOIsZYZkqbb7DvwP4T6vAbcB0/CwKH8SsosK7kJIS3KUwNrCxttig3juKRdnaQI9Q==}
     peerDependencies:
       '@grafana/data': ^10.4.0 ||^11 || ^12
       '@grafana/runtime': ^10.4.0 || ^11 || ^12
@@ -3123,8 +3123,8 @@ packages:
   dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
 
-  dompurify@3.4.9:
-    resolution: {integrity: sha512-4dPSRMRDqHvs0V4YDFCsaIZo4if5u0xM+llyxiM2fwuZFdKArUBAF3VtI2+n8NKg9P870WMdYk0UhqQNoWXbfQ==}
+  dompurify@3.4.11:
+    resolution: {integrity: sha512-zhlUV12GsaRzMsf9q5M254YhA4+VuF0fG+QFqu6aYpoGlKtz+w8//jBcGVYBgQkR5GHjUomejY84AV+/uPbWdw==}
 
   dotenv@16.6.1:
     resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
@@ -6873,7 +6873,7 @@ snapshots:
       d3-interpolate: 3.0.1
       d3-scale-chromatic: 3.1.0
       date-fns: 4.1.0
-      dompurify: 3.4.9
+      dompurify: 3.4.11
       eventemitter3: 5.0.1
       fast_array_intersect: 1.1.0
       history: 4.10.1
@@ -6974,7 +6974,7 @@ snapshots:
       - supports-color
       - typescript
 
-  '@grafana/llm@1.0.8(@grafana/data@13.0.2(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(@grafana/runtime@13.0.2(@babel/core@7.29.7)(@react-spectrum/provider@3.11.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.3.28)(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(rxjs@7.8.2)(zod@4.4.3)':
+  '@grafana/llm@1.0.9(@grafana/data@13.0.2(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(@grafana/runtime@13.0.2(@babel/core@7.29.7)(@react-spectrum/provider@3.11.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.3.28)(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(rxjs@7.8.2)(zod@4.4.3)':
     dependencies:
       '@grafana/data': 13.0.2(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2)
       '@grafana/runtime': 13.0.2(@babel/core@7.29.7)(@react-spectrum/provider@3.11.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(@types/react@18.3.28)(eslint@9.39.4(jiti@2.7.0))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(typescript@5.6.2)
@@ -9544,7 +9544,7 @@ snapshots:
       '@babel/runtime': 7.29.7
       csstype: 3.2.3
 
-  dompurify@3.4.9:
+  dompurify@3.4.11:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
