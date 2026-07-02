@@ -3,6 +3,7 @@ import { GrafanaTheme2, usePluginContext } from '@grafana/data';
 import { t, Trans } from '@grafana/i18n';
 import { config } from '@grafana/runtime';
 import { Dropdown, IconButton, Menu, useStyles2 } from '@grafana/ui';
+import { useFlagFeedbackButton } from '@shared/infrastructure/featureFlags/featureFlags';
 import React from 'react';
 
 import { GIT_COMMIT } from '../../version';
@@ -10,6 +11,7 @@ import { PyroscopeLogo } from './PyroscopeLogo';
 
 const pluginCommitSha: string = GIT_COMMIT;
 const pluginCommitURL = `https://github.com/grafana/profiles-drilldown/commit/${pluginCommitSha}`;
+const FEEDBACK_FORM_URL = 'https://grafana.qualtrics.com/jfe/form/SV_6Gav4IUU6jcYfd4';
 
 const { buildInfo: grafanaBuildInfo } = config;
 
@@ -36,6 +38,7 @@ function InfoMenuHeader() {
 }
 
 function InfoMenu() {
+  const feedbackButtonEnabled = useFlagFeedbackButton();
   const isDev = pluginCommitSha === 'dev';
   const shortCommitSha = isDev ? pluginCommitSha : pluginCommitSha.slice(0, 8);
 
@@ -62,6 +65,13 @@ function InfoMenu() {
         icon="document-info"
         onClick={() => window.open('https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles')}
       />
+      {feedbackButtonEnabled && (
+        <Menu.Item
+          label={t('give-feedback.button', 'Give feedback')}
+          icon="comment-alt-message"
+          onClick={() => window.open(FEEDBACK_FORM_URL, '_blank', 'noopener,noreferrer')}
+        />
+      )}
       <Menu.Item
         label={t('plugin-info.report-issue', 'Report an issue')}
         icon="bug"

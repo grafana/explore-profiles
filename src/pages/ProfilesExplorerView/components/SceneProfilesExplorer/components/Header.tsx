@@ -9,7 +9,6 @@ import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetch
 import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
 
-import { GiveFeedbackButton } from '../../GiveFeedbackButton';
 import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
 import { useHeader } from './domain/useHeader';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
@@ -71,8 +70,6 @@ export function Header(props: HeaderProps) {
 
   return (
     <div className={styles.header} data-testid="allControls">
-      {!props.isEmbedded && <GiveFeedbackButton />}
-
       <div className={styles.appControls} data-testid="appControls">
         <div className={styles.appControlsLeft}>
           <ExplorationTypeSelector

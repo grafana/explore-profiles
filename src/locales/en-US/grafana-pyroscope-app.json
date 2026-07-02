@@ -295,8 +295,7 @@
     "title": "Function Details"
   },
   "give-feedback": {
-    "button": "Give feedback",
-    "tooltip": "Share your thoughts about Profiles in Grafana."
+    "button": "Give feedback"
   },
   "grid": {
     "empty-state": {
