@@ -6,14 +6,17 @@ import { Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton, useStyles2 }
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { PluginInfo } from '@shared/ui/PluginInfo';
+import { PluginInfo } from './PluginInfo';
 import React from 'react';
 
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
-import { useHeader } from './domain/useHeader';
-import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
+import {
+  SceneProfilesExplorer,
+  SceneProfilesExplorerState,
+} from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/SceneProfilesExplorer';
+import { usePluginHeaderToolbar } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/usePluginHeaderToolbar';
+import { ExplorationTypeSelector } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/ui/ExplorationTypeSelector';
 
-export type HeaderProps = {
+export type PluginHeaderToolbarProps = {
   model: SceneProfilesExplorer;
   explorationType: SceneProfilesExplorerState['explorationType'];
   controls: SceneProfilesExplorerState['controls'];
@@ -25,11 +28,11 @@ export type HeaderProps = {
   isEmbedded?: boolean;
 };
 
-export function Header(props: HeaderProps) {
+export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
   const chromeHeaderHeight = useChromeHeaderHeight?.();
   const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0, props.isEmbedded ?? false);
 
-  const { data, actions } = useHeader(props);
+  const { data, actions } = usePluginHeaderToolbar(props);
 
   const { settings } = useFetchPluginSettings();
   const metricsFromProfiles = useFlagMetricsFromProfiles();
