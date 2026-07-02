@@ -126,17 +126,17 @@ export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
               />
 
               <ToolbarButton
-                icon="cog"
-                variant="canvas"
-                tooltip={t('explorer.header.settings-tooltip', 'View/edit tenant settings')}
-                onClick={actions.onClickUserSettings}
-              />
-
-              <ToolbarButton
                 icon="share-alt"
                 variant="canvas"
                 tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
                 onClick={actions.onClickShareLink}
+              />
+
+              <ToolbarButton
+                icon="cog"
+                variant="canvas"
+                tooltip={t('explorer.header.settings-tooltip', 'View/edit tenant settings')}
+                onClick={actions.onClickUserSettings}
               />
 
               <PluginInfo variant="canvas" />
