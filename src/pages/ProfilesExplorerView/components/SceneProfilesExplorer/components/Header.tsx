@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
-import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
+import { Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -105,36 +105,38 @@ export function Header(props: HeaderProps) {
           {!props.isEmbedded && (
             <div className={styles.appMiscButtons}>
               {settings?.enableMetricsFromProfiles && metricsFromProfiles && (
-                <>
-                  <Dropdown overlay={metricsFromProfilesMenu}>
-                    <IconButton
-                      name="gf-prometheus"
-                      tooltip={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
-                      aria-label={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
-                    />
-                  </Dropdown>
-                </>
+                <Dropdown overlay={metricsFromProfilesMenu}>
+                  <ToolbarButton
+                    icon="gf-prometheus"
+                    variant="canvas"
+                    tooltip={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                    aria-label={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                  />
+                </Dropdown>
               )}
 
-              <IconButton
-                name="upload"
+              <ToolbarButton
+                icon="upload"
+                variant="canvas"
                 tooltip={t('explorer.header.upload-tooltip', 'Upload ad hoc profiles')}
                 onClick={actions.onClickAdHoc}
               />
 
-              <IconButton
-                name="cog"
+              <ToolbarButton
+                icon="cog"
+                variant="canvas"
                 tooltip={t('explorer.header.settings-tooltip', 'View/edit tenant settings')}
                 onClick={actions.onClickUserSettings}
               />
 
-              <IconButton
-                name="share-alt"
+              <ToolbarButton
+                icon="share-alt"
+                variant="canvas"
                 tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
                 onClick={actions.onClickShareLink}
               />
 
-              <PluginInfo />
+              <PluginInfo variant="canvas" />
             </div>
           )}
         </div>
@@ -211,16 +213,23 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
   `,
   appMiscButtons: css`
     display: flex;
-    align-items: center;
-    gap: 4px;
+    align-items: stretch;
+    height: ${theme.spacing(theme.components.height.md)};
+    box-sizing: border-box;
     border: 1px solid ${theme.colors.border.weak};
     background-color: ${theme.colors.background.secondary};
-    height: 32px;
-    padding: 0 ${theme.spacing(1)};
+    border-radius: ${theme.shape.radius.default};
+    overflow: hidden;
 
-    & svg {
-      width: 18px;
-      height: 18px;
+    button {
+      border: none;
+      border-radius: 0;
+      height: auto;
+
+      &:hover,
+      &:focus {
+        border: none;
+      }
     }
   `,
   sceneControls: css`

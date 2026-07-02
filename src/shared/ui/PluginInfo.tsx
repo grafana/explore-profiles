@@ -2,9 +2,9 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, usePluginContext } from '@grafana/data';
 import { t, Trans } from '@grafana/i18n';
 import { config } from '@grafana/runtime';
-import { Dropdown, IconButton, Menu, useStyles2 } from '@grafana/ui';
+import { Dropdown, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
 import { useFlagFeedbackButton } from '@shared/infrastructure/featureFlags/featureFlags';
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 
 import { GIT_COMMIT } from '../../version';
 import { PyroscopeLogo } from './PyroscopeLogo';
@@ -90,13 +90,18 @@ function InfoMenu() {
   );
 }
 
-export function PluginInfo() {
+type PluginInfoProps = {
+  variant?: ComponentProps<typeof ToolbarButton>['variant'];
+};
+
+export function PluginInfo({ variant = 'canvas' }: PluginInfoProps) {
   return (
     <Dropdown overlay={() => <InfoMenu />} placement="bottom-end">
-      <IconButton
-        name="info-circle"
+      <ToolbarButton
+        icon="info-circle"
+        variant={variant}
         aria-label={t('plugin-info.aria-label', 'Plugin info')}
-        title={t('plugin-info.title', 'Plugin info')}
+        tooltip={t('plugin-info.title', 'Plugin info')}
       />
     </Dropdown>
   );
