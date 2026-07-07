@@ -6,7 +6,7 @@ import {
   SceneObjectUrlValues,
   SceneTimeRangeLike,
   SceneTimeRangeState,
-  VariableDependencyConfig,
+  SceneVariableValueChangedEvent,
   VizPanel,
 } from '@grafana/scenes';
 import { omit } from 'lodash';
@@ -43,14 +43,6 @@ export class SceneTimeRangeWithAnnotations
   extends SceneObjectBase<SceneTimeRangeWithAnnotationsState>
   implements SceneTimeRangeLike
 {
-  protected _variableDependency = new VariableDependencyConfig(this, {
-    variableNames: ['dataSource', 'serviceName'],
-    onReferencedVariableValueChanged: () => {
-      this.nullifyAnnotationTimeRange();
-      this.updateTimeseriesAnnotation();
-    },
-  });
-
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['diffFrom', 'diffTo'] });
 
   constructor(options: {
@@ -97,6 +89,20 @@ export class SceneTimeRangeWithAnnotations
         }
       })
     );
+
+    for (const variableName of ['serviceName', 'dataSource']) {
+      const variable = sceneGraph.lookupVariable(variableName, this);
+      if (!variable) {
+        continue;
+      }
+
+      this._subs.add(
+        variable.subscribeToEvent(SceneVariableValueChangedEvent, () => {
+          this.nullifyAnnotationTimeRange();
+          this.updateTimeseriesAnnotation();
+        })
+      );
+    }
   }
 
   protected getAncestorTimeRange(): SceneTimeRangeLike {
@@ -116,7 +122,7 @@ export class SceneTimeRangeWithAnnotations
       }
 
       return vizPanel;
-    } catch (error) {
+    } catch {
       throw new Error('Ancestor timeseries panel not found!');
     }
   }
@@ -149,16 +155,16 @@ export class SceneTimeRangeWithAnnotations
     });
   }
 
+  nullifyAnnotationTimeRange() {
+    this.setAnnotationTimeRange(TIMERANGE_NIL);
+  }
+
   setAnnotationTimeRange(annotationTimeRange: TimeRange, updateTimeseries = false) {
     this.setState({ annotationTimeRange });
 
     if (updateTimeseries) {
       this.updateTimeseriesAnnotation();
     }
-  }
-
-  nullifyAnnotationTimeRange() {
-    this.setAnnotationTimeRange(TIMERANGE_NIL);
   }
 
   getUrlState() {
@@ -179,7 +185,8 @@ export class SceneTimeRangeWithAnnotations
   updateFromUrl(values: SceneObjectUrlValues) {
     const { diffFrom, diffTo } = values;
 
-    if (!diffTo && !diffFrom) {
+    if (!diffFrom || !diffTo) {
+      this.nullifyAnnotationTimeRange();
       return;
     }
 

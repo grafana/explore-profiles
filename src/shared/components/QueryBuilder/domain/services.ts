@@ -52,7 +52,7 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
     }
   },
   // TODO: refactor indeed
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   fetchLabelValues: async (context) => {
     let { query, edition, suggestions } = context;
     let targetFilter;

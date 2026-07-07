@@ -1,4 +1,5 @@
 import { css } from '@emotion/css';
+import { t, Trans } from '@grafana/i18n';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { InlineBanner } from '@shared/ui/InlineBanner';
 import React from 'react';
@@ -25,29 +26,37 @@ export function AiSuggestionsPanel({ suggestionPromptInputs }: AiSuggestionsPane
 
   return (
     <>
-      <h6 className={styles.title}>Code Optimization Suggestions</h6>
+      <h6 className={styles.title}>
+        <Trans i18nKey="function-details.ai-suggestions.title">Code Optimization Suggestions</Trans>
+      </h6>
       <div className={styles.content}>
         {data.isLoading && (
           <>
             <Spinner inline />
-            &nbsp;Analyzing...
+            &nbsp;<Trans i18nKey="function-details.ai-suggestions.analyzing">Analyzing...</Trans>
           </>
         )}
 
         {data.fetchError && (
           <InlineBanner
             severity="error"
-            title="Error while fetching profiles!"
-            message="Sorry for any inconvenience, please try again later."
+            title={t('function-details.ai-suggestions.fetch-error', 'Error while fetching profiles!')}
+            message={t(
+              'function-details.ai-suggestions.fetch-error-message',
+              'Sorry for any inconvenience, please try again later.'
+            )}
           />
         )}
 
         {data.llmError && (
           <InlineBanner
             severity="error"
-            title="Failed to generate content using OpenAI!"
+            title={t('function-details.ai-suggestions.llm-error', 'Failed to generate content using OpenAI!')}
             error={data.llmError}
-            message="Sorry for any inconvenience, please try again later or if the problem persists, contact your organization admin."
+            message={t(
+              'function-details.ai-suggestions.llm-error-message',
+              'Sorry for any inconvenience, please try again later or if the problem persists, contact your organization admin.'
+            )}
           />
         )}
 

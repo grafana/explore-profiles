@@ -1,6 +1,6 @@
 import { assign, State, StateNodeConfig } from 'xstate';
 
-import { MESSAGES } from '../../ui/constants';
+import { getMessages } from '../../ui/constants';
 import { defaultContext } from '../stateMachine';
 import { QueryBuilderContext, QueryBuilderEvent, SuggestionKind } from '../types';
 
@@ -56,7 +56,7 @@ export const displayOperators: StateNodeConfig<
       ...context.suggestions,
       type: SuggestionKind.operator,
       isVisible: true,
-      placeholder: MESSAGES.SELECT_OPERATOR,
+      placeholder: getMessages().SELECT_OPERATOR,
       allowCustomValue: false,
       multiple: false,
     }),

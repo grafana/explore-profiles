@@ -1,3 +1,4 @@
+import { getPyroscopeUTF8LabelNamesFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 
 export class LabelsApiClient extends ApiClient {
@@ -39,6 +40,9 @@ export class LabelsApiClient extends ApiClient {
     return super.fetch(pathname, {
       method: 'POST',
       body: JSON.stringify(body),
+      headers: getPyroscopeUTF8LabelNamesFromOpenFeature()
+        ? { accept: 'application/json; allow-utf8-labelnames=true' }
+        : {},
     });
   }
 }

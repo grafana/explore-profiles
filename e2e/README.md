@@ -18,7 +18,7 @@ When developing tests locally, we use a [Pyroscope server with static data](../d
 Install Playwright with Chromium:
 
 ```shell
-yarn e2e:local:prepare
+pnpm run e2e:local:prepare
 ```
 
 To launch the tests against your local environment, set these variables in the `.env` file:
@@ -34,25 +34,25 @@ E2E_PASSWORD=pass
 Start the app, in one terminal window:
 
 ```shell
-yarn && yarn dev
+pnpm install --frozen-lockfile --ignore-scripts && pnpm run dev
 ```
 
 And in another terminal tab, start the server:
 
 ```shell
-yarn e2e:local:server
+pnpm run e2e:local:server
 ```
 
 Run the tests in interactive UI mode (with a built-in watch mode):
 
 ```shell
-yarn e2e:local:watch
+pnpm run e2e:local:watch
 ```
 
 You can also run the [code generator](https://playwright.dev/docs/codegen#running-codegen):
 
 ```shell
-yarn e2e:local:codegen
+pnpm run e2e:local:codegen
 ```
 
 If you write tests that generate screenshots, please read the next section.
@@ -64,23 +64,23 @@ When launching the tests locally, the screenshots generated are ignored by Git. 
 In order to generate the correct screenshots that will always match the ones that will be generated during the CI build, **we have to launch Playwright in Docker**:
 
 ```shell
-yarn e2e:ci:server:up
+pnpm run e2e:ci:server:up
 
-yarn e2e:ci:prepare
-yarn e2e:ci
+pnpm run e2e:ci:prepare
+pnpm run e2e:ci
 
 # then once finished
-yarn e2e:ci:server:down
+pnpm run e2e:ci:server:down
 ```
 
 The screenshots are generated in subfolders within the [e2e/tests](./tests) folder, next to their corresponding tests. They can be commited to Git.
 
 ### Regenerating screenshots
 
-Just pass extra arguments to `yarn e2e:ci`, e.g.:
+Just pass extra arguments to `pnpm run e2e:ci`, e.g.:
 
 ```shell
-yarn e2e:ci single-view.spec.ts --update-snapshots
+pnpm run e2e:ci single-view.spec.ts --update-snapshots
 ```
 
 ### CI build
@@ -103,5 +103,5 @@ In build time (PR and main branch), we run a [Pyroscope server with static data]
 - Identify the new Playwright version, e.g. `1.47.0`
 - In a terminal, execute: `./scripts/upgrade-playwright 1.46.0 1.47.0`
 - Update sha for the new version in Dockerfile.plugin.e2e based on https://mcr.microsoft.com/en-us/artifact/mar/playwright
-- Launch the E2E tests locally with Docker to verify that the new version works: `yarn e2e:ci:server:up && yarn e2e:ci`
+- Launch the E2E tests locally with Docker to verify that the new version works: `pnpm run e2e:ci:server:up && pnpm run e2e:ci`
 - Push the modified files to the PR

@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Button, Divider, Field, Input, Modal, MultiSelect, Text, useStyles2 } from '@grafana/ui';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
@@ -53,7 +54,7 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
   }
 
   // TODO: https://github.com/grafana/profiles-drilldown/issues/614
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   static Component = function ({
     model,
     isModalOpen,
@@ -89,10 +90,10 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
       formState: { errors },
     } = useForm<RecordingRuleForm>({
       mode: 'onChange',
-      shouldUnregister: true,
       values: {
         functionName,
         metricName: '',
+        // eslint-disable-next-line @grafana/i18n/no-untranslated-strings
         labels: ruleForAllServices ? [{ label: 'service_name', value: 'service_name' }] : [],
         serviceName,
         matcher: '',
@@ -134,15 +135,18 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
 
     return (
       <Modal
-        title="Create recording rule"
+        title={t('create-recording-rule.title', 'Create recording rule')}
         isOpen={isModalOpen}
         onDismiss={onDismiss}
         data-testid="Create recording rule modal"
       >
         <form onSubmit={handleSubmit(onSubmit)}>
           <Field
-            label="Metric name"
-            description={`Prometheus metric name (automatically prefixed with ${METRIC_NAME_PREFIX}).`}
+            label={t('create-recording-rule.metric-name.label', 'Metric name')}
+            description={t(
+              'create-recording-rule.metric-name.description',
+              `Prometheus metric name (automatically prefixed with ${METRIC_NAME_PREFIX}).`
+            )}
             error={MetricNameErrorComponent(errors.metricName)}
             invalid={!!errors.metricName}
           >
@@ -150,25 +154,32 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
               <div className={css({ alignContent: 'center', fontFamily: 'monospace' })}>{METRIC_NAME_PREFIX}</div>
               <Input
                 className={css({ input: { fontFamily: 'monospace', paddingLeft: 0 } })}
+                // eslint-disable-next-line @grafana/i18n/no-untranslated-strings
                 placeholder={`${profileMetric.type}_${(serviceName || 'name')
                   .toString()
                   .replace(/[^a-zA-Z0-9_]/g, '_')}`}
-                aria-label="Metric name"
+                aria-label={t('create-recording-rule.metric-name.aria-label', 'Metric name')}
                 required
                 autoFocus
                 {...register('metricName', {
-                  required: 'Metric name is required.',
+                  required: t('create-recording-rule.metric-name.required', 'Metric name is required.'),
                   // This pattern was pulled from here: https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels
                   pattern: {
                     value: /^[a-zA-Z_][a-zA-Z0-9_]*$/,
-                    message: 'Invalid metric name.',
+                    message: t('create-recording-rule.metric-name.invalid', 'Invalid metric name.'),
                   },
                 })}
               />
             </div>
           </Field>
 
-          <Field label="Additional labels" description="Additional profiling labels to forward to the metric">
+          <Field
+            label={t('create-recording-rule.labels.label', 'Additional labels')}
+            description={t(
+              'create-recording-rule.labels.description',
+              'Additional profiling labels to forward to the metric'
+            )}
+          >
             <Controller
               name="labels"
               control={control}
@@ -188,41 +199,63 @@ export class SceneCreateRecordingRuleModal extends SceneObjectBase<SceneCreateRe
 
           <Divider />
 
-          <Field label="Service name" data-testid="Create recording rule modal service name field">
+          <Field
+            label={t('create-recording-rule.service-name.label', 'Service name')}
+            data-testid="Create recording rule modal service name field"
+          >
             {serviceName ? (
               <div>{`${serviceName}`}</div>
             ) : (
               <Text element="span" color="secondary">
-                All services
+                <Trans i18nKey="create-recording-rule.service-name.all">All services</Trans>
               </Text>
             )}
           </Field>
 
           <input type="text" hidden {...register('serviceName')} />
 
-          <Field label="Profile type">
+          <Field label={t('create-recording-rule.profile-type.label', 'Profile type')}>
             <div>{`${profileMetric.group}/${profileMetric.type}`}</div>
           </Field>
           <input type="text" hidden {...register('profileType')} />
 
-          <Field label="Function name" description="Optional function name to filter the recording rule">
+          <Field
+            label={t('create-recording-rule.function-name.label', 'Function name')}
+            description={t(
+              'create-recording-rule.function-name.description',
+              'Optional function name to filter the recording rule'
+            )}
+          >
             <Input
-              aria-label="Function name"
-              placeholder="Leave empty for total aggregation"
+              aria-label={t('create-recording-rule.function-name.aria-label', 'Function name')}
+              placeholder={t('create-recording-rule.function-name.placeholder', 'Leave empty for total aggregation')}
               {...register('functionName')}
             />
           </Field>
 
-          <Field label="Filters" description="Filters selected in the main view will be applied to this rule">
-            <div>{filters.length === 0 ? 'No filters selected' : filterQuery}</div>
+          <Field
+            label={t('create-recording-rule.filters.label', 'Filters')}
+            description={t(
+              'create-recording-rule.filters.description',
+              'Filters selected in the main view will be applied to this rule'
+            )}
+          >
+            <div>
+              {filters.length === 0 ? t('create-recording-rule.filters.none', 'No filters selected') : filterQuery}
+            </div>
           </Field>
 
           <Modal.ButtonRow>
-            <Button variant="secondary" fill="outline" onClick={onDismiss} aria-label="Cancel">
-              Cancel
+            <Button
+              variant="secondary"
+              fill="outline"
+              onClick={onDismiss}
+              aria-label={t('create-recording-rule.cancel', 'Cancel')}
+            >
+              <Trans i18nKey="create-recording-rule.cancel">Cancel</Trans>
             </Button>
             <Button variant="primary" type="submit">
-              Create
+              <Trans i18nKey="create-recording-rule.create">Create</Trans>
             </Button>
           </Modal.ButtonRow>
         </form>
@@ -241,10 +274,20 @@ const MetricNameErrorComponent = (error: FieldError | undefined) => {
   if (error.type === 'pattern') {
     return (
       <span>
-        <span>Metric name is invalid, it must have the following properties:</span>
+        <span>
+          <Trans i18nKey="create-recording-rule.metric-name.pattern-error">
+            Metric name is invalid, it must have the following properties:
+          </Trans>
+        </span>
         <ul className={styles.errorList}>
-          <li>Only contain alphanumeric characters or underscores</li>
-          <li>Must not begin with a number</li>
+          <li>
+            <Trans i18nKey="create-recording-rule.metric-name.pattern-alphanumeric">
+              Only contain alphanumeric characters or underscores
+            </Trans>
+          </li>
+          <li>
+            <Trans i18nKey="create-recording-rule.metric-name.pattern-no-number">Must not begin with a number</Trans>
+          </li>
         </ul>
       </span>
     );

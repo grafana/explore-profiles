@@ -1,20 +1,11 @@
 import { getExportFilename } from '../getExportFilename';
 
 describe('getFileName(appName)', () => {
-  const originalLocation = window.location;
-
   beforeEach(() => {
-    Object.defineProperty(window, 'location', {
-      value: {
-        search:
-          '?explorationType=diff-flame-graph&var-serviceName=pyroscope&var-profileMetricId=process_cpu:cpu:nanoseconds:cpu:nanoseconds&var-dataSource=grafanacloud-profiles-local-a&var-groupBy=all&maxNodes=128&var-filters=&from-2=now-30m&to-2=now&from-3=now-30m&to-3=now&diffFrom=2024-09-16T12:21:51.298Z&diffTo=2024-09-16T12:25:35.688Z&diffFrom-2=2024-09-16T12:31:56.176Z&diffTo-2=2024-09-16T12:34:56.664Z',
-      },
-      writable: true,
+    setWindowLocation({
+      search:
+        '?explorationType=diff-flame-graph&var-serviceName=pyroscope&var-profileMetricId=process_cpu:cpu:nanoseconds:cpu:nanoseconds&var-dataSource=grafanacloud-profiles-local-a&var-groupBy=all&maxNodes=128&var-filters=&from-2=now-30m&to-2=now&from-3=now-30m&to-3=now&diffFrom=2024-09-16T12:21:51.298Z&diffTo=2024-09-16T12:25:35.688Z&diffFrom-2=2024-09-16T12:31:56.176Z&diffTo-2=2024-09-16T12:34:56.664Z',
     });
-  });
-
-  afterEach(() => {
-    window.location = originalLocation;
   });
 
   describe('when "appName" is passed', () => {

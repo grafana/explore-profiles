@@ -1,0 +1,689 @@
+{
+  "actions": {
+    "exemplar-toggle": {
+      "hide": "Ocultar ejemplos",
+      "label": "Ejemplos",
+      "show": "Mostrar ejemplos"
+    },
+    "fav": {
+      "favorite": "Favorito",
+      "unfavorite": "Eliminar de favoritos"
+    }
+  },
+  "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
+    "profile-type-selector": {
+      "label": "Perfil"
+    },
+    "tabs": {
+      "diff-view": "",
+      "single-view": "Vista única"
+    },
+    "view": {
+      "title": "Vista personalizada"
+    }
+  },
+  "ai-panel": {
+    "analyzing": "Analizando...",
+    "close": "Cerrar panel",
+    "fetch-error": "¡Error al cargar los datos del perfil!",
+    "fetch-error-message": "Sentimos las molestias. Inténtalo de nuevo más tarde.",
+    "follow-up": {
+      "placeholder": "Haz una pregunta de seguimiento...",
+      "send": "Enviar"
+    },
+    "llm-error": "",
+    "llm-error-message": "Sentimos las molestias. Vuelve a intentarlo o, si el problema persiste, ponte en contacto con el administrador de tu organización.",
+    "reply": {
+      "search-node": "Buscar este nodo"
+    },
+    "retry": "Reintentar",
+    "title": "Análisis del gráfico de llama",
+    "validation-error": "¡Error de validación!"
+  },
+  "analyze-diff": {
+    "context": {
+      "title": "Perfiles DOT e instrucciones"
+    },
+    "error": "Error al obtener los perfiles DOT para el análisis",
+    "prompt": "Analiza las diferencias entre estos dos perfiles de rendimiento."
+  },
+  "back-button": {
+    "aria-label": "Volver a Profiles Drilldown",
+    "label": "Volver a Profiles Drilldown"
+  },
+  "create-recording-rule": {
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "filters": {
+      "description": "Los filtros seleccionados en la vista principal se aplicarán a esta regla.",
+      "label": "Filtros",
+      "none": "No se han seleccionado filtros"
+    },
+    "function-name": {
+      "aria-label": "Nombre de la función",
+      "description": "Nombre de función opcional para filtrar la regla de registro",
+      "label": "Nombre de la función",
+      "placeholder": "Déjelo vacío para la agregación total."
+    },
+    "labels": {
+      "description": "Etiquetas de elaboración de perfiles adicionales para reenviar a la métrica",
+      "label": "Etiquetas adicionales"
+    },
+    "menu-option": "Crear regla de registro",
+    "metric-name": {
+      "aria-label": "Nombre de la métrica",
+      "description": "",
+      "invalid": "Nombre de métrica no válido.",
+      "label": "Nombre de la métrica",
+      "pattern-alphanumeric": "Solo puede contener caracteres alfanuméricos o guiones bajos",
+      "pattern-error": "El nombre de la métrica no es válido; debe tener las siguientes propiedades:",
+      "pattern-no-number": "No debe comenzar con un número",
+      "required": "El nombre de la métrica es obligatorio."
+    },
+    "profile-type": {
+      "label": "Tipo de perfil"
+    },
+    "service-name": {
+      "all": "Todos los servicios",
+      "label": "Nombre de servicio"
+    },
+    "title": "Crear regla de registro"
+  },
+  "diff-flame-graph": {
+    "compare-panel": {
+      "annotation-title": "Intervalo del gráfico de llama de {{title}}",
+      "baseline": "Punto de referencia",
+      "comparison": "Comparación",
+      "flame-graph": "Gráfico de llama",
+      "range-selection-mode": "Modo de selección de intervalo",
+      "sync-time-ranges": "Sincronizar intervalos de tiempo",
+      "time-picker": "Selector de tiempo",
+      "tooltip-description": "Utiliza estos botones para cambiar el comportamiento al seleccionar un intervalo con el ratón en la serie temporal:",
+      "tooltip-flame-graph": "Gráfico de llama",
+      "tooltip-flame-graph-description": "Intervalo de tiempo para crear el gráfico de llama (los trazos de pila se recuperarán únicamente para el intervalo seleccionado).",
+      "tooltip-time-picker": "Selector de tiempo",
+      "tooltip-time-picker-description": "Acercar intervalo de tiempo (comportamiento predeterminado)"
+    },
+    "error-loading-profile": "¡Error al cargar los datos del perfil!",
+    "explain-button": "Explicar el gráfico de llama de diferencias",
+    "missing-selections": {
+      "auto-select": "Selección automática",
+      "how-to-alt": "Cómo ver el gráfico de llama de diferencias",
+      "learn-how": "Haz clic aquí para descubrir cómo seleccionar los intervalos del gráfico de llama con el ratón.",
+      "step-1": "Asegúrate de que el modo de selección de intervalo «Gráfico de llama» esté seleccionado.",
+      "step-2": "Utiliza el ratón para seleccionar los intervalos de tiempo deseados tanto en la serie temporal de referencia como en la de comparación.",
+      "title": "Selecciona los intervalos del gráfico de llama de referencia y del gráfico de llama de comparación para ver el gráfico de llama de diferencias."
+    },
+    "no-profile-data": "No hay datos de perfil disponibles",
+    "no-profile-data-message": "Comprueba que hayas seleccionado los filtros y los intervalos de tiempo adecuados.",
+    "presets": {
+      "1h-ago-vs-now": "Hace 1 h frente a ahora",
+      "1h-ago-vs-now-description": "Intervalo de 30 min",
+      "24h-ago-vs-now": "Hace 24 h frente a ahora",
+      "6h-ago-vs-now": "Hace 6 h frente a ahora",
+      "label": "Preajustes de comparación",
+      "placeholder": "Elegir un valor preestablecido"
+    },
+    "settings-error": {
+      "message": "Es posible que algunas funciones no tengan el comportamiento esperado (por ejemplo, las opciones de exportación de gráficos de llama). Intenta volver a cargar la página. Disculpa las molestias.",
+      "title": "¡Error al recuperar los ajustes del plugin!"
+    },
+    "title": "Gráfico de llama de diferencias para {{serviceName}} ({{profileMetricType}})"
+  },
+  "error-page": {
+    "banner-message": "Intenta volver a cargar la página o, si el problema persiste, ponte en contacto con el administrador de tu organización. Disculpa las molestias.",
+    "banner-title": "¡Error grave!",
+    "title": "Profiles Drilldown de Grafana"
+  },
+  "explorer": {
+    "add-to-dashboard": {
+      "modal-title": "Añadir al panel de control"
+    },
+    "exploration-type": {
+      "all-services": "Todos los servicios",
+      "all-services-description": "Resumen de todos los servicios, para cualquier tipo de perfil",
+      "diff-flame-graph": "Gráfico de llama de diferencias",
+      "diff-flame-graph-description": "Comparar las diferencias entre dos gráficos de llama",
+      "favorites": "Favoritos",
+      "favorites-description": "Resumen de las visualizaciones favoritas",
+      "flame-graph": "Gráfico de llama",
+      "flame-graph-description": "Gráfico de llama de un solo servicio",
+      "labels": "Etiquetas",
+      "labels-description": "Exploración y filtrado de etiquetas de un único servicio",
+      "profile-types": "Tipos de perfil",
+      "profile-types-description": "Resumen de todos los tipos de perfil para un solo servicio"
+    },
+    "header": {
+      "add-recording-rule": "Añadir regla de registro",
+      "recording-rules-tooltip": "Reglas de registro",
+      "settings-tooltip": "Ver/editar los ajustes del inquilino",
+      "share-tooltip": "Copiar el enlace para compartir en el portapapeles",
+      "upload-tooltip": "Subir perfiles personalizados",
+      "view-recording-rules": "Ver reglas de registro"
+    }
+  },
+  "export-data": {
+    "aria-label": "Exportar datos del perfil",
+    "tooltip": "Exportar datos del perfil"
+  },
+  "export-menu": {
+    "aria-label": "Exportar datos del perfil",
+    "error-flamegraph-com": "¡Error al exportar a flamegraph.com!",
+    "error-loading-profile": "¡Error al cargar los datos del perfil de Flamebearer!",
+    "error-png": "¡Error al exportar a PNG!",
+    "error-pprof": "¡Error al exportar a PPROF!",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "PPROF",
+    "tooltip": "Exportar datos del perfil"
+  },
+  "exposed-components": {
+    "loading": "Cargando..."
+  },
+  "favorites": {
+    "data-source": {
+      "test-success": "Aceptar"
+    }
+  },
+  "flame-graph": {
+    "error-loading-profile": "¡Error al cargar los datos del perfil!",
+    "explain-button": "Explicar el gráfico de llama",
+    "profile-id-selector": {
+      "filter-label": "Etiqueta del filtro",
+      "filter-operator": "Operador del filtro",
+      "filter-value": "Valor del filtro",
+      "name": "ID de perfil",
+      "remove": "Eliminar el selector de ID de perfil de la consulta",
+      "tooltip": "Has añadido un selector de ID de perfil a la consulta de gráfico de llama ({{profileIdSelector}})."
+    },
+    "settings-error": {
+      "message": "Es posible que algunas funciones no tengan el comportamiento esperado (por ejemplo, los gráficos de llama contraídos). Intenta volver a cargar la página. Disculpa las molestias.",
+      "title": "¡Error al recuperar los ajustes del plugin!"
+    },
+    "span-selector": {
+      "added": "Selector de intervalo añadido",
+      "remove": "Eliminar el selector de intervalo de la consulta",
+      "tooltip": "Has añadido un selector de intervalo a la consulta de gráfico de llama ({{spanSelector}})."
+    },
+    "title": "Gráfico de llama para {{serviceName}} ({{profileMetricType}})"
+  },
+  "function-details": {
+    "ai-suggestions": {
+      "analyzing": "Analizando...",
+      "fetch-error": "¡Error al obtener los perfiles!",
+      "fetch-error-message": "Sentimos las molestias. Inténtalo de nuevo más tarde.",
+      "llm-error": "¡Error al generar contenido con OpenAI!",
+      "llm-error-message": "Sentimos las molestias. Vuelve a intentarlo más tarde o, si el problema persiste, ponte en contacto con el administrador de tu organización.",
+      "title": "Sugerencias para optimizar el código"
+    },
+    "close": "cerrar",
+    "code": {
+      "breakdown-per-line": "Desglose por línea",
+      "file-unavailable": "(información del archivo no disponible)",
+      "optimize": "Optimizar código",
+      "view-on-github": "Ver en GitHub"
+    },
+    "commit": "Confirmar",
+    "commit-option": {
+      "author-date": "{{author}} el {{date}}"
+    },
+    "commit-select": {
+      "no-options": "No se han encontrado confirmaciones"
+    },
+    "commit-tooltip": "La versión de la aplicación (confirmación) en la que se define la función. Utiliza el menú desplegable para seleccionar una confirmación específica.",
+    "context-menu": {
+      "label": "Detalles de la función"
+    },
+    "copy-to-clipboard": "Copiar al portapapeles",
+    "fetch-error": "¡Error al obtener los detalles de la función!",
+    "file": "Archivo",
+    "file-path-copied": "¡Ruta del archivo copiada al portapapeles!",
+    "file-tooltip": "Ruta del archivo en el que se define esa función",
+    "function-name": "Nombre de la función",
+    "github": {
+      "banner-dismiss": "Descartar",
+      "banner-git-ref": "Deben establecerse, respectivamente, en la URL completa del repositorio de GitHub y en la <2>referencia Git</2> actual del servicio en ejecución.",
+      "banner-labels": "Para activar esta función, deberás añadir dos nuevas etiquetas al enviar perfiles: <2>service_repository</2> y <4>service_git_ref</4>. ",
+      "banner-language-support": "Este lenguaje admite la integración con <1></1> GitHub.",
+      "banner-learn-more": "Más información",
+      "banner-title": "Integrar con Github",
+      "connect-button": "Conectar con {{name}}",
+      "connect-tooltip": "Una vez establecida la conexión, solo se podrá acceder al código de GitHub desde esta sesión del navegador.",
+      "connecting": "Conectando con GitHub...",
+      "disconnect": "Desconectar de GitHub",
+      "view-commit": "Ver confirmación"
+    },
+    "github-callback": {
+      "logging-in": "Iniciando sesión en GitHub...",
+      "title": "Inicio de sesión en GitHub"
+    },
+    "not-available": "-",
+    "override": {
+      "add": "Añadir",
+      "add-title": "Añadir nueva anulación de detalles del repositorio",
+      "alert-debug": "Para fines de depuración, puedes proporcionar manualmente los detalles del repositorio a través de este formulario. El valor personalizado se guarda en el almacenamiento local de tu navegador para la fuente de datos y el nombre de servicio indicados.",
+      "alert-labels": "Para activar la función de integración con GitHub, deberás añadir dos nuevas etiquetas al enviar perfiles: <1>service_repository</1> y <3>service_git_ref</3>.",
+      "alert-title": "Etiquetas de integración de Github",
+      "aria-label": "anular los ajustes del repositorio",
+      "data-source": "Fuente de datos",
+      "delete": "Eliminar anulación",
+      "edit": "Editar",
+      "edit-title": "Editar anulación de detalles del repositorio",
+      "git-ref-label": "service_git_ref (referencia de confirmación)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Eliminar todas las anulaciones",
+      "remove-all-confirm": "Eliminar todo",
+      "repository-label": "service_repository (URL del repositorio): obligatoria",
+      "repository-placeholder": "Introduce el nombre del repositorio de GitHub, https://github.com/org/repo",
+      "repository-required": "El nombre del repositorio es obligatorio",
+      "root-path": "Ruta a la raíz",
+      "root-path-placeholder": "Introducir ruta de la raíz",
+      "service-name": "Nombre de servicio",
+      "user-set": "(definido por el usuario)"
+    },
+    "repository": "Repositorio",
+    "repository-tooltip": "El repositorio configurado para el servicio seleccionado.",
+    "start-line": "Línea de inicio",
+    "start-line-tooltip": "La línea en la que comienza la definición de esta función.",
+    "title": "Detalles de la función"
+  },
+  "give-feedback": {
+    "button": "Enviar comentarios",
+    "tooltip": "Comparte tu opinión sobre los perfiles en Grafana."
+  },
+  "grid": {
+    "empty-state": {
+      "no-results": "Ningún resultado"
+    },
+    "error": {
+      "title": "¡Error de consulta!"
+    },
+    "exemplars": {
+      "view-profile": "Ver perfil"
+    },
+    "layout": {
+      "aria-label": "Cambio de diseño",
+      "grid": "Cuadrícula",
+      "rows": "Filas"
+    },
+    "no-data": {
+      "label": "Ocultar paneles sin datos"
+    },
+    "panel-type": {
+      "aria-label": "Cambio de tipo de panel",
+      "histograms": "Histogramas",
+      "maxima": "Máximos",
+      "time-series": "Serie temporal",
+      "totals": "Totales"
+    },
+    "quick-filter": {
+      "aria-label": "Filtro rápido",
+      "clear": "Borrar búsqueda"
+    }
+  },
+  "labels": {
+    "compare": {
+      "aria-label": "",
+      "button_one": "Comparar ({{count}}/2)",
+      "button_many": "",
+      "button_other": "Comparar ({{count}}/2)",
+      "clear-tooltip": "Borrar selección de comparación",
+      "tooltip-empty": "Selecciona un panel de referencia y un panel de comparación para comparar sus gráficos de llama.",
+      "tooltip-ready": "Comparar «{{baseline}}» con «{{comparison}}»",
+      "tooltip-select-baseline": "Seleccionar otro panel para compararlo con «{{label}}»",
+      "tooltip-select-comparison": "Seleccionar otro panel para compararlo con «{{label}}»"
+    },
+    "data-source": {
+      "all": "Todo",
+      "test-success": "Aceptar"
+    },
+    "filter": {
+      "clear-tooltip": "Borrar «{{label}}» de los filtros",
+      "exclude": "Excluir",
+      "exclude-tooltip": "Excluir «{{label}}» de los filtros",
+      "include": "Incluir",
+      "include-tooltip": "Incluir «{{label}}» en los filtros"
+    },
+    "grid": {
+      "no-results": "Ningún resultado",
+      "refresh-tooltip": "Haz clic para actualizar por completo todos los paneles que aparecen en la pantalla."
+    },
+    "stats-panel": {
+      "baseline": "Punto de referencia",
+      "baseline-description": "Haz clic para seleccionar «{{value}}» como referencia para la comparación.",
+      "comparison": "Comparación",
+      "comparison-description": "Haz clic para seleccionar «{{value}}» como objetivo para la comparación.",
+      "total": "{{statsDescription}}: {{total}}"
+    }
+  },
+  "onboarding": {
+    "empty-loading": {
+      "title": "Cargando..."
+    },
+    "modal": {
+      "billing": {
+        "description": "El uso de Grafana Cloud Profiles está sujeto a los <2>precios de Grafana Cloud</2> para perfiles.<br/>Para obtener más información, consulta la <6>entrada del blog</6> en la que se anuncia la novedad.",
+        "title": "Cómo funciona la facturación"
+      },
+      "cloud": {
+        "step1": {
+          "description": "Utiliza <2>Grafana Alloy</2> o los <6>SDK de Pyroscope</6> para enviar perfiles desde tus aplicaciones a Grafana Cloud.",
+          "title": "Añade la elaboración de perfiles a tu aplicación"
+        },
+        "step2": {
+          "description": "Accede a la <1>configuración de la pila de Grafana Cloud</1> para encontrar tus credenciales de Grafana Cloud.",
+          "title": "Configura tus aplicaciones"
+        },
+        "step3": {
+          "description": "Después de completar la configuración inicial, actualiza esta página para ver tus datos de elaboración de perfiles.",
+          "title": "Empieza a obtener información sobre el rendimiento"
+        }
+      },
+      "decrease-latency": {
+        "description": "Conserva una velocidad y una eficiencia elevadas y mejora el rendimiento de las aplicaciones. En un mundo digital competitivo, reducir la latencia se traduce en un aumento de los ingresos.",
+        "title": "Disminuye la latencia"
+      },
+      "how-to-get-started": "Cómo empezar",
+      "reduce-costs": {
+        "description": "Detecta picos de CPU, pérdidas de memoria y otras ineficiencias gracias a la visibilidad del uso de recursos a nivel de código. De este modo, los equipos pueden optimizar su código y reducir los costes de infraestructura.",
+        "title": "Reduce los costes"
+      },
+      "resolve-incidents": {
+        "description": "Reduce el tiempo medio de resolución (MTTR) correlacionando los datos de elaboración de perfiles continua con métricas, logs y trazas para identificar rápidamente la causa raíz de cualquier problema.",
+        "title": "Resuelve las incidencias más rápido"
+      },
+      "self-hosted": {
+        "step1": {
+          "description": "Instala <1>Pyroscope Server</1> en tu infraestructura. O, si prefieres utilizar un servicio alojado, accede a la <5>configuración de la pila de Grafana Cloud</5> para encontrar tus credenciales de Grafana Cloud.",
+          "title": "Configura Pyroscope Server"
+        },
+        "step2": {
+          "description": "Añade una nueva <1>fuente de datos de Pyroscope</1>. Utiliza la URL de tu instancia de Pyroscope Server y las credenciales de seguridad correspondientes si utilizas Grafana Cloud Profiles.",
+          "title": "Define la configuración de Grafana"
+        },
+        "step3": {
+          "description": "Utiliza <2>Grafana Alloy</2> o los <6>SDK de Pyroscope</6> para enviar perfiles desde tus aplicaciones a Grafana Cloud.",
+          "title": "Añade la elaboración de perfiles a tu aplicación"
+        }
+      },
+      "subtitle": "Optimiza el gasto en infraestructura, simplifica la depuración y mejora el rendimiento de las aplicaciones.",
+      "title": "Te damos la bienvenida a Profiles Drilldown de Grafana",
+      "what-you-can-do": "Qué puedes hacer"
+    },
+    "no-data-source": {
+      "alert-message": "Este plugin requiere una fuente de datos de Pyroscope. <2>Añade y configura una fuente de datos de Pyroscope</2> en tu instancia de Grafana.",
+      "alert-title": "¡Falta la fuente de datos de Pyroscope!",
+      "title": "Profiles Drilldown de Grafana"
+    },
+    "page": {
+      "close": "Cerrar",
+      "nav": "Incorporación"
+    }
+  },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
+  "panel-box": {
+    "cancel-query": "Cancelar consulta",
+    "loading-bar": "Barra de carga del panel",
+    "panel-status": "Estado del panel",
+    "stop-streaming": "Detener transmisión",
+    "streaming": "Transmisión",
+    "untitled": "Sin título"
+  },
+  "panel-menu": {
+    "aria-label-no-title": "Menú para el panel sin título",
+    "aria-label-with-title": "Menú para el panel con título {{title}}",
+    "title": "Menú"
+  },
+  "plugin-info": {
+    "aria-label": "Información del plugin",
+    "changelog": "Log de cambios",
+    "commit-sha": "Confirmar SHA: {{shortCommitSha}}",
+    "contribute": "Contribuir",
+    "documentation": "Documentación",
+    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "last-update": "Última actualización: {{updated}}",
+    "report-issue": "Notificar un problema",
+    "title": "Información del plugin",
+    "version": "Profiles Drilldown de Grafana v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
+  },
+  "query-analysis": {
+    "blocks": "Bloques",
+    "data-in-time-range": "Datos en el intervalo de tiempo",
+    "deduplication": "Desduplicación",
+    "index-store": "Almacén de índices",
+    "no": "no",
+    "profiles": "Perfiles",
+    "profiles-store": "Almacén de perfiles",
+    "query-info-aria-label": "Información de la consulta",
+    "replicas": "Réplicas",
+    "samples": "Muestras",
+    "series": "Series",
+    "series-in-query": "Series en la consulta",
+    "stored-data-in-time-range": "Datos almacenados en el intervalo de tiempo: {{totalBytesInTimeRange}}",
+    "symbols-store": "Almacén de símbolos",
+    "yes": "sí"
+  },
+  "query-builder": {
+    "chiclet": {
+      "edit-attribute": "Editar «{{label}}»",
+      "edit-operator": "Editar «{{label}}»",
+      "filter": "Filtro",
+      "filter-label": "Etiqueta del filtro",
+      "filter-operator": "Operador del filtro",
+      "filter-value": "Valor del filtro",
+      "partial-filter": "Filtro parcial",
+      "remove-filter": "Eliminar filtro"
+    },
+    "error-load": "¡Se ha producido un error inesperado al cargar! Vuelve a intentarlo.",
+    "execute": "Ejecutar",
+    "execute-tooltip": "Ejecutar una nueva consulta",
+    "loading": "Cargando...",
+    "no-value": "(sin valor)",
+    "nothing-to-execute-tooltip": "No hay nada que ejecutar; se han aplicado todos los filtros.",
+    "operators": {
+      "in": "en",
+      "in-description": "Es uno de",
+      "is-empty": "está vacío",
+      "not-in": "no está en",
+      "not-in-description": "No es uno de",
+      "regex-match-description": "Coincide con la expresión regular",
+      "regex-not-match-description": "No coincide con la expresión regular"
+    },
+    "placeholder": {
+      "filter-add": "Filtrar por valores de etiqueta...",
+      "select-label": "Seleccionar una etiqueta...",
+      "select-operator": "Seleccionar un operador...",
+      "select-value": "Seleccionar un valor...",
+      "select-values": "Seleccionar valores...",
+      "type-value": "Escribe una expresión regular..."
+    },
+    "suggestions-disabled": "Las sugerencias están deshabilitadas para esta etiqueta.",
+    "suggestions-none": "No hay ninguna sugerencia disponible."
+  },
+  "recording-rules": {
+    "delete": {
+      "aria-label": "Eliminar regla de registro",
+      "body": "¿Seguro que quieres eliminar la regla de registro {{metricName}}?",
+      "confirm": "Sí",
+      "title": "Eliminar regla de registro"
+    },
+    "details": {
+      "filters": "Filtros",
+      "no": "No",
+      "no-labels": "Ninguna etiqueta",
+      "read-only": "Solo lectura",
+      "yes": "Sí"
+    },
+    "empty": {
+      "description": "Abre un gráfico de llama, haz clic en el bloque «Total» de la parte superior y selecciona «Crear regla de registro» en el menú contextual para definir una nueva regla.",
+      "message": "No hay reglas de registro"
+    },
+    "error": {
+      "feature-required": "Esta función requiere Pyroscope con el indicador recording_rules habilitado.",
+      "message": "Error al recuperar las reglas de registro",
+      "title": "Error al recuperar las reglas de registro"
+    },
+    "table": {
+      "actions": "Acciones",
+      "all-services": "Todos los servicios",
+      "function-name": "Nombre de la función",
+      "labels": "Etiquetas",
+      "name": "Nombre",
+      "none": "Ninguno",
+      "profile-type": "Tipo de perfil",
+      "readonly-tooltip": "Esta regla está aprovisionada con la configuración del inquilino y no se puede eliminar.",
+      "service-name": "Nombre de servicio",
+      "total-all-functions": "Total (todas las funciones)"
+    },
+    "title": "Reglas de registro"
+  },
+  "saved-searches": {
+    "load": {
+      "no-searches": "No hay búsquedas guardadas para mostrar.",
+      "no-searches-tooltip": "No hay búsquedas guardadas para cargar.",
+      "remove-tooltip": "Eliminar",
+      "saved-query-tooltip": "Cargar consulta guardada",
+      "select": "Seleccionar",
+      "select-pyroscope-query": "Selecciona una consulta de Pyroscope.",
+      "title": "Carga una búsqueda guardada anteriormente",
+      "tooltip": "Permite cargar una búsqueda guardada."
+    },
+    "save": {
+      "cancel": "Cancelar",
+      "close": "Cerrar",
+      "description-label": "Descripción",
+      "error-message": "Se ha producido un error inesperado al guardar esta búsqueda.",
+      "existing-search-warning": "Hay una búsqueda guardada anteriormente con la misma consulta: {{title}}",
+      "info-message": "Las búsquedas guardadas se almacenan localmente en tu navegador y solo estarán disponibles en este dispositivo.",
+      "save": "Guardar",
+      "saved-queries-tooltip": "Guardar en Consultas guardadas",
+      "success-body": "Búsqueda guardada correctamente.",
+      "success-message": "Búsqueda guardada correctamente.",
+      "success-title": "Completado con éxito",
+      "title": "Guardar búsqueda actual",
+      "title-label": "Título",
+      "tooltip": "Permite guardar una búsqueda."
+    }
+  },
+  "series": {
+    "data-source": {
+      "test-success": "Aceptar"
+    }
+  },
+  "settings": {
+    "loading": "Cargando...",
+    "save-button": "Guardar ajustes",
+    "tabs": {
+      "ui-settings": "Ajustes de la interfaz de usuario",
+      "unknown-extension": "Extensión desconocida"
+    },
+    "title": "Ajustes de los perfiles (inquilino)",
+    "ui": {
+      "collapsed-flame-graphs": {
+        "label": "Gráficos de llama contraídos",
+        "toggle": "Alternar gráficos de llama contraídos"
+      },
+      "enable-function-details": {
+        "label": "Habilitar detalles de la función",
+        "learn-more": "Más información",
+        "toggle": "Alternar detalles de la función",
+        "tooltip": "La función de detalles de la función permite asignar el uso de recursos a líneas de código fuente. Si la integración con GitHub está configurada, el código fuente se descargará desde GitHub."
+      },
+      "fetch-error": {
+        "message": "Intenta volver a cargar la página. Disculpa las molestias.",
+        "title": "¡Error al recuperar los ajustes del plugin!"
+      },
+      "flame-graph": {
+        "label": "Gráfico de llama"
+      },
+      "function-details": {
+        "label": "Detalles de la función"
+      },
+      "max-nodes": {
+        "label": "Número máximo de nodos"
+      },
+      "metrics-from-profiles": {
+        "disable-hint": "Para dejar de exportar datos, elimina todas las reglas de registro relacionadas antes de deshabilitar esta función.",
+        "disable-warning": "Al desactivar esta función, solo se oculta en la interfaz de usuario. No se eliminan las reglas de registro existentes. Estas reglas permanecerán activas y seguirán exportando métricas, lo que seguirá repercutiendo en tu factura.",
+        "enable-warning": "Habilitar esta función te permite definir reglas de registro desde Profiles Drilldown. Cualquier regla de registro que crees enviará nuevas métricas a tu instancia de Grafana Cloud, lo que aumentará tu consumo de datos en Grafana Mimir y podría repercutir en tu factura.",
+        "label": "Métricas de perfiles",
+        "toggle": "Habilitar métricas de perfiles",
+        "toggle-label": "Habilitar métricas de perfiles",
+        "tooltip": "Permite crear reglas de registro a partir de perfiles."
+      }
+    }
+  },
+  "timeseries": {
+    "menu": {
+      "add-to-dashboard": "Añadir al panel de control",
+      "exemplars": "Ejemplos",
+      "open-in-explore": "Abrir en Explorar",
+      "scale-linear": "Lineal",
+      "scale-log2": "Log2",
+      "scale-type": "Tipo de escala"
+    }
+  },
+  "variables": {
+    "data-source": {
+      "label": "Fuente de datos"
+    },
+    "favorite": {
+      "label": "🔖 Favorito"
+    },
+    "filters": {
+      "label": "Filtros"
+    },
+    "group-by": {
+      "label": "Agrupar por etiquetas",
+      "labels-selector": "Selector de etiquetas",
+      "other-labels-placeholder": "Otras etiquetas",
+      "other-labels-selector": "Selector de otras etiquetas",
+      "refresh-tooltip": "Haz clic para actualizar todas las etiquetas.",
+      "select-label-placeholder": "Seleccionar etiqueta"
+    },
+    "profile-id-selector": {
+      "label": "Selector de ID de perfil"
+    },
+    "profile-metric": {
+      "aria-label": "Lista de métricas del perfil",
+      "label": "Tipo de perfil",
+      "loading": "Cargando...",
+      "placeholder_one": "Seleccionar una métrica de perfil ({{count}})",
+      "placeholder_many": "",
+      "placeholder_other": "Seleccionar una métrica de perfil ({{count}})"
+    },
+    "service-name": {
+      "aria-label": "Lista de servicios",
+      "label": "Servicio",
+      "loading": "Cargando servicios...",
+      "placeholder_one": "Seleccionar un servicio ({{count}})",
+      "placeholder_many": "",
+      "placeholder_other": "Seleccionar un servicio ({{count}})",
+      "unmatched-tooltip": ""
+    },
+    "span-selector": {
+      "label": "Selector de intervalo"
+    }
+  }
+}

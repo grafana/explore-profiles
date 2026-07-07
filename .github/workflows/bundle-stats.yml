@@ -17,9 +17,12 @@ permissions:
 jobs:
   compare:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3 (2026-01-09)
+        with:
+          persist-credentials: false
 
-      - uses: grafana/plugin-actions/bundle-size@main
+      - uses: grafana/plugin-actions/bundle-size@a66a1c96cdbb176f9cccf10cf23593e250db7cce # bundle-size/v1.1.0 (2025-11-13)

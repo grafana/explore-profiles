@@ -4,7 +4,7 @@ import { Select, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
 import { Suggestion } from '../../domain/types';
-import { MESSAGES } from '../constants';
+import { getMessages } from '../constants';
 import { SingleEditionInput } from '../inputs/SingleEditionInput';
 
 const getStyles = () => ({
@@ -45,7 +45,7 @@ export function SingleEditionSelect({ selection, suggestions, onChange, onCloseM
     <Select
       className={styles.editionSelect}
       placeholder={suggestions.placeholder}
-      loadingMessage={MESSAGES.LOADING}
+      loadingMessage={getMessages().LOADING}
       closeMenuOnSelect={false}
       autoFocus
       value={selection.value}

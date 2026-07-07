@@ -146,6 +146,21 @@ const cases: TestCase[] = [
     [actionFilter, vehicleFilter],
     'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests",action="count",region!~"eu|us"}',
   ],
+  // UTF-8 label name — must be quoted in the output
+  [
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests"}',
+    [
+      {
+        id: 'utf8test01',
+        type: FilterKind['attribute-operator-value'],
+        active: true,
+        attribute: { value: 'http.method', label: 'http.method' },
+        operator: { value: '=', label: '=' },
+        value: { value: 'GET', label: 'GET' },
+      },
+    ],
+    'process_cpu:wall:nanoseconds:wall:nanoseconds{service_name="core-requests","http.method"="GET"}',
+  ],
 ];
 
 describe('filtersToQuery(query: string, filters: Filters)', () => {

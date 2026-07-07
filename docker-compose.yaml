@@ -5,7 +5,7 @@ services:
       context: ./.config
       args:
         grafana_image: ${GRAFANA_IMAGE:-grafana-enterprise}
-        grafana_version: ${GRAFANA_VERSION:-12.3.0}
+        grafana_version: ${GRAFANA_VERSION:-12.3.0@sha256:96a793a92c9a77cf543d6e5c55100cd296ed9e22487dc3d069331364c456247b}
     ports:
       - ${GRAFANA_PORT:-3000}:3000/tcp
     volumes:
@@ -16,16 +16,16 @@ services:
       GF_INSTALL_PLUGINS: grafana-llm-app
       OPENAI_API_KEY: $OPENAI_API_KEY
       OPENAI_ORGANIZATION_ID: $OPENAI_ORGANIZATION_ID
-      GF_FEATURE_TOGGLES_ENABLE: ${GF_FEATURE_TOGGLES_ENABLE:-metricsFromProfiles}
+      GF_FEATURE_TOGGLES_ENABLE: ${GF_FEATURE_TOGGLES_ENABLE:-metricsFromProfiles,localizationForPlugins}
 
   qdrant:
-    image: qdrant/qdrant@sha256:0fb8897412abc81d1c0430a899b9a81eb8328aa634e7242d1bc804c1fe8fe863
+    image: qdrant/qdrant:v1.17.0@sha256:f1c7272cdac52b38c1a0e89313922d940ba50afd90d593a1605dbbc214e66ffb
     volumes:
       - qdrant-storage:/qdrant/storage
 
   pyroscope:
     container_name: 'pyroscope'
-    image: grafana/pyroscope:weekly-f129-6d0f4264a@sha256:89f1108d5534e3de0a54d72e4eb36c11d300a16029b1bc289886694ef307349a
+    image: grafana/pyroscope:1.20.0@sha256:77b87e1a7ff2c9465951e47444f08b0e434ea651a72a56739f9c9dc676b6246c
     ports:
       - 4100:4100/tcp
     volumes:
@@ -55,7 +55,7 @@ services:
       context: ./samples/rideshare
       dockerfile: Dockerfile.load-generator
     environment:
-      - HOST_PREFIX=pyroscope-app-plugin_rideshare
+      - HOST_PREFIX=profiles-drilldown-rideshare
       # This should be the same as the rideshare replica count.
       - REPLICAS=5
       # Set this to 1 to turn on debug logging.

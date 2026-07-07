@@ -1,8 +1,10 @@
 import { css } from '@emotion/css';
+import { t } from '@grafana/i18n';
 import { useStyles2 } from '@grafana/ui';
+import { sanitizeHref } from '@shared/domain/sanitize';
 import { logger } from '@shared/infrastructure/tracking/logger';
 import Markdown from 'markdown-to-jsx';
-import React, { ReactNode } from 'react';
+import React, { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { OpenAiReply } from '../domain/useOpenAiChatCompletions';
 
@@ -33,6 +35,20 @@ const onClickSearchTerm = (event: any) => {
   searchInputElement.dispatchEvent(new Event('input', { bubbles: true }));
 };
 
+const SafeLink = ({ children, href, ...props }: AnchorHTMLAttributes<HTMLAnchorElement>) => {
+  const safeHref = sanitizeHref(href);
+
+  if (!safeHref) {
+    return <span>{children}</span>;
+  }
+
+  return (
+    <a {...props} href={safeHref} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
+  );
+};
+
 const SearchTerm = ({ children }: { children: ReactNode }) => {
   const styles = useStyles2(getStyles);
 
@@ -42,14 +58,22 @@ const SearchTerm = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <code className={styles.searchLink} title="Search for this node" onClick={onClickSearchTerm}>
+    <code
+      className={styles.searchLink}
+      title={t('ai-panel.reply.search-node', 'Search for this node')}
+      onClick={onClickSearchTerm}
+    >
       {children}
     </code>
   );
 };
 
 const MARKDOWN_OPTIONS = {
+  disableParsingRawHTML: true,
   overrides: {
+    a: {
+      component: SafeLink,
+    },
     code: {
       component: SearchTerm,
     },

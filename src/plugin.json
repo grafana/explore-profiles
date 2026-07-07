@@ -6,13 +6,36 @@
   "autoEnabled": true,
   "backend": false,
   "preload": true,
+  "languages": [
+    "en-US",
+    "cs-CZ",
+    "de-DE",
+    "es-ES",
+    "fr-FR",
+    "hu-HU",
+    "id-ID",
+    "it-IT",
+    "ja-JP",
+    "ko-KR",
+    "nl-NL",
+    "pl-PL",
+    "pt-BR",
+    "pt-PT",
+    "ru-RU",
+    "sv-SE",
+    "tr-TR",
+    "zh-Hans",
+    "zh-Hant"
+  ],
   "dependencies": {
-    "grafanaDependency": ">=11.6.11 <12 || >=12.0.10 <12.1 || >=12.1.7 <12.2 || >=12.2.5",
+    "grafanaDependency": ">=11.6.11-0 <12 || >=12.0.10-0 <12.1 || >=12.1.7-0 <12.2 || >=12.2.5-0",
     "plugins": [],
     "extensions": {
       "exposedComponents": [
         "grafana-o11yinsights-app/insights-launcher/v1",
-        "grafana-adaptiveprofiles-app/resolution-boost/v1"
+        "grafana-adaptiveprofiles-app/resolution-boost/v1",
+        "grafana/query-library-context/v1",
+        "grafana/add-to-dashboard-form/v1"
       ]
     }
   },

@@ -1,6 +1,7 @@
 import { PluginExtensionAddedLinkConfig, PluginExtensionPoints, RawTimeRange } from '@grafana/data';
 import { DataQuery } from '@grafana/schema';
 import { GrafanaPyroscopeDataQuery } from '@grafana/schema/dist/esm/raw/composable/grafanapyroscope/dataquery/x/GrafanaPyroscopeDataQuery_types.gen';
+import { parseRawFilters } from '@shared/components/QueryBuilder/domain/helpers/queryToFilters';
 
 export type PluginExtensionExploreContext = {
   targets: DataQuery[];
@@ -16,19 +17,11 @@ type URLParamsBuilderProps = {
 
 // Helper function to extract additional labels (preserving operators)
 function extractAdditionalLabels(labelSelector: string): string[] {
-  const labels: string[] = [];
-  // Match: label_name + operator + quoted_value
-  const labelRegex = /(\w+)(=|!=|=~|!~)"([^"]+)"/g;
-  let match;
-  while ((match = labelRegex.exec(labelSelector)) !== null) {
-    if (match[1] !== 'service_name') {
-      // Skip service_name, handled separately
-      // must have | delimiter for Scenes variables
-      const scenesDelimiter = '|';
-      labels.push(`${match[1]}${scenesDelimiter}${match[2]}${scenesDelimiter}${match[3]}`); // Remove quotes, they'll be added by URLSearchParams
-    }
-  }
-  return labels;
+  const scenesDelimiter = '|';
+
+  return parseRawFilters(labelSelector)
+    .filter(([name]) => name !== 'service_name')
+    .map(([name, op, value]) => `${name}${scenesDelimiter}${op}${scenesDelimiter}${value}`);
 }
 
 /**
@@ -229,6 +222,7 @@ export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<any> = {
       spanSelector,
       datasource: context.datasource,
       groupBy: ['service_name'],
+      includeExemplars: false,
     };
 
     if (pyroscopeQuery.datasource) {

@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, SelectableValue } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Field, Icon, RefreshPicker, Spinner, Tooltip, useStyles2 } from '@grafana/ui';
 import { noOp } from '@shared/domain/noOp';
@@ -11,6 +12,8 @@ import { GridItemData } from 'src/pages/ProfilesExplorerView/components/SceneByV
 
 import { PYROSCOPE_LABELS_DATA_SOURCE } from '../../../infrastructure/pyroscope-data-sources';
 import { GroupBySelector } from './GroupBySelector';
+
+const GROUP_BY_LABEL_DEFAULT = 'Group by labels';
 
 export type OptionWithIndex = VariableValueOption & {
   index: number;
@@ -28,7 +31,7 @@ export class GroupByVariable extends QueryVariable {
     super({
       key: 'groupBy',
       name: 'groupBy',
-      label: 'Group by labels',
+      label: GROUP_BY_LABEL_DEFAULT,
       datasource: PYROSCOPE_LABELS_DATA_SOURCE,
       // "hack": we want to subscribe to changes of dataSource, serviceName and profileMetricId
       // we could also add filters, but the Service labels exploration type would reload all labels each time they are modified
@@ -43,9 +46,10 @@ export class GroupByVariable extends QueryVariable {
   }
 
   onActivate() {
-    if (!this.state.value) {
-      this.setState({ value: GroupByVariable.DEFAULT_VALUE });
-    }
+    this.setState({
+      label: t('variables.group-by.label', GROUP_BY_LABEL_DEFAULT),
+      ...(!this.state.value ? { value: GroupByVariable.DEFAULT_VALUE } : {}),
+    });
   }
 
   update = async () => {
@@ -120,7 +124,7 @@ export class GroupByVariable extends QueryVariable {
 
     if (loading) {
       return (
-        <Field label="Group by labels">
+        <Field label={t('variables.group-by.label', 'Group by labels')}>
           <Spinner className={styles.spinner} />
         </Field>
       );
@@ -128,7 +132,7 @@ export class GroupByVariable extends QueryVariable {
 
     if (error) {
       return (
-        <Field label="Group by labels">
+        <Field label={t('variables.group-by.label', 'Group by labels')}>
           <div className={styles.groupByErrorContainer}>
             <Tooltip theme="error" content={error.toString()}>
               <Icon className={styles.iconError} name="exclamation-triangle" size="xl" />

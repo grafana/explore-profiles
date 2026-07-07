@@ -1,0 +1,674 @@
+{
+  "actions": {
+    "exemplar-toggle": {
+      "hide": "Dölj exempel",
+      "label": "Exemplar",
+      "show": "Visa exempel"
+    },
+    "fav": {
+      "favorite": "Favorit",
+      "unfavorite": "Avmarkera som favorit"
+    }
+  },
+  "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
+    "profile-type-selector": {
+      "label": "Profil"
+    },
+    "tabs": {
+      "diff-view": "",
+      "single-view": "Enskild vy"
+    },
+    "view": {
+      "title": "Ad hoc-vy"
+    }
+  },
+  "ai-panel": {
+    "analyzing": "Analyserar …",
+    "close": "Stäng panelen",
+    "fetch-error": "Fel vid laddning av profildata!",
+    "fetch-error-message": "Vi ber om ursäkt för eventuella besvär. Försök igen senare.",
+    "follow-up": {
+      "placeholder": "Ställ en uppföljningsfråga …",
+      "send": "Skicka"
+    },
+    "llm-error": "",
+    "llm-error-message": "Vi ber om ursäkt för eventuella besvär. Försök igen eller kontakta din organisationsadministratör om problemet kvarstår.",
+    "reply": {
+      "search-node": "Sök efter den här noden"
+    },
+    "retry": "Försök igen",
+    "title": "Analys av flamgraf",
+    "validation-error": "Valideringsfel!"
+  },
+  "analyze-diff": {
+    "context": {
+      "title": "DOT-profiler och instruktioner"
+    },
+    "error": "Det gick inte att hämta DOT-profiler för analys",
+    "prompt": "Analysera skillnaderna mellan dessa två prestandaprofiler."
+  },
+  "back-button": {
+    "aria-label": "Tillbaka till Profiles Drilldown",
+    "label": "Tillbaka till Profiles Drilldown"
+  },
+  "create-recording-rule": {
+    "cancel": "Avbryt",
+    "create": "Skapa",
+    "filters": {
+      "description": "Filter som valts i huvudvyn kommer att tillämpas på denna regel",
+      "label": "Filter",
+      "none": "Inga filter har valts"
+    },
+    "function-name": {
+      "aria-label": "Funktionsnamn",
+      "description": "Valfritt funktionsnamn för att filtrera inspelningsregeln",
+      "label": "Funktionsnamn",
+      "placeholder": "Lämna tomt för total aggregering"
+    },
+    "labels": {
+      "description": "Ytterligare profileringsetiketter som ska vidarebefordras till mätvärdet",
+      "label": "Ytterligare etiketter"
+    },
+    "menu-option": "Skapa inspelningsregel",
+    "metric-name": {
+      "aria-label": "Måttnamn",
+      "description": "",
+      "invalid": "Ogiltigt mätvärdesnamn.",
+      "label": "Måttnamn",
+      "pattern-alphanumeric": "Får endast innehålla alfanumeriska tecken eller understreck",
+      "pattern-error": "Måttnamnet är ogiltigt. Det måste ha följande egenskaper:",
+      "pattern-no-number": "Får inte börja med en siffra",
+      "required": "Mätvärdesnamn krävs."
+    },
+    "profile-type": {
+      "label": "Profiltyp"
+    },
+    "service-name": {
+      "all": "Alla tjänster",
+      "label": "Namn på tjänst"
+    },
+    "title": "Skapa inspelningsregel"
+  },
+  "diff-flame-graph": {
+    "compare-panel": {
+      "annotation-title": "{{title}} flamgrafintervall",
+      "baseline": "Baslinje",
+      "comparison": "Jämförelse",
+      "flame-graph": "Flamgraf",
+      "range-selection-mode": "Läge för val av intervall",
+      "sync-time-ranges": "Synkronisera tidsintervall",
+      "time-picker": "Tidsväljare",
+      "tooltip-description": "Använd dessa knappar för att ändra beteendet när du markerar ett intervall med musen på tidsserien:",
+      "tooltip-flame-graph": "Flamgraf",
+      "tooltip-flame-graph-description": "Tidsintervall för att skapa flamgrafen (stackspåren hämtas endast för det valda intervallet)",
+      "tooltip-time-picker": "Tidsväljare",
+      "tooltip-time-picker-description": "Zooma in tidsintervall (standardbeteende)"
+    },
+    "error-loading-profile": "Fel vid laddning av profildata!",
+    "explain-button": "Förklara diff-flamgrafen",
+    "missing-selections": {
+      "auto-select": "Välj automatiskt",
+      "how-to-alt": "Så här visar du diff-flamgrafen",
+      "learn-how": "Klicka här för att lära dig hur du markerar flamgrafintervallen med musen",
+      "step-1": "Se till att läget för val av intervall för flamgraf har valts",
+      "step-2": "Använd musen för att markera de önskade tidsintervallen för både baslinjen och jämförelsetidsserien",
+      "title": "Välj intervall för både baslinje- och jämförelseflamgrafen för att visa diff-flamgrafen"
+    },
+    "no-profile-data": "Inga profildata tillgängliga",
+    "no-profile-data-message": "Kontrollera att du har valt lämpliga filter och tidsintervall.",
+    "presets": {
+      "1h-ago-vs-now": "1 timme sedan jämfört med nu",
+      "1h-ago-vs-now-description": "30-minutersfönster",
+      "24h-ago-vs-now": "24 timmar sedan jämfört med nu",
+      "6h-ago-vs-now": "6 timmar sedan jämfört med nu",
+      "label": "Förinställningar för jämförelse",
+      "placeholder": "Välj en förinställning"
+    },
+    "settings-error": {
+      "message": "Vissa funktioner kanske inte fungerar som förväntat (t.ex. exportalternativ för flamgraf). Försök att ladda om sidan. Vi ber om ursäkt för besväret.",
+      "title": "Fel vid hämtning av plugin-inställningar!"
+    },
+    "title": "Diff-flamgraf för {{serviceName}} ({{profileMetricType}})"
+  },
+  "error-page": {
+    "banner-message": "Prova att ladda om sidan eller kontakta din organisationsadministratör om problemet kvarstår. Vi ber om ursäkt för besväret.",
+    "banner-title": "Allvarligt fel!",
+    "title": "Grafana Profiles Drilldown"
+  },
+  "explorer": {
+    "exploration-type": {
+      "all-services": "Alla tjänster",
+      "all-services-description": "Översikt över alla tjänster, för valfri profiltyp",
+      "diff-flame-graph": "Diff-flamgraf",
+      "diff-flame-graph-description": "Jämför skillnaderna mellan två flamgrafer",
+      "favorites": "Favoritsaker",
+      "favorites-description": "Översikt över favoritvisualiseringar",
+      "flame-graph": "Flamgraf",
+      "flame-graph-description": "Flamgraf för enskild tjänst",
+      "labels": "Etiketter",
+      "labels-description": "Utforskning och filtrering av etiketter för enskild tjänst",
+      "profile-types": "Profiltyper",
+      "profile-types-description": "Översikt över alla profiltyper för en enskild tjänst"
+    },
+    "header": {
+      "add-recording-rule": "Lägg till inspelningsregel",
+      "recording-rules-tooltip": "Inspelningsregler",
+      "settings-tooltip": "Visa/redigera klientinställningar",
+      "share-tooltip": "Kopiera delbar länk till urklippet",
+      "upload-tooltip": "Ladda upp ad hoc-profiler",
+      "view-recording-rules": "Visa inspelningsregler"
+    }
+  },
+  "export-data": {
+    "aria-label": "Exportera profildata",
+    "tooltip": "Exportera profildata"
+  },
+  "export-menu": {
+    "aria-label": "Exportera profildata",
+    "error-flamegraph-com": "Det gick inte att exportera till flamegraph.com!",
+    "error-loading-profile": "Fel vid laddning av Flamebearer-profildata!",
+    "error-png": "Det gick inte att exportera till PNG!",
+    "error-pprof": "Det gick inte att exportera till PPROF!",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "Exportera profildata"
+  },
+  "exposed-components": {
+    "loading": "Laddar …"
+  },
+  "favorites": {
+    "data-source": {
+      "test-success": "OK"
+    }
+  },
+  "flame-graph": {
+    "error-loading-profile": "Fel vid laddning av profildata!",
+    "explain-button": "Förklara flamgrafen",
+    "profile-id-selector": {
+      "filter-label": "Filteretikett",
+      "filter-operator": "Filteroperatör",
+      "filter-value": "Filtervärde",
+      "name": "Profil-ID",
+      "remove": "Ta bort profil-ID-väljare från frågan",
+      "tooltip": "Du har lagt till en profil-ID-väljare i Flamegraph-frågan ({{profileIdSelector}})."
+    },
+    "settings-error": {
+      "message": "Vissa funktioner kanske inte fungerar som förväntat (t.ex. minimerade flamgrafer). Försök att ladda om sidan. Vi ber om ursäkt för besväret.",
+      "title": "Fel vid hämtning av plugin-inställningar!"
+    },
+    "span-selector": {
+      "added": "Intervallväljare tillagd",
+      "remove": "Ta bort intervallväljare från frågan",
+      "tooltip": "Du har lagt till en intervallväljare i flamegraffrågan ({{spanSelector}})."
+    },
+    "title": "Flamgraf för {{serviceName}} ({{profileMetricType}})"
+  },
+  "function-details": {
+    "ai-suggestions": {
+      "analyzing": "Analyserar …",
+      "fetch-error": "Fel vid hämtning av profiler!",
+      "fetch-error-message": "Vi ber om ursäkt för eventuella besvär. Försök igen senare.",
+      "llm-error": "Det gick inte att generera innehåll med OpenAI!",
+      "llm-error-message": "Vi ber om ursäkt för eventuella besvär. Försök igen senare eller kontakta din organisationsadministratör om problemet kvarstår.",
+      "title": "Förslag på kodoptimering"
+    },
+    "close": "stäng",
+    "code": {
+      "breakdown-per-line": "Uppdelning per rad",
+      "file-unavailable": "(filinformation är inte tillgänglig)",
+      "optimize": "Optimera kod",
+      "view-on-github": "Visa på GitHub"
+    },
+    "commit": "Commit",
+    "commit-option": {
+      "author-date": "{{author}} den {{date}}"
+    },
+    "commit-select": {
+      "no-options": "Hittade ingen commit"
+    },
+    "commit-tooltip": "Versionen av applikationen (commit) där funktionen definieras. Använd rullgardinsmenyn för att rikta in dig på en specifik commit.",
+    "context-menu": {
+      "label": "Funktionsdetaljer"
+    },
+    "copy-to-clipboard": "Kopiera till urklippet",
+    "fetch-error": "Fel vid hämtning av funktionsdetaljer!",
+    "file": "Fil",
+    "file-path-copied": "Filsökväg kopierad till urklippet!",
+    "file-tooltip": "Filsökväg där funktionen definieras",
+    "function-name": "Funktionsnamn",
+    "github": {
+      "banner-dismiss": "Avfärda",
+      "banner-git-ref": "De bör ställas in på den fullständiga webbadressen till GitHub-lagringsplatsen respektive den aktuella <2>git-referensen</2> för den pågående tjänsten.",
+      "banner-labels": "För att aktivera den här funktionen måste du lägga till två nya etiketter när du skickar profilerna <2>service_repository</2> och <4>service_git_ref</4>. ",
+      "banner-language-support": "Detta språk stöder integration med <1></1> GitHub.",
+      "banner-learn-more": "Läs mer",
+      "banner-title": "Integrera med Github",
+      "connect-button": "Anslut till {{name}}",
+      "connect-tooltip": "När anslutningen har upprättats kommer GitHub-koden endast att vara tillgänglig från den här webbläsarsessionen.",
+      "connecting": "Ansluter till GitHub …",
+      "disconnect": "Koppla från GitHub",
+      "view-commit": "Visa commit"
+    },
+    "github-callback": {
+      "logging-in": "Loggar in på GitHub …",
+      "title": "GitHub-inloggning"
+    },
+    "not-available": "-",
+    "override": {
+      "add": "Lägg till",
+      "add-title": "Lägg till ny åsidosättning av lagringsplatsinformation",
+      "alert-debug": "För felsökningsändamål kan du ange information om lagringsplatsen manuellt med hjälp av detta formulär. Det anpassade värdet sparas i din webbläsares lokala lagring för den angivna datakällan och det angivna tjänstnamnet.",
+      "alert-labels": "För att aktivera GitHub-integrationsfunktionen måste du lägga till två nya etiketter när du skickar profilerna: <1>service_repository</1> och <3>service_git_ref</3>.",
+      "alert-title": "Etiketter för Github-integration",
+      "aria-label": "åsidosätt lagringsplatsinställningar",
+      "data-source": "Datakälla",
+      "delete": "Radera åsidosättning",
+      "edit": "Redigera",
+      "edit-title": "Redigera åsidosättning av lagringsplatsinformation",
+      "git-ref-label": "service_git_ref (commit-referens)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Ta bort alla åsidosättanden",
+      "remove-all-confirm": "Ta bort alla",
+      "repository-label": "service_repository (webbadress för lagringsplatsen) – obligatoriskt",
+      "repository-placeholder": "Ange namnet på GitHub-lagringsplatsen, https://github.com/org/repo",
+      "repository-required": "Namn på lagringsplats krävs",
+      "root-path": "Sökväg till rot",
+      "root-path-placeholder": "Ange rotsökväg",
+      "service-name": "Namn på tjänst",
+      "user-set": "(användaruppsättning)"
+    },
+    "repository": "Databas",
+    "repository-tooltip": "Lagringsplatsen som är konfigurerad för den valda tjänsten",
+    "start-line": "Startrad",
+    "start-line-tooltip": "Raden där denna funktionsdefinition börjar",
+    "title": "Funktionsdetaljer"
+  },
+  "give-feedback": {
+    "button": "Ge feedback",
+    "tooltip": "Berätta vad du tycker om Profiles i Grafana."
+  },
+  "grid": {
+    "empty-state": {
+      "no-results": "Inga resultat"
+    },
+    "error": {
+      "title": "Frågefel!"
+    },
+    "exemplars": {
+      "view-profile": "Visa profil"
+    },
+    "layout": {
+      "aria-label": "Layoutväxlare",
+      "grid": "Rutnät",
+      "rows": "Rader"
+    },
+    "no-data": {
+      "label": "Dölj paneler utan data"
+    },
+    "panel-type": {
+      "aria-label": "Växlare för paneltyp",
+      "histograms": "Histogram",
+      "maxima": "Maxima",
+      "time-series": "Tidsserier",
+      "totals": "Totalsummor"
+    },
+    "quick-filter": {
+      "aria-label": "Snabbfilter",
+      "clear": "Rensa sökningen"
+    }
+  },
+  "labels": {
+    "compare": {
+      "aria-label": "",
+      "clear-tooltip": "Rensa jämförelseval",
+      "tooltip-empty": "Välj både en baslinje- och en jämförelsepanel för att jämföra deras flamgrafer",
+      "tooltip-ready": "Jämför ”{{baseline}}” med ”{{comparison}}”",
+      "tooltip-select-baseline": "Välj en annan panel att jämföra med ”{{label}}”",
+      "tooltip-select-comparison": "Välj en annan panel att jämföra med ”{{label}}”",
+      "button_one": "Jämför ({{count}}/2)",
+      "button_other": "Jämför ({{count}}/2)"
+    },
+    "data-source": {
+      "all": "Alla",
+      "test-success": "OK"
+    },
+    "filter": {
+      "clear-tooltip": "Rensa ”{{label}}” från filtren",
+      "exclude": "Exkludera",
+      "exclude-tooltip": "Exkludera ”{{label}}” i filtren",
+      "include": "Inkludera",
+      "include-tooltip": "Inkludera ”{{label}}” i filtren"
+    },
+    "grid": {
+      "no-results": "Inga resultat",
+      "refresh-tooltip": "Klicka för att helt uppdatera alla paneler som visas på skärmen"
+    },
+    "stats-panel": {
+      "baseline": "Baslinje",
+      "baseline-description": "Klicka för att välja ”{{value}}” som baslinje för jämförelse",
+      "comparison": "Jämförelse",
+      "comparison-description": "Klicka för att välja ”{{value}}” som mål för jämförelse",
+      "total": "{{statsDescription}}: {{total}}"
+    }
+  },
+  "onboarding": {
+    "empty-loading": {
+      "title": "Laddar …"
+    },
+    "modal": {
+      "billing": {
+        "description": "Användningen av Grafana Cloud-profiler omfattas av <2>Grafana Clouds prissättning</2> för profiler.<br/>För mer information kan du läsa <6>blogginlägget</6> om tillkännagivandet.",
+        "title": "Hur faktureringen fungerar"
+      },
+      "cloud": {
+        "step1": {
+          "description": "Använd <2>Grafana Alloy</2> eller <6>Pyroscope SDK:er</6> för att skicka profiler från dina applikationer till Grafana Cloud.",
+          "title": "Lägg till profilering i din applikation"
+        },
+        "step2": {
+          "description": "Gå till <1>Grafana Cloud Stack-inställningarna</1> för att hitta dina Grafana Cloud-autentiseringsuppgifter.",
+          "title": "Konfigurera dina applikationer"
+        },
+        "step3": {
+          "description": "När du är klar med den första konfigurationen ska du uppdatera den här sidan för att se dina profileringsdata.",
+          "title": "Börja få prestandainsikter"
+        }
+      },
+      "decrease-latency": {
+        "description": "Bibehåll hög hastighet och effektivitet och förbättra applikationens prestanda. I en konkurrensutsatt digital värld leder minskad latens till ökade intäkter.",
+        "title": "Minska latensen"
+      },
+      "how-to-get-started": "Så här kommer du igång",
+      "reduce-costs": {
+        "description": "Upptäck CPU-toppar, minnesläckor och andra ineffektiviteter med insyn i resursanvändningen på kodnivå. Teamen kan sedan optimera sin kod och sänka infrastrukturkostnaderna.",
+        "title": "Minska kostnaderna"
+      },
+      "resolve-incidents": {
+        "description": "Minska den genomsnittliga tiden för lösning (MTTR) genom att korrelera kontinuerliga profileringsdata med mätvärden, loggar och traces för att snabbt identifiera grundorsaken till eventuella problem.",
+        "title": "Åtgärda incidenter snabbare"
+      },
+      "self-hosted": {
+        "step1": {
+          "description": "Installera <1>Pyroscope Server</1> i din infrastruktur. Eller om du vill använda en värdtjänst kan du gå till <5>Grafana Cloud Stack-inställningarna</5> för att hitta dina Grafana Cloud-autentiseringsuppgifter.",
+          "title": "Konfigurera Pyroscope-servern"
+        },
+        "step2": {
+          "description": "Lägg till en ny <1>Pyroscope-datakälla</1>. Använd webbadressen till Pyroscope-servern och lämpliga säkerhetsuppgifter om du använder Grafana Cloud-profiler.",
+          "title": "Konfigurera Grafana"
+        },
+        "step3": {
+          "description": "Använd <2>Grafana Alloy</2> eller <6>Pyroscope SDK:er</6> för att skicka profiler från dina applikationer till Grafana Cloud.",
+          "title": "Lägg till profilering i din applikation"
+        }
+      },
+      "subtitle": "Optimera infrastrukturkostnaderna, förenkla felsökningen och förbättra applikationens prestanda",
+      "title": "Välkommen till detaljanalys av Profiles i Grafana",
+      "what-you-can-do": "Vad du kan göra"
+    },
+    "no-data-source": {
+      "alert-message": "Detta tilläggsprogram kräver en Pyroscope-datakälla. <2>Lägg till och konfigurera en Pyroscope-datakälla</2> i din Grafana-instans.",
+      "alert-title": "Pyroscope-datakälla saknas!",
+      "title": "Grafana Profiles Drilldown"
+    },
+    "page": {
+      "close": "Stäng",
+      "nav": "Introduktion"
+    }
+  },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
+  "panel-box": {
+    "cancel-query": "Avbryt fråga",
+    "loading-bar": "Panelladdningsfält",
+    "panel-status": "Panelstatus",
+    "stop-streaming": "Avsluta streaming",
+    "streaming": "Streaming",
+    "untitled": "Namnlös"
+  },
+  "panel-menu": {
+    "aria-label-no-title": "Meny för panel utan titel",
+    "aria-label-with-title": "Meny för panel med titel {{title}}",
+    "title": "Meny"
+  },
+  "plugin-info": {
+    "aria-label": "Information om tillägg",
+    "changelog": "Ändringslogg",
+    "commit-sha": "Commit-SHA: {{shortCommitSha}}",
+    "contribute": "Bidra",
+    "documentation": "Dokumentation",
+    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "last-update": "Senaste uppdatering: {{updated}}",
+    "report-issue": "Rapportera ett problem",
+    "title": "Information om tillägg",
+    "version": "Grafana Profiles Drilldown v{{version}}"
+  },
+  "query-analysis": {
+    "blocks": "Block",
+    "data-in-time-range": "Data inom tidsintervall",
+    "deduplication": "Avduplicering",
+    "index-store": "Indexlagring",
+    "no": "nej",
+    "profiles": "Profiler",
+    "profiles-store": "Profilarkiv",
+    "query-info-aria-label": "Information om fråga",
+    "replicas": "Replikor",
+    "samples": "Exempel",
+    "series": "Serie",
+    "series-in-query": "Serier i frågan",
+    "stored-data-in-time-range": "Lagrade data inom tidsintervall: {{totalBytesInTimeRange}}",
+    "symbols-store": "Symbolarkiv",
+    "yes": "ja"
+  },
+  "query-builder": {
+    "chiclet": {
+      "edit-attribute": "Redigera ”{{label}}”",
+      "edit-operator": "Redigera ”{{label}}”",
+      "filter": "Filter",
+      "filter-label": "Filteretikett",
+      "filter-operator": "Filteroperatör",
+      "filter-value": "Filtervärde",
+      "partial-filter": "Partiellt filter",
+      "remove-filter": "Ta bort filter"
+    },
+    "error-load": "Ett oväntat fel inträffade vid inläsning! Försök igen.",
+    "execute": "Kör",
+    "execute-tooltip": "Kör ny fråga",
+    "loading": "Laddar …",
+    "no-value": "(inget värde)",
+    "nothing-to-execute-tooltip": "Inget att utföra, alla filter har tillämpats",
+    "operators": {
+      "in": "i",
+      "in-description": "Är en av",
+      "is-empty": "är tomt",
+      "not-in": "inte i",
+      "not-in-description": "Är inte en av",
+      "regex-match-description": "Matchar reguljärt uttryck",
+      "regex-not-match-description": "Matchar inte reguljärt uttryck"
+    },
+    "placeholder": {
+      "filter-add": "Filtrera efter etikettvärden …",
+      "select-label": "Välj en etikett …",
+      "select-operator": "Välj en operatör …",
+      "select-value": "Välj ett värde …",
+      "select-values": "Välj värden …",
+      "type-value": "Skriv in ett reguljärt uttryck …"
+    },
+    "suggestions-disabled": "Förslag är inaktiverade för denna etikett.",
+    "suggestions-none": "Inga förslag tillgängliga."
+  },
+  "recording-rules": {
+    "delete": {
+      "aria-label": "Radera inspelningsregel",
+      "body": "Är du säker på att du vill radera {{metricName}} inspelningsregeln för ?",
+      "confirm": "Ja",
+      "title": "Radera inspelningsregel"
+    },
+    "details": {
+      "filters": "Filter",
+      "no": "Nej",
+      "no-labels": "Inga etiketter",
+      "read-only": "Skrivskyddad",
+      "yes": "Ja"
+    },
+    "empty": {
+      "description": "Öppna ett flamdiagram, klicka på blocket ”Totalt” högst upp och välj ”Skapa inspelningsregel” i snabbmenyn för att definiera en ny regel.",
+      "message": "Inga inspelningsregler"
+    },
+    "error": {
+      "feature-required": "Denna funktion kräver Pyroscope med flaggan recording_rules aktiverad.",
+      "message": "Fel vid hämtning av inspelningsregler",
+      "title": "Fel vid hämtning av inspelningsregler"
+    },
+    "table": {
+      "actions": "Åtgärder",
+      "all-services": "Alla tjänster",
+      "function-name": "Funktionsnamn",
+      "labels": "Etiketter",
+      "name": "Namn",
+      "none": "Inget",
+      "profile-type": "Profiltyp",
+      "readonly-tooltip": "Den här regeln är etablerad med klientinställningar och kan inte raderas.",
+      "service-name": "Namn på tjänst",
+      "total-all-functions": "Totalt (alla funktioner)"
+    },
+    "title": "Inspelningsregler"
+  },
+  "saved-searches": {
+    "load": {
+      "no-searches": "Inga sparade sökningar att visa.",
+      "no-searches-tooltip": "Inga sparade sökningar att läsa in",
+      "remove-tooltip": "Ta bort",
+      "saved-query-tooltip": "Läs in sparad fråga",
+      "select": "Välj",
+      "select-pyroscope-query": "Välj en Pyroscope-fråga.",
+      "title": "Läs in en tidigare sparad sökning",
+      "tooltip": "Läs in sparad sökning"
+    },
+    "save": {
+      "cancel": "Avbryt",
+      "close": "Stäng",
+      "description-label": "Beskrivning",
+      "error-message": "Ett oväntat fel uppstod när denna sökning skulle sparas.",
+      "existing-search-warning": "Det finns en tidigare sparad sökning med samma fråga: {{title}}",
+      "info-message": "Sparade sökningar lagras lokalt i din webbläsare och kommer endast att vara tillgängliga på den här enheten.",
+      "save": "Spara",
+      "saved-queries-tooltip": "Spara i Sparade frågor",
+      "success-body": "Sökningen har sparats.",
+      "success-message": "Sökningen har sparats.",
+      "success-title": "Lyckades",
+      "title": "Spara aktuell sökning",
+      "title-label": "Titel",
+      "tooltip": "Spara sökning"
+    }
+  },
+  "series": {
+    "data-source": {
+      "test-success": "OK"
+    }
+  },
+  "settings": {
+    "loading": "Laddar …",
+    "save-button": "Spara inställningar",
+    "tabs": {
+      "ui-settings": "Användargränssnittsinställningar",
+      "unknown-extension": "Okänt tillägg"
+    },
+    "title": "Profilinställningar (tenant)",
+    "ui": {
+      "collapsed-flame-graphs": {
+        "label": "Minimerade flamgrafer",
+        "toggle": "Växla minimerade flamgrafer"
+      },
+      "enable-function-details": {
+        "label": "Aktivera funktionsdetaljer",
+        "learn-more": "Läs mer",
+        "toggle": "Växla funktionsdetaljer",
+        "tooltip": "Funktionen för funktionsdetaljer gör det möjligt att kartlägga resursanvändningen till raderna i källkoden. Om GitHub-integrationen har konfigurerats kommer källkoden att laddas ner från GitHub."
+      },
+      "fetch-error": {
+        "message": "Försök att ladda om sidan. Vi ber om ursäkt för besväret.",
+        "title": "Fel vid hämtning av plugin-inställningar!"
+      },
+      "flame-graph": {
+        "label": "Flamgraf"
+      },
+      "function-details": {
+        "label": "Funktionsdetaljer"
+      },
+      "max-nodes": {
+        "label": "Maximalt antal noder"
+      },
+      "metrics-from-profiles": {
+        "disable-hint": "För att sluta exportera data måste du radera alla relaterade inspelningsregler innan du inaktiverar den här funktionen.",
+        "disable-warning": "Om du inaktiverar den här funktionen döljs den endast från användargränssnittet. Inga befintliga inspelningsregler tas bort. Dessa regler kommer att förbli aktiva och fortsätta att exportera mätvärden, vilket fortfarande kommer att påverka din faktura.",
+        "enable-warning": "Om du aktiverar den här funktionen kan du definiera inspelningsregler från Profiles Drilldown. Alla inspelningsregler du skapar kommer att skicka nya mätvärden till din Grafana Cloud-instans, vilket ökar din dataanvändning i Grafana Mimir och eventuellt påverkar din faktura.",
+        "label": "Mätvärden från profiler",
+        "toggle": "Aktivera mätvärden från profiler",
+        "toggle-label": "Aktivera mätvärden från profiler",
+        "tooltip": "Gör det möjligt att skapa inspelningsregler från profiler"
+      }
+    }
+  },
+  "timeseries": {
+    "menu": {
+      "exemplars": "Exemplar",
+      "open-in-explore": "Öppna i Utforskaren",
+      "scale-linear": "Linjär",
+      "scale-log2": "Log2",
+      "scale-type": "Skaltyp"
+    }
+  },
+  "variables": {
+    "data-source": {
+      "label": "Datakälla"
+    },
+    "favorite": {
+      "label": "🔖 Favorit"
+    },
+    "filters": {
+      "label": "Filter"
+    },
+    "group-by": {
+      "label": "Gruppera efter etiketter",
+      "labels-selector": "Etikettväljare",
+      "other-labels-placeholder": "Andra etiketter",
+      "other-labels-selector": "Väljare för andra etiketter",
+      "refresh-tooltip": "Klicka för att uppdatera alla etiketter",
+      "select-label-placeholder": "Välj etikett"
+    },
+    "profile-id-selector": {
+      "label": "Väljare för profil-ID"
+    },
+    "profile-metric": {
+      "aria-label": "Lista över profilmätvärden",
+      "label": "Profiltyp",
+      "loading": "Laddar …",
+      "placeholder_one": "Välj ett profilmätvärde ({{count}})",
+      "placeholder_other": "Välj ett profilmätvärde ({{count}})"
+    },
+    "service-name": {
+      "aria-label": "Lista över tjänster",
+      "label": "Service",
+      "loading": "Läser in tjänster …",
+      "unmatched-tooltip": "",
+      "placeholder_one": "Välj en tjänst ({{count}})",
+      "placeholder_other": "Välj en tjänst ({{count}})"
+    },
+    "span-selector": {
+      "label": "Intervallväljare"
+    }
+  }
+}

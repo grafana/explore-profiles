@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Alert, Button, IconButton, Spinner, useStyles2 } from '@grafana/ui';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
@@ -70,14 +71,14 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
     return (
       <Panel
         className={styles.sidePanel}
-        title="Flame graph analysis"
+        title={t('ai-panel.title', 'Flame graph analysis')}
         isLoading={data.isLoading}
         headerActions={
           <IconButton
-            title="Close panel"
+            title={t('ai-panel.close', 'Close panel')}
             name="times-circle"
             variant="secondary"
-            aria-label="close"
+            aria-label={t('ai-panel.close', 'Close panel')}
             onClick={onClose}
           />
         }
@@ -85,14 +86,18 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
       >
         <div className={styles.content}>
           {data.validationError && (
-            <InlineBanner severity="error" title="Validation error!" error={data.validationError} />
+            <InlineBanner
+              severity="error"
+              title={t('ai-panel.validation-error', 'Validation error!')}
+              error={data.validationError}
+            />
           )}
 
           {data.fetchError && (
             <InlineBanner
               severity="error"
-              title="Error while loading profile data!"
-              message="Sorry for any inconvenience, please try again later."
+              title={t('ai-panel.fetch-error', 'Error while loading profile data!')}
+              message={t('ai-panel.fetch-error-message', 'Sorry for any inconvenience, please try again later.')}
               error={data.fetchError}
             />
           )}
@@ -102,23 +107,28 @@ export class SceneAiPanel extends SceneObjectBase<SceneAiPanelState> {
           {data.isLoading && (
             <>
               <Spinner inline />
-              &nbsp;Analyzing...
+              &nbsp;<Trans i18nKey="ai-panel.analyzing">Analyzing...</Trans>
             </>
           )}
 
           {data.llmError && (
-            <Alert title="An error occured while generating content using OpenAI!" severity="warning">
+            <Alert
+              title={t('ai-panel.llm-error', 'An error occurred while generating content using OpenAI!')}
+              severity="warning"
+            >
               <div>
                 <div>
                   <p>{data.llmError.message}</p>
                   <p>
-                    Sorry for any inconvenience, please retry or if the problem persists, contact your organization
-                    admin.
+                    <Trans i18nKey="ai-panel.llm-error-message">
+                      Sorry for any inconvenience, please retry or if the problem persists, contact your organization
+                      admin.
+                    </Trans>
                   </p>
                 </div>
               </div>
               <Button className={styles.retryButton} variant="secondary" fill="outline" onClick={() => actions.retry()}>
-                Retry
+                <Trans i18nKey="ai-panel.retry">Retry</Trans>
               </Button>
             </Alert>
           )}

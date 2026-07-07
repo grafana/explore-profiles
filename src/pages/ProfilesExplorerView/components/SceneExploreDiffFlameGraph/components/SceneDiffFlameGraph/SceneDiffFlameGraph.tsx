@@ -1,5 +1,6 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Spinner, useStyles2 } from '@grafana/ui';
 import { FlameGraph } from '@shared/components/FlameGraph/FlameGraph';
@@ -23,7 +24,6 @@ import { AnalyzeDiffFlameGraph } from '../../../AnalyzeDiffFlameGraph';
 import { AIButton } from '../../../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../../../SceneAiPanel/SceneAiPanel';
 import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
-import { EventDiffChoosePreset } from '../../domain/events/EventDiffChoosePreset';
 import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 import { MissingSelectionsBanner } from './ui/MissingSelectionsBanner';
@@ -48,14 +48,19 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     return (
       <>
         <PyroscopeLogo size="small" />
-        Diff flame graph for {serviceName} ({profileMetricType})
+        <Trans i18nKey="diff-flame-graph.title" values={{ serviceName, profileMetricType }}>
+          Diff flame graph for {{ serviceName }} ({{ profileMetricType }})
+        </Trans>
       </>
     );
   }
 
   useSceneDiffFlameGraph = (): DomainHookReturnValue => {
     const { aiPanel } = this.useState();
-    const { baselineTimeRange, comparisonTimeRange } = (this.parent as SceneExploreDiffFlameGraph).useDiffTimeRanges();
+
+    const { baselineTimeRange, comparisonTimeRange } = sceneGraph
+      .findByKeyAndType(this, 'explore-diff-flame-graph', SceneExploreDiffFlameGraph)
+      .useDiffTimeRanges();
 
     const baselineQuery = useBuildPyroscopeQuery(this, 'filtersBaseline');
     const comparisonQuery = useBuildPyroscopeQuery(this, 'filtersComparison');
@@ -126,12 +131,6 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
     this.publishEvent(new EventDiffAutoSelect({ wholeRange: false }), true);
   };
 
-  onClickChoosePreset = () => {
-    reportInteraction('g_pyroscope_app_diff_choose_preset_clicked');
-
-    this.publishEvent(new EventDiffChoosePreset({}), true);
-  };
-
   onOpenLearnHow = () => {
     reportInteraction('g_pyroscope_app_diff_learn_how_clicked');
   };
@@ -154,8 +153,11 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
 
     if (data.fetchSettingsError) {
       displayWarning([
-        'Error while retrieving the plugin settings!',
-        'Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.',
+        t('diff-flame-graph.settings-error.title', 'Error while retrieving the plugin settings!'),
+        t(
+          'diff-flame-graph.settings-error.message',
+          'Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.'
+        ),
       ]);
     }
 
@@ -186,7 +188,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
         onClick={() => sidePanel.open('ai')}
         interactionName="g_pyroscope_app_explain_flamegraph_clicked"
       >
-        Explain Diff Flame Graph
+        <Trans i18nKey="diff-flame-graph.explain-button">Explain Diff Flame Graph</Trans>
       </AIButton>
     );
 
@@ -202,20 +204,26 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
           {data.hasMissingSelections && (
             <MissingSelectionsBanner
               onClickAutoSelect={model.onClickAutoSelect}
-              onClickChoosePreset={model.onClickChoosePreset}
               onOpenLearnHow={model.onOpenLearnHow}
             />
           )}
 
           {data.fetchProfileError && (
-            <InlineBanner severity="error" title="Error while loading profile data!" error={data.fetchProfileError} />
+            <InlineBanner
+              severity="error"
+              title={t('diff-flame-graph.error-loading-profile', 'Error while loading profile data!')}
+              error={data.fetchProfileError}
+            />
           )}
 
           {data.noProfileDataAvailable && (
             <InlineBanner
               severity="warning"
-              title="No profile data available"
-              message="Please verify that you've selected adequate filters and time ranges."
+              title={t('diff-flame-graph.no-profile-data', 'No profile data available')}
+              message={t(
+                'diff-flame-graph.no-profile-data-message',
+                "Please verify that you've selected adequate filters and time ranges."
+              )}
             />
           )}
 

@@ -1,5 +1,7 @@
 import { css } from '@emotion/css';
 import { AdHocVariableFilter } from '@grafana/data';
+import { t } from '@grafana/i18n';
+import { locationService } from '@grafana/runtime';
 import {
   EmbeddedSceneState,
   SceneComponentProps,
@@ -16,16 +18,22 @@ import {
   SplitLayout,
 } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
+import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScene';
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
+import { getKgAnnotationsInPyroscopeFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
+import { ensureOpenFeaturePluginInitialized } from '@shared/infrastructure/featureFlags/openFeature';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useState } from 'react';
 
+import { setupKeyboardShortcuts } from '../../../../services/keyboardShortcuts';
 import { SceneExploreAllServices } from '../../components/SceneExploreAllServices/SceneExploreAllServices';
 import { SceneExploreFavorites } from '../../components/SceneExploreFavorites/SceneExploreFavorites';
 import { SceneExploreServiceLabels } from '../../components/SceneExploreServiceLabels/SceneExploreServiceLabels';
 import { SceneExploreServiceProfileTypes } from '../../components/SceneExploreServiceProfileTypes/SceneExploreServiceProfileTypes';
+import { EventOpenAddToDashboard, type PanelDataRequestPayload } from '../../domain/actions/addToDashboard';
+import { AddToDashboardModal } from '../../domain/actions/AddToDashboardModal';
 import { getDefaultTimeRange } from '../../domain/buildTimeRange';
 import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameGraph';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
@@ -38,6 +46,7 @@ import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVaria
 import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
+import { getKgSceneProps } from '../../helpers/kgAnnotations';
 import { FavoritesDataSource } from '../../infrastructure/favorites/FavoritesDataSource';
 import { LabelsDataSource } from '../../infrastructure/labels/LabelsDataSource';
 import { SeriesDataSource } from '../../infrastructure/series/SeriesDataSource';
@@ -62,9 +71,12 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   explorationType?: ExplorationType;
   body?: SplitLayout;
   createRecordingRuleModal: SceneCreateRecordingRuleModal;
+  loadSearchScene: LoadSearchScene;
   isEmbedded?: boolean;
   initialFilters?: AdHocVariableFilter[];
   initialDS?: string;
+  isAddToDashboardModalOpen?: boolean;
+  addToDashboardPanelData?: PanelDataRequestPayload;
 }
 
 export enum ExplorationType {
@@ -77,44 +89,60 @@ export enum ExplorationType {
 }
 
 export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorerState> {
-  static EXPLORATION_TYPE_OPTIONS = [
-    {
-      value: ExplorationType.ALL_SERVICES,
-      label: 'All services',
-      description: 'Overview of all services, for any given profile type',
-    },
-    {
-      value: ExplorationType.PROFILE_TYPES,
-      label: 'Profile types',
-      description: 'Overview of all the profile types for a single service',
-    },
-    {
-      value: ExplorationType.LABELS,
-      label: 'Labels',
-      description: 'Single service label exploration and filtering',
-    },
-    {
-      value: ExplorationType.FLAME_GRAPH,
-      label: 'Flame graph',
-      description: 'Single service flame graph',
-    },
-    {
-      value: ExplorationType.DIFF_FLAME_GRAPH,
-      label: 'Diff flame graph',
-      description: 'Compare the differences between two flame graphs',
-    },
-    {
-      value: ExplorationType.FAVORITES,
-      label: 'Favorites',
-      description: 'Overview of favorited visualizations',
-      icon: 'favorite',
-    },
-  ];
+  static get EXPLORATION_TYPE_OPTIONS() {
+    return [
+      {
+        value: ExplorationType.ALL_SERVICES,
+        label: t('explorer.exploration-type.all-services', 'All services'),
+        description: t(
+          'explorer.exploration-type.all-services-description',
+          'Overview of all services, for any given profile type'
+        ),
+      },
+      {
+        value: ExplorationType.PROFILE_TYPES,
+        label: t('explorer.exploration-type.profile-types', 'Profile types'),
+        description: t(
+          'explorer.exploration-type.profile-types-description',
+          'Overview of all the profile types for a single service'
+        ),
+      },
+      {
+        value: ExplorationType.LABELS,
+        label: t('explorer.exploration-type.labels', 'Labels'),
+        description: t(
+          'explorer.exploration-type.labels-description',
+          'Single service label exploration and filtering'
+        ),
+      },
+      {
+        value: ExplorationType.FLAME_GRAPH,
+        label: t('explorer.exploration-type.flame-graph', 'Flame graph'),
+        description: t('explorer.exploration-type.flame-graph-description', 'Single service flame graph'),
+      },
+      {
+        value: ExplorationType.DIFF_FLAME_GRAPH,
+        label: t('explorer.exploration-type.diff-flame-graph', 'Diff flame graph'),
+        description: t(
+          'explorer.exploration-type.diff-flame-graph-description',
+          'Compare the differences between two flame graphs'
+        ),
+      },
+      {
+        value: ExplorationType.FAVORITES,
+        label: t('explorer.exploration-type.favorites', 'Favorites'),
+        description: t('explorer.exploration-type.favorites-description', 'Overview of favorited visualizations'),
+        icon: 'favorite',
+      },
+    ];
+  }
 
-  static DEFAULT_EXPLORATION_TYPE = SceneProfilesExplorer.EXPLORATION_TYPE_OPTIONS[0].value;
+  /** Must not read `EXPLORATION_TYPE_OPTIONS` here — that getter calls `t()` and runs while the class body initializes (before i18n in embedded lazy chunks). */
+  static DEFAULT_EXPLORATION_TYPE = ExplorationType.ALL_SERVICES;
 
   protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
   private initialFilters?: AdHocVariableFilter[];
+  private kgInitialized = false;
 
   public constructor(state: Partial<SceneProfilesExplorerState>) {
     super({
@@ -154,6 +182,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           ],
         }),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
+      loadSearchScene: new LoadSearchScene(),
+      isAddToDashboardModalOpen: false,
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -175,6 +205,23 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   onActivate() {
     const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
+    const clearKeyBindings = setupKeyboardShortcuts(this);
+
+    if (!this.kgInitialized) {
+      this.kgInitialized = true;
+      void ensureOpenFeaturePluginInitialized().then(() => {
+        if (getKgAnnotationsInPyroscopeFromOpenFeature()) {
+          const kg = getKgSceneProps('Service', 'serviceName');
+          if (kg) {
+            this.setState({
+              $data: this.state.$data ?? kg.$data,
+              $behaviors: [...(this.state.$behaviors ?? []), ...kg.behaviors],
+              controls: [...(this.state.controls ?? []), kg.controls],
+            });
+          }
+        }
+      });
+    }
 
     if (!this.state.explorationType) {
       this.setExplorationType({
@@ -183,6 +230,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
 
     return () => {
+      clearKeyBindings();
       eventsSub.unsubscribe();
       varSub.unsubscribe();
     };
@@ -233,6 +281,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          this.resetDiffTimeRangeAnnotations();
           this.resetSpanSelector();
         }
       });
@@ -242,6 +291,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       .subscribeToState((newState, prevState) => {
         if (newState.value && newState.value !== prevState.value) {
           FiltersVariable.resetAll(this);
+          this.resetDiffTimeRangeAnnotations();
+
           // This is to prevent removing the span selector if the previous service name was not correct
           // This way a user can still select the service name for selected span in case there's a mismatch
           // in the service name that was provided from the trace
@@ -303,14 +354,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     });
 
     const diffFlameGraphSub = this.subscribeToEvent(EventViewDiffFlameGraph, (event) => {
-      const { useAncestorTimeRange, clearDiffRange, baselineFilters, comparisonFilters } = event.payload;
+      const { baselineFilters, comparisonFilters } = event.payload;
 
       this.setExplorationType({
         type: ExplorationType.DIFF_FLAME_GRAPH,
         comesFromUserAction: true,
         bodySceneOptions: {
-          useAncestorTimeRange,
-          clearDiffRange,
           baselineFilters,
           comparisonFilters,
         },
@@ -325,6 +374,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       this.resetProfileIdSelector();
     });
 
+    const addToDashboardSub = this.subscribeToEvent(EventOpenAddToDashboard, (event) => {
+      this.openAddToDashboardModal(event.payload.panelData);
+    });
+
     return {
       unsubscribe() {
         diffFlameGraphSub.unsubscribe();
@@ -333,8 +386,24 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         profilesSub.unsubscribe();
         removeSpanSelectorSub.unsubscribe();
         removeProfileIdSelectorSub.unsubscribe();
+        addToDashboardSub.unsubscribe();
       },
     };
+  }
+
+  public openAddToDashboardModal(panelData: PanelDataRequestPayload) {
+    reportInteraction('g_pyroscope_app_add_to_dashboard_modal_opened');
+    this.setState({
+      isAddToDashboardModalOpen: true,
+      addToDashboardPanelData: panelData,
+    });
+  }
+
+  public closeAddToDashboardModal() {
+    this.setState({
+      isAddToDashboardModalOpen: false,
+      addToDashboardPanelData: undefined,
+    });
   }
 
   setExplorationType({
@@ -351,6 +420,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     if (comesFromUserAction) {
       prepareHistoryEntry();
       this.resetVariables(type);
+
+      // Only reset diff time ranges if a panel from "All services" was
+      // selected.
+      if (item) {
+        this.resetDiffTimeRangeAnnotations();
+      }
     }
 
     this.setState({
@@ -365,6 +440,20 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
   resetProfileIdSelector() {
     sceneGraph.findByKeyAndType(this, 'profileIdSelector', ProfileIdSelectorVariable).reset();
+  }
+
+  resetDiffTimeRangeAnnotations() {
+    locationService.partial(
+      {
+        diffFrom: '',
+        diffTo: '',
+        'diffFrom-2': '',
+        'diffTo-2': '',
+        comparisonFrom: '',
+        comparisonTo: '',
+      },
+      true
+    );
   }
 
   resetVariables(nextExplorationType: string) {
@@ -450,26 +539,33 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   };
 
   static Component({ model }: SceneComponentProps<SceneProfilesExplorer>) {
-    const styles = useStyles2(getStyles); // eslint-disable-line react-hooks/rules-of-hooks
+    const styles = useStyles2(getStyles);
 
     const { data, actions } = model.useProfilesExplorer();
     const { explorationType, controls, body, $variables, dataSourceUid } = data;
 
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [recordingRulesModalState, setRecordingRulesModalState] = useState<{
       isOpen: boolean;
       functionName?: string;
     }>({ isOpen: false });
-    const { createRecordingRuleModal, isEmbedded } = model.useState();
+    const {
+      createRecordingRuleModal,
+      isEmbedded,
+      loadSearchScene,
+      isAddToDashboardModalOpen,
+      addToDashboardPanelData,
+    } = model.useState();
 
     return (
       <FunctionVersionProvider>
         <GitHubContextProvider dataSourceUid={dataSourceUid}>
           <Header
+            model={model}
             explorationType={explorationType}
             controls={controls}
             body={body}
             $variables={$variables}
+            loadSearchScene={loadSearchScene}
             onChangeExplorationType={actions.onChangeExplorationType}
             isEmbedded={isEmbedded}
             onCreateRecordingRule={() => {
@@ -491,6 +587,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 setRecordingRulesModalState({ isOpen: false });
               }}
             />
+          )}
+
+          {isAddToDashboardModalOpen && addToDashboardPanelData && (
+            <AddToDashboardModal panelData={addToDashboardPanelData} onClose={() => model.closeAddToDashboardModal()} />
           )}
         </GitHubContextProvider>
       </FunctionVersionProvider>

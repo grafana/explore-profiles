@@ -37,7 +37,7 @@ See the [Configure Grafana documentation](https://grafana.com/docs/grafana/lates
 In the terminal, execute:
 
 ```shell
-yarn dev
+pnpm run dev
 ```
 
 to build the frontend assets.
@@ -47,7 +47,7 @@ to build the frontend assets.
 In a different terminal tab execute:
 
 ```shell
-yarn start
+pnpm start
 ```
 
 to build the frontend assets.

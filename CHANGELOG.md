@@ -1,5 +1,269 @@
 # Changelog
 
+## [2.1.0](https://github.com/grafana/profiles-drilldown/compare/v2.0.7...v2.1.0) (2026-07-02)
+
+
+### 🎉 Features
+
+* add Knowledge Graph insights annotations to timeseries ([#886](https://github.com/grafana/profiles-drilldown/issues/886)) ([644600c](https://github.com/grafana/profiles-drilldown/commit/644600c9eb521a42d6841fb60cb2f83052fad33c))
+
+
+### 🐛 Bug Fixes
+
+* **deps:** bump dompurify override to ~3.4.11 for CVE remediation ([#1027](https://github.com/grafana/profiles-drilldown/issues/1027)) ([52ca002](https://github.com/grafana/profiles-drilldown/commit/52ca0026ed4f860ee5b4e27c39b4061364bf91cc))
+* **deps:** update dependency protobufjs to v8.2.0 [security] ([#1001](https://github.com/grafana/profiles-drilldown/issues/1001)) ([e4ed126](https://github.com/grafana/profiles-drilldown/commit/e4ed126fcd48bbc457569184d0d9ce8858d00bcb))
+* **security/unknown/samples/rideshare:** update module golang.org/x/sys to v0.44.0 [security] ([#1000](https://github.com/grafana/profiles-drilldown/issues/1000)) ([47d37b1](https://github.com/grafana/profiles-drilldown/commit/47d37b1b49c266d41f7d079fcfc73890cda6e850))
+
+
+### 🤖 Continuous Integrations
+
+* **release-please:** add release please ([#1024](https://github.com/grafana/profiles-drilldown/issues/1024)) ([61f2ed0](https://github.com/grafana/profiles-drilldown/commit/61f2ed05f88415153bc75a273b1a782abb00fff9))
+
+
+### 🧹 Chore
+
+* Add myself as a CODEOWNER ([#1015](https://github.com/grafana/profiles-drilldown/issues/1015)) ([8f7b5e6](https://github.com/grafana/profiles-drilldown/commit/8f7b5e68b8a20503e680ed293ed1ff40ac08fece))
+* Better feature tracking for uploading profiles ([#983](https://github.com/grafana/profiles-drilldown/issues/983)) ([d6b2dda](https://github.com/grafana/profiles-drilldown/commit/d6b2ddadf5563e3c8631dbd61b2951cda11e5a35))
+* **ci/cd:** update to 10.1.0 ([#1030](https://github.com/grafana/profiles-drilldown/issues/1030)) ([b1a5d19](https://github.com/grafana/profiles-drilldown/commit/b1a5d19453abf5956b0f1227cd36132b558f7898))
+* **ci:** Update release workflows ([#1036](https://github.com/grafana/profiles-drilldown/issues/1036)) ([e858b91](https://github.com/grafana/profiles-drilldown/commit/e858b91e493413b7e853f5cdd603a9f6b10ef51a))
+* **deps:** bump @openfeature/ofrep-web-provider from 0.3.6 to 0.4.1 ([#1011](https://github.com/grafana/profiles-drilldown/issues/1011)) ([f486480](https://github.com/grafana/profiles-drilldown/commit/f4864800f762400bb415b69e273f73134af5abcf))
+* **deps:** update golang:1.26.3 docker digest to 2d6c802 ([#996](https://github.com/grafana/profiles-drilldown/issues/996)) ([4f07155](https://github.com/grafana/profiles-drilldown/commit/4f0715584268a3d4f218932c8b9cf333b1b9522e))
+* Regenerate pyroscope API client ([#1025](https://github.com/grafana/profiles-drilldown/issues/1025)) ([c71c1e9](https://github.com/grafana/profiles-drilldown/commit/c71c1e9a4a918eb43f2c30be507ef9c6acac2461))
+* Remove publish-technical-documentation workflows ([#1026](https://github.com/grafana/profiles-drilldown/issues/1026)) ([227ab2b](https://github.com/grafana/profiles-drilldown/commit/227ab2b6ec74a51b6eaa1a2d5832cfbc362d0287))
+* Sanitize AiReply button link ([#1010](https://github.com/grafana/profiles-drilldown/issues/1010)) ([500489b](https://github.com/grafana/profiles-drilldown/commit/500489b1c6e4fa6b293632025829c3430ffa84a8))
+* Surface backend error of creating a recording rule ([#1014](https://github.com/grafana/profiles-drilldown/issues/1014)) ([bb36a4c](https://github.com/grafana/profiles-drilldown/commit/bb36a4c20d2f06b563a5ce822f7eb678c4082964))
+* Update LLM package ([#1032](https://github.com/grafana/profiles-drilldown/issues/1032)) ([667e618](https://github.com/grafana/profiles-drilldown/commit/667e618d43fe6b8349ff2eb90b9bc91a93b0a12b))
+* Update packages ([#1020](https://github.com/grafana/profiles-drilldown/issues/1020)) ([f025c68](https://github.com/grafana/profiles-drilldown/commit/f025c682b122ed89567f8af31ddcbb9bc116d045))
+* Workflows update ([#995](https://github.com/grafana/profiles-drilldown/issues/995)) ([f665d6d](https://github.com/grafana/profiles-drilldown/commit/f665d6d14ac3ccfcbfbfc9aa5595d4069950799a))
+
+## 2.0.7
+
+##### Chores
+
+*  Update ci-cd-workflows (#987) (3de7b007)
+*  update Saved queries texts (#1006) (500d8d73)
+*  Harden package use and workspace environment (#984) (1ace8a94)
+*  Fix translations (#986) (b58dea2d)
+*  Use tabs instead of custom menu navigation (#974) (59c90d52)
+
+##### New Features
+
+*  Support add to dashboard (#970) (667d2a21)
+
+##### Bug Fixes
+
+*  update Crowdin workflows for get-vault-secrets breaking change (#1008) (86eabe59)
+* **Recording Rules:**  Stop dropping profile type, service name, and function name on submit (#979) (c1d75858)
+
+##### Other Changes
+
+*  Download translations from Crowdin (#993) (5e02932b)
+*  Download translations from Crowdin (#953) (ff04cc53)
+
+
+## 2.0.6
+
+##### Chores
+
+* **deps:**
+  *  bump protobufjs from 8.0.1 to 8.0.3 (#976) (9fdea055)
+  *  update dependency protobufjs@^7.3.0 to v8 [security] (#972) (f4a4eea9)
+  *  lock file maintenance (#969) (6b3f68a2)
+  *  bump hono from 4.12.16 to 4.12.18 (#966) (b6edc18f)
+  *  bump fast-uri from 3.1.1 to 3.1.2 (#967) (107f6c96)
+  *  pin dependencies (#958) (8ac3c790)
+  *  lock file maintenance (#926) (8ff0c056)
+  *  update alpine:latest docker digest to 5b10f43 (#959) (4115a9ef)
+  *  update golang:1.26 docker digest to b54cbf5 (#960) (7fcafe6c)
+*  Update rideshare mod (#971) (f92c3079)
+*  Update which feature flags are on by default (#965) (fd0ee099)
+*  Fix loading translations before i18n available (#963) (87519cbf)
+*  fix tests (#962) (1dc0d256)
+
+##### New Features
+
+* **time picker:**  add support for keyboard shortcuts (#936) (2965dbb3)
+
+##### Bug Fixes
+
+*  Download json (#975) (e7fdec78)
+
+##### Other Changes
+
+*  occured -> occurred in AI panel error message (#968) (dcb321f9)
+
+
+## 2.0.5
+
+##### Build System / Dependencies
+
+*  migrate to pnpm (#949) (c26b6a84)
+
+##### Chores
+
+*  Update @grafana/flamegraph to 13.1.0-25141410377 (#957) (0464d5bf)
+*  Use OpenFeature for all feature flags (#950) (75caf58d)
+* **deps:**  bump postcss from 8.4.39 to 8.5.12 (#954) (bbe86aaf)
+* **i18n:**  Expose all supported languages in plugin.json (#904) (37bdb2b6)
+
+##### New Features
+
+*  Use Grafana Assistant for Optimize Code button when available (#943) (284dc66f)
+
+##### Bug Fixes
+
+*  Revert changes to analyze flame graph button in SceneFlameGraph (#955) (c3d03d93)
+*  consolidate CI/CD into single workflow to fix broken `workflow_run` chaining (#956) (218f43eb)
+
+##### Other Changes
+
+*  Download translations from Crowdin (#951) (4ff76d61)
+
+##### Performance Improvements
+
+* **i18n:**  prevent loading en-US translations at runtime (#938) (be0806e6)
+
+
+## 2.0.4
+
+##### Chores
+
+* **deps:**
+  *  update dependency dompurify to v3.4.0 [security] (#942) (0487f527)
+  *  update dependency hono to v4.12.14 [security] (#941) (2c403fcf)
+
+##### New Features
+
+* **adhoc:**  add diff view with side-by-side and computed diff modes (#842) (d4461470)
+
+##### Bug Fixes
+
+* **deps:**
+  *  patch CVEs via yarn resolutions (#948) (5624f69b)
+  *  update dependency protobufjs to v8 [security] (#946) (04b77a2f)
+  *  update module go.opentelemetry.io/otel/sdk to v1.43.0 [security] (#933) (63e52289)
+* **samples:**  upgrade otel/sdk to v1.43.0 to address CVE (#940) (fbf87a0c)
+
+
+## 2.0.3
+
+##### Chores
+
+* **ci:**  fix flaky tests (#939) (afd7acbe)
+
+
+## 2.0.2
+
+##### Chores
+
+*  fix docker compose setup (#928) (30ba539f)
+*  Warning for missing service names (#924) (0815b4ac)
+*  Add more Renovate groups (#919) (b54139d1)
+* **deps:**
+  *  update dependency @hono/node-server to v1.19.13 [security] (#930) (693a90c3)
+  *  update dependency hono to v4.12.12 [security] (#931) (ad2d87fc)
+  *  update dependency lodash to v4.18.1 [security] (#921) (23fbc2b6)
+  *  update dependency lodash to v4.18.1 [security] (#920) (5f0445c5)
+  *  update dependency @types/node to v22.19.15 (#917) (d51853aa)
+  *  update dependency @babel/core to v7.29.0 (#915) (e82681ea)
+  *  update dependency tar to v7.5.13 (#913) (30192d02)
+  *  update dependency semver to v7.7.4 (#912) (19d23060)
+  *  update dependency nanoid to v5.1.7 (#911) (e349f466)
+  *  update dependency i18next-cli to v1.51.4 (#910) (a2ed6c79)
+  *  update dependency eslint-plugin-jsdoc to v62.8.1 (#907) (b99184b1)
+  *  update dependency hono to v4.12.9 (#909) (5d3aa217)
+  *  update dependency hono to v4.12.9 (#908) (3f0a50fe)
+  *  update dependency eslint-plugin-jest to v29.15.1 (#906) (2348000f)
+  *  update qdrant/qdrant docker digest to 9472857 (#896) (3fc040e6)
+  *  update dependency esbuild to v0.27.4 (#905) (3999a247)
+  *  update dependency @hono/node-server to v1.19.11 (#897) (6370f737)
+  *  update dependency @types/lodash to v4.17.24 (#902) (87f9cca9)
+  *  update dependency dompurify to v3.3.3 (#903) (0e90e176)
+  *  update dependency @react-aria/utils to v3.33.1 (#900) (191768c9)
+  *  update dependency @types/color to v3.0.7 (#901) (ed7b3a03)
+  *  update grafana/grafana-enterprise:latest docker digest to 8b65309 (#895) (d04d330c)
+  *  bump undici from 7.18.2 to 7.24.6 (#892) (162bfc66)
+  *  update actions/checkout digest to 34e1148 (#847) (4bf70e2f)
+  *  bump brace-expansion from 1.1.12 to 1.1.13 (#887) (c39dd9d7)
+  *  update dependency serialize-javascript to v7.0.5 [security] (#888) (513129b6)
+  *  pin dependencies (#846) (a851ae51)
+  *  bump picomatch from 2.3.1 to 2.3.2 (#881) (a913aae0)
+  *  update alpine:latest docker digest to 2510918 (#848) (f71200bb)
+* **config:**  migrate config renovate.json (#922) (2f3a4847)
+* **i18n:**
+  *  add Crowdin GitHub Actions (#889) (694b0dd1)
+  *  add ESLint rules and translate all user-facing strings (#885) (95a9b848)
+  *  add @grafana/i18n infrastructure (#865) (b1a208a9)
+* **eslint:**  migrate to ESLint 9 flat config (#876) (e7d6f2c7)
+
+##### Documentation Changes
+
+*  add exemplars documentation (#890) (591fe58b)
+*  Increase weight of Profiles Drilldown to 200 (#923) (1f4fb7fc)
+
+##### New Features
+
+* **labels:**  support UTF-8 label names in label matchers (#925) (2521cffa)
+* **ResolutionBoostExtensionPoint:**  pass datasourceUID to Adaptive Profiles extension (#880) (7a1b2f6f)
+* **call-tree:**  enable the call tree visualization (#862) (7cfcb89c)
+
+##### Bug Fixes
+
+*  Sync time range sync between Diff page and the other pages (#784) (fce256a5)
+* **deps:**  update grafana packages (#914) (53f1c84f)
+* **ci:**  add permissions to PR validation workflow for Dependabot PRs (#883) (db27bf06)
+
+##### Other Changes
+
+*  Download translations from Crowdin (#918) (9578b975)
+*  Download translations from Crowdin (#893) (5d3e1434)
+
+
+## 2.0.1
+
+##### Chores
+
+*  Remove unused / update dependencies (#879) (0c0eb57a)
+* **deps:**
+  *  bump undici from 7.18.2 to 7.24.5 (#878) (91da6ba2)
+  *  bump minimatch from 3.1.2 to 3.1.5 (#877) (03e3b581)
+  *  update grafana/grafana-enterprise:latest docker digest to 8e8fc4c (#849) (fda61e94)
+  *  update dependency flatted to v3.4.2 [security] (#874) (3ad985dc)
+
+
+## 2.0.0
+
+##### Chores
+
+* **deps:**
+  *  pin 11 transitive dependencies to fix 15 CVEs (#873) (a58f1e9b)
+  *  pin minimatch@9.0.3 to 9.0.9 to fix CVE (#871) (4d79df99)
+  *  bump undici from 7.18.2 to 7.24.4 (#867) (a7e5cfe1)
+  *  update dependency tar to v7.5.11 [security] (#854) (b2a3b84c)
+  *  bump hono from 4.11.9 to 4.12.0 (#834) (e3e92a16)
+  *  bump ajv from 6.12.6 to 6.14.0 (#835) (6f272630)
+*  React 19 upgrade (#858) (606a7c0a)
+*  Fix codeowners file (#863) (d4d4e5a5)
+*  add other drilldown teams as codeowners (#841) (8985e093)
+* **cd:**  remove github-draft-release (#850) (00bbdcc8)
+
+##### Documentation Changes
+
+*  Updates for the latest release (#869) (8b135fc6)
+
+##### New Features
+
+*  Support Saved Queries (#868) (bb418724)
+*  Add AGENTS.md and surrounding files (#870) (dffe1202)
+*  highlight filtered exemplar on the timeseries for the flame gra… (#802) (7ce57937)
+*  inspect a single exemplar's flamegraph (#796) (01dfcb1e)
+
+##### Refactors
+
+*  remove unused exemplar link helpers from data-transformations (#859) (9b44b15f)
+*  rename exemplars var (#857) (23466603)
+
+
 ## 1.17.0
 
 ##### Chores

@@ -1,4 +1,4 @@
-import { nanoid } from 'nanoid';
+import { t } from '@grafana/i18n';
 import { assign } from 'xstate';
 
 import { LabelsApiClient } from '../../../../pages/ProfilesExplorerView/infrastructure/labels/http/LabelsApiClient';
@@ -42,7 +42,7 @@ export const actions: any = {
   setFilterAttribute: assign((context: QueryBuilderContext, event: SelectEvent) => {
     const newFilters = [
       ...context.filters,
-      { id: nanoid(10), type: FilterKind.partial, active: false, attribute: event.data },
+      { id: crypto.randomUUID(), type: FilterKind.partial, active: false, attribute: event.data },
     ] as Filters;
 
     return {
@@ -102,7 +102,7 @@ export const actions: any = {
       ...updateFiltersAndQuery(newFilters, context),
     };
   }),
-  // eslint-disable-next-line sonarjs/cognitive-complexity
+
   editFilterOperator: assign((context: QueryBuilderContext, event: SelectEvent) => {
     if (context.edition === null) {
       throw new Error('Cannot edit filter operator without edition data!');
@@ -127,7 +127,7 @@ export const actions: any = {
       }
 
       if (previousOperator === OperatorKind['is-empty']) {
-        filter.value = { value: '(no value)', label: '(no value)' };
+        filter.value = { value: '(no value)', label: t('query-builder.no-value', '(no value)') };
       }
 
       if (!isPartialFilter(filter) && isEditingOperatorMode(previousOperator, newOperator.value)) {

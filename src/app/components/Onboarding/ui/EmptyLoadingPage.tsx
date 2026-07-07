@@ -1,4 +1,5 @@
 import { PageLayoutType } from '@grafana/data';
+import { Trans } from '@grafana/i18n';
 import { PluginPage } from '@grafana/runtime';
 import { Icon } from '@grafana/ui';
 import { PageTitle } from '@shared/ui/PageTitle';
@@ -10,7 +11,7 @@ export function EmptyLoadingPage() {
       <PageTitle
         title={
           <span>
-            Loading... <Icon name="fa fa-spinner" />
+            <Trans i18nKey="onboarding.empty-loading.title">Loading...</Trans> <Icon name="fa fa-spinner" />
           </span>
         }
       />

@@ -1,0 +1,671 @@
+{
+  "actions": {
+    "exemplar-toggle": {
+      "hide": "隐藏范例",
+      "label": "范例",
+      "show": "显示范例"
+    },
+    "fav": {
+      "favorite": "收藏",
+      "unfavorite": "取消收藏"
+    }
+  },
+  "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
+    "profile-type-selector": {
+      "label": "配置文件"
+    },
+    "tabs": {
+      "diff-view": "",
+      "single-view": "单一视图"
+    },
+    "view": {
+      "title": "临时视图"
+    }
+  },
+  "ai-panel": {
+    "analyzing": "正在分析…",
+    "close": "关闭面板",
+    "fetch-error": "加载配置文件数据时出错！",
+    "fetch-error-message": "对于给您带来的不便，我们深表歉意。请稍后重试。",
+    "follow-up": {
+      "placeholder": "提出后续问题……",
+      "send": "发送"
+    },
+    "llm-error": "",
+    "llm-error-message": "对于给您带来的不便，我们深表歉意。请重试；如果问题仍然存在，请联系您的组织管理员。",
+    "reply": {
+      "search-node": "搜索此节点"
+    },
+    "retry": "重试",
+    "title": "火焰图分析",
+    "validation-error": "验证错误！"
+  },
+  "analyze-diff": {
+    "context": {
+      "title": "DOT 配置文件和说明"
+    },
+    "error": "获取用于分析的 DOT 配置文件失败",
+    "prompt": "分析这两个性能配置文件之间的差异。"
+  },
+  "back-button": {
+    "aria-label": "返回配置文件深入分析",
+    "label": "返回配置文件深入分析"
+  },
+  "create-recording-rule": {
+    "cancel": "取消",
+    "create": "创建",
+    "filters": {
+      "description": "在主视图中选择的筛选条件将应用于此规则",
+      "label": "筛选条件",
+      "none": "未选择筛选条件"
+    },
+    "function-name": {
+      "aria-label": "函数名称",
+      "description": "用于筛选录制规则的可选功能名称",
+      "label": "函数名称",
+      "placeholder": "保留为空以进行总计聚合"
+    },
+    "labels": {
+      "description": "要转发给指标的其他配置文件标签",
+      "label": "其他标签"
+    },
+    "menu-option": "创建录制规则",
+    "metric-name": {
+      "aria-label": "指标名称",
+      "description": "",
+      "invalid": "指标名称无效。",
+      "label": "指标名称",
+      "pattern-alphanumeric": "仅可使用字母数字字符或下划线",
+      "pattern-error": "指标名称无效，它必须具有以下属性：",
+      "pattern-no-number": "不得以数字开头",
+      "required": "指标名称为必填项。"
+    },
+    "profile-type": {
+      "label": "配置文件类型"
+    },
+    "service-name": {
+      "all": "所有服务",
+      "label": "服务名称"
+    },
+    "title": "创建录制规则"
+  },
+  "diff-flame-graph": {
+    "compare-panel": {
+      "annotation-title": "{{title}}火焰图范围",
+      "baseline": "基线",
+      "comparison": "比较",
+      "flame-graph": "火焰图",
+      "range-selection-mode": "范围选择模式",
+      "sync-time-ranges": "同步时间范围",
+      "time-picker": "时间选择器",
+      "tooltip-description": "使用这些按钮可以更改在时间序列上用鼠标选择范围时的行为：",
+      "tooltip-flame-graph": "火焰图",
+      "tooltip-flame-graph-description": "用于构建火焰图的时间范围（仅针对所选范围检索堆栈跟踪）",
+      "tooltip-time-picker": "时间选择器",
+      "tooltip-time-picker-description": "时间范围放大（默认行为）"
+    },
+    "error-loading-profile": "加载配置文件数据时出错！",
+    "explain-button": "解释差异火焰图",
+    "missing-selections": {
+      "auto-select": "自动选择",
+      "how-to-alt": "如何查看差异火焰图",
+      "learn-how": "点击此处了解如何使用鼠标选择火焰图范围",
+      "step-1": "确保已选择“火焰图”范围选择模式",
+      "step-2": "使用鼠标在基准时间序列和比较时间序列上选择所需的时间范围",
+      "title": "同时选择基准火焰图和对比火焰图的范围，以便查看差异火焰图"
+    },
+    "no-profile-data": "无可用的配置文件数据",
+    "no-profile-data-message": "请确认您已选择足够的筛选条件和时间范围。",
+    "presets": {
+      "1h-ago-vs-now": "1 小时前与现在",
+      "1h-ago-vs-now-description": "30 分钟窗口",
+      "24h-ago-vs-now": "24 小时前与现在",
+      "6h-ago-vs-now": "6 小时前与现在",
+      "label": "比较预设",
+      "placeholder": "选择一个预设"
+    },
+    "settings-error": {
+      "message": "某些功能可能无法按预期运行（例如火焰图导出选项）。请尝试重新加载页面。对于给您带来的不便，我们深表歉意。",
+      "title": "检索插件设置时出错！"
+    },
+    "title": "{{serviceName}}（{{profileMetricType}}）的差异火焰图"
+  },
+  "error-page": {
+    "banner-message": "请尝试重新加载页面；如果问题仍然存在，请联系您的组织管理员。对于给您带来的不便，我们深表歉意。",
+    "banner-title": "致命错误！",
+    "title": "Grafana 配置文件深入分析"
+  },
+  "explorer": {
+    "exploration-type": {
+      "all-services": "所有服务",
+      "all-services-description": "针对任何给定配置文件类型的所有服务概览",
+      "diff-flame-graph": "差异火焰图",
+      "diff-flame-graph-description": "比较两个火焰图之间的差异",
+      "favorites": "收藏",
+      "favorites-description": "已收藏可视化的概览",
+      "flame-graph": "火焰图",
+      "flame-graph-description": "单个服务的火焰图",
+      "labels": "标签",
+      "labels-description": "单个服务的标签探索和筛选",
+      "profile-types": "配置文件类型",
+      "profile-types-description": "针对单个服务的所有配置文件类型概览"
+    },
+    "header": {
+      "add-recording-rule": "添加录制规则",
+      "recording-rules-tooltip": "录制规则",
+      "settings-tooltip": "查看/编辑租户设置",
+      "share-tooltip": "将可共享链接复制到剪贴板",
+      "upload-tooltip": "上传临时配置文件",
+      "view-recording-rules": "查看录制规则"
+    }
+  },
+  "export-data": {
+    "aria-label": "导出配置文件数据",
+    "tooltip": "导出配置文件数据"
+  },
+  "export-menu": {
+    "aria-label": "导出配置文件数据",
+    "error-flamegraph-com": "导出到 flamegraph.com 失败！",
+    "error-loading-profile": "加载 Flamebearer 配置文件数据时出错！",
+    "error-png": "导出到 png 失败！",
+    "error-pprof": "导出到 pprof 失败！",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "导出配置文件数据"
+  },
+  "exposed-components": {
+    "loading": "正在加载…"
+  },
+  "favorites": {
+    "data-source": {
+      "test-success": "确定"
+    }
+  },
+  "flame-graph": {
+    "error-loading-profile": "加载配置文件数据时出错！",
+    "explain-button": "解释火焰图",
+    "profile-id-selector": {
+      "filter-label": "筛选条件标签",
+      "filter-operator": "筛选条件运算符",
+      "filter-value": "筛选条件值",
+      "name": "配置文件 ID",
+      "remove": "从查询中移除配置文件 ID 选择器",
+      "tooltip": "您已在火焰图查询（{{profileIdSelector}}）中添加了配置文件 ID 选择器。"
+    },
+    "settings-error": {
+      "message": "某些功能可能无法按预期运行（例如折叠的火焰图）。请尝试重新加载页面。对于给您带来的不便，我们深表歉意。",
+      "title": "检索插件设置时出错！"
+    },
+    "span-selector": {
+      "added": "已添加跨度选择器",
+      "remove": "从查询中移除跨度选择器",
+      "tooltip": "您已在火焰图查询（{{spanSelector}}）中添加了跨度选择器。"
+    },
+    "title": "{{serviceName}}（{{profileMetricType}}）的火焰图"
+  },
+  "function-details": {
+    "ai-suggestions": {
+      "analyzing": "正在分析…",
+      "fetch-error": "获取配置文件时出错！",
+      "fetch-error-message": "对于给您带来的不便，我们深表歉意。请稍后重试。",
+      "llm-error": "使用 OpenAI 生成内容失败！",
+      "llm-error-message": "对于给您带来的不便，我们深表歉意。请稍后重试；如果问题仍然存在，请联系您的组织管理员。",
+      "title": "代码优化建议"
+    },
+    "close": "关闭",
+    "code": {
+      "breakdown-per-line": "每行明细",
+      "file-unavailable": "（文件信息不可用）",
+      "optimize": "优化代码",
+      "view-on-github": "在 GitHub 上查看"
+    },
+    "commit": "提交",
+    "commit-option": {
+      "author-date": "{{author}}于 {{date}}"
+    },
+    "commit-select": {
+      "no-options": "未找到提交内容"
+    },
+    "commit-tooltip": "在其中定义了该函数的应用程序版本（提交内容）。使用下拉菜单选择特定提交内容。",
+    "context-menu": {
+      "label": "函数详情"
+    },
+    "copy-to-clipboard": "复制到剪贴板",
+    "fetch-error": "获取函数详细信息时出错！",
+    "file": "文件",
+    "file-path-copied": "文件路径已复制到剪贴板！",
+    "file-tooltip": "在其中定义了该函数的文件路径",
+    "function-name": "函数名称",
+    "github": {
+      "banner-dismiss": "忽略",
+      "banner-git-ref": "它们应分别设置为完整的 GitHub 存储库 URL 和正在运行的服务的当前 <2>git ref</2>。",
+      "banner-labels": "要激活此功能，您需要在发送配置文件时添加两个新标签：<2>service_repository</2> 和 <4>service_git_ref</4>。",
+      "banner-language-support": "此语言支持与 <1></1> GitHub 集成。",
+      "banner-learn-more": "了解更多",
+      "banner-title": "与 Github 集成",
+      "connect-button": "连接到{{name}}",
+      "connect-tooltip": "连接后，GitHub 代码将仅能通过此浏览器会话访问。",
+      "connecting": "正在连接到 GitHub…",
+      "disconnect": "断开与 GitHub 的连接",
+      "view-commit": "查看提交内容"
+    },
+    "github-callback": {
+      "logging-in": "正在登录 GitHub…",
+      "title": "GitHub 登录"
+    },
+    "not-available": "-",
+    "override": {
+      "add": "添加",
+      "add-title": "添加新的存储库详情覆盖",
+      "alert-debug": "出于调试目的，您可以使用此表单手动提供存储库详情。对于给定的数据源和服务名称，自定义值会保存在您的浏览器本地存储中。",
+      "alert-labels": "要激活 GitHub 集成功能，您需要在发送配置文件时添加两个新标签：<1>service_repository</1> 和 <3>service_git_ref</3>。",
+      "alert-title": "Github 集成标签",
+      "aria-label": "覆盖存储库设置",
+      "data-source": "数据源",
+      "delete": "删除覆盖",
+      "edit": "编辑",
+      "edit-title": "编辑存储库详情覆盖",
+      "git-ref-label": "service_git_ref（提交引用）",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "移除所有覆盖",
+      "remove-all-confirm": "移除所有",
+      "repository-label": "service_repository（存储库 URL）- 必填",
+      "repository-placeholder": "输入 GitHub 存储库名称，https://github.com/org/repo",
+      "repository-required": "存储库名称为必填项",
+      "root-path": "根节点路径",
+      "root-path-placeholder": "输入根路径",
+      "service-name": "服务名称",
+      "user-set": "（用户设置）"
+    },
+    "repository": "存储库",
+    "repository-tooltip": "为所选服务配置的存储库",
+    "start-line": "起始行",
+    "start-line-tooltip": "此函数定义开始的行",
+    "title": "函数详情"
+  },
+  "give-feedback": {
+    "button": "提供反馈",
+    "tooltip": "分享您对 Grafana 配置文件的看法。"
+  },
+  "grid": {
+    "empty-state": {
+      "no-results": "没有结果"
+    },
+    "error": {
+      "title": "查询错误！"
+    },
+    "exemplars": {
+      "view-profile": "查看配置文件"
+    },
+    "layout": {
+      "aria-label": "布局切换器",
+      "grid": "网格",
+      "rows": "行"
+    },
+    "no-data": {
+      "label": "隐藏没有数据的面板"
+    },
+    "panel-type": {
+      "aria-label": "面板类型切换器",
+      "histograms": "直方图",
+      "maxima": "最大值",
+      "time-series": "时间序列",
+      "totals": "总计"
+    },
+    "quick-filter": {
+      "aria-label": "快速筛选器",
+      "clear": "清除搜索"
+    }
+  },
+  "labels": {
+    "compare": {
+      "aria-label": "",
+      "clear-tooltip": "清除比较选择",
+      "tooltip-empty": "同时选择基准面板和对比面板，以便比较它们的火焰图",
+      "tooltip-ready": "比较“{{baseline}}”与“{{comparison}}”",
+      "tooltip-select-baseline": "选择另一个面板以与“{{label}}”进行比较",
+      "tooltip-select-comparison": "选择另一个面板以与“{{label}}”进行比较",
+      "button_other": "比较 ({{count}}/2)"
+    },
+    "data-source": {
+      "all": "全部",
+      "test-success": "确定"
+    },
+    "filter": {
+      "clear-tooltip": "从筛选条件中清除“{{label}}”",
+      "exclude": "排除",
+      "exclude-tooltip": "在筛选条件中排除“{{label}}”",
+      "include": "包括",
+      "include-tooltip": "在筛选条件中包含“{{label}}”"
+    },
+    "grid": {
+      "no-results": "没有结果",
+      "refresh-tooltip": "点击以完全刷新屏幕上显示的所有面板"
+    },
+    "stats-panel": {
+      "baseline": "基线",
+      "baseline-description": "点击以选择“{{value}}”作为用于比较的基准",
+      "comparison": "比较",
+      "comparison-description": "点击以选择“{{value}}”作为比较的目标",
+      "total": "{{statsDescription}}：{{total}}"
+    }
+  },
+  "onboarding": {
+    "empty-loading": {
+      "title": "正在加载…"
+    },
+    "modal": {
+      "billing": {
+        "description": "使用 Grafana Cloud Profiles 受 Profiles 的<2>Grafana Cloud 定价</2>约束。<br/>如需了解更多信息，请阅读公告<6>博客文章</6>。",
+        "title": "计费运作方式"
+      },
+      "cloud": {
+        "step1": {
+          "description": "使用 <2>Grafana Alloy</2> 或 <6>Pyroscope SDK</6> 将配置文件从您的应用程序推送到 Grafana Cloud。",
+          "title": "将配置文件添加到您的应用程序中"
+        },
+        "step2": {
+          "description": "转到 <1>Grafana Cloud Stack 设置</1>，查找您的 Grafana Cloud 凭证。",
+          "title": "配置您的应用程序"
+        },
+        "step3": {
+          "description": "完成初始设置后，请刷新此页面以查看您的配置文件数据。",
+          "title": "开始获取性能洞察"
+        }
+      },
+      "decrease-latency": {
+        "description": "保持高速和高效，并提高应用程序性能。在竞争激烈的数字世界中，缩短延迟时间可以转化为收入增长。",
+        "title": "缩短延迟时间"
+      },
+      "how-to-get-started": "如何开始操作",
+      "reduce-costs": {
+        "description": "通过在代码级别查看资源使用情况，发现 CPU 使用率峰值、内存泄漏和其他低效现象。然后，团队可以优化代码并降低基础设施成本。",
+        "title": "降低成本"
+      },
+      "resolve-incidents": {
+        "description": "通过将持续分析数据与指标、日志和跟踪数据关联起来，快速识别任何问题的根本原因，从而缩短平均修复时间 (MTTR)。",
+        "title": "更快地解决事件"
+      },
+      "self-hosted": {
+        "step1": {
+          "description": "在您的基础设施上安装 <1>Pyroscope 服务器</1>。如果您想使用托管服务，请前往 <5>Grafana Cloud Stack 设置</5>，查找您的 Grafana Cloud 凭证。",
+          "title": "设置您的 Pyroscope 服务器"
+        },
+        "step2": {
+          "description": "添加新的 <1>Pyroscope 数据源</1>。如果您使用 Grafana Cloud Profiles，请使用您的 Pyroscope 服务器 URL 和相应的安全凭证。",
+          "title": "配置 Grafana"
+        },
+        "step3": {
+          "description": "使用 <2>Grafana Alloy</2> 或 <6>Pyroscope SDK</6> 将配置文件从您的应用程序推送到 Grafana Cloud。",
+          "title": "将配置文件添加到您的应用程序中"
+        }
+      },
+      "subtitle": "优化基础设施支出，简化调试，并提高应用程序性能",
+      "title": "欢迎使用 Grafana 配置文件深入分析",
+      "what-you-can-do": "您可以做什么"
+    },
+    "no-data-source": {
+      "alert-message": "此插件需要 Pyroscope 数据源。请在您的 Grafana 实例中<2>添加并配置 Pyroscope 数据源</2>。",
+      "alert-title": "缺少 Pyroscope 数据源！",
+      "title": "Grafana 配置文件深入分析"
+    },
+    "page": {
+      "close": "关闭",
+      "nav": "入门引导"
+    }
+  },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
+  "panel-box": {
+    "cancel-query": "取消查询",
+    "loading-bar": "面板加载栏",
+    "panel-status": "面板状态",
+    "stop-streaming": "停止流媒体传输",
+    "streaming": "流媒体传输",
+    "untitled": "无标题"
+  },
+  "panel-menu": {
+    "aria-label-no-title": "无标题面板的菜单",
+    "aria-label-with-title": "带标题{{title}}面板的菜单",
+    "title": "菜单"
+  },
+  "plugin-info": {
+    "aria-label": "插件信息",
+    "changelog": "变更日志",
+    "commit-sha": "提交 SHA：{{shortCommitSha}}",
+    "contribute": "贡献",
+    "documentation": "文档",
+    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "last-update": "上次更新：{{updated}}",
+    "report-issue": "报告问题",
+    "title": "插件信息",
+    "version": "Grafana 配置文件深入分析 v{{version}}"
+  },
+  "query-analysis": {
+    "blocks": "区块",
+    "data-in-time-range": "时间范围内的数据",
+    "deduplication": "去重",
+    "index-store": "索引存储",
+    "no": "否",
+    "profiles": "配置文件",
+    "profiles-store": "配置文件存储",
+    "query-info-aria-label": "查询信息",
+    "replicas": "副本",
+    "samples": "样本",
+    "series": "序列",
+    "series-in-query": "查询中的序列",
+    "stored-data-in-time-range": "时间范围内的已存储数据：{{totalBytesInTimeRange}}",
+    "symbols-store": "符号存储",
+    "yes": "是"
+  },
+  "query-builder": {
+    "chiclet": {
+      "edit-attribute": "编辑“{{label}}”",
+      "edit-operator": "编辑“{{label}}”",
+      "filter": "筛选条件",
+      "filter-label": "筛选条件标签",
+      "filter-operator": "筛选条件运算符",
+      "filter-value": "筛选条件值",
+      "partial-filter": "部分筛选条件",
+      "remove-filter": "移除筛选条件"
+    },
+    "error-load": "加载时发生意外错误！请再试一次。",
+    "execute": "执行",
+    "execute-tooltip": "执行新查询",
+    "loading": "正在加载…",
+    "no-value": "（无值）",
+    "nothing-to-execute-tooltip": "没有可执行的内容，已应用所有筛选条件",
+    "operators": {
+      "in": "在",
+      "in-description": "为以下之一",
+      "is-empty": "为空",
+      "not-in": "不在其中",
+      "not-in-description": "不为以下之一",
+      "regex-match-description": "匹配正则表达式",
+      "regex-not-match-description": "不匹配正则表达式"
+    },
+    "placeholder": {
+      "filter-add": "按标签值筛选...",
+      "select-label": "选择一个标签...",
+      "select-operator": "选择一个运算符...",
+      "select-value": "选择一个值...",
+      "select-values": "选择值…",
+      "type-value": "输入一个正则表达式…"
+    },
+    "suggestions-disabled": "已针对此标签禁用建议。",
+    "suggestions-none": "没有可用的建议。"
+  },
+  "recording-rules": {
+    "delete": {
+      "aria-label": "删除录制规则",
+      "body": "您确定要删除{{metricName}}录制规则吗？",
+      "confirm": "是",
+      "title": "删除录制规则"
+    },
+    "details": {
+      "filters": "筛选条件",
+      "no": "否",
+      "no-labels": "无标签",
+      "read-only": "只读",
+      "yes": "是"
+    },
+    "empty": {
+      "description": "打开火焰图，点击顶部的“总计”块，然后从右键菜单中选择“创建录制规则”以定义新规则。",
+      "message": "没有录制规则"
+    },
+    "error": {
+      "feature-required": "此功能需要已启用 recording_rules 标记的 Pyroscope。",
+      "message": "检索录制规则时出错",
+      "title": "检索录制规则时出错"
+    },
+    "table": {
+      "actions": "操作",
+      "all-services": "所有服务",
+      "function-name": "函数名称",
+      "labels": "标签",
+      "name": "名称",
+      "none": "无",
+      "profile-type": "配置文件类型",
+      "readonly-tooltip": "此规则通过租户设置进行配置，无法删除。",
+      "service-name": "服务名称",
+      "total-all-functions": "总计（所有函数）"
+    },
+    "title": "录制规则"
+  },
+  "saved-searches": {
+    "load": {
+      "no-searches": "没有要显示的已保存搜索。",
+      "no-searches-tooltip": "没有要加载的已保存搜索",
+      "remove-tooltip": "移除",
+      "saved-query-tooltip": "加载已保存的查询",
+      "select": "选择",
+      "select-pyroscope-query": "请选择一个 Pyroscope 查询。",
+      "title": "加载之前保存的搜索",
+      "tooltip": "加载已保存的搜索"
+    },
+    "save": {
+      "cancel": "取消",
+      "close": "关闭",
+      "description-label": "描述",
+      "error-message": "保存此搜索时出现意外错误。",
+      "existing-search-warning": "之前保存的一个搜索具有相同查询：{{title}}",
+      "info-message": "已保存的搜索会存储在您的浏览器本地，并且只能在此设备上使用。",
+      "save": "保存",
+      "saved-queries-tooltip": "保存在“已保存的查询”中",
+      "success-body": "已成功保存搜索。",
+      "success-message": "已成功保存搜索。",
+      "success-title": "成功",
+      "title": "保存当前搜索",
+      "title-label": "标题",
+      "tooltip": "保存搜索"
+    }
+  },
+  "series": {
+    "data-source": {
+      "test-success": "确定"
+    }
+  },
+  "settings": {
+    "loading": "正在加载…",
+    "save-button": "保存设置",
+    "tabs": {
+      "ui-settings": "UI 设置",
+      "unknown-extension": "未知扩展"
+    },
+    "title": "配置文件设置（租户）",
+    "ui": {
+      "collapsed-flame-graphs": {
+        "label": "已收起的火焰图",
+        "toggle": "切换已收起的火焰图"
+      },
+      "enable-function-details": {
+        "label": "启用函数详情",
+        "learn-more": "了解更多",
+        "toggle": "切换函数详情",
+        "tooltip": "函数详情功能可将资源使用情况映射到源代码行。如果已配置 GitHub 集成，则将从 GitHub 下载源代码。"
+      },
+      "fetch-error": {
+        "message": "请尝试重新加载页面。对于给您带来的不便，我们深表歉意。",
+        "title": "检索插件设置时出错！"
+      },
+      "flame-graph": {
+        "label": "火焰图"
+      },
+      "function-details": {
+        "label": "函数详情"
+      },
+      "max-nodes": {
+        "label": "最大节点数"
+      },
+      "metrics-from-profiles": {
+        "disable-hint": "要停止导出数据，请在禁用此功能之前删除所有相关的录制规则。",
+        "disable-warning": "禁用此功能只会将其从 UI 隐藏。不会移除任何现有的录制规则。这些规则将保持有效状态并继续导出指标，这仍然会对您的账单产生影响。",
+        "enable-warning": "启用此功能后，您可以通过配置文件深入分析来定义录制规则。您创建的任何录制规则都会向您的 Grafana Cloud 实例发送新的指标，这将增加您在 Grafana Mimir 中的数据使用量，并可能影响您的账单。",
+        "label": "来自配置文件的指标",
+        "toggle": "启用来自配置文件的指标",
+        "toggle-label": "启用来自配置文件的指标",
+        "tooltip": "允许通过配置文件创建录制规则"
+      }
+    }
+  },
+  "timeseries": {
+    "menu": {
+      "exemplars": "范例",
+      "open-in-explore": "在 Explore 中打开",
+      "scale-linear": "线性",
+      "scale-log2": "Log2",
+      "scale-type": "比例类型"
+    }
+  },
+  "variables": {
+    "data-source": {
+      "label": "数据源"
+    },
+    "favorite": {
+      "label": "🔖 收藏"
+    },
+    "filters": {
+      "label": "筛选条件"
+    },
+    "group-by": {
+      "label": "按标签分组",
+      "labels-selector": "标签选择器",
+      "other-labels-placeholder": "其他标签",
+      "other-labels-selector": "其他标签选择器",
+      "refresh-tooltip": "点击以刷新所有标签",
+      "select-label-placeholder": "选择标签"
+    },
+    "profile-id-selector": {
+      "label": "配置文件 ID 选择器"
+    },
+    "profile-metric": {
+      "aria-label": "配置文件指标列表",
+      "label": "配置文件类型",
+      "loading": "正在加载…",
+      "placeholder_other": "选择一个配置文件指标 ({{count}})"
+    },
+    "service-name": {
+      "aria-label": "服务列表",
+      "label": "服务",
+      "loading": "正在加载服务…",
+      "unmatched-tooltip": "",
+      "placeholder_other": "选择一个服务 ({{count}})"
+    },
+    "span-selector": {
+      "label": "跨度选择器"
+    }
+  }
+}

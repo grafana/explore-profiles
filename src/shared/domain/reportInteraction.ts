@@ -15,12 +15,21 @@ export type Interactions = {
     page: PageName;
   };
 
+  g_pyroscope_app_add_to_dashboard_modal_opened: {};
+
   g_pyroscope_app_ad_hoc_file_dropped: {
     fileType: string;
   };
   g_pyroscope_app_ad_hoc_file_removed: {};
   g_pyroscope_app_ad_hoc_profile_metric_selected: {};
-  g_pyroscope_app_ad_hoc_profile: {};
+  g_pyroscope_app_ad_hoc_profile_upload_success: {
+    fileType: string;
+    profileTypeCount: number;
+  };
+  g_pyroscope_app_ad_hoc_profile_upload_failed: {
+    fileType: string;
+    errorName: string;
+  };
   g_pyroscope_app_compare_link_clicked: {};
   g_pyroscope_app_diff_auto_select_clicked: {};
   g_pyroscope_app_diff_choose_preset_clicked: {};

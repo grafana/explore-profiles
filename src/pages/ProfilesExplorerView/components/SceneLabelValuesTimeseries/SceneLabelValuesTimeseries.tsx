@@ -1,5 +1,5 @@
 import { css, cx } from '@emotion/css';
-import { DataFrame, FieldMatcherID, LoadingState } from '@grafana/data';
+import { DataFrame, FieldMatcherID, LoadingState, PanelData } from '@grafana/data';
 import { config } from '@grafana/runtime';
 import {
   PanelBuilders,
@@ -17,7 +17,7 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
-import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
+import { getProfilesExemplarsFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
 import { isEqual, merge } from 'lodash';
 import React from 'react';
 
@@ -86,9 +86,11 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     annotations?: boolean;
     includeExemplars?: boolean;
   }) {
+    const profilesExemplarsEnabled = getProfilesExemplarsFromOpenFeature();
     const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(
       headerActions,
-      includeExemplars
+      includeExemplars,
+      profilesExemplarsEnabled
     );
 
     super({
@@ -100,6 +102,8 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       overrides,
       annotations,
       body: PanelBuilders.timeseries()
+        // TODO: remove `as any` once @grafana/scenes exposes `multiLane` on the annotations option type
+        .setOption('annotations' as any, { multiLane: true })
         .setTitle(item.label)
         .setData(
           data ||
@@ -108,7 +112,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
                 annotations,
-                includeExemplars && featureToggles.exemplars
+                includeExemplars && profilesExemplarsEnabled
               ),
               transformations: [],
             })
@@ -126,12 +130,13 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
 
   private static processExemplarsConfig(
     headerActions: SceneLabelValuesTimeseriesState['headerActions'],
-    includeExemplars?: boolean
+    includeExemplars: boolean | undefined,
+    profilesExemplarsEnabled: boolean
   ): {
     processedHeaderActions: SceneLabelValuesTimeseriesState['headerActions'];
     menuState: Record<string, unknown>;
   } {
-    if (!featureToggles.exemplars) {
+    if (!profilesExemplarsEnabled) {
       return { processedHeaderActions: headerActions, menuState: {} };
     }
 
@@ -181,7 +186,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     }
   }
 
-  private handleDataStateChange(newState: any, prevState: any) {
+  private handleDataStateChange(newState: { data?: PanelData }, prevState: { data?: PanelData }) {
     if (newState.data?.state !== LoadingState.Done) {
       return;
     }
@@ -197,15 +202,22 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     this.publishEvent(new EventTimeseriesDataReceived({ series }), true);
   }
 
-  private retainPreviousAnnotations(newState: any, prevState: any) {
+  private retainPreviousAnnotations(newState: { data?: PanelData }, prevState: { data?: PanelData }) {
     const rangeAnnotations = prevState?.data?.annotations?.filter(
-      (annotation: any) => annotation instanceof RangeAnnotation
+      (annotation: unknown) => annotation instanceof RangeAnnotation
     );
     if (
-      rangeAnnotations &&
-      !newState?.data?.annotations?.some((annotation: any) => annotation instanceof RangeAnnotation)
+      rangeAnnotations?.length &&
+      newState?.data &&
+      !newState.data.annotations?.some((annotation: unknown) => annotation instanceof RangeAnnotation)
     ) {
-      newState?.data?.annotations?.push(...rangeAnnotations);
+      const $data = this.state.body.state.$data as SceneDataProvider;
+      $data.setState({
+        data: {
+          ...newState.data,
+          annotations: [...(newState.data.annotations ?? []), ...rangeAnnotations],
+        },
+      });
     }
   }
 
@@ -223,7 +235,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
           this.handleProfileMetricChange();
         }
       });
-    } catch (error) {
+    } catch {
       return null;
     }
   }

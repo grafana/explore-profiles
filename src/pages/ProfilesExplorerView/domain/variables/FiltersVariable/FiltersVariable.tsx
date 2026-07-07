@@ -1,14 +1,18 @@
 import { AdHocVariableFilter } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { AdHocFiltersVariable, SceneComponentProps, sceneGraph, SceneObject } from '@grafana/scenes';
-import { CompleteFilters, OperatorKind } from '@shared/components/QueryBuilder/domain/types';
+import { CompleteFilters } from '@shared/components/QueryBuilder/domain/types';
 import { QueryBuilder } from '@shared/components/QueryBuilder/QueryBuilder';
+import { buildFilterExpressionParts } from '@shared/components/SavedSearches/utils';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { uniq } from 'lodash';
 import React from 'react';
 
 import { useBuildPyroscopeQuery } from '../../useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
-import { convertPyroscopeToVariableFilter, isFilterValid } from './filters-ops';
+import { convertPyroscopeToVariableFilter } from './filters-ops';
+
+const FILTERS_LABEL_DEFAULT = 'Filters';
 
 export class FiltersVariable extends AdHocFiltersVariable {
   static DEFAULT_VALUE = [];
@@ -18,17 +22,9 @@ export class FiltersVariable extends AdHocFiltersVariable {
     super({
       key,
       name: key,
-      label: 'Filters',
+      label: FILTERS_LABEL_DEFAULT,
       filters: FiltersVariable.DEFAULT_VALUE,
-      expressionBuilder: (filters) =>
-        filters
-          // after parsing the URL search parameters the filters might end up having an invalid operator, which in turn, will
-          // generate an invalid query that will make the API requests fail - we prevent this to happen by sanitizing the filters here
-          .filter(isFilterValid)
-          .map(({ key, operator, value }) =>
-            operator === OperatorKind['is-empty'] ? `${key}=""` : `${key}${operator}"${value}"`
-          )
-          .join(','),
+      expressionBuilder: (filters) => buildFilterExpressionParts(filters),
     });
     this.initialFilters = initialFilters;
     this.addActivationHandler(this.onActivate.bind(this));
@@ -45,6 +41,7 @@ export class FiltersVariable extends AdHocFiltersVariable {
   }
 
   onActivate() {
+    this.setState({ label: t('variables.filters.label', FILTERS_LABEL_DEFAULT) });
     this.setInitialValue();
 
     // VariableDependencyConfig does not work :man_shrug: (never called)

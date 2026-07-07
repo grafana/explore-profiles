@@ -1,5 +1,6 @@
 import { PanelMenuItem } from '@grafana/data';
-import { reportInteraction } from '@grafana/runtime';
+import { t } from '@grafana/i18n';
+import { reportInteraction, usePluginComponent } from '@grafana/runtime';
 import {
   SceneComponentProps,
   SceneDataQuery,
@@ -7,31 +8,36 @@ import {
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
+  VizPanel,
   VizPanelMenu,
 } from '@grafana/scenes';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
-import React from 'react';
+import React, { useEffect } from 'react';
 
+import {
+  ADD_TO_DASHBOARD_COMPONENT_ID,
+  EventOpenAddToDashboard,
+  getPanelData,
+} from '../../domain/actions/addToDashboard';
 import { getExploreUrl } from '../../helpers/getExploreUrl';
 import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { SceneLabelValuesTimeseries } from './SceneLabelValuesTimeseries';
+
+/**
+ * Divider rows must use distinct non-empty `text` values because `VizPanelMenu` keys list children
+ * from `text`, and multiple `text: ''` dividers produce duplicate React keys. Use explicit sentinel
+ * values instead of zero-width Unicode characters so the behavior is easier to understand and less
+ * fragile if the menu implementation changes.
+ */
+const MENU_DIVIDER_AFTER_EXEMPLARS = 'divider-after-exemplars';
+const MENU_DIVIDER_BEFORE_ACTIONS = 'divider-before-actions';
 
 interface SceneTimeseriesMenuState extends SceneObjectState {
   items?: PanelMenuItem[];
   scaleType?: ScaleDistribution;
   showExemplars?: boolean; // undefined means that the Exemplars button is not shown in the menu. Otherwise, it's shown and the value is the current state of the Exemplars button.
+  includeAddToDashboard?: boolean;
 }
-
-const SCALE_TYPES = [
-  {
-    text: 'Linear',
-    scaleDistribution: { type: ScaleDistribution.Linear },
-  },
-  {
-    text: 'Log2',
-    scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
-  },
-];
 
 export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuState> {
   constructor(state: SceneTimeseriesMenuState) {
@@ -44,42 +50,63 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   onActivate() {
-    this.setState({ items: this.buildMenuItems() });
+    const includeAddToDashboard = this.state.includeAddToDashboard ?? false;
+    this.setState({ includeAddToDashboard, items: this.buildMenuItems(includeAddToDashboard) });
   }
 
-  buildMenuItems(): PanelMenuItem[] {
+  buildMenuItems(includeAddOverride?: boolean): PanelMenuItem[] {
     const { scaleType, showExemplars } = this.state;
+    const includeAddToDashboard = includeAddOverride ?? this.state.includeAddToDashboard ?? false;
+
+    const scaleTypes = [
+      {
+        text: t('timeseries.menu.scale-linear', 'Linear'),
+        scaleDistribution: { type: ScaleDistribution.Linear },
+      },
+      {
+        text: t('timeseries.menu.scale-log2', 'Log2'),
+        scaleDistribution: { type: ScaleDistribution.Log, log: 2 },
+      },
+    ];
 
     const menuItems: PanelMenuItem[] = [
       {
-        text: 'Scale type',
+        text: t('timeseries.menu.scale-type', 'Scale type'),
         type: 'group',
-        subMenu: SCALE_TYPES.map((option) => ({
+        subMenu: scaleTypes.map((option) => ({
           text: `${scaleType === option.scaleDistribution.type ? '✔ ' : ''}${option.text}`,
           onClick: () => this.onClickScaleOption(option),
         })),
       },
       {
         type: 'divider',
-        text: '',
+        text: MENU_DIVIDER_BEFORE_ACTIONS,
       },
       {
         iconClassName: 'compass',
-        text: 'Open in Explore',
+        text: t('timeseries.menu.open-in-explore', 'Open in Explore'),
         onClick: () => this.onClickExplore(),
       },
     ];
+
+    if (includeAddToDashboard) {
+      menuItems.push({
+        iconClassName: 'apps',
+        text: t('timeseries.menu.add-to-dashboard', 'Add to dashboard'),
+        onClick: () => this.onClickAddToDashboard(),
+      });
+    }
 
     if (showExemplars !== undefined) {
       menuItems.unshift(
         {
           iconClassName: showExemplars ? 'eye' : 'eye-slash',
-          text: 'Exemplars',
+          text: t('timeseries.menu.exemplars', 'Exemplars'),
           onClick: () => this.onClickToggleExemplars(),
         },
         {
           type: 'divider',
-          text: 'new-divider',
+          text: MENU_DIVIDER_AFTER_EXEMPLARS,
         }
       );
     }
@@ -118,6 +145,14 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
     });
   }
 
+  private onClickAddToDashboard() {
+    const vizPanel = sceneGraph.findObject(this, (o) => o instanceof VizPanel);
+    if (!(vizPanel instanceof VizPanel)) {
+      return;
+    }
+    this.publishEvent(new EventOpenAddToDashboard({ panelData: getPanelData(vizPanel) }), true);
+  }
+
   onClickExplore() {
     reportInteraction('g_pyroscope_app_open_in_explore_clicked');
 
@@ -147,6 +182,23 @@ export class SceneTimeseriesMenu extends SceneObjectBase<SceneTimeseriesMenuStat
   }
 
   static Component({ model }: SceneComponentProps<SceneTimeseriesMenu>) {
+    const { component: addToDashboardForm, isLoading: isLoadingAddToDashboardForm } =
+      usePluginComponent(ADD_TO_DASHBOARD_COMPONENT_ID);
+
+    useEffect(() => {
+      if (isLoadingAddToDashboardForm) {
+        return;
+      }
+      const includeAdd = Boolean(addToDashboardForm);
+      if (model.state.includeAddToDashboard === includeAdd) {
+        return;
+      }
+      model.setState({
+        includeAddToDashboard: includeAdd,
+        items: model.buildMenuItems(includeAdd),
+      });
+    }, [model, isLoadingAddToDashboardForm, addToDashboardForm]);
+
     return <VizPanelMenu.Component model={model as unknown as VizPanelMenu} />;
   }
 }

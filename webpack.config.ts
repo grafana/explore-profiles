@@ -5,9 +5,9 @@ import { type Configuration, NormalModuleReplacementPlugin, type RuleSetRule } f
 import LiveReloadPlugin from 'webpack-livereload-plugin';
 import { merge } from 'webpack-merge';
 
-import grafanaConfig from './.config/webpack/webpack.config';
+import grafanaConfig, { type Env } from './.config/webpack/webpack.config';
 
-const config = async (env): Promise<Configuration> => {
+const config = async (env: Env): Promise<Configuration> => {
   const baseConfig = (await grafanaConfig(env)) as any;
 
   /* MODULES */
@@ -25,28 +25,34 @@ const config = async (env): Promise<Configuration> => {
   /* PLUGINS */
 
   // Disable Live reload
-  baseConfig.plugins = baseConfig.plugins.filter((p) => !(p instanceof LiveReloadPlugin));
+  baseConfig.plugins = baseConfig.plugins.filter((p: unknown) => !(p instanceof LiveReloadPlugin));
 
   // Customize CopyWebpackPlugin to prevent JSON files used in tests to appear in the build artefacts.
   // Among them, there might be (e.g.) some "plugin.json" files used that the platform would try to load.
   const jsonPattern = baseConfig.plugins
-    .find((p) => p instanceof CopyWebpackPlugin)
-    .patterns.find(({ from }) => from === '**/*.json');
+    .find((p: unknown) => p instanceof CopyWebpackPlugin)
+    .patterns.find(({ from }: { from: string }) => from === '**/*.json');
 
   if (!jsonPattern) {
     throw 'Cannot find a JSON entry in the Webpack CopyPlugin! Please check .config/webpack/webpack.config.ts and adjust this configuration.';
   }
 
-  jsonPattern.filter = (filepath) => !filepath.includes('__tests__');
+  jsonPattern.filter = (filepath: string) => !filepath.includes('__tests__');
 
   /* FINAL CONFIG */
+
+  baseConfig.externals = [...(baseConfig.externals || []), 'i18next'];
 
   const finalConfig = merge(baseConfig, {
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.json'],
       alias: {
+        src: path.resolve(__dirname, './src'),
         '@shared': path.resolve(__dirname, './src/shared'),
         '@img': path.resolve(__dirname, './src/img'),
+        // Ensure single instances of these packages when using pnpm
+        // This prevents module duplication issues with i18n state
+        '@grafana/i18n': path.resolve(process.cwd(), 'node_modules/@grafana/i18n'),
       },
     },
     module: {

@@ -1,8 +1,13 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t, Trans } from '@grafana/i18n';
 import { LinkButton, Spinner, useStyles2 } from '@grafana/ui';
 import React from 'react';
 
+import {
+  ContextProviderResults,
+  OpenAssistantButtonAsync,
+} from '../../../../../../../components/OpenAssistantButtonAsync';
 import { AIButton } from '../../../../../../../components/SceneAiPanel/components/AiButton/AIButton';
 import { buildUnitFormatter } from '../../../domain/buildUnitFormatter';
 import { CodeLine } from '../domain/useCodeContainer';
@@ -14,9 +19,18 @@ type CodeProps = {
   isLoadingCode: boolean;
   noCodeAvailable: boolean;
   onOptimizeCodeClick: () => void;
+  optimizeCodeContextProvider?: () => Promise<ContextProviderResults | undefined>;
 };
 
-export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, onOptimizeCodeClick }: CodeProps) => {
+export const Code = ({
+  lines,
+  unit,
+  githubUrl,
+  isLoadingCode,
+  noCodeAvailable,
+  onOptimizeCodeClick,
+  optimizeCodeContextProvider,
+}: CodeProps) => {
   const styles = useStyles2(getStyles);
 
   const fmt = buildUnitFormatter(unit);
@@ -49,10 +63,14 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.breakdownLabel}>
-            <h6>Breakdown per line</h6>
+            <h6>
+              <Trans i18nKey="function-details.code.breakdown-per-line">Breakdown per line</Trans>
+            </h6>
             <span>
               {isLoadingCode && <Spinner inline />}
-              {!isLoadingCode && noCodeAvailable && '(file information unavailable)'}
+              {!isLoadingCode &&
+                noCodeAvailable &&
+                t('function-details.code.file-unavailable', '(file information unavailable)')}
             </span>
           </div>
 
@@ -63,17 +81,26 @@ export const Code = ({ lines, unit, githubUrl, isLoadingCode, noCodeAvailable, o
               target="_blank"
               icon="github"
               fill="text"
+              size="sm"
             >
-              View on GitHub
+              <Trans i18nKey="function-details.code.view-on-github">View on GitHub</Trans>
             </LinkButton>
 
-            <AIButton
-              onClick={onOptimizeCodeClick}
-              disabled={isLoadingCode || noCodeAvailable}
-              interactionName="g_pyroscope_app_optimize_code_clicked"
-            >
-              Optimize Code
-            </AIButton>
+            {optimizeCodeContextProvider ? (
+              <OpenAssistantButtonAsync
+                origin="grafana-pyroscope-app/function-details/optimize-code"
+                title={t('function-details.code.optimize', 'Optimize Code')}
+                contextProvider={optimizeCodeContextProvider}
+              />
+            ) : (
+              <AIButton
+                onClick={onOptimizeCodeClick}
+                disabled={isLoadingCode || noCodeAvailable}
+                interactionName="g_pyroscope_app_optimize_code_clicked"
+              >
+                <Trans i18nKey="function-details.code.optimize">Optimize Code</Trans>
+              </AIButton>
+            )}
           </div>
         </div>
       </div>
@@ -184,6 +211,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
   buttons: css`
     display: flex;
     flex-wrap: no-wrap;
+    margin-bottom: ${theme.spacing(1)};
+    gap: ${theme.spacing(1)};
   `,
   codeBlock: css`
     position: relative;

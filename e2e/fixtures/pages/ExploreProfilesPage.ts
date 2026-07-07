@@ -248,7 +248,7 @@ export class ExploreProfilesPage extends PyroscopePage {
   }
 
   async assertQuickFilter(explectedPlaceholder: string, expectedValue: string, expectedResultsCount: number) {
-    await expect(await this.getQuickFilterInput().getAttribute('placeholder')).toBe(explectedPlaceholder);
+    await expect(this.getQuickFilterInput()).toHaveAttribute('placeholder', explectedPlaceholder);
     await expect(this.getQuickFilterInput()).toHaveValue(expectedValue);
     await this.assertQuickFilterResultsCount(expectedResultsCount);
   }
@@ -295,7 +295,7 @@ export class ExploreProfilesPage extends PyroscopePage {
     // weirdly the mouse is on the "Flame graph" panel action at this point
     // so we have to move it for the label to become actionable
     await this.mouse.move(0, 0);
-    await this.getByLabel('Hide panels without data').click();
+    await this.getHideNoDataSwitcher().check({ force: true });
   }
 
   /* Panel type switcher */
@@ -342,7 +342,7 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   async clickOnPanelAction(panelTitle: string, actionLabel: string) {
     const panel = await this.getPanelByTitle(panelTitle);
-    await panel.getByLabel(actionLabel).click();
+    await panel.getByRole('button', { name: actionLabel, exact: true }).click();
 
     // we have to move the mouse to prevent the action tooltip to cover (e.g.) the profile type selector
     await this.mouse.move(0, 0);
@@ -446,15 +446,34 @@ export class ExploreProfilesPage extends PyroscopePage {
   async selectGroupByLabel(label: string) {
     const container = this.getGroupByContainer();
     const radios = container.getByRole('radio');
+    const prefix = label.replace(/\s*\(\d+\)\s*$/, '');
+    const prefixRegex = new RegExp(`^${escapeRegex(prefix)}\\b`);
+    const targetRadio = container.getByRole('radio', { name: prefixRegex });
 
-    if ((await radios.count()) > 0) {
+    // Wait for group-by labels to load (radios may appear after the initial "All" radio)
+    await expect
+      .poll(
+        async () => {
+          if ((await targetRadio.count()) > 0) {
+            return true;
+          }
+          // Narrow layout fallback: no radios at all, only a Select
+          if ((await radios.count()) === 0) {
+            return (await container.locator('input[role="combobox"]').count()) > 0;
+          }
+          return false;
+        },
+        { timeout: 15000 }
+      )
+      .toBeTruthy();
+
+    if ((await targetRadio.count()) > 0) {
+      // Wide layout: prefer exact name match, fall back to prefix
       const exactRadio = container.getByRole('radio', { name: label, exact: true });
       if ((await exactRadio.count()) > 0) {
         await exactRadio.click();
         return;
       }
-      // Same label name, different cardinality e.g. vehicle (3) vs vehicle (4)
-      const prefix = label.replace(/\s*\(\d+\)\s*$/, '');
       const withCount = container.getByRole('radio', {
         name: new RegExp(`^${escapeRegex(prefix)}\\s*\\(\\d+\\)$`),
       });
@@ -462,10 +481,7 @@ export class ExploreProfilesPage extends PyroscopePage {
         await withCount.first().click();
         return;
       }
-      await container
-        .getByRole('radio', { name: new RegExp(`^${escapeRegex(prefix)}\\b`) })
-        .first()
-        .click();
+      await targetRadio.first().click();
       return;
     }
 

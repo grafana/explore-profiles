@@ -1,0 +1,671 @@
+{
+  "actions": {
+    "exemplar-toggle": {
+      "hide": "エグゼンプラーを非表示",
+      "label": "エグゼンプラー",
+      "show": "エグゼンプラーを表示"
+    },
+    "fav": {
+      "favorite": "お気に入り",
+      "unfavorite": "お気に入りから削除"
+    }
+  },
+  "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
+    "profile-type-selector": {
+      "label": "プロファイル"
+    },
+    "tabs": {
+      "diff-view": "",
+      "single-view": "単一ビュー"
+    },
+    "view": {
+      "title": "アドホックビュー"
+    }
+  },
+  "ai-panel": {
+    "analyzing": "分析中...",
+    "close": "パネルを閉じる",
+    "fetch-error": "プロファイルデータの読み込み中にエラーが発生しました！",
+    "fetch-error-message": "ご不便をおかけして申し訳ございません。後でもう一度お試しください。",
+    "follow-up": {
+      "placeholder": "フォローアップの質問をする...",
+      "send": "送信"
+    },
+    "llm-error": "",
+    "llm-error-message": "ご不便をおかけして申し訳ございません。もう一度お試しください。それでも問題が解決しない場合は、組織の管理者に連絡してください。",
+    "reply": {
+      "search-node": "このノードを検索"
+    },
+    "retry": "再試行",
+    "title": "フレームグラフ分析",
+    "validation-error": "検証エラーが発生しました！"
+  },
+  "analyze-diff": {
+    "context": {
+      "title": "DOTプロファイルと手順"
+    },
+    "error": "分析用のDOTプロファイルの取得に失敗しました",
+    "prompt": "これら2つのパフォーマンスプロファイルの違いを分析してください。"
+  },
+  "back-button": {
+    "aria-label": "Profiles Drilldownに戻る",
+    "label": "Profiles Drilldownに戻る"
+  },
+  "create-recording-rule": {
+    "cancel": "キャンセル",
+    "create": "作成",
+    "filters": {
+      "description": "メインビューで選択されたフィルターは、このルールに適用されます",
+      "label": "フィルター",
+      "none": "フィルターが選択されていません"
+    },
+    "function-name": {
+      "aria-label": "関数名",
+      "description": "記録ルールをフィルタリングするための関数名（オプション）",
+      "label": "関数名",
+      "placeholder": "全体を集計する場合は空欄のままにしてください"
+    },
+    "labels": {
+      "description": "メトリクスに転送する追加のプロファイリングラベル",
+      "label": "追加ラベル"
+    },
+    "menu-option": "記録ルールを作成",
+    "metric-name": {
+      "aria-label": "メトリック名",
+      "description": "",
+      "invalid": "メトリック名が無効です。",
+      "label": "メトリック名",
+      "pattern-alphanumeric": "英数字またはアンダースコアのみを含める",
+      "pattern-error": "メトリック名が無効です。メトリック名には次の特性が必要です：",
+      "pattern-no-number": "数字で始めることはできません",
+      "required": "メトリック名は必須です。"
+    },
+    "profile-type": {
+      "label": "プロファイルタイプ"
+    },
+    "service-name": {
+      "all": "すべてのサービス",
+      "label": "サービス名"
+    },
+    "title": "記録ルールを作成"
+  },
+  "diff-flame-graph": {
+    "compare-panel": {
+      "annotation-title": "{{title}}フレームグラフの範囲",
+      "baseline": "ベースライン",
+      "comparison": "比較",
+      "flame-graph": "フレームグラフ",
+      "range-selection-mode": "範囲選択モード",
+      "sync-time-ranges": "時間範囲を同期",
+      "time-picker": "タイムピッカー",
+      "tooltip-description": "これらのボタンを使用して、時系列上でマウスを使用して範囲を選択する際の動作を変更します：",
+      "tooltip-flame-graph": "フレームグラフ",
+      "tooltip-flame-graph-description": "フレームグラフを作成するための時間範囲（スタックトレースは、選択した範囲に対してのみ取得されます）",
+      "tooltip-time-picker": "タイムピッカー",
+      "tooltip-time-picker-description": "時間範囲ズームイン（デフォルトの動作）"
+    },
+    "error-loading-profile": "プロファイルデータの読み込み中にエラーが発生しました！",
+    "explain-button": "差分フレームグラフを説明する",
+    "missing-selections": {
+      "auto-select": "自動選択",
+      "how-to-alt": "差分フレームグラフの表示方法",
+      "learn-how": "マウスでフレームグラフの範囲を選択する方法については、こちらをクリックしてください",
+      "step-1": "「フレームグラフ」範囲選択モードが選択されていることを確認します",
+      "step-2": "マウスを使用して、ベースライン時系列と比較時系列の両方で任意の時間範囲を選択します",
+      "title": "ベースラインと比較フレームグラフの両方の範囲を選択して、差分フレームグラフを表示します"
+    },
+    "no-profile-data": "利用可能なプロファイルデータがありません",
+    "no-profile-data-message": "適切なフィルターと時間範囲を選択していることを確認してください。",
+    "presets": {
+      "1h-ago-vs-now": "1時間前と今",
+      "1h-ago-vs-now-description": "30分ウィンドウ",
+      "24h-ago-vs-now": "24時間前と今",
+      "6h-ago-vs-now": "6時間前と今",
+      "label": "比較プリセット",
+      "placeholder": "プリセットを選択"
+    },
+    "settings-error": {
+      "message": "一部の機能（フレームグラフのエクスポートオプションなど）が期待通りに動作しない可能性があります。ページの再読み込みをお試しください。ご不便をおかけして申し訳ございません。",
+      "title": "プラグイン設定の取得中にエラーが発生しました！"
+    },
+    "title": "{{serviceName}}（{{profileMetricType}}）の差分フレームグラフ"
+  },
+  "error-page": {
+    "banner-message": "ページを再読み込みしてみてください。問題が解決しない場合は、組織の管理者に連絡してください。ご不便をおかけして申し訳ございません。",
+    "banner-title": "致命的なエラーが発生しました！",
+    "title": "Grafana Profiles Drilldown"
+  },
+  "explorer": {
+    "exploration-type": {
+      "all-services": "すべてのサービス",
+      "all-services-description": "任意のプロファイルタイプに対する、すべてのサービスの概要",
+      "diff-flame-graph": "差分フレームグラフ",
+      "diff-flame-graph-description": "2つのフレームグラフの違いを比較する",
+      "favorites": "お気に入り",
+      "favorites-description": "お気に入りの視覚化の概要",
+      "flame-graph": "フレームグラフ",
+      "flame-graph-description": "単一サービスのフレームグラフ",
+      "labels": "ラベル",
+      "labels-description": "単一サービスのラベルの探索とフィルタリング",
+      "profile-types": "プロファイルタイプ",
+      "profile-types-description": "単一サービスのすべてのプロファイルタイプの概要"
+    },
+    "header": {
+      "add-recording-rule": "記録ルールを追加",
+      "recording-rules-tooltip": "記録ルール",
+      "settings-tooltip": "テナント設定の表示/編集",
+      "share-tooltip": "共有可能なリンクをクリップボードにコピー",
+      "upload-tooltip": "アドホックプロファイルをアップロード",
+      "view-recording-rules": "記録ルールを表示"
+    }
+  },
+  "export-data": {
+    "aria-label": "プロファイルデータをエクスポート",
+    "tooltip": "プロファイルデータをエクスポート"
+  },
+  "export-menu": {
+    "aria-label": "プロファイルデータをエクスポート",
+    "error-flamegraph-com": "flamegraph.comへのエクスポートに失敗しました！",
+    "error-loading-profile": "Flamebearerプロファイルデータの読み込み中にエラーが発生しました！",
+    "error-png": "pngへのエクスポートに失敗しました！",
+    "error-pprof": "pprofへのエクスポートに失敗しました！",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "プロファイルデータをエクスポート"
+  },
+  "exposed-components": {
+    "loading": "読み込み中..."
+  },
+  "favorites": {
+    "data-source": {
+      "test-success": "OK"
+    }
+  },
+  "flame-graph": {
+    "error-loading-profile": "プロファイルデータの読み込み中にエラーが発生しました！",
+    "explain-button": "フレームグラフを説明する",
+    "profile-id-selector": {
+      "filter-label": "ラベルを絞り込む",
+      "filter-operator": "演算子を絞り込む",
+      "filter-value": "値を絞り込む",
+      "name": "プロファイルID",
+      "remove": "クエリからプロファイルIDセレクターを削除",
+      "tooltip": "フレームグラフクエリ（{{profileIdSelector}}）にプロファイルIDセレクターを追加しました。"
+    },
+    "settings-error": {
+      "message": "一部の機能（折りたたまれたフレームグラフなど）が期待通りに動作しない可能性があります。ページの再読み込みをお試しください。ご不便をおかけして申し訳ございません。",
+      "title": "プラグイン設定の取得中にエラーが発生しました！"
+    },
+    "span-selector": {
+      "added": "スパンセレクターが追加されました",
+      "remove": "クエリからスパンセレクターを削除",
+      "tooltip": "フレームグラフクエリ（{{spanSelector}}）にスパンセレクターを追加しました。"
+    },
+    "title": " {{serviceName}}（{{profileMetricType}}）のフレームグラフ"
+  },
+  "function-details": {
+    "ai-suggestions": {
+      "analyzing": "分析中...",
+      "fetch-error": "プロファイルの取得中にエラーが発生しました！",
+      "fetch-error-message": "ご不便をおかけして申し訳ございません。後でもう一度お試しください。",
+      "llm-error": "OpenAIを使用したコンテンツの生成に失敗しました！",
+      "llm-error-message": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。それでも問題が解決しない場合は、組織の管理者に連絡してください。",
+      "title": "コード最適化の提案"
+    },
+    "close": "閉じる",
+    "code": {
+      "breakdown-per-line": "行ごとの内訳",
+      "file-unavailable": "（ファイル情報が利用できません）",
+      "optimize": "コードを最適化",
+      "view-on-github": "GitHubで表示"
+    },
+    "commit": "コミット",
+    "commit-option": {
+      "author-date": "{{author}}、{{date}}"
+    },
+    "commit-select": {
+      "no-options": "コミットが見つかりません"
+    },
+    "commit-tooltip": "関数が定義されているアプリケーションのバージョン（コミット）。特定のコミットを対象とするには、ドロップダウンメニューを使用してください。",
+    "context-menu": {
+      "label": "関数の詳細"
+    },
+    "copy-to-clipboard": "クリップボードにコピー",
+    "fetch-error": "関数の詳細の取得中にエラーが発生しました！",
+    "file": "ファイル",
+    "file-path-copied": "ファイルパスをクリップボードにコピーしました！",
+    "file-tooltip": "その関数が定義されているファイルパス",
+    "function-name": "関数名",
+    "github": {
+      "banner-dismiss": "閉じる",
+      "banner-git-ref": "これらは、それぞれ完全なリポジトリのGitHub URLと、実行中のサービスの現在の<2>git ref</2>に設定する必要があります。",
+      "banner-labels": "この機能を有効にするには、プロファイルを送信する際に<2>service_repository</2>と<4>service_git_ref</4>という2つの新しいラベルを追加する必要があります。",
+      "banner-language-support": "この言語は、<1></1>GitHubとの統合をサポートしています。",
+      "banner-learn-more": "詳細を見る",
+      "banner-title": "GitHubとの連携",
+      "connect-button": "{{name}}に接続する",
+      "connect-tooltip": "接続が完了すると、GitHubコードにはこのブラウザセッションからのみアクセスできます。",
+      "connecting": "GitHubに接続中...",
+      "disconnect": "GitHubから切断する",
+      "view-commit": "コミットを表示"
+    },
+    "github-callback": {
+      "logging-in": "GitHubにログイン中…",
+      "title": "GitHubログイン"
+    },
+    "not-available": "-",
+    "override": {
+      "add": "追加",
+      "add-title": "新しいリポジトリ詳細のオーバーライドを追加",
+      "alert-debug": "デバッグ目的で、このフォームを使用してリポジトリの詳細を手動で入力できます。カスタム値は、指定されたデータソースとサービス名に対して、ブラウザのローカルストレージに保存されます。",
+      "alert-labels": "GitHub統合機能を有効にするには、プロファイルを送信する際に<1>service_repository</1>と<3>service_git_ref</3>の2つの新しいラベルを追加する必要があります。",
+      "alert-title": "GitHub統合ラベル",
+      "aria-label": "リポジトリ設定をオーバーライド",
+      "data-source": "データソース",
+      "delete": "オーバーライドを削除",
+      "edit": "編集",
+      "edit-title": "リポジトリ詳細のオーバーライドを編集",
+      "git-ref-label": "service_git_ref（コミット参照）",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "すべての上書きを削除",
+      "remove-all-confirm": "すべて削除",
+      "repository-label": "service_repository（リポジトリURL） - 必須",
+      "repository-placeholder": "GitHubリポジトリ名（https://github.com/org/repo）を入力してください",
+      "repository-required": "リポジトリ名が必要です",
+      "root-path": "ルートへのパス",
+      "root-path-placeholder": "ルートパスを入力",
+      "service-name": "サービス名",
+      "user-set": "（ユーザー設定）"
+    },
+    "repository": "リポジトリ",
+    "repository-tooltip": "選択したサービス用に設定されたリポジトリ",
+    "start-line": "開始行",
+    "start-line-tooltip": "この関数定義が開始される行",
+    "title": "関数の詳細"
+  },
+  "give-feedback": {
+    "button": "フィードバックを提供",
+    "tooltip": "Grafanaのプロファイル機能についてのご意見をお聞かせください。"
+  },
+  "grid": {
+    "empty-state": {
+      "no-results": "結果はありません"
+    },
+    "error": {
+      "title": "クエリエラーが発生しました！"
+    },
+    "exemplars": {
+      "view-profile": "プロファイルを表示"
+    },
+    "layout": {
+      "aria-label": "レイアウト切り替え",
+      "grid": "グリッド",
+      "rows": "行"
+    },
+    "no-data": {
+      "label": "データのないパネルを非表示にする"
+    },
+    "panel-type": {
+      "aria-label": "パネルタイプ切り替え",
+      "histograms": "ヒストグラム",
+      "maxima": "最大値",
+      "time-series": "時系列",
+      "totals": "合計"
+    },
+    "quick-filter": {
+      "aria-label": "クイックフィルター",
+      "clear": "検索をクリア"
+    }
+  },
+  "labels": {
+    "compare": {
+      "aria-label": "",
+      "clear-tooltip": "比較の選択をクリア",
+      "tooltip-empty": "ベースラインと比較パネルの両方を選択して、それぞれのフレームグラフを比較します",
+      "tooltip-ready": "「{{baseline}}」と「{{comparison}}」を比較",
+      "tooltip-select-baseline": "「{{label}}」と比較する別のパネルを選択",
+      "tooltip-select-comparison": "「{{label}}」と比較する別のパネルを選択",
+      "button_other": "比較（{{count}}/2）"
+    },
+    "data-source": {
+      "all": "すべて",
+      "test-success": "OK"
+    },
+    "filter": {
+      "clear-tooltip": "フィルターから「{{label}}」をクリア",
+      "exclude": "除外する",
+      "exclude-tooltip": "フィルターから「{{label}}」を除外する",
+      "include": "含める",
+      "include-tooltip": "フィルターに「{{label}}」を含める"
+    },
+    "grid": {
+      "no-results": "結果はありません",
+      "refresh-tooltip": "クリックして、画面上に表示されているすべてのパネルを完全に更新"
+    },
+    "stats-panel": {
+      "baseline": "ベースライン",
+      "baseline-description": "クリックして、比較のベースラインとして「{{value}}」を選択",
+      "comparison": "比較",
+      "comparison-description": "クリックして「{{value}}」を比較対象として選択",
+      "total": "{{statsDescription}}：{{total}}"
+    }
+  },
+  "onboarding": {
+    "empty-loading": {
+      "title": "読み込み中..."
+    },
+    "modal": {
+      "billing": {
+        "description": "Grafana Cloud Profilesの使用には、Profiles向けの<2>Grafana Cloudの料金体系</2>が適用されます。<br/>詳細については、お知らせの<6>ブログ記事</6>をお読みください。",
+        "title": "請求の仕組み"
+      },
+      "cloud": {
+        "step1": {
+          "description": "<2>Grafana Alloy</2>または<6>Pyroscope SDK</6>を使用して、アプリケーションからGrafana Cloudにプロファイルをプッシュします。",
+          "title": "アプリケーションにプロファイリングを追加する"
+        },
+        "step2": {
+          "description": "<1>Grafana Cloudスタックの設定</1>に移動して、Grafana Cloudの認証情報を見つけてください。",
+          "title": "アプリケーションを設定する"
+        },
+        "step3": {
+          "description": "初期設定が完了したら、このページを更新してプロファイリングデータを確認してください。",
+          "title": "パフォーマンスインサイトの取得を開始"
+        }
+      },
+      "decrease-latency": {
+        "description": "高速性と効率性を維持し、アプリケーションのパフォーマンスを向上させます。競争の激しいデジタル世界では、レイテンシーの短縮は収益の増加につながります。",
+        "title": "レイテンシーを短縮する"
+      },
+      "how-to-get-started": "開始方法",
+      "reduce-costs": {
+        "description": "リソース使用状況をコードレベルで可視化することで、CPUのスパイク、メモリリーク、その他の非効率性を特定できます。その後、チームはコードを最適化し、インフラストラクチャのコストを削減できます。",
+        "title": "コストを削減"
+      },
+      "resolve-incidents": {
+        "description": "継続的なプロファイリングデータをメトリクス、ログ、トレースと関連付けることで、平均修復時間（MTTR）を短縮し、問題の根本原因を迅速に特定できます。",
+        "title": "インシデントをより迅速に解決"
+      },
+      "self-hosted": {
+        "step1": {
+          "description": "お使いのインフラストラクチャに<1>Pyroscopeサーバー</1>をインストールします。または、ホスト型サービスを使用する場合は、<5>Grafana Cloudスタックの設定</5>に移動して、Grafana Cloudの認証情報を見つけてください。",
+          "title": "Pyroscopeサーバーを設定する"
+        },
+        "step2": {
+          "description": "新しい<1>Pyroscopeデータソース</1>を追加します。 Grafana Cloud Profilesを使用する場合は、PyroscopeサーバーのURLと適切なセキュリティ認証情報を使用してください。",
+          "title": "Grafanaを設定"
+        },
+        "step3": {
+          "description": "<2>Grafana Alloy</2>または<6>Pyroscope SDK</6>を使用して、アプリケーションからGrafana Cloudにプロファイルをプッシュします。",
+          "title": "アプリケーションにプロファイリングを追加する"
+        }
+      },
+      "subtitle": "インフラストラクチャのコストを最適化し、デバッグを簡素化し、アプリケーションのパフォーマンスを向上させます",
+      "title": "Grafana Profiles Drilldownへようこそ",
+      "what-you-can-do": "できること"
+    },
+    "no-data-source": {
+      "alert-message": "このプラグインにはPyroscopeデータソースが必要です。Grafanaインスタンスに<2>Pyroscopeデータソースを追加して設定</2>してください。",
+      "alert-title": "Pyroscopeデータソースがありません！",
+      "title": "Grafana Profiles Drilldown"
+    },
+    "page": {
+      "close": "閉じる",
+      "nav": "オンボーディング"
+    }
+  },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
+  "panel-box": {
+    "cancel-query": "クエリをキャンセル",
+    "loading-bar": "パネル読み込みバー",
+    "panel-status": "パネルステータス",
+    "stop-streaming": "ストリーミングを停止",
+    "streaming": "ストリーミング",
+    "untitled": "無題"
+  },
+  "panel-menu": {
+    "aria-label-no-title": "タイトルのないパネルのメニュー",
+    "aria-label-with-title": "タイトル{{title}}付きパネルのメニュー",
+    "title": "メニュー"
+  },
+  "plugin-info": {
+    "aria-label": "プラグイン情報",
+    "changelog": "変更ログ",
+    "commit-sha": "コミットSHA：{{shortCommitSha}}",
+    "contribute": "貢献",
+    "documentation": "ドキュメント",
+    "grafana-version": "Grafana {{edition}} v{{version}}（{{env}}）",
+    "last-update": "最終更新：{{updated}}",
+    "report-issue": "問題を報告する",
+    "title": "プラグイン情報",
+    "version": "Grafana Profiles Drilldown v{{version}}"
+  },
+  "query-analysis": {
+    "blocks": "ブロック",
+    "data-in-time-range": "時間範囲内のデータ",
+    "deduplication": "重複排除",
+    "index-store": "インデックスストア",
+    "no": "いいえ",
+    "profiles": "プロファイル",
+    "profiles-store": "プロファイルストア",
+    "query-info-aria-label": "クエリ情報",
+    "replicas": "レプリカ",
+    "samples": "サンプル",
+    "series": "系列",
+    "series-in-query": "クエリ内の系列",
+    "stored-data-in-time-range": "時間範囲内の保存データ：{{totalBytesInTimeRange}}",
+    "symbols-store": "シンボルストア",
+    "yes": "はい"
+  },
+  "query-builder": {
+    "chiclet": {
+      "edit-attribute": "「{{label}}」を編集",
+      "edit-operator": "「{{label}}」を編集",
+      "filter": "フィルター",
+      "filter-label": "ラベルを絞り込む",
+      "filter-operator": "演算子を絞り込む",
+      "filter-value": "値を絞り込む",
+      "partial-filter": "部分フィルター",
+      "remove-filter": "フィルターを削除"
+    },
+    "error-load": "読み込み中に予期しないエラーが発生しました！もう一度お試しください。",
+    "execute": "実行",
+    "execute-tooltip": "新しいクエリを実行",
+    "loading": "読み込み中...",
+    "no-value": "（値なし）",
+    "nothing-to-execute-tooltip": "実行するものがありません。すべてのフィルターが適用されています",
+    "operators": {
+      "in": "内",
+      "in-description": "次のいずれかである：",
+      "is-empty": "は空白です",
+      "not-in": "に含まれない",
+      "not-in-description": "次のいずれでもない：",
+      "regex-match-description": "正規表現に一致する",
+      "regex-not-match-description": "正規表現に一致しない"
+    },
+    "placeholder": {
+      "filter-add": "ラベル値で絞り込む...",
+      "select-label": "ラベルを選択...",
+      "select-operator": "演算子を選択...",
+      "select-value": "値を選択...",
+      "select-values": "値を選択...",
+      "type-value": "正規表現を入力…"
+    },
+    "suggestions-disabled": "このラベルでは、提案は無効になっています。",
+    "suggestions-none": "利用可能な提案はありません。"
+  },
+  "recording-rules": {
+    "delete": {
+      "aria-label": "記録ルールを削除",
+      "body": "{{metricName}}記録ルールを削除してもよろしいですか？",
+      "confirm": "はい",
+      "title": "記録ルールを削除"
+    },
+    "details": {
+      "filters": "フィルター",
+      "no": "いいえ",
+      "no-labels": "ラベルなし",
+      "read-only": "読み取り専用",
+      "yes": "はい"
+    },
+    "empty": {
+      "description": "フレームグラフを開き、上部の「合計」ブロックをクリックして、コンテキストメニューから「記録ルールを作成」を選択し、新しいルールを定義します。",
+      "message": "記録ルールはありません"
+    },
+    "error": {
+      "feature-required": "この機能を使用するには、recording_rulesフラグが有効になっているPyroscopeが必要です。",
+      "message": "記録ルールの取得中にエラーが発生しました",
+      "title": "記録ルールの取得中にエラーが発生しました"
+    },
+    "table": {
+      "actions": "操作",
+      "all-services": "すべてのサービス",
+      "function-name": "関数名",
+      "labels": "ラベル",
+      "name": "名前",
+      "none": "なし",
+      "profile-type": "プロファイルタイプ",
+      "readonly-tooltip": "このルールはテナント設定でプロビジョニングされているため、削除できません。",
+      "service-name": "サービス名",
+      "total-all-functions": "合計（すべての関数）"
+    },
+    "title": "記録ルール"
+  },
+  "saved-searches": {
+    "load": {
+      "no-searches": "表示する保存した検索がありません。",
+      "no-searches-tooltip": "読み込む保存した検索がありません",
+      "remove-tooltip": "削除",
+      "saved-query-tooltip": "保存されたクエリを読み込む",
+      "select": "選択",
+      "select-pyroscope-query": "Pyroscope クエリを選択してください。",
+      "title": "以前に保存した検索を読み込む",
+      "tooltip": "保存された検索を読み込む"
+    },
+    "save": {
+      "cancel": "キャンセル",
+      "close": "閉じる",
+      "description-label": "説明",
+      "error-message": "この検索の保存中に予期しないエラーが発生しました。",
+      "existing-search-warning": "同じクエリを使用した、以前に保存した検索が存在します：{{title}}",
+      "info-message": "保存した検索はブラウザのローカルデータに保存され、このデバイスでのみ利用できます。",
+      "save": "保存",
+      "saved-queries-tooltip": "保存されたクエリに保存",
+      "success-body": "検索が正常に保存されました。",
+      "success-message": "検索が正常に保存されました。",
+      "success-title": "成功",
+      "title": "現在の検索を保存",
+      "title-label": "タイトル",
+      "tooltip": "検索を保存"
+    }
+  },
+  "series": {
+    "data-source": {
+      "test-success": "OK"
+    }
+  },
+  "settings": {
+    "loading": "読み込み中...",
+    "save-button": "設定を保存",
+    "tabs": {
+      "ui-settings": "UI設定",
+      "unknown-extension": "不明な拡張機能"
+    },
+    "title": "プロファイル設定（テナント）",
+    "ui": {
+      "collapsed-flame-graphs": {
+        "label": "折りたたみ済みのフレームグラフ",
+        "toggle": "折りたたまれたフレームグラフを切り替え"
+      },
+      "enable-function-details": {
+        "label": "関数の詳細を有効化",
+        "learn-more": "詳細を見る",
+        "toggle": "関数の詳細を切り替え",
+        "tooltip": "関数の詳細機能を使用すると、リソース使用状況をソースコードの行にマッピングできます。GitHub統合が設定されている場合、ソースコードはGitHubからダウンロードされます。"
+      },
+      "fetch-error": {
+        "message": "ページの再読み込みをお試しください。ご不便をおかけして申し訳ございません。",
+        "title": "プラグイン設定の取得中にエラーが発生しました！"
+      },
+      "flame-graph": {
+        "label": "フレームグラフ"
+      },
+      "function-details": {
+        "label": "関数の詳細"
+      },
+      "max-nodes": {
+        "label": "ノードの最大数"
+      },
+      "metrics-from-profiles": {
+        "disable-hint": "データのエクスポートを停止するには、この機能を無効にする前に、関連するすべての記録ルールを削除してください。",
+        "disable-warning": "この機能を無効にしても、UIから非表示になるだけです。既存の記録ルールは削除されません。これらのルールは引き続き有効であり、メトリクスのエクスポートを継続します。そのため、請求額に影響し続けます。",
+        "enable-warning": "この機能を有効にすると、Profiles Drilldownから記録ルールを定義できます。作成した記録ルールはすべて、Grafana Cloudインスタンスに新しいメトリクスを送信します。これにより、Grafana Mimirでのデータ使用量が増加し、請求額に影響を及ぼす可能性があります。",
+        "label": "プロファイルからのメトリクス",
+        "toggle": "プロファイルからのメトリクスを有効化",
+        "toggle-label": "プロファイルからのメトリクスを有効化",
+        "tooltip": "プロファイルから記録ルールを作成できるようにします"
+      }
+    }
+  },
+  "timeseries": {
+    "menu": {
+      "exemplars": "エグゼンプラー",
+      "open-in-explore": "Exploreで開く",
+      "scale-linear": "線形",
+      "scale-log2": "Log2",
+      "scale-type": "スケールタイプ"
+    }
+  },
+  "variables": {
+    "data-source": {
+      "label": "データソース"
+    },
+    "favorite": {
+      "label": "🔖 お気に入り"
+    },
+    "filters": {
+      "label": "フィルター"
+    },
+    "group-by": {
+      "label": "ラベルでグループ化",
+      "labels-selector": "ラベルセレクター",
+      "other-labels-placeholder": "その他のラベル",
+      "other-labels-selector": "その他のラベルセレクター",
+      "refresh-tooltip": "クリックしてすべてのラベルを更新",
+      "select-label-placeholder": "ラベルを選択"
+    },
+    "profile-id-selector": {
+      "label": "プロファイルIDセレクター"
+    },
+    "profile-metric": {
+      "aria-label": "プロファイルメトリクスリスト",
+      "label": "プロファイルタイプ",
+      "loading": "読み込み中...",
+      "placeholder_other": "プロファイルメトリクス（{{count}}）を選択"
+    },
+    "service-name": {
+      "aria-label": "サービスリスト",
+      "label": "サービス",
+      "loading": "サービスを読み込み中...",
+      "unmatched-tooltip": "",
+      "placeholder_other": "サービスを選択（{{count}}件）"
+    },
+    "span-selector": {
+      "label": "スパンセレクター"
+    }
+  }
+}

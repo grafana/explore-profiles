@@ -18,15 +18,35 @@ Before a piece of work is finished, it should:
 
 - [Git](https://git-scm.com/downloads)
 - [Node.js](https://nodejs.org/en) v20
-- [Yarn](https://yarnpkg.com/) v4
+- pnpm
 - [Docker](https://www.docker.com/get-started/) or [OrbStack](https://orbstack.dev/download) (lighter alternative)
+
+### Dependency install (supply-chain)
+
+Always install with a frozen lockfile and lifecycle scripts disabled:
+
+```shell
+pnpm install --frozen-lockfile --ignore-scripts
+```
+
+Or run `pnpm run deps` (same command). `pnpm-workspace.yaml` sets `frozenLockfile: true` and `ignoreScripts: true`, so plain `pnpm install` enforces both even without flags.
+
+When you change dependencies and need to update `pnpm-lock.yaml`, run:
+
+```shell
+pnpm install --no-frozen-lockfile --ignore-scripts
+```
+
+Review `overrides` in `pnpm-workspace.yaml` when security advisories land, and run `pnpm audit` after dependency changes.
+
+CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`), which runs the package manager’s frozen install command (`pnpm install --frozen-lockfile` for this repo). When bumping that reusable workflow, confirm installs still use a frozen lockfile and skip lifecycle scripts (`pnpm-workspace.yaml` is copied into the job).
 
 ## Get started
 
 1. Clone the repository `git clone git@github.com:grafana/profiles-drilldown.git`
-2. Install the dependencies: `yarn install`
-3. Build the plugin in dev mode: `yarn dev`
-4. Start the Grafana server (with static data): `yarn server:static`
+2. Install the dependencies: `pnpm install --frozen-lockfile --ignore-scripts`
+3. Build the plugin in dev mode: `pnpm run dev`
+4. Start the Grafana server (with static data): `pnpm run server:static`
 5. Optionally, to enable the **GitHub integration feature**, read the "Enable GitHub integration" section below.
 
 Then visit http://localhost:3000/a/grafana-pyroscope-app
@@ -41,12 +61,12 @@ Then visit http://localhost:3000/a/grafana-pyroscope-app
 
 1. If not already done, copy the content of the `.env.local` file to a new `.env` file in the root directory.
 2. Fill in the missing `REMOTE_` values in the `.env` file.
-3. Start the Grafana server: `yarn server:remote`
+3. Start the Grafana server: `pnpm run server:remote`
 
 ### Enable with a local version of Pyroscope
 
 1. Start the local version of Pyroscope (see [Pyroscope's contributing guide](https://github.com/grafana/pyroscope/tree/main/docs/internal/contributing))
-2. Execute `yarn server:local`
+2. Execute `pnpm run server:local`
 
 ### Enable GitHub integration ("Function details")
 

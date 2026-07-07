@@ -1,0 +1,671 @@
+{
+  "actions": {
+    "exemplar-toggle": {
+      "hide": "Sembunyikan contoh",
+      "label": "Contoh",
+      "show": "Tampilkan contoh"
+    },
+    "fav": {
+      "favorite": "Favorit",
+      "unfavorite": "Batalkan favorit"
+    }
+  },
+  "ad-hoc": {
+    "diff": {
+      "cannot-compute-diff": "",
+      "no-common-profile-types": "",
+      "profile": ""
+    },
+    "profile-type-selector": {
+      "label": "Profil"
+    },
+    "tabs": {
+      "diff-view": "",
+      "single-view": "Tampilan tunggal"
+    },
+    "view": {
+      "title": "Tampilan ad hoc"
+    }
+  },
+  "ai-panel": {
+    "analyzing": "Menganalisis...",
+    "close": "Tutup panel",
+    "fetch-error": "Terjadi kesalahan saat memuat data profil!",
+    "fetch-error-message": "Mohon maaf atas ketidaknyamanan ini. Silakan coba lagi nanti.",
+    "follow-up": {
+      "placeholder": "Ajukan pertanyaan lanjutan...",
+      "send": "Kirim"
+    },
+    "llm-error": "",
+    "llm-error-message": "Mohon maaf atas ketidaknyamanan ini. Silakan coba lagi atau, jika masalah berlanjut, hubungi admin organisasi Anda.",
+    "reply": {
+      "search-node": "Cari node ini"
+    },
+    "retry": "Coba lagi",
+    "title": "Analisis flame graph",
+    "validation-error": "Terjadi kesalahan validasi!"
+  },
+  "analyze-diff": {
+    "context": {
+      "title": "Profil DOT dan petunjuk"
+    },
+    "error": "Gagal mengambil profil DOT untuk analisis",
+    "prompt": "Analisis perbedaan antara dua profil kinerja ini."
+  },
+  "back-button": {
+    "aria-label": "Kembali ke Drilldown Profil",
+    "label": "Kembali ke Drilldown Profil"
+  },
+  "create-recording-rule": {
+    "cancel": "Batalkan",
+    "create": "Buat",
+    "filters": {
+      "description": "Filter yang dipilih di tampilan utama akan diterapkan ke aturan ini",
+      "label": "Filter",
+      "none": "Tidak ada filter yang dipilih"
+    },
+    "function-name": {
+      "aria-label": "Nama fungsi",
+      "description": "Nama fungsi opsional untuk menyaring aturan perekaman",
+      "label": "Nama fungsi",
+      "placeholder": "Biarkan kosong untuk agregasi total"
+    },
+    "labels": {
+      "description": "Label profiling tambahan untuk diteruskan ke metrik",
+      "label": "Label tambahan"
+    },
+    "menu-option": "Buat aturan perekaman",
+    "metric-name": {
+      "aria-label": "Nama metrik",
+      "description": "",
+      "invalid": "Nama metrik tidak valid.",
+      "label": "Nama metrik",
+      "pattern-alphanumeric": "Hanya berisi karakter alfanumerik atau garis bawah",
+      "pattern-error": "Nama metrik tidak valid, nama metrik harus memiliki properti berikut:",
+      "pattern-no-number": "Tidak boleh diawali dengan angka",
+      "required": "Nama metrik wajib diisi."
+    },
+    "profile-type": {
+      "label": "Jenis profil"
+    },
+    "service-name": {
+      "all": "Semua service",
+      "label": "Nama service"
+    },
+    "title": "Buat aturan perekaman"
+  },
+  "diff-flame-graph": {
+    "compare-panel": {
+      "annotation-title": "Rentang flame graph {{title}}",
+      "baseline": "Baseline",
+      "comparison": "Perbandingan",
+      "flame-graph": "Flame graph",
+      "range-selection-mode": "Mode pemilihan rentang",
+      "sync-time-ranges": "Sinkronkan rentang waktu",
+      "time-picker": "Pemilih waktu",
+      "tooltip-description": "Gunakan tombol-tombol ini untuk mengubah perilaku saat memilih rentang dengan mouse pada deret waktu:",
+      "tooltip-flame-graph": "Flame graph",
+      "tooltip-flame-graph-description": "Rentang waktu untuk membuat flame graph (jejak stack hanya akan diambil untuk rentang yang dipilih)",
+      "tooltip-time-picker": "Pemilih waktu",
+      "tooltip-time-picker-description": "Perbesar rentang waktu (perilaku default)"
+    },
+    "error-loading-profile": "Terjadi kesalahan saat memuat data profil!",
+    "explain-button": "Jelaskan Diff Flame Graph",
+    "missing-selections": {
+      "auto-select": "Pilih otomatis",
+      "how-to-alt": "Cara melihat Diff Flame Graph",
+      "learn-how": "Klik di sini untuk mempelajari cara memilih rentang flame graph menggunakan mouse",
+      "step-1": "Pastikan mode pemilihan rentang “Flame Graph” dipilih",
+      "step-2": "Gunakan mouse Anda untuk memilih rentang waktu yang diinginkan pada kedua deret waktu: baseline dan perbandingan",
+      "title": "Pilih rentang flame graph baseline dan perbandingan untuk melihat diff flame graph"
+    },
+    "no-profile-data": "Tidak ada data profil yang tersedia",
+    "no-profile-data-message": "Pastikan Anda telah memilih filter dan rentang waktu yang memadai.",
+    "presets": {
+      "1h-ago-vs-now": "1 jam lalu vs sekarang",
+      "1h-ago-vs-now-description": "Rentang waktu 30 menit",
+      "24h-ago-vs-now": "24 jam lalu vs sekarang",
+      "6h-ago-vs-now": "6 jam lalu vs sekarang",
+      "label": "Preset perbandingan",
+      "placeholder": "Pilih preset"
+    },
+    "settings-error": {
+      "message": "Beberapa fitur mungkin tidak berfungsi seperti yang diharapkan (misalnya opsi ekspor flamegraph). Coba muat ulang halaman. Maaf atas ketidaknyamanan ini.",
+      "title": "Terjadi kesalahan saat mengambil pengaturan plugin!"
+    },
+    "title": "Diff flame graph untuk {{serviceName}} ({{profileMetricType}})"
+  },
+  "error-page": {
+    "banner-message": "Coba muat ulang halaman atau, jika masalah berlanjut, hubungi admin organisasi Anda. Mohon maaf atas ketidaknyamanan ini.",
+    "banner-title": "Kesalahan fatal!",
+    "title": "Drilldown Profil Grafana"
+  },
+  "explorer": {
+    "exploration-type": {
+      "all-services": "Semua service",
+      "all-services-description": "Ikhtisar semua service, untuk jenis profil tertentu",
+      "diff-flame-graph": "Diff flame graph",
+      "diff-flame-graph-description": "Bandingkan perbedaan antara dua flame graph",
+      "favorites": "Favorit",
+      "favorites-description": "Ikhtisar visualisasi favorit",
+      "flame-graph": "Flame graph",
+      "flame-graph-description": "Flame graph satu service",
+      "labels": "Label",
+      "labels-description": "Eksplorasi dan pemfilteran label satu service",
+      "profile-types": "Jenis profil",
+      "profile-types-description": "Ikhtisar semua jenis profil untuk satu service"
+    },
+    "header": {
+      "add-recording-rule": "Tambahkan aturan perekaman",
+      "recording-rules-tooltip": "Aturan perekaman",
+      "settings-tooltip": "Lihat/edit pengaturan tenant",
+      "share-tooltip": "Salin tautan yang dapat dibagikan ke papan klip",
+      "upload-tooltip": "Unggah profil ad hoc",
+      "view-recording-rules": "Lihat aturan perekaman"
+    }
+  },
+  "export-data": {
+    "aria-label": "Ekspor data profil",
+    "tooltip": "Ekspor data profil"
+  },
+  "export-menu": {
+    "aria-label": "Ekspor data profil",
+    "error-flamegraph-com": "Gagal mengekspor ke flamegraph.com!",
+    "error-loading-profile": "Terjadi kesalahan saat memuat data profil Flamebearer!",
+    "error-png": "Gagal mengekspor ke png!",
+    "error-pprof": "Gagal mengekspor ke pprof!",
+    "json": "json",
+    "json-label": "json",
+    "png": "png",
+    "png-label": "png",
+    "pprof": "pprof",
+    "tooltip": "Ekspor data profil"
+  },
+  "exposed-components": {
+    "loading": "Memuat..."
+  },
+  "favorites": {
+    "data-source": {
+      "test-success": "OK"
+    }
+  },
+  "flame-graph": {
+    "error-loading-profile": "Terjadi kesalahan saat memuat data profil!",
+    "explain-button": "Jelaskan Flame Graph",
+    "profile-id-selector": {
+      "filter-label": "Filter label",
+      "filter-operator": "Filter operator",
+      "filter-value": "Nilai filter",
+      "name": "ID profil",
+      "remove": "Hapus selektor ID profil dari kueri",
+      "tooltip": "Anda telah menambahkan selektor ID profil ke kueri flamegraph ({{profileIdSelector}})."
+    },
+    "settings-error": {
+      "message": "Beberapa fitur mungkin tidak berfungsi seperti yang diharapkan (misalnya flamegraph yang diciutkan). Coba muat ulang halaman. Maaf atas ketidaknyamanan ini.",
+      "title": "Terjadi kesalahan saat mengambil pengaturan plugin!"
+    },
+    "span-selector": {
+      "added": "Selektor rentang ditambahkan",
+      "remove": "Hapus selektor rentang dari kueri",
+      "tooltip": "Anda telah menambahkan selektor rentang ke kueri flamegraph ({{spanSelector}})."
+    },
+    "title": "Flame graph untuk {{serviceName}} ({{profileMetricType}})"
+  },
+  "function-details": {
+    "ai-suggestions": {
+      "analyzing": "Menganalisis...",
+      "fetch-error": "Terjadi kesalahan saat mengambil profil!",
+      "fetch-error-message": "Mohon maaf atas ketidaknyamanan ini. Silakan coba lagi nanti.",
+      "llm-error": "Gagal membuat konten menggunakan OpenAI!",
+      "llm-error-message": "Mohon maaf atas ketidaknyamanan ini. Silakan coba lagi nanti atau, jika masalah berlanjut, hubungi admin organisasi Anda.",
+      "title": "Saran Optimasi Kode"
+    },
+    "close": "tutup",
+    "code": {
+      "breakdown-per-line": "Perincian per baris",
+      "file-unavailable": "(informasi file tidak tersedia)",
+      "optimize": "Optimalkan Kode",
+      "view-on-github": "Lihat di GitHub"
+    },
+    "commit": "Commit",
+    "commit-option": {
+      "author-date": "{{author}} pada {{date}}"
+    },
+    "commit-select": {
+      "no-options": "Tidak ada commit yang ditemukan"
+    },
+    "commit-tooltip": "Versi aplikasi (commit) tempat fungsi ditetapkan. Gunakan menu dropdown untuk menargetkan commit tertentu.",
+    "context-menu": {
+      "label": "Detail fungsi"
+    },
+    "copy-to-clipboard": "Salin ke papan klip",
+    "fetch-error": "Terjadi kesalahan saat mengambil detail fungsi!",
+    "file": "File",
+    "file-path-copied": "Jalur file disalin ke papan klip!",
+    "file-tooltip": "Jalur file tempat fungsi tersebut ditetapkan",
+    "function-name": "Nama fungsi",
+    "github": {
+      "banner-dismiss": "Tutup",
+      "banner-git-ref": "Masing-masing harus diatur ke URL lengkap repositori GitHub dan <2>git ref</2> service yang sedang berjalan.",
+      "banner-labels": "Untuk mengaktifkan fitur ini, Anda harus menambahkan dua label baru saat mengirim profil, yaitu <2>service_repository</2> dan <4>service_git_ref</4>. ",
+      "banner-language-support": "Bahasa ini mendukung integrasi dengan <1></1> GitHub.",
+      "banner-learn-more": "Pelajari lebih lanjut",
+      "banner-title": "Integrasikan dengan Github",
+      "connect-button": "Hubungkan ke {{name}}",
+      "connect-tooltip": "Setelah terhubung, kode GitHub hanya dapat diakses dari sesi browser ini.",
+      "connecting": "Menghubungkan ke GitHub...",
+      "disconnect": "Putuskan koneksi dari GitHub",
+      "view-commit": "Lihat commit"
+    },
+    "github-callback": {
+      "logging-in": "Login ke GitHub...",
+      "title": "Login GitHub"
+    },
+    "not-available": "-",
+    "override": {
+      "add": "Tambahkan",
+      "add-title": "Tambahkan penimpaan detail repositori baru",
+      "alert-debug": "Untuk tujuan debugging, Anda dapat memberikan detail repositori secara manual menggunakan formulir ini. Nilai kustom disimpan dalam penyimpanan lokal browser Anda untuk sumber data dan nama service yang telah ditentukan.",
+      "alert-labels": "Untuk mengaktifkan fitur Integrasi GitHub, Anda harus menambahkan dua label baru saat mengirim profil, yaitu <1>service_repository</1> dan <3>service_git_ref</3>.",
+      "alert-title": "Label Integrasi Github",
+      "aria-label": "timpa pengaturan repositori",
+      "data-source": "Sumber data",
+      "delete": "Hapus penimpaan",
+      "edit": "Edit",
+      "edit-title": "Edit penimpaan detail repositori",
+      "git-ref-label": "service_git_ref (referensi commit)",
+      "git-ref-placeholder": "HEAD",
+      "remove-all": "Hapus semua penimpaan",
+      "remove-all-confirm": "Hapus semua",
+      "repository-label": "service_repository (URL repositori) - diperlukan",
+      "repository-placeholder": "Masukkan nama repositori GitHub, https://github.com/org/repo",
+      "repository-required": "Nama repositori diperlukan",
+      "root-path": "Jalur ke root",
+      "root-path-placeholder": "Masukkan jalur root",
+      "service-name": "Nama service",
+      "user-set": "(kumpulan pengguna)"
+    },
+    "repository": "Repositori",
+    "repository-tooltip": "Repositori yang dikonfigurasi untuk service yang dipilih",
+    "start-line": "Baris awal",
+    "start-line-tooltip": "Baris tempat definisi fungsi ini dimulai",
+    "title": "Detail Fungsi"
+  },
+  "give-feedback": {
+    "button": "Berikan umpan balik",
+    "tooltip": "Bagikan pendapat Anda tentang Profil di Grafana."
+  },
+  "grid": {
+    "empty-state": {
+      "no-results": "Tidak ada hasil"
+    },
+    "error": {
+      "title": "Terjadi kesalahan kueri!"
+    },
+    "exemplars": {
+      "view-profile": "Lihat profil"
+    },
+    "layout": {
+      "aria-label": "Pengalih tata letak",
+      "grid": "Kisi",
+      "rows": "Baris"
+    },
+    "no-data": {
+      "label": "Sembunyikan panel tanpa data"
+    },
+    "panel-type": {
+      "aria-label": "Pengalih jenis panel",
+      "histograms": "Histogram",
+      "maxima": "Maxima",
+      "time-series": "Deret waktu",
+      "totals": "Total"
+    },
+    "quick-filter": {
+      "aria-label": "Filter cepat",
+      "clear": "Hapus pencarian"
+    }
+  },
+  "labels": {
+    "compare": {
+      "aria-label": "",
+      "clear-tooltip": "Hapus pilihan perbandingan",
+      "tooltip-empty": "Pilih panel baseline dan panel perbandingan untuk membandingkan flame graph keduanya",
+      "tooltip-ready": "Bandingkan \"{{baseline}}\" vs \"{{comparison}}\"",
+      "tooltip-select-baseline": "Pilih panel lain untuk dibandingkan dengan \"{{label}}\"",
+      "tooltip-select-comparison": "Pilih panel lain untuk dibandingkan dengan \"{{label}}\"",
+      "button_other": "Bandingkan ({{count}}/2)"
+    },
+    "data-source": {
+      "all": "Semua",
+      "test-success": "OK"
+    },
+    "filter": {
+      "clear-tooltip": "Hapus \"{{label}}\" dari filter",
+      "exclude": "Kecualikan",
+      "exclude-tooltip": "Kecualikan \"{{label}}\" dalam filter",
+      "include": "Meliputi",
+      "include-tooltip": "Sertakan \"{{label}}\" dalam filter"
+    },
+    "grid": {
+      "no-results": "Tidak ada hasil",
+      "refresh-tooltip": "Klik untuk sepenuhnya memuat ulang semua panel yang ada di layar"
+    },
+    "stats-panel": {
+      "baseline": "Baseline",
+      "baseline-description": "Klik untuk memilih \"{{value}}\" sebagai titik awal untuk perbandingan",
+      "comparison": "Perbandingan",
+      "comparison-description": "Klik untuk memilih \"{{value}}\" sebagai target perbandingan",
+      "total": "{{statsDescription}}: {{total}}"
+    }
+  },
+  "onboarding": {
+    "empty-loading": {
+      "title": "Memuat..."
+    },
+    "modal": {
+      "billing": {
+        "description": "Penggunaan Profil Grafana Cloud tunduk pada <2>Harga Grafana Cloud</2> untuk Profil.<br/>Untuk informasi tambahan, baca <6>postingan blog</6> berisi pengumuman.",
+        "title": "Cara Kerja Penagihan"
+      },
+      "cloud": {
+        "step1": {
+          "description": "Gunakan <2>Grafana Alloy</2> atau <6>SDK Pyroscope</6> untuk memindahkan profil dari aplikasi Anda ke Grafana Cloud.",
+          "title": "Tambahkan Profiling ke Aplikasi Anda"
+        },
+        "step2": {
+          "description": "Buka <1>pengaturan Grafana Cloud Stack</1> untuk menemukan Kredensial Grafana Cloud Anda.",
+          "title": "Konfigurasikan Aplikasi Anda"
+        },
+        "step3": {
+          "description": "Setelah Anda menyelesaikan pengaturan awal, muat ulang halaman ini untuk melihat data profiling Anda.",
+          "title": "Mulai Mendapatkan Wawasan Kinerja"
+        }
+      },
+      "decrease-latency": {
+        "description": "Pertahankan kecepatan dan efisiensi yang tinggi serta tingkatkan kinerja aplikasi. Di dunia digital yang kompetitif, penurunan latensi berarti peningkatan pendapatan.",
+        "title": "Kurangi Latensi"
+      },
+      "how-to-get-started": "Cara Memulai",
+      "reduce-costs": {
+        "description": "Temukan lonjakan CPU, kebocoran memori, dan ketidakefisienan lainnya dengan visibilitas tingkat kode terhadap penggunaan sumber daya. Kemudian tim dapat mengoptimalkan kode mereka dan menurunkan biaya infrastruktur.",
+        "title": "Kurangi Biaya"
+      },
+      "resolve-incidents": {
+        "description": "Pangkas mean time to resolution (MTTR) dengan mengorelasikan data profiling berkelanjutan dengan metrik, log, dan trace untuk mengidentifikasi akar masalah dengan cepat.",
+        "title": "Selesaikan Insiden Lebih Cepat"
+      },
+      "self-hosted": {
+        "step1": {
+          "description": "Instal <1>Server Pyroscope</1> pada infrastruktur Anda. Atau, jika Anda ingin menggunakan service yang dihosting, buka <5>pengaturan Grafana Cloud Stack</5> untuk menemukan Kredensial Grafana Cloud Anda.",
+          "title": "Siapkan Server Pyroscope Anda"
+        },
+        "step2": {
+          "description": "Tambahkan <1>sumber data Pyroscope</1> baru. Gunakan URL server Pyroscope Anda dan kredensial keamanan yang sesuai jika Anda menggunakan Profil Grafana Cloud.",
+          "title": "Konfigurasikan Grafana"
+        },
+        "step3": {
+          "description": "Gunakan <2>Grafana Alloy</2> atau <6>SDK Pyroscope</6> untuk memindahkan profil dari aplikasi Anda ke Grafana Cloud.",
+          "title": "Tambahkan Profiling ke Aplikasi Anda"
+        }
+      },
+      "subtitle": "Optimalkan pengeluaran infrastruktur, sederhanakan debugging, dan tingkatkan kinerja aplikasi",
+      "title": "Selamat datang di Drilldown Profil Grafana",
+      "what-you-can-do": "Apa yang Dapat Anda Lakukan"
+    },
+    "no-data-source": {
+      "alert-message": "Plugin ini memerlukan sumber data Pyroscope. Silakan <2>tambahkan dan konfigurasikan sumber data Pyroscope</2> ke instance Grafana Anda.",
+      "alert-title": "Sumber data Pyroscope tidak ada!",
+      "title": "Drilldown Profil Grafana"
+    },
+    "page": {
+      "close": "Tutup",
+      "nav": "Onboarding"
+    }
+  },
+  "optimize-code": {
+    "context": {
+      "title": ""
+    },
+    "error": "",
+    "prompt": ""
+  },
+  "panel-box": {
+    "cancel-query": "Batalkan kueri",
+    "loading-bar": "Bilah pemuatan panel",
+    "panel-status": "Status panel",
+    "stop-streaming": "Hentikan streaming",
+    "streaming": "Streaming",
+    "untitled": "Tanpa judul"
+  },
+  "panel-menu": {
+    "aria-label-no-title": "Menu untuk panel tanpa judul",
+    "aria-label-with-title": "Menu untuk panel dengan judul {{title}}",
+    "title": "Menu"
+  },
+  "plugin-info": {
+    "aria-label": "Info plugin",
+    "changelog": "Log Perubahan",
+    "commit-sha": "Commit SHA: {{shortCommitSha}}",
+    "contribute": "Berkontribusi",
+    "documentation": "Dokumentasi",
+    "grafana-version": "Grafana {{edition}} v{{version}} ({{env}})",
+    "last-update": "Terakhir diperbarui: {{updated}}",
+    "report-issue": "Laporkan masalah",
+    "title": "Info plugin",
+    "version": "Drilldown Profil Grafana v{{version}}"
+  },
+  "query-analysis": {
+    "blocks": "Blok",
+    "data-in-time-range": "Data dalam rentang waktu",
+    "deduplication": "Deduplikasi",
+    "index-store": "Penyimpanan Indeks",
+    "no": "tidak",
+    "profiles": "Profil",
+    "profiles-store": "Penyimpanan Profil",
+    "query-info-aria-label": "Info kueri",
+    "replicas": "Replika",
+    "samples": "Sampel",
+    "series": "Seri",
+    "series-in-query": "Seri dalam kueri",
+    "stored-data-in-time-range": "Data tersimpan dalam rentang waktu: {{totalBytesInTimeRange}}",
+    "symbols-store": "Penyimpanan Simbol",
+    "yes": "ya"
+  },
+  "query-builder": {
+    "chiclet": {
+      "edit-attribute": "Edit \"{{label}}\"",
+      "edit-operator": "Edit \"{{label}}\"",
+      "filter": "Filter",
+      "filter-label": "Filter label",
+      "filter-operator": "Filter operator",
+      "filter-value": "Nilai filter",
+      "partial-filter": "Filter parsial",
+      "remove-filter": "Hapus filter"
+    },
+    "error-load": "Terjadi kesalahan tak terduga saat memuat! Silakan coba lagi.",
+    "execute": "Jalankan",
+    "execute-tooltip": "Jalankan kueri baru",
+    "loading": "Memuat...",
+    "no-value": "(tidak ada nilai)",
+    "nothing-to-execute-tooltip": "Tidak ada yang perlu dijalankan, semua filter diterapkan",
+    "operators": {
+      "in": "di",
+      "in-description": "Adalah salah satu dari",
+      "is-empty": "kosong",
+      "not-in": "tidak ada di",
+      "not-in-description": "Bukan salah satu dari",
+      "regex-match-description": "Sesuai dengan regex",
+      "regex-not-match-description": "Tidak cocok dengan regex"
+    },
+    "placeholder": {
+      "filter-add": "Filter berdasarkan nilai label...",
+      "select-label": "Pilih label...",
+      "select-operator": "Pilih operator...",
+      "select-value": "Pilih nilai...",
+      "select-values": "Pilih nilai...",
+      "type-value": "Ketik regex..."
+    },
+    "suggestions-disabled": "Saran dinonaktifkan untuk label ini.",
+    "suggestions-none": "Tidak ada saran yang tersedia."
+  },
+  "recording-rules": {
+    "delete": {
+      "aria-label": "Hapus aturan perekaman",
+      "body": "Anda yakin ingin menghapus aturan perekaman {{metricName}}?",
+      "confirm": "Ya",
+      "title": "Hapus aturan perekaman"
+    },
+    "details": {
+      "filters": "Filter",
+      "no": "Tidak",
+      "no-labels": "Tidak ada label",
+      "read-only": "Hanya baca",
+      "yes": "Ya"
+    },
+    "empty": {
+      "description": "Buka flame graph, klik blok “total” di bagian atas, dan pilih “Buat aturan perekaman” dari menu konteks untuk menentukan aturan baru.",
+      "message": "Tidak ada aturan perekaman"
+    },
+    "error": {
+      "feature-required": "Fitur ini memerlukan Pyroscope dengan bendera recording_rules diaktifkan.",
+      "message": "Terjadi kesalahan saat mengambil aturan perekaman",
+      "title": "Terjadi kesalahan saat mengambil aturan perekaman"
+    },
+    "table": {
+      "actions": "Tindakan",
+      "all-services": "Semua service",
+      "function-name": "Nama Fungsi",
+      "labels": "Label",
+      "name": "Nama",
+      "none": "Tidak ada",
+      "profile-type": "Jenis Profil",
+      "readonly-tooltip": "Aturan ini disediakan dengan pengaturan tenant dan tidak dapat dihapus.",
+      "service-name": "Nama Service",
+      "total-all-functions": "Total (semua fungsi)"
+    },
+    "title": "Aturan perekaman"
+  },
+  "saved-searches": {
+    "load": {
+      "no-searches": "Tidak ada pencarian tersimpan untuk ditampilkan.",
+      "no-searches-tooltip": "Tidak ada pencarian tersimpan untuk dimuat",
+      "remove-tooltip": "Hapus",
+      "saved-query-tooltip": "Muat kueri tersimpan",
+      "select": "Pilih",
+      "select-pyroscope-query": "Pilih kueri Pyroscope.",
+      "title": "Muat pencarian yang sudah disimpan sebelumnya",
+      "tooltip": "Muat pencarian tersimpan"
+    },
+    "save": {
+      "cancel": "Batalkan",
+      "close": "Tutup",
+      "description-label": "Deskripsi",
+      "error-message": "Terjadi kesalahan tak terduga saat menyimpan pencarian ini.",
+      "existing-search-warning": "Ada pencarian yang sudah disimpan sebelumnya dengan kueri yang sama: {{title}}",
+      "info-message": "Pencarian tersimpan disimpan secara lokal di browser Anda dan hanya akan tersedia di perangkat ini.",
+      "save": "Simpan",
+      "saved-queries-tooltip": "Simpan di Kueri Tersimpan",
+      "success-body": "Pencarian berhasil disimpan.",
+      "success-message": "Pencarian berhasil disimpan.",
+      "success-title": "Berhasil",
+      "title": "Simpan pencarian saat ini",
+      "title-label": "Judul",
+      "tooltip": "Simpan pencarian"
+    }
+  },
+  "series": {
+    "data-source": {
+      "test-success": "OK"
+    }
+  },
+  "settings": {
+    "loading": "Memuat...",
+    "save-button": "Simpan pengaturan",
+    "tabs": {
+      "ui-settings": "Pengaturan UI",
+      "unknown-extension": "Ekstensi Tidak Diketahui"
+    },
+    "title": "Pengaturan profil (tenant)",
+    "ui": {
+      "collapsed-flame-graphs": {
+        "label": "Flame graph yang diciutkan",
+        "toggle": "Alihkan flamegraph yang diciutkan"
+      },
+      "enable-function-details": {
+        "label": "Aktifkan detail fungsi",
+        "learn-more": "Pelajari lebih lanjut",
+        "toggle": "Detail fungsi tombol geser",
+        "tooltip": "Fitur detail fungsi memungkinkan pemetaan penggunaan sumber daya ke baris kode sumber. Jika integrasi GitHub dikonfigurasi, kode sumber akan diunduh dari GitHub."
+      },
+      "fetch-error": {
+        "message": "Coba muat ulang halaman. Maaf atas ketidaknyamanan ini.",
+        "title": "Terjadi kesalahan saat mengambil pengaturan plugin!"
+      },
+      "flame-graph": {
+        "label": "Flame graph"
+      },
+      "function-details": {
+        "label": "Detail fungsi"
+      },
+      "max-nodes": {
+        "label": "Jumlah maksimum node"
+      },
+      "metrics-from-profiles": {
+        "disable-hint": "Untuk berhenti mengekspor data, hapus semua aturan perekaman yang terkait sebelum menonaktifkan fitur ini.",
+        "disable-warning": "Menonaktifkan fitur ini hanya akan menyembunyikannya dari UI. Tidak ada aturan perekaman yang sudah ada yang dihapus. Aturan ini akan tetap aktif dan terus mengekspor metrik, yang masih akan memengaruhi tagihan Anda.",
+        "enable-warning": "Dengan mengaktifkan fitur ini, Anda dapat menentukan aturan perekaman dari Drilldown Profil. Setiap aturan perekaman yang Anda buat akan mengirimkan metrik baru ke instance Grafana Cloud Anda, sehingga meningkatkan penggunaan data Anda di Grafana Mimir dan berpotensi memengaruhi tagihan Anda.",
+        "label": "Metrik dari profil",
+        "toggle": "Aktifkan metrik dari profil",
+        "toggle-label": "Aktifkan metrik dari profil",
+        "tooltip": "Memungkinkan pembuatan aturan perekaman dari profil"
+      }
+    }
+  },
+  "timeseries": {
+    "menu": {
+      "exemplars": "Contoh",
+      "open-in-explore": "Buka di Telusuri",
+      "scale-linear": "Linier",
+      "scale-log2": "Log2",
+      "scale-type": "Jenis skala"
+    }
+  },
+  "variables": {
+    "data-source": {
+      "label": "Sumber data"
+    },
+    "favorite": {
+      "label": "🔖 Favorit"
+    },
+    "filters": {
+      "label": "Filter"
+    },
+    "group-by": {
+      "label": "Kelompokkan berdasarkan label",
+      "labels-selector": "Selektor label",
+      "other-labels-placeholder": "Label lainnya",
+      "other-labels-selector": "Selektor label lainnya",
+      "refresh-tooltip": "Klik untuk memuat ulang semua label",
+      "select-label-placeholder": "Pilih label"
+    },
+    "profile-id-selector": {
+      "label": "Selektor ID Profil"
+    },
+    "profile-metric": {
+      "aria-label": "Daftar metrik profil",
+      "label": "Jenis profil",
+      "loading": "Memuat...",
+      "placeholder_other": "Pilih metrik profil ({{count}})"
+    },
+    "service-name": {
+      "aria-label": "Daftar service",
+      "label": "Service",
+      "loading": "Memuat service...",
+      "unmatched-tooltip": "",
+      "placeholder_other": "Pilih service ({{count}})"
+    },
+    "span-selector": {
+      "label": "Selektor rentang"
+    }
+  }
+}

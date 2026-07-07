@@ -1,4 +1,5 @@
 import { SelectableValue } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { FormatOptionLabelMeta, Select } from '@grafana/ui';
 import React from 'react';
 
@@ -26,7 +27,7 @@ export function CommitSelect({ commits, selectedCommit, onChange }: CommitSelect
       }}
       hideSelectedOptions
       isSearchable={false}
-      noOptionsMessage="No commits found"
+      noOptionsMessage={t('function-details.commit-select.no-options', 'No commits found')}
       formatOptionLabel={formatOption}
       onChange={(item) => {
         if (item.value) {

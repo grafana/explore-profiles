@@ -1,0 +1,44 @@
+name: Plugins Platform - CI / CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions: {}
+
+jobs:
+  ci:
+    name: CI / CD
+    uses: grafana/plugin-ci-workflows/.github/workflows/cd.yml@ci-cd-workflows/v10.1.0
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+      pull-requests: read
+    with:
+      branch: ${{ github.event_name == 'push' && github.ref_name || github.ref }}
+      
+      # On push to main: deploy to dev,ops (CI runs first inside the CD workflow).
+      # On PRs run CI only, no publish/deploy.
+      environment: ${{ (github.event_name == 'push' && github.ref_name == 'main') && 'dev,ops' || 'none' }}
+      
+      # Deploy provisioned plugin to Grafana Cloud
+      grafana-cloud-deployment-type: provisioned
+      auto-merge-environments: dev,ops
+      argo-workflow-slack-channel: '#proj-profilesdrilldown-cd'
+
+      # Add the git head ref sha to the plugin version as suffix (`+abcdef`). This is required for CD builds.
+      plugin-version-suffix: ${{ github.event_name == 'push' && github.sha || github.event.pull_request.head.sha }}
+
+      run-playwright: false
+      run-playwright-docker: true
+      run-playwright-with-skip-grafana-nightly-image: true
+      upload-playwright-artifacts: true
+      run-playwright-with-grafana-dependency: '>=13.1.0'
+      playwright-config: e2e/config/playwright.config.ci.ts
+      playwright-docker-compose-file: docker-compose.e2e.yaml
+      playwright-report-path: e2e/test-reports/
+
+      node-version: '24'

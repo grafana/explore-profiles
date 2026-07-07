@@ -1,8 +1,10 @@
 import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
 import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, useStyles2 } from '@grafana/ui';
-import { featureToggles } from '@shared/infrastructure/settings/featureToggles';
+import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
+import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from '@shared/ui/PluginInfo';
 import React from 'react';
@@ -13,10 +15,12 @@ import { useHeader } from './domain/useHeader';
 import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
 
 export type HeaderProps = {
+  model: SceneProfilesExplorer;
   explorationType: SceneProfilesExplorerState['explorationType'];
   controls: SceneProfilesExplorerState['controls'];
   body: SceneProfilesExplorerState['body'];
   $variables: SceneProfilesExplorerState['$variables'];
+  loadSearchScene: SceneProfilesExplorerState['loadSearchScene'];
   onChangeExplorationType: (explorationType: string) => void;
   onCreateRecordingRule: () => void;
   isEmbedded?: boolean;
@@ -29,6 +33,7 @@ export function Header(props: HeaderProps) {
   const { data, actions } = useHeader(props);
 
   const { settings } = useFetchPluginSettings();
+  const metricsFromProfiles = useFlagMetricsFromProfiles();
 
   const {
     explorationType,
@@ -38,6 +43,7 @@ export function Header(props: HeaderProps) {
     sceneVariables,
     gridControls,
     serviceName,
+    extraControls,
   } = data;
 
   type InsightsLauncherProps = {
@@ -51,11 +57,15 @@ export function Header(props: HeaderProps) {
   const metricsFromProfilesMenu = (
     <Menu>
       <Menu.Item
-        ariaLabel="View recording rules"
-        label="View recording rules"
+        ariaLabel={t('explorer.header.view-recording-rules', 'View recording rules')}
+        label={t('explorer.header.view-recording-rules', 'View recording rules')}
         onClick={actions.onClickRecordingRules}
       />
-      <Menu.Item ariaLabel="Add recording rule" label="Add recording rule" onClick={props.onCreateRecordingRule} />
+      <Menu.Item
+        ariaLabel={t('explorer.header.add-recording-rule', 'Add recording rule')}
+        label={t('explorer.header.add-recording-rule', 'Add recording rule')}
+        onClick={props.onCreateRecordingRule}
+      />
     </Menu>
   );
 
@@ -83,6 +93,11 @@ export function Header(props: HeaderProps) {
             </ErrorBoundary>
           )}
 
+          {!props.isEmbedded && <SaveSearchButton sceneRef={props.model} />}
+          {!props.isEmbedded && props.loadSearchScene && (
+            <props.loadSearchScene.Component model={props.loadSearchScene} />
+          )}
+
           {timePickerControl && (
             <timePickerControl.Component key={timePickerControl.state.key} model={timePickerControl} />
           )}
@@ -92,21 +107,33 @@ export function Header(props: HeaderProps) {
 
           {!props.isEmbedded && (
             <div className={styles.appMiscButtons}>
-              {settings?.enableMetricsFromProfiles && featureToggles.metricsFromProfiles && (
+              {settings?.enableMetricsFromProfiles && metricsFromProfiles && (
                 <>
                   <Dropdown overlay={metricsFromProfilesMenu}>
-                    <IconButton name="gf-prometheus" tooltip="Recording rules" aria-label="Recording rules" />
+                    <IconButton
+                      name="gf-prometheus"
+                      tooltip={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                      aria-label={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                    />
                   </Dropdown>
                 </>
               )}
 
-              <IconButton name="upload" tooltip="Upload ad hoc profiles" onClick={actions.onClickAdHoc} />
+              <IconButton
+                name="upload"
+                tooltip={t('explorer.header.upload-tooltip', 'Upload ad hoc profiles')}
+                onClick={actions.onClickAdHoc}
+              />
 
-              <IconButton name="cog" tooltip="View/edit tenant settings" onClick={actions.onClickUserSettings} />
+              <IconButton
+                name="cog"
+                tooltip={t('explorer.header.settings-tooltip', 'View/edit tenant settings')}
+                onClick={actions.onClickUserSettings}
+              />
 
               <IconButton
                 name="share-alt"
-                tooltip="Copy shareable link to the clipboard"
+                tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
                 onClick={actions.onClickShareLink}
               />
 
@@ -152,6 +179,10 @@ export function Header(props: HeaderProps) {
             <control.Component model={control} />
           </Field>
         ))}
+
+        {extraControls?.map((control) => (
+          <control.Component key={control.state.key} model={control} />
+        ))}
       </div>
     </div>
   );
@@ -178,6 +209,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
   `,
   appControlsRight: css`
     display: flex;
+    align-items: center;
     gap: ${theme.spacing(1)};
   `,
   appMiscButtons: css`
