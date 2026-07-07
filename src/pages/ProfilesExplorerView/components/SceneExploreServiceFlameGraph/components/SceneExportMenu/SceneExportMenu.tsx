@@ -6,6 +6,7 @@ import { displayError } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { saveProfileJsonToFile } from '@shared/domain/saveProfileJsonToFile';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
+import { useIsFlameGraphCanvasPresent } from '@shared/domain/useIsFlameGraphCanvasPresent';
 import { DEFAULT_SETTINGS } from '@shared/infrastructure/settings/PluginSettings';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
@@ -183,7 +184,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
     };
 
     // png export captures the flame graph <canvas>, which is not rendered in the "Top table" view
-    const isPngExportDisabled = !document.querySelector('canvas[data-testid="flameGraph"]');
+    const isPngExportDisabled = !useIsFlameGraphCanvasPresent();
 
     return {
       data: {
