@@ -298,6 +298,10 @@
     "button": "Enviar comentarios"
   },
   "grid": {
+    "empty-state": {
+      "no-profiles": "",
+      "no-results": ""
+    },
     "error": {
       "title": "¡Error de consulta!"
     },
