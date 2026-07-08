@@ -3,6 +3,7 @@ import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
+import { generateUUID } from '@shared/domain/generateUUID';
 import { localeCompare } from '@shared/domain/localeCompare';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
@@ -135,7 +136,7 @@ export class ProfileMetricVariable extends QueryVariable {
       <Cascader
         // we add a key to ensure that the Cascader selects the initial value or available options properly when landing on the page
         // and when switching exploration types, because the value might also be changed after the component has been rendered by SceneProfilesExplorer
-        key={crypto.randomUUID()}
+        key={generateUUID()}
         aria-label={t('variables.profile-metric.aria-label', 'Profile metrics list')}
         width={24}
         separator="/"
