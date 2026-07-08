@@ -332,7 +332,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       children: [
         new SceneCSSGridItem({
           body: new SceneEmptyState({
-            message: t('grid.empty-state.no-results', 'No results'),
+            message: t(
+              'grid.empty-state.no-profiles',
+              'No profiles found. Widen the time range or start sending profile data.'
+            ),
           }),
         }),
       ],

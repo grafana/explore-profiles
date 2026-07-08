@@ -1,7 +1,13 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2, VariableRefresh } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { MultiValueVariable, QueryVariable, SceneComponentProps, VariableValueOption } from '@grafana/scenes';
+import {
+  MultiValueVariable,
+  MultiValueVariableState,
+  QueryVariable,
+  SceneComponentProps,
+  VariableValueOption,
+} from '@grafana/scenes';
 import { Cascader, CascaderOption, Icon, Tooltip, useStyles2 } from '@grafana/ui';
 import { localeCompare } from '@shared/domain/localeCompare';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
@@ -57,6 +63,18 @@ export class ProfileMetricVariable extends QueryVariable {
       label: t('variables.profile-metric.label', PROFILE_METRIC_LABEL_DEFAULT),
       ...(!this.state.value ? { value: ProfileMetricVariable.DEFAULT_VALUE } : {}),
     });
+  }
+
+  /**
+   * Whenever URL sync (or anything else) tries to set an empty profile type, use the default instead.
+   * Same pattern as ServiceNameVariable uses for its own URL/state edge cases.
+   */
+  protected interceptStateUpdateAfterValidation(stateUpdate: Partial<MultiValueVariableState>): void {
+    super.interceptStateUpdateAfterValidation(stateUpdate);
+
+    if ('value' in stateUpdate && !stateUpdate.value) {
+      stateUpdate.value = ProfileMetricVariable.DEFAULT_VALUE;
+    }
   }
 
   async update(force = false) {

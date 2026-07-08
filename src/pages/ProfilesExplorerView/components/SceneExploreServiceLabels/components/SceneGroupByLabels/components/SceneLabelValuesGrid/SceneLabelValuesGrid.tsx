@@ -404,7 +404,10 @@ export class SceneLabelValuesGrid extends SceneObjectBase<SceneLabelValuesGridSt
       children: [
         new SceneCSSGridItem({
           body: new SceneEmptyState({
-            message: t('labels.grid.no-results', 'No results'),
+            message: t(
+              'grid.empty-state.no-profiles',
+              'No profiles found. Widen the time range or start sending profile data.'
+            ),
           }),
         }),
       ],

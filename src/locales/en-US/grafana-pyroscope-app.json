@@ -299,7 +299,7 @@
   },
   "grid": {
     "empty-state": {
-      "no-results": "No results"
+      "no-profiles": "No profiles found. Widen the time range or start sending profile data."
     },
     "error": {
       "title": "Query error!"
@@ -350,7 +350,6 @@
       "include-tooltip": "Include \"{{label}}\" in the filters"
     },
     "grid": {
-      "no-results": "No results",
       "refresh-tooltip": "Click to completely refresh all the panels present on the screen"
     },
     "stats-panel": {
