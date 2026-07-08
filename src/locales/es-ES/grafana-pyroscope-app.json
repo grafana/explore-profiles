@@ -299,7 +299,7 @@
   },
   "grid": {
     "empty-state": {
-      "no-results": "Ningún resultado"
+      "no-profiles": ""
     },
     "error": {
       "title": "¡Error de consulta!"
@@ -351,7 +351,6 @@
       "include-tooltip": "Incluir «{{label}}» en los filtros"
     },
     "grid": {
-      "no-results": "Ningún resultado",
       "refresh-tooltip": "Haz clic para actualizar por completo todos los paneles que aparecen en la pantalla."
     },
     "stats-panel": {
