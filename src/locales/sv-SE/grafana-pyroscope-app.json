@@ -295,9 +295,6 @@
     "button": "Ge feedback"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Inga resultat"
-    },
     "error": {
       "title": "Frågefel!"
     },

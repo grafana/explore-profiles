@@ -70,9 +70,11 @@ export class ProfileMetricVariable extends QueryVariable {
    * Same pattern as ServiceNameVariable uses for its own URL/state edge cases.
    */
   protected interceptStateUpdateAfterValidation(stateUpdate: Partial<MultiValueVariableState>): void {
+    const hadEmptyValue = 'value' in stateUpdate && (stateUpdate.value === '' || stateUpdate.value == null);
+
     super.interceptStateUpdateAfterValidation(stateUpdate);
 
-    if ('value' in stateUpdate && !stateUpdate.value) {
+    if (hadEmptyValue) {
       stateUpdate.value = ProfileMetricVariable.DEFAULT_VALUE;
     }
   }

@@ -295,9 +295,6 @@
     "button": "Berikan umpan balik"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Tidak ada hasil"
-    },
     "error": {
       "title": "Terjadi kesalahan kueri!"
     },

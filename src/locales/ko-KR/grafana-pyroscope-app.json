@@ -295,9 +295,6 @@
     "button": "피드백 제출하기"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "결과 없음"
-    },
     "error": {
       "title": "쿼리 오류!"
     },

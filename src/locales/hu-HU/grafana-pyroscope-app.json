@@ -295,9 +295,6 @@
     "button": "Visszajelzés küldése"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Nincs találat"
-    },
     "error": {
       "title": "Lekérdezési hiba!"
     },
