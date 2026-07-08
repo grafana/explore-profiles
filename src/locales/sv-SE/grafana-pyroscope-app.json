@@ -292,8 +292,7 @@
     "title": "Funktionsdetaljer"
   },
   "give-feedback": {
-    "button": "Ge feedback",
-    "tooltip": "Berätta vad du tycker om Profiles i Grafana."
+    "button": "Ge feedback"
   },
   "grid": {
     "empty-state": {

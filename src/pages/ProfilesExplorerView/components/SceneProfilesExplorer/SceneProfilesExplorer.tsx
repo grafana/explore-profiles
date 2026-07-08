@@ -62,7 +62,7 @@ import { FunctionVersionProvider } from '../SceneExploreServiceFlameGraph/compon
 import { RemoveProfileIdSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveProfileIdSelector';
 import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph/SceneExploreServiceFlameGraph';
-import { Header } from './components/Header';
+import { PluginHeaderToolbar } from '@shared/ui/PluginHeaderToolbar';
 
 export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> {
   $timeRange: SceneTimeRange;
@@ -559,7 +559,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     return (
       <FunctionVersionProvider>
         <GitHubContextProvider dataSourceUid={dataSourceUid}>
-          <Header
+          <PluginHeaderToolbar
             model={model}
             explorationType={explorationType}
             controls={controls}
