@@ -21,7 +21,8 @@ export function buildFlameGraphQueryRunner({
   const completeFilters = filters ? [...filters] : [];
   completeFilters.unshift({ key: 'service_name', operator: '=', value: '$serviceName' });
 
-  const extraVars = extraFilterVariables?.map((f) => `$${f}`).join(',') ?? '';
+  const filterVariable = (name: string) => `\${${name}.filterExpressionWithLeadingComma}`;
+  const extraVars = extraFilterVariables?.map(filterVariable).join('') ?? '';
   const selector = completeFilters
     .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}"${value}"`)
     .join(',');
@@ -33,7 +34,7 @@ export function buildFlameGraphQueryRunner({
         refId: 'profile',
         queryType: 'profile',
         profileTypeId: '$profileMetricId',
-        labelSelector: `{${selector},$filters${extraVars}}`,
+        labelSelector: `{${selector}${filterVariable('filters')}${extraVars}}`,
         maxNodes,
         ...(spanSelector && { spanSelector: [spanSelector] }),
         ...(profileIdSelector && { profileIdSelector: [profileIdSelector] }),

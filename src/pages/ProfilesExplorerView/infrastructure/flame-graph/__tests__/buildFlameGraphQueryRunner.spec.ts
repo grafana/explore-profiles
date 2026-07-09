@@ -8,11 +8,25 @@ import {
   sceneGraph,
 } from '@grafana/scenes';
 
+import {
+  FILTER_EXPRESSION_WITH_LEADING_COMMA,
+  filterExpressionWithLeadingComma,
+} from '../../../domain/variables/FiltersVariable/filterExpressionWithLeadingComma';
 import { buildFlameGraphQueryRunner } from '../buildFlameGraphQueryRunner';
 
 jest.mock('../../withPreventInvalidQuery', () => ({
   withPreventInvalidQuery: (runner: any) => runner,
 }));
+
+class TestFiltersVariable extends AdHocFiltersVariable {
+  getValue(fieldPath?: string) {
+    if (fieldPath === FILTER_EXPRESSION_WITH_LEADING_COMMA) {
+      return filterExpressionWithLeadingComma(this.state.filterExpression);
+    }
+
+    return super.getValue(fieldPath);
+  }
+}
 
 function getLabelSelector(runner: any): string {
   return runner.state.queries[0].labelSelector;
@@ -25,7 +39,9 @@ describe('buildFlameGraphQueryRunner', () => {
         extraFilterVariables: ['filtersAllServices'],
       });
 
-      expect(getLabelSelector(runner)).toBe('{service_name="$serviceName",$filters$filtersAllServices}');
+      expect(getLabelSelector(runner)).toBe(
+        '{service_name="$serviceName"${filters.filterExpressionWithLeadingComma}${filtersAllServices.filterExpressionWithLeadingComma}}'
+      );
     });
 
     it('appends multiple extraFilterVariables', () => {
@@ -33,13 +49,15 @@ describe('buildFlameGraphQueryRunner', () => {
         extraFilterVariables: ['filtersAllServices', 'filtersOther'],
       });
 
-      expect(getLabelSelector(runner)).toBe('{service_name="$serviceName",$filters$filtersAllServices,$filtersOther}');
+      expect(getLabelSelector(runner)).toBe(
+        '{service_name="$serviceName"${filters.filterExpressionWithLeadingComma}${filtersAllServices.filterExpressionWithLeadingComma}${filtersOther.filterExpressionWithLeadingComma}}'
+      );
     });
 
     it('does not append anything when extraFilterVariables is undefined', () => {
       const runner = buildFlameGraphQueryRunner({});
 
-      expect(getLabelSelector(runner)).toBe('{service_name="$serviceName",$filters}');
+      expect(getLabelSelector(runner)).toBe('{service_name="$serviceName"${filters.filterExpressionWithLeadingComma}}');
     });
 
     it('does not append anything when extraFilterVariables is empty', () => {
@@ -47,7 +65,7 @@ describe('buildFlameGraphQueryRunner', () => {
         extraFilterVariables: [],
       });
 
-      expect(getLabelSelector(runner)).toBe('{service_name="$serviceName",$filters}');
+      expect(getLabelSelector(runner)).toBe('{service_name="$serviceName"${filters.filterExpressionWithLeadingComma}}');
     });
   });
 
@@ -57,7 +75,7 @@ describe('buildFlameGraphQueryRunner', () => {
     }
 
     function makeFiltersVar(name: string, filters: AdHocVariableFilter[]): AdHocFiltersVariable {
-      return new AdHocFiltersVariable({ name, filters, applyMode: 'manual' });
+      return new TestFiltersVariable({ name, filters, applyMode: 'manual' });
     }
 
     function interpolateSelector({

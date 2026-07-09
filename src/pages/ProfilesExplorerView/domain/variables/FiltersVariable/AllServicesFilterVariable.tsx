@@ -8,6 +8,10 @@ import React, { useMemo } from 'react';
 
 import { ProfileMetricVariable } from '../ProfileMetricVariable';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
+import {
+  FILTER_EXPRESSION_WITH_LEADING_COMMA,
+  filterExpressionWithLeadingComma,
+} from './filterExpressionWithLeadingComma';
 import { convertPyroscopeToVariableFilter } from './filters-ops';
 
 export class AllServicesFilterVariable extends AdHocFiltersVariable {
@@ -21,6 +25,14 @@ export class AllServicesFilterVariable extends AdHocFiltersVariable {
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
+  }
+
+  getValue(fieldPath?: string) {
+    if (fieldPath === FILTER_EXPRESSION_WITH_LEADING_COMMA) {
+      return filterExpressionWithLeadingComma(this.state.filterExpression);
+    }
+
+    return super.getValue(fieldPath);
   }
 
   private onActivate() {
