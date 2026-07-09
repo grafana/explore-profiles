@@ -16,22 +16,8 @@ const profile = {
 } as FlamebearerProfile;
 
 describe('<ExportMenu />', () => {
-  const originalLocation = window.location;
-
-  beforeEach(() => {
-    // getExportFilename reads the diff time ranges from the URL
-    Object.defineProperty(window, 'location', {
-      value: {
-        search:
-          '?diffFrom=2024-09-16T12:21:51.298Z&diffTo=2024-09-16T12:25:35.688Z&diffFrom-2=2024-09-16T12:31:56.176Z&diffTo-2=2024-09-16T12:34:56.664Z',
-      },
-      writable: true,
-    });
-  });
-
   afterEach(() => {
     document.body.innerHTML = '';
-    window.location = originalLocation;
   });
 
   describe('when there is no flame graph canvas (e.g. the "Top table" view is selected)', () => {

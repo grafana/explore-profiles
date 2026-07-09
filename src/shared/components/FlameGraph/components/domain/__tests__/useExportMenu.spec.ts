@@ -34,23 +34,22 @@ const profile = {
 } as FlamebearerProfile;
 
 describe('useExportMenu(props)', () => {
-  const originalLocation = window.location;
-
   beforeEach(() => {
-    // getExportFilename reads the diff time ranges from the URL
-    Object.defineProperty(window, 'location', {
-      value: {
-        search:
-          '?diffFrom=2024-09-16T12:21:51.298Z&diffTo=2024-09-16T12:25:35.688Z&diffFrom-2=2024-09-16T12:31:56.176Z&diffTo-2=2024-09-16T12:34:56.664Z',
-      },
-      writable: true,
-    });
+    // getExportFilename reads the diff time ranges from the URL.
+    // We update the URL via history.replaceState rather than redefining window.location: once
+    // @testing-library/react is imported the location property is non-configurable, so
+    // Object.defineProperty(window, 'location', ...) throws "Cannot redefine property: location".
+    window.history.replaceState(
+      {},
+      '',
+      '?diffFrom=2024-09-16T12:21:51.298Z&diffTo=2024-09-16T12:25:35.688Z&diffFrom-2=2024-09-16T12:31:56.176Z&diffTo-2=2024-09-16T12:34:56.664Z'
+    );
   });
 
   afterEach(() => {
     jest.clearAllMocks();
     document.body.innerHTML = '';
-    window.location = originalLocation;
+    window.history.replaceState({}, '', '/');
   });
 
   describe('data.isPngExportDisabled', () => {
