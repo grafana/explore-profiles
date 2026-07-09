@@ -132,8 +132,7 @@ export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
                 icon="share-alt"
                 variant="secondary"
                 fill="text"
-                size="sm"
-                className={styles.clipboardIconButton}
+                className={styles.toolbarClipboardButton}
                 tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
                 getText={() => builsShareableUrl().toString()}
                 onClipboardCopy={() => reportInteraction('g_pyroscope_app_share_link_clicked')}
@@ -246,15 +245,36 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
       }
     }
   `,
-  clipboardIconButton: css`
+  toolbarClipboardButton: css`
     && {
-      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 0 ${theme.spacing(1)} !important;
+      height: auto !important;
       min-height: unset;
-      height: auto;
       min-width: unset;
-      width: auto;
-      line-height: 1;
-      margin: 0;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      line-height: ${theme.components.height.md * theme.spacing.gridSize - 2}px;
+      font-weight: ${theme.typography.fontWeightMedium};
+      color: ${theme.colors.text.primary};
+      background: ${theme.colors.secondary.main};
+
+      &:hover:not(:disabled),
+      &:focus:not(:disabled),
+      &:focus-visible:not(:disabled) {
+        color: ${theme.colors.text.primary};
+        background: ${theme.colors.secondary.shade};
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      [class*='icon'] {
+        margin: 0 !important;
+      }
     }
   `,
   sceneControls: css`
