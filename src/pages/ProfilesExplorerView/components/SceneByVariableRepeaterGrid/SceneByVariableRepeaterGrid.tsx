@@ -248,7 +248,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     this.setState({ items: newItems });
 
     if (!this.state.items.length) {
-      this.renderEmptyState();
+      this.renderEmptyState(this.isQuickFilterActive());
       return;
     }
 
@@ -326,13 +326,23 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return items.filter(({ label }) => regexes.some((r) => r.test(label)));
   }
 
-  renderEmptyState() {
+  isQuickFilterActive() {
+    const quickFilterScene = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
+    return Boolean(quickFilterScene?.state.searchText);
+  }
+
+  renderEmptyState(isFiltered = false) {
     (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({
           body: new SceneEmptyState({
-            message: t('grid.empty-state.no-results', 'No results'),
+            message: isFiltered
+              ? t('grid.empty-state.no-results', 'No results')
+              : t(
+                  'grid.empty-state.no-profiles',
+                  'No profiles found. Widen the time range or start sending profile data.'
+                ),
           }),
         }),
       ],

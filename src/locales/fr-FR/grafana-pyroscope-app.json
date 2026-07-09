@@ -295,9 +295,6 @@
     "button": "Donner un avis"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Aucun résultat"
-    },
     "error": {
       "title": "Erreur de requête !"
     },

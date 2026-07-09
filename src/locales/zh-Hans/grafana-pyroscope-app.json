@@ -295,9 +295,6 @@
     "button": "提供反馈"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "没有结果"
-    },
     "error": {
       "title": "查询错误！"
     },

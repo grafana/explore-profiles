@@ -295,9 +295,6 @@
     "button": "Przekaż opinię"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Brak wyników"
-    },
     "error": {
       "title": "Błąd zapytania"
     },

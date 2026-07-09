@@ -295,9 +295,6 @@
     "button": "フィードバックを提供"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "結果はありません"
-    },
     "error": {
       "title": "クエリエラーが発生しました！"
     },

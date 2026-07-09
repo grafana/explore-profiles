@@ -295,9 +295,6 @@
     "button": "Feedback geven"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Geen resultaten"
-    },
     "error": {
       "title": "Queryfout!"
     },
