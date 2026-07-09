@@ -292,8 +292,7 @@
     "title": "İşlev Ayrıntıları"
   },
   "give-feedback": {
-    "button": "Geri bildirim gönder",
-    "tooltip": "Grafana'daki Profiller hakkındaki düşüncelerinizi paylaşın."
+    "button": "Geri bildirim gönder"
   },
   "grid": {
     "empty-state": {

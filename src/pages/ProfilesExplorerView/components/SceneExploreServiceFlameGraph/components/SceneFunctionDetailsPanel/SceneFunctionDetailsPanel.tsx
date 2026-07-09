@@ -43,13 +43,14 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
     const dataSourceName = sceneGraph.findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable).useState()
       .text as string;
     const serviceName = getSceneVariableValue(this, 'serviceName');
+    const profileIdSelector = getSceneVariableValue(this, 'profileIdSelector');
     const query = useBuildPyroscopeQuery(this, 'filters');
 
     const {
       functionsDetails,
       error: fetchFunctionDetailsError,
       isFetching,
-    } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace });
+    } = useFetchFunctionsDetails({ dataSourceUid, query, timeRange, stackTrace, profileIdSelector });
 
     const [prevFunctionsDetails, setPrevFunctionsDetails] = useState<FunctionDetails[]>();
     const [currentFunctionDetails, setCurrentFunctionDetails] = useState<FunctionDetails>(functionsDetails[0]);

@@ -7,9 +7,15 @@ import { getSceneVariableValue } from 'src/pages/ProfilesExplorerView/helpers/ge
 
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
 import { ExplorationType } from '../../SceneProfilesExplorer';
-import { HeaderProps } from '../Header';
+import type { PluginHeaderToolbarProps } from '@shared/ui/PluginHeaderToolbar';
 
-export function useHeader({ explorationType, controls, body, $variables, onChangeExplorationType }: HeaderProps) {
+export function usePluginHeaderToolbar({
+  explorationType,
+  controls,
+  body,
+  $variables,
+  onChangeExplorationType,
+}: PluginHeaderToolbarProps) {
   const [timePickerControl, refreshPickerControl, ...extraControls] =
     explorationType === ExplorationType.DIFF_FLAME_GRAPH ? [] : (controls as SceneObject[]);
 

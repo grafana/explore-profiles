@@ -2,22 +2,24 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
-import { Dropdown, ErrorBoundary, Field, Icon, IconButton, Menu, ClipboardButton, useStyles2 } from '@grafana/ui';
+import { ClipboardButton, Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
+import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { displayError } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { PluginInfo } from '@shared/ui/PluginInfo';
+import { PluginInfo } from './PluginInfo';
 import React from 'react';
 
-import { GiveFeedbackButton } from '../../GiveFeedbackButton';
-import { SceneProfilesExplorer, SceneProfilesExplorerState } from '../SceneProfilesExplorer';
-import { useHeader } from './domain/useHeader';
-import { builsShareableUrl } from './domain/builsShareableUrl';
-import { ExplorationTypeSelector } from './ui/ExplorationTypeSelector';
+import {
+  SceneProfilesExplorer,
+  SceneProfilesExplorerState,
+} from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/SceneProfilesExplorer';
+import { usePluginHeaderToolbar } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/usePluginHeaderToolbar';
+import { builsShareableUrl } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/builsShareableUrl';
+import { ExplorationTypeSelector } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/ui/ExplorationTypeSelector';
 
-export type HeaderProps = {
+export type PluginHeaderToolbarProps = {
   model: SceneProfilesExplorer;
   explorationType: SceneProfilesExplorerState['explorationType'];
   controls: SceneProfilesExplorerState['controls'];
@@ -29,11 +31,11 @@ export type HeaderProps = {
   isEmbedded?: boolean;
 };
 
-export function Header(props: HeaderProps) {
+export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
   const chromeHeaderHeight = useChromeHeaderHeight?.();
   const styles = useStyles2(getStyles, chromeHeaderHeight ?? 0, props.isEmbedded ?? false);
 
-  const { data, actions } = useHeader(props);
+  const { data, actions } = usePluginHeaderToolbar(props);
 
   const { settings } = useFetchPluginSettings();
   const metricsFromProfiles = useFlagMetricsFromProfiles();
@@ -74,8 +76,6 @@ export function Header(props: HeaderProps) {
 
   return (
     <div className={styles.header} data-testid="allControls">
-      {!props.isEmbedded && <GiveFeedbackButton />}
-
       <div className={styles.appControls} data-testid="appControls">
         <div className={styles.appControlsLeft}>
           <ExplorationTypeSelector
@@ -111,27 +111,21 @@ export function Header(props: HeaderProps) {
           {!props.isEmbedded && (
             <div className={styles.appMiscButtons}>
               {settings?.enableMetricsFromProfiles && metricsFromProfiles && (
-                <>
-                  <Dropdown overlay={metricsFromProfilesMenu}>
-                    <IconButton
-                      name="gf-prometheus"
-                      tooltip={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
-                      aria-label={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
-                    />
-                  </Dropdown>
-                </>
+                <Dropdown overlay={metricsFromProfilesMenu}>
+                  <ToolbarButton
+                    icon="gf-prometheus"
+                    variant="canvas"
+                    tooltip={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                    aria-label={t('explorer.header.recording-rules-tooltip', 'Recording rules')}
+                  />
+                </Dropdown>
               )}
 
-              <IconButton
-                name="upload"
+              <ToolbarButton
+                icon="upload"
+                variant="canvas"
                 tooltip={t('explorer.header.upload-tooltip', 'Upload ad hoc profiles')}
                 onClick={actions.onClickAdHoc}
-              />
-
-              <IconButton
-                name="cog"
-                tooltip={t('explorer.header.settings-tooltip', 'View/edit tenant settings')}
-                onClick={actions.onClickUserSettings}
               />
 
               <ClipboardButton
@@ -149,7 +143,14 @@ export function Header(props: HeaderProps) {
                 }}
               />
 
-              <PluginInfo />
+              <ToolbarButton
+                icon="cog"
+                variant="canvas"
+                tooltip={t('explorer.header.settings-tooltip', 'View/edit tenant settings')}
+                onClick={actions.onClickUserSettings}
+              />
+
+              <PluginInfo variant="canvas" />
             </div>
           )}
         </div>
@@ -226,16 +227,23 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
   `,
   appMiscButtons: css`
     display: flex;
-    align-items: center;
-    gap: 4px;
+    align-items: stretch;
+    height: ${theme.spacing(theme.components.height.md)};
+    box-sizing: border-box;
     border: 1px solid ${theme.colors.border.weak};
     background-color: ${theme.colors.background.secondary};
-    height: 32px;
-    padding: 0 ${theme.spacing(1)};
+    border-radius: ${theme.shape.radius.default};
+    overflow: hidden;
 
-    & svg {
-      width: 18px;
-      height: 18px;
+    button {
+      border: none;
+      border-radius: 0;
+      height: auto;
+
+      &:hover,
+      &:focus {
+        border: none;
+      }
     }
   `,
   clipboardIconButton: css`

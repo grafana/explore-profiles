@@ -292,8 +292,7 @@
     "title": "Szczegóły funkcji"
   },
   "give-feedback": {
-    "button": "Przekaż opinię",
-    "tooltip": "Podziel się swoimi przemyśleniami na temat profili w usłudze Grafana."
+    "button": "Przekaż opinię"
   },
   "grid": {
     "empty-state": {

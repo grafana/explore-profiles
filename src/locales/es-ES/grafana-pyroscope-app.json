@@ -294,8 +294,7 @@
     "title": "Detalles de la función"
   },
   "give-feedback": {
-    "button": "Enviar comentarios",
-    "tooltip": "Comparte tu opinión sobre los perfiles en Grafana."
+    "button": "Enviar comentarios"
   },
   "grid": {
     "empty-state": {
