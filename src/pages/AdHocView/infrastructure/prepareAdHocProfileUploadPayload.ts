@@ -85,11 +85,12 @@ function base64ToBytes(b64: string): Uint8Array {
 }
 
 function bytesToBase64(bytes: Uint8Array): string {
-  let bin = '';
-  for (let i = 0; i < bytes.length; i++) {
-    bin += String.fromCharCode(bytes[i]!);
+  const chunkSize = 0x8000;
+  const parts: string[] = [];
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    parts.push(String.fromCharCode(...bytes.subarray(i, i + chunkSize)));
   }
-  return btoa(bin);
+  return btoa(parts.join(''));
 }
 
 /** Returns `[base64Payload, convertedFromDouble]`. */
