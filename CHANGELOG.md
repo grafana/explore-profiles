@@ -1,5 +1,29 @@
 # Changelog
 
+## [2.1.1](https://github.com/grafana/profiles-drilldown/compare/v2.1.0...v2.1.1) (2026-07-10)
+
+
+### 🐛 Bug Fixes
+
+* Fix empty profile type from URL sync and improve grid empty state ([#1046](https://github.com/grafana/profiles-drilldown/issues/1046)) ([f561976](https://github.com/grafana/profiles-drilldown/commit/f561976240224ced63f87ba0c1923498a035685d))
+* include profile ID selector in function details query ([#1042](https://github.com/grafana/profiles-drilldown/issues/1042)) ([41e5efd](https://github.com/grafana/profiles-drilldown/commit/41e5efd686d6d17f5519a55028129f268e1f09c3))
+* replace crypto.randomUUID with fallback for non-secure contexts ([#1019](https://github.com/grafana/profiles-drilldown/issues/1019)) ([a3f8304](https://github.com/grafana/profiles-drilldown/commit/a3f8304bb63c74de994575ca846d0f2649b46812)), closes [#1017](https://github.com/grafana/profiles-drilldown/issues/1017)
+* **security/high/:** update pnpm to v11.8.0 [security] ([#1034](https://github.com/grafana/profiles-drilldown/issues/1034)) ([2626f08](https://github.com/grafana/profiles-drilldown/commit/2626f08d321bc5056676ac0f1da10c05f8b79f49))
+
+
+### 📝 Documentation
+
+* Add GenAI policy, contributor guide updates and issue templates ([#1041](https://github.com/grafana/profiles-drilldown/issues/1041)) ([7554854](https://github.com/grafana/profiles-drilldown/commit/755485460bf4a933bdf3ed035ca003d773190f46))
+
+
+### 🧹 Chore
+
+* Add give feedback link to plugin info menu and style updates ([#1043](https://github.com/grafana/profiles-drilldown/issues/1043)) ([a7eb27b](https://github.com/grafana/profiles-drilldown/commit/a7eb27b5d4fcf3bf13a96ade2f4dfcbad01de223))
+* align i18next config with core Grafana ([#1033](https://github.com/grafana/profiles-drilldown/issues/1033)) ([1174a53](https://github.com/grafana/profiles-drilldown/commit/1174a53a1f49fabe5c39ff9a43c74fef66fb28f3))
+* **deps:** update actions/checkout action to v6.0.3 ([#1039](https://github.com/grafana/profiles-drilldown/issues/1039)) ([2b016b1](https://github.com/grafana/profiles-drilldown/commit/2b016b1ea91b47b7b7babe16826d18d4c5322fc7))
+* **deps:** update alpine:latest docker digest to 28bd5fe ([#1038](https://github.com/grafana/profiles-drilldown/issues/1038)) ([34ecfac](https://github.com/grafana/profiles-drilldown/commit/34ecfac224f3b9a5003bba4d4f2c16a536957829))
+* **deps:** update dependency semver@6 to v7.8.5 ([#1040](https://github.com/grafana/profiles-drilldown/issues/1040)) ([841c3db](https://github.com/grafana/profiles-drilldown/commit/841c3db18fd5596c6ff9966cf67be7e2a299be06))
+
 ## [2.1.0](https://github.com/grafana/profiles-drilldown/compare/v2.0.7...v2.1.0) (2026-07-02)
 
 
