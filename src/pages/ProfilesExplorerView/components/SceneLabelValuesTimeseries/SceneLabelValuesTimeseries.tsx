@@ -49,7 +49,6 @@ interface SceneLabelValuesTimeseriesState extends SceneObjectState {
   displayAllValues: boolean;
   legendPlacement: VizLegendOptions['placement'];
   overrides?: (series: DataFrame[]) => VizPanelState['fieldConfig']['overrides'];
-  annotations?: boolean;
 }
 
 const styles = {
@@ -74,7 +73,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     legendPlacement,
     data,
     overrides,
-    annotations,
     includeExemplars,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
@@ -83,7 +81,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     legendPlacement?: SceneLabelValuesTimeseriesState['legendPlacement'];
     data?: SceneDataTransformer;
     overrides?: SceneLabelValuesTimeseriesState['overrides'];
-    annotations?: boolean;
     includeExemplars?: boolean;
   }) {
     const profilesExemplarsEnabled = getProfilesExemplarsFromOpenFeature();
@@ -100,7 +97,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       displayAllValues: Boolean(displayAllValues),
       legendPlacement: legendPlacement || 'bottom',
       overrides,
-      annotations,
       body: PanelBuilders.timeseries()
         // TODO: remove `as any` once @grafana/scenes exposes `multiLane` on the annotations option type
         .setOption('annotations' as any, { multiLane: true })
@@ -111,7 +107,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               $data: buildTimeSeriesQueryRunner(
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
-                annotations,
                 includeExemplars && profilesExemplarsEnabled
               ),
               transformations: [],
@@ -249,7 +244,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   }
 
   handleExemplarToggleChange(includeExemplars: boolean) {
-    const { body, item, displayAllValues, annotations } = this.state;
+    const { body, item, displayAllValues } = this.state;
     if (!includeExemplars) {
       // Hide exemplars (annotations) by filtering them out from the data without running queries
       const { $data } = body.state;
@@ -270,7 +265,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     const { queries } = buildTimeSeriesQueryRunner(
       item.queryRunnerParams,
       displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
-      annotations,
       includeExemplars
     ).state;
 

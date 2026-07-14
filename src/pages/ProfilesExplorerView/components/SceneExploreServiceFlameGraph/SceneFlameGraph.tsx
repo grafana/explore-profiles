@@ -30,6 +30,7 @@ import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { useCreateRecordingRulesMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
 import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
+import { SamplingIndicatorExtensionPoint } from './components/SamplingIndicatorExtensionPoint';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
@@ -268,6 +269,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                   <Trans i18nKey="flame-graph.explain-button">Explain Flame Graph</Trans>
                 </AIButton>
               )}
+              <SamplingIndicatorExtensionPoint scene={model} />
             </>
           }
         >

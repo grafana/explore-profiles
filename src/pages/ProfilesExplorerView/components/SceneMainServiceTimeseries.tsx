@@ -119,7 +119,6 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     return new SceneLabelValuesTimeseries({
       item: timeseriesItem,
       headerActions,
-      annotations: true,
       includeExemplars: includeExemplars,
       // we pass data for the scenarios where we land on the page from a shared link
       // we do this to prevent rendering a timeseries without groupBy for a second then with groupBy
