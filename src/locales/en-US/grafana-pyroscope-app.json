@@ -176,10 +176,12 @@
     "error-flamegraph-com": "Failed to export to flamegraph.com!",
     "error-loading-profile": "Error while loading flamebearer profile data!",
     "error-png": "Failed to export to png!",
+    "error-png-no-canvas": "Please ensure the flame graph is visible before exporting to png.",
     "error-pprof": "Failed to export to pprof!",
     "json": "json",
     "json-label": "json",
     "png": "png",
+    "png-disabled-description": "Switch to the flame graph view to export it as a png",
     "png-label": "png",
     "pprof": "pprof",
     "tooltip": "Export profile data"

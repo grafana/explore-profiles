@@ -176,10 +176,12 @@
     "error-flamegraph-com": "¡Error al exportar a flamegraph.com!",
     "error-loading-profile": "¡Error al cargar los datos del perfil de Flamebearer!",
     "error-png": "¡Error al exportar a PNG!",
+    "error-png-no-canvas": "",
     "error-pprof": "¡Error al exportar a PPROF!",
     "json": "json",
     "json-label": "json",
     "png": "png",
+    "png-disabled-description": "",
     "png-label": "png",
     "pprof": "PPROF",
     "tooltip": "Exportar datos del perfil"
