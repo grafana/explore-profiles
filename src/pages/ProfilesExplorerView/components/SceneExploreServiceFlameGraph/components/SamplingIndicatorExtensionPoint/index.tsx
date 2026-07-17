@@ -1,6 +1,8 @@
 import { usePluginComponent } from '@grafana/runtime';
-import { sceneGraph, SceneObject } from '@grafana/scenes';
+import { SceneObject } from '@grafana/scenes';
 import React from 'react';
+
+import { safeInterpolate } from '../../../../infrastructure/series/helpers/safeInterpolate';
 
 type SamplingIndicatorExtensionProps = {
   serviceName: string;
@@ -19,14 +21,14 @@ export function SamplingIndicatorExtensionPoint({ scene }: { scene: SceneObject 
     return null;
   }
 
-  const serviceName = sceneGraph.interpolate(scene, SERVICE_NAME_EXPR);
-  // interpolation failed if the expression is returned back unchanged
-  if (serviceName === SERVICE_NAME_EXPR) {
+  // interpolation can fail during variable bootstrap or return the expression unchanged; fail closed
+  const serviceName = safeInterpolate(scene, SERVICE_NAME_EXPR);
+  if (!serviceName || serviceName === SERVICE_NAME_EXPR) {
     return null;
   }
 
-  const datasourceUID = sceneGraph.interpolate(scene, DATASOURCE_UID_EXPR);
-  if (datasourceUID === DATASOURCE_UID_EXPR) {
+  const datasourceUID = safeInterpolate(scene, DATASOURCE_UID_EXPR);
+  if (!datasourceUID || datasourceUID === DATASOURCE_UID_EXPR) {
     return null;
   }
 
