@@ -14,3 +14,17 @@ datasources:
     basicAuthUser: $REMOTE_BASIC_AUTH_USER
     secureJsonData:
       basicAuthPassword: $REMOTE_BASIC_AUTH_PASSWORD
+  - uid: grafanacloud-tempo-dev
+    type: tempo
+    name: Dev (tempo-dev-01)
+    url: $REMOTE_TRACE_BACKEND_URL
+    basicAuth: true
+    basicAuthUser: $REMOTE_TRACE_BASIC_AUTH_USER
+    jsonData:
+      streamingEnabled:
+        search: true
+      tracesToProfiles:
+        datasourceUid: grafanacloud-profiles-dev
+        profileTypeId: process_cpu:cpu:nanoseconds:cpu:nanoseconds
+    secureJsonData:
+      basicAuthPassword: $REMOTE_TRACE_BASIC_AUTH_PASSWORD
