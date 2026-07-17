@@ -1,19 +1,12 @@
 import { css } from '@emotion/css';
-import {
-  DataQueryRequest,
-  DataQueryResponse,
-  DataSourceApi,
-  Field,
-  getValueFormat,
-  GrafanaTheme2,
-} from '@grafana/data';
+import { DataSourceJsonData, getValueFormat, GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { getDataSourceSrv } from '@grafana/runtime';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Field as FormField, IconButton, Select, Spinner, useStyles2 } from '@grafana/ui';
-import { getProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
-import React, { useCallback, useState } from 'react';
-import { lastValueFrom, Observable } from 'rxjs';
+import { Column, Field as FormField, IconButton, InteractiveTable, Select, Spinner, useStyles2 } from '@grafana/ui';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { reportInteraction } from '@shared/domain/reportInteraction';
+import React, { useMemo } from 'react';
 
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
@@ -21,92 +14,30 @@ import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelec
 import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
 import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { buildUnitFormatter } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/domain/buildUnitFormatter';
+import { CopyableId } from './components/CopyableId';
+import { getDisplayedExemplarRows } from './domain/getDisplayedExemplarRows';
+import { selectTempoDataSourceUid, TempoDataSourceOption } from './domain/selectTempoDataSourceUid';
 import { ExemplarRow } from './infrastructure/buildHeatmapDataFrames';
+import { lookupTempoTraceInfo, TraceInfo } from './infrastructure/lookupTempoTraceInfo';
 import { SceneExploreServiceHeatmap } from './SceneExploreServiceHeatmap';
-
-interface TraceInfo {
-  traceId: string;
-  spanName?: string;
-  duration?: number;
-}
-
-interface TempoDatasource {
-  uid: string;
-  name: string;
-}
 
 interface SceneExemplarTableState extends SceneObjectState {
   rows: ExemplarRow[];
   traceInfoBySpanId: Record<string, TraceInfo | null>;
   loadingSpanIds: string[];
-  tempoDatasources: TempoDatasource[];
-  tempoDataSourceUid?: string;
+  tempoDatasources: TempoDataSourceOption[];
+  traceLookupFailed: boolean;
+}
+
+interface TempoDataSourceJsonData extends DataSourceJsonData {
+  tracesToProfiles?: {
+    datasourceUid?: string;
+  };
 }
 
 function formatTimestamp(ms: number): string {
   return new Date(ms).toLocaleTimeString();
 }
-
-function CopyableId({ value, display }: { value: string; display: string }) {
-  const [copied, setCopied] = useState(false);
-  const styles = useStyles2(getCopyableStyles);
-
-  const handleCopy = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
-      navigator.clipboard.writeText(value).then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-      });
-    },
-    [value]
-  );
-
-  return (
-    <span className={styles.wrapper} title={value} onClick={handleCopy}>
-      <span className={styles.text}>{display}</span>
-      <IconButton
-        name={copied ? 'check' : 'clipboard-alt'}
-        tooltip={
-          copied
-            ? t('heatmap.exemplar-table.copied', 'Copied!')
-            : t('heatmap.exemplar-table.copy-to-clipboard', 'Copy to clipboard')
-        }
-        size="xs"
-        className={copied ? styles.iconCopied : styles.icon}
-        onClick={handleCopy}
-      />
-    </span>
-  );
-}
-
-const getCopyableStyles = (theme: GrafanaTheme2) => ({
-  wrapper: css`
-    display: inline-flex;
-    align-items: center;
-    gap: ${theme.spacing(0.5)};
-    cursor: pointer;
-    border-radius: ${theme.shape.radius.default};
-    padding: ${theme.spacing(0, 0.25)};
-    &:hover {
-      background: ${theme.colors.action.hover};
-    }
-  `,
-  text: css`
-    font-family: ${theme.typography.fontFamilyMonospace};
-    font-size: ${theme.typography.bodySmall.fontSize};
-  `,
-  icon: css`
-    color: ${theme.colors.text.secondary};
-    opacity: 0;
-    .wrapper:hover & {
-      opacity: 1;
-    }
-  `,
-  iconCopied: css`
-    color: ${theme.colors.success.text};
-  `,
-});
 
 export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState> {
   private traceLookupRequestId = 0;
@@ -118,7 +49,7 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
       traceInfoBySpanId: {},
       loadingSpanIds: [],
       tempoDatasources: [],
-      tempoDataSourceUid: undefined,
+      traceLookupFailed: false,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -126,7 +57,16 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
   onActivate() {
     const allDatasources = getDataSourceSrv().getList({ pluginId: 'tempo' });
-    const tempoDatasources = allDatasources.map((ds) => ({ uid: ds.uid, name: ds.name }));
+    const tempoDatasources = allDatasources.map((ds) => {
+      const jsonData = ds.jsonData as TempoDataSourceJsonData;
+
+      return {
+        uid: ds.uid,
+        name: ds.name,
+        isDefault: ds.isDefault,
+        tracesToProfilesDataSourceUid: jsonData.tracesToProfiles?.datasourceUid,
+      };
+    });
     this.setState({ tempoDatasources });
 
     let parent: SceneExploreServiceHeatmap | undefined;
@@ -134,6 +74,16 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
       parent = sceneGraph.getAncestor(this, SceneExploreServiceHeatmap);
     } catch {
       return;
+    }
+
+    const profilesDataSourceUid = sceneGraph.interpolate(this, '$dataSource');
+    const tempoDataSourceUid = selectTempoDataSourceUid(
+      tempoDatasources,
+      parent.state.tempoDataSourceUid,
+      profilesDataSourceUid
+    );
+    if (tempoDataSourceUid !== parent.state.tempoDataSourceUid) {
+      parent.setTempoDataSourceUid(tempoDataSourceUid);
     }
 
     const parentSub = parent.subscribeToState((newState, prevState) => {
@@ -152,9 +102,9 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
   private handleNewExemplarRows(rows: ExemplarRow[]) {
     this.invalidateTraceInfo();
     const spanIds = [...new Set(rows.filter((r) => r.spanId).map((r) => r.spanId!))];
-    this.setState({ rows, traceInfoBySpanId: {}, loadingSpanIds: [] });
+    this.setState({ rows, traceInfoBySpanId: {}, loadingSpanIds: [], traceLookupFailed: false });
 
-    const { tempoDataSourceUid } = this.state;
+    const tempoDataSourceUid = this.getParent().state.tempoDataSourceUid;
     if (tempoDataSourceUid) {
       if (spanIds.length > 0) {
         this.lookupTraceInfo(spanIds);
@@ -167,7 +117,8 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
   }
 
   setTempoDataSourceUid(tempoDataSourceUid?: string) {
-    if (tempoDataSourceUid === this.state.tempoDataSourceUid) {
+    const parent = this.getParent();
+    if (tempoDataSourceUid === parent.state.tempoDataSourceUid) {
       return;
     }
 
@@ -175,14 +126,8 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
     const spanIds = [...new Set(this.state.rows.filter((row) => row.spanId).map((row) => row.spanId!))];
 
-    this.setState({ tempoDataSourceUid, traceInfoBySpanId: {}, loadingSpanIds: [] });
-
-    try {
-      const parent = sceneGraph.getAncestor(this, SceneExploreServiceHeatmap);
-      parent.setState({ tempoDataSourceUid, selectedTraceId: undefined });
-    } catch {
-      // outside expected parent hierarchy
-    }
+    this.setState({ traceInfoBySpanId: {}, loadingSpanIds: [], traceLookupFailed: false });
+    parent.setTempoDataSourceUid(tempoDataSourceUid);
 
     if (tempoDataSourceUid && spanIds.length > 0) {
       this.lookupTraceInfo(spanIds);
@@ -190,7 +135,7 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
   }
 
   lookupTraceInfo(spanIds: string[]) {
-    const { tempoDataSourceUid } = this.state;
+    const tempoDataSourceUid = this.getParent().state.tempoDataSourceUid;
     if (!tempoDataSourceUid || spanIds.length === 0) {
       return;
     }
@@ -198,93 +143,46 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
     const requestId = this.traceLookupRequestId;
     const requestTempoDataSourceUid = tempoDataSourceUid;
 
-    const conditions = spanIds.map((id) => `span:id="${id}"`).join(' || ');
-    const query = `{${conditions}}`;
-
     this.setState({ loadingSpanIds: [...this.state.loadingSpanIds, ...spanIds] });
 
-    // eslint-disable-next-line sonarjs/cognitive-complexity
     (async () => {
       try {
-        const ds: DataSourceApi = await getDataSourceSrv().get(tempoDataSourceUid);
         const timeRange = sceneGraph.getTimeRange(this).state.value;
+        const traceInfoBySpanId = await lookupTempoTraceInfo(tempoDataSourceUid, spanIds, timeRange);
 
-        const request = {
-          requestId: 'span-trace-lookup',
-          targets: [
-            {
-              refId: 'A',
-              queryType: 'traceql',
-              tableType: 'spans',
-              query,
-              limit: spanIds.length,
-              datasource: { type: 'tempo', uid: tempoDataSourceUid },
-            },
-          ],
-          range: timeRange,
-          interval: '1s',
-          intervalMs: 1000,
-          maxDataPoints: spanIds.length,
-          scopedVars: {},
-          timezone: 'browser',
-          app: 'explore',
-          startTime: Date.now(),
-        } as unknown as DataQueryRequest;
-
-        const result = ds.query(request) as Observable<DataQueryResponse> | Promise<DataQueryResponse>;
-        const response: DataQueryResponse =
-          result instanceof Promise ? await result : await lastValueFrom(result as Observable<DataQueryResponse>);
-
-        const traceInfoBySpanId: Record<string, TraceInfo | null> = {};
-
-        for (const frame of response?.data ?? []) {
-          const traceIdField = frame.fields.find((f: Field) => f.name === 'traceIdHidden');
-          const spanIdField = frame.fields.find((f: Field) => f.name === 'spanID');
-          const spanNameField = frame.fields.find((f: Field) => f.name === 'name');
-          const durationField = frame.fields.find((f: Field) => f.name === 'duration');
-
-          if (traceIdField && spanIdField) {
-            for (let i = 0; i < frame.length; i++) {
-              const spanId = spanIdField.values[i];
-              const traceId = traceIdField.values[i];
-              if (spanId && traceId) {
-                traceInfoBySpanId[spanId] = {
-                  traceId,
-                  spanName: spanNameField?.values[i],
-                  duration: durationField?.values[i],
-                };
-              }
-            }
-          }
-        }
-
-        for (const spanId of spanIds) {
-          if (!(spanId in traceInfoBySpanId)) {
-            traceInfoBySpanId[spanId] = null;
-          }
-        }
-
-        if (requestId !== this.traceLookupRequestId || requestTempoDataSourceUid !== this.state.tempoDataSourceUid) {
+        if (
+          requestId !== this.traceLookupRequestId ||
+          requestTempoDataSourceUid !== this.getParent().state.tempoDataSourceUid
+        ) {
           return;
         }
 
         this.setState({
           traceInfoBySpanId: { ...this.state.traceInfoBySpanId, ...traceInfoBySpanId },
           loadingSpanIds: this.state.loadingSpanIds.filter((id) => !spanIds.includes(id)),
+          traceLookupFailed: false,
         });
       } catch {
         const notFound = Object.fromEntries(spanIds.map((id) => [id, null]));
 
-        if (requestId !== this.traceLookupRequestId || requestTempoDataSourceUid !== this.state.tempoDataSourceUid) {
+        if (
+          requestId !== this.traceLookupRequestId ||
+          requestTempoDataSourceUid !== this.getParent().state.tempoDataSourceUid
+        ) {
           return;
         }
 
         this.setState({
           traceInfoBySpanId: { ...this.state.traceInfoBySpanId, ...notFound },
           loadingSpanIds: this.state.loadingSpanIds.filter((id) => !spanIds.includes(id)),
+          traceLookupFailed: true,
         });
       }
     })();
+  }
+
+  private getParent(): SceneExploreServiceHeatmap {
+    return sceneGraph.getAncestor(this, SceneExploreServiceHeatmap);
   }
 
   openFlameGraph(profileId: string, spanId?: string, timestamp?: number) {
@@ -330,7 +228,7 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
   static Component({ model }: SceneComponentProps<SceneExemplarTable>) {
     const styles = useStyles2(getStyles);
-    const { rows, traceInfoBySpanId, loadingSpanIds, tempoDatasources, tempoDataSourceUid } = model.useState();
+    const { rows, traceInfoBySpanId, loadingSpanIds, tempoDatasources, traceLookupFailed } = model.useState();
 
     let selectedSpanId: string | undefined;
     let selectedTimestamp: number | undefined;
@@ -343,30 +241,173 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
     } catch {
       // outside expected parent hierarchy
     }
+    const tempoDataSourceUid = parent?.state.tempoDataSourceUid;
 
-    const openTrace = (spanId: string | undefined) => {
-      if (!parent || !spanId) {
-        return;
-      }
-      const traceId = traceInfoBySpanId[spanId]?.traceId;
-      parent.setState({
-        selectedSpanId: spanId,
-        selectedTimestamp: undefined,
-        selectedProfileId: undefined,
-        selectedTraceId: traceId,
-        tempoDataSourceUid: tempoDataSourceUid,
-      });
-    };
-
-    const dsOptions = tempoDatasources.map((ds: TempoDatasource) => ({ label: ds.name, value: ds.uid }));
+    const dsOptions = tempoDatasources.map((ds: TempoDataSourceOption) => ({ label: ds.name, value: ds.uid }));
 
     const profileMetricId = sceneGraph.interpolate(model, '$profileMetricId');
-    const { unit, description } = getProfileMetric(profileMetricId as any);
-    const formatter = buildUnitFormatter(unit);
-    const formatValue = (v: number) => {
-      const { text, suffix } = formatter(v, 2);
-      return `${text}${suffix ?? ''}`;
-    };
+    const { unit, description } = getProfileMetric(profileMetricId as ProfileMetricId);
+    const displayedRows = useMemo(
+      () => getDisplayedExemplarRows(rows, selectedSpanId, selectedTimestamp),
+      [rows, selectedSpanId, selectedTimestamp]
+    );
+    const columns = useMemo<Array<Column<ExemplarRow>>>(() => {
+      const getRow = (props: { row: { original: ExemplarRow } }) => props.row.original;
+      const formatter = buildUnitFormatter(unit);
+      const formatValue = (value: number) => {
+        const { text, suffix } = formatter(value, 2);
+        return `${text}${suffix ?? ''}`;
+      };
+      const openTrace = (row: ExemplarRow, source: 'trace-id' | 'action') => {
+        if (!parent || !row.spanId) {
+          return;
+        }
+        reportInteraction('g_pyroscope_app_span_trace_opened', { source });
+        parent.setState({
+          selectedSpanId: row.spanId,
+          selectedTimestamp: row.timestamp,
+          selectedProfileId: row.profileId,
+          selectedTraceId: traceInfoBySpanId[row.spanId]?.traceId,
+        });
+      };
+
+      return [
+        {
+          id: 'timestamp',
+          header: t('heatmap.exemplar-table.col-timestamp', 'Timestamp'),
+          cell: (props) => formatTimestamp(getRow(props).timestamp),
+        },
+        {
+          id: 'spanId',
+          header: t('heatmap.exemplar-table.col-span-id', 'Span ID'),
+          cell: (props) => {
+            const row = getRow(props);
+            return row.spanId ? (
+              <CopyableId
+                value={row.spanId}
+                display={row.spanId.slice(0, 16) + (row.spanId.length > 16 ? '…' : '')}
+              />
+            ) : (
+              t('common.not-available', '–')
+            );
+          },
+        },
+        {
+          id: 'spanName',
+          header: t('heatmap.exemplar-table.col-span-name', 'Span name'),
+          cell: (props) => {
+            const row = getRow(props);
+            const traceInfo = row.spanId ? traceInfoBySpanId[row.spanId] : undefined;
+            const isLoading = row.spanId ? loadingSpanIds.includes(row.spanId) : false;
+            return row.spanName ?? traceInfo?.spanName ?? (isLoading ? <Spinner size="sm" /> : '–');
+          },
+        },
+        {
+          id: 'value',
+          header: description || 'Value',
+          cell: (props) => formatValue(getRow(props).value),
+        },
+        {
+          id: 'duration',
+          header: t('heatmap.exemplar-table.col-duration', 'Duration'),
+          cell: (props) => {
+            const row = getRow(props);
+            const traceInfo = row.spanId ? traceInfoBySpanId[row.spanId] : undefined;
+            const isLoading = row.spanId ? loadingSpanIds.includes(row.spanId) : false;
+            if (traceInfo?.duration !== undefined) {
+              const formatted = getValueFormat('ns')(traceInfo.duration, 2);
+              return `${formatted.text}${formatted.suffix ?? ''}`;
+            }
+            return isLoading ? <Spinner size="sm" /> : '–';
+          },
+        },
+        {
+          id: 'traceId',
+          header: t('heatmap.exemplar-table.col-trace-id', 'Trace ID'),
+          cell: (props) => {
+            const row = getRow(props);
+            if (!row.spanId) {
+              return '–';
+            }
+            const traceInfo = traceInfoBySpanId[row.spanId];
+            if (loadingSpanIds.includes(row.spanId)) {
+              return <Spinner size="sm" />;
+            }
+            if (traceInfo) {
+              return (
+                <CopyableId
+                  value={traceInfo.traceId}
+                  display={`${traceInfo.traceId.slice(0, 7)}…`}
+                  onOpen={() => openTrace(row, 'trace-id')}
+                />
+              );
+            }
+            return tempoDataSourceUid ? '–' : t('heatmap.exemplar-table.select-tempo', 'Select Tempo data source');
+          },
+        },
+        {
+          id: 'actions',
+          header: t('heatmap.exemplar-table.col-actions', 'Actions'),
+          disableGrow: true,
+          cell: (props) => {
+            const row = getRow(props);
+            const traceInfo = row.spanId ? traceInfoBySpanId[row.spanId] : undefined;
+            const isSelected = row.spanId === selectedSpanId && row.timestamp === selectedTimestamp;
+            return (
+              <div className={styles.actionsCell}>
+                {row.spanId && (
+                  <IconButton
+                    name={isSelected ? 'times' : 'crosshair'}
+                    tooltip={
+                      isSelected
+                        ? t('heatmap.exemplar-table.clear-selection', 'Clear exemplar selection')
+                        : t('heatmap.exemplar-table.select-exemplar', 'Select exemplar')
+                    }
+                    size="sm"
+                    onClick={() => {
+                      reportInteraction('g_pyroscope_app_span_exemplar_selected', {
+                        source: 'table',
+                        selected: !isSelected,
+                      });
+                      parent?.setState({
+                        selectedSpanId: isSelected ? undefined : row.spanId,
+                        selectedProfileId: isSelected ? undefined : row.profileId,
+                        selectedTimestamp: isSelected ? undefined : row.timestamp,
+                      });
+                    }}
+                  />
+                )}
+                <IconButton
+                  name="fire"
+                  tooltip={t('heatmap.exemplar-table.open-flamegraph', 'Open flame graph')}
+                  size="sm"
+                  onClick={() => model.openFlameGraph(row.profileId, row.spanId, row.timestamp)}
+                />
+                {row.spanId && traceInfo && (
+                  <IconButton
+                    name="compass"
+                    tooltip={t('heatmap.exemplar-table.open-trace', 'Open trace')}
+                    size="sm"
+                    onClick={() => openTrace(row, 'action')}
+                  />
+                )}
+              </div>
+            );
+          },
+        },
+      ];
+    }, [
+      description,
+      loadingSpanIds,
+      model,
+      parent,
+      selectedSpanId,
+      selectedTimestamp,
+      styles.actionsCell,
+      tempoDataSourceUid,
+      traceInfoBySpanId,
+      unit,
+    ]);
 
     return (
       <div className={styles.container}>
@@ -374,7 +415,7 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
           <span className={styles.title}>{t('heatmap.exemplar-table.title', 'Top span exemplars')}</span>
           <div className={styles.picker}>
             <FormField
-              label={t('heatmap.exemplar-table.tempo-datasource', 'Tempo datasource')}
+              label={t('heatmap.exemplar-table.tempo-datasource', 'Tempo data source')}
               className={styles.pickerField}
             >
               <Select
@@ -384,130 +425,32 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
                 onChange={(option) => {
                   model.setTempoDataSourceUid(option?.value ?? undefined);
                 }}
-                placeholder={t('heatmap.exemplar-table.tempo-placeholder', 'Select Tempo datasource…')}
+                placeholder={t('heatmap.exemplar-table.tempo-placeholder', 'Select Tempo data source…')}
                 isClearable
               />
             </FormField>
           </div>
         </div>
 
-        {rows.length === 0 ? (
+        {traceLookupFailed && (
+          <div className={styles.lookupError}>
+            {t('heatmap.exemplar-table.trace-lookup-failed', 'Unable to load trace details from Tempo.')}
+          </div>
+        )}
+
+        {displayedRows.length === 0 ? (
           <div className={styles.empty}>
             {t('heatmap.exemplar-table.empty', 'No span exemplars in the selected time range.')}
           </div>
         ) : (
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>{t('heatmap.exemplar-table.col-timestamp', 'Timestamp')}</th>
-                  <th>{t('heatmap.exemplar-table.col-span-id', 'Span ID')}</th>
-                  <th>{t('heatmap.exemplar-table.col-span-name', 'Span name')}</th>
-                  <th>{description || 'Value'}</th>
-                  <th>{t('heatmap.exemplar-table.col-duration', 'Duration')}</th>
-                  <th>{t('heatmap.exemplar-table.col-trace-id', 'Trace ID')}</th>
-                  <th>{t('heatmap.exemplar-table.col-actions', 'Actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* eslint-disable-next-line sonarjs/cognitive-complexity */}
-                {rows.map((row: ExemplarRow, i: number) => {
-                  const traceInfo = row.spanId ? traceInfoBySpanId[row.spanId] : undefined;
-                  const isLoading = row.spanId ? loadingSpanIds.includes(row.spanId) : false;
-                  const isSelected =
-                    !!row.spanId && row.spanId === selectedSpanId && row.timestamp === selectedTimestamp;
-
-                  return (
-                    <tr
-                      key={`${row.spanId ?? row.profileId}-${i}`}
-                      className={isSelected ? styles.selectedRow : styles.clickableRow}
-                      onClick={() => {
-                        if (!parent || !row.spanId) {
-                          return;
-                        }
-                        const isSelectedRow = row.spanId === selectedSpanId && row.timestamp === selectedTimestamp;
-                        parent.setState({
-                          selectedSpanId: isSelectedRow ? undefined : row.spanId,
-                          selectedProfileId: isSelectedRow ? undefined : row.profileId,
-                          selectedTimestamp: isSelectedRow ? undefined : row.timestamp,
-                        });
-                      }}
-                    >
-                      <td>{formatTimestamp(row.timestamp)}</td>
-                      <td className={styles.mono}>
-                        {row.spanId ? (
-                          <CopyableId
-                            value={row.spanId}
-                            display={row.spanId.slice(0, 16) + (row.spanId.length > 16 ? '…' : '')}
-                          />
-                        ) : (
-                          t('common.not-available', '–')
-                        )}
-                      </td>
-                      <td>
-                        {row.spanName ??
-                          traceInfo?.spanName ??
-                          (isLoading ? <Spinner size="sm" /> : t('common.not-available', '–'))}
-                      </td>
-                      <td>{formatValue(row.value)}</td>
-                      <td>
-                        {traceInfo?.duration !== undefined ? (
-                          (() => {
-                            const f = getValueFormat('ns')(traceInfo.duration, 2);
-                            return `${f.text}${f.suffix ?? ''}`;
-                          })()
-                        ) : isLoading ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          t('common.not-available', '–')
-                        )}
-                      </td>
-                      <td className={styles.mono}>
-                        {!row.spanId ? (
-                          t('common.not-available', '–')
-                        ) : isLoading ? (
-                          <Spinner size="sm" />
-                        ) : traceInfo ? (
-                          <CopyableId value={traceInfo.traceId} display={traceInfo.traceId.slice(0, 7) + '…'} />
-                        ) : tempoDataSourceUid ? (
-                          t('common.not-available', '–')
-                        ) : (
-                          <span className={styles.hint}>
-                            {t('heatmap.exemplar-table.select-tempo', 'Select Tempo datasource')}
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        <div className={styles.actionsCell}>
-                          <IconButton
-                            name="fire"
-                            tooltip={t('heatmap.exemplar-table.open-flamegraph', 'Open flame graph')}
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              model.openFlameGraph(row.profileId, row.spanId, row.timestamp);
-                            }}
-                          />
-                          {row.spanId && isLoading && <Spinner size="sm" />}
-                          {row.spanId && traceInfo && (
-                            <IconButton
-                              name="compass"
-                              tooltip={t('heatmap.exemplar-table.open-trace', 'Open trace')}
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openTrace(row.spanId);
-                              }}
-                            />
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <InteractiveTable
+            className={selectedSpanId ? styles.selectedTable : styles.table}
+            columns={columns}
+            data={displayedRows}
+            pageSize={5}
+            autoResetPage
+            getRowId={(row) => `${row.profileId}-${row.spanId ?? 'no-span'}-${row.timestamp}`}
+          />
         )}
       </div>
     );
@@ -554,53 +497,21 @@ const getStyles = (theme: GrafanaTheme2) => ({
       white-space: nowrap;
     }
   `,
-  tableWrapper: css`
-    overflow: auto;
-    flex: 1;
-  `,
   table: css`
-    width: 100%;
-    border-collapse: collapse;
-    font-size: ${theme.typography.bodySmall.fontSize};
-
-    th,
-    td {
-      padding: ${theme.spacing(0.75, 1.5)};
-      text-align: left;
-      border-bottom: 1px solid ${theme.colors.border.weak};
-      white-space: nowrap;
-    }
-
-    th {
-      background: ${theme.colors.background.secondary};
-      color: ${theme.colors.text.secondary};
-      font-weight: ${theme.typography.fontWeightMedium};
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
-    tbody tr:hover {
-      background: ${theme.colors.action.hover};
-    }
-  `,
-  selectedRow: css`
-    background: ${theme.colors.action.selected} !important;
-    outline: 1px solid ${theme.colors.primary.border};
-    outline-offset: -1px;
-    cursor: pointer;
-  `,
-  clickableRow: css`
-    cursor: pointer;
-  `,
-  mono: css`
-    font-family: ${theme.typography.fontFamilyMonospace};
     font-size: ${theme.typography.bodySmall.fontSize};
   `,
-  hint: css`
-    color: ${theme.colors.text.disabled};
-    font-style: italic;
+  selectedTable: css`
     font-size: ${theme.typography.bodySmall.fontSize};
+
+    tbody tr {
+      background: ${theme.colors.action.selected};
+      outline: 1px solid ${theme.colors.primary.border};
+      outline-offset: -1px;
+    }
+  `,
+  lookupError: css`
+    color: ${theme.colors.error.text};
+    padding: ${theme.spacing(1, 2)};
   `,
   actionsCell: css`
     display: flex;
