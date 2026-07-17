@@ -277,7 +277,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         type: Object.values(ExplorationType).includes(type) ? type : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
       });
     } else if (showSpanHeatmapChanged && this.state.explorationType === ExplorationType.FLAME_GRAPH) {
-      this.setExplorationType({ type: ExplorationType.FLAME_GRAPH });
+      this.syncSpanHeatmapFromUrl();
     }
   }
 
@@ -289,6 +289,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.setState({ showSpanHeatmap });
     return true;
+  }
+
+  private syncSpanHeatmapFromUrl() {
+    const flameGraph = sceneGraph.findObject(this, (scene) => scene instanceof SceneExploreServiceFlameGraph);
+    if (flameGraph instanceof SceneExploreServiceFlameGraph) {
+      flameGraph.syncSpanHeatmapFromUrl(this.state.showSpanHeatmap);
+    }
   }
 
   registerRuntimeDataSources() {

@@ -77,4 +77,23 @@ describe('SceneExploreServiceFlameGraph', () => {
     expect(clearSpanProfileSelection).toHaveBeenCalledTimes(1);
     expect(fetchHeatmapData).toHaveBeenCalledTimes(1);
   });
+
+  it('opens span heatmap from URL state without recreating the scene', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const probeSpanAvailability = jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
+
+    scene.syncSpanHeatmapFromUrl(true);
+
+    expect(probeSpanAvailability).toHaveBeenCalledWith(true);
+  });
+
+  it('closes an open span heatmap from URL state', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const closeSpanHeatmapMode = jest.spyOn(scene, 'closeSpanHeatmapMode').mockImplementation();
+    scene.setState({ showSpanHeatmap: true });
+
+    scene.syncSpanHeatmapFromUrl(false);
+
+    expect(closeSpanHeatmapMode).toHaveBeenCalledTimes(1);
+  });
 });

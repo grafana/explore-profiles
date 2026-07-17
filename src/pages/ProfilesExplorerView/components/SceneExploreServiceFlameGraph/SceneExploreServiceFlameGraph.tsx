@@ -236,6 +236,17 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     }
   }
 
+  syncSpanHeatmapFromUrl(showSpanHeatmap: boolean) {
+    if (showSpanHeatmap) {
+      this.probeSpanAvailability(true);
+      return;
+    }
+
+    if (this.state.showSpanHeatmap) {
+      this.closeSpanHeatmapMode();
+    }
+  }
+
   openSpanHeatmapMode() {
     if (!this.profilesHeatmapEnabled) {
       return;
