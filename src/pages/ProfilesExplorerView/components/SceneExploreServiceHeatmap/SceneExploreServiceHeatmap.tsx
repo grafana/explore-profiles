@@ -12,7 +12,7 @@ import {
 } from '@grafana/scenes';
 import { Drawer, useStyles2 } from '@grafana/ui';
 import { quoteLabelName } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
-import { getProfileMetric } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
@@ -27,8 +27,8 @@ import {
 } from './infrastructure/buildHeatmapDataFrames';
 import {
   ExemplarType,
-  HeatmapApiClient,
   HeatmapQueryType,
+  selectHeatmap,
   SelectHeatmapRequest,
   SelectHeatmapResponse,
 } from './infrastructure/HeatmapApiClient';
@@ -66,17 +66,22 @@ export interface PrimedSpanHeatmapResponse {
 export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServiceHeatmapState> {
   private fetchRequestId = 0;
   private primedResponse?: PrimedSpanHeatmapResponse;
+  private onTempoDataSourceUidChange?: (tempoDataSourceUid?: string) => void;
 
   constructor({
     item,
     manageProfileMetricQuery = true,
     embedded = false,
     primedResponse,
+    initialTempoDataSourceUid,
+    onTempoDataSourceUidChange,
   }: {
     item?: GridItemData;
     manageProfileMetricQuery?: boolean;
     embedded?: boolean;
     primedResponse?: PrimedSpanHeatmapResponse;
+    initialTempoDataSourceUid?: string;
+    onTempoDataSourceUidChange?: (tempoDataSourceUid?: string) => void;
   }) {
     super({
       key: 'explore-service-heatmap',
@@ -88,7 +93,7 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
       selectedProfileId: undefined,
       selectedTimestamp: undefined,
       selectedTraceId: undefined,
-      tempoDataSourceUid: undefined,
+      tempoDataSourceUid: initialTempoDataSourceUid,
       embedded,
       tracePanel: new SceneTracePanel(),
       body: new SceneFlexLayout({
@@ -101,12 +106,18 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
     });
 
     this.primedResponse = primedResponse;
+    this.onTempoDataSourceUidChange = onTempoDataSourceUidChange;
 
     this.addActivationHandler(this.onActivate.bind(this, item, manageProfileMetricQuery));
   }
 
   primeWithResponse(primedResponse?: PrimedSpanHeatmapResponse) {
     this.primedResponse = primedResponse;
+  }
+
+  setTempoDataSourceUid(tempoDataSourceUid?: string) {
+    this.setState({ tempoDataSourceUid, selectedTraceId: undefined });
+    this.onTempoDataSourceUidChange?.(tempoDataSourceUid);
   }
 
   onActivate(item?: GridItemData, manageProfileMetricQuery = true) {
@@ -196,8 +207,7 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
     this.setState({ isLoading: true });
 
     try {
-      const client = new HeatmapApiClient({ dataSourceUid: spanHeatmapQuery.dataSourceUid });
-      const response = await client.selectHeatmap(spanHeatmapQuery.request);
+      const response = await selectHeatmap(spanHeatmapQuery.dataSourceUid, spanHeatmapQuery.request);
       const heatmapState = buildSpanHeatmapState(response, spanHeatmapQuery.profileTypeId);
 
       if (requestId !== this.fetchRequestId) {
@@ -288,7 +298,7 @@ export function buildSpanHeatmapQuery(scene: SceneObject): SpanHeatmapQuery | un
 }
 
 export function buildSpanHeatmapState(response: SelectHeatmapResponse, profileTypeId: string) {
-  const { unit } = getProfileMetric(profileTypeId as any);
+  const { unit } = getProfileMetric(profileTypeId as ProfileMetricId);
   const series = response.series?.[0];
 
   return {

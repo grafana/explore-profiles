@@ -12,6 +12,8 @@ import React from 'react';
 
 import { FiltersVariable } from '../domain/variables/FiltersVariable/FiltersVariable';
 import { SpanExemplarToggleAction } from '../domain/actions/SpanExemplarToggleAction';
+import { FavAction } from '../domain/actions/FavAction';
+import { SelectAction } from '../domain/actions/SelectAction';
 import { GroupByVariable } from '../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileMetricVariable } from '../domain/variables/ProfileMetricVariable';
 import { ServiceNameVariable } from '../domain/variables/ServiceNameVariable/ServiceNameVariable';
@@ -38,6 +40,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     includeExemplars,
     includeSpanExemplars,
     spanExemplarToggleAction,
+    menuActions,
   }: {
     item?: GridItemData;
     headerActions: SceneMainServiceTimeseriesState['headerActions'];
@@ -45,6 +48,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     includeExemplars?: boolean;
     includeSpanExemplars?: boolean;
     spanExemplarToggleAction?: SpanExemplarToggleAction;
+    menuActions?: (item: GridItemData) => { selectAction: SelectAction; favAction: FavAction };
   }) {
     super({
       headerActions,
@@ -52,7 +56,15 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     });
 
     this.addActivationHandler(
-      this.onActivate.bind(this, item, supportGroupBy, includeExemplars, includeSpanExemplars, spanExemplarToggleAction)
+      this.onActivate.bind(
+        this,
+        item,
+        supportGroupBy,
+        includeExemplars,
+        includeSpanExemplars,
+        spanExemplarToggleAction,
+        menuActions
+      )
     );
   }
 
@@ -61,14 +73,22 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     supportGroupBy?: boolean,
     includeExemplars?: boolean,
     includeSpanExemplars?: boolean,
-    spanExemplarToggleAction?: SpanExemplarToggleAction
+    spanExemplarToggleAction?: SpanExemplarToggleAction,
+    menuActions?: (item: GridItemData) => { selectAction: SelectAction; favAction: FavAction }
   ) {
     if (item) {
       this.initVariables(item);
     }
 
     this.setState({
-      body: this.buildTimeseries(item, supportGroupBy, includeExemplars, includeSpanExemplars, spanExemplarToggleAction),
+      body: this.buildTimeseries(
+        item,
+        supportGroupBy,
+        includeExemplars,
+        includeSpanExemplars,
+        spanExemplarToggleAction,
+        menuActions
+      ),
     });
 
     if (supportGroupBy) {
@@ -119,7 +139,8 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     supportGroupBy?: boolean,
     includeExemplars?: boolean,
     includeSpanExemplars?: boolean,
-    spanExemplarToggleAction?: SpanExemplarToggleAction
+    spanExemplarToggleAction?: SpanExemplarToggleAction,
+    menuActions?: (item: GridItemData) => { selectAction: SelectAction; favAction: FavAction }
   ) {
     const { headerActions } = this.state;
 
@@ -144,6 +165,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
       includeExemplars: includeExemplars,
       includeSpanExemplars: includeSpanExemplars,
       spanExemplarToggleAction,
+      menuActions: menuActions?.(timeseriesItem),
       // we pass data for the scenarios where we land on the page from a shared link
       // we do this to prevent rendering a timeseries without groupBy for a second then with groupBy
       // and also to directly render something when there's no groupBy in the URL

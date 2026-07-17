@@ -1,0 +1,65 @@
+import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph';
+
+jest.mock('@shared/infrastructure/featureFlags/featureFlags', () => ({
+  getProfilesHeatmapFromOpenFeature: () => true,
+}));
+
+jest.mock('../../../domain/variables/FiltersVariable/FiltersVariable', () => ({
+  FiltersVariable: class FiltersVariable {},
+}));
+
+jest.mock('../SceneFlameGraph', () => {
+  const { SceneObjectBase } = jest.requireActual('@grafana/scenes');
+
+  return {
+    SceneFlameGraph: class SceneFlameGraph extends SceneObjectBase {
+      constructor() {
+        super({});
+      }
+    },
+  };
+});
+
+jest.mock('../../SceneMainServiceTimeseries', () => {
+  const { SceneObjectBase } = jest.requireActual('@grafana/scenes');
+
+  return {
+    SceneMainServiceTimeseries: class SceneMainServiceTimeseries extends SceneObjectBase {
+      static MIN_HEIGHT = 0;
+
+      constructor() {
+        super({});
+      }
+    },
+  };
+});
+
+describe('SceneExploreServiceFlameGraph', () => {
+  it('clears the selected span when switching from span heatmap to time series', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const clearSpanProfileSelection = jest.spyOn(scene, 'clearSpanProfileSelection').mockImplementation();
+    jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
+
+    scene.setState({ showSpanHeatmap: true });
+    scene.closeSpanHeatmapMode();
+
+    expect(clearSpanProfileSelection).toHaveBeenCalledTimes(1);
+    expect(scene.state.showSpanHeatmap).toBe(false);
+  });
+
+  it('switches from span heatmap to time series when the service changes', () => {
+    const onShowSpanHeatmapChange = jest.fn();
+    const scene = new SceneExploreServiceFlameGraph({ onShowSpanHeatmapChange });
+    const clearSpanProfileSelection = jest.spyOn(scene, 'clearSpanProfileSelection').mockImplementation();
+    const probeSpanAvailability = jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
+
+    scene.setState({ showSpanHeatmap: true });
+    scene.onServiceNameChange();
+
+    expect(clearSpanProfileSelection).toHaveBeenCalledTimes(1);
+    expect(scene.state.showSpanHeatmap).toBe(false);
+    expect(scene.state.spanToggleAction.state.showSpanHeatmap).toBe(false);
+    expect(onShowSpanHeatmapChange).toHaveBeenCalledWith(false);
+    expect(probeSpanAvailability).toHaveBeenCalledTimes(1);
+  });
+});

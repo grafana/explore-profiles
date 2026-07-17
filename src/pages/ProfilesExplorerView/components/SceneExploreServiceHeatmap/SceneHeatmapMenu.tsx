@@ -1,15 +1,22 @@
 import { t } from '@grafana/i18n';
-import { reportInteraction } from '@grafana/runtime';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Menu } from '@grafana/ui';
 import { quoteLabelName } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getExploreUrl } from '../../helpers/getExploreUrl';
 import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
+import { FavAction } from '../../domain/actions/FavAction';
+import { SelectAction } from '../../domain/actions/SelectAction';
 
-export class SceneHeatmapMenu extends SceneObjectBase<SceneObjectState> {
+interface SceneHeatmapMenuState extends SceneObjectState {
+  selectAction: SelectAction;
+  favAction: FavAction;
+}
+
+export class SceneHeatmapMenu extends SceneObjectBase<SceneHeatmapMenuState> {
   onClickExplore() {
     reportInteraction('g_pyroscope_app_open_in_explore_clicked');
 
@@ -44,8 +51,21 @@ export class SceneHeatmapMenu extends SceneObjectBase<SceneObjectState> {
   }
 
   static Component({ model }: SceneComponentProps<SceneHeatmapMenu>) {
+    const { selectAction, favAction } = model.useState();
+    const { isFav } = favAction.useState();
+
     return (
       <Menu>
+        <Menu.Item
+          label={selectAction.state.label ?? t('heatmap.menu.labels', 'Labels')}
+          onClick={selectAction.onClick}
+        />
+        <Menu.Item
+          label={isFav ? t('actions.fav.unfavorite', 'Unfavorite') : t('actions.fav.favorite', 'Favorite')}
+          icon={isFav ? 'favorite' : 'star'}
+          onClick={favAction.onClick}
+        />
+        <Menu.Divider />
         <Menu.Item
           ariaLabel={t('heatmap.menu.open-in-explore', 'Open in Explore')}
           label={t('heatmap.menu.open-in-explore', 'Open in Explore')}

@@ -10,9 +10,9 @@
       "unfavorite": "Unfavorite"
     },
     "span-exemplar-toggle": {
-      "hide": "Hide span profiles",
-      "label": "Span profiles",
-      "show": "Show span profiles",
+      "aria-label": "Profile timeline visualization",
+      "span-heatmap": "Span heatmap",
+      "time-series": "Time series",
       "unavailable": "No span profiles are available for the current service, filters, and time range"
     }
   },
@@ -349,6 +349,7 @@
       "select": "Select exemplar"
     },
     "exemplar-table": {
+      "clear-selection": "Clear exemplar selection",
       "col-actions": "Actions",
       "col-duration": "Duration",
       "col-span-id": "Span ID",
@@ -360,12 +361,15 @@
       "empty": "No span exemplars in the selected time range.",
       "open-flamegraph": "Open flame graph",
       "open-trace": "Open trace",
-      "select-tempo": "Select Tempo datasource",
-      "tempo-datasource": "Tempo datasource",
-      "tempo-placeholder": "Select Tempo datasource…",
-      "title": "Top span exemplars"
+      "select-exemplar": "Select exemplar",
+      "select-tempo": "Select Tempo data source",
+      "tempo-datasource": "Tempo data source",
+      "tempo-placeholder": "Select Tempo data source…",
+      "title": "Top span exemplars",
+      "trace-lookup-failed": "Unable to load trace details from Tempo."
     },
     "menu": {
+      "labels": "Labels",
       "open-in-explore": "Open in Explore"
     },
     "trace-drawer": {
@@ -681,6 +685,7 @@
     "menu": {
       "add-to-dashboard": "Add to dashboard",
       "exemplars": "Exemplars",
+      "labels": "Labels",
       "open-in-explore": "Open in Explore",
       "scale-linear": "Linear",
       "scale-log2": "Log2",

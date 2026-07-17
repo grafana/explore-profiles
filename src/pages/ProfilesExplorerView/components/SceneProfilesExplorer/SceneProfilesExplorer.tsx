@@ -77,6 +77,8 @@ export interface SceneProfilesExplorerState extends Partial<EmbeddedSceneState> 
   initialDS?: string;
   isAddToDashboardModalOpen?: boolean;
   addToDashboardPanelData?: PanelDataRequestPayload;
+  showSpanHeatmap: boolean;
+  tempoDataSourceUid?: string;
 }
 
 export enum ExplorationType {
@@ -184,6 +186,8 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
       loadSearchScene: new LoadSearchScene(),
       isAddToDashboardModalOpen: false,
+      showSpanHeatmap: state.showSpanHeatmap ?? false,
+      tempoDataSourceUid: state.tempoDataSourceUid,
       controls: [new SceneTimePicker({ isOnCanvas: true }), new SceneRefreshPicker({ isOnCanvas: true })],
       // these scenes also sync with the URL so...
       // ...because of a limitation of the Scenes library, we have to create them now, once, and not every time we set a new exploration type
@@ -495,7 +499,13 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
         break;
 
       case ExplorationType.FLAME_GRAPH:
-        primary = new SceneExploreServiceFlameGraph({ item });
+        primary = new SceneExploreServiceFlameGraph({
+          item,
+          initialShowSpanHeatmap: this.state.showSpanHeatmap,
+          initialTempoDataSourceUid: this.state.tempoDataSourceUid,
+          onShowSpanHeatmapChange: (showSpanHeatmap) => this.setState({ showSpanHeatmap }),
+          onTempoDataSourceUidChange: (tempoDataSourceUid) => this.setState({ tempoDataSourceUid }),
+        });
         break;
 
       case ExplorationType.DIFF_FLAME_GRAPH:

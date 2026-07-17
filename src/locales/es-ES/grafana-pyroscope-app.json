@@ -10,9 +10,9 @@
       "unfavorite": "Eliminar de favoritos"
     },
     "span-exemplar-toggle": {
-      "hide": "",
-      "label": "",
-      "show": "",
+      "aria-label": "",
+      "span-heatmap": "",
+      "time-series": "",
       "unavailable": ""
     }
   },
@@ -349,6 +349,7 @@
       "select": ""
     },
     "exemplar-table": {
+      "clear-selection": "",
       "col-actions": "",
       "col-duration": "",
       "col-span-id": "",
@@ -360,12 +361,15 @@
       "empty": "",
       "open-flamegraph": "",
       "open-trace": "",
+      "select-exemplar": "",
       "select-tempo": "",
       "tempo-datasource": "",
       "tempo-placeholder": "",
-      "title": ""
+      "title": "",
+      "trace-lookup-failed": ""
     },
     "menu": {
+      "labels": "",
       "open-in-explore": ""
     },
     "trace-drawer": {
@@ -682,6 +686,7 @@
     "menu": {
       "add-to-dashboard": "Añadir al panel de control",
       "exemplars": "Ejemplos",
+      "labels": "",
       "open-in-explore": "Abrir en Explorar",
       "scale-linear": "Lineal",
       "scale-log2": "Log2",

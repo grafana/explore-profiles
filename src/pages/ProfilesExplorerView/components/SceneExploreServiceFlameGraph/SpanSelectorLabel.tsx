@@ -1,10 +1,8 @@
 import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
-import { Tag, Tooltip, useStyles2 } from '@grafana/ui';
+import { IconButton, Tooltip, useStyles2 } from '@grafana/ui';
 import React from 'react';
-
-const noOp = () => {};
 
 type Props = {
   spanSelector: string;
@@ -25,37 +23,34 @@ export function SpanSelectorLabel(props: Props) {
         )}
         placement="top"
       >
-        <Tag
+        <span
           aria-label={t('flame-graph.span-selector.filter-label', 'Filter label')}
-          className={styles.spanSelectorLabel}
-          name={t('flame-graph.span-selector.name', 'Span')}
-          onClick={noOp}
-        />
+          className={styles.label}
+        >
+          {t('flame-graph.span-selector.name', 'Span')}
+        </span>
       </Tooltip>
 
-      <Tag
+      <span
         aria-label={t('flame-graph.span-selector.filter-operator', 'Filter operator')}
-        className={styles.noInteraction}
-        name="="
-        onClick={noOp}
-        tabIndex={0}
-      />
+        className={styles.chip}
+      >
+        =
+      </span>
 
-      <Tag
+      <span
         aria-label={t('flame-graph.span-selector.filter-value', 'Filter value')}
-        name={spanSelector}
-        className={styles.noInteraction}
-        onClick={noOp}
-        tabIndex={0}
-      />
+        className={styles.chip}
+      >
+        {spanSelector}
+      </span>
 
-      <Tag
+      <IconButton
         aria-label={t('flame-graph.span-selector.remove', 'Remove span selector from query')}
         className={styles.removeButton}
-        icon="times"
-        name=""
-        onClick={() => removeSpanSelector()}
-        tabIndex={0}
+        name="times"
+        tooltip={t('flame-graph.span-selector.remove', 'Remove span selector from query')}
+        onClick={removeSpanSelector}
       />
     </div>
   );
@@ -72,22 +67,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     border: 1px solid ${activeBackgroundColor};
     border-radius: 2px;
 
-    & > button {
-      height: 30px;
-      background-color: ${theme.colors.background.primary};
-      color: ${theme.colors.text.maxContrast};
-    }
-
-    & > :first-child {
-      background-color: ${activeBackgroundColor};
-      color: ${activeTextColor};
-      border-radius: 0;
-
-      &:hover {
-        cursor: not-allowed !important;
-      }
-    }
-
     & > :last-child {
       border-left: 1px solid ${activeBackgroundColor};
       border-top-left-radius: 0;
@@ -95,7 +74,28 @@ const getStyles = (theme: GrafanaTheme2) => ({
     }
   `,
 
+  chip: css`
+    align-items: center;
+    background: ${theme.colors.background.primary};
+    color: ${theme.colors.text.maxContrast};
+    display: inline-flex;
+    height: 30px;
+    padding: ${theme.spacing(0, 1)};
+  `,
+
+  label: css`
+    align-items: center;
+    background: ${activeBackgroundColor};
+    color: ${activeTextColor};
+    display: inline-flex;
+    height: 30px;
+    padding: ${theme.spacing(0, 1)};
+  `,
+
   removeButton: css`
+    cursor: pointer;
+    height: 30px;
+
     &:hover {
       background-color: ${theme.colors.background.secondary};
     }
@@ -106,16 +106,4 @@ const getStyles = (theme: GrafanaTheme2) => ({
     }
   `,
 
-  spanSelectorLabel: css`
-    &:hover {
-      opacity: 1 !important;
-    }
-  `,
-
-  noInteraction: css`
-    &:hover {
-      background-color: ${theme.colors.background.secondary};
-      cursor: not-allowed !important;
-    }
-  `,
 });

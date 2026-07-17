@@ -23,6 +23,8 @@ import React from 'react';
 
 import { ExemplarToggleAction } from '../../domain/actions/ExemplarToggleAction';
 import { SpanExemplarToggleAction } from '../../domain/actions/SpanExemplarToggleAction';
+import { FavAction } from '../../domain/actions/FavAction';
+import { SelectAction } from '../../domain/actions/SelectAction';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -80,6 +82,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     includeExemplars,
     includeSpanExemplars,
     spanExemplarToggleAction,
+    menuActions,
   }: {
     item: SceneLabelValuesTimeseriesState['item'];
     headerActions: SceneLabelValuesTimeseriesState['headerActions'];
@@ -91,6 +94,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     includeExemplars?: boolean;
     includeSpanExemplars?: boolean;
     spanExemplarToggleAction?: SpanExemplarToggleAction;
+    menuActions?: { selectAction: SelectAction; favAction: FavAction };
   }) {
     const profilesExemplarsEnabled = getProfilesExemplarsFromOpenFeature();
     const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(
@@ -100,6 +104,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       includeSpanExemplars,
       spanExemplarToggleAction
     );
+    Object.assign(menuState, menuActions);
 
     super({
       key: 'timeseries-label-values',
