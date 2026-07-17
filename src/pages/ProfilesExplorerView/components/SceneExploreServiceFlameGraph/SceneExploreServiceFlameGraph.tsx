@@ -7,7 +7,6 @@ import React from 'react';
 import { Unsubscribable } from 'rxjs';
 
 import { FavAction } from '../../domain/actions/FavAction';
-import { SelectAction } from '../../domain/actions/SelectAction';
 import { SpanExemplarToggleAction } from '../../domain/actions/SpanExemplarToggleAction';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
@@ -81,7 +80,6 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       showSpanHeatmap: false,
       spanToggleAction,
       heatmapMenu: new SceneHeatmapMenu({
-        selectAction: new SelectAction({ type: 'view-labels', item: HEATMAP_ITEM }),
         favAction: new FavAction({ item: HEATMAP_ITEM }),
       }),
       mainTimeseries: new SceneMainServiceTimeseries({
@@ -93,7 +91,6 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
           new SceneReactObject({ component: ResolutionBoostExtensionPoint, props: { scene: this } }),
         ],
         menuActions: (item) => ({
-          selectAction: new SelectAction({ type: 'view-labels', item }),
           favAction: new FavAction({ item }),
         }),
       }),

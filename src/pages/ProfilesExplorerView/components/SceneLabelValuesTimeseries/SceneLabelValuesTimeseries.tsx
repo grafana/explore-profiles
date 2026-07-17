@@ -93,7 +93,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     includeExemplars?: boolean;
     includeSpanExemplars?: boolean;
     spanExemplarToggleAction?: SpanExemplarToggleAction;
-    menuActions?: { selectAction: SelectAction; favAction: FavAction };
+    menuActions?: { selectAction?: SelectAction; favAction: FavAction };
   }) {
     const profilesExemplarsEnabled = getProfilesExemplarsFromOpenFeature();
     const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(

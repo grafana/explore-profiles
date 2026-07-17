@@ -48,7 +48,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     includeExemplars?: boolean;
     includeSpanExemplars?: boolean;
     spanExemplarToggleAction?: SpanExemplarToggleAction;
-    menuActions?: (item: GridItemData) => { selectAction: SelectAction; favAction: FavAction };
+    menuActions?: (item: GridItemData) => { selectAction?: SelectAction; favAction: FavAction };
   }) {
     super({
       headerActions,
@@ -74,7 +74,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     includeExemplars?: boolean,
     includeSpanExemplars?: boolean,
     spanExemplarToggleAction?: SpanExemplarToggleAction,
-    menuActions?: (item: GridItemData) => { selectAction: SelectAction; favAction: FavAction }
+    menuActions?: (item: GridItemData) => { selectAction?: SelectAction; favAction: FavAction }
   ) {
     if (item) {
       this.initVariables(item);
@@ -140,7 +140,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     includeExemplars?: boolean,
     includeSpanExemplars?: boolean,
     spanExemplarToggleAction?: SpanExemplarToggleAction,
-    menuActions?: (item: GridItemData) => { selectAction: SelectAction; favAction: FavAction }
+    menuActions?: (item: GridItemData) => { selectAction?: SelectAction; favAction: FavAction }
   ) {
     const { headerActions } = this.state;
 

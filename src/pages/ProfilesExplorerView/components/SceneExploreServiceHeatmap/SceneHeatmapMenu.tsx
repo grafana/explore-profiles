@@ -9,10 +9,8 @@ import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersV
 import { getExploreUrl } from '../../helpers/getExploreUrl';
 import { TimeSeriesQuery } from '../../infrastructure/timeseries/buildTimeSeriesQueryRunner';
 import { FavAction } from '../../domain/actions/FavAction';
-import { SelectAction } from '../../domain/actions/SelectAction';
 
 interface SceneHeatmapMenuState extends SceneObjectState {
-  selectAction: SelectAction;
   favAction: FavAction;
 }
 
@@ -51,15 +49,11 @@ export class SceneHeatmapMenu extends SceneObjectBase<SceneHeatmapMenuState> {
   }
 
   static Component({ model }: SceneComponentProps<SceneHeatmapMenu>) {
-    const { selectAction, favAction } = model.useState();
+    const { favAction } = model.useState();
     const { isFav } = favAction.useState();
 
     return (
       <Menu>
-        <Menu.Item
-          label={selectAction.state.label ?? t('heatmap.menu.labels', 'Labels')}
-          onClick={selectAction.onClick}
-        />
         <Menu.Item
           label={isFav ? t('actions.fav.unfavorite', 'Unfavorite') : t('actions.fav.favorite', 'Favorite')}
           icon={isFav ? 'favorite' : 'star'}

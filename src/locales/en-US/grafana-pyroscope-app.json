@@ -369,7 +369,6 @@
       "trace-lookup-failed": "Unable to load trace details from Tempo."
     },
     "menu": {
-      "labels": "Labels",
       "open-in-explore": "Open in Explore"
     },
     "trace-drawer": {
