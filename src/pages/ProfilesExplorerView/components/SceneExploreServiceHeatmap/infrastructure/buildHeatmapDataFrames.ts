@@ -1,9 +1,10 @@
-import { DataFrameType, DataTopic, FieldType, MutableDataFrame } from '@grafana/data';
+import { createDataFrame, DataFrame, DataFrameType, DataTopic, FieldType, MutableDataFrame } from '@grafana/data';
 import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
 import { SelectHeatmapResponse } from '@shared/pyroscope-api/querier/v1/querier_pb';
 import { HeatmapSeries } from '@shared/pyroscope-api/types/v1/types_pb';
 
 type HeatmapSlot = HeatmapSeries['slots'][number];
+const MAX_MISSING_X_BUCKETS_PER_GAP = 256;
 
 export interface ExemplarRow {
   profileId: string;
@@ -157,7 +158,12 @@ function appendMissingHeatmapSlots(
   }
 
   const slotTimestamp = Number(slot.timestamp);
-  for (let xMax = Number(previousSlot.timestamp) + xBucketSize; xMax < slotTimestamp; xMax += xBucketSize) {
+  let missingBuckets = 0;
+  for (
+    let xMax = Number(previousSlot.timestamp) + xBucketSize;
+    xMax < slotTimestamp && missingBuckets < MAX_MISSING_X_BUCKETS_PER_GAP;
+    xMax += xBucketSize, missingBuckets++
+  ) {
     appendEmptyHeatmapSlot(xMax, yBucketStarts, xMaxValues, yMinValues, countValues);
   }
 }
@@ -244,7 +250,7 @@ export function buildExemplarDataFrame(response: SelectHeatmapResponse, unit: st
 
   return new MutableDataFrame({
     name: 'exemplar',
-    meta: { dataTopic: DataTopic.Annotations as any },
+    meta: { dataTopic: DataTopic.Annotations },
     fields: [
       { name: 'Time', type: FieldType.time, values: collected.map((e) => e.timestamp), config: {} },
       { name: 'Value', type: FieldType.number, values: collected.map((e) => e.value), config: { unit } },
@@ -262,6 +268,48 @@ export function buildExemplarDataFrame(response: SelectHeatmapResponse, unit: st
       })),
     ],
   });
+}
+
+export function buildHighlightedExemplarDataFrame(
+  exemplarFrame: DataFrame,
+  selectedSpanId?: string,
+  selectedTimestamp?: number
+): DataFrame | undefined {
+  if (!selectedSpanId) {
+    return undefined;
+  }
+
+  const idField = exemplarFrame.fields.find(({ name }) => name === 'Id');
+  const timeField = exemplarFrame.fields.find(({ name }) => name === 'Time');
+  if (!idField || !timeField) {
+    return undefined;
+  }
+
+  const matchingIndex = idField.values.findIndex(
+    (spanId, index) =>
+      spanId === selectedSpanId &&
+      (selectedTimestamp === undefined || timeField.values[index] === selectedTimestamp)
+  );
+  if (matchingIndex < 0) {
+    return undefined;
+  }
+
+  const highlightedFrame = createDataFrame({
+    ...exemplarFrame,
+    refId: 'highlightedExemplar',
+  });
+  highlightedFrame.length = 1;
+  highlightedFrame.fields.forEach((field) => {
+    field.values = [field.values[matchingIndex]];
+  });
+  highlightedFrame.fields.push({
+    name: 'highlighted',
+    type: FieldType.string,
+    values: ['true'],
+    config: {},
+  });
+
+  return highlightedFrame;
 }
 
 /**

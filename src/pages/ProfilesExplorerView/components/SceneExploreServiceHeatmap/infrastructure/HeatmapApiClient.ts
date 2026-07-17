@@ -26,16 +26,14 @@ export interface SelectHeatmapRequest {
   limit?: number;
 }
 
-export class HeatmapApiClient extends DataSourceProxyClient {
-  constructor(options: { dataSourceUid: string }) {
-    super(options);
-  }
-
-  async selectHeatmap(request: SelectHeatmapRequest): Promise<SelectHeatmapResponse> {
-    const response = await this.fetch('/querier.v1.QuerierService/SelectHeatmap', {
-      method: 'POST',
-      body: JSON.stringify(request),
-    });
-    return response.json();
-  }
+export async function selectHeatmap(
+  dataSourceUid: string,
+  request: SelectHeatmapRequest
+): Promise<SelectHeatmapResponse> {
+  const client = new DataSourceProxyClient({ dataSourceUid });
+  const response = await client.fetch('/querier.v1.QuerierService/SelectHeatmap', {
+    method: 'POST',
+    body: JSON.stringify(request),
+  });
+  return response.json();
 }

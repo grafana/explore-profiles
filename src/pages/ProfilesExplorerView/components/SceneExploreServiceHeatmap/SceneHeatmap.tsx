@@ -1,5 +1,4 @@
-import { css } from '@emotion/css';
-import { DataLinkClickEvent, Field, LoadingState, MutableDataFrame } from '@grafana/data';
+import { DataFrame, DataLinkClickEvent, LoadingState } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import {
   PanelBuilders,
@@ -11,37 +10,25 @@ import {
   VizPanel,
 } from '@grafana/scenes';
 import { TooltipDisplayMode } from '@grafana/schema';
-import { useStyles2 } from '@grafana/ui';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { reportInteraction } from '@shared/domain/reportInteraction';
+import React from 'react';
 
+import { resolveExemplarTimestamp } from './domain/resolveExemplarTimestamp';
+import { buildHighlightedExemplarDataFrame } from './infrastructure/buildHeatmapDataFrames';
 import { SceneExploreServiceHeatmap } from './SceneExploreServiceHeatmap';
-
-interface SelectedExemplar {
-  timestamp: number; // ms
-  value: number;
-}
 
 interface SceneHeatmapState extends SceneObjectState {
   body: VizPanel;
-  selectedExemplar?: SelectedExemplar;
-  yMin: number;
-  yMax: number;
-  yBucketSize: number;
 }
 
 const EXEMPLAR_COLOR_DEFAULT = 'rgba(31, 120, 193, 0.7)';
-const EXEMPLAR_HIGHLIGHT_COLOR = 'rgba(255, 152, 0, 1)';
-const MARKER_SIZE = 8; // px — matches the heatmap panel's exemplar diamond size
+const EXEMPLAR_COLOR_SELECTED = 'rgba(255, 152, 0, 1)';
 
 export class SceneHeatmap extends SceneObjectBase<SceneHeatmapState> {
   constructor({ embedded = false }: { embedded?: boolean } = {}) {
     super({
       key: 'scene-heatmap',
       body: SceneHeatmap.buildPanel(embedded),
-      selectedExemplar: undefined,
-      yMin: 0,
-      yMax: 1,
-      yBucketSize: 0,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -103,37 +90,20 @@ export class SceneHeatmap extends SceneObjectBase<SceneHeatmapState> {
     return () => parentSub.unsubscribe();
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   private updateData(
-    frame: MutableDataFrame | undefined,
-    exemplarFrame: MutableDataFrame | undefined,
+    frame: DataFrame | undefined,
+    exemplarFrame: DataFrame | undefined,
     isLoading: boolean,
     selectedSpanId: string | undefined,
     selectedTimestamp: number | undefined,
     parent: SceneExploreServiceHeatmap
   ) {
     const timeRange = sceneGraph.getTimeRange(this).state.value;
-    const annotations: MutableDataFrame[] = [];
-    let selectedExemplar: SelectedExemplar | undefined;
-
-    // Compute y extent from the heatmap frame for overlay positioning
-    let yMin = 0;
-    let yMax = 1;
-    let yBucketSize = 0;
-    if (frame) {
-      const yMinField = frame.fields.find((f) => f.name === 'yMin');
-      if (yMinField) {
-        const vals: number[] = yMinField.values.toArray();
-        yMin = Math.min(...vals);
-        yBucketSize = (frame.meta?.custom as any)?.yBucketSize ?? 0;
-        yMax = Math.max(...vals) + yBucketSize;
-      }
-    }
+    const annotations: DataFrame[] = [];
 
     if (exemplarFrame) {
       const idField = exemplarFrame.fields.find((f) => f.name === 'Id');
       const timeField = exemplarFrame.fields.find((f) => f.name === 'Time');
-      const valueField = exemplarFrame.fields.find((f) => f.name === 'Value');
 
       if (idField) {
         idField.config = {
@@ -164,6 +134,10 @@ export class SceneHeatmap extends SceneObjectBase<SceneHeatmapState> {
 
                 const isSelected =
                   spanId === parent.state.selectedSpanId && timestamp === parent.state.selectedTimestamp;
+                reportInteraction('g_pyroscope_app_span_exemplar_selected', {
+                  source: 'heatmap',
+                  selected: !isSelected,
+                });
                 parent.setState({
                   selectedSpanId: isSelected ? undefined : spanId,
                   selectedProfileId: undefined,
@@ -175,24 +149,17 @@ export class SceneHeatmap extends SceneObjectBase<SceneHeatmapState> {
         };
       }
 
-      if (selectedSpanId && idField && timeField && valueField) {
-        const ids = idField.values.toArray();
-        const timestamps = timeField.values.toArray();
-        const idx = ids.findIndex((id, index) => {
-          return id === selectedSpanId && (selectedTimestamp === undefined || timestamps[index] === selectedTimestamp);
-        });
-        if (idx >= 0) {
-          selectedExemplar = {
-            timestamp: timeField.values.get(idx),
-            value: valueField.values.get(idx),
-          };
-        }
-      }
+      const highlightedFrame = buildHighlightedExemplarDataFrame(exemplarFrame, selectedSpanId, selectedTimestamp);
+      annotations.push(highlightedFrame ?? exemplarFrame);
 
-      annotations.push(exemplarFrame);
+      const exemplarColor = highlightedFrame ? EXEMPLAR_COLOR_SELECTED : EXEMPLAR_COLOR_DEFAULT;
+      this.state.body.setState({
+        options: {
+          ...this.state.body.state.options,
+          exemplars: { color: exemplarColor },
+        },
+      });
     }
-
-    this.setState({ selectedExemplar, yMin, yMax, yBucketSize });
 
     (this.state.body.state.$data as SceneDataNode).setState({
       data: {
@@ -205,142 +172,8 @@ export class SceneHeatmap extends SceneObjectBase<SceneHeatmapState> {
   }
 
   static Component({ model }: SceneComponentProps<SceneHeatmap>) {
-    const { body, selectedExemplar, yMin, yMax, yBucketSize } = model.useState();
-    const timeRange = sceneGraph.getTimeRange(model).useState().value;
-    const styles = useStyles2(getStyles);
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const overlayRef = useRef<HTMLCanvasElement>(null);
-
-    const drawOverlay = useCallback(() => {
-      const overlay = overlayRef.current;
-      const wrapper = wrapperRef.current;
-      if (!overlay || !wrapper) {
-        return;
-      }
-
-      const ctx = overlay.getContext('2d');
-      if (!ctx) {
-        return;
-      }
-
-      // The canvas is the only canvas in our wrapper (the heatmap panel renders
-      // directly without a .uplot wrapper div in this Scenes context).
-      const panelCanvas = wrapper.querySelector<HTMLCanvasElement>('canvas');
-      if (!panelCanvas) {
-        return;
-      }
-
-      // Size the overlay to exactly cover the panel canvas
-      const rect = panelCanvas.getBoundingClientRect();
-      const wrapRect = wrapper.getBoundingClientRect();
-      overlay.style.left = `${rect.left - wrapRect.left}px`;
-      overlay.style.top = `${rect.top - wrapRect.top}px`;
-      overlay.width = panelCanvas.width;
-      overlay.height = panelCanvas.height;
-      overlay.style.width = `${rect.width}px`;
-      overlay.style.height = `${rect.height}px`;
-
-      ctx.clearRect(0, 0, overlay.width, overlay.height);
-
-      if (!selectedExemplar) {
-        return;
-      }
-
-      // Compute pixel position using the time range (x) and frame y extent.
-      // We get xMin/xMax from the Scenes time range and yMin/yMax from the
-      // heatmap frame stored in parent state. The heatmap panel uses a linear
-      // scale for both axes (we confirmed the data is linearly spaced).
-      const dpr = window.devicePixelRatio || 1;
-      const xMin = timeRange.from.valueOf();
-      const xMax = timeRange.to.valueOf();
-
-      // Read the actual plot area from the .u-over div (the uPlot cursor overlay
-      // which covers exactly the data area, excluding axis margins).
-      const canvasRect = panelCanvas.getBoundingClientRect();
-      const uOver = wrapper.querySelector('.u-over');
-      let plotLeft: number, plotTop: number, plotW: number, plotH: number;
-
-      if (uOver) {
-        const overRect = uOver.getBoundingClientRect();
-        // Convert from page coords to canvas pixel coords (accounting for dpr)
-        const scaleX = panelCanvas.width / canvasRect.width;
-        const scaleY = panelCanvas.height / canvasRect.height;
-        plotLeft = (overRect.left - canvasRect.left) * scaleX;
-        plotTop = (overRect.top - canvasRect.top) * scaleY;
-        plotW = overRect.width * scaleX;
-        plotH = overRect.height * scaleY;
-      } else {
-        // Fallback: hardcoded estimates
-        plotLeft = 55 * dpr;
-        plotTop = 10 * dpr;
-        plotW = panelCanvas.width - plotLeft;
-        plotH = panelCanvas.height - 30 * dpr - plotTop;
-      }
-
-      const xFrac = (selectedExemplar.timestamp - xMin) / (xMax - xMin);
-      // Grafana's heatmap y scale extends by half a bucket on each end to visually
-      // centre the bucket cells, so we match that range for accurate overlay placement.
-      const halfBucket = yBucketSize / 2;
-      const yExtMin = yMin - halfBucket;
-      const yExtRange = yMax - yMin + yBucketSize;
-      const yFrac = yExtRange > 0 ? (selectedExemplar.value - yExtMin) / yExtRange : 0;
-      const xPx = plotLeft + xFrac * plotW;
-      const yPx = plotTop + (1 - yFrac) * plotH + MARKER_SIZE * dpr;
-
-      if (isNaN(xPx) || isNaN(yPx)) {
-        return;
-      }
-
-      const size = MARKER_SIZE * dpr;
-
-      ctx.save();
-      ctx.strokeStyle = EXEMPLAR_HIGHLIGHT_COLOR;
-      ctx.lineWidth = 2 * dpr;
-      ctx.shadowColor = EXEMPLAR_HIGHLIGHT_COLOR;
-      ctx.shadowBlur = 4 * dpr;
-
-      // Draw a diamond outline matching the exemplar marker shape
-      ctx.beginPath();
-      ctx.moveTo(xPx, yPx - size);
-      ctx.lineTo(xPx + size, yPx);
-      ctx.lineTo(xPx, yPx + size);
-      ctx.lineTo(xPx - size, yPx);
-      ctx.closePath();
-      ctx.stroke();
-
-      ctx.restore();
-    }, [selectedExemplar, yMin, yMax, yBucketSize, timeRange]);
-
-    useEffect(() => {
-      drawOverlay();
-
-      // Defer redraws via rAF so uPlot finishes its own resize before we measure.
-      // Multiple resize events in the same frame are coalesced (cancelAnimationFrame).
-      let rafId = 0;
-      const scheduleRedraw = () => {
-        cancelAnimationFrame(rafId);
-        rafId = requestAnimationFrame(drawOverlay);
-      };
-
-      const ro = new ResizeObserver(scheduleRedraw);
-      if (wrapperRef.current) {
-        ro.observe(wrapperRef.current);
-      }
-      window.addEventListener('resize', scheduleRedraw);
-
-      return () => {
-        ro.disconnect();
-        window.removeEventListener('resize', scheduleRedraw);
-        cancelAnimationFrame(rafId);
-      };
-    }, [drawOverlay]);
-
-    return (
-      <div ref={wrapperRef} className={styles.wrapper}>
-        <body.Component model={body} />
-        <canvas ref={overlayRef} className={styles.overlay} />
-      </div>
-    );
+    const { body } = model.useState();
+    return <body.Component model={body} />;
   }
 }
 
@@ -354,50 +187,6 @@ function getDataLinkString(event: DataLinkClickEvent, variableNames: string[]): 
   }
 
   return undefined;
-}
-
-/**
- * Resolves the exact exemplar timestamp from the frame for a clicked span id.
- *
- * The data link click only yields a lossy timestamp (the interpolated Time string
- * is formatted, truncated to seconds, and parsed as local time), which never
- * strictly equals the raw frame Time value used for the selected-exemplar lookup.
- * We therefore look up the matching frame row(s) by span id and return the raw
- * Time value, using the lossy timestamp only to disambiguate duplicate span ids.
- */
-function resolveExemplarTimestamp(
-  idField: Field | undefined,
-  timeField: Field | undefined,
-  spanId: string,
-  approxTimestamp: number | undefined
-): number | undefined {
-  if (!idField || !timeField) {
-    return approxTimestamp;
-  }
-
-  const ids = idField.values.toArray();
-  const times = timeField.values.toArray();
-
-  const candidates: number[] = [];
-  for (let i = 0; i < ids.length; i++) {
-    if (ids[i] === spanId) {
-      candidates.push(times[i]);
-    }
-  }
-
-  if (candidates.length === 0) {
-    return approxTimestamp;
-  }
-
-  if (candidates.length === 1 || approxTimestamp === undefined) {
-    return candidates[0];
-  }
-
-  // Disambiguate duplicates: pick the raw frame time nearest the lossy click time.
-  return candidates.reduce(
-    (best, t) => (Math.abs(t - approxTimestamp) < Math.abs(best - approxTimestamp) ? t : best),
-    candidates[0]
-  );
 }
 
 function getDataLinkTimestamp(event: DataLinkClickEvent): number | undefined {
@@ -420,15 +209,3 @@ function getDataLinkTimestamp(event: DataLinkClickEvent): number | undefined {
   const parsedValue = Date.parse(value);
   return Number.isFinite(parsedValue) ? parsedValue : undefined;
 }
-
-const getStyles = () => ({
-  wrapper: css`
-    position: relative;
-    width: 100%;
-    height: 100%;
-  `,
-  overlay: css`
-    position: absolute;
-    pointer-events: none;
-  `,
-});
