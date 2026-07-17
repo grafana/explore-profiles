@@ -62,4 +62,19 @@ describe('SceneExploreServiceFlameGraph', () => {
     expect(onShowSpanHeatmapChange).toHaveBeenCalledWith(false);
     expect(probeSpanAvailability).toHaveBeenCalledTimes(1);
   });
+
+  it('refreshes the open heatmap when the Pyroscope datasource changes', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const clearSpanProfileSelection = jest.spyOn(scene, 'clearSpanProfileSelection').mockImplementation();
+    const fetchHeatmapData = jest.fn();
+
+    scene.setState({
+      showSpanHeatmap: true,
+      spanHeatmap: { fetchHeatmapData } as any,
+    });
+    scene.onDataSourceChange();
+
+    expect(clearSpanProfileSelection).toHaveBeenCalledTimes(1);
+    expect(fetchHeatmapData).toHaveBeenCalledTimes(1);
+  });
 });

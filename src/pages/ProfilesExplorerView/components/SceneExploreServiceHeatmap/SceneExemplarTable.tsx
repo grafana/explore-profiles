@@ -11,6 +11,7 @@ import React, { useMemo } from 'react';
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
+import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
 import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
 import { buildUnitFormatter } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/domain/buildUnitFormatter';
@@ -76,15 +77,15 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
       return;
     }
 
-    const profilesDataSourceUid = sceneGraph.interpolate(this, '$dataSource');
-    const tempoDataSourceUid = selectTempoDataSourceUid(
-      tempoDatasources,
-      parent.state.tempoDataSourceUid,
-      profilesDataSourceUid
-    );
-    if (tempoDataSourceUid !== parent.state.tempoDataSourceUid) {
-      parent.setTempoDataSourceUid(tempoDataSourceUid);
-    }
+    this.syncTempoDataSource(parent, tempoDatasources);
+
+    const dataSourceSub = sceneGraph
+      .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
+      .subscribeToState((newState, prevState) => {
+        if (newState.value !== prevState.value) {
+          this.syncTempoDataSource(parent!, tempoDatasources, true);
+        }
+      });
 
     const parentSub = parent.subscribeToState((newState, prevState) => {
       if (newState.exemplarRows !== prevState.exemplarRows) {
@@ -96,7 +97,24 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
     return () => {
       parentSub.unsubscribe();
+      dataSourceSub.unsubscribe();
     };
+  }
+
+  private syncTempoDataSource(
+    parent: SceneExploreServiceHeatmap,
+    tempoDatasources: TempoDataSourceOption[],
+    preferLinkedDataSource = false
+  ) {
+    const profilesDataSourceUid = sceneGraph.interpolate(this, '$dataSource');
+    const tempoDataSourceUid = selectTempoDataSourceUid(
+      tempoDatasources,
+      preferLinkedDataSource ? undefined : parent.state.tempoDataSourceUid,
+      profilesDataSourceUid
+    );
+    if (tempoDataSourceUid !== parent.state.tempoDataSourceUid) {
+      parent.setTempoDataSourceUid(tempoDataSourceUid);
+    }
   }
 
   private handleNewExemplarRows(rows: ExemplarRow[]) {

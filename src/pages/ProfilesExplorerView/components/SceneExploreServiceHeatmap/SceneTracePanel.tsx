@@ -99,6 +99,7 @@ export class SceneTracePanel extends SceneObjectBase<SceneTracePanelState> {
       datasource: { type: 'tempo', uid: tempoUid },
       queries: [{ refId: 'A', query: traceId, queryType: 'traceql' }],
     });
+    this.queryRunner.runQueries();
   }
 
   static Component({ model }: SceneComponentProps<SceneTracePanel>) {

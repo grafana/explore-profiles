@@ -1,7 +1,7 @@
 import { t } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
 import { Menu } from '@grafana/ui';
-import { quoteLabelName } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
+import { quoteLabelName, quoteLabelValue } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React from 'react';
 
@@ -38,7 +38,7 @@ export class SceneHeatmapMenu extends SceneObjectBase<SceneHeatmapMenuState> {
     completeFilters.unshift({ key: 'service_name', operator: '=', value: serviceName });
 
     const selector = completeFilters
-      .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}"${value}"`)
+      .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}${quoteLabelValue(value)}`)
       .join(',');
 
     return {

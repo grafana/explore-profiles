@@ -1,6 +1,6 @@
 import { BusEventWithPayload } from '@grafana/data';
 
-export interface SpanProfilesToggledPayload {
+interface SpanProfilesToggledPayload {
   enabled: boolean;
 }
 

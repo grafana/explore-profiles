@@ -28,7 +28,8 @@ export interface ExemplarRow {
 export function buildHeatmapDataFrame(
   series: HeatmapSeries,
   unit: string,
-  scaleDistribution: ScaleDistributionConfig = { type: ScaleDistribution.Linear }
+  scaleDistribution: ScaleDistributionConfig = { type: ScaleDistribution.Linear },
+  xBucketSize?: number
 ): MutableDataFrame | null {
   const slots = series?.slots;
   if (!slots?.length) {
@@ -47,9 +48,17 @@ export function buildHeatmapDataFrame(
 
   const lowerBucketStarts = buildLowerBucketStarts(yBucketSize, minBucketStart);
   const yBucketStarts = buildYBucketStarts(sortedSlots, lowerBucketStarts);
-  const xBucketSize = getXBucketSize(sortedSlots);
+  const resolvedXBucketSize = xBucketSize ?? getXBucketSize(sortedSlots);
 
-  appendHeatmapSlots(sortedSlots, lowerBucketStarts, yBucketStarts, xBucketSize, xMaxValues, yMinValues, countValues);
+  appendHeatmapSlots(
+    sortedSlots,
+    lowerBucketStarts,
+    yBucketStarts,
+    resolvedXBucketSize,
+    xMaxValues,
+    yMinValues,
+    countValues
+  );
 
   if (xMaxValues.length === 0) {
     return null;

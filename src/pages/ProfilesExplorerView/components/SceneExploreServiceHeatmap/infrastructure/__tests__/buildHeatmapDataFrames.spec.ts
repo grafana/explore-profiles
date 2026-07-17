@@ -41,6 +41,19 @@ describe('buildHeatmapDataFrame', () => {
 
     expect(frame?.length).toBe(259);
   });
+
+  it('uses the requested step when omitted slots make timestamps sparse', () => {
+    const series = {
+      slots: [
+        { timestamp: 1000, yMin: [0], counts: [1] },
+        { timestamp: 3000, yMin: [0], counts: [2] },
+      ],
+    } as unknown as HeatmapSeries;
+
+    const frame = buildHeatmapDataFrame(series, 'ms', undefined, 1000);
+
+    expect([...new Set(frame?.fields.find((field) => field.name === 'xMax')?.values)]).toEqual([1000, 2000, 3000]);
+  });
 });
 
 describe('extractExemplarRows', () => {

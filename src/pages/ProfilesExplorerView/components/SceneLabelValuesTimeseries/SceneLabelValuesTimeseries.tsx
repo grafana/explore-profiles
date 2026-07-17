@@ -42,7 +42,6 @@ import {
 } from '../SceneByVariableRepeaterGrid/infrastructure/exemplars-transformations';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import { RangeAnnotation } from '../SceneExploreDiffFlameGraph/components/SceneComparePanel/domain/RangeAnnotation';
-import { SpanProfilesToggled } from '../SceneExploreServiceFlameGraph/domain/events/SpanProfilesToggled';
 import { TimeseriesReprocess } from './domain/events/TimeseriesReprocess';
 import { SceneTimeseriesMenu } from './SceneTimeseriesMenu';
 
@@ -304,10 +303,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
       queryRunner.setState({ queries });
       queryRunner.runQueries();
     }
-  }
-
-  handleSpanExemplarToggleChange(enabled: boolean) {
-    this.publishEvent(new SpanProfilesToggled({ enabled }), true);
   }
 
   getConfig(series: DataFrame[]) {

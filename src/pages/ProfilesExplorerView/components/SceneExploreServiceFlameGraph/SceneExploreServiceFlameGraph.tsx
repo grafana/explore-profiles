@@ -12,6 +12,7 @@ import { SpanExemplarToggleAction } from '../../domain/actions/SpanExemplarToggl
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
+import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
 import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelTypeSwitcher';
@@ -153,6 +154,14 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       this.probeSpanAvailability();
     });
 
+    const dataSourceSub = sceneGraph
+      .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
+      .subscribeToState((newState, prevState) => {
+        if (newState.value !== prevState.value) {
+          this.onDataSourceChange();
+        }
+      });
+
     const serviceNameSub = sceneGraph
       .findByKeyAndType(this, 'serviceName', ServiceNameVariable)
       .subscribeToState((newState, prevState) => {
@@ -177,11 +186,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
         }
       });
 
-    if (this.initialShowSpanHeatmap) {
-      this.openSpanHeatmapMode();
-    } else {
-      this.probeSpanAvailability();
-    }
+    this.probeSpanAvailability(this.initialShowSpanHeatmap);
 
     return () => {
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
@@ -190,6 +195,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       spanToggleSub.unsubscribe();
       spanSelectorSub.unsubscribe();
       timeRangeSub.unsubscribe();
+      dataSourceSub.unsubscribe();
       serviceNameSub.unsubscribe();
       profileMetricSub.unsubscribe();
       filtersSub.unsubscribe();
@@ -197,7 +203,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     };
   }
 
-  async probeSpanAvailability() {
+  async probeSpanAvailability(openHeatmapWhenAvailable = false) {
     if (!this.profilesHeatmapEnabled || this.state.showSpanHeatmap) {
       return;
     }
@@ -219,7 +225,11 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       }
 
       this.primedSpanHeatmapResponse = { response, signature: spanHeatmapQuery.signature };
-      this.state.spanToggleAction.setState({ hasSpanData: hasSpanProfiles(response) });
+      const hasSpanData = hasSpanProfiles(response);
+      this.state.spanToggleAction.setState({ hasSpanData });
+      if (openHeatmapWhenAvailable && hasSpanData) {
+        this.openSpanHeatmapMode();
+      }
     } catch {
       if (requestId !== this.spanAvailabilityProbeId) {
         return;
@@ -341,6 +351,17 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     }
 
     this.clearSpanProfileSelection();
+    this.probeSpanAvailability();
+  }
+
+  onDataSourceChange() {
+    this.clearSpanProfileSelection();
+
+    if (this.state.showSpanHeatmap) {
+      this.state.spanHeatmap?.fetchHeatmapData();
+      return;
+    }
+
     this.probeSpanAvailability();
   }
 

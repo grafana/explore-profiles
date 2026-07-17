@@ -22,7 +22,10 @@ import { LoadSearchScene } from '@shared/components/SavedSearches/LoadSearchScen
 import { displayError } from '@shared/domain/displayStatus';
 import { prepareHistoryEntry } from '@shared/domain/prepareHistoryEntry';
 import { reportInteraction } from '@shared/domain/reportInteraction';
-import { getKgAnnotationsInPyroscopeFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
+import {
+  getKgAnnotationsInPyroscopeFromOpenFeature,
+  getProfilesHeatmapFromOpenFeature,
+} from '@shared/infrastructure/featureFlags/featureFlags';
 import { ensureOpenFeaturePluginInitialized } from '@shared/infrastructure/featureFlags/openFeature';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import React, { useState } from 'react';
@@ -142,7 +145,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   /** Must not read `EXPLORATION_TYPE_OPTIONS` here — that getter calls `t()` and runs while the class body initializes (before i18n in embedded lazy chunks). */
   static DEFAULT_EXPLORATION_TYPE = ExplorationType.ALL_SERVICES;
 
-  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType'] });
+  protected _urlSync = new SceneObjectUrlSyncConfig(this, { keys: ['explorationType', 'showSpanHeatmap'] });
   private initialFilters?: AdHocVariableFilter[];
   private kgInitialized = false;
 
@@ -207,6 +210,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   }
 
   onActivate() {
+    let isActive = true;
     const varSub = this.subscribeToVariableChanges();
     const eventsSub = this.subscribeToEvents();
     const clearKeyBindings = setupKeyboardShortcuts(this);
@@ -214,6 +218,10 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     if (!this.kgInitialized) {
       this.kgInitialized = true;
       void ensureOpenFeaturePluginInitialized().then(() => {
+        if (!isActive) {
+          return;
+        }
+
         if (getKgAnnotationsInPyroscopeFromOpenFeature()) {
           const kg = getKgSceneProps('Service', 'serviceName');
           if (kg) {
@@ -223,6 +231,12 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
               controls: [...(this.state.controls ?? []), kg.controls],
             });
           }
+        }
+
+        // Scene constructors synchronously read feature flags. Rebuild an already-open
+        // flame graph after OpenFeature resolves so it can pick up an enabled heatmap.
+        if (getProfilesHeatmapFromOpenFeature() && this.state.explorationType === ExplorationType.FLAME_GRAPH) {
+          this.setState({ body: this.buildBodyScene(ExplorationType.FLAME_GRAPH) });
         }
       });
     }
@@ -234,6 +248,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     }
 
     return () => {
+      isActive = false;
       clearKeyBindings();
       eventsSub.unsubscribe();
       varSub.unsubscribe();
@@ -243,6 +258,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   getUrlState() {
     return {
       explorationType: this.state.explorationType,
+      showSpanHeatmap: this.state.showSpanHeatmap ? 'true' : 'false',
     };
   }
 
@@ -253,12 +269,26 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
       return;
     }
 
+    const showSpanHeatmapChanged = this.updateShowSpanHeatmapFromUrl(values);
+
     if (typeof values.explorationType === 'string' && values.explorationType !== this.state.explorationType) {
       const type = values.explorationType as ExplorationType;
       this.setExplorationType({
         type: Object.values(ExplorationType).includes(type) ? type : SceneProfilesExplorer.DEFAULT_EXPLORATION_TYPE,
       });
+    } else if (showSpanHeatmapChanged && this.state.explorationType === ExplorationType.FLAME_GRAPH) {
+      this.setExplorationType({ type: ExplorationType.FLAME_GRAPH });
     }
+  }
+
+  private updateShowSpanHeatmapFromUrl(values: SceneObjectUrlValues): boolean {
+    const showSpanHeatmap = values.showSpanHeatmap === 'true';
+    if (showSpanHeatmap === this.state.showSpanHeatmap) {
+      return false;
+    }
+
+    this.setState({ showSpanHeatmap });
+    return true;
   }
 
   registerRuntimeDataSources() {
@@ -440,6 +470,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
 
     this.setState({
       explorationType: type,
+      showSpanHeatmap: type === ExplorationType.FLAME_GRAPH ? this.state.showSpanHeatmap : false,
       body: this.buildBodyScene(type, item, bodySceneOptions),
     });
   }

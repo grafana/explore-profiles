@@ -11,12 +11,13 @@ import {
   SceneObjectState,
 } from '@grafana/scenes';
 import { Drawer, useStyles2 } from '@grafana/ui';
-import { quoteLabelName } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
+import { quoteLabelName, quoteLabelValue } from '@shared/components/QueryBuilder/domain/helpers/quoteLabelName';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import React from 'react';
 
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
+import { ProfilesDataSourceVariable } from '../../domain/variables/ProfilesDataSourceVariable';
 import { ServiceNameVariable } from '../../domain/variables/ServiceNameVariable/ServiceNameVariable';
 import { GridItemData } from '../SceneByVariableRepeaterGrid/types/GridItemData';
 import {
@@ -136,6 +137,14 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
       this.fetchHeatmapData();
     });
 
+    const dataSourceSub = sceneGraph
+      .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
+      .subscribeToState((newState, prevState) => {
+        if (newState.value !== prevState.value) {
+          this.fetchHeatmapData();
+        }
+      });
+
     const serviceNameSub = sceneGraph
       .findByKeyAndType(this, 'serviceName', ServiceNameVariable)
       .subscribeToState((newState, prevState) => {
@@ -162,6 +171,7 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
 
     return () => {
       timeRangeSub.unsubscribe();
+      dataSourceSub.unsubscribe();
       serviceNameSub.unsubscribe();
       profileMetricSub.unsubscribe();
       filtersSub.unsubscribe();
@@ -198,7 +208,11 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
     }
 
     if (this.primedResponse?.signature === spanHeatmapQuery.signature) {
-      const heatmapState = buildSpanHeatmapState(this.primedResponse.response, spanHeatmapQuery.profileTypeId);
+      const heatmapState = buildSpanHeatmapState(
+        this.primedResponse.response,
+        spanHeatmapQuery.profileTypeId,
+        spanHeatmapQuery.request.step
+      );
       this.primedResponse = undefined;
       this.setState({ isLoading: false, ...heatmapState });
       return;
@@ -208,7 +222,7 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
 
     try {
       const response = await selectHeatmap(spanHeatmapQuery.dataSourceUid, spanHeatmapQuery.request);
-      const heatmapState = buildSpanHeatmapState(response, spanHeatmapQuery.profileTypeId);
+      const heatmapState = buildSpanHeatmapState(response, spanHeatmapQuery.profileTypeId, spanHeatmapQuery.request.step);
 
       if (requestId !== this.fetchRequestId) {
         return;
@@ -272,7 +286,7 @@ export function buildSpanHeatmapQuery(scene: SceneObject): SpanHeatmapQuery | un
   const filters = filtersVar.state.filters ?? [];
   const completeFilters = [{ key: 'service_name', operator: '=', value: serviceName }, ...filters];
   const labelSelector = `{${completeFilters
-    .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}"${value}"`)
+    .map(({ key, operator, value }) => `${quoteLabelName(key)}${operator}${quoteLabelValue(value)}`)
     .join(',')}}`;
   const timeRange = sceneGraph.getTimeRange(scene).state.value;
   const start = timeRange.from.valueOf();
@@ -297,12 +311,12 @@ export function buildSpanHeatmapQuery(scene: SceneObject): SpanHeatmapQuery | un
   };
 }
 
-export function buildSpanHeatmapState(response: SelectHeatmapResponse, profileTypeId: string) {
+function buildSpanHeatmapState(response: SelectHeatmapResponse, profileTypeId: string, stepSeconds: number) {
   const { unit } = getProfileMetric(profileTypeId as ProfileMetricId);
   const series = response.series?.[0];
 
   return {
-    heatmapFrame: series ? buildHeatmapDataFrame(series, unit) ?? undefined : undefined,
+    heatmapFrame: series ? buildHeatmapDataFrame(series, unit, undefined, stepSeconds * 1000) ?? undefined : undefined,
     exemplarFrame: buildExemplarDataFrame(response, unit) ?? undefined,
     exemplarRows: extractExemplarRows(response),
   };
