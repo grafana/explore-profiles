@@ -14,7 +14,7 @@ const DATASOURCE_UID_EXPR = '${dataSource}';
 
 export function SamplingIndicatorExtensionPoint({ scene }: { scene: SceneObject }) {
   const { component: Extension } = usePluginComponent<SamplingIndicatorExtensionProps>(
-    'grafana-adaptiveprofiles-app/adaptive-profiles-indicator/v1'
+    'grafana-adaptiveprofiles-app/sampling-indicator/v1'
   );
 
   if (!Extension) {
