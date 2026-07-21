@@ -1,3 +1,4 @@
+import type { SceneExploreServiceHeatmap } from '../../SceneExploreServiceHeatmap/SceneExploreServiceHeatmap';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph';
 
 jest.mock('@shared/infrastructure/featureFlags/featureFlags', () => ({
@@ -70,7 +71,7 @@ describe('SceneExploreServiceFlameGraph', () => {
 
     scene.setState({
       showSpanHeatmap: true,
-      spanHeatmap: { fetchHeatmapData } as any,
+      spanHeatmap: { fetchHeatmapData } as unknown as SceneExploreServiceHeatmap,
     });
     scene.onDataSourceChange();
 
@@ -89,7 +90,7 @@ describe('SceneExploreServiceFlameGraph', () => {
       subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
     };
 
-    scene.setState({ spanHeatmap: spanHeatmap as any });
+    scene.setState({ spanHeatmap: spanHeatmap as unknown as SceneExploreServiceHeatmap });
 
     scene.openSpanHeatmapMode();
 
