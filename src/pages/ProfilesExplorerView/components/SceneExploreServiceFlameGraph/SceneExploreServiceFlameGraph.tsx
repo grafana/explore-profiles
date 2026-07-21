@@ -264,7 +264,11 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
         onTempoDataSourceUidChange: this.onTempoDataSourceUidChange,
       });
     } else {
+      // Re-priming alone doesn't refetch: without this, reopening an existing
+      // heatmap after switching services would keep showing the previous
+      // service's data until something else happened to trigger a fetch.
       spanHeatmap.primeWithResponse(primedResponse);
+      spanHeatmap.fetchHeatmapData();
     }
 
     // Sync the current spanSelector into the heatmap's selection highlight.

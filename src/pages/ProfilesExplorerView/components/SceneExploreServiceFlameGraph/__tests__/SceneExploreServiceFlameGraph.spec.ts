@@ -78,6 +78,28 @@ describe('SceneExploreServiceFlameGraph', () => {
     expect(fetchHeatmapData).toHaveBeenCalledTimes(1);
   });
 
+  it('refetches the heatmap for the current service when reopening an existing heatmap', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    jest.spyOn(scene, 'getPrimedSpanHeatmapResponse').mockReturnValue(undefined);
+
+    const spanHeatmap = {
+      primeWithResponse: jest.fn(),
+      fetchHeatmapData: jest.fn(),
+      setState: jest.fn(),
+      subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+    };
+
+    scene.setState({ spanHeatmap: spanHeatmap as any });
+
+    scene.openSpanHeatmapMode();
+
+    expect(spanHeatmap.primeWithResponse).toHaveBeenCalledTimes(1);
+    // Re-priming alone doesn't refetch: without an explicit fetchHeatmapData call here,
+    // reopening an existing heatmap after switching services would keep showing the
+    // previous service's data.
+    expect(spanHeatmap.fetchHeatmapData).toHaveBeenCalledTimes(1);
+  });
+
   it('opens span heatmap from URL state without recreating the scene', () => {
     const scene = new SceneExploreServiceFlameGraph({});
     const probeSpanAvailability = jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
