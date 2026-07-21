@@ -33,6 +33,8 @@ interface SceneMainServiceTimeseriesState extends SceneObjectState {
 export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainServiceTimeseriesState> {
   static MIN_HEIGHT = 240;
 
+  private variablesInitialized = false;
+
   constructor({
     item,
     headerActions,
@@ -76,9 +78,14 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     spanExemplarToggleAction?: SpanExemplarToggleAction,
     menuActions?: (item: GridItemData) => { selectAction?: SelectAction; favAction: FavAction }
   ) {
-    if (item) {
+    // Only seed the variables from the construction-time item on first activation.
+    // This scene is remounted whenever the span heatmap panel is toggled, and
+    // re-running initVariables would revert user-driven changes (e.g. the selected
+    // service) back to the original item's values.
+    if (item && !this.variablesInitialized) {
       this.initVariables(item);
     }
+    this.variablesInitialized = true;
 
     this.setState({
       body: this.buildTimeseries(
