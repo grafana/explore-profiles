@@ -12,7 +12,11 @@ describe('SceneTracePanel', () => {
     const queryRunner = panel.state.$data as SceneQueryRunner;
     const runQueries = jest.spyOn(queryRunner, 'runQueries').mockImplementation();
 
-    (panel as any).updateTrace('trace-1', 'span-1', 'tempo-1');
+    (
+      panel as unknown as {
+        updateTrace(traceId: string | undefined, spanId: string | undefined, tempoUid: string | undefined): void;
+      }
+    ).updateTrace('trace-1', 'span-1', 'tempo-1');
 
     expect(queryRunner.state).toMatchObject({
       datasource: { type: 'tempo', uid: 'tempo-1' },

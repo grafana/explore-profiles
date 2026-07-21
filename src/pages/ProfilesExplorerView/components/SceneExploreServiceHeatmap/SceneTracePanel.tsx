@@ -84,7 +84,13 @@ export class SceneTracePanel extends SceneObjectBase<SceneTracePanelState> {
   private buildPanel(spanId?: string): SceneObject {
     const panel = PanelBuilders.traces().setHoverHeader(true);
     if (spanId) {
-      panel.setOption('focusedSpanId' as any, spanId as any);
+      // `@grafana/scenes` mistypes `PanelBuilders.traces()` as the Trend panel options, so
+      // `focusedSpanId` (a Traces panel option) isn't on the builder's key type. Narrow to a
+      // structural type instead of casting to `any` to keep the id/value strongly typed.
+      (panel as unknown as { setOption(id: 'focusedSpanId', value: string): unknown }).setOption(
+        'focusedSpanId',
+        spanId
+      );
     }
     return panel.build();
   }
