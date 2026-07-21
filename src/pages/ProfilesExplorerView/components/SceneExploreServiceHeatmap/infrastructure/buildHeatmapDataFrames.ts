@@ -322,8 +322,9 @@ export function buildHighlightedExemplarDataFrame(
 }
 
 /**
- * Collects all exemplars from a SelectHeatmap response, sorts by value descending,
- * and returns the top 50 rows for the exemplar table.
+ * Collects all exemplars from a SelectHeatmap response and sorts by value descending
+ * for the exemplar table. Returns every exemplar so the table stays in sync with the
+ * heatmap markers (which are not truncated); the table itself paginates the list.
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export function extractExemplarRows(response: SelectHeatmapResponse): ExemplarRow[] {
@@ -354,5 +355,5 @@ export function extractExemplarRows(response: SelectHeatmapResponse): ExemplarRo
   }
 
   rows.sort((a, b) => b.value - a.value);
-  return rows.slice(0, 50);
+  return rows;
 }
