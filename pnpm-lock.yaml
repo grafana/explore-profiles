@@ -16,21 +16,21 @@ overrides:
   minimatch@^5: ~5.1.9
   minimatch@^9: ~9.0.9
   ajv@^8: ~8.18.0
-  dompurify: ~3.4.12
-  hono: '>=4.12.27'
-  js-yaml: '>=4.3.0'
+  dompurify: 3.4.12
+  hono: 4.12.30
+  js-yaml: 5.2.1
   '@opentelemetry/core': '>=2.8.0'
-  immutable: ~5.1.8
+  immutable: 5.1.9
   js-cookie: '>=3.0.7'
-  protobufjs: '>=8.6.6'
+  protobufjs: 8.7.1
   protocol-buffers-schema: ~3.6.1
   qs: ~6.15.2
   serialize-javascript: ~7.0.5
   uuid: '>=11.1.1'
   ws: '>=8.20.1'
-  fast-uri: '>=3.1.4'
-  body-parser: '>=2.3.0'
-  '@hono/node-server': '>=2.0.5'
+  fast-uri: 4.1.0
+  body-parser: 2.3.0
+  '@hono/node-server': 2.0.10
 
 importers:
 
@@ -100,7 +100,7 @@ importers:
         specifier: ^6.1.0
         version: 6.2.0
       protobufjs:
-        specifier: '>=8.6.6'
+        specifier: 8.7.1
         version: 8.7.1
       react:
         specifier: 18.2.0
@@ -940,7 +940,7 @@ packages:
     resolution: {integrity: sha512-ZcnNVhKTmyDJeg0UlnZjvM73JBsTAuhrH/J4fjwGOw59PwOW51r4J+p6CsKZWXdKSme4MFqU62CZMOsdDrU4CA==}
     engines: {node: '>=20'}
     peerDependencies:
-      hono: '>=4.12.27'
+      hono: 4.12.30
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -5091,7 +5091,7 @@ packages:
   react-immutable-proptypes@2.2.0:
     resolution: {integrity: sha512-Vf4gBsePlwdGvSZoLSBfd4HAP93HDauMY4fDjXhreg/vg6F3Fj/MXDNyTbltPC/xZKmZc+cjLu3598DdYK6sgQ==}
     peerDependencies:
-      immutable: ~5.1.8
+      immutable: 5.1.9
 
   react-inlinesvg@4.2.0:
     resolution: {integrity: sha512-V59P6sFU7NACIbvoay9ikYKVFWyIIZFGd7w6YT1m+H7Ues0fOI6B6IftE6NPSYXXv7RHVmrncIyJeYurs3OJcA==}
@@ -5509,13 +5509,13 @@ packages:
   slate-plain-serializer@0.7.13:
     resolution: {integrity: sha512-TtrlaslxQBEMV0LYdf3s7VAbTxRPe1xaW10WNNGAzGA855/0RhkaHjKkQiRjHv5rvbRleVf7Nxr9fH+4uErfxQ==}
     peerDependencies:
-      immutable: ~5.1.8
+      immutable: 5.1.9
       slate: '>=0.46.0 <0.50.0'
 
   slate-prop-types@0.5.44:
     resolution: {integrity: sha512-JS0iW7uaciE/W3ADuzeN1HOnSjncQhHPXJ65nZNQzB0DF7mXVmbwQKI6cmCo/xKni7XRJT0JbWSpXFhEdPiBUA==}
     peerDependencies:
-      immutable: ~5.1.8
+      immutable: 5.1.9
       slate: '>=0.32.0 <0.50.0'
 
   slate-react-placeholder@0.2.9:
@@ -5528,7 +5528,7 @@ packages:
   slate-react@0.22.10:
     resolution: {integrity: sha512-B2Ms1u/REbdd8yKkOItKgrw/tX8klgz5l5x6PP86+oh/yqmB6EHe0QyrYlQ9fc3WBlJUVTOL+nyAP1KmlKj2/w==}
     peerDependencies:
-      immutable: ~5.1.8
+      immutable: 5.1.9
       react: '>=16.6.0'
       react-dom: '>=16.6.0'
       slate: '>=0.47.0'
@@ -5536,7 +5536,7 @@ packages:
   slate@0.47.9:
     resolution: {integrity: sha512-EK4O6b7lGt+g5H9PGw9O5KCM4RrOvOgE9mPi3rzQ0zDRlgAb2ga4TdpS6XNQbrsJWsc8I1fjaSsUeCqCUhhi9A==}
     peerDependencies:
-      immutable: ~5.1.8
+      immutable: 5.1.9
 
   smol-toml@1.6.1:
     resolution: {integrity: sha512-dWUG8F5sIIARXih1DTaQAX4SsiTXhInKf1buxdY9DIg4ZYPZK5nGM1VRIYmEbDbsHt7USo99xSLFu5Q1IqTmsg==}
