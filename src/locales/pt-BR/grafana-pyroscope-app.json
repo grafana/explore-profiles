@@ -295,9 +295,6 @@
     "button": "Enviar feedback"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Nenhum resultado"
-    },
     "error": {
       "title": "Erro de consulta!"
     },

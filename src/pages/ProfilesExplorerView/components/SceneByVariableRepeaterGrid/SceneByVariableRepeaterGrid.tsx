@@ -18,6 +18,7 @@ import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { AllServicesFilterVariable } from '../../domain/variables/FiltersVariable/AllServicesFilterVariable';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
@@ -116,8 +117,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const layoutChangeSub = this.subscribeToLayoutChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
     const filtersSub = this.subscribeToFiltersChange();
+    const filtersAllServicesSub = this.subscribeToFiltersAllServicesChange();
 
     return () => {
+      filtersAllServicesSub.unsubscribe();
       filtersSub.unsubscribe();
       hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
@@ -201,6 +204,18 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     });
   }
 
+  subscribeToFiltersAllServicesChange() {
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable);
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
+
+    return filtersVariable.subscribeToState(() => {
+      if (noDataSwitcher.state.hideNoData === 'on') {
+        // to be sure the list is updated we force render because the filters only influence the query made in each panel
+        this.renderGridItems(true);
+      }
+    });
+  }
+
   buildItemsData(variable: QueryVariable) {
     const { mapOptionToItem } = this.state;
 
@@ -248,7 +263,7 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     this.setState({ items: newItems });
 
     if (!this.state.items.length) {
-      this.renderEmptyState();
+      this.renderEmptyState(this.isQuickFilterActive());
       return;
     }
 
@@ -326,13 +341,23 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return items.filter(({ label }) => regexes.some((r) => r.test(label)));
   }
 
-  renderEmptyState() {
+  isQuickFilterActive() {
+    const quickFilterScene = sceneGraph.findByKeyAndType(this, 'quick-filter', SceneQuickFilter);
+    return Boolean(quickFilterScene?.state.searchText);
+  }
+
+  renderEmptyState(isFiltered = false) {
     (this.state.body as SceneCSSGridLayout).setState({
       autoRows: '480px',
       children: [
         new SceneCSSGridItem({
           body: new SceneEmptyState({
-            message: t('grid.empty-state.no-results', 'No results'),
+            message: isFiltered
+              ? t('grid.empty-state.no-results', 'No results')
+              : t(
+                  'grid.empty-state.no-profiles',
+                  'No profiles found. Widen the time range or start sending profile data.'
+                ),
           }),
         }),
       ],

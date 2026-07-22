@@ -348,6 +348,15 @@ export class ExploreProfilesPage extends PyroscopePage {
     await this.mouse.move(0, 0);
   }
 
+  async clickOnPanelMenuAction(panelTitle: string, actionLabel: string) {
+    const panel = await this.getPanelByTitle(panelTitle);
+    await panel.hover();
+    await panel.getByRole('button', { name: `Menu for panel ${panelTitle}`, exact: true }).click();
+    await this.getByRole('menuitem', { name: actionLabel, exact: true }).click();
+
+    await this.mouse.move(0, 0);
+  }
+
   async assertPanelHasNoData(panelTitle: string) {
     await expect(this.getPanelByTitle(panelTitle).getByText('No data')).toBeVisible();
   }
