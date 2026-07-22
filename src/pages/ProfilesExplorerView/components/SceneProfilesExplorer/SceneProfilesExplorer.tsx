@@ -39,6 +39,7 @@ import { EventViewDiffFlameGraph } from '../../domain/events/EventViewDiffFlameG
 import { EventViewServiceFlameGraph } from '../../domain/events/EventViewServiceFlameGraph';
 import { EventViewServiceLabels } from '../../domain/events/EventViewServiceLabels';
 import { EventViewServiceProfiles } from '../../domain/events/EventViewServiceProfiles';
+import { AllServicesFilterVariable } from '../../domain/variables/FiltersVariable/AllServicesFilterVariable';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { GroupByVariable } from '../../domain/variables/GroupByVariable/GroupByVariable';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
@@ -174,6 +175,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
                 return filtered.length > 0 ? filtered : undefined;
               })(),
             }),
+            new AllServicesFilterVariable({ key: 'filtersAllServices' }),
             new FiltersVariable({ key: 'filtersBaseline' }),
             new FiltersVariable({ key: 'filtersComparison' }),
             new GroupByVariable(),

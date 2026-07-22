@@ -2,10 +2,12 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState, SceneReactObject } from '@grafana/scenes';
 import { useStyles2 } from '@grafana/ui';
+import { uniqBy } from 'lodash';
 import React from 'react';
 
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
+import { AllServicesFilterVariable } from '../../domain/variables/FiltersVariable/AllServicesFilterVariable';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -45,14 +47,34 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       this.initVariables(item);
     }
 
-    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
+    const allServicesFilters = sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable);
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable);
+    if (allServicesFilters.state.filters.length > 0) {
+      const merged = uniqBy(
+        [...allServicesFilters.state.filters, ...filtersVariable.state.filters],
+        ({ key, operator, value }) => `${key}${operator}${value}`
+      );
+      filtersVariable.updateFilters(merged);
+    }
 
+    const profileMetricVariable = sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable);
     profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_SERVICE_NAME_DEPENDENT });
     profileMetricVariable.update(true);
 
     return () => {
       profileMetricVariable.setState({ query: ProfileMetricVariable.QUERY_DEFAULT });
       profileMetricVariable.update(true);
+
+      const withoutAllServicesFilters = filtersVariable.state.filters.filter((filter) => {
+        return !allServicesFilters.state.filters.some((allServicesFilter) => {
+          return (
+            filter.key === allServicesFilter.key &&
+            filter.operator === allServicesFilter.operator &&
+            filter.value === allServicesFilter.value
+          );
+        });
+      });
+      filtersVariable.updateFilters([...withoutAllServicesFilters]);
     };
   }
 

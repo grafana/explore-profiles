@@ -18,6 +18,7 @@ import { debounce, isEqual } from 'lodash';
 import React from 'react';
 
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
+import { AllServicesFilterVariable } from '../../domain/variables/FiltersVariable/AllServicesFilterVariable';
 import { FiltersVariable } from '../../domain/variables/FiltersVariable/FiltersVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { vizPanelBuilder } from '../../helpers/vizPanelBuilder';
@@ -116,8 +117,10 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const layoutChangeSub = this.subscribeToLayoutChange();
     const hideNoDataSub = this.subscribeToHideNoDataChange();
     const filtersSub = this.subscribeToFiltersChange();
+    const filtersAllServicesSub = this.subscribeToFiltersAllServicesChange();
 
     return () => {
+      filtersAllServicesSub.unsubscribe();
       filtersSub.unsubscribe();
       hideNoDataSub.unsubscribe();
       layoutChangeSub.unsubscribe();
@@ -193,6 +196,18 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
 
     // the handler will be called each time a filter is added/removed/modified
+    return filtersVariable.subscribeToState(() => {
+      if (noDataSwitcher.state.hideNoData === 'on') {
+        // to be sure the list is updated we force render because the filters only influence the query made in each panel
+        this.renderGridItems(true);
+      }
+    });
+  }
+
+  subscribeToFiltersAllServicesChange() {
+    const filtersVariable = sceneGraph.findByKeyAndType(this, 'filtersAllServices', AllServicesFilterVariable);
+    const noDataSwitcher = sceneGraph.findByKeyAndType(this, 'no-data-switcher', SceneNoDataSwitcher);
+
     return filtersVariable.subscribeToState(() => {
       if (noDataSwitcher.state.hideNoData === 'on') {
         // to be sure the list is updated we force render because the filters only influence the query made in each panel
