@@ -138,10 +138,6 @@
       "label": "Comparison presets",
       "placeholder": "Choose a preset"
     },
-    "settings-error": {
-      "message": "Some features might not work as expected (e.g. flamegraph export options). Please try to reload the page, sorry for the inconvenience.",
-      "title": "Error while retrieving the plugin settings!"
-    },
     "title": "Diff flame graph for {{serviceName}} ({{profileMetricType}})"
   },
   "error-page": {
@@ -217,10 +213,6 @@
       "name": "Profile id",
       "remove": "Remove profile id selector from query",
       "tooltip": "You have added a profile id selector to the flamegraph query ({{profileIdSelector}})."
-    },
-    "settings-error": {
-      "message": "Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.",
-      "title": "Error while retrieving the plugin settings!"
     },
     "span-selector": {
       "filter-label": "Filter label",
@@ -658,7 +650,9 @@
         "tooltip": "The function details feature enables mapping of resource usage to lines of source code. If the GitHub integration is configured, then the source code will be downloaded from GitHub."
       },
       "fetch-error": {
-        "message": "Please try to reload the page, sorry for the inconvenience.",
+        "cloud-hint": "On Grafana Cloud, check with your organization administrator that you have permission to read and write plugin settings for this data source.",
+        "message": "The settings below show default values instead of what was previously saved. What you can do:",
+        "oss-hint": "With Grafana Pyroscope OSS, make sure the data source URL exposes the tenant-settings endpoint.",
         "title": "Error while retrieving the plugin settings!"
       },
       "flame-graph": {

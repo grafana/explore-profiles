@@ -10,7 +10,6 @@ import {
   SceneTimeRange,
 } from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
-import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import {
@@ -122,19 +121,9 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     const getTheme = useMemo(() => () => createTheme({ colors: { mode: isLight ? 'light' : 'dark' } }), [isLight]);
 
     const [maxNodes] = useMaxNodesFromUrl();
-    const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
+    const { settings } = useFetchPluginSettings();
     const { $timeRange, $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createRecordingRuleModal } =
       this.useState();
-
-    if (isFetchingSettingsError) {
-      displayWarning([
-        t('flame-graph.settings-error.title', 'Error while retrieving the plugin settings!'),
-        t(
-          'flame-graph.settings-error.message',
-          'Some features might not work as expected (e.g. collapsed flame graphs). Please try to reload the page, sorry for the inconvenience.'
-        ),
-      ]);
-    }
 
     useEffect(() => {
       const runner = buildFlameGraphQueryRunner({
