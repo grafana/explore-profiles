@@ -168,7 +168,6 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     return new SceneLabelValuesTimeseries({
       item: timeseriesItem,
       headerActions,
-      annotations: true,
       includeExemplars: includeExemplars,
       includeSpanExemplars: includeSpanExemplars,
       spanExemplarToggleAction,
