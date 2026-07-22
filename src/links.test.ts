@@ -23,6 +23,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -45,6 +47,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{service_name="payment-service"}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -64,6 +68,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{service_name="payment", region="us-east", instance="pod-1"}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -86,6 +92,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
         spanSelector: ['test-span-id'],
       };
 
@@ -105,6 +113,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -123,6 +133,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{service_name="payment-service"}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -142,6 +154,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
         spanSelector: [],
       };
 
@@ -163,6 +177,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{}', // No service_name
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -183,6 +199,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{service_name="payment", region="us-east", version=~"1.2.*"}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -204,6 +222,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
         maxNodes: 8192,
       };
 
@@ -223,6 +243,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
         spanSelector: ['span-1', 'span-2'],
       };
 
@@ -242,6 +264,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{service_name="api", region!="test", version=~"1.*", env!~"dev.*"}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -262,6 +286,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{service_name="payment","http.method"="GET","k8s.node.name"!="node-1"}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({
@@ -282,6 +308,8 @@ describe('buildURL - Original Functionality', () => {
         labelSelector: '{service_name="payment", region="us-east"}',
         groupBy: [],
         includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
       };
 
       const result = buildURL({

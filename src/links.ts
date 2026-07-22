@@ -216,6 +216,8 @@ export const TRACEVIEW_DETAILS_ACTION: PluginExtensionAddedLinkConfig<any> = {
       datasource: context.datasource,
       groupBy: ['service_name'],
       includeExemplars: false,
+      includeHeatmap: false,
+      heatmapType: 'individual',
     };
 
     if (pyroscopeQuery.datasource) {
