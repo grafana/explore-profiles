@@ -18,6 +18,7 @@ const pyroscopeUTF8LabelNamesKey = 'pyroscopeUTF8LabelNames' as keyof FeatureTog
 export const QUERY_LIBRARY_FEATURE_FLAG_KEY = 'queryLibrary' as const;
 const queryLibraryKey: keyof FeatureToggles = QUERY_LIBRARY_FEATURE_FLAG_KEY;
 const kgAnnotationsInPyroscopeKey = 'kgAnnotationsInPyroscope' as keyof FeatureToggles;
+const feedbackButtonKey = 'feedbackButton' as keyof FeatureToggles;
 
 export function useFlagFlameGraphWithCallTree(): boolean {
   return useBooleanFlagDetails(flameGraphWithCallTreeKey, false).value;
@@ -29,6 +30,10 @@ export function useFlagMetricsFromProfiles(): boolean {
 
 export function useFlagGrafanaAssistantInProfilesDrilldown(): boolean {
   return useBooleanFlagDetails(grafanaAssistantInProfilesDrilldownKey, true).value;
+}
+
+export function useFlagFeedbackButton(): boolean {
+  return useBooleanFlagDetails(feedbackButtonKey, true).value;
 }
 
 export function getProfilesExemplarsFromOpenFeature(): boolean {

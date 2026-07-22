@@ -10,6 +10,10 @@ import React from 'react';
 
 import { useBuildPyroscopeQuery } from '../../useBuildPyroscopeQuery';
 import { ProfilesDataSourceVariable } from '../ProfilesDataSourceVariable';
+import {
+  FILTER_EXPRESSION_WITH_LEADING_COMMA,
+  filterExpressionWithLeadingComma,
+} from './filterExpressionWithLeadingComma';
 import { convertPyroscopeToVariableFilter } from './filters-ops';
 
 const FILTERS_LABEL_DEFAULT = 'Filters';
@@ -32,6 +36,14 @@ export class FiltersVariable extends AdHocFiltersVariable {
 
   reset() {
     this.setState({ filters: FiltersVariable.DEFAULT_VALUE });
+  }
+
+  getValue(fieldPath?: string) {
+    if (fieldPath === FILTER_EXPRESSION_WITH_LEADING_COMMA) {
+      return filterExpressionWithLeadingComma(this.state.filterExpression);
+    }
+
+    return super.getValue(fieldPath);
   }
 
   static resetAll(sceneObject: SceneObject) {

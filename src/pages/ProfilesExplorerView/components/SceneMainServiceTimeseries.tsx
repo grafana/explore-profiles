@@ -154,7 +154,7 @@ export class SceneMainServiceTimeseries extends SceneObjectBase<SceneMainService
     const timeseriesItem: GridItemData = {
       index: 0,
       value: '',
-      queryRunnerParams: {}, // let interpolation happen
+      queryRunnerParams: {},
       label: this.buildTitle(),
       panelType: PanelType.TIMESERIES,
     };

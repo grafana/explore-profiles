@@ -17,8 +17,8 @@ export class SeriesApiClient extends DataSourceProxyClient {
     super(options);
   }
 
-  async list(options: { from: number; to: number }): Promise<PyroscopeSeries> {
-    const { from, to } = options;
+  async list(options: { from: number; to: number; matchers?: string[] }): Promise<PyroscopeSeries> {
+    const { from, to, matchers } = options;
 
     return this.fetch('/querier.v1.QuerierService/Series', {
       method: 'POST',
@@ -26,7 +26,7 @@ export class SeriesApiClient extends DataSourceProxyClient {
         start: from,
         end: to,
         labelNames: ['service_name', '__profile_type__'],
-        matchers: [],
+        matchers: matchers ?? [],
       }),
       headers: getPyroscopeUTF8LabelNamesFromOpenFeature()
         ? { accept: 'application/json; allow-utf8-labelnames=true' }

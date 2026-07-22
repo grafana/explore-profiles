@@ -189,10 +189,12 @@
     "error-flamegraph-com": "Failed to export to flamegraph.com!",
     "error-loading-profile": "Error while loading flamebearer profile data!",
     "error-png": "Failed to export to png!",
+    "error-png-no-canvas": "Please ensure the flame graph is visible before exporting to png.",
     "error-pprof": "Failed to export to pprof!",
     "json": "json",
     "json-label": "json",
     "png": "png",
+    "png-disabled-description": "Switch to the flame graph view to export it as a png",
     "png-label": "png",
     "pprof": "pprof",
     "tooltip": "Export profile data"
@@ -311,11 +313,11 @@
     "title": "Function Details"
   },
   "give-feedback": {
-    "button": "Give feedback",
-    "tooltip": "Share your thoughts about Profiles in Grafana."
+    "button": "Give feedback"
   },
   "grid": {
     "empty-state": {
+      "no-profiles": "No profiles found. Widen the time range or start sending profile data.",
       "no-results": "No results"
     },
     "error": {
@@ -398,7 +400,6 @@
       "include-tooltip": "Include \"{{label}}\" in the filters"
     },
     "grid": {
-      "no-results": "No results",
       "refresh-tooltip": "Click to completely refresh all the panels present on the screen"
     },
     "stats-panel": {

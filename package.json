@@ -1,6 +1,6 @@
 {
   "name": "pyroscope-app-plugin",
-  "version": "2.0.7",
+  "version": "2.1.1",
   "description": "Grafana Pyroscope app plugin (profiles)",
   "license": "AGPL-3.0-only",
   "author": "Grafana",
@@ -22,8 +22,8 @@
     "e2e:local:watch": "pnpm run e2e:local --ui",
     "format:fix": "prettier --write .",
     "generate:pyroscope-api": "pnpm exec buf generate",
-    "i18n-extract": "i18next-cli extract -c i18next-parser.config.ts",
-    "i18n-extract-check": "i18next-cli extract -c i18next-parser.config.ts --ci",
+    "i18n-extract": "i18next-cli extract",
+    "i18n-extract-check": "i18next-cli extract --ci",
     "knip": "knip",
     "lint": "eslint --cache .",
     "lint:fix": "pnpm run lint --fix && prettier --write --list-different .",
@@ -138,5 +138,5 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@11.2.2+sha512.36e6621fad506178936455e70247b8808ef4ec25797a9f437a93281a020484e2607f6a469a22e982987c3dbb8866e3071514ab10a4a1749e06edcd1ec118436f"
+  "packageManager": "pnpm@11.8.0+sha512.c1f5e7c4cb241c8f174b743851d82f42b802324afc8b0f116b96adb15aa06664948dde36960a3ba1079ba5b4b29dd0140135b94b5b5f5263592249d68e555f26"
 }

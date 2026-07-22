@@ -2,6 +2,21 @@
 
 Welcome! We're excited that you're interested in contributing. Below are some basic guidelines.
 
+We love accepting contributions! To help us create a safe and positive community experience, we require all participants to adhere to the [Grafana Code of Conduct](https://github.com/grafana/grafana/blob/main/CODE_OF_CONDUCT.md).
+
+## Filing issues
+
+Use [GitHub Issues](https://github.com/grafana/profiles-drilldown/issues/new) to report bugs, ask questions, or propose larger changes.
+
+| Situation | What to do |
+|-----------|------------|
+| **Bug** — something is broken or regressed | [Open a bug report](https://github.com/grafana/profiles-drilldown/issues/new?template=bug_report.md) with reproduction steps, expected vs actual behavior, Grafana/Pyroscope versions, and screenshots or recordings if helpful. |
+| **Small fix** — typo, clear one-file change, docs tweak | Open a pull request directly; link a related issue if one exists. |
+| **Feature or larger change** — new UI, behavior change, refactor | [Open a feature request](https://github.com/grafana/profiles-drilldown/issues/new?template=feature_request.md) to discuss scope, or open a draft PR with context in the description. |
+| **Documentation only** | Open a PR and add the `type/doc` label. |
+
+For bugs, check [Pyroscope](https://grafana.com/docs/grafana/latest/datasources/pyroscope/) and [Grafana profiling](https://grafana.com/docs/grafana/latest/explore/simplified-exploration/profiles/) behavior first — missing profile data outside the selected time window or filters may be expected, not a plugin bug.
+
 ## Workflow
 
 Grafana Profiles Drilldown follows a standard GitHub pull request workflow. If you're unfamiliar with this workflow, read the very helpful [Understanding the GitHub flow](https://guides.github.com/introduction/flow/) guide from GitHub.
@@ -113,6 +128,33 @@ When opening a Pull Request (PR), please make sure that the title is properly pr
 We encourage you to write tests, whether they are unit tests or end-to-end tests. They will give us the confidence that the plugin behaves as intended and help us capture any regression early.
 
 For end-to-end testing (E2E), please have a look at our [E2E testing documentation](../e2e/README.md).
+
+### Before you open a pull request
+
+- Fill out the [pull request template](../.github/pull_request_template.md) with a clear summary and test steps.
+- Use a [conventional commit](https://www.conventionalcommits.org/) style PR title (enforced by CI).
+- Run `pnpm run lint`, `pnpm run typecheck`, and `pnpm run test:ci` locally.
+- Add or update tests when behavior changes. Prefer focused unit tests (Jest) or Playwright E2E when UI flows are affected.
+- Do not modify files under `.config/` unless you are following the plugin-tools guidance in `.config/AGENTS/instructions.md`.
+
+### Internationalization (i18n)
+
+User-facing strings must use Grafana i18n APIs — `t` or `Trans` from `@grafana/i18n` with a stable `i18nKey`, not hard-coded text in components.
+
+After adding or changing copy:
+
+1. Run `pnpm run i18n-extract` to update `src/locales/en-US/grafana-pyroscope-app.json`.
+2. Commit the extracted English locale file with your PR.
+
+CI runs an i18n verification workflow on pull requests. Translations for other locales are managed via Crowdin and synced after changes merge to `main`; you do not need to hand-edit non-English locale files in most PRs.
+
+## Using AI and coding assistants
+
+Generative AI tools can help you explore the codebase, draft code, and write documentation. **You are always responsible for what you submit.**
+
+Read the full [Generative AI Contribution Policy](genai.md) for acceptable use, disclosure, Profiles Drilldown-specific guidance (Pyroscope, Scenes, tests), and rules for agentic tools. Point coding assistants at [AGENTS.md](../AGENTS.md) for technical conventions.
+
+When AI generated the bulk of a pull request, check the disclosure box in the pull request template.
 
 ## Common problems & solutions
 

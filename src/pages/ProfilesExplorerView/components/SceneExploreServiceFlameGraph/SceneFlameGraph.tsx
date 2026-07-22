@@ -136,7 +136,11 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     }
 
     useEffect(() => {
-      const runner = buildFlameGraphQueryRunner({ maxNodes, spanSelector, profileIdSelector });
+      const runner = buildFlameGraphQueryRunner({
+        maxNodes,
+        spanSelector,
+        profileIdSelector,
+      });
       this.setState({ $data: runner });
       return deferSceneQueryRunnerRun(runner);
     }, [$timeRange, maxNodes, spanSelector, profileIdSelector]);

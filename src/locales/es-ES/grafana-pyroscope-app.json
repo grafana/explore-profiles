@@ -189,10 +189,12 @@
     "error-flamegraph-com": "¡Error al exportar a flamegraph.com!",
     "error-loading-profile": "¡Error al cargar los datos del perfil de Flamebearer!",
     "error-png": "¡Error al exportar a PNG!",
+    "error-png-no-canvas": "",
     "error-pprof": "¡Error al exportar a PPROF!",
     "json": "json",
     "json-label": "json",
     "png": "png",
+    "png-disabled-description": "",
     "png-label": "png",
     "pprof": "PPROF",
     "tooltip": "Exportar datos del perfil"
@@ -311,12 +313,12 @@
     "title": "Detalles de la función"
   },
   "give-feedback": {
-    "button": "Enviar comentarios",
-    "tooltip": "Comparte tu opinión sobre los perfiles en Grafana."
+    "button": "Enviar comentarios"
   },
   "grid": {
     "empty-state": {
-      "no-results": "Ningún resultado"
+      "no-profiles": "",
+      "no-results": ""
     },
     "error": {
       "title": "¡Error de consulta!"
@@ -399,7 +401,6 @@
       "include-tooltip": "Incluir «{{label}}» en los filtros"
     },
     "grid": {
-      "no-results": "Ningún resultado",
       "refresh-tooltip": "Haz clic para actualizar por completo todos los paneles que aparecen en la pantalla."
     },
     "stats-panel": {
