@@ -1,81 +1,161 @@
 import { AdHocVariableFilter } from '@grafana/data';
 import { sceneGraph } from '@grafana/scenes';
 
+import type { SceneExploreServiceHeatmap } from '../../SceneExploreServiceHeatmap/SceneExploreServiceHeatmap';
 import { SceneExploreServiceFlameGraph } from '../SceneExploreServiceFlameGraph';
 
-// Mock heavy transitive dependencies that pull in SVGs/CSS
-jest.mock('../../SceneByVariableRepeaterGrid/SceneByVariableRepeaterGrid', () => ({}));
-jest.mock('../../SceneMainServiceTimeseries', () => ({
-  SceneMainServiceTimeseries: class {
-    static MIN_HEIGHT = 200;
-    constructor() {}
-  },
+jest.mock('@shared/infrastructure/featureFlags/featureFlags', () => ({
+  getProfilesHeatmapFromOpenFeature: () => true,
 }));
-jest.mock('../SceneFlameGraph', () => ({
-  SceneFlameGraph: class {
-    constructor() {}
-  },
-}));
-jest.mock('../../../domain/actions/SelectAction', () => ({
-  SelectAction: class {
-    constructor() {}
-  },
-}));
-jest.mock('../../../domain/actions/FavAction', () => ({
-  FavAction: class {
-    constructor() {}
-  },
-}));
-jest.mock('../components/ResolutionBoostExtensionPoint', () => ({
-  ResolutionBoostExtensionPoint: () => null,
-}));
-jest.mock('../../../domain/variables/FiltersVariable/AllServicesFilterVariable', () => ({
-  AllServicesFilterVariable: class {},
-}));
+
 jest.mock('../../../domain/variables/FiltersVariable/FiltersVariable', () => ({
-  FiltersVariable: class {},
-}));
-jest.mock('../../../domain/variables/ProfileMetricVariable', () => ({
-  ProfileMetricVariable: class {
-    static QUERY_DEFAULT = 'default';
-    static QUERY_SERVICE_NAME_DEPENDENT = 'service-name-dependent';
-  },
-}));
-jest.mock('../../../domain/variables/ServiceNameVariable/ServiceNameVariable', () => ({
-  ServiceNameVariable: class {},
-}));
-jest.mock('../../../domain/variables/ProfileIdSelectorVariable', () => ({
-  ProfileIdSelectorVariable: class {},
+  FiltersVariable: class FiltersVariable {},
 }));
 
-function makeFilter(key: string, operator: string, value: string): AdHocVariableFilter {
-  return { key, operator, value };
-}
+jest.mock('../../../domain/variables/FiltersVariable/AllServicesFilterVariable', () => ({
+  AllServicesFilterVariable: class AllServicesFilterVariable {},
+}));
 
-function createMockFiltersVariable(initialFilters: AdHocVariableFilter[] = []) {
+jest.mock('../SceneFlameGraph', () => {
+  const { SceneObjectBase } = jest.requireActual('@grafana/scenes');
+
   return {
-    state: { filters: [...initialFilters] },
-    setState(update: { filters: AdHocVariableFilter[] }) {
-      this.state = { ...this.state, ...update };
-    },
-    updateFilters(filters: AdHocVariableFilter[]) {
-      this.state.filters = filters;
+    SceneFlameGraph: class SceneFlameGraph extends SceneObjectBase {
+      constructor() {
+        super({});
+      }
     },
   };
-}
+});
 
-function createMockProfileMetricVariable() {
+jest.mock('../../SceneMainServiceTimeseries', () => {
+  const { SceneObjectBase } = jest.requireActual('@grafana/scenes');
+
   return {
-    state: { query: '' },
-    setState(update: any) {
-      this.state = { ...this.state, ...update };
+    SceneMainServiceTimeseries: class SceneMainServiceTimeseries extends SceneObjectBase {
+      static MIN_HEIGHT = 0;
+
+      constructor() {
+        super({});
+      }
     },
-    update: jest.fn(),
   };
-}
+});
 
 describe('SceneExploreServiceFlameGraph', () => {
+  it('clears the selected span when switching from span heatmap to time series', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const clearSpanProfileSelection = jest.spyOn(scene, 'clearSpanProfileSelection').mockImplementation();
+    jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
+
+    scene.setState({ showSpanHeatmap: true });
+    scene.closeSpanHeatmapMode();
+
+    expect(clearSpanProfileSelection).toHaveBeenCalledTimes(1);
+    expect(scene.state.showSpanHeatmap).toBe(false);
+  });
+
+  it('switches from span heatmap to time series when the service changes', () => {
+    const onShowSpanHeatmapChange = jest.fn();
+    const scene = new SceneExploreServiceFlameGraph({ onShowSpanHeatmapChange });
+    const clearSpanProfileSelection = jest.spyOn(scene, 'clearSpanProfileSelection').mockImplementation();
+    const probeSpanAvailability = jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
+
+    scene.setState({ showSpanHeatmap: true });
+    scene.onServiceNameChange();
+
+    expect(clearSpanProfileSelection).toHaveBeenCalledTimes(1);
+    expect(scene.state.showSpanHeatmap).toBe(false);
+    expect(scene.state.spanToggleAction.state.showSpanHeatmap).toBe(false);
+    expect(onShowSpanHeatmapChange).toHaveBeenCalledWith(false);
+    expect(probeSpanAvailability).toHaveBeenCalledTimes(1);
+  });
+
+  it('refreshes the open heatmap when the Pyroscope datasource changes', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const clearSpanProfileSelection = jest.spyOn(scene, 'clearSpanProfileSelection').mockImplementation();
+    const fetchHeatmapData = jest.fn();
+
+    scene.setState({
+      showSpanHeatmap: true,
+      spanHeatmap: { fetchHeatmapData } as unknown as SceneExploreServiceHeatmap,
+    });
+    scene.onDataSourceChange();
+
+    expect(clearSpanProfileSelection).toHaveBeenCalledTimes(1);
+    expect(fetchHeatmapData).toHaveBeenCalledTimes(1);
+  });
+
+  it('refetches the heatmap for the current service when reopening an existing heatmap', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    jest.spyOn(scene, 'getPrimedSpanHeatmapResponse').mockReturnValue(undefined);
+
+    const spanHeatmap = {
+      primeWithResponse: jest.fn(),
+      fetchHeatmapData: jest.fn(),
+      setState: jest.fn(),
+      subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+    };
+
+    scene.setState({ spanHeatmap: spanHeatmap as unknown as SceneExploreServiceHeatmap });
+
+    scene.openSpanHeatmapMode();
+
+    expect(spanHeatmap.primeWithResponse).toHaveBeenCalledTimes(1);
+    // Re-priming alone doesn't refetch: without an explicit fetchHeatmapData call here,
+    // reopening an existing heatmap after switching services would keep showing the
+    // previous service's data.
+    expect(spanHeatmap.fetchHeatmapData).toHaveBeenCalledTimes(1);
+  });
+
+  it('opens span heatmap from URL state without recreating the scene', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const probeSpanAvailability = jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
+
+    scene.syncSpanHeatmapFromUrl(true);
+
+    expect(probeSpanAvailability).toHaveBeenCalledWith(true);
+  });
+
+  it('closes an open span heatmap from URL state', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    const closeSpanHeatmapMode = jest.spyOn(scene, 'closeSpanHeatmapMode').mockImplementation();
+    scene.setState({ showSpanHeatmap: true });
+
+    scene.syncSpanHeatmapFromUrl(false);
+
+    expect(closeSpanHeatmapMode).toHaveBeenCalledTimes(1);
+  });
+
   describe('onActivate / deactivate filter cleanup', () => {
+    function makeFilter(key: string, operator: string, value: string): AdHocVariableFilter {
+      return { key, operator, value };
+    }
+
+    function createMockFiltersVariable(initialFilters: AdHocVariableFilter[] = []) {
+      return {
+        state: { filters: [...initialFilters] },
+        setState(update: { filters: AdHocVariableFilter[] }) {
+          this.state = { ...this.state, ...update };
+        },
+        updateFilters(filters: AdHocVariableFilter[]) {
+          this.state.filters = filters;
+        },
+        subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+      };
+    }
+
+    function createMockProfileMetricVariable() {
+      return {
+        state: { query: '' },
+        setState(update: any) {
+          this.state = { ...this.state, ...update };
+        },
+        update: jest.fn(),
+        subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+      };
+    }
+
     let scene: SceneExploreServiceFlameGraph;
     let filtersVariable: ReturnType<typeof createMockFiltersVariable>;
     let allServicesFiltersVariable: ReturnType<typeof createMockFiltersVariable>;
@@ -86,16 +166,25 @@ describe('SceneExploreServiceFlameGraph', () => {
       allServicesFiltersVariable = createMockFiltersVariable();
       profileMetricVariable = createMockProfileMetricVariable();
 
+      const changeableVariableStub = { changeValueTo: jest.fn(), subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }) };
+
       jest.spyOn(sceneGraph, 'findByKeyAndType').mockImplementation((_obj: any, key: string) => {
         const mocks: Record<string, any> = {
           filtersAllServices: allServicesFiltersVariable,
           filters: filtersVariable,
           profileMetricId: profileMetricVariable,
-          serviceName: { changeValueTo: jest.fn() },
-          profileIdSelector: { changeValueTo: jest.fn() },
+          serviceName: changeableVariableStub,
+          profileIdSelector: changeableVariableStub,
+          spanSelector: changeableVariableStub,
+          dataSource: changeableVariableStub,
         };
         return mocks[key];
       });
+
+      jest.spyOn(sceneGraph, 'getTimeRange').mockReturnValue({
+        state: { value: { from: 0, to: 0 } },
+        subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+      } as any);
 
       scene = new SceneExploreServiceFlameGraph({});
     });

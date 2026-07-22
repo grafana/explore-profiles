@@ -46,6 +46,16 @@ export type Interactions = {
   g_pyroscope_app_exemplars_toggled: {
     showExemplars: boolean;
   };
+  g_pyroscope_app_span_heatmap_toggled: {
+    showSpanHeatmap: boolean;
+  };
+  g_pyroscope_app_span_exemplar_selected: {
+    source: 'heatmap' | 'table';
+    selected: boolean;
+  };
+  g_pyroscope_app_span_trace_opened: {
+    source: 'trace-id' | 'action';
+  };
   g_pyroscope_app_export_profile: {
     format: 'png' | 'json' | 'pprof' | 'flamegraph.com';
   };

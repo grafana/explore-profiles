@@ -8,6 +8,12 @@
     "fav": {
       "favorite": "Favorito",
       "unfavorite": "Eliminar de favoritos"
+    },
+    "span-exemplar-toggle": {
+      "aria-label": "",
+      "span-heatmap": "",
+      "time-series": "",
+      "unavailable": ""
     }
   },
   "ad-hoc": {
@@ -55,6 +61,9 @@
   "back-button": {
     "aria-label": "Volver a Profiles Drilldown",
     "label": "Volver a Profiles Drilldown"
+  },
+  "common": {
+    "not-available": ""
   },
   "create-recording-rule": {
     "cancel": "Cancelar",
@@ -140,6 +149,10 @@
     "banner-title": "¡Error grave!",
     "title": "Profiles Drilldown de Grafana"
   },
+  "explore-service-heatmap": {
+    "description": "",
+    "title": ""
+  },
   "explorer": {
     "add-to-dashboard": {
       "modal-title": "Añadir al panel de control"
@@ -210,7 +223,10 @@
       "title": "¡Error al recuperar los ajustes del plugin!"
     },
     "span-selector": {
-      "added": "Selector de intervalo añadido",
+      "filter-label": "",
+      "filter-operator": "",
+      "filter-value": "",
+      "name": "",
       "remove": "Eliminar el selector de intervalo de la consulta",
       "tooltip": "Has añadido un selector de intervalo a la consulta de gráfico de llama ({{spanSelector}})."
     },
@@ -328,6 +344,37 @@
     "quick-filter": {
       "aria-label": "Filtro rápido",
       "clear": "Borrar búsqueda"
+    }
+  },
+  "heatmap": {
+    "exemplar": {
+      "select": ""
+    },
+    "exemplar-table": {
+      "clear-selection": "",
+      "col-actions": "",
+      "col-duration": "",
+      "col-span-id": "",
+      "col-span-name": "",
+      "col-timestamp": "",
+      "col-trace-id": "",
+      "copied": "",
+      "copy-to-clipboard": "",
+      "empty": "",
+      "open-flamegraph": "",
+      "open-trace": "",
+      "select-exemplar": "",
+      "select-tempo": "",
+      "tempo-datasource": "",
+      "tempo-placeholder": "",
+      "title": "",
+      "trace-lookup-failed": ""
+    },
+    "menu": {
+      "open-in-explore": ""
+    },
+    "trace-drawer": {
+      "title": ""
     }
   },
   "labels": {
@@ -639,6 +686,7 @@
     "menu": {
       "add-to-dashboard": "Añadir al panel de control",
       "exemplars": "Ejemplos",
+      "labels": "",
       "open-in-explore": "Abrir en Explorar",
       "scale-linear": "Lineal",
       "scale-log2": "Log2",

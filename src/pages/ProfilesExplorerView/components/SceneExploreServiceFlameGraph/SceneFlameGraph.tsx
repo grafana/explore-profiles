@@ -2,7 +2,13 @@ import { css } from '@emotion/css';
 import { createTheme, GrafanaTheme2, LoadingState, TimeRange } from '@grafana/data';
 import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { t, Trans } from '@grafana/i18n';
-import { SceneComponentProps, SceneObjectBase, SceneObjectState, SceneQueryRunner } from '@grafana/scenes';
+import {
+  SceneComponentProps,
+  SceneObjectBase,
+  SceneObjectState,
+  SceneQueryRunner,
+  SceneTimeRange,
+} from '@grafana/scenes';
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { displayWarning } from '@shared/domain/displayStatus';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
@@ -33,6 +39,7 @@ import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCr
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
 import { SceneFunctionDetailsPanel } from './components/SceneFunctionDetailsPanel/SceneFunctionDetailsPanel';
+import { buildSpanTimeRange } from './domain/buildSpanTimeRange';
 import { RemoveProfileIdSelector } from './domain/events/RemoveProfileIdSelector';
 import { RemoveSpanSelector } from './domain/events/RemoveSpanSelector';
 import { ProfileIdSelectorLabel } from './ProfileIdSelectorLabel';
@@ -40,6 +47,7 @@ import { SceneExploreServiceFlameGraph } from './SceneExploreServiceFlameGraph';
 import { SpanSelectorLabel } from './SpanSelectorLabel';
 
 interface SceneFlameGraphState extends SceneObjectState {
+  $timeRange?: SceneTimeRange;
   $data: SceneQueryRunner;
   lastTimeRange?: TimeRange;
   exportMenu: SceneExportMenu;
@@ -114,7 +122,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const [maxNodes] = useMaxNodesFromUrl();
     const { settings, error: isFetchingSettingsError } = useFetchPluginSettings();
-    const { $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createRecordingRuleModal } =
+    const { $timeRange, $data, lastTimeRange, exportMenu, aiPanel, functionDetailsPanel, createRecordingRuleModal } =
       this.useState();
 
     if (isFetchingSettingsError) {
@@ -135,7 +143,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       });
       this.setState({ $data: runner });
       return deferSceneQueryRunnerRun(runner);
-    }, [maxNodes, spanSelector, profileIdSelector]);
+    }, [$timeRange, maxNodes, spanSelector, profileIdSelector]);
 
     const $dataState = $data.useState();
     const loadingState = $dataState?.data?.state;
@@ -185,7 +193,14 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   };
 
   removeSpanSelector() {
+    this.setState({ $timeRange: undefined });
     this.publishEvent(new RemoveSpanSelector({}), true);
+  }
+
+  setSpanTimeRange(timestamp: number) {
+    this.setState({
+      $timeRange: new SceneTimeRange(buildSpanTimeRange(timestamp)),
+    });
   }
 
   removeProfileIdSelector() {

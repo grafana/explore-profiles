@@ -8,6 +8,12 @@
     "fav": {
       "favorite": "Favorite",
       "unfavorite": "Unfavorite"
+    },
+    "span-exemplar-toggle": {
+      "aria-label": "Profile timeline visualization",
+      "span-heatmap": "Span heatmap",
+      "time-series": "Time series",
+      "unavailable": "No span profiles are available for the current service, filters, and time range"
     }
   },
   "ad-hoc": {
@@ -55,6 +61,9 @@
   "back-button": {
     "aria-label": "Back to Profiles Drilldown",
     "label": "Back to Profiles Drilldown"
+  },
+  "common": {
+    "not-available": "–"
   },
   "create-recording-rule": {
     "cancel": "Cancel",
@@ -140,6 +149,10 @@
     "banner-title": "Fatal error!",
     "title": "Grafana Profiles Drilldown"
   },
+  "explore-service-heatmap": {
+    "description": "Count of trace spans falling into a specific bucket",
+    "title": "{{title}} per trace span"
+  },
   "explorer": {
     "add-to-dashboard": {
       "modal-title": "Add to dashboard"
@@ -210,7 +223,10 @@
       "title": "Error while retrieving the plugin settings!"
     },
     "span-selector": {
-      "added": "Span selector added",
+      "filter-label": "Filter label",
+      "filter-operator": "Filter operator",
+      "filter-value": "Filter value",
+      "name": "Span",
       "remove": "Remove span selector from query",
       "tooltip": "You have added a span selector to the flamegraph query ({{spanSelector}})."
     },
@@ -328,6 +344,37 @@
     "quick-filter": {
       "aria-label": "Quick filter",
       "clear": "Clear search"
+    }
+  },
+  "heatmap": {
+    "exemplar": {
+      "select": "Select exemplar"
+    },
+    "exemplar-table": {
+      "clear-selection": "Clear exemplar selection",
+      "col-actions": "Actions",
+      "col-duration": "Duration",
+      "col-span-id": "Span ID",
+      "col-span-name": "Span name",
+      "col-timestamp": "Timestamp",
+      "col-trace-id": "Trace ID",
+      "copied": "Copied!",
+      "copy-to-clipboard": "Copy to clipboard",
+      "empty": "No span exemplars in the selected time range.",
+      "open-flamegraph": "Open flame graph",
+      "open-trace": "Open trace",
+      "select-exemplar": "Select exemplar",
+      "select-tempo": "Select Tempo data source",
+      "tempo-datasource": "Tempo data source",
+      "tempo-placeholder": "Select Tempo data source…",
+      "title": "Top span exemplars",
+      "trace-lookup-failed": "Unable to load trace details from Tempo."
+    },
+    "menu": {
+      "open-in-explore": "Open in Explore"
+    },
+    "trace-drawer": {
+      "title": "Trace {{traceId}}"
     }
   },
   "labels": {
@@ -638,6 +685,7 @@
     "menu": {
       "add-to-dashboard": "Add to dashboard",
       "exemplars": "Exemplars",
+      "labels": "Labels",
       "open-in-explore": "Open in Explore",
       "scale-linear": "Linear",
       "scale-log2": "Log2",
