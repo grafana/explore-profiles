@@ -3,7 +3,7 @@ import { DataSourceJsonData, getValueFormat, GrafanaTheme2 } from '@grafana/data
 import { t } from '@grafana/i18n';
 import { getDataSourceSrv } from '@grafana/runtime';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { Column, Field as FormField, IconButton, InteractiveTable, Select, Spinner, useStyles2 } from '@grafana/ui';
+import { Column, Field as FormField, IconButton, InteractiveTable, Pagination, Select, Spinner, useStyles2 } from '@grafana/ui';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import React, { useMemo } from 'react';
@@ -17,10 +17,14 @@ import { PanelType } from '../SceneByVariableRepeaterGrid/components/ScenePanelT
 import { buildUnitFormatter } from '../SceneExploreServiceFlameGraph/components/SceneFunctionDetailsPanel/domain/buildUnitFormatter';
 import { CopyableId } from './components/CopyableId';
 import { getDisplayedExemplarRows } from './domain/getDisplayedExemplarRows';
+import { getVisiblePageRows, uniqueSpanTimestamps } from './domain/getVisiblePageSpans';
+import { SpanTimestamp } from './domain/mergeSpanTraceWindows';
 import { selectTempoDataSourceUid, TempoDataSourceOption } from './domain/selectTempoDataSourceUid';
 import { ExemplarRow } from './infrastructure/buildHeatmapDataFrames';
 import { lookupTempoTraceInfo, TraceInfo } from './infrastructure/lookupTempoTraceInfo';
 import { SceneExploreServiceHeatmap } from './SceneExploreServiceHeatmap';
+
+const PAGE_SIZE = 5;
 
 interface SceneExemplarTableState extends SceneObjectState {
   rows: ExemplarRow[];
@@ -28,6 +32,7 @@ interface SceneExemplarTableState extends SceneObjectState {
   loadingSpanIds: string[];
   tempoDatasources: TempoDataSourceOption[];
   traceLookupFailed: boolean;
+  page: number;
 }
 
 interface TempoDataSourceJsonData extends DataSourceJsonData {
@@ -51,6 +56,7 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
       loadingSpanIds: [],
       tempoDatasources: [],
       traceLookupFailed: false,
+      page: 0,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -90,6 +96,11 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
     const parentSub = parent.subscribeToState((newState, prevState) => {
       if (newState.exemplarRows !== prevState.exemplarRows) {
         this.handleNewExemplarRows(newState.exemplarRows);
+        return;
+      }
+
+      if (newState.selectedSpanId !== prevState.selectedSpanId || newState.selectedTimestamp !== prevState.selectedTimestamp) {
+        this.setPage(0, true);
       }
     });
 
@@ -119,19 +130,44 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
   private handleNewExemplarRows(rows: ExemplarRow[]) {
     this.invalidateTraceInfo();
-    const spanIds = [...new Set(rows.filter((r) => r.spanId).map((r) => r.spanId!))];
-    this.setState({ rows, traceInfoBySpanId: {}, loadingSpanIds: [], traceLookupFailed: false });
-
-    const tempoDataSourceUid = this.getParent().state.tempoDataSourceUid;
-    if (tempoDataSourceUid) {
-      if (spanIds.length > 0) {
-        this.lookupTraceInfo(spanIds);
-      }
-    }
+    this.setState({ rows, traceInfoBySpanId: {}, loadingSpanIds: [], traceLookupFailed: false, page: 0 });
+    this.lookupVisibleSpans(rows, 0);
   }
 
   private invalidateTraceInfo() {
     this.traceLookupRequestId++;
+  }
+
+  /**
+   * Sets the current table page and looks up trace info only for the span IDs
+   * visible on that page, so Tempo lookups stay scoped to a handful of spans
+   * instead of every exemplar.
+   */
+  setPage(page: number, lookupVisibleSpans = false) {
+    if (page === this.state.page) {
+      if (lookupVisibleSpans) {
+        this.lookupVisibleSpans(this.state.rows, page);
+      }
+      return;
+    }
+
+    this.setState({ page });
+    this.lookupVisibleSpans(this.state.rows, page);
+  }
+
+  private lookupVisibleSpans(rows: ExemplarRow[], page: number) {
+    const parent = this.getParent();
+    const { selectedSpanId, selectedTimestamp } = parent.state;
+    const pageRows = getVisiblePageRows(rows, selectedSpanId, selectedTimestamp, page, PAGE_SIZE);
+    const visibleSpans = uniqueSpanTimestamps(pageRows);
+
+    const pendingSpans = visibleSpans.filter(
+      (span) => !(span.spanId in this.state.traceInfoBySpanId) && !this.state.loadingSpanIds.includes(span.spanId)
+    );
+
+    if (this.getParent().state.tempoDataSourceUid && pendingSpans.length > 0) {
+      this.lookupTraceInfo(pendingSpans);
+    }
   }
 
   setTempoDataSourceUid(tempoDataSourceUid?: string) {
@@ -142,31 +178,29 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
     this.invalidateTraceInfo();
 
-    const spanIds = [...new Set(this.state.rows.filter((row) => row.spanId).map((row) => row.spanId!))];
-
     this.setState({ traceInfoBySpanId: {}, loadingSpanIds: [], traceLookupFailed: false });
     parent.setTempoDataSourceUid(tempoDataSourceUid);
 
-    if (tempoDataSourceUid && spanIds.length > 0) {
-      this.lookupTraceInfo(spanIds);
+    if (tempoDataSourceUid) {
+      this.lookupVisibleSpans(this.state.rows, this.state.page);
     }
   }
 
-  lookupTraceInfo(spanIds: string[]) {
+  lookupTraceInfo(spans: SpanTimestamp[]) {
     const tempoDataSourceUid = this.getParent().state.tempoDataSourceUid;
-    if (!tempoDataSourceUid || spanIds.length === 0) {
+    if (!tempoDataSourceUid || spans.length === 0) {
       return;
     }
 
     const requestId = this.traceLookupRequestId;
     const requestTempoDataSourceUid = tempoDataSourceUid;
+    const spanIds = spans.map((span) => span.spanId);
 
     this.setState({ loadingSpanIds: [...this.state.loadingSpanIds, ...spanIds] });
 
     (async () => {
       try {
-        const timeRange = sceneGraph.getTimeRange(this).state.value;
-        const traceInfoBySpanId = await lookupTempoTraceInfo(tempoDataSourceUid, spanIds, timeRange);
+        const { traceInfoBySpanId, failed } = await lookupTempoTraceInfo(tempoDataSourceUid, spans);
 
         if (
           requestId !== this.traceLookupRequestId ||
@@ -178,11 +212,9 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
         this.setState({
           traceInfoBySpanId: { ...this.state.traceInfoBySpanId, ...traceInfoBySpanId },
           loadingSpanIds: this.state.loadingSpanIds.filter((id) => !spanIds.includes(id)),
-          traceLookupFailed: false,
+          traceLookupFailed: failed,
         });
       } catch {
-        const notFound = Object.fromEntries(spanIds.map((id) => [id, null]));
-
         if (
           requestId !== this.traceLookupRequestId ||
           requestTempoDataSourceUid !== this.getParent().state.tempoDataSourceUid
@@ -191,7 +223,6 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
         }
 
         this.setState({
-          traceInfoBySpanId: { ...this.state.traceInfoBySpanId, ...notFound },
           loadingSpanIds: this.state.loadingSpanIds.filter((id) => !spanIds.includes(id)),
           traceLookupFailed: true,
         });
@@ -246,7 +277,7 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
   static Component({ model }: SceneComponentProps<SceneExemplarTable>) {
     const styles = useStyles2(getStyles);
-    const { rows, traceInfoBySpanId, loadingSpanIds, tempoDatasources, traceLookupFailed } = model.useState();
+    const { rows, traceInfoBySpanId, loadingSpanIds, tempoDatasources, traceLookupFailed, page } = model.useState();
 
     let selectedSpanId: string | undefined;
     let selectedTimestamp: number | undefined;
@@ -268,6 +299,12 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
     const displayedRows = useMemo(
       () => getDisplayedExemplarRows(rows, selectedSpanId, selectedTimestamp),
       [rows, selectedSpanId, selectedTimestamp]
+    );
+    const numberOfPages = Math.max(1, Math.ceil(displayedRows.length / PAGE_SIZE));
+    const safePage = Math.min(page, numberOfPages - 1);
+    const pageRows = useMemo(
+      () => getVisiblePageRows(rows, selectedSpanId, selectedTimestamp, safePage, PAGE_SIZE),
+      [rows, selectedSpanId, selectedTimestamp, safePage]
     );
     const columns = useMemo<Array<Column<ExemplarRow>>>(() => {
       const getRow = (props: { row: { original: ExemplarRow } }) => props.row.original;
@@ -461,14 +498,22 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
             {t('heatmap.exemplar-table.empty', 'No span exemplars in the selected time range.')}
           </div>
         ) : (
-          <InteractiveTable
-            className={selectedSpanId ? styles.selectedTable : styles.table}
-            columns={columns}
-            data={displayedRows}
-            pageSize={5}
-            autoResetPage
-            getRowId={(row) => `${row.profileId}-${row.spanId ?? 'no-span'}-${row.timestamp}`}
-          />
+          <>
+            <InteractiveTable
+              className={selectedSpanId ? styles.selectedTable : styles.table}
+              columns={columns}
+              data={pageRows}
+              getRowId={(row) => `${row.profileId}-${row.spanId ?? 'no-span'}-${row.timestamp}`}
+            />
+            <div className={styles.pagination}>
+              <Pagination
+                currentPage={safePage + 1}
+                numberOfPages={numberOfPages}
+                onNavigate={(toPage) => model.setPage(toPage - 1)}
+                hideWhenSinglePage
+              />
+            </div>
+          </>
         )}
       </div>
     );
@@ -541,5 +586,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
     text-align: center;
     color: ${theme.colors.text.secondary};
     font-style: italic;
+  `,
+  pagination: css`
+    display: flex;
+    justify-content: center;
+    padding: ${theme.spacing(1)};
+    flex-shrink: 0;
   `,
 });
