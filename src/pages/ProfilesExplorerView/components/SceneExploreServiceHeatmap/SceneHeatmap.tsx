@@ -25,30 +25,25 @@ const EXEMPLAR_COLOR_DEFAULT = 'rgba(31, 120, 193, 0.7)';
 const EXEMPLAR_COLOR_SELECTED = 'rgba(255, 152, 0, 1)';
 
 export class SceneHeatmap extends SceneObjectBase<SceneHeatmapState> {
-  constructor({ embedded = false }: { embedded?: boolean } = {}) {
+  constructor() {
     super({
       key: 'scene-heatmap',
-      body: SceneHeatmap.buildPanel(embedded),
+      body: SceneHeatmap.buildPanel(),
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
   }
 
-  private static buildPanel(embedded = false): VizPanel {
-    let builder = PanelBuilders.heatmap()
+  private static buildPanel(): VizPanel {
+    return PanelBuilders.heatmap()
       .setTitle('Span Profile Heatmap')
       .setOption('calculate', false)
       .setOption('cellGap', 1)
       .setOption('color', { scheme: 'Spectral', steps: 64 })
       .setOption('tooltip', { mode: TooltipDisplayMode.Single, yHistogram: true, showColorScale: true })
       .setOption('exemplars', { color: EXEMPLAR_COLOR_DEFAULT })
-      .setData(new SceneDataNode());
-
-    if (embedded) {
-      builder = builder.setHoverHeader(true);
-    }
-
-    return builder.build();
+      .setData(new SceneDataNode())
+      .build();
   }
 
   onActivate() {

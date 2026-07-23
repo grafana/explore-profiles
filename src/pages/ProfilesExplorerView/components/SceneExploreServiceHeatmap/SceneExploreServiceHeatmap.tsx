@@ -100,7 +100,7 @@ export class SceneExploreServiceHeatmap extends SceneObjectBase<SceneExploreServ
       body: new SceneFlexLayout({
         direction: 'column',
         children: [
-          new SceneFlexItem({ height: '400px', body: new SceneHeatmap({ embedded }) }),
+          new SceneFlexItem({ height: '400px', body: new SceneHeatmap() }),
           new SceneFlexItem({ minHeight: '200px', body: new SceneExemplarTable() }),
         ],
       }),
