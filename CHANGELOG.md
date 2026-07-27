@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.2.0](https://github.com/grafana/profiles-drilldown/compare/v2.1.1...v2.2.0) (2026-07-27)
+
+
+### 🎉 Features
+
+* Add filters to "All services" page ([#947](https://github.com/grafana/profiles-drilldown/issues/947)) ([de70e87](https://github.com/grafana/profiles-drilldown/commit/de70e8738f1b75f09d049147dd5aed89adc57efd))
+* Profiles to Traces integration via span heatmap ([#934](https://github.com/grafana/profiles-drilldown/issues/934)) ([05fbcdd](https://github.com/grafana/profiles-drilldown/commit/05fbcdd7b3959c7d48615969d4da061a1ff6f1c7))
+* remove data-driven annotations, add an extension point on the flame graph panel header ([#1051](https://github.com/grafana/profiles-drilldown/issues/1051)) ([b9197c0](https://github.com/grafana/profiles-drilldown/commit/b9197c08beea09d0835cd07c3fa642d2a1060430))
+
+
+### 🐛 Bug Fixes
+
+* avoid checking LLM plugin status when grafana-llm-app is not installed ([#1056](https://github.com/grafana/profiles-drilldown/issues/1056)) ([c1ef3d2](https://github.com/grafana/profiles-drilldown/commit/c1ef3d224614f7aa59fb7cf58e8400d4b8509772)), closes [#757](https://github.com/grafana/profiles-drilldown/issues/757)
+* Avoid error exporting png from top table diff ([#1013](https://github.com/grafana/profiles-drilldown/issues/1013)) ([edfed94](https://github.com/grafana/profiles-drilldown/commit/edfed9489a6e125e0ae49478eef41ed99274ac64))
+* **deps:** upgrade @grafana/* packages to 13.1.0 ([#1047](https://github.com/grafana/profiles-drilldown/issues/1047)) ([18b0bb2](https://github.com/grafana/profiles-drilldown/commit/18b0bb21c088b212f7272768db669effc764da95))
+* **header:** use ButtonGroup for plugin header toolbar buttons ([#1065](https://github.com/grafana/profiles-drilldown/issues/1065)) ([95b50ce](https://github.com/grafana/profiles-drilldown/commit/95b50ce3948e1e3508673f6c00f4d404b9f73d66))
+* remove span heatmap hover header ([#1062](https://github.com/grafana/profiles-drilldown/issues/1062)) ([b4b2651](https://github.com/grafana/profiles-drilldown/commit/b4b2651d4a9cd6c10df1b8df8feccfa07132b61e))
+* scope span trace lookups to visible page ([#1061](https://github.com/grafana/profiles-drilldown/issues/1061)) ([4af682e](https://github.com/grafana/profiles-drilldown/commit/4af682ed9bf0784a76d257164e5d28e5c4d07006))
+* show persistent settings-fetch error only on settings page ([#1057](https://github.com/grafana/profiles-drilldown/issues/1057)) ([5bed48c](https://github.com/grafana/profiles-drilldown/commit/5bed48c0c00116b3804629526aa52b37cf450887))
+* time picker menu position ([#1068](https://github.com/grafana/profiles-drilldown/issues/1068)) ([3a39f0a](https://github.com/grafana/profiles-drilldown/commit/3a39f0a56240a90d7d1efbb37b28688a62cca789))
+
+
+### 🧹 Chore
+
+* **remote:** add remote provisioning for the llm app and traces ([#1054](https://github.com/grafana/profiles-drilldown/issues/1054)) ([e5d98d7](https://github.com/grafana/profiles-drilldown/commit/e5d98d706c46cf66fe4e5a9f98320194549b8723))
+
 ## [2.1.1](https://github.com/grafana/profiles-drilldown/compare/v2.1.0...v2.1.1) (2026-07-10)
 
 
