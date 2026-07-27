@@ -213,6 +213,12 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
     display: flex;
     align-items: center;
     gap: ${theme.spacing(1)};
+
+    /* TimeRangePicker defaults to right:0; open into the page so the docked nav does not clip it */
+    [data-testid='data-testid TimePicker Overlay Content'] > section {
+      right: auto;
+      left: 0;
+    }
   `,
   appMiscButtons: css`
     display: flex;
