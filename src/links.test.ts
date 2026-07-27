@@ -166,6 +166,51 @@ describe('buildURL - Original Functionality', () => {
 
       expect(result).not.toContain('var-spanSelector');
     });
+
+    // Grafana's Trace View passes spanSelector as a single string rather than the declared
+    // Array<string>, which used to throw `spanSelector.join is not a function`. See
+    // https://github.com/grafana/profiles-drilldown/issues/775
+    it('should handle a string span selector from trace view context', () => {
+      const pyroscopeQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{}',
+        groupBy: [],
+        includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
+        spanSelector: 'single-span-id',
+      } as unknown as GrafanaPyroscopeDataQuery;
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+      });
+
+      expect(result).toContain('var-spanSelector=single-span-id');
+    });
+
+    it('should omit the span selector param for an empty string span selector', () => {
+      const pyroscopeQuery = {
+        refId: 'A',
+        datasource: mockDatasource,
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds',
+        labelSelector: '{}',
+        groupBy: [],
+        includeExemplars: false,
+        includeHeatmap: false,
+        heatmapType: 'individual',
+        spanSelector: '',
+      } as unknown as GrafanaPyroscopeDataQuery;
+
+      const result = buildURL({
+        pyroscopeQuery,
+        timeRange: mockTimeRange,
+      });
+
+      expect(result).not.toContain('var-spanSelector');
+    });
   });
 
   describe('enhanced functionality', () => {
