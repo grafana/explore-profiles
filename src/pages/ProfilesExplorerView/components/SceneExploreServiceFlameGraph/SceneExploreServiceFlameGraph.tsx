@@ -28,6 +28,7 @@ import {
 import { SceneHeatmapMenu } from '../SceneExploreServiceHeatmap/SceneHeatmapMenu';
 import { TimeseriesReprocess } from '../SceneLabelValuesTimeseries/domain/events/TimeseriesReprocess';
 import { SceneMainServiceTimeseries } from '../SceneMainServiceTimeseries';
+import { SceneSpanIdFilter } from '../SceneSpanIdFilter/SceneSpanIdFilter';
 import { ResolutionBoostExtensionPoint } from './components/ResolutionBoostExtensionPoint';
 import { SpanHeatmapPanel } from './components/SpanHeatmapPanel';
 import { SpanProfilesToggled } from './domain/events/SpanProfilesToggled';
@@ -40,6 +41,7 @@ interface SceneExploreServiceFlameGraphState extends SceneObjectState {
   showSpanHeatmap: boolean;
   spanToggleAction: SpanExemplarToggleAction;
   heatmapMenu: SceneHeatmapMenu;
+  spanIdFilters?: SceneSpanIdFilter;
 }
 
 const HEATMAP_ITEM: GridItemData = {
@@ -97,6 +99,9 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
         }),
       }),
       body: new SceneFlameGraph(),
+      // The span filter is only meaningful where span profiles are, which is the same feature as
+      // the heatmap its options are sourced from.
+      spanIdFilters: profilesHeatmapEnabled ? new SceneSpanIdFilter() : undefined,
     });
 
     this.profilesHeatmapEnabled = profilesHeatmapEnabled;
@@ -142,7 +147,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       }
     });
 
-    // When spanSelector changes from outside (e.g. the "×" button on SpanSelectorLabel),
+    // When spanSelector changes from outside (e.g. the "×" on the span chiclet in the query builder),
     // sync the selection into the visible heatmap.
     const spanSelectorSub = sceneGraph
       .findByKeyAndType(this, 'spanSelector', SpanSelectorVariable)
@@ -455,6 +460,9 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       variables: [
         sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
         sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
+        // Sits between the profile type and the label filters: like the pickers before it, it
+        // narrows what the flame graph queries, and it is not a label filter.
+        ...(this.state.spanIdFilters ? [this.state.spanIdFilters] : []),
         sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable),
       ],
       gridControls: [],
@@ -463,25 +471,13 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
 
   static Component({ model }: SceneComponentProps<SceneExploreServiceFlameGraph>) {
     const styles = useStyles2(getStyles);
-    const {
-      mainTimeseries,
-      body,
-      spanHeatmap,
-      showSpanHeatmap,
-      heatmapMenu,
-      spanToggleAction,
-    } = model.useState();
+    const { mainTimeseries, body, spanHeatmap, showSpanHeatmap, heatmapMenu, spanToggleAction } = model.useState();
     const showHeatmapPanel = model.profilesHeatmapEnabled && showSpanHeatmap && spanHeatmap;
 
     return (
       <div className={styles.flex}>
         {showHeatmapPanel ? (
-          <SpanHeatmapPanel
-            model={model}
-            spanHeatmap={spanHeatmap}
-            menu={heatmapMenu}
-            spanToggle={spanToggleAction}
-          />
+          <SpanHeatmapPanel model={model} spanHeatmap={spanHeatmap} menu={heatmapMenu} spanToggle={spanToggleAction} />
         ) : (
           // we use CSS here and Scenes Flex layout because we encountered a problem where the Flamegraph would not respect each panel width,
           // resulting in a cropped flame graph when opening the side panel

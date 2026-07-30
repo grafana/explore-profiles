@@ -675,6 +675,11 @@
       }
     }
   },
+  "span-id-filter": {
+    "label": "Span ID",
+    "no-options": "No span profiles in the current time range",
+    "placeholder": "Filter by span ID"
+  },
   "timeseries": {
     "menu": {
       "add-to-dashboard": "Add to dashboard",

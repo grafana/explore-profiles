@@ -4,6 +4,7 @@ import { FlameGraph, Props as FlameGraphProps } from '@grafana/flamegraph';
 import { t, Trans } from '@grafana/i18n';
 import {
   SceneComponentProps,
+  sceneGraph,
   SceneObjectBase,
   SceneObjectState,
   SceneQueryRunner,
@@ -27,6 +28,7 @@ import { Unsubscribable } from 'rxjs';
 
 import { useBuildPyroscopeQuery } from '../../domain/useBuildPyroscopeQuery';
 import { useGrafanaAssistant } from '../../domain/useGrafanaAssistant';
+import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariable';
 import { getSceneVariableValue } from '../../helpers/getSceneVariableValue';
 import { deferSceneQueryRunnerRun } from '../../infrastructure/deferSceneQueryRunnerRun';
 import { buildFlameGraphQueryRunner } from '../../infrastructure/flame-graph/buildFlameGraphQueryRunner';
@@ -79,6 +81,16 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   onActivate() {
     let dataSubscription: Unsubscribable | undefined;
 
+    // The span can also be cleared from the toolbar filter, which sits above this scene and cannot
+    // call removeSpanSelector(), so widen the time range off the variable emptying as well.
+    const spanSelectorSubscription = sceneGraph
+      .findByKeyAndType(this, 'spanSelector', SpanSelectorVariable)
+      .subscribeToState((newState, prevState) => {
+        if (prevState.value && !newState.value) {
+          this.setState({ $timeRange: undefined });
+        }
+      });
+
     const stateSubscription = this.subscribeToState((newState, prevState) => {
       if (newState.$data === prevState.$data) {
         return;
@@ -96,6 +108,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
     });
 
     return () => {
+      spanSelectorSubscription.unsubscribe();
       stateSubscription.unsubscribe();
       dataSubscription?.unsubscribe();
     };

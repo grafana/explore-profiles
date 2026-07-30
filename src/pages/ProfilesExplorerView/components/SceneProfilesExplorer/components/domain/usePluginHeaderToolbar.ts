@@ -2,6 +2,7 @@ import { SceneObject, SceneVariable } from '@grafana/scenes';
 import { displaySuccess } from '@shared/domain/displayStatus';
 import { reportInteraction } from '@shared/domain/reportInteraction';
 import { logger } from '@shared/infrastructure/tracking/logger';
+import type { PluginHeaderToolbarProps } from '@shared/ui/PluginHeaderToolbar';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PLUGIN_BASE_URL, ROUTES } from 'src/constants';
@@ -9,7 +10,6 @@ import { getSceneVariableValue } from 'src/pages/ProfilesExplorerView/helpers/ge
 
 import { ProfilesDataSourceVariable } from '../../../../domain/variables/ProfilesDataSourceVariable';
 import { ExplorationType } from '../../SceneProfilesExplorer';
-import type { PluginHeaderToolbarProps } from '@shared/ui/PluginHeaderToolbar';
 import { builsShareableUrl } from './builsShareableUrl';
 
 async function onClickShareLink() {

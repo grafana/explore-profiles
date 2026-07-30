@@ -36,10 +36,6 @@ const getStyles = () => ({
     align-self: flex-start;
     flex-grow: 1;
   `,
-  executeButton: css`
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  `,
 });
 
 export type QueryBuilderProps = {
@@ -136,7 +132,6 @@ function QueryBuilderComponent(props: QueryBuilderProps) {
                 ? t('query-builder.execute-tooltip', 'Execute new query')
                 : t('query-builder.nothing-to-execute-tooltip', 'Nothing to execute, all filters applied')
             }
-            className={styles.executeButton}
             disabled={isQueryUpToDate}
           >
             <Trans i18nKey="query-builder.execute">Execute</Trans>

@@ -56,6 +56,9 @@ export type Interactions = {
   g_pyroscope_app_span_trace_opened: {
     source: 'trace-id' | 'action';
   };
+  g_pyroscope_app_span_id_filter_changed: {
+    source: 'dropdown';
+  };
   g_pyroscope_app_export_profile: {
     format: 'png' | 'json' | 'pprof' | 'flamegraph.com';
   };
