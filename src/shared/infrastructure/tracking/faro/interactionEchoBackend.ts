@@ -1,3 +1,4 @@
+import { stringifyObjectValues } from '@grafana/faro-core';
 import { EchoBackend, EchoEventType, InteractionEchoEvent, registerEchoBackend } from '@grafana/runtime';
 
 import { getFaro } from './faro';
@@ -8,20 +9,6 @@ const PLUGIN_INTERACTION_PREFIXES = ['g_pyroscope_app_', 'grafana_profiles_app_'
 
 const isPluginInteraction = (interactionName: string) =>
   PLUGIN_INTERACTION_PREFIXES.some((prefix) => interactionName.startsWith(prefix));
-
-// faro event attributes must be strings
-const toEventAttributes = (properties: Record<string, unknown> = {}): Record<string, string> => {
-  const attributes: Record<string, string> = {};
-
-  for (const [key, value] of Object.entries(properties)) {
-    if (value === undefined || value === null) {
-      continue;
-    }
-    attributes[key] = typeof value === 'object' ? JSON.stringify(value) : String(value);
-  }
-
-  return attributes;
-};
 
 // echo backend that mirrors this plugin's reportInteraction events into faro as events.
 // EchoSrv fans every interaction out to registered backends, so we filter to our own names
@@ -36,7 +23,8 @@ class FaroInteractionEchoBackend implements EchoBackend<InteractionEchoEvent, {}
       return;
     }
 
-    getFaro()?.api.pushEvent(interactionName, toEventAttributes(properties));
+    // faro event attributes must be strings
+    getFaro()?.api.pushEvent(interactionName, stringifyObjectValues(properties));
   };
 
   // faro batches and sends internally, nothing to flush here
