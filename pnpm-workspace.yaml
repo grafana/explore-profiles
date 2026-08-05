@@ -42,7 +42,8 @@ overrides:
   immutable: ~5.1.8
   js-cookie: '>=3.0.7'
   protobufjs: '>=8.6.6'
-  brace-expansion@^5: '>=5.0.8'
+  brace-expansion@^1: 1.1.18
+  brace-expansion@^5: '>=5.0.9'
   body-parser: '>=2.3.0'
   fast-uri@^3: ~3.1.4
   postcss: '>=8.5.18'
