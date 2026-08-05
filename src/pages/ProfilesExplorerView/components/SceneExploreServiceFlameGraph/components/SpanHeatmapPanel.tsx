@@ -34,6 +34,7 @@ export function SpanHeatmapPanel({
 
   return (
     <Panel
+      dataTestId="span-heatmap-panel"
       title={title}
       description={t('explore-service-heatmap.description', 'Count of trace spans falling into a specific bucket')}
       isLoading={isLoading}

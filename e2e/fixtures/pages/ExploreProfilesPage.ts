@@ -400,6 +400,18 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   /* Flame graph component */
 
+  getSpanProfileVisualizationPicker() {
+    return this.getByLabel('Profile timeline visualization');
+  }
+
+  getSpanHeatmapPanel() {
+    return this.getByTestId('span-heatmap-panel');
+  }
+
+  getSpanHeatmapCanvas() {
+    return this.getSpanHeatmapPanel().locator('canvas');
+  }
+
   getExportDataButton() {
     return this.getByLabel('Export profile data');
   }
