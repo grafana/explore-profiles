@@ -12,7 +12,6 @@ import { getPluginOpenFeatureBoolean } from './openFeature';
 const flameGraphWithCallTreeKey = 'flameGraphWithCallTree' as keyof FeatureToggles;
 const metricsFromProfilesKey = 'metricsFromProfiles' as keyof FeatureToggles;
 const grafanaAssistantInProfilesDrilldownKey = 'grafanaAssistantInProfilesDrilldown' as keyof FeatureToggles;
-const profilesExemplarsKey = 'profilesExemplars' as keyof FeatureToggles;
 const profilesHeatmapKey = 'profilesHeatmap' as keyof FeatureToggles;
 const pyroscopeUTF8LabelNamesKey = 'pyroscopeUTF8LabelNames' as keyof FeatureToggles;
 export const QUERY_LIBRARY_FEATURE_FLAG_KEY = 'queryLibrary' as const;
@@ -34,10 +33,6 @@ export function useFlagGrafanaAssistantInProfilesDrilldown(): boolean {
 
 export function useFlagFeedbackButton(): boolean {
   return useBooleanFlagDetails(feedbackButtonKey, true).value;
-}
-
-export function getProfilesExemplarsFromOpenFeature(): boolean {
-  return getPluginOpenFeatureBoolean(profilesExemplarsKey, false);
 }
 
 export function getProfilesHeatmapFromOpenFeature(): boolean {
