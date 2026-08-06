@@ -251,7 +251,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
               content={t('export-menu.gcx-command-tooltip', 'Copy the gcx command to download this profile as pprof')}
             >
               <Menu.Item
-                icon="clipboard-alt"
+                icon="copy"
                 label={t('export-menu.gcx-command', 'gcx command')}
                 onClick={actions.copyGcxCommand}
               />

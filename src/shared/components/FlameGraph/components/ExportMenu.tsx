@@ -29,7 +29,7 @@ export function ExportMenu(props: ExportDataProps) {
           )}
         >
           <Menu.Item
-            icon="clipboard-alt"
+            icon="copy"
             label={t('export-menu.gcx-commands', 'gcx commands')}
             onClick={props.onCopyGcxCommands}
           />
