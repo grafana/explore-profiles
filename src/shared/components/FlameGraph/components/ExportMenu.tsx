@@ -22,18 +22,21 @@ export function ExportMenu(props: ExportDataProps) {
       />
       <Menu.Item label={t('export-menu.json-label', 'json')} onClick={actions.downloadJson} />
       {props.onCopyGcxCommands && (
-        <Tooltip
-          content={t(
-            'export-menu.gcx-commands-tooltip',
-            'Copy the gcx commands to download the baseline and comparison profiles as pprof'
-          )}
-        >
-          <Menu.Item
-            icon="copy"
-            label={t('export-menu.gcx-commands', 'gcx commands')}
-            onClick={props.onCopyGcxCommands}
-          />
-        </Tooltip>
+        <>
+          <Menu.Divider />
+          <Tooltip
+            content={t(
+              'export-menu.gcx-commands-tooltip',
+              'Copy the gcx commands to download the baseline and comparison profiles as pprof'
+            )}
+          >
+            <Menu.Item
+              icon="copy"
+              label={t('export-menu.gcx-commands', 'gcx commands')}
+              onClick={props.onCopyGcxCommands}
+            />
+          </Tooltip>
+        </>
       )}
     </Menu>
   );

@@ -247,6 +247,7 @@ export class SceneExportMenu extends SceneObjectBase<SceneExportMenuState> {
             />
             <Menu.Item label={t('export-menu.json', 'json')} onClick={actions.downloadJson} />
             <Menu.Item label={t('export-menu.pprof', 'pprof')} onClick={actions.downloadPprof} />
+            <Menu.Divider />
             <Tooltip
               content={t('export-menu.gcx-command-tooltip', 'Copy the gcx command to download this profile as pprof')}
             >
