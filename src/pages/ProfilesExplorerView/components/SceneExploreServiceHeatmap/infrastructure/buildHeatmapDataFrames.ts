@@ -3,7 +3,7 @@ import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
 import { SelectHeatmapResponse } from '@shared/pyroscope-api/querier/v1/querier_pb';
 import { HeatmapSeries } from '@shared/pyroscope-api/types/v1/types_pb';
 
-type HeatmapSlot = HeatmapSeries['slots'][number];
+export type HeatmapSlot = HeatmapSeries['slots'][number];
 
 export interface ExemplarRow {
   profileId: string;
@@ -68,7 +68,7 @@ export function buildHeatmapDataFrame(
   return frame;
 }
 
-function normalizeHeatmapSlotBuckets(slot: HeatmapSlot): HeatmapSlot {
+export function normalizeHeatmapSlotBuckets(slot: HeatmapSlot): HeatmapSlot {
   const countsByBucketStart = new Map<number, number>();
 
   for (let index = 0; index < slot.yMin.length; index++) {
@@ -88,7 +88,7 @@ function normalizeHeatmapSlotBuckets(slot: HeatmapSlot): HeatmapSlot {
   };
 }
 
-function getXBucketSize(slots: HeatmapSlot[]): number {
+export function getXBucketSize(slots: HeatmapSlot[]): number {
   const timestamps = slots.map((slot) => Number(slot.timestamp)).sort((a, b) => a - b);
   const diffs = timestamps
     .slice(1)
@@ -98,7 +98,7 @@ function getXBucketSize(slots: HeatmapSlot[]): number {
   return diffs.length > 0 ? Math.min(...diffs) : 0;
 }
 
-function appendEmptyHeatmapSlot(
+export function appendEmptyHeatmapSlot(
   xMax: number,
   yBucketStarts: number[],
   xMaxValues: number[],
@@ -112,7 +112,7 @@ function appendEmptyHeatmapSlot(
   }
 }
 
-function appendHeatmapSlots(
+export function appendHeatmapSlots(
   slots: HeatmapSlot[],
   xBucketSize: number,
   xMaxValues: number[],
@@ -133,7 +133,7 @@ function appendHeatmapSlots(
   }
 }
 
-function appendHeatmapSlot(
+export function appendHeatmapSlot(
   slot: HeatmapSlot,
   xMaxValues: number[],
   yMinValues: number[],
