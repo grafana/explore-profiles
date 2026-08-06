@@ -17,14 +17,13 @@ import {
 } from '@grafana/scenes';
 import { GraphGradientMode, ScaleDistribution, ScaleDistributionConfig, SortOrder } from '@grafana/schema';
 import { LegendDisplayMode, TooltipDisplayMode, VizLegendOptions } from '@grafana/ui';
-import { getProfilesExemplarsFromOpenFeature } from '@shared/infrastructure/featureFlags/featureFlags';
 import { isEqual, merge } from 'lodash';
 import React from 'react';
 
 import { ExemplarToggleAction } from '../../domain/actions/ExemplarToggleAction';
-import { SpanExemplarToggleAction } from '../../domain/actions/SpanExemplarToggleAction';
 import { FavAction } from '../../domain/actions/FavAction';
 import { SelectAction } from '../../domain/actions/SelectAction';
+import { SpanExemplarToggleAction } from '../../domain/actions/SpanExemplarToggleAction';
 import { EventTimeseriesDataReceived } from '../../domain/events/EventTimeseriesDataReceived';
 import { ProfileIdSelectorVariable } from '../../domain/variables/ProfileIdSelectorVariable';
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -92,11 +91,9 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     spanExemplarToggleAction?: SpanExemplarToggleAction;
     menuActions?: { selectAction?: SelectAction; favAction: FavAction };
   }) {
-    const profilesExemplarsEnabled = getProfilesExemplarsFromOpenFeature();
     const { processedHeaderActions, menuState } = SceneLabelValuesTimeseries.processExemplarsConfig(
       headerActions,
       includeExemplars,
-      profilesExemplarsEnabled,
       includeSpanExemplars,
       spanExemplarToggleAction
     );
@@ -119,7 +116,7 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
               $data: buildTimeSeriesQueryRunner(
                 item.queryRunnerParams,
                 displayAllValues ? undefined : LabelsDataSource.MAX_TIMESERIES_LABEL_VALUES,
-                includeExemplars && profilesExemplarsEnabled
+                includeExemplars
               ),
               transformations: [],
             })
@@ -138,7 +135,6 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
   private static processExemplarsConfig(
     headerActions: SceneLabelValuesTimeseriesState['headerActions'],
     includeExemplars: boolean | undefined,
-    profilesExemplarsEnabled: boolean,
     includeSpanExemplars?: boolean,
     spanExemplarToggleAction?: SpanExemplarToggleAction
   ): {
@@ -148,16 +144,14 @@ export class SceneLabelValuesTimeseries extends SceneObjectBase<SceneLabelValues
     let processedHeaderActions = headerActions;
     const menuState: Record<string, unknown> = {};
 
-    if (profilesExemplarsEnabled) {
-      if (includeExemplars) {
-        const prev = processedHeaderActions;
-        processedHeaderActions = (item: GridItemData) => [
-          ...(prev(item) as SceneObject[]),
-          new ExemplarToggleAction(true),
-        ];
-      } else {
-        menuState.showExemplars = false;
-      }
+    if (includeExemplars) {
+      const prev = processedHeaderActions;
+      processedHeaderActions = (item: GridItemData) => [
+        ...(prev(item) as SceneObject[]),
+        new ExemplarToggleAction(true),
+      ];
+    } else {
+      menuState.showExemplars = false;
     }
 
     if (includeSpanExemplars) {
