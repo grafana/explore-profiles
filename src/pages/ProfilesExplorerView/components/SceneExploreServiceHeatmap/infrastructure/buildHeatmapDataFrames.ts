@@ -3,8 +3,7 @@ import { ScaleDistribution, ScaleDistributionConfig } from '@grafana/schema';
 import { SelectHeatmapResponse } from '@shared/pyroscope-api/querier/v1/querier_pb';
 import { HeatmapSeries } from '@shared/pyroscope-api/types/v1/types_pb';
 
-type HeatmapSlot = HeatmapSeries['slots'][number];
-const MAX_MISSING_X_BUCKETS_PER_GAP = 256;
+export type HeatmapSlot = HeatmapSeries['slots'][number];
 
 export interface ExemplarRow {
   profileId: string;
@@ -15,14 +14,13 @@ export interface ExemplarRow {
 }
 
 /**
- * Builds a sparse "heatmap-cells" DataFrame from a HeatmapSeries, matching the format
- * produced by the Grafana backend in heatmap/heatmap.go (PR #120995).
+ * Builds a dense "heatmap-cells" DataFrame from a HeatmapSeries.
  *
- * Only non-zero cells are emitted. A gap-filling calibration row is inserted after the
- * first slot when consecutive timestamps are more than one step apart, so the frontend
- * panel can infer the correct bucket width.
+ * All y buckets are emitted for every represented x slot because the Grafana heatmap panel
+ * infers dimensions from the frame's rectangular scanline layout. When necessary, one
+ * zero-count x column is inserted after the first slot to calibrate the requested bucket width.
  *
- * Fields: xMax (Time), yMin (Number, unit), yMax (Number, unit), count (Number).
+ * Fields: xMax (Time), yMin (Number, unit), count (Number).
  * frame.meta.type = DataFrameType.HeatmapCells
  */
 export function buildHeatmapDataFrame(
@@ -36,44 +34,29 @@ export function buildHeatmapDataFrame(
     return null;
   }
 
-  const sortedSlots = [...slots].sort((a, b) => Number(a.timestamp) - Number(b.timestamp));
+  const sortedSlots = slots
+    .map(normalizeHeatmapSlotBuckets)
+    .sort((a, b) => Number(a.timestamp) - Number(b.timestamp));
 
   const xMaxValues: number[] = [];
   const yMinValues: number[] = [];
   const countValues: number[] = [];
 
-  const firstSlot = sortedSlots[0];
-  const yBucketSize = firstSlot.yMin.length > 1 ? firstSlot.yMin[1] - firstSlot.yMin[0] : firstSlot.yMin[0];
-  const minBucketStart = Math.min(...sortedSlots.map((slot) => slot.yMin[0] ?? 0));
-
-  const lowerBucketStarts = buildLowerBucketStarts(yBucketSize, minBucketStart);
-  const yBucketStarts = buildYBucketStarts(sortedSlots, lowerBucketStarts);
   const resolvedXBucketSize = xBucketSize ?? getXBucketSize(sortedSlots);
 
-  appendHeatmapSlots(
-    sortedSlots,
-    lowerBucketStarts,
-    yBucketStarts,
-    resolvedXBucketSize,
-    xMaxValues,
-    yMinValues,
-    countValues
-  );
+  appendHeatmapSlots(sortedSlots, resolvedXBucketSize, xMaxValues, yMinValues, countValues);
 
   if (xMaxValues.length === 0) {
     return null;
   }
 
-  // The panel reads meta.custom.yBucketSize for cell sizing in the dense/linear path.
-
   // isHeatmapCellsDense returns true iff the frame has exactly one field named 'y', 'yMin',
-  // or 'yMax'. With only yMin present it returns true -> the panel respects
-  // fields[1].config.custom.scaleDistribution and uses the linear scale.
+  // or 'yMax'. With only yMin present it uses the linear scale and infers cell height from
+  // the first two yMin values, so they must remain the response's evenly spaced bucket starts.
   const frame = new MutableDataFrame({
     name: 'heatmap',
     meta: {
       type: DataFrameType.HeatmapCells,
-      custom: { yBucketSize },
     },
     fields: [
       { name: 'xMax', type: FieldType.time, values: xMaxValues, config: {} },
@@ -85,33 +68,27 @@ export function buildHeatmapDataFrame(
   return frame;
 }
 
-function buildLowerBucketStarts(yBucketSize: number, minBucketStart: number): number[] {
-  const lowerBucketStarts: number[] = [];
+export function normalizeHeatmapSlotBuckets(slot: HeatmapSlot): HeatmapSlot {
+  const countsByBucketStart = new Map<number, number>();
 
-  if (yBucketSize <= 0 || minBucketStart <= 0) {
-    return lowerBucketStarts;
+  for (let index = 0; index < slot.yMin.length; index++) {
+    const bucketStart = slot.yMin[index];
+    countsByBucketStart.set(bucketStart, (countsByBucketStart.get(bucketStart) ?? 0) + (slot.counts[index] ?? 0));
   }
 
-  for (let bucketStart = 0; bucketStart < minBucketStart; bucketStart += yBucketSize) {
-    lowerBucketStarts.push(bucketStart);
+  if (countsByBucketStart.size === slot.yMin.length) {
+    return slot;
   }
 
-  return lowerBucketStarts;
+  const yMin = [...countsByBucketStart.keys()].sort((a, b) => a - b);
+  return {
+    ...slot,
+    yMin,
+    counts: yMin.map((bucketStart) => countsByBucketStart.get(bucketStart) ?? 0),
+  };
 }
 
-function buildYBucketStarts(slots: HeatmapSlot[], lowerBucketStarts: number[]): number[] {
-  const bucketStarts = new Set(lowerBucketStarts);
-
-  for (const slot of slots) {
-    for (const bucketStart of slot.yMin) {
-      bucketStarts.add(bucketStart);
-    }
-  }
-
-  return [...bucketStarts].sort((a, b) => a - b);
-}
-
-function getXBucketSize(slots: HeatmapSlot[]): number {
+export function getXBucketSize(slots: HeatmapSlot[]): number {
   const timestamps = slots.map((slot) => Number(slot.timestamp)).sort((a, b) => a - b);
   const diffs = timestamps
     .slice(1)
@@ -121,7 +98,7 @@ function getXBucketSize(slots: HeatmapSlot[]): number {
   return diffs.length > 0 ? Math.min(...diffs) : 0;
 }
 
-function appendEmptyHeatmapSlot(
+export function appendEmptyHeatmapSlot(
   xMax: number,
   yBucketStarts: number[],
   xMaxValues: number[],
@@ -135,63 +112,35 @@ function appendEmptyHeatmapSlot(
   }
 }
 
-function appendHeatmapSlots(
+export function appendHeatmapSlots(
   slots: HeatmapSlot[],
-  lowerBucketStarts: number[],
-  yBucketStarts: number[],
   xBucketSize: number,
   xMaxValues: number[],
   yMinValues: number[],
   countValues: number[]
 ) {
-  for (let i = 0; i < slots.length; i++) {
-    const slot = slots[i];
-    const previousSlot = slots[i - 1];
+  const firstSlot = slots[0];
+  appendHeatmapSlot(firstSlot, xMaxValues, yMinValues, countValues);
 
-    appendMissingHeatmapSlots(previousSlot, slot, yBucketStarts, xBucketSize, xMaxValues, yMinValues, countValues);
-    appendHeatmapSlot(slot, lowerBucketStarts, xMaxValues, yMinValues, countValues);
+  const calibrationTimestamp = Number(firstSlot.timestamp) + xBucketSize;
+  const secondTimestamp = slots[1] ? Number(slots[1].timestamp) : undefined;
+  if (xBucketSize > 0 && secondTimestamp !== calibrationTimestamp) {
+    appendEmptyHeatmapSlot(calibrationTimestamp, firstSlot.yMin, xMaxValues, yMinValues, countValues);
+  }
+
+  for (let index = 1; index < slots.length; index++) {
+    appendHeatmapSlot(slots[index], xMaxValues, yMinValues, countValues);
   }
 }
 
-function appendMissingHeatmapSlots(
-  previousSlot: HeatmapSlot | undefined,
+export function appendHeatmapSlot(
   slot: HeatmapSlot,
-  yBucketStarts: number[],
-  xBucketSize: number,
-  xMaxValues: number[],
-  yMinValues: number[],
-  countValues: number[]
-) {
-  if (!previousSlot || xBucketSize <= 0) {
-    return;
-  }
-
-  const slotTimestamp = Number(slot.timestamp);
-  let missingBuckets = 0;
-  for (
-    let xMax = Number(previousSlot.timestamp) + xBucketSize;
-    xMax < slotTimestamp && missingBuckets < MAX_MISSING_X_BUCKETS_PER_GAP;
-    xMax += xBucketSize, missingBuckets++
-  ) {
-    appendEmptyHeatmapSlot(xMax, yBucketStarts, xMaxValues, yMinValues, countValues);
-  }
-}
-
-function appendHeatmapSlot(
-  slot: HeatmapSlot,
-  lowerBucketStarts: number[],
   xMaxValues: number[],
   yMinValues: number[],
   countValues: number[]
 ) {
   const xMax = Number(slot.timestamp);
   const { yMin, counts } = slot;
-
-  for (const bucketStart of lowerBucketStarts) {
-    xMaxValues.push(xMax);
-    yMinValues.push(bucketStart);
-    countValues.push(0);
-  }
 
   // Emit all buckets including zeros so the panel knows the full y extent.
   for (let j = 0; j < counts.length; j++) {
