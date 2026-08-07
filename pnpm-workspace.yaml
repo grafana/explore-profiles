@@ -11,6 +11,8 @@ minimumReleaseAge: 7200
 # Temporary: fast-uri@4.1.2 is under the age gate; remove after it matures.
 minimumReleaseAgeExclude:
   - fast-uri@4.1.2
+  # Renovate security update: brace-expansion@5.0.9
+  - brace-expansion@5.0.9
 # Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
 # Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
@@ -45,7 +47,7 @@ overrides:
   js-cookie: '>=3.0.7'
   protobufjs: '>=8.6.6'
   brace-expansion@^1: ~1.1.16
-  brace-expansion@^2: 2.1.2
+  brace-expansion@^2: 5.0.9
   brace-expansion@^5: '>=5.0.8'
   body-parser: '>=2.3.0'
   fast-uri: 4.1.2
