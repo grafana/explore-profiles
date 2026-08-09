@@ -26,6 +26,7 @@ import { EventDiffAutoSelect } from '../../domain/events/EventDiffAutoSelect';
 import { SceneExploreDiffFlameGraph } from '../../SceneExploreDiffFlameGraph';
 import { useFetchDiffProfile } from './infrastructure/useFetchDiffProfile';
 import { MissingSelectionsBanner } from './ui/MissingSelectionsBanner';
+import { DataSourceType } from "@shared/types/DataSourceType";
 
 interface SceneDiffFlameGraphState extends SceneObjectState {
   aiPanel: SceneAiPanel;
@@ -223,6 +224,7 @@ export class SceneDiffFlameGraph extends SceneObjectBase<SceneDiffFlameGraphStat
               collapsedFlamegraphs={data.settings?.collapsedFlamegraphs}
               /** Grafana assistant does not support diff flame graphs yet, we will use LLM plugin if enabled */
               showAnalyzeWithAssistant={false}
+              dataSource={DataSourceType.PprofPyroscope}
             />
           )}
         </Panel>
