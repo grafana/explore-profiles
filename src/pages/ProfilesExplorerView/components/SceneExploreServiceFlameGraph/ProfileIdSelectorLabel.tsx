@@ -65,7 +65,6 @@ const activeTextColor = '#fff';
 
 const getStyles = (theme: GrafanaTheme2) => ({
   container: css`
-    margin-top: 5px;
     display: flex;
     align-items: center;
     border: 1px solid ${activeBackgroundColor};

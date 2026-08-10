@@ -676,7 +676,7 @@
     }
   },
   "span-id-filter": {
-    "label": "Span ID",
+    "exemplar-group": "Sampled span exemplars (not an exhaustive list)",
     "no-options": "No span profiles in the current time range",
     "placeholder": "Filter by span ID"
   },

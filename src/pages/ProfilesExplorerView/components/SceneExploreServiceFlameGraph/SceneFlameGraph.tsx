@@ -14,6 +14,7 @@ import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
 import {
+  getProfilesHeatmapFromOpenFeature,
   useFlagFlameGraphWithCallTree,
   useFlagMetricsFromProfiles,
 } from '@shared/infrastructure/featureFlags/featureFlags';
@@ -37,6 +38,7 @@ import { AIButton } from '../SceneAiPanel/components/AiButton/AIButton';
 import { SceneAiPanel } from '../SceneAiPanel/SceneAiPanel';
 import { useCreateRecordingRulesMenu } from '../SceneCreateMetricModal/domain/useMenuOption';
 import { SceneCreateRecordingRuleModal } from '../SceneCreateMetricModal/SceneCreateRecordingRuleModal';
+import { SceneSpanIdFilter } from '../SceneSpanIdFilter/SceneSpanIdFilter';
 import { SamplingIndicatorExtensionPoint } from './components/SamplingIndicatorExtensionPoint';
 import { SceneExportMenu } from './components/SceneExportMenu/SceneExportMenu';
 import { useGitHubIntegration } from './components/SceneFunctionDetailsPanel/domain/useGitHubIntegration';
@@ -56,6 +58,10 @@ interface SceneFlameGraphState extends SceneObjectState {
   aiPanel: SceneAiPanel;
   functionDetailsPanel: SceneFunctionDetailsPanel;
   createRecordingRuleModal: SceneCreateRecordingRuleModal;
+  /** Header span ID filter; only mounted with the `profilesHeatmap` toggle, whose exemplar API feeds its options. */
+  spanIdFilter?: SceneSpanIdFilter;
+  /** Mirrors the parent's showSpanHeatmap: the span ID filter only belongs to the heatmap experience. */
+  spanHeatmapActive?: boolean;
 }
 
 // I've tried to use a SplitLayout for the body without any success (left: flame graph, right: explain flame graph content)
@@ -73,6 +79,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
       aiPanel: new SceneAiPanel(),
       functionDetailsPanel: new SceneFunctionDetailsPanel(),
       createRecordingRuleModal: new SceneCreateRecordingRuleModal(),
+      spanIdFilter: getProfilesHeatmapFromOpenFeature() ? new SceneSpanIdFilter() : undefined,
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -81,8 +88,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
   onActivate() {
     let dataSubscription: Unsubscribable | undefined;
 
-    // The span can also be cleared from the toolbar filter, which sits above this scene and cannot
-    // call removeSpanSelector(), so widen the time range off the variable emptying as well.
+    // The header filter clears the span via the removal event, so widen the time range off the variable emptying too.
     const spanSelectorSubscription = sceneGraph
       .findByKeyAndType(this, 'spanSelector', SpanSelectorVariable)
       .subscribeToState((newState, prevState) => {
@@ -218,6 +224,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
     const spanSelector = getSceneVariableValue(model, 'spanSelector');
     const profileIdSelector = getSceneVariableValue(model, 'profileIdSelector');
+    const { spanIdFilter, spanHeatmapActive } = model.useState();
     const { data, actions } = model.useSceneFlameGraph(spanSelector, profileIdSelector);
     const sidePanel = useToggleSidePanel();
     const gitHubIntegration = useGitHubIntegration(sidePanel);
@@ -272,8 +279,17 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
           isLoading={data.isLoading}
           headerActions={
             <>
-              {spanSelector && (
-                <SpanSelectorLabel spanSelector={spanSelector} removeSpanSelector={() => model.removeSpanSelector()} />
+              {spanIdFilter && spanHeatmapActive ? (
+                // The filter shows the current span and clears it via the combobox's own clear action.
+                <spanIdFilter.Component model={spanIdFilter} />
+              ) : (
+                // Outside the heatmap experience an active span (e.g. from a shared URL) only gets a removal chip.
+                spanSelector && (
+                  <SpanSelectorLabel
+                    spanSelector={spanSelector}
+                    removeSpanSelector={() => model.removeSpanSelector()}
+                  />
+                )
               )}
               {profileIdSelector && (
                 <ProfileIdSelectorLabel

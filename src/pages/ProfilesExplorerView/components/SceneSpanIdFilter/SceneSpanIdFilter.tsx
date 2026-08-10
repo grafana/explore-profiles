@@ -17,22 +17,15 @@ import { SpanSelectorVariable } from '../../domain/variables/SpanSelectorVariabl
 import { RemoveSpanSelector } from '../SceneExploreServiceFlameGraph/domain/events/RemoveSpanSelector';
 import { fetchSpanIdOptions } from './domain/fetchSpanIdOptions';
 
-const LABEL_DEFAULT = 'Span ID';
-
 interface SceneSpanIdFilterState extends SceneObjectState {
-  // The toolbar keys, labels and test-ids its controls off `name` and `label`, like a scene variable.
-  name: string;
-  label: string;
-  // Mirrored from the spanSelector variable: the chip, the heatmap and this control all write it, and
-  // owning a copy is what re-renders the input when one of the others clears it.
+  // Mirrored from the spanSelector variable so writes from the heatmap or exemplar table re-render the input.
   spanId: string | null;
   options: Array<ComboboxOption<string>>;
   isLoading: boolean;
 }
 
 /**
- * Toolbar span ID filter: reads and writes the same `spanSelector` variable as the panel-header chip,
- * but is reachable without first finding a span on the heatmap (#1053).
+ * Flame graph header span ID filter (#1053); lives in the panel header because it scopes only the flame graph.
  */
 export class SceneSpanIdFilter extends SceneObjectBase<SceneSpanIdFilterState> {
   private fetchRequestId = 0;
@@ -40,8 +33,6 @@ export class SceneSpanIdFilter extends SceneObjectBase<SceneSpanIdFilterState> {
   constructor() {
     super({
       key: 'spanIdFilter',
-      name: 'spanId',
-      label: LABEL_DEFAULT,
       spanId: null,
       options: [],
       isLoading: false,
@@ -51,9 +42,6 @@ export class SceneSpanIdFilter extends SceneObjectBase<SceneSpanIdFilterState> {
   }
 
   onActivate() {
-    // Translated here rather than in the constructor, like the sibling variables do.
-    this.setState({ label: t('span-id-filter.label', LABEL_DEFAULT) });
-
     // Anything can clear the span — the panel-header chip, the heatmap, a service or profile type
     // change. Mirror the variable into our own state so every one of those re-renders the input.
     const spanSelector = sceneGraph.findByKeyAndType(this, 'spanSelector', SpanSelectorVariable);
@@ -151,12 +139,14 @@ export class SceneSpanIdFilter extends SceneObjectBase<SceneSpanIdFilterState> {
   static Component = ({ model }: SceneComponentProps<SceneSpanIdFilter>) => {
     const { options, isLoading, spanId } = model.useState();
 
-    // Always rendered, like the pickers beside it: a control that appears and disappears with the
-    // service would shift the row. With no span profiles the dropdown says so instead.
+    // Hide the input until there is a span to show or options to pick — "no options" noise otherwise.
+    if (!spanId && options.length === 0) {
+      return null;
+    }
+
     return (
       <Combobox
-        // Combobox keeps the text it displays in internal state seeded at mount, so remount it on
-        // every value change to keep the input from showing a span that was cleared elsewhere.
+        // Remount on value change: Combobox seeds its display text at mount.
         key={spanId ?? 'empty'}
         id="span-id-filter"
         data-testid="span-id-filter"

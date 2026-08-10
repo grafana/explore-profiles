@@ -28,7 +28,6 @@ import {
 import { SceneHeatmapMenu } from '../SceneExploreServiceHeatmap/SceneHeatmapMenu';
 import { TimeseriesReprocess } from '../SceneLabelValuesTimeseries/domain/events/TimeseriesReprocess';
 import { SceneMainServiceTimeseries } from '../SceneMainServiceTimeseries';
-import { SceneSpanIdFilter } from '../SceneSpanIdFilter/SceneSpanIdFilter';
 import { ResolutionBoostExtensionPoint } from './components/ResolutionBoostExtensionPoint';
 import { SpanHeatmapPanel } from './components/SpanHeatmapPanel';
 import { SpanProfilesToggled } from './domain/events/SpanProfilesToggled';
@@ -41,7 +40,6 @@ interface SceneExploreServiceFlameGraphState extends SceneObjectState {
   showSpanHeatmap: boolean;
   spanToggleAction: SpanExemplarToggleAction;
   heatmapMenu: SceneHeatmapMenu;
-  spanIdFilters?: SceneSpanIdFilter;
 }
 
 const HEATMAP_ITEM: GridItemData = {
@@ -99,9 +97,6 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
         }),
       }),
       body: new SceneFlameGraph(),
-      // The span filter is only meaningful where span profiles are, which is the same feature as
-      // the heatmap its options are sourced from.
-      spanIdFilters: profilesHeatmapEnabled ? new SceneSpanIdFilter() : undefined,
     });
 
     this.profilesHeatmapEnabled = profilesHeatmapEnabled;
@@ -163,9 +158,12 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
         });
       });
 
-    const timeRangeSub = sceneGraph.getTimeRange(this).subscribeToState(() => {
-      this.clearSpanProfileSelection();
-      this.probeSpanAvailability();
+    // The time range also emits during activation, which would wipe a span selection restored from the URL.
+    const timeRangeSub = sceneGraph.getTimeRange(this).subscribeToState((newState, prevState) => {
+      if (newState.from !== prevState.from || newState.to !== prevState.to) {
+        this.clearSpanProfileSelection();
+        this.probeSpanAvailability();
+      }
     });
 
     const dataSourceSub = sceneGraph
@@ -242,25 +240,46 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       return;
     }
 
+    if (openHeatmapWhenAvailable) {
+      // Optimistic, like the toggle button: a URL-restored span would flash the fallback chip during the probe.
+      this.state.body.setState({ spanHeatmapActive: true });
+    }
+
+    // null = a newer probe owns the state, leave it alone.
+    const hasSpanData = await this.fetchSpanAvailability(spanHeatmapQuery, requestId);
+    if (hasSpanData === null || !openHeatmapWhenAvailable) {
+      return;
+    }
+
+    if (hasSpanData) {
+      this.openSpanHeatmapMode();
+    } else {
+      this.state.body.setState({ spanHeatmapActive: false });
+    }
+  }
+
+  private async fetchSpanAvailability(
+    spanHeatmapQuery: NonNullable<ReturnType<typeof buildSpanHeatmapQuery>>,
+    requestId: number
+  ): Promise<boolean | null> {
     try {
       const response = await selectHeatmap(spanHeatmapQuery.dataSourceUid, spanHeatmapQuery.request);
 
       if (requestId !== this.spanAvailabilityProbeId) {
-        return;
+        return null;
       }
 
       this.primedSpanHeatmapResponse = { response, signature: spanHeatmapQuery.signature };
       const hasSpanData = hasSpanProfiles(response);
       this.state.spanToggleAction.setState({ hasSpanData });
-      if (openHeatmapWhenAvailable && hasSpanData) {
-        this.openSpanHeatmapMode();
-      }
+      return hasSpanData;
     } catch {
       if (requestId !== this.spanAvailabilityProbeId) {
-        return;
+        return null;
       }
 
       this.state.spanToggleAction.setState({ hasSpanData: undefined });
+      return false;
     }
   }
 
@@ -346,6 +365,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
 
     this.state.spanToggleAction.setState({ showSpanHeatmap: true });
     this.setState({ spanHeatmap, showSpanHeatmap: true });
+    this.state.body.setState({ spanHeatmapActive: true });
     this.onShowSpanHeatmapChange?.(true);
   }
 
@@ -380,6 +400,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     this.clearSpanProfileSelection();
     this.state.spanToggleAction.setState({ showSpanHeatmap: false });
     this.setState({ showSpanHeatmap: false });
+    this.state.body.setState({ spanHeatmapActive: false });
     this.onShowSpanHeatmapChange?.(false);
     this.probeSpanAvailability();
   }
@@ -460,9 +481,6 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       variables: [
         sceneGraph.findByKeyAndType(this, 'serviceName', ServiceNameVariable),
         sceneGraph.findByKeyAndType(this, 'profileMetricId', ProfileMetricVariable),
-        // Sits between the profile type and the label filters: like the pickers before it, it
-        // narrows what the flame graph queries, and it is not a label filter.
-        ...(this.state.spanIdFilters ? [this.state.spanIdFilters] : []),
         sceneGraph.findByKeyAndType(this, 'filters', FiltersVariable),
       ],
       gridControls: [],

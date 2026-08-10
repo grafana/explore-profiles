@@ -1,3 +1,4 @@
+import { t } from '@grafana/i18n';
 import { SceneObject } from '@grafana/scenes';
 import { ComboboxOption } from '@grafana/ui';
 
@@ -19,6 +20,8 @@ export async function fetchSpanIdOptions(scene: SceneObject, limit = 100): Promi
   const response = await selectHeatmap(query.dataSourceUid, query.request);
   const options: Array<ComboboxOption<string>> = [];
   const seen = new Set<string>();
+  // Group the options as a sample: exemplars are not an exhaustive span list.
+  const group = t('span-id-filter.exemplar-group', 'Sampled span exemplars (not an exhaustive list)');
 
   for (const row of extractExemplarRows(response)) {
     if (!row.spanId || seen.has(row.spanId)) {
@@ -30,6 +33,7 @@ export async function fetchSpanIdOptions(scene: SceneObject, limit = 100): Promi
       value: row.spanId,
       label: row.spanId,
       description: row.spanName,
+      group,
     });
 
     if (options.length >= limit) {

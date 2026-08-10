@@ -52,8 +52,9 @@ describe('fetchSpanIdOptions', () => {
     );
 
     await expect(fetchSpanIdOptions(scene)).resolves.toEqual([
-      { value: 'span-a', label: 'span-a', description: 'GET /' },
-      { value: 'span-b', label: 'span-b', description: undefined },
+      // Grouped so the dropdown presents exemplars as a sample rather than an exhaustive list.
+      { value: 'span-a', label: 'span-a', description: 'GET /', group: expect.any(String) },
+      { value: 'span-b', label: 'span-b', description: undefined, group: expect.any(String) },
     ]);
   });
 
@@ -80,7 +81,7 @@ describe('fetchSpanIdOptions', () => {
     );
 
     await expect(fetchSpanIdOptions(scene)).resolves.toEqual([
-      { value: 'span-a', label: 'span-a', description: undefined },
+      { value: 'span-a', label: 'span-a', description: undefined, group: expect.any(String) },
     ]);
   });
 

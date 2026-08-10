@@ -77,21 +77,21 @@ describe('SceneSpanIdFilter', () => {
   });
 
   describe('visibility', () => {
-    it('renders even when there is nothing to pick and nothing selected', () => {
+    it('hides when there is nothing to pick and nothing selected', () => {
       const { spanIdFilters } = buildScene();
 
       render(<SceneSpanIdFilter.Component model={spanIdFilters} />);
 
-      expect(screen.getByTestId('span-id-filter')).toBeInTheDocument();
+      expect(screen.queryByTestId('span-id-filter')).not.toBeInTheDocument();
     });
 
-    it('renders while the options are still loading', () => {
+    it('stays hidden while the first options fetch is still loading', () => {
       const { spanIdFilters } = buildScene();
       spanIdFilters.setState({ isLoading: true });
 
       render(<SceneSpanIdFilter.Component model={spanIdFilters} />);
 
-      expect(screen.getByTestId('span-id-filter')).toBeInTheDocument();
+      expect(screen.queryByTestId('span-id-filter')).not.toBeInTheDocument();
     });
 
     it('renders when a span is selected, so an active filter stays clearable', () => {
