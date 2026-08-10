@@ -71,6 +71,14 @@ export class ExploreProfilesPage extends PyroscopePage {
     await this.getByTestId('data-testid TimePicker Overlay Content').getByText(quickRangeLabel).click();
   }
 
+  getZoomOutButton() {
+    return this.getByLabel('Zoom out time range');
+  }
+
+  clickOnZoomOut() {
+    return this.getZoomOutButton().click();
+  }
+
   getRefreshPicker() {
     return this.getByTestId('data-testid RefreshPicker run button');
   }
@@ -330,6 +338,28 @@ export class ExploreProfilesPage extends PyroscopePage {
       const height = await sceneBody.evaluate((el) => (el as HTMLElement).offsetHeight);
       expect(height).toBeGreaterThanOrEqual(600);
     }).toPass({ timeout: 15000 });
+  }
+
+  /**
+   * Marks the panel DOM nodes that are currently mounted. The marker is an expando property, which
+   * survives re-renders but not an unmount/remount, so counting the survivors after an interaction
+   * tells us whether the grid reused its panels or tore them all down and rebuilt them.
+   */
+  tagMountedPanels() {
+    return this.getSceneBody().evaluate((body) => {
+      body.querySelectorAll('[data-viz-panel-key]').forEach((el) => {
+        (el as HTMLElement & { __e2ePanelTag?: boolean }).__e2ePanelTag = true;
+      });
+    });
+  }
+
+  countTaggedPanels() {
+    return this.getSceneBody().evaluate(
+      (body) =>
+        Array.from(body.querySelectorAll('[data-viz-panel-key]')).filter(
+          (el) => (el as HTMLElement & { __e2ePanelTag?: boolean }).__e2ePanelTag
+        ).length
+    );
   }
 
   getPanelByTitle(title: string) {

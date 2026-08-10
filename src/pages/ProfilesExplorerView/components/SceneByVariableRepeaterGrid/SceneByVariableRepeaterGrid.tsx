@@ -53,8 +53,13 @@ const GRID_TEMPLATE_ROWS = '1fr';
 const GRID_AUTO_ROWS = '240px';
 
 export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariableRepeaterGridState> {
+  /**
+   * Identifies a panel by what it queries, so that renderGridItems() can recognize the panels it
+   * can keep. `index` is deliberately left out: it only drives panel colors and shifts for every
+   * item whenever the list grows or shrinks, which would make every panel look new.
+   */
   static buildGridItemKey(item: GridItemData) {
-    return `grid-item-${item.index}-${item.value}`;
+    return `grid-item-${item.value}-${item.panelType}-${JSON.stringify(item.queryRunnerParams)}`;
   }
 
   static getGridColumnsTemplate(layout: LayoutType) {
@@ -242,6 +247,43 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
     return !isEqual(items, newItems);
   }
 
+  /**
+   * Indexes the panels that are already on screen so that renderGridItems() can keep the ones that
+   * still query the same thing. Replacing every child unmounts the whole grid, which blanks the
+   * page and restarts every query each time the time range or the filters change.
+   *
+   * A forced render intentionally reuses nothing: it is how panels (re)attach the "no data"
+   * subscription set up in setupHideNoData().
+   */
+  private collectReusablePanels(forceRender: boolean) {
+    const reusablePanels = new Map<string, SceneCSSGridLayout['state']['children'][number]>();
+
+    if (forceRender) {
+      return reusablePanels;
+    }
+
+    for (const child of (this.state.body as SceneCSSGridLayout).state.children) {
+      if (child.state.key) {
+        reusablePanels.set(child.state.key, child);
+      }
+    }
+
+    return reusablePanels;
+  }
+
+  private buildGridItem(item: GridItemData, key: string) {
+    const vizPanel = vizPanelBuilder(item.panelType, {
+      item,
+      headerActions: this.state.headerActions.bind(null, item, this.state.items),
+    });
+
+    if (this.state.hideNoData) {
+      this.setupHideNoData(vizPanel);
+    }
+
+    return new SceneCSSGridItem({ key, body: vizPanel });
+  }
+
   renderGridItems(forceRender = false) {
     const variable = sceneGraph.lookupVariable(this.state.variableName, this) as QueryVariable;
 
@@ -267,23 +309,15 @@ export class SceneByVariableRepeaterGrid extends SceneObjectBase<SceneByVariable
       return;
     }
 
+    const grid = this.state.body as SceneCSSGridLayout;
+    const reusablePanels = this.collectReusablePanels(forceRender);
+
     const gridItems = this.state.items.map((item) => {
-      const vizPanel = vizPanelBuilder(item.panelType, {
-        item,
-        headerActions: this.state.headerActions.bind(null, item, this.state.items),
-      });
-
-      if (this.state.hideNoData) {
-        this.setupHideNoData(vizPanel);
-      }
-
-      return new SceneCSSGridItem({
-        key: SceneByVariableRepeaterGrid.buildGridItemKey(item),
-        body: vizPanel,
-      });
+      const key = SceneByVariableRepeaterGrid.buildGridItemKey(item);
+      return reusablePanels.get(key) ?? this.buildGridItem(item, key);
     });
 
-    (this.state.body as SceneCSSGridLayout).setState({
+    grid.setState({
       autoRows: GRID_AUTO_ROWS, // required to have the correct grid items height
       children: gridItems,
     });
