@@ -6,15 +6,15 @@ import { ButtonGroup, Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton,
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
-import { PluginInfo } from './PluginInfo';
 import React from 'react';
-
+import { usePluginHeaderToolbar } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/usePluginHeaderToolbar';
+import { ExplorationTypeSelector } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/ui/ExplorationTypeSelector';
 import {
   SceneProfilesExplorer,
   SceneProfilesExplorerState,
 } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/SceneProfilesExplorer';
-import { usePluginHeaderToolbar } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/usePluginHeaderToolbar';
-import { ExplorationTypeSelector } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/ui/ExplorationTypeSelector';
+
+import { PluginInfo } from './PluginInfo';
 
 export type PluginHeaderToolbarProps = {
   model: SceneProfilesExplorer;
@@ -235,13 +235,17 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
       width: ${theme.spacing(32)};
     }
 
+    // The label filters fill the row, but the floor keeps them from compressing to a few characters
+    // on narrow viewports — they wrap onto their own line instead.
     &.filters {
       flex: 1 1 0;
+      min-width: ${theme.spacing(40)};
     }
 
     &.filtersAllServices {
       // Set to 2 to add priority over quick-filter.
       flex: 2 1 0;
+      min-width: ${theme.spacing(40)};
     }
 
     &.compare-presets {

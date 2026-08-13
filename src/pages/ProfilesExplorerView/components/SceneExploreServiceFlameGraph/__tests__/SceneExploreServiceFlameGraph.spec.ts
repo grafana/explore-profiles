@@ -108,6 +108,27 @@ describe('SceneExploreServiceFlameGraph', () => {
     expect(spanHeatmap.fetchHeatmapData).toHaveBeenCalledTimes(1);
   });
 
+  it('mirrors the heatmap experience into the flame graph panel so the span ID filter only shows there', () => {
+    const scene = new SceneExploreServiceFlameGraph({});
+    jest.spyOn(scene, 'getPrimedSpanHeatmapResponse').mockReturnValue(undefined);
+    jest.spyOn(scene, 'clearSpanProfileSelection').mockImplementation();
+    jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();
+
+    const spanHeatmap = {
+      primeWithResponse: jest.fn(),
+      fetchHeatmapData: jest.fn(),
+      setState: jest.fn(),
+      subscribeToState: jest.fn().mockReturnValue({ unsubscribe: jest.fn() }),
+    };
+    scene.setState({ spanHeatmap: spanHeatmap as unknown as SceneExploreServiceHeatmap });
+
+    scene.openSpanHeatmapMode();
+    expect(scene.state.body.state.spanHeatmapActive).toBe(true);
+
+    scene.closeSpanHeatmapMode();
+    expect(scene.state.body.state.spanHeatmapActive).toBe(false);
+  });
+
   it('opens span heatmap from URL state without recreating the scene', () => {
     const scene = new SceneExploreServiceFlameGraph({});
     const probeSpanAvailability = jest.spyOn(scene, 'probeSpanAvailability').mockImplementation();

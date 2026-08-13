@@ -348,7 +348,8 @@ const getStyles = (theme: GrafanaTheme2) => {
     }),
     rightActions: css({
       display: 'flex',
-      padding: theme.spacing(0, padding),
+      alignItems: 'center',
+      padding: theme.spacing(1, padding, 0, padding),
       gap: theme.spacing(1),
     }),
     rightAligned: css({

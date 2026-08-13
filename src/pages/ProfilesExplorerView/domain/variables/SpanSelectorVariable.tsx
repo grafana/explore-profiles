@@ -9,7 +9,8 @@ export class SpanSelectorVariable extends CustomVariable {
       key: 'spanSelector',
       name: 'spanSelector',
       label: SPAN_SELECTOR_LABEL_DEFAULT,
-      value: undefined,
+      // '' not undefined, which the URL sync stringifies into a truthy "undefined".
+      value: '',
     });
 
     this.addActivationHandler(this.onActivate.bind(this));
@@ -20,6 +21,6 @@ export class SpanSelectorVariable extends CustomVariable {
   }
 
   reset() {
-    this.setState({ value: undefined });
+    this.setState({ value: '' });
   }
 }

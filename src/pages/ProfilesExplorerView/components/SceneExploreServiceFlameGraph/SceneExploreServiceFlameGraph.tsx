@@ -142,7 +142,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       }
     });
 
-    // When spanSelector changes from outside (e.g. the "×" button on SpanSelectorLabel),
+    // When spanSelector changes from outside (e.g. the "×" on the span chiclet in the query builder),
     // sync the selection into the visible heatmap.
     const spanSelectorSub = sceneGraph
       .findByKeyAndType(this, 'spanSelector', SpanSelectorVariable)
@@ -158,9 +158,12 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
         });
       });
 
-    const timeRangeSub = sceneGraph.getTimeRange(this).subscribeToState(() => {
-      this.clearSpanProfileSelection();
-      this.probeSpanAvailability();
+    // The time range also emits during activation, which would wipe a span selection restored from the URL.
+    const timeRangeSub = sceneGraph.getTimeRange(this).subscribeToState((newState, prevState) => {
+      if (newState.from !== prevState.from || newState.to !== prevState.to) {
+        this.clearSpanProfileSelection();
+        this.probeSpanAvailability();
+      }
     });
 
     const dataSourceSub = sceneGraph
@@ -237,25 +240,46 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
       return;
     }
 
+    if (openHeatmapWhenAvailable) {
+      // Optimistic, like the toggle button: a URL-restored span would flash the fallback chip during the probe.
+      this.state.body.setState({ spanHeatmapActive: true });
+    }
+
+    // null = a newer probe owns the state, leave it alone.
+    const hasSpanData = await this.fetchSpanAvailability(spanHeatmapQuery, requestId);
+    if (hasSpanData === null || !openHeatmapWhenAvailable) {
+      return;
+    }
+
+    if (hasSpanData) {
+      this.openSpanHeatmapMode();
+    } else {
+      this.state.body.setState({ spanHeatmapActive: false });
+    }
+  }
+
+  private async fetchSpanAvailability(
+    spanHeatmapQuery: NonNullable<ReturnType<typeof buildSpanHeatmapQuery>>,
+    requestId: number
+  ): Promise<boolean | null> {
     try {
       const response = await selectHeatmap(spanHeatmapQuery.dataSourceUid, spanHeatmapQuery.request);
 
       if (requestId !== this.spanAvailabilityProbeId) {
-        return;
+        return null;
       }
 
       this.primedSpanHeatmapResponse = { response, signature: spanHeatmapQuery.signature };
       const hasSpanData = hasSpanProfiles(response);
       this.state.spanToggleAction.setState({ hasSpanData });
-      if (openHeatmapWhenAvailable && hasSpanData) {
-        this.openSpanHeatmapMode();
-      }
+      return hasSpanData;
     } catch {
       if (requestId !== this.spanAvailabilityProbeId) {
-        return;
+        return null;
       }
 
       this.state.spanToggleAction.setState({ hasSpanData: undefined });
+      return false;
     }
   }
 
@@ -341,6 +365,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
 
     this.state.spanToggleAction.setState({ showSpanHeatmap: true });
     this.setState({ spanHeatmap, showSpanHeatmap: true });
+    this.state.body.setState({ spanHeatmapActive: true });
     this.onShowSpanHeatmapChange?.(true);
   }
 
@@ -375,6 +400,7 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
     this.clearSpanProfileSelection();
     this.state.spanToggleAction.setState({ showSpanHeatmap: false });
     this.setState({ showSpanHeatmap: false });
+    this.state.body.setState({ spanHeatmapActive: false });
     this.onShowSpanHeatmapChange?.(false);
     this.probeSpanAvailability();
   }
@@ -463,25 +489,13 @@ export class SceneExploreServiceFlameGraph extends SceneObjectBase<SceneExploreS
 
   static Component({ model }: SceneComponentProps<SceneExploreServiceFlameGraph>) {
     const styles = useStyles2(getStyles);
-    const {
-      mainTimeseries,
-      body,
-      spanHeatmap,
-      showSpanHeatmap,
-      heatmapMenu,
-      spanToggleAction,
-    } = model.useState();
+    const { mainTimeseries, body, spanHeatmap, showSpanHeatmap, heatmapMenu, spanToggleAction } = model.useState();
     const showHeatmapPanel = model.profilesHeatmapEnabled && showSpanHeatmap && spanHeatmap;
 
     return (
       <div className={styles.flex}>
         {showHeatmapPanel ? (
-          <SpanHeatmapPanel
-            model={model}
-            spanHeatmap={spanHeatmap}
-            menu={heatmapMenu}
-            spanToggle={spanToggleAction}
-          />
+          <SpanHeatmapPanel model={model} spanHeatmap={spanHeatmap} menu={heatmapMenu} spanToggle={spanToggleAction} />
         ) : (
           // we use CSS here and Scenes Flex layout because we encountered a problem where the Flamegraph would not respect each panel width,
           // resulting in a cropped flame graph when opening the side panel
