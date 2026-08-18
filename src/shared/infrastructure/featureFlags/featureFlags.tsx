@@ -9,7 +9,6 @@ import { getPluginOpenFeatureBoolean } from './openFeature';
  *
  * @see https://github.com/grafana/grafana/blob/main/contribute/feature-toggles.md
  */
-const flameGraphWithCallTreeKey = 'flameGraphWithCallTree' as keyof FeatureToggles;
 const metricsFromProfilesKey = 'metricsFromProfiles' as keyof FeatureToggles;
 const grafanaAssistantInProfilesDrilldownKey = 'grafanaAssistantInProfilesDrilldown' as keyof FeatureToggles;
 const profilesHeatmapKey = 'profilesHeatmap' as keyof FeatureToggles;
@@ -18,10 +17,6 @@ export const QUERY_LIBRARY_FEATURE_FLAG_KEY = 'queryLibrary' as const;
 const queryLibraryKey: keyof FeatureToggles = QUERY_LIBRARY_FEATURE_FLAG_KEY;
 const kgAnnotationsInPyroscopeKey = 'kgAnnotationsInPyroscope' as keyof FeatureToggles;
 const feedbackButtonKey = 'feedbackButton' as keyof FeatureToggles;
-
-export function useFlagFlameGraphWithCallTree(): boolean {
-  return useBooleanFlagDetails(flameGraphWithCallTreeKey, false).value;
-}
 
 export function useFlagMetricsFromProfiles(): boolean {
   return useBooleanFlagDetails(metricsFromProfilesKey, false).value;

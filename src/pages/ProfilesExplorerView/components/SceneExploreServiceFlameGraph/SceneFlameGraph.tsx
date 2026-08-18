@@ -12,10 +12,7 @@ import {
 import { Spinner, useStyles2, useTheme2 } from '@grafana/ui';
 import { useMaxNodesFromUrl } from '@shared/domain/url-params/useMaxNodesFromUrl';
 import { useToggleSidePanel } from '@shared/domain/useToggleSidePanel';
-import {
-  useFlagFlameGraphWithCallTree,
-  useFlagMetricsFromProfiles,
-} from '@shared/infrastructure/featureFlags/featureFlags';
+import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
@@ -200,7 +197,6 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
 
   static Component = ({ model }: SceneComponentProps<SceneFlameGraph>) => {
     const styles = useStyles2(getStyles);
-    const flameGraphWithCallTree = useFlagFlameGraphWithCallTree();
     const metricsFromProfiles = useFlagMetricsFromProfiles();
 
     const spanSelector = getSceneVariableValue(model, 'spanSelector');
@@ -303,7 +299,7 @@ export class SceneFlameGraph extends SceneObjectBase<SceneFlameGraphState> {
                 />
               }
               keepFocusOnDataChange
-              enableNewUI={flameGraphWithCallTree}
+              enableNewUI={true}
             />
           )}
         </Panel>
