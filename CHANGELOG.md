@@ -1,5 +1,37 @@
 # Changelog
 
+## [2.3.0](https://github.com/grafana/profiles-drilldown/compare/v2.2.0...v2.3.0) (2026-08-21)
+
+
+### 🎉 Features
+
+* **call-tree:** remove feature flag (default=on) ([#1101](https://github.com/grafana/profiles-drilldown/issues/1101)) ([f527548](https://github.com/grafana/profiles-drilldown/commit/f527548ffe4453c6a72a6b5f481b5ea88d834003))
+
+
+### 🐛 Bug Fixes
+
+* **create-github-app-token:** version bump to 0.3.1 ([#1103](https://github.com/grafana/profiles-drilldown/issues/1103)) ([f535bb1](https://github.com/grafana/profiles-drilldown/commit/f535bb1e96103e4b814a3a8c47a4b7d78b7bf8ec))
+* **deps:** bump pnpm overrides for CVE remediation ([#1098](https://github.com/grafana/profiles-drilldown/issues/1098)) ([75f9380](https://github.com/grafana/profiles-drilldown/commit/75f93805e905628763aacc2f9226bdf2c6de8470))
+* **deps:** bump pnpm overrides for CVE remediation ([#1100](https://github.com/grafana/profiles-drilldown/issues/1100)) ([2c2730b](https://github.com/grafana/profiles-drilldown/commit/2c2730b6ee254f8861c574a08fdbd968043732c8))
+* **deps:** override @hono/node-server ([#1076](https://github.com/grafana/profiles-drilldown/issues/1076)) ([e33002a](https://github.com/grafana/profiles-drilldown/commit/e33002aabd11091c5458b4d7da51c320a9a513ff))
+* **deps:** resolve pnpm audit vulnerabilities ([#1073](https://github.com/grafana/profiles-drilldown/issues/1073)) ([6e2c46c](https://github.com/grafana/profiles-drilldown/commit/6e2c46c9d9b89c0a522fb3e5657aa5be1ca2f2f9))
+* normalize string spanSelector in drilldown link builder ([#1069](https://github.com/grafana/profiles-drilldown/issues/1069)) ([1b7248f](https://github.com/grafana/profiles-drilldown/commit/1b7248f1086222127c913e3372cb111afa48a9dd))
+* preserve span heatmap cell dimensions ([#1089](https://github.com/grafana/profiles-drilldown/issues/1089)) ([d51e13e](https://github.com/grafana/profiles-drilldown/commit/d51e13eeb8fd340b93358a41af7dca575ef354fa))
+* **release-please:** Update release-please action version to v2.0.2 ([#1104](https://github.com/grafana/profiles-drilldown/issues/1104)) ([0f3c35f](https://github.com/grafana/profiles-drilldown/commit/0f3c35fead8f03f2668a541f6876beee85dcea40))
+* **security/unknown/samples/rideshare:** update module github.com/klauspost/compress to v1.18.7 [security] ([#1070](https://github.com/grafana/profiles-drilldown/issues/1070)) ([a295445](https://github.com/grafana/profiles-drilldown/commit/a29544572a39f493af55d7715ea49177c57e185a))
+* **security/unknown/samples/rideshare:** update module go.opentelemetry.io/otel to v1.44.0 [security] ([#1066](https://github.com/grafana/profiles-drilldown/issues/1066)) ([a712509](https://github.com/grafana/profiles-drilldown/commit/a712509ddf2ad0a542ca312e89f554955c8b96bf))
+* stop rebuilding every grid panel when the item list changes ([#1096](https://github.com/grafana/profiles-drilldown/issues/1096)) ([72d6bcf](https://github.com/grafana/profiles-drilldown/commit/72d6bcfc1dc4469b9271cef78921b56ac5ed193d))
+
+
+### 🧹 Chore
+
+* **deps:** update golang docker tag to v1.26.5 ([#1082](https://github.com/grafana/profiles-drilldown/issues/1082)) ([7480059](https://github.com/grafana/profiles-drilldown/commit/748005985dd969b7b4f63b9dfba12d1b9fee5457))
+* **faro:** duplicate rudderstack events as faro events and enhance instrumentation ([#1083](https://github.com/grafana/profiles-drilldown/issues/1083)) ([43711f4](https://github.com/grafana/profiles-drilldown/commit/43711f4a1fd06d27646432bd23fe8f36ac02dc55))
+* move CONTRIBUTING to root of repo ([#1097](https://github.com/grafana/profiles-drilldown/issues/1097)) ([3711e23](https://github.com/grafana/profiles-drilldown/commit/3711e23c32c1aff185b780450bb3d996ee005ae8))
+* remove profilesExemplars feature toggle ([#1090](https://github.com/grafana/profiles-drilldown/issues/1090)) ([57c5017](https://github.com/grafana/profiles-drilldown/commit/57c5017da40058aa504a1899d9dda826b0fa52e9))
+* Update brace ([#1078](https://github.com/grafana/profiles-drilldown/issues/1078)) ([a3505f4](https://github.com/grafana/profiles-drilldown/commit/a3505f41e4ff12fed26dcdb90960855b744d4291))
+* update dependencies ([#1087](https://github.com/grafana/profiles-drilldown/issues/1087)) ([55f40f2](https://github.com/grafana/profiles-drilldown/commit/55f40f252f0603c6dbc1c45b49207d20ef4d3910))
+
 ## [2.2.0](https://github.com/grafana/profiles-drilldown/compare/v2.1.1...v2.2.0) (2026-07-27)
 
 
