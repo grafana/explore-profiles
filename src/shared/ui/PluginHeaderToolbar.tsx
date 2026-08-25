@@ -2,8 +2,10 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
-import { ButtonGroup, Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
+import { ButtonGroup, ClipboardButton, Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
+import { displayError } from '@shared/domain/displayStatus';
+import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
 import { PluginInfo } from './PluginInfo';
@@ -14,6 +16,7 @@ import {
   SceneProfilesExplorerState,
 } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/SceneProfilesExplorer';
 import { usePluginHeaderToolbar } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/usePluginHeaderToolbar';
+import { getShareableUrlText } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/builsShareableUrl';
 import { ExplorationTypeSelector } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/ui/ExplorationTypeSelector';
 
 export type PluginHeaderToolbarProps = {
@@ -125,11 +128,20 @@ export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
                 onClick={actions.onClickAdHoc}
               />
 
-              <ToolbarButton
+              <ClipboardButton
                 icon="share-alt"
-                variant="canvas"
+                variant="secondary"
+                fill="text"
+                className={styles.toolbarClipboardButton}
                 tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
-                onClick={actions.onClickShareLink}
+                getText={getShareableUrlText}
+                onClipboardCopy={() => reportInteraction('g_pyroscope_app_share_link_clicked')}
+                onClipboardError={(_text, error) => {
+                  reportInteraction('g_pyroscope_app_share_link_clicked');
+                  displayError(error as Error, [
+                    t('explorer.header.share-error', 'Error while copying the shareable link to the clipboard!'),
+                  ]);
+                }}
               />
 
               <ToolbarButton
@@ -218,6 +230,38 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
     [data-testid='data-testid TimePicker Overlay Content'] > section {
       right: auto;
       left: 0;
+    }
+  `,
+  toolbarClipboardButton: css`
+    && {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 0 ${theme.spacing(1)} !important;
+      height: auto !important;
+      min-height: unset;
+      min-width: unset;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      line-height: ${theme.components.height.md * theme.spacing.gridSize - 2}px;
+      font-weight: ${theme.typography.fontWeightMedium};
+      color: ${theme.colors.text.primary};
+      background: ${theme.colors.secondary.main};
+
+      &:hover:not(:disabled),
+      &:focus:not(:disabled),
+      &:focus-visible:not(:disabled) {
+        color: ${theme.colors.text.primary};
+        background: ${theme.colors.secondary.shade};
+        border: none !important;
+        box-shadow: none !important;
+      }
+
+      [class*='icon'] {
+        margin: 0 !important;
+      }
     }
   `,
   sceneControls: css`

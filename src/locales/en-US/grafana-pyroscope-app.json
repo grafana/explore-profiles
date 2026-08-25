@@ -171,6 +171,7 @@
       "add-recording-rule": "Add recording rule",
       "recording-rules-tooltip": "Recording rules",
       "settings-tooltip": "View/edit tenant settings",
+      "share-error": "Error while copying the shareable link to the clipboard!",
       "share-tooltip": "Copy shareable link to the clipboard",
       "upload-tooltip": "Upload ad hoc profiles",
       "view-recording-rules": "View recording rules"
@@ -251,10 +252,10 @@
     "context-menu": {
       "label": "Function details"
     },
+    "copy-error": "Error while copying the file path to the clipboard!",
     "copy-to-clipboard": "Copy to clipboard",
     "fetch-error": "Error while fetching function details!",
     "file": "File",
-    "file-path-copied": "File path copied to clipboard!",
     "file-tooltip": "File path where that function is defined",
     "function-name": "Function name",
     "github": {
