@@ -2,7 +2,8 @@ import { css } from '@emotion/css';
 import { GrafanaTheme2, TimeRange } from '@grafana/data';
 import { t, Trans } from '@grafana/i18n';
 import { SceneComponentProps, sceneGraph, SceneObjectBase, SceneObjectState } from '@grafana/scenes';
-import { IconButton, InlineLabel, TextLink, Tooltip, ClipboardButton, useStyles2 } from '@grafana/ui';
+import { ClipboardButton, IconButton, InlineLabel, TextLink, Tooltip, useStyles2 } from '@grafana/ui';
+import { displayError } from '@shared/domain/displayStatus';
 import { userStorage } from '@shared/infrastructure/userStorage';
 import { DomainHookReturnValue } from '@shared/types/DomainHookReturnValue';
 import { InlineBanner } from '@shared/ui/InlineBanner';
@@ -211,6 +212,11 @@ export class SceneFunctionDetailsPanel extends SceneObjectBase<SceneFunctionDeta
                       className={styles.clipboardIconButton}
                       tooltip={t('function-details.copy-to-clipboard', 'Copy to clipboard')}
                       getText={() => data.functionDetails.fileName ?? ''}
+                      onClipboardError={(_text, error) => {
+                        displayError(error as Error, [
+                          t('function-details.copy-error', 'Error while copying the file path to the clipboard!'),
+                        ]);
+                      }}
                     />
                   </>
                 ) : (

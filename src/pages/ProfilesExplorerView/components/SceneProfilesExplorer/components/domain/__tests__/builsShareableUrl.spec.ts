@@ -1,10 +1,12 @@
 import { dateMath } from '@grafana/data';
-import { displayError } from '@shared/domain/displayStatus';
+import { logger } from '@shared/infrastructure/tracking/logger';
 
 import { builsShareableUrl, getShareableUrlText } from '../builsShareableUrl';
 
-jest.mock('@shared/domain/displayStatus', () => ({
-  displayError: jest.fn(),
+jest.mock('@shared/infrastructure/tracking/logger', () => ({
+  logger: {
+    error: jest.fn(),
+  },
 }));
 
 const BASE_URL = 'http://localhost:3000/a/grafana-pyroscope-app/profiles-explorer?explorationType=diff-flame-graph';
@@ -45,11 +47,7 @@ describe('builsShareableUrl()', () => {
       new URL(`${BASE_URL}&from=now-1d&to=2024-10-18T12:03:44.687Z`),
       `${BASE_URL}&from=1729165933247&to=1729253024687`,
     ],
-    [
-      'malformed from',
-      new URL(`${BASE_URL}&from=not-a-date&to=now`),
-      `${BASE_URL}&from=not-a-date&to=1729252333247`,
-    ],
+    ['malformed from', new URL(`${BASE_URL}&from=not-a-date&to=now`), `${BASE_URL}&from=not-a-date&to=1729252333247`],
     [
       'malformed relative from',
       new URL(`${BASE_URL}&from=now-bogus&to=now`),
@@ -70,19 +68,17 @@ describe('builsShareableUrl()', () => {
       setWindowLocation(new URL(BASE_URL));
 
       expect(getShareableUrlText()).toBe(`${BASE_URL}&from=1729250533247&to=1729252333247`);
-      expect(displayError).not.toHaveBeenCalled();
+      expect(logger.error).not.toHaveBeenCalled();
     });
 
-    it('reports errors from builsShareableUrl() without throwing', () => {
+    it('logs errors from builsShareableUrl() without throwing or alerting', () => {
       setWindowLocation(new URL(BASE_URL));
       jest.spyOn(dateMath, 'toDateTime').mockImplementation(() => {
         throw new Error('malformed time');
       });
 
       expect(getShareableUrlText()).toBe(BASE_URL);
-      expect(displayError).toHaveBeenCalledWith(expect.any(Error), [
-        'Error while copying the shareable link to the clipboard!',
-      ]);
+      expect(logger.error).toHaveBeenCalledWith(expect.any(Error), { handheldBy: 'getShareableUrlText' });
     });
   });
 });

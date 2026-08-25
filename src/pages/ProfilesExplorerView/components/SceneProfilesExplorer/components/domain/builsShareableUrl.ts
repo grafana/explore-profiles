@@ -1,6 +1,5 @@
 import { dateMath } from '@grafana/data';
-import { t } from '@grafana/i18n';
-import { displayError } from '@shared/domain/displayStatus';
+import { logger } from '@shared/infrastructure/tracking/logger';
 
 import { getDefaultTimeRange } from '../../../..//domain/buildTimeRange';
 
@@ -31,16 +30,16 @@ export function builsShareableUrl(): URL {
 }
 
 /**
- * ClipboardButton calls getText() outside its clipboard error handler, so this
- * wrapper reports build failures instead of letting them escape the click handler.
+ * ClipboardButton calls getText() outside its clipboard error handler.
+ * Swallow build failures (and fall back to the current URL) so the click
+ * handler does not throw. User-facing copy errors belong in onClipboardError
+ * only — otherwise a failed build plus a failed clipboard write would toast twice.
  */
 export function getShareableUrlText(): string {
   try {
     return builsShareableUrl().toString();
   } catch (error) {
-    displayError(error as Error, [
-      t('explorer.header.share-error', 'Error while copying the shareable link to the clipboard!'),
-    ]);
+    logger.error(error as Error, { handheldBy: 'getShareableUrlText' });
     return window.location.toString();
   }
 }
