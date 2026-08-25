@@ -295,9 +295,6 @@
     "button": "Lascia un feedback"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Nessun risultato"
-    },
     "error": {
       "title": "Errore di query!"
     },

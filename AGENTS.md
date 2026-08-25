@@ -7,7 +7,7 @@
 | File                                 | What it's for                                                                                                                   |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | **`AGENTS.md`** (this file)          | **Entry point.** Pyroscope & profiling workflow, expected vs bug, Scenes patterns, security. Points to every other doc below.   |
-| **`docs/CONTRIBUTING.md`**           | **Human contributors.** Dev setup, issues vs PRs, i18n, PR checklist, link to GenAI policy.                                     |
+| **`CONTRIBUTING.md`**                | **Human contributors.** Dev setup, issues vs PRs, i18n, PR checklist, link to GenAI policy.                                     |
 | **`docs/genai.md`**                  | **AI-assisted contributions.** Disclosure, acceptable use, Profiles Drilldown-specific pitfalls.                                  |
 | **`.config/AGENTS/instructions.md`** | **Plugin tooling only** — webpack, `plugin.json`, E2E, rules about `.config`.                                                   |
 | **`docs/project-intent.md`**         | **Why** we built the app — philosophy, principles. Use when reasoning about tradeoffs or scope.                                 |
@@ -76,4 +76,4 @@ Profiles Drilldown uses [@grafana/scenes](https://grafana.com/developers/scenes/
 
 Start with the **How these files fit together** table above, then open the doc that matches your task.
 
-**Human contributors:** follow [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for how to file issues, open pull requests, run local checks, and use AI tools responsibly. The full GenAI policy is in [docs/genai.md](docs/genai.md).
+**Human contributors:** follow [CONTRIBUTING.md](CONTRIBUTING.md) for how to file issues, open pull requests, run local checks, and use AI tools responsibly. The full GenAI policy is in [docs/genai.md](docs/genai.md).

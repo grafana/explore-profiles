@@ -54,7 +54,7 @@ pnpm install --no-frozen-lockfile --ignore-scripts
 
 Review `overrides` in `pnpm-workspace.yaml` when security advisories land, and run `pnpm audit` after dependency changes.
 
-CI runs via [`.github/workflows/ci-cd.yml`](../.github/workflows/ci-cd.yml) (`grafana/plugin-ci-workflows`), which runs the package manager’s frozen install command (`pnpm install --frozen-lockfile` for this repo). When bumping that reusable workflow, confirm installs still use a frozen lockfile and skip lifecycle scripts (`pnpm-workspace.yaml` is copied into the job).
+CI runs via [`.github/workflows/ci.yml`](.github/workflows/ci.yml) (`grafana/plugin-ci-workflows`), which runs the package manager’s frozen install command (`pnpm install --frozen-lockfile` for this repo). When bumping that reusable workflow, confirm installs still use a frozen lockfile and skip lifecycle scripts (`pnpm-workspace.yaml` is copied into the job).
 
 ## Get started
 
@@ -70,7 +70,7 @@ Then visit http://localhost:3000/a/grafana-pyroscope-app
 
 - To use **live remote data**, read the "Enable with live remote profile data" section below.
 - To use **a local version of Pyroscope**, read the "Enable with a local version of Pyroscope" section below.
-- To use **a local version of Grafana**, read [this section](./GRAFANA-CROSS-DEVELOPMENT.md).
+- To use **a local version of Grafana**, read [this section](docs/GRAFANA-CROSS-DEVELOPMENT.md).
 
 ### Enable with live remote profile data
 
@@ -111,7 +111,7 @@ For more information, refer to the [Flame graph AI](https://grafana.com/docs/gra
 
 For developing in this repo, requirements are generally managed by lint rules and pre-commit hooks. However, for other things, like code organization, please follow the pattern established by the rest of the repo.
 
-In case of doubt, have a look at ["Profiles Drilldown frontend architecture"](./CODE-ARCHITECTURE.md)
+In case of doubt, have a look at ["Profiles Drilldown frontend architecture"](docs/CODE-ARCHITECTURE.md)
 
 ### Lint and format your code
 
@@ -127,11 +127,11 @@ When opening a Pull Request (PR), please make sure that the title is properly pr
 
 We encourage you to write tests, whether they are unit tests or end-to-end tests. They will give us the confidence that the plugin behaves as intended and help us capture any regression early.
 
-For end-to-end testing (E2E), please have a look at our [E2E testing documentation](../e2e/README.md).
+For end-to-end testing (E2E), please have a look at our [E2E testing documentation](e2e/README.md).
 
 ### Before you open a pull request
 
-- Fill out the [pull request template](../.github/pull_request_template.md) with a clear summary and test steps.
+- Fill out the [pull request template](.github/pull_request_template.md) with a clear summary and test steps.
 - Use a [conventional commit](https://www.conventionalcommits.org/) style PR title (enforced by CI).
 - Run `pnpm run lint`, `pnpm run typecheck`, and `pnpm run test:ci` locally.
 - Add or update tests when behavior changes. Prefer focused unit tests (Jest) or Playwright E2E when UI flows are affected.
@@ -152,7 +152,7 @@ CI runs an i18n verification workflow on pull requests. Translations for other l
 
 Generative AI tools can help you explore the codebase, draft code, and write documentation. **You are always responsible for what you submit.**
 
-Read the full [Generative AI Contribution Policy](genai.md) for acceptable use, disclosure, Profiles Drilldown-specific guidance (Pyroscope, Scenes, tests), and rules for agentic tools. Point coding assistants at [AGENTS.md](../AGENTS.md) for technical conventions.
+Read the full [Generative AI Contribution Policy](docs/genai.md) for acceptable use, disclosure, Profiles Drilldown-specific guidance (Pyroscope, Scenes, tests), and rules for agentic tools. Point coding assistants at [AGENTS.md](AGENTS.md) for technical conventions.
 
 When AI generated the bulk of a pull request, check the disclosure box in the pull request template.
 

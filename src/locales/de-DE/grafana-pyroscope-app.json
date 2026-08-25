@@ -295,9 +295,6 @@
     "button": "Feedback geben"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Keine Ergebnisse"
-    },
     "error": {
       "title": "Abfragefehler!"
     },

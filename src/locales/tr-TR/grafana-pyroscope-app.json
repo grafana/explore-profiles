@@ -295,9 +295,6 @@
     "button": "Geri bildirim gönder"
   },
   "grid": {
-    "empty-state": {
-      "no-results": "Sonuç yok"
-    },
     "error": {
       "title": "Sorgu hatası!"
     },
