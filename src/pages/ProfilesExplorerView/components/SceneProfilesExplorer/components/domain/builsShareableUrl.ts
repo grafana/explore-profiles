@@ -1,4 +1,5 @@
 import { dateMath } from '@grafana/data';
+import { displayError } from '@shared/domain/displayStatus';
 
 import { getDefaultTimeRange } from '../../../..//domain/buildTimeRange';
 
@@ -15,10 +16,28 @@ export function builsShareableUrl(): URL {
 
   ['from', 'to', 'from-2', 'to-2', 'from-3', 'to-3', 'diffFrom', 'diffTo', 'diffFrom-2', 'diffTo-2'].forEach((name) => {
     const value = searchParams.get(name);
-    if (value) {
-      searchParams.set(name, String(dateMath.parse(value)!.valueOf()));
+    if (!value) {
+      return;
+    }
+
+    const parsed = dateMath.toDateTime(value, {});
+    if (parsed?.isValid()) {
+      searchParams.set(name, String(parsed.valueOf()));
     }
   });
 
   return shareableUrl;
+}
+
+/**
+ * ClipboardButton calls getText() outside its clipboard error handler, so this
+ * wrapper reports build failures instead of letting them escape the click handler.
+ */
+export function getShareableUrlText(): string {
+  try {
+    return builsShareableUrl().toString();
+  } catch (error) {
+    displayError(error as Error, ['Error while copying the shareable link to the clipboard!']);
+    return window.location.toString();
+  }
 }

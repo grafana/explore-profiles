@@ -16,7 +16,7 @@ import {
   SceneProfilesExplorerState,
 } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/SceneProfilesExplorer';
 import { usePluginHeaderToolbar } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/usePluginHeaderToolbar';
-import { builsShareableUrl } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/builsShareableUrl';
+import { getShareableUrlText } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/domain/builsShareableUrl';
 import { ExplorationTypeSelector } from 'src/pages/ProfilesExplorerView/components/SceneProfilesExplorer/components/ui/ExplorationTypeSelector';
 
 export type PluginHeaderToolbarProps = {
@@ -134,7 +134,7 @@ export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
                 fill="text"
                 className={styles.toolbarClipboardButton}
                 tooltip={t('explorer.header.share-tooltip', 'Copy shareable link to the clipboard')}
-                getText={() => builsShareableUrl().toString()}
+                getText={getShareableUrlText}
                 onClipboardCopy={() => reportInteraction('g_pyroscope_app_share_link_clicked')}
                 onClipboardError={(_text, error) => {
                   reportInteraction('g_pyroscope_app_share_link_clicked');
