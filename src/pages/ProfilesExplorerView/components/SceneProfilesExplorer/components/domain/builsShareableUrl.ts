@@ -1,4 +1,5 @@
 import { dateMath } from '@grafana/data';
+import { t } from '@grafana/i18n';
 import { displayError } from '@shared/domain/displayStatus';
 
 import { getDefaultTimeRange } from '../../../..//domain/buildTimeRange';
@@ -37,7 +38,9 @@ export function getShareableUrlText(): string {
   try {
     return builsShareableUrl().toString();
   } catch (error) {
-    displayError(error as Error, ['Error while copying the shareable link to the clipboard!']);
+    displayError(error as Error, [
+      t('explorer.header.share-error', 'Error while copying the shareable link to the clipboard!'),
+    ]);
     return window.location.toString();
   }
 }

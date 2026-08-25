@@ -171,6 +171,7 @@
       "add-recording-rule": "Add recording rule",
       "recording-rules-tooltip": "Recording rules",
       "settings-tooltip": "View/edit tenant settings",
+      "share-error": "Error while copying the shareable link to the clipboard!",
       "share-tooltip": "Copy shareable link to the clipboard",
       "upload-tooltip": "Upload ad hoc profiles",
       "view-recording-rules": "View recording rules"

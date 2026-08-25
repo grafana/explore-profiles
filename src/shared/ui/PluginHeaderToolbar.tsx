@@ -138,7 +138,9 @@ export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
                 onClipboardCopy={() => reportInteraction('g_pyroscope_app_share_link_clicked')}
                 onClipboardError={(_text, error) => {
                   reportInteraction('g_pyroscope_app_share_link_clicked');
-                  displayError(error as Error, ['Error while copying the shareable link to the clipboard!']);
+                  displayError(error as Error, [
+                    t('explorer.header.share-error', 'Error while copying the shareable link to the clipboard!'),
+                  ]);
                 }}
               />
 
