@@ -93,8 +93,23 @@ function bytesToBase64(bytes: Uint8Array): string {
   return btoa(parts.join(''));
 }
 
+function looksLikeJson(base64Payload: string): boolean {
+  try {
+    const n = Math.min(base64Payload.length, 64);
+    const text = atob(base64Payload.slice(0, n - (n % 4)));
+    const trimmed = text.trimStart();
+    return trimmed.startsWith('{') || trimmed.startsWith('[');
+  } catch {
+    return false;
+  }
+}
+
 /** Returns `[base64Payload, convertedFromDouble]`. */
 export function prepareAdHocProfileUploadPayload(base64Payload: string): [string, boolean] {
+  if (!looksLikeJson(base64Payload)) {
+    return [base64Payload, false];
+  }
+
   let bytes: Uint8Array;
   try {
     bytes = base64ToBytes(base64Payload);

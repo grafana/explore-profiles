@@ -21,11 +21,11 @@ const doubleProfile = (): FlamebearerProfile => ({
 });
 
 function utf8ToBase64(s: string): string {
-  return Buffer.from(s, 'utf8').toString('base64');
+  return btoa(s);
 }
 
 function parsePayload(base64: string): FlamebearerProfile {
-  return JSON.parse(Buffer.from(base64, 'base64').toString('utf8')) as FlamebearerProfile;
+  return JSON.parse(atob(base64)) as FlamebearerProfile;
 }
 
 describe('prepareAdHocProfileUploadPayload', () => {
@@ -40,7 +40,7 @@ describe('prepareAdHocProfileUploadPayload', () => {
   });
 
   it('returns input unchanged for non-JSON and single profiles', () => {
-    const binary = Buffer.from([0xff, 0xfe, 0xfd]).toString('base64');
+    const binary = btoa(String.fromCharCode(0xff, 0xfe, 0xfd));
     expect(prepareAdHocProfileUploadPayload(binary)).toEqual([binary, false]);
 
     const text = utf8ToBase64('not json');
