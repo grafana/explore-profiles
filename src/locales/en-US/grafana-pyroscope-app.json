@@ -252,6 +252,7 @@
     "context-menu": {
       "label": "Function details"
     },
+    "copy-error": "Error while copying the file path to the clipboard!",
     "copy-to-clipboard": "Copy to clipboard",
     "fetch-error": "Error while fetching function details!",
     "file": "File",
