@@ -58,7 +58,7 @@ function InfoMenu() {
       <Menu.Item
         label={t('plugin-info.contribute', 'Contribute')}
         icon="external-link-alt"
-        onClick={() => window.open('https://github.com/grafana/profiles-drilldown/blob/main/docs/CONTRIBUTING.md')}
+        onClick={() => window.open('https://github.com/grafana/profiles-drilldown/blob/main/CONTRIBUTING.md')}
       />
       <Menu.Item
         label={t('plugin-info.documentation', 'Documentation')}

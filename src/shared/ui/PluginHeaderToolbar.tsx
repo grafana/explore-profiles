@@ -2,7 +2,7 @@ import { css, cx } from '@emotion/css';
 import { GrafanaTheme2 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { useChromeHeaderHeight, usePluginComponent } from '@grafana/runtime';
-import { Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
+import { ButtonGroup, Dropdown, ErrorBoundary, Field, Icon, Menu, ToolbarButton, useStyles2 } from '@grafana/ui';
 import { SaveSearchButton } from '@shared/components/SavedSearches/SaveSearchButton';
 import { useFlagMetricsFromProfiles } from '@shared/infrastructure/featureFlags/featureFlags';
 import { useFetchPluginSettings } from '@shared/infrastructure/settings/useFetchPluginSettings';
@@ -106,7 +106,7 @@ export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
           )}
 
           {!props.isEmbedded && (
-            <div className={styles.appMiscButtons}>
+            <ButtonGroup>
               {settings?.enableMetricsFromProfiles && metricsFromProfiles && (
                 <Dropdown overlay={metricsFromProfilesMenu}>
                   <ToolbarButton
@@ -140,7 +140,7 @@ export function PluginHeaderToolbar(props: PluginHeaderToolbarProps) {
               />
 
               <PluginInfo variant="canvas" />
-            </div>
+            </ButtonGroup>
           )}
         </div>
       </div>
@@ -213,26 +213,11 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
     display: flex;
     align-items: center;
     gap: ${theme.spacing(1)};
-  `,
-  appMiscButtons: css`
-    display: flex;
-    align-items: stretch;
-    height: ${theme.spacing(theme.components.height.md)};
-    box-sizing: border-box;
-    border: 1px solid ${theme.colors.border.weak};
-    background-color: ${theme.colors.background.secondary};
-    border-radius: ${theme.shape.radius.default};
-    overflow: hidden;
 
-    button {
-      border: none;
-      border-radius: 0;
-      height: auto;
-
-      &:hover,
-      &:focus {
-        border: none;
-      }
+    /* TimeRangePicker defaults to right:0; open into the page so the docked nav does not clip it */
+    [data-testid='data-testid TimePicker Overlay Content'] > section {
+      right: auto;
+      left: 0;
     }
   `,
   sceneControls: css`
@@ -251,7 +236,12 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
     }
 
     &.filters {
-      flex-grow: 1;
+      flex: 1 1 0;
+    }
+
+    &.filtersAllServices {
+      // Set to 2 to add priority over quick-filter.
+      flex: 2 1 0;
     }
 
     &.compare-presets {
@@ -276,7 +266,7 @@ const getStyles = (theme: GrafanaTheme2, chromeHeaderHeight: number, isEmbedded:
     margin-bottom: 0;
 
     &#quick-filter {
-      flex: 1;
+      flex: 1 1 0;
       min-width: 112px;
     }
   `,
