@@ -428,6 +428,17 @@ export class ExploreProfilesPage extends PyroscopePage {
     }
   }
 
+  /** Opens the filter input and returns the suggestions menu, which lists the labels found in the current time range. */
+  async openFilterSuggestions(filterKey = 'filters') {
+    await this.getFilters(filterKey).getByRole('combobox').click();
+
+    return this.getByLabel('Select options menu');
+  }
+
+  closeFilterSuggestions() {
+    return this.page.keyboard.press('Escape');
+  }
+
   /* Flame graph component */
 
   getSpanProfileVisualizationPicker() {
@@ -571,6 +582,11 @@ export class ExploreProfilesPage extends PyroscopePage {
 
   getComparisonTimePickerButton(target: 'baseline' | 'comparison') {
     return this.getByTestId(`panel-${target}`).getByTestId('data-testid TimePicker Open Button');
+  }
+
+  async selectComparisonQuickRange(target: 'baseline' | 'comparison', quickRangeLabel: string) {
+    await this.getComparisonTimePickerButton(target).click();
+    await this.getByTestId('data-testid TimePicker Overlay Content').getByText(quickRangeLabel).click();
   }
 
   async selectComparisonTimeRange(target: 'baseline' | 'comparison', from: string, to: string) {
