@@ -29,6 +29,9 @@
       "diff-view": "Diff view",
       "single-view": "Single view"
     },
+    "upload": {
+      "diff-converted-to-single": "Diff profile was converted to a single flame graph for upload. Comparison data was not kept."
+    },
     "view": {
       "title": "Ad hoc view"
     }

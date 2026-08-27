@@ -29,6 +29,9 @@
       "diff-view": "",
       "single-view": "Vista única"
     },
+    "upload": {
+      "diff-converted-to-single": ""
+    },
     "view": {
       "title": "Vista personalizada"
     }
