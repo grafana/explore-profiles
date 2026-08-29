@@ -141,6 +141,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Tüm hizmetler",
       "all-services-description": "Belirli bir profil türü için tüm hizmetlerin genel görünümü",
@@ -445,11 +448,19 @@
     "commit-sha": "SHA yürütme: {{shortCommitSha}}",
     "contribute": "Katkıda bulunun",
     "documentation": "Belgeler",
-    "grafana-version": "Grafana {{edition}} {{version}} sürümü ({{env}})",
+    "grafana-version": "",
     "last-update": "Son güncelleme: {{updated}}",
     "report-issue": "Sorun bildir",
     "title": "Eklenti bilgileri",
     "version": "Grafana Profiles Drilldown {{version}} sürümü"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Bloklar",
@@ -547,7 +558,7 @@
       "no-searches": "Gösterilecek kayıtlı arama yok.",
       "no-searches-tooltip": "Yüklenecek kayıtlı arama yok",
       "remove-tooltip": "Kaldır",
-      "saved-query-tooltip": "Kaydedilen sorguyu yükle",
+      "saved-query-tooltip": "",
       "select": "Seçin",
       "select-pyroscope-query": "Lütfen bir Pyroscope sorgusu seçin.",
       "title": "Önceden kaydedilmiş bir aramayı yükleyin",
@@ -561,7 +572,7 @@
       "existing-search-warning": "Aynı sorguya sahip, daha önceden kaydedilmiş bir arama var: {{title}}",
       "info-message": "Kayıtlı aramalar tarayıcınızda yerel olarak depolanır ve yalnızca bu cihazda kullanılabilir.",
       "save": "Kaydet",
-      "saved-queries-tooltip": "Kayıtlı Sorgular'a kaydet",
+      "saved-queries-tooltip": "",
       "success-body": "Arama başarıyla kaydedildi.",
       "success-message": "Arama başarıyla kaydedildi.",
       "success-title": "Başarılı",
@@ -620,6 +631,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Temsilî veriler",
       "open-in-explore": "Keşfet'te aç",
       "scale-linear": "Doğrusal",

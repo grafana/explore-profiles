@@ -141,6 +141,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "Alle Dienste",
       "all-services-description": "Überblick über alle Dienste für jeden Profiltyp",
@@ -445,11 +448,19 @@
     "commit-sha": "Commit SHA: {{shortCommitSha}}",
     "contribute": "Beitragen",
     "documentation": "Dokumentation",
-    "grafana-version": "Grafana {{edition}} Ver. {{version}} ({{env}})",
+    "grafana-version": "",
     "last-update": "Letztes Update: {{updated}}",
     "report-issue": "Problem melden",
     "title": "Plugin-Info",
     "version": "Grafana Profiles Drilldown Ver. {{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "Blöcke",
@@ -547,7 +558,7 @@
       "no-searches": "Keine gespeicherten Suchen zum Anzeigen vorhanden.",
       "no-searches-tooltip": "Keine gespeicherten Suchen zum Laden vorhanden",
       "remove-tooltip": "Entfernen",
-      "saved-query-tooltip": "Gespeicherte Abfrage laden",
+      "saved-query-tooltip": "",
       "select": "Auswählen",
       "select-pyroscope-query": "Bitte wählen Sie eine Pyroscope-Abfrage aus.",
       "title": "Zuvor gespeicherte Suche laden",
@@ -561,7 +572,7 @@
       "existing-search-warning": "Es gibt eine zuvor gespeicherte Suche mit derselben Abfrage: {{title}}",
       "info-message": "Gespeicherte Suchen werden lokal in Ihrem Browser gespeichert und sind nur auf diesem Gerät verfügbar.",
       "save": "Speichern",
-      "saved-queries-tooltip": "In „Gespeicherte Abfragen“ speichern",
+      "saved-queries-tooltip": "",
       "success-body": "Suche erfolgreich gespeichert.",
       "success-message": "Suche erfolgreich gespeichert.",
       "success-title": "Erfolg",
@@ -620,6 +631,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "Exemplare",
       "open-in-explore": "In Explore öffnen",
       "scale-linear": "Linear",

@@ -141,6 +141,9 @@
     "title": "Grafana Profiles Drilldown"
   },
   "explorer": {
+    "add-to-dashboard": {
+      "modal-title": ""
+    },
     "exploration-type": {
       "all-services": "すべてのサービス",
       "all-services-description": "任意のプロファイルタイプに対する、すべてのサービスの概要",
@@ -444,11 +447,19 @@
     "commit-sha": "コミットSHA：{{shortCommitSha}}",
     "contribute": "貢献",
     "documentation": "ドキュメント",
-    "grafana-version": "Grafana {{edition}} v{{version}}（{{env}}）",
+    "grafana-version": "",
     "last-update": "最終更新：{{updated}}",
     "report-issue": "問題を報告する",
     "title": "プラグイン情報",
     "version": "Grafana Profiles Drilldown v{{version}}"
+  },
+  "profiles": {
+    "kg-annotations": {
+      "insights-label": "",
+      "severity-critical": "",
+      "severity-info": "",
+      "severity-warning": ""
+    }
   },
   "query-analysis": {
     "blocks": "ブロック",
@@ -546,7 +557,7 @@
       "no-searches": "表示する保存した検索がありません。",
       "no-searches-tooltip": "読み込む保存した検索がありません",
       "remove-tooltip": "削除",
-      "saved-query-tooltip": "保存されたクエリを読み込む",
+      "saved-query-tooltip": "",
       "select": "選択",
       "select-pyroscope-query": "Pyroscope クエリを選択してください。",
       "title": "以前に保存した検索を読み込む",
@@ -560,7 +571,7 @@
       "existing-search-warning": "同じクエリを使用した、以前に保存した検索が存在します：{{title}}",
       "info-message": "保存した検索はブラウザのローカルデータに保存され、このデバイスでのみ利用できます。",
       "save": "保存",
-      "saved-queries-tooltip": "保存されたクエリに保存",
+      "saved-queries-tooltip": "",
       "success-body": "検索が正常に保存されました。",
       "success-message": "検索が正常に保存されました。",
       "success-title": "成功",
@@ -619,6 +630,7 @@
   },
   "timeseries": {
     "menu": {
+      "add-to-dashboard": "",
       "exemplars": "エグゼンプラー",
       "open-in-explore": "Exploreで開く",
       "scale-linear": "線形",
