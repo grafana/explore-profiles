@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.3.1](https://github.com/grafana/profiles-drilldown/compare/v2.3.0...v2.3.1) (2026-09-08)
+
+
+### 🐛 Bug Fixes
+
+* **deps:** bump pnpm overrides for CVE remediation ([#1115](https://github.com/grafana/profiles-drilldown/issues/1115)) ([dd4735f](https://github.com/grafana/profiles-drilldown/commit/dd4735f7913f4df2148007c29ac725f3a4bd9c57))
+* Issue with share button copying ([#1035](https://github.com/grafana/profiles-drilldown/issues/1035)) ([20ec037](https://github.com/grafana/profiles-drilldown/commit/20ec037791355bcba767c65dd0aa32ecf2e767d3))
+* scope diff view filters to their own panel time range ([#1099](https://github.com/grafana/profiles-drilldown/issues/1099)) ([34022af](https://github.com/grafana/profiles-drilldown/commit/34022af58965abd3a4524a99ec00ee3610caf590))
+* **security/high/:** update pnpm to v11.11.0 [security] ([#1112](https://github.com/grafana/profiles-drilldown/issues/1112)) ([2ea7a6f](https://github.com/grafana/profiles-drilldown/commit/2ea7a6fd511d849b143e1b01e3864404f13992b7))
+* **security/medium/:** update dependency react-router-dom to v6.30.5 [security] ([#1102](https://github.com/grafana/profiles-drilldown/issues/1102)) ([f4715e4](https://github.com/grafana/profiles-drilldown/commit/f4715e45c38966422cef5491792dddb7738f4fa9))
+* Upload failure for diff profile ([#1048](https://github.com/grafana/profiles-drilldown/issues/1048)) ([68138cf](https://github.com/grafana/profiles-drilldown/commit/68138cf84f78a65e638f77f3cc43c9bb4de1006e))
+
+
+### 🧹 Chore
+
+* **deps:** update golang:1.26.5 docker digest to 705e964 ([#1108](https://github.com/grafana/profiles-drilldown/issues/1108)) ([ec5604b](https://github.com/grafana/profiles-drilldown/commit/ec5604b4fa0694003f0c341ce8eaf85760fbea2e))
+* **deps:** update grafana/shared-workflows/lint-pr-title action to v1.2.4 ([#1111](https://github.com/grafana/profiles-drilldown/issues/1111)) ([92653a2](https://github.com/grafana/profiles-drilldown/commit/92653a2e107aa1f214190c1d9acc9f295b2de755))
+* Update packages ([#1107](https://github.com/grafana/profiles-drilldown/issues/1107)) ([42a8a0d](https://github.com/grafana/profiles-drilldown/commit/42a8a0dbd7e8e273bb933b52640ee93aca25046c))
+
 ## [2.3.0](https://github.com/grafana/profiles-drilldown/compare/v2.2.0...v2.3.0) (2026-08-21)
 
 
