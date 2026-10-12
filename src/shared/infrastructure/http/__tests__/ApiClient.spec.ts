@@ -25,6 +25,13 @@ function setupMocks(options?: {
     },
   }));
 
+  const { locationUtil } = require('@grafana/data');
+  locationUtil.initialize({
+    config: { appSubUrl: options?.appSubUrl ?? '' },
+    getTimeRangeForUrl: jest.fn(),
+    getVariablesUrlParams: jest.fn(),
+  });
+
   jest.doMock('@grafana/plugin-compat/datasources', () => ({
     getDataSourceInstanceList: () => Promise.resolve(datasources),
     getDataSourceInstanceSettings: (uid: string) => Promise.resolve(datasources.find((d) => d.uid === uid)),

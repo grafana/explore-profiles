@@ -7,6 +7,7 @@ import {
   PYROSCOPE_URL_SEARCH_PARAM_NAME,
   TEMPO_DATA_SOURCE_PLUGIN_ID,
 } from '../../../constants';
+import { getDataSourceProxyUrl } from '../appUrl';
 import { logger } from '../tracking/logger';
 import { userStorage } from '../userStorage';
 import { getSettingsAndDefault, SettingsWithDefaultUid } from './datasources';
@@ -67,13 +68,7 @@ export class ApiClient extends HttpClient {
   override async getBaseUrl(): Promise<string> {
     const pyroscopeDataSource = await ApiClient.selectDefaultDataSource();
 
-    let appSubUrl = config.appSubUrl || '';
-    if (appSubUrl.at(-1) !== '/') {
-      // ensures that the API pathname is appended correctly (appUrl seems to always have it but better to be extra careful)
-      appSubUrl += '/';
-    }
-
-    return `${appSubUrl}api/datasources/proxy/uid/${pyroscopeDataSource.uid}`;
+    return getDataSourceProxyUrl(pyroscopeDataSource.uid);
   }
 
   constructor() {
