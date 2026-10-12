@@ -1,20 +1,20 @@
-import { isAppPluginInstalled } from '@grafana/runtime';
+import { BackendSrv, isAppPluginEnabled, isAppPluginInstalled, setBackendSrv } from '@grafana/runtime';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 
 import { useFetchLlmPluginStatus } from '../useFetchLlmPluginStatus';
 
-const mockGet = jest.fn();
-
 jest.mock('@grafana/runtime', () => ({
+  ...jest.requireActual('@grafana/runtime'),
   isAppPluginInstalled: jest.fn(),
-  getBackendSrv: () => ({
-    get: (...args: unknown[]) => mockGet(...args),
-  }),
+  isAppPluginEnabled: jest.fn(),
 }));
 
 jest.mock('@shared/infrastructure/tracking/logger');
+
+const isAppPluginInstalledMock = jest.mocked(isAppPluginInstalled);
+const isAppPluginEnabledMock = jest.mocked(isAppPluginEnabled);
 
 class HttpError extends Error {
   status: number;
@@ -40,9 +40,23 @@ const createWrapper = () => {
 };
 
 describe('useFetchLlmPluginStatus()', () => {
+  let backendSrvMock: BackendSrv;
   beforeEach(() => {
-    jest.clearAllMocks();
-    (isAppPluginInstalled as jest.Mock).mockResolvedValue(false);
+    jest.resetAllMocks();
+    backendSrvMock = {
+      chunked: jest.fn(),
+      delete: jest.fn(),
+      fetch: jest.fn(),
+      get: jest.fn(),
+      patch: jest.fn(),
+      post: jest.fn(),
+      put: jest.fn(),
+      datasourceRequest: jest.fn(),
+      request: jest.fn(),
+    };
+    setBackendSrv(backendSrvMock);
+    isAppPluginInstalledMock.mockResolvedValue(false);
+    isAppPluginEnabledMock.mockResolvedValue(false);
   });
 
   describe('when the Grafana LLM app is not installed', () => {
@@ -53,7 +67,8 @@ describe('useFetchLlmPluginStatus()', () => {
         expect(result.current.isFetching).toBe(false);
       });
 
-      expect(mockGet).not.toHaveBeenCalled();
+      expect(isAppPluginEnabledMock).not.toHaveBeenCalled();
+      expect(backendSrvMock.get).not.toHaveBeenCalled();
       expect(result.current.isEnabled).toBe(false);
       expect(result.current.error).toBeFalsy();
     });
@@ -61,11 +76,12 @@ describe('useFetchLlmPluginStatus()', () => {
 
   describe('when the Grafana LLM app is installed', () => {
     beforeEach(() => {
-      (isAppPluginInstalled as jest.Mock).mockResolvedValue(true);
+      isAppPluginInstalledMock.mockResolvedValue(true);
     });
 
     it('returns isEnabled=true when settings.enabled and the health check reports a configured, ok provider', async () => {
-      mockGet.mockResolvedValueOnce({ enabled: true }).mockResolvedValueOnce({
+      isAppPluginEnabledMock.mockResolvedValue(true);
+      backendSrvMock.get = jest.fn().mockResolvedValueOnce({
         details: { llmProvider: { configured: true, ok: true } },
       });
 
@@ -75,17 +91,14 @@ describe('useFetchLlmPluginStatus()', () => {
         expect(result.current.isEnabled).toBe(true);
       });
 
-      expect(mockGet).toHaveBeenCalledWith(
-        '/api/plugins/grafana-llm-app/settings',
-        undefined,
-        undefined,
-        expect.objectContaining({ showErrorAlert: false, showSuccessAlert: false })
-      );
+      expect(isAppPluginEnabledMock).toHaveBeenCalledWith('grafana-llm-app');
+      expect(backendSrvMock.get).toHaveBeenCalledWith('/api/plugins/grafana-llm-app/health', undefined, undefined, {
+        showErrorAlert: false,
+        showSuccessAlert: false,
+      });
     });
 
     it('returns isEnabled=false without calling the health endpoint when settings.enabled is false', async () => {
-      mockGet.mockResolvedValueOnce({ enabled: false });
-
       const { result } = renderHook(() => useFetchLlmPluginStatus(), { wrapper: createWrapper() });
 
       await waitFor(() => {
@@ -93,11 +106,13 @@ describe('useFetchLlmPluginStatus()', () => {
       });
 
       expect(result.current.isEnabled).toBe(false);
-      expect(mockGet).toHaveBeenCalledTimes(1);
+      expect(isAppPluginEnabledMock).toHaveBeenCalledTimes(1);
+      expect(backendSrvMock.get).toHaveBeenCalledTimes(0);
     });
 
     it('returns isEnabled=false when the health check reports the provider is not configured/ok', async () => {
-      mockGet.mockResolvedValueOnce({ enabled: true }).mockResolvedValueOnce({
+      isAppPluginEnabledMock.mockResolvedValue(true);
+      backendSrvMock.get = jest.fn().mockResolvedValueOnce({
         details: { llmProvider: { configured: false, ok: false } },
       });
 
@@ -108,10 +123,13 @@ describe('useFetchLlmPluginStatus()', () => {
       });
 
       expect(result.current.isEnabled).toBe(false);
+      expect(isAppPluginEnabledMock).toHaveBeenCalledTimes(1);
+      expect(backendSrvMock.get).toHaveBeenCalledTimes(1);
     });
 
-    it('returns isEnabled=false, without an error or toast, when the settings endpoint returns a 403 (Access Denied)', async () => {
-      mockGet.mockRejectedValueOnce(new HttpError(403, 'Access Denied'));
+    it('returns isEnabled=false, without an error or toast, when the health endpoint returns a 403 (Access Denied)', async () => {
+      isAppPluginEnabledMock.mockResolvedValue(true);
+      backendSrvMock.get = jest.fn().mockRejectedValueOnce(new HttpError(403, 'Access Denied'));
 
       const { result } = renderHook(() => useFetchLlmPluginStatus(), { wrapper: createWrapper() });
 
@@ -121,25 +139,14 @@ describe('useFetchLlmPluginStatus()', () => {
 
       expect(result.current.isEnabled).toBe(false);
       expect(result.current.error).toBeFalsy();
-      expect(mockGet).toHaveBeenCalledWith(
-        '/api/plugins/grafana-llm-app/settings',
+      expect(isAppPluginEnabledMock).toHaveBeenCalledTimes(1);
+      expect(backendSrvMock.get).toHaveBeenCalledTimes(1);
+      expect(backendSrvMock.get).toHaveBeenCalledWith(
+        '/api/plugins/grafana-llm-app/health',
         undefined,
         undefined,
         expect.objectContaining({ showErrorAlert: false, showSuccessAlert: false })
       );
-    });
-
-    it('returns isEnabled=false when the settings endpoint is unreachable (plugin not installed server-side)', async () => {
-      mockGet.mockRejectedValueOnce(new Error('not found'));
-
-      const { result } = renderHook(() => useFetchLlmPluginStatus(), { wrapper: createWrapper() });
-
-      await waitFor(() => {
-        expect(result.current.isFetching).toBe(false);
-      });
-
-      expect(result.current.isEnabled).toBe(false);
-      expect(result.current.error).toBeFalsy();
     });
   });
 });
