@@ -1,5 +1,6 @@
-import { config, reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
+import { getAppPluginVersion, reportInteraction as grafanaReportInteraction } from '@grafana/runtime';
 import { ScaleDistribution } from '@grafana/schema';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import { ActionType } from 'xstate';
 
 import { PYROSCOPE_APP_ID, ROUTES } from '../../constants';
@@ -107,10 +108,11 @@ function getCurrentPage(): string {
   return pathname.split('/').pop() || '';
 }
 
-function getMetaProperties() {
+async function getMetaProperties(): Promise<Record<string, any>> {
+  const appRelease = await getAppPluginVersion(PYROSCOPE_APP_ID);
   const meta: Record<string, any> = {
     // same naming as Faro (see src/shared/infrastructure/tracking/faro/faro.ts)
-    appRelease: config.apps[PYROSCOPE_APP_ID].version,
+    appRelease,
     appVersion: GIT_COMMIT,
     page: getCurrentPage(),
   };
@@ -123,12 +125,14 @@ function getMetaProperties() {
   return meta;
 }
 
-export function reportInteraction<E extends keyof Interactions, P extends Interactions[E]>(
+export async function reportInteraction<E extends keyof Interactions, P extends Interactions[E]>(
   interactionName: E,
   props?: P
 ) {
-  grafanaReportInteraction(interactionName, {
-    props,
-    meta: getMetaProperties(),
-  });
+  try {
+    const meta = await getMetaProperties();
+    grafanaReportInteraction(interactionName, { props, meta });
+  } catch (error) {
+    logger.error(error as Error, { interactionName });
+  }
 }
