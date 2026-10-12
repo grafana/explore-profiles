@@ -67,24 +67,54 @@ describe('SceneQuickFilter', () => {
     deactivateAgain();
   });
 
-  it.each(['clear', 'reset', 'navigate', 'deactivate'])('cancels pending changes on %s', (action) => {
+  it('cancels pending changes on clear', () => {
     const model = new SceneQuickFilter({ placeholder: '' });
     const deactivate = model.activate();
     type(model, 'pending');
-    if (action === 'clear') {
-      model.clearSearchText();
-    } else if (action === 'reset') {
-      model.reset();
-    } else if (action === 'navigate') {
-      model.updateFromUrl({ searchText: 'from-url' });
-    } else {
-      deactivate();
-    }
+
+    model.clearSearchText();
+
     jest.advanceTimersByTime(SceneQuickFilter.DEBOUNCE_DELAY);
-    expect(model.state.searchText).toBe(action === 'navigate' ? 'from-url' : '');
-    expect(model.state.inputText).toBe(model.state.searchText);
-    if (action !== 'deactivate') {
-      deactivate();
-    }
+    expect(model.state.searchText).toBe('');
+    expect(model.state.inputText).toBe('');
+    deactivate();
+  });
+
+  it('cancels pending changes on reset', () => {
+    const model = new SceneQuickFilter({ placeholder: '' });
+    const deactivate = model.activate();
+    type(model, 'pending');
+
+    model.reset();
+
+    jest.advanceTimersByTime(SceneQuickFilter.DEBOUNCE_DELAY);
+    expect(model.state.searchText).toBe('');
+    expect(model.state.inputText).toBe('');
+    deactivate();
+  });
+
+  it('cancels pending changes on navigation', () => {
+    const model = new SceneQuickFilter({ placeholder: '' });
+    const deactivate = model.activate();
+    type(model, 'pending');
+
+    model.updateFromUrl({ searchText: 'from-url' });
+
+    jest.advanceTimersByTime(SceneQuickFilter.DEBOUNCE_DELAY);
+    expect(model.state.searchText).toBe('from-url');
+    expect(model.state.inputText).toBe('from-url');
+    deactivate();
+  });
+
+  it('cancels pending changes on deactivation', () => {
+    const model = new SceneQuickFilter({ placeholder: '' });
+    const deactivate = model.activate();
+    type(model, 'pending');
+
+    deactivate();
+
+    jest.advanceTimersByTime(SceneQuickFilter.DEBOUNCE_DELAY);
+    expect(model.state.searchText).toBe('');
+    expect(model.state.inputText).toBe('');
   });
 });
