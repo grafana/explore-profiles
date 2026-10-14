@@ -11,12 +11,6 @@ jest.mock('@grafana/runtime', () => {
   const actual = jest.requireActual<typeof import('@grafana/runtime')>('@grafana/runtime');
   return {
     ...actual,
-    config: {
-      ...actual.config,
-      namespace: 'test-ns',
-      appSubUrl: '',
-      openFeatureContext: {},
-    },
     logWarning: jest.fn(),
     createOpenFeatureLocalStorageProvider: jest.fn(),
     createOpenFeatureOFREPWebProvider: jest.fn(),
