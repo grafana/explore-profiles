@@ -8,6 +8,14 @@ frozenLockfile: true
 ignoreScripts: true
 # Three days in minutes (3 × 24 × 60).
 minimumReleaseAge: 4320
+# Temporary: @grafana/flamegraph 13.2.4 (escalation #24150) and its pinned deps; remove after 2026-10-16.
+minimumReleaseAgeExclude:
+  - '@grafana/flamegraph@13.2.4'
+  - '@grafana/data@13.2.4'
+  - '@grafana/ui@13.2.4'
+  - '@grafana/schema@13.2.4'
+  - '@grafana/i18n@13.2.4'
+  - '@grafana/e2e-selectors@13.2.4'
 # Fail install if a package's trust evidence is weaker than an earlier release (e.g. lost trusted publisher).
 trustPolicy: no-downgrade
 # Transitive deps must come from the registry/workspace; block git/tarball URLs except on direct deps.
