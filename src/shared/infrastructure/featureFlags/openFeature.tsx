@@ -18,13 +18,6 @@ export function getPluginOpenFeatureBoolean(flagKey: string, defaultValue: boole
   return OpenFeature.getClient(PLUGIN_OPEN_FEATURE_DOMAIN).getBooleanValue(flagKey, defaultValue);
 }
 
-let initOnce: Promise<void> | null = null;
-
-/** Clears init latch between tests. Do not use in production code. */
-export function resetOpenFeaturePluginStateForTesting(): void {
-  initOnce = null;
-}
-
 /**
  * Registers Grafana’s shared providers on this plugin’s domain: localStorage overrides
  * (feature control UI) first, then the read-only OFREP proxy.
@@ -32,28 +25,25 @@ export function resetOpenFeaturePluginStateForTesting(): void {
  * Skips registration when a provider is already bound to the domain. On failure, the
  * default provider stays in place so hooks keep returning their declared defaults.
  */
-export function ensureOpenFeaturePluginInitialized(): Promise<void> {
-  initOnce ??= (async () => {
-    // No domain provider yet: `getProvider(domain)` falls back to the default provider.
-    if (OpenFeature.getProvider(PLUGIN_OPEN_FEATURE_DOMAIN) !== OpenFeature.getProvider()) {
-      return;
-    }
+export async function ensureOpenFeaturePluginInitialized(): Promise<void> {
+  // No domain provider yet: `getProvider(domain)` falls back to the default provider.
+  if (OpenFeature.getProvider(PLUGIN_OPEN_FEATURE_DOMAIN) !== OpenFeature.getProvider()) {
+    return;
+  }
 
-    try {
-      await OpenFeature.setProviderAndWait(
-        PLUGIN_OPEN_FEATURE_DOMAIN,
-        new MultiProvider([
-          { provider: createOpenFeatureLocalStorageProvider() },
-          { provider: createOpenFeatureOFREPWebProvider() },
-        ])
-      );
-    } catch (error: unknown) {
-      logWarning('OpenFeature provider initialization failed; feature flags remain at default values', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  })();
-  return initOnce;
+  try {
+    await OpenFeature.setProviderAndWait(
+      PLUGIN_OPEN_FEATURE_DOMAIN,
+      new MultiProvider([
+        { provider: createOpenFeatureLocalStorageProvider() },
+        { provider: createOpenFeatureOFREPWebProvider() },
+      ])
+    );
+  } catch (error: unknown) {
+    logWarning('OpenFeature provider initialization failed; feature flags remain at default values', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
 
 /**
