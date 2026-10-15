@@ -16,6 +16,7 @@ import { reportInteraction } from '@shared/domain/reportInteraction';
 import { useFlagVisualDesignRefresh } from '@shared/infrastructure/featureFlags/featureFlags';
 import { ApiClient } from '@shared/infrastructure/http/ApiClient';
 import { getProfileMetric, ProfileMetricId } from '@shared/infrastructure/profile-metrics/getProfileMetric';
+import { logger } from '@shared/infrastructure/tracking/logger';
 import React, { useMemo } from 'react';
 import { type Unsubscribable } from 'rxjs';
 
@@ -94,32 +95,40 @@ export class SceneExemplarTable extends SceneObjectBase<SceneExemplarTableState>
 
     this.handleNewExemplarRows(parent.state.exemplarRows);
 
-    ApiClient.getTempoDataSources().then((result) => {
-      if (cancelled) {
-        return;
-      }
+    ApiClient.getTempoDataSources()
+      .then((result) => {
+        if (cancelled) {
+          return;
+        }
 
-      const tempoDatasources = result.settings.map((ds) => {
-        return {
-          uid: ds.uid,
-          name: ds.name,
-          isDefault: Boolean(result.defaultUid) && ds.uid === result.defaultUid,
-          tracesToProfilesDataSourceUid: ds.jsonData.tracesToProfiles?.datasourceUid,
-        };
-      });
-
-      dataSourceSub = sceneGraph
-        .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
-        .subscribeToState((newState, prevState) => {
-          if (newState.value !== prevState.value) {
-            this.syncTempoDataSource(parent!, tempoDatasources, true);
-          }
+        const tempoDatasources = result.settings.map((ds) => {
+          return {
+            uid: ds.uid,
+            name: ds.name,
+            isDefault: Boolean(result.defaultUid) && ds.uid === result.defaultUid,
+            tracesToProfilesDataSourceUid: ds.jsonData.tracesToProfiles?.datasourceUid,
+          };
         });
 
-      this.setState({ tempoDatasources });
-      this.syncTempoDataSource(parent, tempoDatasources);
-      this.handleNewExemplarRows(parent.state.exemplarRows);
-    });
+        dataSourceSub = sceneGraph
+          .findByKeyAndType(this, 'dataSource', ProfilesDataSourceVariable)
+          .subscribeToState((newState, prevState) => {
+            if (newState.value !== prevState.value) {
+              this.syncTempoDataSource(parent!, tempoDatasources, true);
+            }
+          });
+
+        this.setState({ tempoDatasources });
+        this.syncTempoDataSource(parent, tempoDatasources);
+        this.handleNewExemplarRows(parent.state.exemplarRows);
+      })
+      .catch((error: unknown) => {
+        if (cancelled) {
+          return;
+        }
+
+        logger.error(error as Error, { info: 'Error while loading Tempo data sources!' });
+      });
 
     return () => {
       cancelled = true;
