@@ -58,6 +58,20 @@ describe('appUrl', () => {
   });
 
   test.each([
+    ['/grafana', '/grafana?view=all', '/grafana?view=all'],
+    ['/grafana', '/grafana#details', '/grafana#details'],
+    ['/grafana/', '/grafana?view=all', '/grafana?view=all'],
+    ['/grafana/', '/grafana#details', '/grafana#details'],
+  ])(
+    'should not duplicate a base path followed by a query or fragment with appSubUrl "%s" and path "%s"',
+    (appSubUrl, path, expectedUrl) => {
+      const { getGrafanaUrl } = setupAppUrl({ appSubUrl });
+
+      expect(getGrafanaUrl(path)).toBe(expectedUrl);
+    }
+  );
+
+  test.each([
     ['', '/grafana-other/explore'],
     ['/', '/grafana-other/explore'],
     ['/grafana', '/grafana/grafana-other/explore'],

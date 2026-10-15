@@ -13,7 +13,8 @@ export function getGrafanaUrl(path: string): string {
 
   const base = locationUtil.assureBaseUrl('/').replace(/\/+$/, '');
   const pathname = path.startsWith('/') ? path : `/${path}`;
-  return pathname === base || pathname.startsWith(`${base}/`) ? pathname : `${base}${pathname}`;
+  const hasBase = pathname.startsWith(base) && /^([/?#]|$)/.test(pathname.slice(base.length));
+  return hasBase ? pathname : `${base}${pathname}`;
 }
 
 /**
