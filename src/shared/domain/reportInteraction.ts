@@ -109,18 +109,16 @@ function getCurrentPage(): string {
 }
 
 async function getMetaProperties(): Promise<Record<string, any>> {
+  const page = getCurrentPage();
+  const view = new URLSearchParams(window.location.search).get('explorationType') || '';
   const appRelease = await getAppPluginVersion(PYROSCOPE_APP_ID);
   const meta: Record<string, any> = {
     // same naming as Faro (see src/shared/infrastructure/tracking/faro/faro.ts)
     appRelease,
     appVersion: GIT_COMMIT,
-    page: getCurrentPage(),
+    page,
+    view: page === PROFILES_EXPLORER_PAGE_NAME ? view : undefined,
   };
-
-  if (meta.page === PROFILES_EXPLORER_PAGE_NAME) {
-    // same naming as Faro (see src/shared/infrastructure/tracking/faro/faro.ts)
-    meta.view = new URLSearchParams(window.location.search).get('explorationType') || '';
-  }
 
   return meta;
 }
