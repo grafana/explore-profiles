@@ -48,6 +48,26 @@ describe('reportInteraction(interactionName, properties)', () => {
     });
   });
 
+  it('should report the page and view where the interaction happened when navigation occurs before the app version resolves', async () => {
+    setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/explore?explorationType=flame-graph'));
+    getAppPluginVersionMock.mockImplementation(async () => {
+      setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/settings'));
+      return '1.0.0';
+    });
+
+    await reportInteraction('g_pyroscope_app_user_settings_clicked');
+
+    expect(grafanaReportInteraction).toHaveBeenCalledWith('g_pyroscope_app_user_settings_clicked', {
+      props: undefined,
+      meta: {
+        appRelease: '1.0.0',
+        appVersion: 'dev',
+        page: 'explore',
+        view: 'flame-graph',
+      },
+    });
+  });
+
   describe('if some extra properties are passed', () => {
     it('calls Grafana\'s reportInteraction with these properties as well as a new "page" property', async () => {
       setWindowLocation(new URL('http://localhost:3000/a/grafana-pyroscope-app/test-page-2'));
