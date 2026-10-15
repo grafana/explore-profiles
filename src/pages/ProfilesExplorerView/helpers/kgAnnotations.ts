@@ -1,14 +1,14 @@
 import { t } from '@grafana/i18n';
-import { config } from '@grafana/runtime';
+import { getDataSourceInstanceList } from '@grafana/plugin-compat/datasources';
 import {
   dataLayers,
   SceneDataLayerSet,
   sceneGraph,
   SceneObjectBase,
   SceneObjectRef,
-  SceneObjectState,
+  type SceneObjectState,
 } from '@grafana/scenes';
-import { DataQuery } from '@grafana/schema';
+import { type DataQuery } from '@grafana/schema';
 
 import { KgAnnotationToggle } from './KgAnnotationToggle';
 
@@ -21,8 +21,11 @@ interface KgSceneProps {
   controls: KgAnnotationToggle;
 }
 
-export function isKgAnnotationsAvailable(): boolean {
-  return Object.values(config.datasources).some((d) => d.uid === KG_DATASOURCE_UID && d.type === KG_DATASOURCE_TYPE);
+export async function isKgAnnotationsAvailable(): Promise<boolean> {
+  const datasources = await getDataSourceInstanceList({
+    filter: (ds: { uid: string; type: string }) => ds.uid === KG_DATASOURCE_UID && ds.type === KG_DATASOURCE_TYPE,
+  });
+  return datasources.length > 0;
 }
 
 function getSeverities() {
@@ -183,8 +186,11 @@ class KgAnnotationBehavior extends SceneObjectBase<KgAnnotationBehaviorState> {
   }
 }
 
-export function getKgSceneProps(entityType: string, serviceNameVarKey: string): KgSceneProps | undefined {
-  if (!isKgAnnotationsAvailable()) {
+export async function getKgSceneProps(
+  entityType: string,
+  serviceNameVarKey: string
+): Promise<KgSceneProps | undefined> {
+  if (!(await isKgAnnotationsAvailable())) {
     return undefined;
   }
 

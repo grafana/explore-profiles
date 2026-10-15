@@ -1,4 +1,4 @@
-import { getBackendSrv, isAppPluginInstalled } from '@grafana/runtime';
+import { getBackendSrv, isAppPluginEnabled, isAppPluginInstalled } from '@grafana/runtime';
 import { logger } from '@shared/infrastructure/tracking/logger';
 import { useQuery } from '@tanstack/react-query';
 import { GRAFANA_LLM_APP_ID } from 'src/constants';
@@ -25,11 +25,8 @@ async function isLlmPluginEnabled(): Promise<boolean> {
   }
 
   try {
-    const settings = await getBackendSrv().get(`${LLM_PLUGIN_ROUTE}/settings`, undefined, undefined, {
-      ...SILENT_REQUEST_OPTIONS,
-    });
-
-    if (!settings?.enabled) {
+    const enabled = await isAppPluginEnabled(GRAFANA_LLM_APP_ID);
+    if (!enabled) {
       return false;
     }
 
