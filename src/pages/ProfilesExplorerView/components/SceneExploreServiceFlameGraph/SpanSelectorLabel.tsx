@@ -38,7 +38,6 @@ export function SpanSelectorLabel(props: Props) {
 
       <IconButton
         aria-label={t('flame-graph.span-selector.remove', 'Remove span selector from query')}
-        className={styles.removeButton}
         name="times"
         tooltip={t('flame-graph.span-selector.remove', 'Remove span selector from query')}
         onClick={removeSpanSelector}
@@ -83,20 +82,6 @@ const getStyles = (theme: GrafanaTheme2) => {
       display: inline-flex;
       height: 30px;
       padding: ${theme.spacing(0, 1)};
-    `,
-
-    removeButton: css`
-      cursor: pointer;
-      height: 30px;
-
-      &:hover {
-        background-color: ${theme.colors.background.secondary};
-      }
-
-      & svg {
-        width: 12px;
-        height: 12px;
-      }
     `,
   };
 };
