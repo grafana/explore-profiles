@@ -535,6 +535,7 @@ export class SceneComparePanel extends SceneObjectBase<SceneComparePanelState> {
             <Button
               variant="secondary"
               icon="link"
+              aria-label={t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')}
               onClick={model.onClickTimeRangeSync}
               tooltip={t('diff-flame-graph.compare-panel.sync-time-ranges', 'Sync time ranges')}
             />
