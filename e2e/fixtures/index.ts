@@ -1,4 +1,4 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base, expect, type Page } from '@playwright/test';
 
 import { DEFAULT_EXPLORE_PROFILES_URL_PARAMS } from '../config/constants';
 import { AdHocViewPage } from './pages/AdHocViewPage';
@@ -15,7 +15,18 @@ type Options = {
   failOnUncaughtExceptions: boolean;
 };
 
-const withExceptionsAssertion = async ({ page, failOnUncaughtExceptions, use }, fixture) => {
+const withExceptionsAssertion = async <T>(
+  {
+    page,
+    failOnUncaughtExceptions,
+    use,
+  }: {
+    page: Page;
+    failOnUncaughtExceptions: boolean;
+    use: (fixture: T) => Promise<void>;
+  },
+  fixture: T
+) => {
   if (!failOnUncaughtExceptions) {
     return await use(fixture);
   }
