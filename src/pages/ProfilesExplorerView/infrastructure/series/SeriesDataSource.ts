@@ -18,8 +18,6 @@ import { PYROSCOPE_SERIES_DATA_SOURCE } from '../pyroscope-data-sources';
 import { formatSeriesToProfileMetrics } from './formatSeriesToProfileMetrics';
 import { formatSeriesToServices } from './formatSeriesToServices';
 import { safeInterpolate } from './helpers/safeInterpolate';
-import { DataSourceProxyClientBuilder } from './http/DataSourceProxyClientBuilder';
-import { SeriesApiClient } from './http/SeriesApiClient';
 import { seriesRepository } from './http/seriesRepository';
 
 export class SeriesDataSource extends RuntimeDataSource {
@@ -28,10 +26,8 @@ export class SeriesDataSource extends RuntimeDataSource {
   }
 
   async fetchSeries(dataSourceUid: string, timeRange: TimeRange, variableName?: string, matchers?: string[]) {
-    seriesRepository.setApiClient(DataSourceProxyClientBuilder.build(dataSourceUid, SeriesApiClient));
-
     try {
-      return await seriesRepository.list({ timeRange, matchers });
+      return await seriesRepository.list({ dataSourceUid, timeRange, matchers });
     } catch (error) {
       logger.error(error as Error, {
         info: 'Error while loading Pyroscope series!',

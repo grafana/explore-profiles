@@ -22,10 +22,10 @@ function handleError(error: Error, info: string) {
 
 export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
   fetchLabels: async (context) => {
-    const { from, to } = context.inputParams;
+    const { dataSourceUid, from, to } = context.inputParams;
 
     try {
-      const labels = await labelsRepository.listLabels({ query: context.query, from, to });
+      const labels = await labelsRepository.listLabels({ dataSourceUid, query: context.query, from, to });
 
       const publicLabels: Suggestions = [];
       const privateLabels: Suggestions = [];
@@ -86,9 +86,9 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
       }
 
       const labelId = targetFilter.attribute.value;
-      const { from, to } = context.inputParams;
+      const { dataSourceUid, from, to } = context.inputParams;
 
-      return await labelsRepository.listLabelValues({ label: labelId, query, from, to });
+      return await labelsRepository.listLabelValues({ dataSourceUid, label: labelId, query, from, to });
     } catch (error) {
       return handleError(error as Error, 'Error while fetching label values!');
     }

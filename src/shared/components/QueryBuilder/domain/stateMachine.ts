@@ -13,6 +13,7 @@ import { InputParams, QueryBuilderContext, QueryBuilderEvent, QueryBuilderSchema
 
 export const defaultContext: QueryBuilderContext = Object.freeze({
   inputParams: {
+    dataSourceUid: '',
     query: '',
     from: 0,
     to: 0,
