@@ -65,6 +65,8 @@ Using Profiles Drilldown, you can:
 
 {{< youtube id="x9aPw_CbIQc" >}}
 
+{{< docs/play title="Profiles Drilldown" url="https://play.grafana.org/a/grafana-pyroscope-app/explore" >}}
+
 ## Explore
 
 {{< card-grid key="cards" type="simple" >}}
