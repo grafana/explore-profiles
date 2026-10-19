@@ -9,12 +9,16 @@ import { SceneProfilesExplorer } from 'src/pages/ProfilesExplorerView/components
 
 import { EmbeddedProfilesExplorationState } from '../types';
 
+interface EmbeddedSceneProps extends EmbeddedProfilesExplorationState {
+  initialDS: string;
+}
+
 function buildProfilesExplorationFromState({
   initialTimeRange,
   onTimeRangeChange,
   initialFilters,
   initialDS,
-}: EmbeddedProfilesExplorationState) {
+}: EmbeddedSceneProps) {
   const $timeRange = new SceneTimeRange({
     value: initialTimeRange,
     from: initialTimeRange.raw.from.toString(),
@@ -38,10 +42,6 @@ function buildProfilesExplorationFromState({
   sceneUtils.syncStateFromSearchParams(exploration, params);
 
   return exploration;
-}
-
-interface EmbeddedSceneProps extends EmbeddedProfilesExplorationState {
-  initialDS: string;
 }
 
 function EmbeddedScene(props: EmbeddedSceneProps) {

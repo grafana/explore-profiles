@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { SceneProfilesExplorer } from './components/SceneProfilesExplorer/SceneProfilesExplorer';
 
 export default function ProfilesExplorerView() {
-  const { uid } = useDataSourceUid();
+  const { uid = '' } = useDataSourceUid();
   const [sceneProfilesExplorer] = useState(() => new SceneProfilesExplorer({ initialDS: uid }));
   useReportPageInitialized('explore');
 

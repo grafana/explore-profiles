@@ -151,7 +151,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
   private initialFilters?: AdHocVariableFilter[];
   private kgInitialized = false;
 
-  public constructor(state: Partial<SceneProfilesExplorerState>) {
+  public constructor(state: Partial<SceneProfilesExplorerState> & { initialDS: string }) {
     super({
       key: 'profiles-explorer',
       explorationType: state.initialFilters && state.initialFilters.length > 0 ? ExplorationType.LABELS : undefined,
@@ -166,7 +166,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
           // (because values would be empty before loading, then populated after fetched)
           // see setExplorationType() for dynamic updates
           variables: [
-            new ProfilesDataSourceVariable({ initialDS: state?.initialDS }),
+            new ProfilesDataSourceVariable({ initialDS: state.initialDS }),
             new ServiceNameVariable({ initialFilters: state?.initialFilters }),
             new ProfileMetricVariable(),
             new FiltersVariable({

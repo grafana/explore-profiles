@@ -9,7 +9,7 @@ import {
 } from '@grafana/data';
 import { t } from '@grafana/i18n';
 import { RuntimeDataSource } from '@grafana/scenes';
-import { ApiClient } from '@shared/infrastructure/http/ApiClient';
+import { getSelectedDefaultDataSource } from '@shared/infrastructure/datasource/useSelectDefaultDataSourceUid';
 import { logger } from '@shared/infrastructure/tracking/logger';
 
 import { ProfileMetricVariable } from '../../domain/variables/ProfileMetricVariable';
@@ -68,7 +68,7 @@ export class SeriesDataSource extends RuntimeDataSource {
 
     // Fallback to default datasource if interpolation not ready yet
     if (!dataSourceUid) {
-      dataSourceUid = ApiClient.selectDefaultDataSource().uid as string;
+      dataSourceUid = (await getSelectedDefaultDataSource())?.uid ?? '';
     }
 
     const pyroscopeSeries = await this.fetchSeries(dataSourceUid, options.range as TimeRange, options.variable?.name, [

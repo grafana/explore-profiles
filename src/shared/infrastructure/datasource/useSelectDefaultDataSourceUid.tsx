@@ -27,7 +27,7 @@ async function getDefaultDataSourceInstance(
   return settings.find((s) => s.isDefault);
 }
 
-export async function getSelectedDefaultDataSource() {
+export async function getSelectedDefaultDataSource(): Promise<CustomDataSourceInstanceSettings | undefined> {
   const pyroscopeDataSources = await getDataSourceInstanceSettingsList();
   const defaultDs = await getDefaultDataSourceInstance(pyroscopeDataSources);
 
@@ -47,14 +47,12 @@ export async function getSelectedDefaultDataSource() {
     );
   }
 
-  // because we instantiate most of our API clients before exporting them,
-  // we have to return a dummy data source to prevent the whole app to fail
-  return defaultDataSource ?? { uid: 'no-data-source-configured' };
+  return defaultDataSource;
 }
 
 export function useSelectDefaultDataSourceUid({ selectedUid }: SelectedDataSourceUidInput) {
   const needsDefault = selectedUid === undefined;
-  const [state, resolve] = useAsyncFn(async () => (await getSelectedDefaultDataSource()).uid, [], {
+  const [state, resolve] = useAsyncFn(async () => (await getSelectedDefaultDataSource())?.uid, [], {
     loading: needsDefault,
   });
 
