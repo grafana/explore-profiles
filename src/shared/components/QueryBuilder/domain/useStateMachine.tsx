@@ -1,10 +1,12 @@
+import { useDataSourceUid } from '@shared/infrastructure/datasource/DataSourceUidContext';
 import { useEffect, useMemo, useState } from 'react';
 
 import { QueryBuilderProps } from '../QueryBuilder';
 import { buildStateMachine } from './stateMachine';
 import { CompleteFilters, QueryBuilderContext } from './types';
 
-export function useStateMachine({ dataSourceUid, query, from, to, onChangeQuery }: QueryBuilderProps) {
+export function useStateMachine({ query, from, to, onChangeQuery }: QueryBuilderProps) {
+  const { uid: dataSourceUid } = useDataSourceUid();
   const { actor, initialContext } = useMemo(
     () => buildStateMachine({ query, from, to }),
     // We don't want to build a new state machine when the props change, props change is handheld via the CHANGE_INPUT_PARAMS action below

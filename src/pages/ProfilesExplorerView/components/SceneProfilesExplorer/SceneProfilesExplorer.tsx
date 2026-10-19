@@ -616,7 +616,7 @@ export class SceneProfilesExplorer extends SceneObjectBase<SceneProfilesExplorer
     return (
       <DataSourceUidProvider uid={dataSourceUid}>
         <FunctionVersionProvider>
-          <GitHubContextProvider dataSourceUid={dataSourceUid}>
+          <GitHubContextProvider>
             <PluginHeaderToolbar
               model={model}
               explorationType={explorationType}
