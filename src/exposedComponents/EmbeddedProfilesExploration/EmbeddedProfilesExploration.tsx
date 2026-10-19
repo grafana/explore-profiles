@@ -1,4 +1,7 @@
 import { SceneTimeRange, sceneUtils, UrlSyncContextProvider } from '@grafana/scenes';
+import { ErrorBoundaryAlert } from '@grafana/ui';
+import { DataSourceUidFallback } from '@shared/infrastructure/datasource/DataSourceUidFallback';
+import { useDefaultDataSourceUid } from '@shared/infrastructure/datasource/useDefaultDataSourceUid';
 import { queryClient } from '@shared/infrastructure/react-query/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
 import React, { useState } from 'react';
@@ -37,14 +40,33 @@ function buildProfilesExplorationFromState({
   return exploration;
 }
 
-export default function EmbeddedProfilesExploration(props: EmbeddedProfilesExplorationState) {
-  const [exploration] = useState(buildProfilesExplorationFromState(props));
+interface EmbeddedSceneProps extends EmbeddedProfilesExplorationState {
+  initialDS: string;
+}
+
+function EmbeddedScene(props: EmbeddedSceneProps) {
+  const [exploration] = useState(() => buildProfilesExplorationFromState(props));
 
   return (
     <UrlSyncContextProvider namespace="pd" scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
-      <QueryClientProvider client={queryClient}>
-        <exploration.Component model={exploration} />
-      </QueryClientProvider>
+      <exploration.Component model={exploration} />
     </UrlSyncContextProvider>
+  );
+}
+
+export default function EmbeddedProfilesExploration(props: EmbeddedProfilesExplorationState) {
+  const dataSourceState = useDefaultDataSourceUid({ selectedUid: props.initialDS });
+  const { uid } = dataSourceState;
+
+  if (!uid) {
+    return <DataSourceUidFallback dataSourceState={dataSourceState} />;
+  }
+
+  return (
+    <ErrorBoundaryAlert>
+      <QueryClientProvider client={queryClient}>
+        <EmbeddedScene {...props} initialDS={uid} />
+      </QueryClientProvider>
+    </ErrorBoundaryAlert>
   );
 }
