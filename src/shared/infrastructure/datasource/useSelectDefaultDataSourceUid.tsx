@@ -1,5 +1,9 @@
 import { DataSourceInstanceSettings } from '@grafana/data';
-import { config } from '@grafana/runtime';
+import {
+  getDataSourceInstanceList,
+  getDataSourceInstanceSettings,
+  getDefaultDataSourceInstanceListItem,
+} from '@grafana/plugin-compat/datasources';
 import { DataSourceJsonData } from '@grafana/schema';
 import { useEffect } from 'react';
 import { useAsync, useAsyncFn } from 'react-use';
@@ -15,21 +19,23 @@ export interface SelectedDataSourceUidInput {
 type CustomDataSourceJsonData = { overridesDefault: boolean };
 type CustomDataSourceInstanceSettings = DataSourceInstanceSettings<DataSourceJsonData & CustomDataSourceJsonData>;
 
-async function getDataSourceInstanceSettingsList(): Promise<CustomDataSourceInstanceSettings[]> {
-  return Object.values(config.datasources).filter(
-    (ds) => ds.type === PYROSCOPE_DATA_SOURCES_TYPE
-  ) as CustomDataSourceInstanceSettings[];
+let pending: Promise<CustomDataSourceInstanceSettings | undefined> | undefined;
+
+async function getPyroscopeDataSources(): Promise<CustomDataSourceInstanceSettings[]> {
+  const instances = await getDataSourceInstanceList({ pluginId: PYROSCOPE_DATA_SOURCES_TYPE });
+  const allSettings = await Promise.all(instances.map((i) => getDataSourceInstanceSettings(i.uid)));
+  return allSettings.filter(Boolean) as CustomDataSourceInstanceSettings[];
 }
 
-async function getDefaultDataSourceInstance(
-  settings: CustomDataSourceInstanceSettings[]
-): Promise<CustomDataSourceInstanceSettings | undefined> {
-  return settings.find((s) => s.isDefault);
+async function getDefaultPyroscopeDataSource(): Promise<CustomDataSourceInstanceSettings | undefined> {
+  const instances = await getDataSourceInstanceList({ pluginId: PYROSCOPE_DATA_SOURCES_TYPE });
+  const defaultDs = await getDefaultDataSourceInstanceListItem(instances);
+  return defaultDs;
 }
 
-export async function getSelectedDefaultDataSource(): Promise<CustomDataSourceInstanceSettings | undefined> {
-  const pyroscopeDataSources = await getDataSourceInstanceSettingsList();
-  const defaultDs = await getDefaultDataSourceInstance(pyroscopeDataSources);
+async function internalGetSelectedDefaultDataSource(): Promise<CustomDataSourceInstanceSettings | undefined> {
+  const pyroscopeDataSources = await getPyroscopeDataSources();
+  const defaultDs = await getDefaultPyroscopeDataSource();
 
   const uidFromUrl = new URL(window.location.href).searchParams.get(PYROSCOPE_URL_SEARCH_PARAM_NAME);
   const uidFromLocalStorage = userStorage.get(userStorage.KEYS.PROFILES_EXPLORER)?.dataSource;
@@ -50,6 +56,18 @@ export async function getSelectedDefaultDataSource(): Promise<CustomDataSourceIn
   return defaultDataSource;
 }
 
+export async function getSelectedDefaultDataSource(): Promise<CustomDataSourceInstanceSettings | undefined> {
+  if (pending) {
+    return pending;
+  }
+
+  pending = internalGetSelectedDefaultDataSource().finally(() => {
+    pending = undefined;
+  });
+
+  return pending;
+}
+
 export function useSelectDefaultDataSourceUid({ selectedUid }: SelectedDataSourceUidInput) {
   const needsDefault = selectedUid === undefined;
   const [state, resolve] = useAsyncFn(async () => (await getSelectedDefaultDataSource())?.uid, [], {
@@ -66,6 +84,6 @@ export function useSelectDefaultDataSourceUid({ selectedUid }: SelectedDataSourc
 }
 
 export function usePyroscopeDataSources() {
-  const { loading, error, value: datasources } = useAsync(getDataSourceInstanceSettingsList, []);
+  const { loading, error, value: datasources } = useAsync(getPyroscopeDataSources, []);
   return { loading, error, datasources };
 }
