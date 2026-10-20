@@ -15,7 +15,7 @@ export function Routes() {
       <Route
         path={ROUTES.EXPLORE}
         element={
-          <WithDataSourceUid>
+          <WithDataSourceUid key="ProfilesExplorerView">
             <ProfilesExplorerView />
           </WithDataSourceUid>
         }
@@ -23,7 +23,7 @@ export function Routes() {
       <Route
         path={ROUTES.ADHOC}
         element={
-          <WithDataSourceUid>
+          <WithDataSourceUid key="AdHocView">
             <AdHocView />
           </WithDataSourceUid>
         }
@@ -31,7 +31,7 @@ export function Routes() {
       <Route
         path={ROUTES.SETTINGS}
         element={
-          <WithDataSourceUid>
+          <WithDataSourceUid key="SettingsView">
             <SettingsView />
           </WithDataSourceUid>
         }
@@ -39,7 +39,7 @@ export function Routes() {
       <Route
         path={ROUTES.RECORDING_RULES}
         element={
-          <WithDataSourceUid>
+          <WithDataSourceUid key="RecordingRulesView">
             <RecordingRulesView />
           </WithDataSourceUid>
         }
