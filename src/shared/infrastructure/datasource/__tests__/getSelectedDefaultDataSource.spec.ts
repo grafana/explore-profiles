@@ -24,9 +24,11 @@ const getDefaultDataSourceInstanceListItemMock = jest.mocked(getDefaultDataSourc
 type MockDataSource = { uid: string; isDefault?: boolean; jsonData: { overridesDefault?: boolean } };
 
 function givenDataSources(dataSources: MockDataSource[]) {
-  getDataSourceInstanceListMock.mockResolvedValue(dataSources as any);
+  const instances = dataSources.map(({ uid }) => ({ uid }));
+  const defaultUid = dataSources.find((ds) => ds.isDefault)?.uid;
+  getDataSourceInstanceListMock.mockResolvedValue(instances as any);
   getDataSourceInstanceSettingsMock.mockImplementation(async (uid) => dataSources.find((ds) => ds.uid === uid) as any);
-  getDefaultDataSourceInstanceListItemMock.mockResolvedValue(dataSources.find((ds) => ds.isDefault) as any);
+  getDefaultDataSourceInstanceListItemMock.mockResolvedValue(instances.find((ds) => ds.uid === defaultUid) as any);
 }
 
 const ds = (uid: string, extra: Partial<MockDataSource> = {}) => ({ uid, jsonData: {}, ...extra });
@@ -62,6 +64,31 @@ describe('getSelectedDefaultDataSource()', () => {
     expect(dataSource?.uid).toBe('pyroscope-def');
   });
 
+  it('should skip settings and default lookups when the URL datasource matches', async () => {
+    givenDataSources([ds('pyroscope-abc'), ds('pyroscope-def')]);
+    setWindowLocation(new URL('http://localhost:3000/?var-dataSource=pyroscope-def'));
+
+    const dataSource = await getSelectedDefaultDataSource();
+
+    expect(dataSource).toEqual({ uid: 'pyroscope-def' });
+    expect(getDataSourceInstanceListMock).toHaveBeenCalledTimes(1);
+    expect(getDataSourceInstanceSettingsMock).not.toHaveBeenCalled();
+    expect(getDefaultDataSourceInstanceListItemMock).not.toHaveBeenCalled();
+  });
+
+  it('should skip settings and default lookups when the stored datasource matches an invalid URL fallback', async () => {
+    givenDataSources([ds('pyroscope-abc'), ds('pyroscope-def')]);
+    setWindowLocation(new URL('http://localhost:3000/?var-dataSource=loki-abc'));
+    storeDataSource('pyroscope-def');
+
+    const dataSource = await getSelectedDefaultDataSource();
+
+    expect(dataSource).toEqual({ uid: 'pyroscope-def' });
+    expect(getDataSourceInstanceListMock).toHaveBeenCalledTimes(1);
+    expect(getDataSourceInstanceSettingsMock).not.toHaveBeenCalled();
+    expect(getDefaultDataSourceInstanceListItemMock).not.toHaveBeenCalled();
+  });
+
   it('should prefer the overriding datasource over the Grafana default', async () => {
     givenDataSources([
       ds('pyroscope-abc', { isDefault: true }),
@@ -71,6 +98,8 @@ describe('getSelectedDefaultDataSource()', () => {
     const dataSource = await getSelectedDefaultDataSource();
 
     expect(dataSource?.uid).toBe('pyroscope-def');
+    expect(getDataSourceInstanceSettingsMock).toHaveBeenCalledTimes(2);
+    expect(getDefaultDataSourceInstanceListItemMock).not.toHaveBeenCalled();
   });
 
   it('should prefer the Grafana default over the first datasource', async () => {
