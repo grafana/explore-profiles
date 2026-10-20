@@ -1,5 +1,4 @@
 import { SceneTimeRange, sceneUtils, UrlSyncContextProvider } from '@grafana/scenes';
-import { ErrorBoundaryAlert } from '@grafana/ui';
 import { DataSourceUidFallback } from '@shared/infrastructure/datasource/DataSourceUidFallback';
 import { useDefaultDataSourceUid } from '@shared/infrastructure/datasource/useDefaultDataSourceUid';
 import { queryClient } from '@shared/infrastructure/react-query/queryClient';
@@ -49,24 +48,19 @@ function EmbeddedScene(props: EmbeddedSceneProps) {
 
   return (
     <UrlSyncContextProvider namespace="pd" scene={exploration} updateUrlOnInit={false} createBrowserHistorySteps={true}>
-      <exploration.Component model={exploration} />
+      <QueryClientProvider client={queryClient}>
+        <exploration.Component model={exploration} />
+      </QueryClientProvider>
     </UrlSyncContextProvider>
   );
 }
 
 export default function EmbeddedProfilesExploration(props: EmbeddedProfilesExplorationState) {
   const dataSourceState = useDefaultDataSourceUid({ selectedUid: props.initialDS });
-  const { uid } = dataSourceState;
 
-  if (!uid) {
+  if (!dataSourceState.uid) {
     return <DataSourceUidFallback dataSourceState={dataSourceState} />;
   }
 
-  return (
-    <ErrorBoundaryAlert>
-      <QueryClientProvider client={queryClient}>
-        <EmbeddedScene {...props} initialDS={uid} />
-      </QueryClientProvider>
-    </ErrorBoundaryAlert>
-  );
+  return <EmbeddedScene {...props} initialDS={dataSourceState.uid} />;
 }
