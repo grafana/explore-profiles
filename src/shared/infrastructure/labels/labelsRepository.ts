@@ -17,7 +17,7 @@ type ListLabelValuesOptions = ListLabelsOptions & {
   label: string;
 };
 
-class LabelsRepository implements DataSourceRepository<LabelsApiClient> {
+export class LabelsRepository implements DataSourceRepository<LabelsApiClient> {
   private readonly cacheClient: MemoryCacheClient;
 
   static isNotMetaLabelOrServiceName = (label: string) => !/^(__.+__|service_name)$/.test(label);
