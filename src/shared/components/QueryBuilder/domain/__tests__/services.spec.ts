@@ -1,8 +1,10 @@
 import { mockFetch, mockPendingFetch } from '@shared/infrastructure/http/testing/mockFetch';
 import { labelsRepository } from '@shared/infrastructure/labels/labelsRepository';
+import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
 
-import { actions } from '../actions';
-import { services } from '../services';
+import { QueryBuilderLabelsRepository } from '../../infrastructure/QueryBuilderLabelsRepository';
+import { createActions } from '../actions';
+import { createServices } from '../services';
 import { buildStateMachine, defaultContext } from '../stateMachine';
 import { FilterKind, QueryBuilderEvent } from '../types';
 
@@ -14,6 +16,15 @@ const context = {
 const event = {} as QueryBuilderEvent;
 
 describe('QueryBuilder labels', () => {
+  let actions: ReturnType<typeof createActions>;
+  let services: ReturnType<typeof createServices>;
+
+  beforeEach(() => {
+    const labelsRepository = new QueryBuilderLabelsRepository({ cacheClient: new MemoryCacheClient() });
+    actions = createActions({ labelsRepository });
+    services = createServices({ labelsRepository });
+  });
+
   it('should fetch labels from the input datasource', async () => {
     const fetch = mockFetch(() => ({ names: [] }));
 
@@ -145,7 +156,7 @@ describe('QueryBuilder labels', () => {
   it('should cancel pending requests to the input datasource', () => {
     const fetch = mockPendingFetch();
 
-    services.fetchLabels({ ...context, query: '{pending}' }, event);
+    void services.fetchLabels({ ...context, query: '{pending}' }, event);
     actions.cancelAllLoad(context);
 
     expect(fetch.mock.calls[0][1]?.signal?.aborted).toBe(true);

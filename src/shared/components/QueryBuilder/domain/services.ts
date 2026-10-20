@@ -1,7 +1,7 @@
 import { logger } from '@shared/infrastructure/tracking/logger';
 
 import { operatorsRepository } from '../infrastructure/operatorsRepository';
-import { queryBuilderLabelsRepository } from '../infrastructure/QueryBuilderLabelsRepository';
+import type { QueryBuilderLabelsRepository } from '../infrastructure/QueryBuilderLabelsRepository';
 import { filtersToQuery } from './helpers/filtersToQuery';
 import { getLastFilter } from './helpers/getLastFilter';
 import { isPrivateLabel } from './helpers/isPrivateLabel';
@@ -20,12 +20,16 @@ function handleError(error: Error, info: string) {
   throw error;
 }
 
-export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
+export const createServices = ({
+  labelsRepository,
+}: {
+  labelsRepository: QueryBuilderLabelsRepository;
+}): Services<QueryBuilderContext, QueryBuilderEvent> => ({
   fetchLabels: async (context) => {
     const { dataSourceUid, from, to } = context.inputParams;
 
     try {
-      const labels = await queryBuilderLabelsRepository.listLabels({ dataSourceUid, query: context.query, from, to });
+      const labels = await labelsRepository.listLabels({ dataSourceUid, query: context.query, from, to });
 
       const publicLabels: Suggestions = [];
       const privateLabels: Suggestions = [];
@@ -88,9 +92,9 @@ export const services: Services<QueryBuilderContext, QueryBuilderEvent> = {
       const labelId = targetFilter.attribute.value;
       const { dataSourceUid, from, to } = context.inputParams;
 
-      return await queryBuilderLabelsRepository.listLabelValues({ dataSourceUid, label: labelId, query, from, to });
+      return await labelsRepository.listLabelValues({ dataSourceUid, label: labelId, query, from, to });
     } catch (error) {
       return handleError(error as Error, 'Error while fetching label values!');
     }
   },
-};
+});

@@ -1,8 +1,7 @@
 import { LabelsRepository } from '@shared/infrastructure/labels/labelsRepository';
-import { MemoryCacheClient } from '@shared/infrastructure/MemoryCacheClient';
 import { LabelsApiClient } from 'src/pages/ProfilesExplorerView/infrastructure/labels/http/LabelsApiClient';
 
-// Keep query-builder cancellation from aborting group-by label requests.
+// Keep cancellation isolated to the query builder that owns this repository.
 export class QueryBuilderLabelsRepository extends LabelsRepository {
   private readonly apiClients = new Map<string, LabelsApiClient>();
 
@@ -17,7 +16,3 @@ export class QueryBuilderLabelsRepository extends LabelsRepository {
     return apiClient;
   }
 }
-
-export const queryBuilderLabelsRepository = new QueryBuilderLabelsRepository({
-  cacheClient: new MemoryCacheClient(),
-});

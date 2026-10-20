@@ -2,7 +2,7 @@ import { t } from '@grafana/i18n';
 import { generateUUID } from '@shared/domain/generateUUID';
 import { assign } from 'xstate';
 
-import { queryBuilderLabelsRepository } from '../infrastructure/QueryBuilderLabelsRepository';
+import type { QueryBuilderLabelsRepository } from '../infrastructure/QueryBuilderLabelsRepository';
 import { areFiltersEqual } from './helpers/areFiltersEqual';
 import { buildIsEmptyFilter } from './helpers/buildIsEmptyFilter';
 import { filtersToQuery } from './helpers/filtersToQuery';
@@ -34,9 +34,9 @@ function updateFiltersAndQuery(newFilters: Filters, context: QueryBuilderContext
   };
 }
 
-export const actions: any = {
+export const createActions = ({ labelsRepository }: { labelsRepository: QueryBuilderLabelsRepository }): any => ({
   cancelAllLoad: (context: QueryBuilderContext) => {
-    queryBuilderLabelsRepository.cancel({
+    labelsRepository.cancel({
       dataSourceUid: context.inputParams.dataSourceUid,
       reason: 'Discarded by user',
     });
@@ -250,4 +250,4 @@ export const actions: any = {
     ...context,
     ...updateFiltersAndQuery(context.filters, context),
   })),
-};
+});
